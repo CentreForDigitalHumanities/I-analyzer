@@ -52,6 +52,18 @@ class Extractor(object):
         '''
         raise NotImplementedError()
 
+class Counter(Extractor):
+    '''
+    Returns integer counts, starting at 0
+    '''
+    def __init__(self, *nargs, **kwargs):
+        self.current = 0
+        super().__init__(**kwargs)
+
+    def _apply(self, metadata, *nargs, **kwargs):
+        current = self.current
+        self.current += 1
+        return current
 
 class Choice(Extractor):
     '''
@@ -82,6 +94,22 @@ class Combined(Extractor):
         return tuple(
             extractor.apply(*nargs, **kwargs) for extractor in self.extractors
         )
+
+
+class Backup(Extractor):
+    '''
+    Try all given extractors in order and return the first result that evaluates as true
+    '''
+    def __init__(self, *nargs, **kwargs):
+        self.extractors = list(nargs)
+        super().__init__(**kwargs)
+
+    def _apply(self, *nargs, **kwargs):
+        for extractor in self.extractors:
+            result = extractor.apply(*nargs, **kwargs)
+            if result:
+                return result
+        return None
 
 
 class Constant(Extractor):
@@ -131,15 +159,21 @@ class XML(Extractor):
                  multiple=False,  # Whether to abandon the search after the first element
                  secondary_tag={
                      'tag': None,
-                     'match': None
-                 },  # Whether the tag's content should match a given string
+                     'match': None,
+                     'exact': None,
+                 },  # Whether the tag's content should match a given metadata field ('match') or string ('exact')
                  external_file={  # Whether to search other xml files for this field, and the file tag these files should have
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
-                 transform_soup_func=None, # a function [e.g. `my_func(soup)`]` to transform the soup directly
-                    # after _select was called, i.e. before further processing (attributes, flattening, etc).
-                    # Keep in mind that the soup passed could be None.
+                 # a function [e.g. `my_func(soup)`]` to transform the soup directly
+                 # after _select was called, i.e. before further processing (attributes, flattening, etc).
+                 # Keep in mind that the soup passed could be None.
+                 transform_soup_func=None,
+                 # a function to extract a value directly from the soup object, instead of using the content string
+                 # or giving an attribute
+                # Keep in mind that the soup passed could be None.
+                 extract_soup_func=None,
                  *nargs,
                  **kwargs
                  ):
@@ -154,6 +188,7 @@ class XML(Extractor):
         self.secondary_tag = secondary_tag if secondary_tag['tag'] != None else None
         self.external_file = external_file if external_file['xml_tag_toplevel'] else None
         self.transform_soup_func = transform_soup_func
+        self.extract_soup_func = extract_soup_func
         super().__init__(*nargs, **kwargs)
 
     def _select(self, soup, metadata=None):
@@ -178,12 +213,16 @@ class XML(Extractor):
                 if not soup:
                     return None
             tag = self.tag[-1]
-            
+
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:
-            sibling = soup.find(
-                self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
+            # match metadata field
+            if self.secondary_tag.get('match') is not None:
+                match_string = metadata[self.secondary_tag['match']]
+            elif self.secondary_tag.get('exact') is not None:
+                match_string = self.secondary_tag['exact']
+            sibling = soup.find(self.secondary_tag['tag'], string=match_string)
             if sibling:
                 return sibling.parent.find(tag)
 
@@ -198,7 +237,6 @@ class XML(Extractor):
             return soup.find(tag, recursive=self.recursive)
         else:
             return soup.find(tag, recursive=self.recursive)
-        
 
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
         if 'metadata' in kwargs:
@@ -214,7 +252,9 @@ class XML(Extractor):
             return None
 
         # Use appropriate extractor
-        if self.attribute:
+        if self.extract_soup_func:
+            return self.extract_soup_func(soup)
+        elif self.attribute:
             return self._attr(soup)
         else:
             if self.flatten:
@@ -248,10 +288,10 @@ class XML(Extractor):
         _tabs = re.compile('\t+')
 
         return html.unescape(
-            _newlines.sub('\n',
-                          _softbreak.sub(' ', 
-                          _tabs.sub('', text)
-                          )).strip()
+            _newlines.sub(
+                '\n',
+                _softbreak.sub(' ', _tabs.sub('', text))
+            ).strip()
         )
 
     def _attr(self, soup):
@@ -260,8 +300,12 @@ class XML(Extractor):
         '''
 
         if isinstance(soup, bs4.element.Tag):
+            if self.attribute == 'name':
+                return soup.name
             return soup.attrs.get(self.attribute)
         else:
+            if self.attribute == 'name':
+                return [ node.name for node in soup]
             return [
                 node.attrs.get(self.attribute)
                 for node in soup if node.attrs.get(self.attribute) is not None
@@ -284,7 +328,7 @@ class HTML(XML):
         super().__init__(*nargs, **kwargs)
         self.attribute_filter = attribute_filter
 
-    def _select(self, soup, metadata = None):
+    def _select(self, soup, metadata):
         '''
         Return the BeautifulSoup element that matches the constraints of this
         extractor.
@@ -313,6 +357,37 @@ class HTML(XML):
         else:
             return(soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
 
+class CSV(Extractor):
+    '''
+    This extractor extracts values from a CSV row.
+
+    Parameters:
+    - multiple: Boolean. If a document spans multiple rows of the CSV, the extracted value for a field with
+    `multiple = True` is a list of the value in each row. If `multiple = False` (default), only the value
+    from the first row is extracted.
+    - convert_to_none: optional, default is `['']`. Listed values are converted to `None`. If `None`/`False`, nothing is converted.
+    '''
+    def __init__(self,
+            field,
+            multiple=False,
+            convert_to_none = [''],
+            *nargs, **kwargs):
+        self.field = field
+        self.multiple = multiple
+        self.convert_to_none = convert_to_none or []
+        super().__init__(*nargs, **kwargs)
+
+    def _apply(self, rows, *nargs, **kwargs):
+        if self.field in rows[0]:
+            if self.multiple:
+                return [self.format(row[self.field]) for row in rows]
+            else:
+                row = rows[0]
+                return self.format(row[self.field])
+
+    def format(self, value):
+        if value and value not in self.convert_to_none:
+            return value
 
 class ExternalFile(Extractor):
 
