@@ -41,7 +41,7 @@ export class ImageViewComponent implements OnChanges {
         if (changes.document &&
             changes.document.previousValue !== changes.document.currentValue) {
                 this.imagePaths = undefined;
-                this.apiService.requestMedia({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                this.apiService.requestMedia({corpus: this.corpus.name, document: this.document}).then( response => {
                     if (response.success) {
                         this.noImages = false;
                         this.imagePaths = response.media;

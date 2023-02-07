@@ -16,3 +16,4 @@ textdistance
 gensim
 scikit-learn
 pandas
+pypdf2

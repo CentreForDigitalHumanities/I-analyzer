@@ -186,11 +186,15 @@ class Corpus(object):
             }
         }
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         '''
         Get a dictionary with
         'media': list of urls from where media associated with a document can be fetched,
         'info': information for file download
+
+        Arguments:
+        - `document`: dict representation of document. Field values are stored in `fieldValues`
+        - `corpus_name`: name of the corpus in settings. Needed to create urls with the proper corpus name.
         '''
         return {'media': None, 'info': None}
 

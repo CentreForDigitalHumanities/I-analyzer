@@ -1,5 +1,5 @@
 '''
-Collect information from the Guardian-Observer corpus: the articles are contained in 
+Collect information from the Guardian-Observer corpus: the articles are contained in
 separate xml-files, zipped.
 '''
 
@@ -14,13 +14,14 @@ from datetime import date, datetime
 from zipfile import ZipFile
 from io import BytesIO
 
-from flask import current_app, url_for
+from django.conf import settings
 
 from es.es_update import update_document
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
-from addcorpus.image_processing import sizeof_fmt
+from media.image_processing import sizeof_fmt
+from media.media_url import media_url
 
 PROCESSED = "corpora/guardianobserver/processed.txt"
 
@@ -32,12 +33,12 @@ class GuardianObserver(XMLCorpus):
     description = "Newspaper archive, 1791-2003"
     min_date = datetime(year=1791, month=1, day=1)
     max_date = datetime(year=2003, month=12, day=31)
-    data_directory = current_app.config['GO_DATA']
-    es_index = current_app.config['GO_ES_INDEX']
-    es_doctype = current_app.config['GO_ES_DOCTYPE']
-    image = current_app.config['GO_IMAGE']
-    scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
-    #description_page = current_app.config['GO_DESCRIPTION_PAGE']
+    data_directory = settings.GO_DATA
+    es_index = settings.GO_ES_INDEX
+    es_doctype = settings.GO_ES_DOCTYPE
+    image = settings.GO_IMAGE
+    scan_image_type = settings.GO_SCAN_IMAGE_TYPE
+    #description_page = settings.GO_DESCRIPTION_PAGE']
 
     tag_toplevel = 'Record'
 
@@ -77,7 +78,7 @@ class GuardianObserver(XMLCorpus):
                 )
             ),
             extractor=extract.XML(
-                tag='NumericPubDate', toplevel=True, 
+                tag='NumericPubDate', toplevel=True,
                 transform=lambda x: '{y}-{m}-{d}'.format(y=x[:4],m=x[4:6],d=x[6:])
                 )
         ),
@@ -165,12 +166,12 @@ class GuardianObserver(XMLCorpus):
         )
     ]
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         field_vals = document['fieldValues']
         target_filename = "{}_{}_{}.pdf".format(
             field_vals['pub_id'],
             re.sub('-', '', field_vals['date']),
-            field_vals['id']             
+            field_vals['id']
         )
         image_path = None
         if 'image_path' in field_vals.keys():
@@ -209,12 +210,10 @@ class GuardianObserver(XMLCorpus):
                     break
         if not image_path:
             return []
-        image_urls = [url_for(
-            'api.api_get_media', 
-            corpus=self.es_index,
-            image_path=image_path,
+        image_urls = [media_url(
+            corpus_name,
+            image_path,
             filename=filename,
-            _external=True
         )]
         pdf_info = {
             "pageNumbers": [1], #change from 0-indexed to real page
@@ -223,7 +222,7 @@ class GuardianObserver(XMLCorpus):
             "fileSize": sizeof_fmt(getsize(join(self.data_directory, image_path)))
         }
         return {'media': image_urls, 'info': pdf_info}
-    
+
 
     def get_media(self, request_args):
         '''
@@ -233,9 +232,9 @@ class GuardianObserver(XMLCorpus):
         '''
         image_path = request_args['image_path']
         filename = request_args['filename']
-        
+
         pdf_data = None
-        with ZipFile(join(self.data_directory, image_path), mode='r') as zipped: 
+        with ZipFile(join(self.data_directory, image_path), mode='r') as zipped:
             zip_info = zipped.getinfo(filename)
             pdf_data = zipped.read(zip_info)
         if pdf_data:

@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 import os
 from datetime import datetime
 
-from flask import current_app
+from django.conf import settings
 
 # everything based on corpora is broken
 import corpora
@@ -21,7 +21,7 @@ def add_images(corpus_definition, page_size):
     corpus_dir = os.path.join(
         corpus_definition.data_directory, 'TDA_GDA', 'TDA_GDA_1785-2009')
     size = page_size
-    scroll = current_app.config['SERVERS']['default']['scroll_timeout']
+    scroll = settings.SERVERS['default']['scroll_timeout']
 
     # Collect initial page
     page = init_search(index, doc_type, size, scroll)
@@ -91,7 +91,7 @@ def update_document(index, doc_type, doc_id, image_path):
 
 if __name__ == "__main__":
     logfile = 'times_add_scans'
-    logging.basicConfig(filename=logfile, level=current_app.config['LOG_LEVEL'])
+    logging.basicConfig(filename=logfile, level=settings.LOG_LEVEL)
     logger.info('Starting adding scans to ES index')
     this_corpus = corpora.DEFINITIONS['times']
     add_images(this_corpus, 100)

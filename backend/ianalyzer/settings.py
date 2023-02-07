@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'visualization',
     'download',
     'wordmodels',
+    'media',
 ]
 
 MIDDLEWARE = [
