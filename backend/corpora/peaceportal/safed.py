@@ -26,7 +26,7 @@ def combine_names(data):
     return f'{own}{", child of "+parents if parents else ""}'
 
 
-class Safed(XMLCorpus, PeacePortal):
+class Safed(PeacePortal):
     data_directory = current_app.config['PEACEPORTAL_SAFED_DATA']
     es_index = current_app.config['PEACEPORTAL_SAFED_ES_INDEX']
     es_alias = current_app.config['PEACEPORTAL_ALIAS']
