@@ -1,4 +1,4 @@
-from celery import shared_task, group, chain
+from celery import shared_task, group
 from django.conf import settings
 from visualization import wordcloud, ngram, term_frequency
 from es import download as es_download
@@ -8,11 +8,6 @@ def get_wordcloud_data(request_json):
     list_of_texts, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], settings.WORDCLOUD_LIMIT)
     word_counts = wordcloud.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
     return word_counts
-
-'''Temporary test task'''
-@shared_task
-def add(x, y):
-    return x + y
 
 @shared_task()
 def get_ngram_data(request_json):

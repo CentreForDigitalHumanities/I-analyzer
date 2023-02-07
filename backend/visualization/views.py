@@ -128,11 +128,3 @@ class AggregateTermFrequencyView(APIView):
         except Exception as e:
             logger.error(e)
             raise APIException('Could not set up term frequency generation.')
-
-from visualization.tasks import add
-class AddView(APIView):
-    def get(self, *args, **kwargs):
-        task = add.delay(1, 2)
-        result = task.get()
-        return Response({"result":result})
-
