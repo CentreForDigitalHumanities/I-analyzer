@@ -7,6 +7,7 @@ psycopg2
 pytest
 pytest-django
 pytest-xdist
+pytest-celery
 elasticsearch
 nltk
 beautifulsoup4
@@ -16,4 +17,6 @@ textdistance
 gensim
 scikit-learn
 pandas
+celery
+Redis
 pypdf2

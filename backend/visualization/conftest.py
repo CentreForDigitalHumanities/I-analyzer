@@ -7,6 +7,7 @@ from addcorpus.load_corpus import load_corpus, load_all_corpora
 from time import sleep
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
+from redis import Redis
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -123,4 +124,24 @@ def basic_query():
                 "filter": []
             }
         }
+    }
+
+@pytest.fixture
+def redis_connection(settings):
+    '''check if we can connect to redis, skip otherwise'''
+    r = Redis.from_url(settings.CELERY_RESULT_BACKEND)
+
+    try:
+        r.set('test_key', 'test_value')
+    except:
+        pytest.skip()
+
+@pytest.fixture
+def celery_config(redis_connection, settings):
+    '''configure celery settings for test session,
+    includes trying redis connection, this fixture is automatically
+    used by the celery worker in the tests'''
+    return {
+        'broker_url': settings.CELERY_BROKER_URL,
+        'result_backend': settings.CELERY_RESULT_BACKEND
     }
