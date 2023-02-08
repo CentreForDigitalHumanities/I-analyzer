@@ -67,8 +67,8 @@ export class SearchService {
         if (queryModel.fields) {
             route['fields'] = queryModel.fields.join(',');
         } else {
- route['fields'] = null;
-}
+            route['fields'] = null;
+        }
 
         for (const filter of queryModel.filters.map(data => ({
                 param: this.getParamForFieldName(data.fieldName),
@@ -85,8 +85,8 @@ export class SearchService {
         if (queryModel.highlight) {
             route['highlight'] = `${queryModel.highlight}`;
         } else {
- route['highlight'] = null;
-}
+            route['highlight'] = null;
+        }
         if (nullableParams.length) {
             nullableParams.forEach( param => route[param] = null);
         }

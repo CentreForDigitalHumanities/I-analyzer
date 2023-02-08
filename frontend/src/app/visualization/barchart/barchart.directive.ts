@@ -3,14 +3,13 @@ import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 
 import * as _ from 'lodash';
 
-import { ApiService, NotificationService, SearchService } from '../../services/index';
+import { ApiService, ChartOptionsService, NotificationService, SearchService, VisualizationService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+import { AggregateResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
     BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
-import { VisualizationService } from '../../services/visualization.service';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -95,9 +94,6 @@ export abstract class BarchartDirective
             axis: 'x',
         },
         plugins: {
-            legend: {
-                display: false,
-            },
             zoom: {
                 zoom: {
                     mode: 'x',
@@ -114,15 +110,11 @@ export abstract class BarchartDirective
                     onZoom: ({chart}) => this.onZoomIn(chart),
                 }
             },
-            title: {
-                display: true,
-                text: `placeholder`,
-                align: 'center',
-            },
         }
     };
 
     constructor(
+        public chartOptionsService: ChartOptionsService,
         public searchService: SearchService,
         public visualizationService: VisualizationService,
         public apiService: ApiService,
@@ -146,6 +138,12 @@ export abstract class BarchartDirective
         } else if (changes.palette) {
             this.prepareChart();
         }
+    }
+
+    getChartTitle() {
+        if (this.frequencyMeasure == 'documents') {
+            return 'Document Frequency';
+        } else return 'Term Frequency';
     }
 
     /** check whether input changes should force reloading the data */
@@ -627,14 +625,8 @@ export abstract class BarchartDirective
         return 'all fields';
     }
 
-    chartTitle() {
-        const queryTexts = this.rawData.map(series => series.queryText);
-        if (this.queryText == null && this.rawData.length == 1) {
-            return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
-        } else {
-            const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
-            return `Frequency of '${queryTexts.join(', ')}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
-            }
+    getVisualizationOptions() {
+        return `normalization-${this.normalizer}`;
     }
 
 

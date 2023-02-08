@@ -1,5 +1,6 @@
 export * from './api.service';
 export * from './api-retry.service';
+export * from './chart-options.service';
 export * from './corpus.service';
 export * from './dialog.service';
 export * from './download.service';
