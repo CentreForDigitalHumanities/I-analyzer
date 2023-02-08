@@ -5,6 +5,7 @@ from api.serializers import QuerySerializer
 from rest_framework.permissions import IsAuthenticated
 from ianalyzer.exceptions import NotImplemented
 
+
 class QueryViewset(viewsets.ModelViewSet):
     '''
     Access search history
@@ -69,60 +70,3 @@ class AbortTasksView(APIView):
         #         current_app.logger.critical(e)
         #         return jsonify({'success': False})
         #     return jsonify({'success': True})
-
-class GetMediaView(APIView):
-    '''
-    Concerns image/pdf versions of documents.
-    Exact purpose unknown.
-    '''
-
-    def get(self, request, *args, **kwargs):
-        raise NotImplemented
-
-        # corpus_index = request.args['corpus']
-        # image_path = request.args['image_path']
-        # backend_corpus = load_corpus(corpus_index)
-        # if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        #     abort(403)
-        # if len(list(request.args.keys()))>2:
-        #     # there are more arguments, currently used for pdf retrieval only
-        #     try:
-        #         out = backend_corpus.get_media(request.args)
-        #     except Exception as e:
-        #         current_app.logger.error(e)
-        #         abort(400)
-        #     if not out:
-        #         abort(404)
-        #     response = make_response(send_file(out, attachment_filename="scan.pdf", as_attachment=True, mimetype=backend_corpus.scan_image_type))
-        #     return response
-        # else:
-        #     absolute_path = join(backend_corpus.data_directory, image_path)
-        #     if not isfile(absolute_path):
-        #         abort(404)
-        #     else:
-        #         return send_file(absolute_path, mimetype=backend_corpus.scan_image_type, as_attachment=True)
-
-
-class RequestMediaView(APIView):
-    '''
-    Concerns image/pdf versions of documents.
-    Exact purpose unknown.
-    '''
-
-    def post(self, request, *args, **kwargs):
-        raise NotImplemented
-
-        # if not request.json:
-        #     abort(400)
-        # corpus_index = request.json['corpus_index']
-        # backend_corpus = load_corpus(corpus_index)
-        # if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        #     abort(403)
-        # else:
-        #     data = backend_corpus.request_media(request.json['document'])
-        #     current_app.logger.info(data)
-        #     if 'media' not in data or len(data['media'])==0:
-        #         return jsonify({'success': False})
-        #     data['success'] = True
-        #     return jsonify(data)
-

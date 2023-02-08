@@ -19,3 +19,4 @@ scikit-learn
 pandas
 celery
 Redis
+pypdf2

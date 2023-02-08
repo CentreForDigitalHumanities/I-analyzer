@@ -9,7 +9,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 target_documents = [
     {
         'character': 'HAMLET',
-        'lines': ["Whither wilt thou lead me? Speak, I’ll go no further."]
+        'lines': ["Whither wilt thou lead me? Speak, I\'ll go no further."]
     },
     {
         'character': 'GHOST',
@@ -23,7 +23,7 @@ target_documents = [
         'character': 'GHOST',
         'lines': [
             "My hour is almost come,",
-            "When I to sulph’rous and tormenting flames",
+            "When I to sulph\'rous and tormenting flames",
             "Must render up myself."
         ]
     },
