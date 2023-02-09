@@ -153,6 +153,10 @@ PROXY_FRONTEND = None
 AUTH_USER_MODEL = 'users.CustomUser'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer'
+}
+
 
 # Download location
 _here = os.path.abspath(os.path.dirname(__file__))
