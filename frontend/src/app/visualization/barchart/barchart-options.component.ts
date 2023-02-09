@@ -55,8 +55,8 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         if (this.currentNormalizer !== 'raw' || 'terms') {
             route['normalize'] = this.currentNormalizer;
         } else {
- route['normalize'] = null;
-}
+            route['normalize'] = null;
+            }
 
         this.setParams(route);
     }
