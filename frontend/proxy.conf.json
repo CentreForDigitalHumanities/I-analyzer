@@ -11,15 +11,7 @@
         "target": "http://localhost:8000",
         "secure": false
     },
-    "/es": {
-        "target": "http://localhost:8000",
-        "secure": false
-    },
     "/saml": {
-        "target": "http://localhost:8000",
-        "secure": false
-    },
-    "/wordmodels": {
         "target": "http://localhost:8000",
         "secure": false
     },

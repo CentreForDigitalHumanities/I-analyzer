@@ -48,7 +48,6 @@ def load_corpus(corpus_name):
 def _save_corpus_in_database(corpus_name, corpus_definition):
     '''
     Save a corpus in the SQL database if it is not saved already.
-    Give access to admin users if the admin group is defined.
 
     Parameters:
     - `corpus_name`: key of the corpus in settings.CORPORA
@@ -56,11 +55,6 @@ def _save_corpus_in_database(corpus_name, corpus_definition):
     '''
     corpus_db, _ = Corpus.objects.get_or_create(name=corpus_name)
     corpus_db.description = corpus_definition.description
-
-    # add it to admin role, too
-    admin = Group.objects.filter(name='admin').first()
-    if admin:
-        corpus_db.groups.add(admin)
     corpus_db.save()
 
 def _try_loading_corpus(corpus_name):
@@ -75,9 +69,16 @@ def load_all_corpora():
     '''
     Return a dict with corpus names and corpus definition objects.
     '''
-    corpus_definitions = {
+    corpus_definitions_unfiltered = {
         corpus_name: _try_loading_corpus(corpus_name)
         for corpus_name in settings.CORPORA.keys()
+    }
+
+    # filter any corpora without a valid definition
+    corpus_definitions = {
+        name: definition
+        for name, definition in corpus_definitions_unfiltered.items()
+        if definition
     }
 
     for corpus_name, corpus_definition in corpus_definitions.items():

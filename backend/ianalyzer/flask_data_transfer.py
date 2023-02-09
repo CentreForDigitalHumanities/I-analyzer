@@ -5,7 +5,8 @@ from django.contrib.auth.models import Group
 from users.models import CustomUser
 from django.db import connection
 from addcorpus.models import Corpus
-from api.models import Query, Download
+from api.models import Query
+from download.models import Download
 import json
 from django.conf import settings
 import warnings

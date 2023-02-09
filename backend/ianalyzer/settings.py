@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'api',
     'es',
     'corpora',
+    'visualization',
+    'download',
+    'wordmodels',
 ]
 
 MIDDLEWARE = [
@@ -151,12 +154,6 @@ AUTH_USER_MODEL = 'users.CustomUser'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
 
-# Application config
-DEFAULT_DOWNLOAD_LIMIT = 10000
-MAX_LENGTH_NAME = 126
-MAX_LENGTH_DESCRIPTION = 254
-MAX_LENGTH_FILENAME = 254
-
 # Download location
 _here = os.path.abspath(os.path.dirname(__file__))
 _backend_path = os.path.join(_here, '..')
@@ -182,3 +179,5 @@ SERVERS = {
 CORPUS_SERVER_NAMES = {}
 
 CORPORA = {}
+
+from ianalyzer.settings_local import *

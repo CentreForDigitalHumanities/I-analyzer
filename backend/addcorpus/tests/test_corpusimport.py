@@ -1,6 +1,7 @@
 import os
 import pytest
 from addcorpus import load_corpus
+from addcorpus.models import Corpus
 
 def test_key_error(db, settings):
     ''' Verify that exception is correctly raised
@@ -23,6 +24,11 @@ def test_import_error(db, settings):
     with pytest.raises(FileNotFoundError) as e:
         load_corpus.load_corpus('times')
 
+    # corpus should not be included when
+    # loading all corpora
+    corpora = load_corpus.load_all_corpora()
+    assert 'times' not in corpora
+    assert not Corpus.objects.filter(name='times')
 
 mock_corpus_definition = '''
 class Times():
@@ -31,9 +37,10 @@ class Times():
     fields = []
 '''
 
-def test_import_from_anywhere(db, settings, tmpdir, admin_group):
-    ''' Verify that the corpus definition
-    can live anywhere in the file system
+@pytest.fixture()
+def temp_times_definition(tmpdir, settings, admin_group):
+    '''Provide a temporary definition files for the
+    times corpus
     '''
     testdir = tmpdir.mkdir('/testdir')
 
@@ -43,7 +50,15 @@ def test_import_from_anywhere(db, settings, tmpdir, admin_group):
 
     settings.CORPORA = {'times': path_testfile}
 
+def test_import_from_anywhere(db, temp_times_definition):
+    ''' Verify that the corpus definition
+    can live anywhere in the file system
+    '''
     corpus_definitions = load_corpus.load_all_corpora()
     assert 'times' in corpus_definitions
     corpus = corpus_definitions['times']
     assert corpus.title == 'Times'
+
+def test_corpus_dir_is_absolute(db, temp_times_definition):
+    corpus_dir = load_corpus.corpus_dir('times')
+    assert os.path.isabs(corpus_dir)

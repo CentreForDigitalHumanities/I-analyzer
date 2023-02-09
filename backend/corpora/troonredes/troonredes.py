@@ -12,7 +12,7 @@ import re
 import random
 from pprint import pprint
 
-from flask import current_app
+from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
@@ -31,11 +31,11 @@ class Troonredes(XMLCorpus):
     description = "Speeches by Dutch monarchs"
     min_date = datetime(year=1814, month=1, day=1)
     max_date = datetime(year=2018, month=12, day=31)
-    data_directory = current_app.config['TROONREDES_DATA']
-    es_index = current_app.config['TROONREDES_ES_INDEX']
-    es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
-    image = current_app.config['TROONREDES_IMAGE']
-    word_model_path = current_app.config['TROONREDES_WM']
+    data_directory = settings.TROONREDES_DATA
+    es_index = settings.TROONREDES_ES_INDEX
+    es_doctype = settings.TROONREDES_ES_DOCTYPE
+    image = settings.TROONREDES_IMAGE
+    word_model_path = settings.TROONREDES_WM
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'

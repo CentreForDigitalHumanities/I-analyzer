@@ -55,7 +55,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/wordcloud'
+        path: '/visualization/wordcloud'
     })
     public wordcloud: ResourceMethod<
     WordcloudParameters,
@@ -63,7 +63,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/wordcloud_tasks'
+        path: 'visualization/wordcloud_task'
     })
     public wordcloudTasks: ResourceMethod<
         WordcloudParameters,
@@ -82,7 +82,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/abort_tasks/'
+        path: '/abort_tasks'
     })
     public abortTasks: ResourceMethod<
     { task_ids: string[] },
@@ -90,7 +90,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/ngram_tasks'
+        path: '/visualization/ngram_tasks'
     })
     public ngramTasks: ResourceMethod<
         { es_query: EsQuery; corpus_name: string; field: string; ngram_size?: number; term_position?: string; freq_compensation?: boolean;
@@ -100,7 +100,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/aggregate_term_frequency'
+        path: '/visualization/aggregate_term_frequency'
     })
     public getAggregateTermFrequency: ResourceMethod<
         AggregateTermFrequencyParameters,
@@ -108,7 +108,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/date_term_frequency'
+        path: '/visualization/date_term_frequency'
     })
     public getDateTermFrequency: ResourceMethod<
         DateTermFrequencyParameters,
@@ -116,7 +116,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/request_full_data'
+        path: '/download/full_data'
     })
     public requestFullData: ResourceMethod<
         { visualization: 'date_term_frequency'; parameters: DateTermFrequencyParameters[]; corpus: string } |
@@ -124,7 +124,7 @@ export class ApiService extends Resource {
         TaskResult>;
 
     @ResourceAction({
-        path: '/corpus'
+        path: '/corpus/'
     })
     public corpus: ResourceMethod<void, any>;
 
@@ -152,7 +152,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Put,
-        path: '/query'
+        path: '/search_history/'
     })
     public query: ResourceMethod<QueryDb<Date> & {
         id?: number;
@@ -171,7 +171,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/download',
+        path: '/download/search_results',
         responseBodyType: ResourceResponseBodyType.Blob,
         asResourceResponse: true
     })
@@ -181,7 +181,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/csv/{id}',
+        path: '/download/csv/{id}',
         responseBodyType: ResourceResponseBodyType.Blob,
         asResourceResponse: true
     })
@@ -192,7 +192,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/download_task'
+        path: '/download/search_results_task'
     })
     public downloadTask: ResourceMethod<
         ResultsDownloadParameters,
@@ -234,13 +234,13 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/search_history'
+        path: '/search_history/'
     })
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/downloads'
+        path: '/download/'
     })
     public downloads: ResourceMethod<void, Download[]>;
 
@@ -272,7 +272,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/corpusdescription/{corpus}/{filename}',
+        path: '/corpus/documentation/{corpus}/{filename}',
         responseBodyType: ResourceResponseBodyType.Text
     })
     public corpusdescription: ResourceMethod<{ filename: string; corpus: string }, any>;
