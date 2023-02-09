@@ -13,22 +13,32 @@ import { SessionService } from './session.service';
 import { UserService } from './user.service';
 import { WordmodelsService } from './wordmodels.service';
 import { WordmodelsServiceMock } from '../../mock-data/wordmodels';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SearchService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([])],
+            imports: [
+                RouterTestingModule.withRoutes([]),
+                HttpClientTestingModule,
+            ],
             providers: [
                 SearchService,
                 ApiRetryService,
                 { provide: ApiService, useValue: new ApiServiceMock() },
-                { provide: ElasticSearchService, useValue: new ElasticSearchServiceMock() },
+                {
+                    provide: ElasticSearchService,
+                    useValue: new ElasticSearchServiceMock(),
+                },
                 LogService,
                 QueryService,
                 UserService,
                 SessionService,
-                { provide: WordmodelsService, useValue: new WordmodelsServiceMock() },
-            ]
+                {
+                    provide: WordmodelsService,
+                    useValue: new WordmodelsServiceMock(),
+                },
+            ],
         });
     });
 

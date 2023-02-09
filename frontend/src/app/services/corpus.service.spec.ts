@@ -16,11 +16,9 @@ describe('CorpusService', () => {
     const apiServiceMock = new ApiServiceMock();
     const userServiceMock = new UserServiceMock();
     // TODO: validate that this shouldn't be done server-side
-    userServiceMock.currentUser.role.corpora.push(...[
-        { name: 'test1', description: '' },
-        { name: 'test2', description: '' },
-        { name: 'times', description: '' },
-    ]);
+    userServiceMock.currentUser.accessibleCorpora.push(
+        ...['test1', 'test2', 'times']
+    );
 
     beforeEach(() => {
         TestBed.configureTestingModule({

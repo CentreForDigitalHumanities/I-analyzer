@@ -11,12 +11,8 @@ export class UserServiceMock {
 export const mockUser: User = new User(
     42,
     'mouse',
-    {
-        name: 'superuser', description: 'users who can access deep thought',
-        corpora: [
-            {name: 'deep thought', description: 'supercomputer database'
-        }]
-    },
+    false,
     10000,
+    ['deep thought'],
     false
 );
