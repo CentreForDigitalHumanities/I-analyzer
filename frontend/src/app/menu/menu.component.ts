@@ -57,7 +57,7 @@ export class MenuComponent implements OnDestroy, OnInit {
                     return;
                 }
                 this.currentUser = currentUser as User;
-                this.isAdmin = this.currentUser.hasRole('admin');
+                this.isAdmin = this.currentUser.isAdmin;
             } else {
                 this.isAdmin = false;
             }

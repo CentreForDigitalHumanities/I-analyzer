@@ -18,6 +18,7 @@ import {
     take,
     tap,
 } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -43,7 +44,7 @@ interface QueryDb<TDateType> {
 export class ApiService extends Resource {
     private apiUrl: string;
 
-    constructor(restHandler: ResourceHandler) {
+    constructor(restHandler: ResourceHandler, private http: HttpClient) {
         super(restHandler);
     }
 
@@ -124,31 +125,12 @@ export class ApiService extends Resource {
         TaskResult>;
 
     @ResourceAction({
-        path: '/corpus/'
-    })
-    public corpus: ResourceMethod<void, any>;
-
-    @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/log'
     })
     public log: ResourceMethod<
         { msg: string; type: 'info' | 'error' },
         { success: boolean }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/login'
-    })
-    public login: ResourceMethod<
-        { username: string; password: string },
-        { success: boolean; id: number; username: string; corpora: AccessibleCorpus[]; downloadLimit: number | null }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/logout'
-    })
-    public logout: ResourceMethod<void, { success: boolean }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Put,
@@ -301,5 +283,9 @@ export class ApiService extends Resource {
             filter(this.tasksDone),
             take(1)
         ).toPromise();
+    }
+
+    public corpus() {
+        return this.http.get('/api/corpus/').toPromise();
     }
 }

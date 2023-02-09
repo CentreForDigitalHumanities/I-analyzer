@@ -1,10 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { User, UserResponse } from '../models/user';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
-import { User } from '../models/user';
 
 import { Subscription } from 'rxjs';
+import { AuthService } from './auth.service';
 
 const localStorageKey = 'currentUser';
 const sessionCheckInterval = 10000;
@@ -19,8 +20,8 @@ export class UserService implements OnDestroy {
     // - If the session on the API server hasn't been checked for 10 seconds it will be checked again.
     // - If the user logs on or off, the value is directly updated.
     // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
-    private sessionCheckPromise: Promise<boolean> = Promise.resolve<boolean>(false);
-
+    private sessionCheckPromise: Promise<boolean> =
+        Promise.resolve<boolean>(false);
 
     /**
      * Get the current user
@@ -38,7 +39,14 @@ export class UserService implements OnDestroy {
         const value = localStorage.getItem(localStorageKey);
         if (value) {
             const parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['isSolisLogin']);
+            return new User(
+                parsed['id'],
+                parsed['username'],
+                parsed['isAdmin'],
+                parsed['downloadLimit'],
+                parsed['corpora'],
+                parsed['isSolisLogin']
+            );
         } else {
             return false;
         }
@@ -53,12 +61,18 @@ export class UserService implements OnDestroy {
         }
     }
 
-
-    constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
-        this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
-            // no need to notify the server that we are going to logoff, because it told us this is already the case
-            this.logout(false, true);
-        });
+    constructor(
+        private apiService: ApiService,
+        private authService: AuthService,
+        private sessionService: SessionService,
+        private router: Router
+    ) {
+        this.sessionExpiredSubscription = this.sessionService.expired.subscribe(
+            () => {
+                // no need to notify the server that we are going to logoff, because it told us this is already the case
+                this.logout(false, true);
+            }
+        );
     }
 
     ngOnDestroy() {
@@ -75,45 +89,52 @@ export class UserService implements OnDestroy {
             if (this.currentUser) {
                 return this.currentUser;
             }
-            throw 'Not logged on';
+            throw new Error('Not logged on');
         }
         const currentUser = await this.getCurrentUserOrFallback();
         if (currentUser) {
             return currentUser;
         }
 
-        throw 'Not logged on';
+        throw new Error('Not logged on');
     }
 
-    public login(username: string, password: string = null): Promise<User | false> {
-        const loginPromise = this.apiService.login({ username, password }).then(result => {
-            if (result.success) {
-                return this.processLoginSucces(result);
-            }
+    public login(
+        username: string,
+        password: string = null
+    ): Promise<User | false> {
+        const loginPromise: Promise<User | false> = this.authService
+            .login(username, password)
+            .toPromise()
+            .then((result) => this.processLoginSucces(result))
+            .catch((reason) => {
+                console.error(reason);
+                return false;
+            });
 
-            return false;
-        });
-
-        this.sessionCheckPromise = loginPromise.then(user => !!user);
+        this.sessionCheckPromise = loginPromise.then((user) => !!user);
 
         return loginPromise;
     }
 
-
     /**
      * Do the actual login with SolisId
+     * TODO: Get it working.
      */
-    public async solisLogin(): Promise<User | false> {
+    // public async solisLogin(): Promise<User | false> {
+    public async solisLogin(): Promise<boolean> {
         await this.sessionCheckPromise;
-        const loginPromise = this.apiService.solisLogin().then(result => {
+        const loginPromise = this.apiService.solisLogin().then((result) => {
             if (result.success) {
-                return this.processLoginSucces(result, true);
+                // return this.processLoginSucces(result, true);
+                // TODO: Solis login!
+                return false;
             }
 
             return false;
         });
 
-        this.sessionCheckPromise = loginPromise.then(user => !!user);
+        this.sessionCheckPromise = loginPromise.then((user) => !!user);
 
         return loginPromise;
     }
@@ -123,27 +144,41 @@ export class UserService implements OnDestroy {
      *
      * @param result The result from the API call
      */
-    private processLoginSucces(result, isSolisLogin: boolean = false): User {
+    private processLoginSucces(
+        result: UserResponse,
+        isSolisLogin: boolean = false
+    ): User {
         this.currentUser = new User(
             result.id,
             result.username,
-            result.role,
+            result.isAdmin,
             result.downloadLimit == null ? 0 : result.downloadLimit,
-            isSolisLogin);
+            result.corpora,
+            isSolisLogin
+        );
 
         return this.currentUser;
     }
 
-
     /**
      * Registration of new user.
      */
-    public register(username: string, email: string, password: string):
-        Promise<{ success: boolean; is_valid_username: boolean; is_valid_email: boolean }> {
+    public register(
+        username: string,
+        email: string,
+        password: string
+    ): Promise<{
+        success: boolean;
+        is_valid_username: boolean;
+        is_valid_email: boolean;
+    }> {
         return this.apiService.register({ username, email, password });
     }
 
-    public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
+    public async logout(
+        notifyServer: boolean = true,
+        redirectToLogout: boolean = true
+    ): Promise<User | undefined> {
         let isSolisLogin = false;
 
         if (this.currentUser) {
@@ -154,10 +189,11 @@ export class UserService implements OnDestroy {
         this.sessionCheckPromise = Promise.resolve(false);
 
         if (isSolisLogin) {
+            // TODO: Solis logout
             window.location.href = 'api/init_solislogout';
         } else {
             if (notifyServer) {
-                await this.apiService.logout();
+                await this.authService.logout();
             }
 
             if (redirectToLogout && !UserService.loginActivated) {
@@ -169,6 +205,9 @@ export class UserService implements OnDestroy {
     }
 
     public showLogin(returnUrl?: string) {
-        this.router.navigate(['/login'], returnUrl ? { queryParams: { returnUrl } } : undefined);
+        this.router.navigate(
+            ['/login'],
+            returnUrl ? { queryParams: { returnUrl } } : undefined
+        );
     }
 }
