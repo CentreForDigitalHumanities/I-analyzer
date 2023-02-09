@@ -83,8 +83,7 @@ def transform_query(query):
         return transformed if transformed != '' else None
 
 def has_whitespace(query):
-    if len(query.split(' ')) != 1:
-        return True
+    return ' ' in query
 
 def strip_punctuation(query):
     return query.strip(punctuation)
