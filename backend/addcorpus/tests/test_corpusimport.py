@@ -38,7 +38,7 @@ class Times():
 '''
 
 @pytest.fixture()
-def temp_times_definition(tmpdir, settings, admin_group):
+def temp_times_definition(tmpdir, settings):
     '''Provide a temporary definition files for the
     times corpus
     '''

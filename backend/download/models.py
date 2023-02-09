@@ -2,6 +2,7 @@ from django.db import models
 from users.models import CustomUser
 from addcorpus.models import Corpus
 from django.conf import settings
+from datetime import datetime
 
 MAX_LENGTH_FILENAME = 254
 
@@ -40,3 +41,13 @@ class Download(models.Model):
             return 'error'
         else:
             return 'working'
+
+    def complete(self, filename = None):
+        '''
+        Mark a download as completed.
+        If no filename is provided, the download will get 'error' status.
+        '''
+
+        self.filename = filename
+        self.completed = datetime.now()
+        self.save()

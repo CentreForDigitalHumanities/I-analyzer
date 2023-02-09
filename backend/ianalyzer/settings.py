@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'visualization',
     'download',
     'wordmodels',
+    'media',
 ]
 
 MIDDLEWARE = [
@@ -161,7 +162,7 @@ REST_AUTH_SERIALIZERS = {
 # Download location
 _here = os.path.abspath(os.path.dirname(__file__))
 _backend_path = os.path.join(_here, '..')
-CSV_FILES_PATH = os.path.join(_backend_path, 'api/csv_files')
+CSV_FILES_PATH = os.path.join(_backend_path, 'download/csv_files')
 
 # Specify elasticsearch servers
 SERVERS = {
@@ -184,4 +185,9 @@ CORPUS_SERVER_NAMES = {}
 
 CORPORA = {}
 
+# Celery configuration
+CELERY_BROKER_URL = 'redis://'
+CELERY_RESULT_BACKEND = 'redis://'
+
+#This needs to be the last line of the settings.py, so that all settings can be overridden.
 from ianalyzer.settings_local import *

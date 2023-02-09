@@ -6,5 +6,6 @@ urlpatterns = [
     path('wordcloud_task', WordcloudTaskView.as_view()),
     path('ngram', NgramView.as_view()),
     path('date_term_frequency', DateTermFrequencyView.as_view()),
-    path('aggregate_term_frequency', AggregateTermFrequencyView.as_view())
+    path('aggregate_term_frequency', AggregateTermFrequencyView.as_view()),
+    path('add', AddView.as_view())
 ]

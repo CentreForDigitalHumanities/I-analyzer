@@ -116,3 +116,11 @@ class AggregateTermFrequencyView(APIView):
         #     return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
         # else:
         #     return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
+
+from visualization.tasks import add
+class AddView(APIView):
+    def get(self, *args, **kwargs):
+        task = add.delay(1, 2)
+        result = task.get()
+        return Response({"result":result})
+

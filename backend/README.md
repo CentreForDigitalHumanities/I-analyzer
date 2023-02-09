@@ -13,7 +13,7 @@ This is a server side web application based on [Django][1] and [Django REST fram
 You need to install the following software:
 
  - PostgreSQL >= 10, client, server and C libraries
- - Python >= 3.8, <= 3.10
+ - Python 3.8
  - virtualenv
  - WSGI-compatible webserver (deployment only)
  - [Visual C++ for Python][14] (Windows only)
