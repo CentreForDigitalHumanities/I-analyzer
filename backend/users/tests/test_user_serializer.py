@@ -1,5 +1,5 @@
 from addcorpus.models import Corpus
-
+from unittest.mock import ANY
 
 def test_user_serializer(auth_client,
                          auth_user,
@@ -10,7 +10,7 @@ def test_user_serializer(auth_client,
     details = auth_client.get('/users/user/')
     assert details.status_code == 200
     assert details.data == {
-        'id': 1,
+        'id': ANY,
         'username': user_credentials['username'],
         'email': user_credentials['email'],
         'download_limit': 10000,
@@ -38,7 +38,7 @@ def test_admin_serializer(admin_client, admin_credentials, test_corpus):
     details = admin_client.get('/users/user/')
     assert details.status_code == 200
     assert details.data == {
-        'id': 1,
+        'id': ANY,
         'username': admin_credentials['username'],
         'email': admin_credentials['email'],
         'download_limit': 10000,

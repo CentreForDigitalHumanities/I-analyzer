@@ -18,7 +18,7 @@ def times_test_settings(settings):
         'times': os.path.join(_here, '../corpora/times/times.py')
     }
 
-    settings.TIMES_DATA = 'addcorpus/tests'
+    settings.TIMES_DATA = os.path.join(_here, '../addcorpus/tests')
     settings.TIMES_ES_INDEX = 'ianalyzer-test-times'
     settings.TIMES_ES_DOCTYPE = 'article'
     settings.TIMES_IMAGE = 'times.jpg'
