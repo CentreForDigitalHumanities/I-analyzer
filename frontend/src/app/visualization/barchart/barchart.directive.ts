@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { ApiService, NotificationService, SearchService } from '../../services/index';
 import { Chart, ChartOptions, ChartType } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartSettings } from '../../models';
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -43,7 +43,7 @@ export abstract class BarchartDirective
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
-    @Input() chartType: 'bar' | 'line' | 'scatter' = 'line';
+    @Input() chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
     documentLimit = 5000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
@@ -159,10 +159,10 @@ export abstract class BarchartDirective
     }
 
     /** update graph after changes to the chart settings (i.e. normalizer and chart type) */
-    onOptionChange(chartSettings: ChartSettings) { //normalizer: 'raw'|'percent'|'documents'|'terms', chartType: 'bar'|'line'|'scatter'
+    onOptionChange(chartParameters: ChartParameters) { //normalizer: 'raw'|'percent'|'documents'|'terms', chartType: 'bar'|'line'|'scatter'
         console.log('Ding!')
-        this.normalizer = chartSettings.normalizer;
-        this.chartType = chartSettings.chartType;
+        this.normalizer = chartParameters.normalizer;
+        this.chartType = chartParameters.chartType;
         if (this.rawData && this.chart) {
             this.prepareChart();
         }
