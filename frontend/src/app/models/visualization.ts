@@ -93,6 +93,13 @@ export type FreqTableHeaders = FreqTableHeader[];
 
 export type Normalizer = 'raw'|'percent'|'documents'|'terms';
 
+export type ChartType = 'bar' | 'line' | 'scatter';
+
+export interface ChartSettings {
+    normalizer: Normalizer;
+    chartType: ChartType;
+}
+
 export interface NgramParameters {
     size: number;
     positions: string;
