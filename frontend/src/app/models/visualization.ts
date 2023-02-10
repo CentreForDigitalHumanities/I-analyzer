@@ -95,7 +95,7 @@ export type Normalizer = 'raw'|'percent'|'documents'|'terms';
 
 export type ChartType = 'bar' | 'line' | 'scatter';
 
-export interface ChartSettings {
+export interface ChartParameters {
     normalizer: Normalizer;
     chartType: ChartType;
 }
