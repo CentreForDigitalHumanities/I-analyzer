@@ -11,6 +11,7 @@
 <div class="block">
     <ia-barchart-options
         [queryText]="queryText" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
+        [freqTable]="asTable"
         [frequencyMeasure]="frequencyMeasure"
         (chartParameters)="onOptionChange($event)" (queriesChanged)="updateQueries($event)" (clearQueries)="clearAddedQueries()">
     </ia-barchart-options>

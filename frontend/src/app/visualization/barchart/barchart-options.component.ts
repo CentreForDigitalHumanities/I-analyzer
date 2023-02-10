@@ -15,6 +15,8 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
 
+    @Input() freqTable: boolean;
+
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
 
     currentNormalizer: Normalizer;
