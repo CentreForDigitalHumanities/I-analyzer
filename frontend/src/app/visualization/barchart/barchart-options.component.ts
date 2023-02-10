@@ -58,7 +58,6 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
             chartType: this.currentChartType
         }
         this.chartParameters.emit(chartParameters);
-        console.log('emit')
         const route = {};
         if (this.currentNormalizer !== 'raw' || 'terms') {
             route['normalize'] = this.currentNormalizer;
@@ -76,7 +75,6 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     }
 
     setStateFromParams(params: Params) {
-        console.log(params)
         if (params.has('normalize')) {
             this.currentNormalizer = params.get('normalize') as Normalizer;
         } else {

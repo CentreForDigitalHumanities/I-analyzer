@@ -160,7 +160,6 @@ export abstract class BarchartDirective
 
     /** update graph after changes to the chart settings (i.e. normalizer and chart type) */
     onOptionChange(chartParameters: ChartParameters) { //normalizer: 'raw'|'percent'|'documents'|'terms', chartType: 'bar'|'line'|'scatter'
-        console.log('Ding!')
         this.normalizer = chartParameters.normalizer;
         this.chartType = chartParameters.chartType;
         if (this.rawData && this.chart) {
