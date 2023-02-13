@@ -1,15 +1,14 @@
-import { Subject, Observable } from 'rxjs';
-
+import { Subject, Observable, of } from 'rxjs';
+import { mockUserResponse } from './user';
 
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
     public SessionExpired = this.SessionExpiredSubject.asObservable();
 
-    constructor(public fakeResult: { [path: string]: any } = {}) {
-    }
+    constructor(public fakeResult: { [path: string]: any } = {}) {}
 
     public abortTasks() {
-        return {success: true};
+        return { success: true };
     }
 
     public get(path: string): Promise<any> {
@@ -17,11 +16,12 @@ export class ApiServiceMock {
     }
 
     public corpus() {
-        return this.get('corpus');
+        // return this.get('corpus');
+        return of(this.get('corpus'));
     }
 
     public search_history() {
-        return Promise.resolve({queries: []});
+        return Promise.resolve({ queries: [] });
     }
 
     public getWordcloudData() {
@@ -34,5 +34,9 @@ export class ApiServiceMock {
 
     public downloads() {
         return Promise.resolve([]);
+    }
+
+    public getUser() {
+        return of(mockUserResponse);
     }
 }

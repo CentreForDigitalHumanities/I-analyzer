@@ -1,4 +1,4 @@
-import { User } from '../app/models/index';
+import { User, UserResponse } from '../app/models/index';
 
 export class UserServiceMock {
     public currentUser: User = mockUser;
@@ -16,3 +16,13 @@ export const mockUser: User = new User(
     ['deep thought'],
     false
 );
+
+export const mockUserResponse: UserResponse = {
+    id: 42,
+    username: 'mouse',
+    is_admin: false,
+    email: 'mighty@mouse.com',
+    download_limit: 10000,
+    saml: false,
+    corpora: ['deep thought'],
+};
