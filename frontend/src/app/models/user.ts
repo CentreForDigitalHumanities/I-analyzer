@@ -5,9 +5,9 @@ export interface UserResponse {
     id: number;
     username: string;
     email: string;
-    downloadLimit: number;
+    download_limit: number;
     corpora: string[];
-    isAdmin: boolean;
+    is_admin: boolean;
     saml: boolean;
 }
 

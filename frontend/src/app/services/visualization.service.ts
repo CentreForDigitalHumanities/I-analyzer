@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { AggregateTermFrequencyParameters, Corpus, DateTermFrequencyParameters, NgramParameters, QueryModel, TaskResult,
-    TimeCategory, TimelineBin } from '../models';
+import {
+    AggregateTermFrequencyParameters,
+    Corpus,
+    DateTermFrequencyParameters,
+    NgramParameters,
+    QueryModel,
+    TaskResult,
+    TimeCategory,
+} from '../models';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { LogService } from './log.service';
-import { QueryService } from './query.service';
-import { UserService } from './user.service';
-import { WordmodelsService } from './wordmodels.service';
 
 @Injectable({
   providedIn: 'root'

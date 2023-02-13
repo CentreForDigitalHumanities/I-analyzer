@@ -151,8 +151,8 @@ export class UserService implements OnDestroy {
         this.currentUser = new User(
             result.id,
             result.username,
-            result.isAdmin,
-            result.downloadLimit == null ? 0 : result.downloadLimit,
+            result.is_admin,
+            result.download_limit == null ? 0 : result.download_limit,
             result.corpora,
             isSolisLogin
         );
@@ -193,7 +193,7 @@ export class UserService implements OnDestroy {
             window.location.href = 'api/init_solislogout';
         } else {
             if (notifyServer) {
-                await this.authService.logout();
+                await this.authService.logout().toPromise();
             }
 
             if (redirectToLogout && !UserService.loginActivated) {
