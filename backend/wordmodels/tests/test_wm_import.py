@@ -12,9 +12,9 @@ def test_complete_import(test_app, mock_corpus):
     model = load_word_models(corpus)
     assert model
 
-    weights = model['matrix']
+    weights = model['vectors']
     assert weights.vector_size == TEST_DIMENSIONS
-    vocab = model['vocab']
+    vocab = weights.index_to_key
     assert len(vocab) == TEST_VOCAB_SIZE
 
 
@@ -29,10 +29,10 @@ def test_binned_import(test_app, mock_corpus):
         assert model['start_year'] == start_year
         assert model['end_year'] == end_year
 
-        weights = model['matrix']
+        weights = model['vectors']
 
         assert weights.vector_size == TEST_DIMENSIONS
-        vocab = model['vocab']
+        vocab = weights.index_to_key
         assert len(vocab) == TEST_VOCAB_SIZE
 
 def test_word_in_model(test_app, mock_corpus):

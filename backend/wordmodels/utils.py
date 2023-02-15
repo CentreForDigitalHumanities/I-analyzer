@@ -26,8 +26,7 @@ def load_word_models(corpus, binned=False):
                 {
                     "start_year": get_year(wm_file, 1),
                     "end_year": get_year(wm_file, 2),
-                    "matrix": KeyedVectors.load(wm_file),
-                    "vocab": get_vocab(wm_file)
+                    "vectors": KeyedVectors.load(wm_file),
                 }
             for wm_file in wv_list
             ]
@@ -36,25 +35,18 @@ def load_word_models(corpus, binned=False):
         wm = {
             "start_year": get_year(full_model, 1),
             "end_year": get_year(full_model, 2),
-            "matrix": model,
-            "vocab": get_vocab(full_model)
+            "vectors": model,
         }
     return wm
-
-def get_vocab(kv_filename):
-    vocab_name = '{}_vocab.pkl'.format(splitext(kv_filename)[0])
-    with open(vocab_name, 'rb') as f:
-        return pickle.load(f)
 
 def get_year(kv_filename, position):
     return int(splitext(basename(kv_filename))[0].split('_')[position])
 
 def word_in_model(query_term, corpus, max_distance = 2):
     model = load_word_models(corpus)
-    vocab = model['vocab']
     transformed_query = transform_query(query_term)
-
-    if transformed_query in model['vocab']:
+    vocab = model['vectors'].index_to_key
+    if transformed_query in vocab:
         return { 'exists': True }
     else:
         is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
