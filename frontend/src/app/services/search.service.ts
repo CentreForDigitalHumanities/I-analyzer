@@ -141,7 +141,7 @@ export class SearchService {
             queryModel
         );
         query.totalResults = results.total;
-        await this.queryService.save(query, true);
+        this.queryService.save(query, true);
 
         return {
             fields: corpus.fields.filter((field) => field.resultsOverview),
