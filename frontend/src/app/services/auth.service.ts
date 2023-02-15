@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -6,14 +5,12 @@ import {
     Observable,
     ReplaySubject,
     Subject,
-    throwError,
+    throwError
 } from 'rxjs';
 import {
     catchError,
-    distinctUntilChanged,
-    tap,
-    mergeMap,
-    takeUntil,
+    distinctUntilChanged, mergeMap,
+    takeUntil, tap
 } from 'rxjs/operators';
 import { User, UserResponse } from '../models';
 import { ApiService } from './api.service';
@@ -57,6 +54,7 @@ export class AuthService implements OnDestroy {
      * @param user User object, not response data
      */
     private setAuth(user: User): void {
+        // TODO: reinstate localStorage with session information (if needed)
         // localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
         this.isAuthenticatedSubject.next(true);
@@ -136,7 +134,7 @@ export class AuthService implements OnDestroy {
     /**
      * Logs in, retrieves user response, transforms to User object
      */
-    login(username: string, password: string): Observable<UserResponse> {
+    public login(username: string, password: string): Observable<UserResponse> {
         const loginRequest$ = this.apiService.login(username, password);
         return loginRequest$.pipe(
             mergeMap(() => this.checkUser()),
@@ -148,7 +146,7 @@ export class AuthService implements OnDestroy {
         );
     }
 
-    logout(redirectToLogin: boolean = false) {
+    public logout(redirectToLogin: boolean = false) {
         return this.apiService.logout().pipe(
             tap(() => {
                 this.purgeAuth();

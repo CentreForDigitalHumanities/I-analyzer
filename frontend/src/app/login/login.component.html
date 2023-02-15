@@ -1,18 +1,7 @@
 <section class="section">
 
-    <form (ngSubmit)="login()" class="container is-readable">        
+    <form (ngSubmit)="login()" class="container is-readable">
         <div class="container is-login">
-           <div *ngIf="isActivated">
-                <article class="message is-success">
-                        <div class="message-header">
-                          <p>Success</p>
-                        </div>
-                        <div class="message-body">
-                           Your registration is complete. You can now log in.
-                        </div>
-                      </article>
-                      <br>
-           </div>
             <h1 class="title">I-Analyzer</h1>
             <div class="field">
                 <label for="username">Username</label>
@@ -29,7 +18,7 @@
                     <input class="input" type="password" [(ngModel)]="password" name="password" />
                     <span class="icon is-small is-left">
                     <i class="fa fa-lock"></i>
-                </span> 
+                </span>
                 </p>
             </div>
             <div class="level">
@@ -62,7 +51,7 @@
                 </p>
             </div>
             <div>
-                <a class="box" href='/api/init_solislogin'>   
+                <a class="box" href='/api/init_solislogin'>
                     <img src="/assets/solis.png" width="40" height="40">
                     <span><strong>Solis ID</strong></span>
                 </a>

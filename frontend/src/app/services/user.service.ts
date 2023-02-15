@@ -12,8 +12,6 @@ const sessionCheckInterval = 10000;
 
 @Injectable()
 export class UserService implements OnDestroy {
-    // workaround for logging out "expired" users, including those who never logged on in the first place
-    public static loginActivated = false;
     private deserializedCurrentUser: User | false = false;
     private sessionExpiredSubscription: Subscription;
     // Basic behavior:
@@ -196,7 +194,7 @@ export class UserService implements OnDestroy {
                 await this.authService.logout().toPromise();
             }
 
-            if (redirectToLogout && !UserService.loginActivated) {
+            if (redirectToLogout) {
                 this.showLogin();
             }
         }
