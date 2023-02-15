@@ -43,7 +43,7 @@ export abstract class BarchartDirective
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
-    @Input() chartType: 'bar' | 'line' | 'scatter' = 'bar';
+    chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
     documentLimit = 5000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
@@ -159,7 +159,7 @@ export abstract class BarchartDirective
     }
 
     /** update graph after changes to the chart settings (i.e. normalizer and chart type) */
-    onOptionChange(chartParameters: ChartParameters) { //normalizer: 'raw'|'percent'|'documents'|'terms', chartType: 'bar'|'line'|'scatter'
+    onOptionChange(chartParameters: ChartParameters) {
         this.normalizer = chartParameters.normalizer;
         this.chartType = chartParameters.chartType;
         if (this.rawData && this.chart) {
