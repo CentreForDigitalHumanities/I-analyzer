@@ -20,7 +20,7 @@ export class WordmodelsService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_related_words'
+        path: '/related_words'
     })
     public relatedWordsRequest: ResourceMethod<
         { query_term: string; corpus_name: string; neighbours: number },
@@ -36,7 +36,7 @@ export class WordmodelsService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/get_similarity_over_time'
+        path: '/similarity_over_time'
     })
     public wordSimilarityRequest: ResourceMethod<
         { term_1: string; term_2: string; corpus_name: string},
@@ -45,7 +45,7 @@ export class WordmodelsService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/get_word_in_model'
+        path: '/word_in_model'
     })
     public wordInModelRequest: ResourceMethod<
         { query_term: string; corpus_name: string },
@@ -53,7 +53,7 @@ export class WordmodelsService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/get_wm_documentation'
+        path: '/documentation'
     })
     public wordModelsDocumentationRequest: ResourceMethod<
         { corpus_name: string },
@@ -76,14 +76,6 @@ export class WordmodelsService extends Resource {
 
     public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
         return this.wordSimilarityRequest({term_1: term1, term_2: term2, corpus_name: corpusName});
-    }
-
-    public async getRelatedWordsTimeInterval(
-        queryTerm: string, corpusName: string, timeInterval: string, neighbours: number
-    ): Promise<WordSimilarity[]> {
-        return this.relatedWordsTimeIntervalRequest(
-            {query_term: queryTerm, corpus_name: corpusName, time: timeInterval, neighbours}
-        );
     }
 
     wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {

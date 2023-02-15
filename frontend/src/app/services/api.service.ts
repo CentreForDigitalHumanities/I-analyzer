@@ -96,7 +96,7 @@ export class ApiService extends Resource {
     >;
 
     public getTasksStatus<ExpectedResult>(tasks: TaskResult): Promise<TasksOutcome<ExpectedResult>> {
-        return this.http.post<TasksOutcome<ExpectedResult>>('/task_status', tasks).toPromise();
+        return this.http.post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks).toPromise();
     }
 
     @ResourceAction({
@@ -110,7 +110,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/visualization/ngram_tasks',
+        path: '/visualization/ngram',
     })
     public ngramTasks: ResourceMethod<
         { es_query: EsQuery; corpus_name: string; field: string; ngram_size?: number; term_position?: string; freq_compensation?: boolean;
