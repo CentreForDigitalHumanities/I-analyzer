@@ -14,25 +14,25 @@ from glob import glob
 def load_word_models(corpus, binned=False):
     if type(corpus)==str:
         corpus = load_corpus(corpus)
-    w2v_list = glob('{}/*.w2v'.format(corpus.word_model_path))
-    full_model = next((item for item in w2v_list if item.endswith('full.w2v')), None)
+    wv_list = glob('{}/*.wv'.format(corpus.word_model_path))
+    full_model = next((item for item in wv_list if item.endswith('full.wv')), None)
     try:
-        w2v_list.remove(full_model)
+        wv_list.remove(full_model)
     except:
        raise(Exception("No full word model found for this corpus."))
     if binned:
-        w2v_list.sort()
+        wv_list.sort()
         wm = [
                 {
                     "start_year": get_year(wm_file, 1),
                     "end_year": get_year(wm_file, 2),
-                    "matrix": KeyedVectors.load_word2vec_format(wm_file, binary=True),
+                    "matrix": KeyedVectors.load(wm_file),
                     "vocab": get_vocab(wm_file)
                 }
-            for wm_file in w2v_list
+            for wm_file in wv_list
             ]
     else:
-        model = KeyedVectors.load_word2vec_format(full_model, binary=True)
+        model = KeyedVectors.load(full_model)
         wm = {
             "start_year": get_year(full_model, 1),
             "end_year": get_year(full_model, 2),
