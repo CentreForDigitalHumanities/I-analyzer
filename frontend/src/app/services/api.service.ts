@@ -27,6 +27,7 @@ import {
     FoundDocument,
     LimitedResultsDownloadParameters,
     Query,
+    QueryModel,
     ResultsDownloadParameters,
     TaskResult,
     UserResponse,
@@ -41,17 +42,15 @@ type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
 /**
  * Describes the values as expected and returned by the server.
  */
-interface QueryDb<TDateType> {
-    query: string;
-    corpus_name: string;
-    started?: TDateType;
-    completed?: TDateType;
+interface QueryDb {
+    query_json: QueryModel;
+    user: any;
+    corpus: string;
+    started?: Date;
+    completed?: Date;
     aborted: boolean;
     transferred: number;
-    total_results: {
-        value: number;
-        relation: string;
-    };
+    total_results: number;
 }
 
 @Injectable()
@@ -182,25 +181,10 @@ export class ApiService extends Resource {
     >;
 
     public query(
-        options: QueryDb<Date> & {
-            id?: number;
-            /**
-             * Mark the query as started, and use the server time for determining this timestamp.
-             */
-            markStarted: boolean;
-            /**
-             * Mark the query as completed, and use the server time for determining this timestamp.
-             */
-            markCompleted: boolean;
-        }
+        options: QueryDb
     ) {
         return this.http
-            .put<
-                QueryDb<string> & {
-                    id: number;
-                    userID: number;
-                }
-            >('/api/search_history/', options)
+            .post('/api/search_history/', options)
             .toPromise();
     }
 

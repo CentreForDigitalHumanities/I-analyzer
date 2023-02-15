@@ -14,7 +14,7 @@ export class Query {
          * User that performed this query.
          */
         public userId: number) {
-        this.query = JSON.stringify(query);
+        this.query = query;
     }
 
     /**
@@ -25,7 +25,7 @@ export class Query {
     /**
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
-    public query: string;
+    public query: QueryModel;
 
     /**
      * Time the first document was sent.

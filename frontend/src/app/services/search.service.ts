@@ -136,12 +136,14 @@ export class SearchService {
         );
         const user = await this.authService.getCurrentUserPromise();
         const query = new Query(queryModel, corpus.name, user.id);
+        query.started = new Date(Date.now());
         const results = await this.elasticSearchService.search(
             corpus,
             queryModel
         );
         query.totalResults = results.total;
-        this.queryService.save(query, true);
+        query.completed = new Date(Date.now());
+        this.queryService.save(query);
 
         return {
             fields: corpus.fields.filter((field) => field.resultsOverview),

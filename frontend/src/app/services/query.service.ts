@@ -1,39 +1,27 @@
 import { Injectable } from '@angular/core';
 import { ApiRetryService } from './api-retry.service';
 import { Query } from '../models/query';
+import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class QueryService {
 
-    constructor(private apiRetryService: ApiRetryService) { }
+    constructor(private apiRetryService: ApiRetryService, private authService: AuthService) { }
 
-    async save(query: Query, started = false, completed = false): Promise<Query> {
+    async save(query: Query): Promise<any> {
         const queryCommand = {
-            id: query.id,
-            query: query.query,
-            corpus_name: query.corpusName,
-            markStarted: started,
-            markCompleted: completed,
+            user: this.authService.getCurrentUser().id,
+            query_json: query.query,
+            corpus: query.corpusName,
             started: query.started,
             completed: query.completed,
             aborted: query.aborted,
             transferred: query.transferred,
-            total_results: query.totalResults
+            total_results: query.totalResults.value,
         };
 
-        const response = await this.apiRetryService.requireLogin(api => api.query(queryCommand));
-
-        return {
-            id: response.id,
-            query: response.query,
-            corpusName: response.corpus_name,
-            started: response.started ? new Date(response.started) : undefined,
-            completed: response.completed ? new Date(response.completed) : undefined,
-            aborted: response.aborted,
-            userId: response.userID,
-            transferred: response.transferred,
-            totalResults: response.total_results
-        };
+        return this.apiRetryService.requireLogin(api => api.query(queryCommand));
     }
 
     /**
