@@ -42,24 +42,20 @@ export class ImageViewComponent implements OnChanges {
             changes.document.previousValue !== changes.document.currentValue) {
                 this.imagePaths = undefined;
                 this.apiService.requestMedia({corpus: this.corpus.name, document: this.document}).then( response => {
-                    if (response.success) {
-                        this.noImages = false;
-                        this.imagePaths = response.media;
-                        if (response.info) {
-                            this.imageInfo = response.info;
-                            this.showPage = Number(this.imageInfo.homePageIndex) - 1;
-                            this.pageIndices = this.imageInfo.pageNumbers.map( d => Number(d) );
-                            this.initialPage = this.pageIndices[this.showPage]; //1-indexed
-                        } else {
-                            this.imageInfo = undefined;
-                            const totalPages = this.imagePaths.length;
-                            this.pageIndices = Array.from(Array(totalPages + 1).keys()).slice(1);
-                            this.showPage = this.pageIndices.indexOf(this.initialPage);
-                        }
+                    this.noImages = false;
+                    this.imagePaths = response.media;
+                    if (response.info) {
+                        this.imageInfo = response.info;
+                        this.showPage = Number(this.imageInfo.homePageIndex) - 1;
+                        this.pageIndices = this.imageInfo.pageNumbers.map( d => Number(d) );
+                        this.initialPage = this.pageIndices[this.showPage]; //1-indexed
                     } else {
-                        this.noImages = true;
+                        this.imageInfo = undefined;
+                        const totalPages = this.imagePaths.length;
+                        this.pageIndices = Array.from(Array(totalPages + 1).keys()).slice(1);
+                        this.showPage = this.pageIndices.indexOf(this.initialPage);
                     }
-                });
+                }).catch(err => this.noImages = true);
         }
     }
 

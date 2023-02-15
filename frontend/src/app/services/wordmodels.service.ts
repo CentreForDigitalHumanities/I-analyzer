@@ -71,13 +71,7 @@ export class WordmodelsService extends Resource {
             query_term: queryTerm,
             corpus_name: corpusName,
             neighbours,
-        }).then( result => new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result.data);
-                } else {
-                    reject({message: result.message});
-                }
-            }));
+        });
     }
 
     public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
