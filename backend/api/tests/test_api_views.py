@@ -1,35 +1,38 @@
 from rest_framework.test import APIClient
 import pytest
+from datetime import datetime
+from addcorpus.models import Corpus
+from rest_framework.status import is_success
 
-@pytest.mark.xfail(reason = 'user authentication not set up')
-def test_search_history_view(user_credentials):
-    client = APIClient()
-    client.login(**user_credentials)
+def test_search_history_view(admin_client, db):
+    corpus = Corpus.objects.create(name = 'mock-corpus', description = '')
 
     # get search history
-    response = client.get('/api/search_history/')
-    assert response.status_code == 200
+    response = admin_client.get('/api/search_history/')
+    assert is_success(response.status_code)
     assert len(response.data) == 0
 
     # add a query to search history
     data = {
         'aborted': False,
-        'corpus_name': 'mock-corpus',
-        'markCompleted': False,
-        'markStarted': True,
-        'query': "{\"queryText\":\"example\",\"filters\":[],\"sortAscending\":false}",
-        'total_results': {
-            'relation': 'eq',
-            'value': 10
+        'corpus': 'mock-corpus',
+        'user': 1,
+        'started': datetime.now().isoformat(),
+        'completed': datetime.now().isoformat(),
+        'query_json': {
+            "queryText": "example",
+            "filters": [],
+            "sortAscending": False
         },
+        'total_results': 10,
         'transferred': 0,
     }
-    response = client.put('api/search_history/', data, format='json')
-    assert response.status_code == 200
+    response = admin_client.post('/api/search_history/', data, content_type='application/json')
+    assert is_success(response.status_code)
 
     # get search history again
-    response = client.get('/api/search_history/')
-    assert response.status_code == 200
+    response = admin_client.get('/api/search_history/')
+    assert  is_success(response.status_code)
     assert len(response.data) == 1
 
 
