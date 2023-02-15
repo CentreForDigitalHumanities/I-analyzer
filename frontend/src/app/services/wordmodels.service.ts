@@ -27,14 +27,6 @@ export class WordmodelsService extends Resource {
         RelatedWordsResults>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/get_related_words_time_interval'
-    })
-    public relatedWordsTimeIntervalRequest: ResourceMethod<
-        { query_term: string; corpus_name: string; time: string; neighbours: number },
-        WordSimilarity[]>;
-
-    @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/similarity_over_time'
     })
