@@ -10,9 +10,9 @@ from addcorpus import load_corpus
 @pytest.fixture()
 def times_test_settings(settings):
     settings.CORPORA = {
-        'times': 'corpora/times/times.py'
+        'times': join(settings.BASE_DIR, 'corpora/times/times.py')
     }
-    settings.TIMES_DATA = 'addcorpus/tests'
+    settings.TIMES_DATA = join(settings.BASE_DIR, 'addcorpus/tests')
     settings.TIMES_ES_INDEX = 'times'
     settings.TIMES_ES_DOCTYPE = 'article'
     settings.TIMES_IMAGE = 'times.jpg'

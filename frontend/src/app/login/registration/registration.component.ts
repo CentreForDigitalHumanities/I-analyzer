@@ -24,14 +24,14 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
   constructor(private userService: UserService) {
     //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
-    UserService.loginActivated = true;
+    // UserService.loginActivated = true;
   }
 
   ngOnInit() {
 
   }
   ngOnDestroy() {
-    UserService.loginActivated = false;
+    // UserService.loginActivated = false;
   }
 
 

@@ -58,5 +58,6 @@ urlpatterns = [
         'rest_framework.urls',
         namespace='rest_framework',
     )),
+    path('users/', include('users.urls')),
     spa_url,  # catch-all; unknown paths to be handled by a SPA
 ]

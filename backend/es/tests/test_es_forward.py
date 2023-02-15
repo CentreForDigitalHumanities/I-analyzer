@@ -17,7 +17,7 @@ FORWARD_CASES = {
             'filter': [],
         }}},
         None,
-        403,
+        401,
     ),
     'search_bogus': (
         True,

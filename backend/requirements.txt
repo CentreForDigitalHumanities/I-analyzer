@@ -28,6 +28,8 @@ certifi==2022.12.7
     # via
     #   elastic-transport
     #   requests
+cffi==1.15.1
+    # via cryptography
 charset-normalizer==3.0.1
     # via requests
 click==8.1.3
@@ -43,18 +45,30 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
+cryptography==39.0.0
+    # via pyjwt
+defusedxml==0.7.1
+    # via python3-openid
+dj-rest-auth[with_social]==2.2.7
+    # via -r requirements.in
 django==4.1.5
     # via
     #   -r requirements.in
+    #   dj-rest-auth
+    #   django-allauth
     #   django-livereload-server
     #   django-revproxy
     #   djangorestframework
+django-allauth==0.52.0
+    # via dj-rest-auth
 django-livereload-server==0.4
     # via -r requirements.in
 django-revproxy @ git+https://github.com/jazzband/django-revproxy.git@1defbb2dad5c0632391d54bcd3dbdaeabf46266a
     # via -r requirements.in
 djangorestframework==3.14.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   dj-rest-auth
 elastic-transport==8.4.0
     # via elasticsearch
 elasticsearch==8.6.0
@@ -97,6 +111,8 @@ numpy==1.24.1
     #   scikit-learn
     #   scipy
     #   simpful
+oauthlib==3.2.2
+    # via requests-oauthlib
 packaging==23.0
     # via pytest
 pandas==1.5.3
@@ -109,8 +125,12 @@ prompt-toolkit==3.0.36
     # via click-repl
 psycopg2==2.9.5
     # via -r requirements.in
+pycparser==2.21
+    # via cffi
 pyfume==0.2.25
     # via fuzzytm
+pyjwt[crypto]==2.6.0
+    # via django-allauth
 pypdf2==3.0.1
     # via -r requirements.in
 pytest==7.2.0
@@ -126,6 +146,8 @@ pytest-xdist==3.1.0
     # via -r requirements.in
 python-dateutil==2.8.2
     # via pandas
+python3-openid==3.2.0
+    # via django-allauth
 pytz==2022.7
     # via
     #   celery
@@ -136,7 +158,12 @@ redis==4.4.2
 regex==2022.10.31
     # via nltk
 requests==2.28.2
-    # via simpful
+    # via
+    #   django-allauth
+    #   requests-oauthlib
+    #   simpful
+requests-oauthlib==1.3.1
+    # via django-allauth
 scikit-learn==1.2.1
     # via -r requirements.in
 scipy==1.10.0

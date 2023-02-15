@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'livereload',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
     'revproxy',
     'users',
     'addcorpus',
@@ -95,6 +97,17 @@ DATABASES = {
     }
 }
 
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ]
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -139,6 +152,11 @@ PROXY_FRONTEND = None
 
 # Authentication
 AUTH_USER_MODEL = 'users.CustomUser'
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer'
+}
 
 
 # Download location
