@@ -37,7 +37,7 @@
                         <input type="radio" name="chartType" (click)="currentChartType='bar'" [checked]="currentChartType==='bar'">
                         Bar
                     </label>
-                    <label class="radio">
+                    <label class="radio" *ngIf="!histogram">
                         <input type="radio" name="chartType" (click)="currentChartType='line'" [checked]="currentChartType==='line'">
                         Line
                     </label>

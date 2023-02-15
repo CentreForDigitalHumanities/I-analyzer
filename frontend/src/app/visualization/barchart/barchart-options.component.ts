@@ -19,6 +19,8 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
 
+    @Input() histogram: boolean;
+
     currentNormalizer: Normalizer;
 
     currentChartType: ChartType = 'bar';
