@@ -124,6 +124,8 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
                 }),
                 backgroundColor: selectColor(this.palette, seriesIndex),
                 hoverBackgroundColor: selectColor(this.palette, seriesIndex),
+                pointRadius: 2.5,
+                pointHoverRadius: 5,
             }
         ));
     }
