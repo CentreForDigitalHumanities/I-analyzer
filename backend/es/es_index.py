@@ -44,11 +44,10 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        if not settings.get('index'):
-            settings['index'] = {
-                'number_of_replicas' : 0,
-                'number_of_shards': 6
-            }
+        settings['index'] = {
+            'number_of_replicas' : 0,
+            'number_of_shards': 6
+        }
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
