@@ -7,7 +7,7 @@ from download.models import Download
 from addcorpus.models import Corpus
 import io
 
-def test_direct_download_view(authenticated_client, mock_corpus, index_mock_corpus):
+def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus):
     request_json = {
         "corpus": mock_corpus,
         "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
@@ -16,15 +16,14 @@ def test_direct_download_view(authenticated_client, mock_corpus, index_mock_corp
         "route": f"/search/{mock_corpus}",
         "encoding":"utf-8"
     }
-    response = authenticated_client.post(
+    response = admin_client.post(
         '/api/download/search_results',
         request_json,
         content_type='application/json'
     )
     assert status.is_success(response.status_code)
 
-@pytest.mark.xfail(reason='view not implemented')
-def test_schedule_download_view(authenticated_client, mock_corpus):
+def test_schedule_download_view(transactional_db, admin_client, mock_corpus, index_mock_corpus, celery_worker):
     request_json = {
         "corpus": mock_corpus,
         "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
@@ -32,7 +31,7 @@ def test_schedule_download_view(authenticated_client, mock_corpus):
         "route": f"/search/{mock_corpus}",
         "encoding":"utf-8"
     }
-    response = authenticated_client.post(
+    response = admin_client.post(
         '/api/download/search_results_task',
         request_json,
         content_type='application/json'
@@ -75,22 +74,21 @@ def term_frequency_parameters(mock_corpus):
         'unit': 'year',
     }
 
-@pytest.mark.xfail(reason='view not implemented')
-def test_full_data_download_view(authenticated_client, mock_corpus, term_frequency_parameters):
+def test_full_data_download_view(transactional_db, admin_client, mock_corpus, term_frequency_parameters, index_mock_corpus, celery_worker):
     request_json = {
         'visualization': 'date_term_frequency',
         'parameters': [term_frequency_parameters],
         'corpus': mock_corpus
     }
-    response = authenticated_client.post(
+    response = admin_client.post(
         '/api/download/full_data',
         request_json,
         content_type='application/json'
     )
     assert status.is_success(response.status_code)
 
-def test_empty_download_history_view(authenticated_client):
-    response = authenticated_client.get(
+def test_empty_download_history_view(admin_client):
+    response = admin_client.get(
         '/api/download/'
     )
 
@@ -98,10 +96,10 @@ def test_empty_download_history_view(authenticated_client):
     assert response.data == []
 
 @pytest.fixture()
-def finished_download(corpus_user, csv_directory, mock_corpus, select_small_mock_corpus):
+def finished_download(admin_user, csv_directory, mock_corpus, select_small_mock_corpus):
     filepath = os.path.join(csv_directory, mock_corpus + '.csv')
     corpus = Corpus.objects.get(name=mock_corpus)
-    download = Download.objects.create(download_type='search_results', corpus=corpus, parameters={}, user=corpus_user)
+    download = Download.objects.create(download_type='search_results', corpus=corpus, parameters={}, user=admin_user)
 
     with open(filepath, 'w') as outfile:
         writer = csv.DictWriter(outfile,
@@ -120,8 +118,8 @@ def finished_download(corpus_user, csv_directory, mock_corpus, select_small_mock
     download.complete(filename)
     return download.id
 
-def test_download_history_view(authenticated_client, finished_download, mock_corpus):
-    response = authenticated_client.get(
+def test_download_history_view(admin_client, finished_download, mock_corpus):
+    response = admin_client.get(
         '/api/download/'
     )
 
@@ -131,8 +129,8 @@ def test_download_history_view(authenticated_client, finished_download, mock_cor
     assert download['corpus'] == mock_corpus
     assert download['status'] == 'done'
 
-def test_csv_download_view(authenticated_client, finished_download):
-    response = authenticated_client.get(
+def test_csv_download_view(admin_client, finished_download):
+    response = admin_client.get(
         f'/api/download/csv/{finished_download}'
     )
     assert status.is_success(response.status_code)

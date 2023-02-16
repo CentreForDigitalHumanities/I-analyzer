@@ -26,7 +26,7 @@ def mock_corpus_settings(settings):
     }
 
 @pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus'])
-def mock_corpus(request, mock_corpus_settings):
+def mock_corpus(request, mock_corpus_settings, mock_corpora_in_db):
     '''Return the name of a mock corpus'''
 
     return request.param
@@ -74,18 +74,3 @@ def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus):
 @pytest.fixture()
 def mock_corpora_in_db(db, mock_corpus_settings):
     load_all_corpora()
-
-@pytest.fixture()
-def corpus_user(db, mock_corpus, mock_corpora_in_db):
-    '''Make a user with access to the mock corpus'''
-
-    username = 'mock-user'
-    password = 'secret'
-    user = CustomUser.objects.create(username=username, password=password, is_superuser = True)
-    load_all_corpora()
-    return user
-
-@pytest.fixture()
-def authenticated_client(client, corpus_user):
-    client.force_login(corpus_user)
-    return client
