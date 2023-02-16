@@ -30,7 +30,8 @@
         "static-p": "yarn build-p && yarn clean-static && yarn collectstatic-p",
         "watch-front-p": "yarn front yarn watch",
         "start-back-p": "cd backend && python manage.py runserver --settings production --insecure --pythonpath ..",
-        "start-p": "yarn static-p && yarn watch-front-p & yarn start-back-p"
+        "start-p": "yarn static-p && yarn watch-front-p & yarn start-back-p",
+        "celery": "yarn back celery -A ianalyzer.celery"
     },
     "private": true,
     "devDependencies": {},
