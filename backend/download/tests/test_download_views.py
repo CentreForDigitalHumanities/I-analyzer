@@ -39,18 +39,19 @@ def test_schedule_download_view(transactional_db, admin_client, mock_corpus, ind
     assert status.is_success(response.status_code)
 
 @pytest.fixture()
-def term_frequency_parameters(mock_corpus):
-    # TODO: get min_year and max_year from mock corpus metadata
-    min_year = 1800
-    max_year = 1899
+def term_frequency_parameters(mock_corpus, mock_corpus_specs):
+    min_year = mock_corpus_specs['min_date'].year
+    max_year = mock_corpus_specs['max_date'].year
     # TODO: construct query from query module, which is much more convenient
+    query_text = mock_corpus_specs['example_query']
+    search_field = mock_corpus_specs['content_field']
     query = {
         "query": {
             "bool": {
                 "must": {
                     "simple_query_string": {
-                        "query": "parliament",
-                        "fields": ["speech"],
+                        "query": query_text,
+                        "fields": [search_field],
                         "lenient": True,
                         "default_operator": "or"
                     }

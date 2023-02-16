@@ -58,12 +58,13 @@ def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus):
     '''generate a results csv for the mock corpus corpus based on a match_all query'''
 
     fields = mock_corpus_specs['fields']
+    query = mock_corpus_specs['example_query']
 
     request_json = {
         'corpus': mock_corpus,
         'es_query': MATCH_ALL,
         'fields': fields,
-        'route': '/search/{};query=test'.format(mock_corpus)
+        'route': '/search/{};query={}'.format(mock_corpus, query)
     }
     results = tasks.download_scroll(request_json)
     filename = tasks.make_csv(results, request_json)
