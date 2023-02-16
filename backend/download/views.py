@@ -67,7 +67,7 @@ class ResultsDownloadTaskView(APIView):
                 raise ValidationError(detail=f'Download failed: specification for {key} is missing')
 
         if not request.user.email:
-            return ValidationError(detail='Download failed: user email not known')
+            raise ValidationError(detail='Download failed: user email not known')
 
         # Celery task
         try:
@@ -101,7 +101,8 @@ class FullDataDownloadTaskView(APIView):
             task_chain = tasks.download_full_data(request.data, request.user)
             task_chain.apply_async()
             return Response({'task_ids': [task_chain.id]})
-        except:
+        except Exception as e:
+            logger.error(e)
             raise APIException('Download failed: server error')
 
 
