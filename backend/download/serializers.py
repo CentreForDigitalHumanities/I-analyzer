@@ -4,4 +4,4 @@ from download.models import Download
 class DownloadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Download
-        fields = ['download_type', 'corpus', 'started', 'completed',  'parameters', 'status',]
+        fields = ['id', 'download_type', 'corpus', 'started', 'completed',  'parameters', 'status',]
