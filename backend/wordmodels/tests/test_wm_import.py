@@ -76,5 +76,5 @@ def test_query_transform(test_app, mock_corpus):
     ]
 
     for query, expected in cases:
-        transformed = transform_query(query, model['analyzer'])
+        transformed = transform_query(query)
         assert transformed == expected

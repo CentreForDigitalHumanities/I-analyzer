@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 
-
-
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
+import { Corpus, CorpusField, Query, QueryModel, SearchFilter, SearchResults,
     AggregateQueryFeedback, SearchFilterData} from '../models/index';
 
-const highlightFragmentSize = 50;
 
 @Injectable()
 export class SearchService {
@@ -59,40 +56,6 @@ export class SearchService {
         return model;
     }
 
-    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false, nullableParams = []): any {
-        const route = {
-            query: queryModel.queryText || ''
-        };
-
-        if (queryModel.fields) {
-            route['fields'] = queryModel.fields.join(',');
-        } else {
-            route['fields'] = null;
-        }
-
-        for (const filter of queryModel.filters.map(data => ({
-                param: this.getParamForFieldName(data.fieldName),
-                value: searchFilterDataToParam(data)
-            }))) {
-            route[filter.param] = filter.value;
-        }
-
-        if (!usingDefaultSortField && queryModel.sortBy) {
-            route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
-        } else {
-            route['sort'] = null;
-        }
-        if (queryModel.highlight) {
-            route['highlight'] = `${queryModel.highlight}`;
-        } else {
-            route['highlight'] = null;
-        }
-        if (nullableParams.length) {
-            nullableParams.forEach( param => route[param] = null);
-        }
-        return route;
-    }
-
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(
             `Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`
@@ -120,7 +83,5 @@ export class SearchService {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
     }
 
-    public getParamForFieldName(fieldName: string) {
-        return `${fieldName}`;
-    }
+
 }

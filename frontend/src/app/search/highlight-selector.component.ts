@@ -1,25 +1,39 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+
+import { ParamDirective } from '../param/param-directive';
+import { ParamService } from '../services/param.service';
+
+const HIGHLIGHT = 200;
 
 @Component({
   selector: 'ia-highlight-selector',
   templateUrl: './highlight-selector.component.html',
   styleUrls: ['./highlight-selector.component.scss']
 })
-export class HighlightSelectorComponent implements OnInit {
+export class HighlightSelectorComponent extends ParamDirective {
+    public highlight: number = HIGHLIGHT;
 
-  constructor() { }
+    constructor(route: ActivatedRoute, router: Router, private paramService: ParamService) {
+      super(route, router);
+    }
 
-  ngOnInit(): void {
-  }
+    initialize() {
 
-  @Input()
-  public highlight: number;
+    }
 
-  @Output()
-  public onChange = new EventEmitter<number>();
+    teardown() {
+        this.setParams({ highlight: null });
+    }
 
-  updateHighlightSize(event) {
-    this.onChange.next(event.target.value);
-  }
+    setStateFromParams(params: ParamMap) {
+        this.highlight = this.paramService.setHighlightFromParams(params);
+    }
+
+
+    updateHighlightSize(event) {
+        const highlightSize = event.target.value;
+        this.setParams({ highlight: highlightSize !== "0" ? highlightSize : null });
+    }
 
 }

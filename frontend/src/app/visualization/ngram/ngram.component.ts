@@ -139,7 +139,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                         this.onFailure(response['message']);
                     }
             }).catch(response => {
-                console.log(response);
                 const body = response.body as string;
                 const message = body.slice(body.lastIndexOf('<p>') + 3, body.lastIndexOf('</p>'));
                 this.onFailure(message);

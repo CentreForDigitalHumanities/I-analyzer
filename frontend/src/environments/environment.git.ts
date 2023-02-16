@@ -5,5 +5,6 @@ export const environment = {
     apiUrl: '/api',
     adminUrl: '/admin',
     wordModelsUrl: '/wordmodels/',
-    logos: []
+    logos: [],
+    showSolis: true
 };

@@ -3,6 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 
+import { environment } from '../../environments/environment';
+
 @Component({
     selector: 'login',
     templateUrl: './login.component.html',
@@ -20,6 +22,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private returnUrl: string;
 
     public static activated = false;
+    public showSolis: boolean;
 
     constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
         this.title.setTitle('I-Analyzer');
@@ -38,6 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.solislogin();
             }
         });
+        this.showSolis = environment.showSolis;
     }
 
     ngOnDestroy() {

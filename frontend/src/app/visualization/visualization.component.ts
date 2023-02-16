@@ -3,7 +3,6 @@ import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
-import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -105,6 +104,13 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     async initialize() {
         this.setupDropdowns();
         this.showTableButtons = true;
+        if (!this.allVisualizationFields.length) {
+            this.noVisualizations = true;
+        } else {
+            this.noVisualizations = false;
+            this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
+            this.updateParams();
+        }
     }
 
     teardown() {
@@ -126,14 +132,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
             this.setVisualizationType(params.get('visualize'));
             const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
             this.setVisualizedField(visualizedField);
-        } else {
-            if (!this.allVisualizationFields.length) {
-                this.noVisualizations = true;
-            } else {
-                this.noVisualizations = false;
-                this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
-                this.updateParams();
-            }
         }
         this.visualizationTypeDropdownValue = this.visDropdown.find(
             item => item.value === this.visualizationType) || this.visDropdown[0];

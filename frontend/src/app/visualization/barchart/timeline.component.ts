@@ -136,6 +136,10 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
                 data,
                 backgroundColor: selectColor(this.palette, seriesIndex),
                 hoverBackgroundColor: selectColor(this.palette, seriesIndex),
+                borderColor: selectColor(this.palette, seriesIndex),
+                borderWidth: 1,
+                pointRadius: 2.5,
+                pointHoverRadius: 5,
             };
         });
     }
