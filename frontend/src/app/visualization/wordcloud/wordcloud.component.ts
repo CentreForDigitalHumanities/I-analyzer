@@ -5,8 +5,8 @@ import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
 import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
-import { DialogService, SearchService, ApiService } from '../../services/index';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { ApiService } from '../../services/index';
+import { BehaviorSubject } from 'rxjs';
 import { VisualizationService } from '../../services/visualization.service';
 
 @Component({
@@ -116,6 +116,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             .classed('wordcloud', true)
             .attr('width', this.width)
             .attr('height', this.height);
+
         const chart = this.svg
             .append('g')
             .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')')

@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
-import { ApiService, VisualizationService } from '../../services';
+import { ApiService, ChartOptionsService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -33,8 +33,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     tableData: { date: string; ngram: string; freq: number }[];
 
     currentResults: NgramResults;
-
-
+    chartTitle: Object;
 
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
@@ -56,6 +55,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     constructor(
         private apiService: ApiService,
+        private chartOptionsService: ChartOptionsService,
         private visualizationService: VisualizationService,
         route: ActivatedRoute,
         router: Router
@@ -74,6 +74,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     setStateFromParams(params: ParamMap) {
         this.setParameters(params);
+        this.setupChartTitle();
         this.loadGraph();
     }
 
@@ -110,6 +111,25 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
             dateField: params.get('dateField') || 'date',
         };
+    }
+
+    setupChartTitle() {
+        this.chartTitle = this.chartOptionsService.getChartHeader(
+            'Most frequent collocations', this.corpus.name, this.queryModel, this.parametersToString()
+        )
+    }
+
+    parametersToString(): string {
+        return [
+            `size=${this.currentParameters.size}`,
+            `positions=${this.currentParameters.positions}`,
+            `freqCompensation=${this.currentParameters.freqCompensation}`,
+            `analysis=${this.currentParameters.analysis}`,
+            `maxDocuments=${this.currentParameters.maxDocuments}`,
+            `numberOfNgrams=${this.currentParameters.numberOfNgrams}`,
+            `dateField=${this.currentParameters.dateField}`
+        ].join(',')
+
     }
 
     loadGraph() {

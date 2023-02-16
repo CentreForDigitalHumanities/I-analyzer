@@ -1,18 +1,19 @@
-import { Injectable, Type } from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import { QueryModel, searchFilterDataToParam } from '../models';
+import { QueryModel } from '../models';
+import { ParamService } from './param.service';
 
 @Injectable()
 export class ChartOptionsService {
 
-    constructor() { }
+    constructor(private paramService: ParamService) { }
 
-    getChartHeader(chartType: string,  corpusName: string, queries?: string, queryModel?: QueryModel, visualizationOptions?: string) {
+    getChartHeader(chartType: string, corpusName: string, queryModel?: QueryModel, visualizationOptions?: string) {
         let subtitle = [
             `Searched corpus: ${corpusName}`
         ]
-        if (queries) {
-            subtitle.push(`Query: ${queries}`);
+        if (queryModel.queryText) {
+            subtitle.push(`Query: ${queryModel.queryText}`);
         }
         const fields = this.representFields(queryModel);
         if (fields) {
@@ -54,13 +55,9 @@ export class ChartOptionsService {
     private representFilters(queryModel: QueryModel): string {
         if (queryModel.filters) {
             return queryModel.filters.map(filter => {
-                const params = searchFilterDataToParam(filter);
+                const params = this.paramService.searchFilterDataToParam(filter);
                 const fieldInfo = `${filter.fieldName}=`
-                if (typeof(params) !== 'string') {
-                    return fieldInfo.concat(`${params.map(m => decodeURIComponent(m)).join(',')}`)
-                } else {
-                    return fieldInfo.concat(`${decodeURIComponent(params)}`)
-                }
+                return fieldInfo.concat(`${decodeURIComponent(params)}`)
             }).join('& ')
         }
     }

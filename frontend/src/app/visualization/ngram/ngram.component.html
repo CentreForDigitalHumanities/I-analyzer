@@ -105,7 +105,7 @@
 <div [ngClass]="{ 'is-hidden': asTable }">
     <div class="block">
         <ia-joyplot [data]="currentResults" [formatValue]="formatValue" [palette]="palette" quantity="frequency"
-            [comparedByQuantity]="dateField?.displayName">
+            [comparedByQuantity]="dateField?.displayName" [chartTitle]="chartTitle">
         </ia-joyplot>
     </div>
 </div>

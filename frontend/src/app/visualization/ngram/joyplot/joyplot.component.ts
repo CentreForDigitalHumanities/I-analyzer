@@ -15,6 +15,7 @@ export class JoyplotComponent implements OnChanges {
     @Input() palette: string[];
     @Input() quantity = 'frequency';
     @Input() comparedByQuantity = 'date';
+    @Input() chartTitle: Object;
 
     maxDataPoint: number;
 
@@ -106,10 +107,7 @@ export class JoyplotComponent implements OnChanges {
                     above: this.getFillColor.bind(this),
                 },
             };
-        })
-    );
-
-
+        }));
     }
 
     getDataPoints(data: number[], ngramIndex: number) {
@@ -198,8 +196,8 @@ export class JoyplotComponent implements OnChanges {
                     }
                 },
             },
-            plugins: {
-                legend: { display: false },
+            plugins: Object.assign(
+                this.chartTitle, {
                 filler: {
                     propagate: true,
                 },
@@ -227,10 +225,9 @@ export class JoyplotComponent implements OnChanges {
                         }
                     }
                 }
-            }
+            })
         };
     }
-
 
     makeChart() {
         return new Chart('chart', {
@@ -239,7 +236,6 @@ export class JoyplotComponent implements OnChanges {
             options: this.chartOptions,
         });
     }
-
 
     resetChartHeight() {
         // updating aspect ratio has no effect if canvas height is set
