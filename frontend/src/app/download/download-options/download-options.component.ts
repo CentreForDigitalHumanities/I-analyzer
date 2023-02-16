@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { Download, PendingDownload, DownloadOptions } from '../../models';
+import { Download, PendingDownload, DownloadOptions, TermFrequencyParameters, TermFrequencyDownloadParameters } from '../../models';
 
 @Component({
     selector: 'ia-download-options',
@@ -28,8 +28,7 @@ export class DownloadOptionsComponent implements OnChanges {
     /** whether to display long/wide format choice */
     get showFormatChoice(): boolean {
         if (this.isTermFrequency) {
-            const parameterString = (this.download as Download).parameters || '[]';
-            const parameters = JSON.parse(parameterString);
+            const parameters = ((this.download as Download).parameters as TermFrequencyDownloadParameters) || [];
             return parameters.length > 1;
         }
     }
