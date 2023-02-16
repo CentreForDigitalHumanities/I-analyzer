@@ -23,7 +23,7 @@ def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus):
     )
     assert status.is_success(response.status_code)
 
-def test_schedule_download_view(transactional_db, admin_client, mock_corpus, index_mock_corpus, celery_worker):
+def test_schedule_download_view(transactional_db, admin_client, mock_corpus, select_small_mock_corpus, index_mock_corpus, celery_worker):
     request_json = {
         "corpus": mock_corpus,
         "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
@@ -75,7 +75,7 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
         'unit': 'year',
     }
 
-def test_full_data_download_view(transactional_db, admin_client, mock_corpus, term_frequency_parameters, index_mock_corpus, celery_worker):
+def test_full_data_download_view(transactional_db, admin_client, mock_corpus, term_frequency_parameters, select_small_mock_corpus, index_mock_corpus, celery_worker):
     request_json = {
         'visualization': 'date_term_frequency',
         'parameters': [term_frequency_parameters],
