@@ -15,15 +15,18 @@ logger = logging.getLogger(__name__)
 
 @shared_task()
 def complete_download(filename, log_id):
-    download = Download.objects.get(log_id)
+    download = Download.objects.get(id = log_id)
     download.complete(filename)
     return log_id
 
 @shared_task()
 def complete_failed_download(request, exc, traceback, log_id):
     logger.error('DOWNLOAD #{} FAILED'.format(log_id)) # traceback is already logged
-    download = Download.objects.get(log_id)
-    download.complete()
+    try:
+        download = Download.objects.get(id = log_id)
+        download.complete()
+    except:
+        logger.error('DOWNLOAD #{} NOT FOUND IN DATABASE'.format(log_id))
 
 @shared_task()
 def download_scroll(request_json, download_size=10000):
@@ -151,7 +154,7 @@ def download_full_data(request_json, user):
     task = task_per_type[visualization_type](parameters, visualization_type)
 
     download = Download.objects.create(
-        download_type=visualization_type, corpus=corpus, parameter=parameters, user=user)
+        download_type=visualization_type, corpus=corpus, parameters=parameters, user=user)
 
     return chain(
         task,
