@@ -8,14 +8,7 @@ export class UserServiceMock {
     }
 }
 
-export const mockUser: User = new User(
-    42,
-    'mouse',
-    false,
-    10000,
-    ['deep thought'],
-    false
-);
+export const mockUser: User = new User(42, 'mouse', false, 10000, false);
 
 export const mockUserResponse: UserResponse = {
     id: 42,
@@ -24,5 +17,4 @@ export const mockUserResponse: UserResponse = {
     email: 'mighty@mouse.com',
     download_limit: 10000,
     saml: false,
-    corpora: ['deep thought'],
 };

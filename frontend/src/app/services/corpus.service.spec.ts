@@ -18,10 +18,7 @@ describe('CorpusService', () => {
     let service: CorpusService;
     const apiServiceMock = new ApiServiceMock();
     const userServiceMock = new UserServiceMock();
-    // TODO: validate that this shouldn't be done server-side
-    userServiceMock.currentUser.accessibleCorpora.push(
-        ...['test1', 'test2', 'times']
-    );
+
 
     beforeEach(() => {
         TestBed.configureTestingModule({

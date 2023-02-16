@@ -1,14 +1,23 @@
 from dj_rest_auth.serializers import UserDetailsSerializer
+from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
+from django.db import transaction
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
-    corpora = serializers.SerializerMethodField()
     is_admin = serializers.BooleanField(source='is_superuser')
 
     class Meta(UserDetailsSerializer.Meta):
         fields = ('id', 'username', 'email', 'saml',
-                  'download_limit', 'corpora', 'is_admin')
+                  'download_limit', 'is_admin')
 
-    def get_corpora(self, obj):
-        return obj.accessible_corpora
+
+class CustomRegistrationSerializer(RegisterSerializer):
+    saml = serializers.BooleanField(default=False)
+
+    @transaction.atomic
+    def save(self, request):
+        user = super().save(request)
+        user.saml = self.data.get('saml', False)
+        user.save()
+        return user
