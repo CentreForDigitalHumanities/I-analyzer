@@ -268,14 +268,8 @@ export class ApiService extends Resource {
         }
     >;
 
-    // @ResourceAction({
-    //     method: ResourceRequestMethod.Get,
-    //     path: '/search_history/',
-    // })
-    // public search_history: ResourceMethod<void, { queries: Query[] }>;
-
-    public search_history() {
-        return this.http.get<{ queries: Query[] }>('/api/corpus/').toPromise();
+    public searchHistory() {
+        return this.http.get<QueryDb[]>('/api/search_history/').toPromise();
     }
 
     @ResourceAction({
