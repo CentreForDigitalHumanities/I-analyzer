@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiRetryService } from './api-retry.service';
 import { Query } from '../models/query';
-import { UserService } from './user.service';
 import { AuthService } from './auth.service';
 
 @Injectable()
