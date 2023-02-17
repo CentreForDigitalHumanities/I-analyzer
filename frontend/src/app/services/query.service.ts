@@ -20,7 +20,7 @@ export class QueryService {
             total_results: query.totalResults.value,
         };
 
-        return this.apiRetryService.requireLogin(api => api.query(queryCommand));
+        return this.apiRetryService.requireLogin(api => api.saveQuery(queryCommand));
     }
 
     /**

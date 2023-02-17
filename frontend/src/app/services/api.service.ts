@@ -180,7 +180,7 @@ export class ApiService extends Resource {
         { success: boolean }
     >;
 
-    public query(
+    public saveQuery(
         options: QueryDb
     ) {
         return this.http
