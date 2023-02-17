@@ -4,7 +4,7 @@ from datetime import datetime
 from addcorpus.models import Corpus
 from rest_framework.status import is_success
 
-def test_search_history_view(admin_client, db):
+def test_search_history_view(admin_client):
     corpus = Corpus.objects.create(name = 'mock-corpus', description = '')
 
     # get search history
