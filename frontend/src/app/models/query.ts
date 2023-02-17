@@ -2,19 +2,19 @@ import {SearchFilter } from '../models/index';
 import { SearchFilterData } from './search-filter';
 
 /** This is the query object as it is saved in the database.*/
-export class Query {
+export class QueryDb {
     constructor(
         query: QueryModel,
         /**
          * Name of the corpus for which the query was performed.
          */
-        public corpusName: string,
+        public corpus: string,
 
         /**
          * User that performed this query.
          */
-        public userId: number) {
-        this.query = query;
+        public user: number) {
+        this.query_json = query;
     }
 
     /**
@@ -25,7 +25,7 @@ export class Query {
     /**
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
-    public query: QueryModel;
+    public query_json: QueryModel;
 
     /**
      * Time the first document was sent.
@@ -50,10 +50,7 @@ export class Query {
     /**
      * Number of total results available for the query.
      */
-    public totalResults: {
-        value: number;
-        relation: string;
-    };
+    public total_results: number;
 }
 
 /** This is the client's representation of the query by the user, shared between components */

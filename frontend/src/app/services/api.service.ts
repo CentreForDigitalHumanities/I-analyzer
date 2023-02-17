@@ -26,7 +26,7 @@ import {
     DownloadOptions,
     FoundDocument,
     LimitedResultsDownloadParameters,
-    Query,
+    QueryDb,
     QueryModel,
     ResultsDownloadParameters,
     TaskResult,
@@ -38,20 +38,6 @@ import { EsQuery } from './elastic-search.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
-
-/**
- * Describes the values as expected and returned by the server.
- */
-interface QueryDb {
-    query_json: QueryModel;
-    user: any;
-    corpus: string;
-    started?: Date;
-    completed?: Date;
-    aborted: boolean;
-    transferred: number;
-    total_results: number;
-}
 
 @Injectable()
 @ResourceParams()
@@ -264,7 +250,7 @@ export class ApiService extends Resource {
             username: string;
             role: UserRole;
             downloadLimit: number | null;
-            queries: Query[];
+            queries: QueryDb[];
         }
     >;
 
