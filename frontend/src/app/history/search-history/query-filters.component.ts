@@ -16,10 +16,6 @@ export class QueryFiltersComponent implements OnInit {
     constructor() { }
 
     ngOnInit() {
-        if (typeof this.queryModel=='string') {
-            this.queryModel = JSON.parse(this.queryModel);
-        }
-
         if (this.queryModel.filters?.length>0) {
             this.formattedFilters = this.queryModel.filters.map(filter =>
                 ({name: filter.fieldName, formattedData: searchFilterDataToParam(filter)})

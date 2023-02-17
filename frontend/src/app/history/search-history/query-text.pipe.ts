@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { QueryModel } from '../../models';
 
 @Pipe({name: 'formatQueryText'})
 export class QueryTextPipe implements PipeTransform {
-    transform(query: string): string {
-        const queryModel = JSON.parse(query);
+    transform(queryModel: QueryModel): string {
         return queryModel.queryText;
     }
 }
