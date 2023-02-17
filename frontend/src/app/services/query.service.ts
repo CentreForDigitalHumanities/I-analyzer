@@ -23,17 +23,6 @@ export class QueryService {
         return this.apiRetryService.requireLogin(api => api.saveQuery(queryCommand));
     }
 
-    /**
-     * Make other operations on this query wait for it to have received an id.
-     *
-     * @param promise Returns a model with the id to assign.
-     * @param query The query for which an id is to be promised.
-     */
-    setQueryIdPromise<T>(promise: Promise<(T & { id: number })>, query: { id?: number | Promise<number> }): Promise<(T & { id: number })> {
-        query.id = new Promise((resolve) => promise.then(value => resolve(value.id)));
-        return promise;
-    }
-
 
     /**
      * Retrieve saved queries
