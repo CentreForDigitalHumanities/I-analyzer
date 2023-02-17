@@ -131,14 +131,16 @@ def test_download_history_view(admin_client, finished_download, mock_corpus):
     assert download['status'] == 'done'
 
 def test_csv_download_view(admin_client, finished_download):
+    encoding = 'utf-8'
+    format = 'long'
     response = admin_client.get(
-        f'/api/download/csv/{finished_download}'
+        f'/api/download/csv/{finished_download}?encoding={encoding}&table_format={format}'
     )
     assert status.is_success(response.status_code)
 
     # read file content of response
     content_bytes = io.BytesIO(response.getvalue()).read()
-    content_string = bytes.decode(content_bytes, 'utf-8')
+    content_string = bytes.decode(content_bytes, encoding)
     reader = csv.DictReader(io.StringIO(content_string), delimiter=';')
     assert reader.fieldnames == ['content', 'date', 'genre', 'query', 'title']
     rows = [row for row in reader]

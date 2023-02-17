@@ -128,7 +128,7 @@ class FileDownloadView(APIView):
     def get(self, request, *args, **kwargs):
         id = kwargs.get('id')
         encoding = request.query_params.get('encoding', 'utf-8')
-        format = request.query_params.get('format', None)
+        format = request.query_params.get('table_format', None)
 
         record = Download.objects.get(id=id)
         if not record.user == request.user:

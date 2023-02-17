@@ -42,7 +42,7 @@ export class DownloadOptionsComponent implements OnChanges {
     confirmDownload() {
         this.confirm.emit({
             encoding: this.encoding,
-            format: this.format,
+            table_format: this.format,
         });
     }
 
