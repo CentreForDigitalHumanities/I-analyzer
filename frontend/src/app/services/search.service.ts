@@ -9,13 +9,13 @@ import { QueryService } from './query.service';
 import {
     Corpus,
     CorpusField,
-    Query,
     QueryModel,
     SearchFilter,
     searchFilterDataToParam,
     SearchResults,
     AggregateQueryFeedback,
     SearchFilterData,
+    QueryDb,
 } from '../models/index';
 import { AuthService } from './auth.service';
 
@@ -135,13 +135,15 @@ export class SearchService {
             }, with filters: ${JSON.stringify(queryModel.filters)}`
         );
         const user = await this.authService.getCurrentUserPromise();
-        const query = new Query(queryModel, corpus.name, user.id);
+        const query = new QueryDb(queryModel, corpus.name, user.id);
+        query.started = new Date(Date.now());
         const results = await this.elasticSearchService.search(
             corpus,
             queryModel
         );
-        query.totalResults = results.total;
-        this.queryService.save(query, true);
+        query.total_results = results.total.value;
+        query.completed = new Date(Date.now());
+        this.queryService.save(query);
 
         return {
             fields: corpus.fields.filter((field) => field.resultsOverview),

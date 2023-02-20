@@ -26,7 +26,8 @@ import {
     DownloadOptions,
     FoundDocument,
     LimitedResultsDownloadParameters,
-    Query,
+    QueryDb,
+    QueryModel,
     ResultsDownloadParameters,
     TaskResult,
     TasksOutcome,
@@ -38,22 +39,6 @@ import { EsQuery } from './elastic-search.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
-
-/**
- * Describes the values as expected and returned by the server.
- */
-interface QueryDb<TDateType> {
-    query: string;
-    corpus_name: string;
-    started?: TDateType;
-    completed?: TDateType;
-    aborted: boolean;
-    transferred: number;
-    total_results: {
-        value: number;
-        relation: string;
-    };
-}
 
 @Injectable()
 @ResourceParams()
@@ -163,26 +148,11 @@ export class ApiService extends Resource {
         { success: boolean }
     >;
 
-    public query(
-        options: QueryDb<Date> & {
-            id?: number;
-            /**
-             * Mark the query as started, and use the server time for determining this timestamp.
-             */
-            markStarted: boolean;
-            /**
-             * Mark the query as completed, and use the server time for determining this timestamp.
-             */
-            markCompleted: boolean;
-        }
+    public saveQuery(
+        options: QueryDb
     ) {
         return this.http
-            .put<
-                QueryDb<string> & {
-                    id: number;
-                    userID: number;
-                }
-            >('/api/search_history/', options)
+            .post('/api/search_history/', options)
             .toPromise();
     }
 
@@ -260,13 +230,12 @@ export class ApiService extends Resource {
             username: string;
             role: UserRole;
             downloadLimit: number | null;
-            queries: Query[];
+            queries: QueryDb[];
         }
     >;
 
-
-    public search_history() {
-        return this.http.get<Query[]>('/api/search_history/').toPromise();
+    public searchHistory() {
+        return this.http.get<QueryDb[]>('/api/search_history/').toPromise();
     }
 
     @ResourceAction({
