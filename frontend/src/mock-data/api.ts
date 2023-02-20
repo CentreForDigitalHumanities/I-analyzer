@@ -20,7 +20,7 @@ export class ApiServiceMock {
         return of(this.get('corpus'));
     }
 
-    public search_history() {
+    public searchHistory() {
         return Promise.resolve({ queries: [] });
     }
 
