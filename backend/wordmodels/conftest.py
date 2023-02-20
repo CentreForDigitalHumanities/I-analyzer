@@ -2,6 +2,8 @@ import pytest
 import os
 from django.conf import settings
 from users.models import CustomUser
+from addcorpus.load_corpus import load_all_corpora
+from addcorpus.models import Corpus
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,12 +25,13 @@ def mock_corpus(mock_corpus_settings):
     return next(iter(settings.CORPORA.keys()))
 
 @pytest.fixture()
-def corpus_user(db):
+def corpus_user(db, mock_corpus):
     '''Make a user with access to the mock corpus'''
 
     username = 'mock-user'
     password = 'secret'
-    user = CustomUser.objects.create(username=username, password=password)
+    user = CustomUser.objects.create(username=username, password=password, is_superuser = True)
+    load_all_corpora()
     return user
 
 @pytest.fixture()

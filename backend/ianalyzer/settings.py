@@ -185,6 +185,8 @@ CORPUS_SERVER_NAMES = {}
 
 CORPORA = {}
 
+WORDCLOUD_LIMIT = 1000
+
 # Celery configuration
 CELERY_BROKER_URL = 'redis://'
 CELERY_RESULT_BACKEND = 'redis://'

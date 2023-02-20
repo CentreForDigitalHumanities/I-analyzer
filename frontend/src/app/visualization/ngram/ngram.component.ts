@@ -122,34 +122,21 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             this.onDataLoaded(cachedResult);
         } else {
             this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
-                this.currentParameters)
-                .then(response => {
-                    if (response.success) {
-                        this.tasksToCancel = response.task_ids;
-                        this.apiService.pollTasks<NgramResults>(response.task_ids).then(outcome => {
-                            if (outcome.success === true && outcome.done === true) {
-                                const result = outcome.results[0];
-                                this.cacheResult(result, this.currentParameters);
-                                this.onDataLoaded(result as NgramResults);
-                            } else {
-                                this.onFailure(outcome['message']);
-                            }
-                        });
-                    } else {
-                        this.onFailure(response['message']);
-                    }
-            }).catch(response => {
-                console.log(response);
-                const body = response.body as string;
-                const message = body.slice(body.lastIndexOf('<p>') + 3, body.lastIndexOf('</p>'));
-                this.onFailure(message);
-            });
+                this.currentParameters).then(response => {
+                this.tasksToCancel = response.task_ids;
+                return this.apiService.pollTasks<NgramResults>(response.task_ids);
+            }).then(([result]) => {
+                this.tasksToCancel = undefined;
+                this.cacheResult(result, this.currentParameters);
+                this.onDataLoaded(result);
+            }).catch(this.onFailure.bind(this));
         }
     }
 
-    onFailure(message: string) {
+    onFailure(error: {message: string}) {
+        console.log(error);
         this.currentResults = undefined;
-        this.error.emit(message);
+        this.error.emit(error.message);
         this.isLoading.emit(false);
     }
 

@@ -36,35 +36,29 @@ def test_search_history_view(admin_client):
     assert len(response.data) == 1
 
 
-@pytest.mark.xfail(reason='view not implemented')
-def test_task_status_view():
-    client = APIClient()
-
+def test_task_status_view(transactional_db, admin_client, celery_worker):
     bad_request = {
         'bad_key': 'data'
     }
-    response = client.post('/api/task_status', bad_request, format='json')
+    response = admin_client.post('/api/task_status', bad_request, content_type='application/json')
     assert response.status_code == 400
 
     nonexistent_tasks = {
         'task_ids': ['1234', '5678']
     }
-    response = client.post('/api/task_status', nonexistent_tasks, format='json')
+    response = admin_client.post('/api/task_status', nonexistent_tasks, content_type='application/json')
     assert response.status_code == 200
 
-@pytest.mark.xfail(reason='view not implemented')
-def test_abort_task_view():
-    client = APIClient()
-
+def test_abort_task_view(transactional_db, admin_client, celery_worker):
     bad_request = {
         'bad_key': 'data'
     }
-    response = client.post('/api/abort_tasks', bad_request, format='json')
+    response = admin_client.post('/api/abort_tasks', bad_request, content_type='application/json')
     assert response.status_code == 400
 
     nonexistent_tasks = {
         'task_ids': ['1234', '5678']
     }
-    response = client.post('/api/abort_tasks', nonexistent_tasks, format='json')
+    response = admin_client.post('/api/abort_tasks', nonexistent_tasks, content_type='application/json')
     assert response.status_code == 200
 

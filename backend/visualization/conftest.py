@@ -81,8 +81,6 @@ def clear_test_corpus(es_client, corpus_name):
     index = corpus.es_index
     es_client.indices.delete(index = index)
 
-from django.conf import settings
-
 @pytest.fixture()
 def index_mock_corpus(mock_corpus, test_es_client):
     '''Create and populate an index for the mock corpus.'''
@@ -92,16 +90,13 @@ def index_mock_corpus(mock_corpus, test_es_client):
     clear_test_corpus(test_es_client, mock_corpus)
 
 @pytest.fixture()
-def mock_corpora_in_db(db, mock_corpus_settings):
-    load_all_corpora()
-
-@pytest.fixture()
-def corpus_user(db, mock_corpus, mock_corpora_in_db):
+def corpus_user(transactional_db, mock_corpus): # use transactional_db instead of db for async task support
     '''Make a user with access to the mock corpus'''
 
     username = 'mock-user'
     password = 'secret'
-    user = CustomUser.objects.create(username=username, password=password)
+    user = CustomUser.objects.create(username=username, password=password, is_superuser=True)
+    load_all_corpora()
     return user
 
 @pytest.fixture()

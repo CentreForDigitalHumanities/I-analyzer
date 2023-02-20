@@ -48,7 +48,7 @@ export class WordSimilarityComponent implements OnChanges {
             Promise.all(this.comparisonTerms.map(term =>
                 this.wordModelsService.getWordSimilarity(this.queryText, term, this.corpus.name)
             ))
-        ).then(this.onDataLoaded.bind(this));
+        ).then(this.onDataLoaded.bind(this)).catch(this.onError.bind(this));
     }
 
     /** execute a process with loading spinner */
@@ -69,6 +69,10 @@ export class WordSimilarityComponent implements OnChanges {
         this.data = _.flatten(this.results);
     }
 
+    onError(error: {message: string}) {
+        this.results = undefined;
+        this.error.emit(error.message);
+    }
 
 
     get tableFileName(): string {

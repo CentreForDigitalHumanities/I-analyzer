@@ -71,12 +71,10 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     loadData(size: number = null) {
         this.isLoading.next(true);
         this.visualizationService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
-            this.significantText = result[this.visualizedField.name];
+            this.significantText = result;
             this.onDataLoaded();
         })
-        .catch(error => {
-            this.error.emit(error);
-        });
+        .catch(this.emitError.bind(this));
     }
 
     loadMoreData() {
@@ -84,19 +82,18 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         const queryModel = this.queryModel;
         if (queryModel) {
             this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(response => {
-                this.tasksToCancel = response['taskIds'];
-                    const childTasks = response['taskIds'];
-                    this.apiService.pollTasks<AggregateResult[]>(childTasks).then( outcome => {
-                        if (outcome['success'] === true && outcome['done'] === true) {
-                            const result = outcome.results[0];
-                            this.significantText = result;
-                            this.onDataLoaded();
-                        } else {
-                            this.error.emit(outcome);
-                        }
-                    });
-            });
+                this.tasksToCancel = response;
+                this.apiService.pollTasks<AggregateResult[]>(response).then( outcome => {
+                    const result = outcome[0];
+                    this.significantText = result;
+                    this.onDataLoaded();
+                });
+            }).catch(this.emitError.bind(this));
         }
+    }
+
+    emitError(error: {message: string}) {
+        this.error.emit(error.message);
     }
 
     onDataLoaded() {
