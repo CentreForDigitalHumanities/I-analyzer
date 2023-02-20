@@ -367,7 +367,7 @@ export abstract class BarchartDirective
         ).then(res =>
             this.processSeriesTermFrequency(res, series)
         ).catch(error => {
-            console.log(error);
+            console.error(error);
             this.error.emit(`could not load results: ${error.message}`);
             return series;
         });
