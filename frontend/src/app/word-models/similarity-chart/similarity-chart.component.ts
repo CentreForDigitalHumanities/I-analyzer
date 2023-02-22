@@ -16,6 +16,7 @@ import { FreqTableHeaders, WordSimilarity } from '../../models';
     styleUrls: ['./similarity-chart.component.scss']
 })
 export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() chartTitle: Object;
     @Input() timeIntervals: string[];
     @Input() totalData: WordSimilarity[];
     @Input() zoomedInData: WordSimilarity[][];

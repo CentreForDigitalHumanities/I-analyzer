@@ -24,7 +24,7 @@
         <ng-container *ngIf="activeQuery && queryFeedback && queryFeedback.status === 'success'">
             <div class="tabs is-boxed">
                 <ul>
-                    <li *ngFor="let tab of tabNames" [ngClass]="{'is-active': tabIndex.value==tab}">
+                    <li *ngFor="let tab of tabNames" [ngClass]="{'is-active': tabIndex.value===tab}">
                         <a role="button" tabindex="0" (keydown.enter)="tabIndex.next(tab)" (click)="tabIndex.next(tab)">{{tabs[tab].title}}</a>
                     </li>
                 </ul>

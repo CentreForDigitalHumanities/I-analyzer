@@ -161,7 +161,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
         const options = this.basicChartOptions;
         Object.assign(options.plugins, this.chartOptionsService.getChartHeader(
-            this.getChartTitle(), this.corpus.name, this.queryModel, this.getVisualizationOptions()
+            this.getChartTitle(), this.corpus.name, this.queryModel.queryText,
+            this.queryModel, this.getVisualizationOptions()
         ));
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;

@@ -134,7 +134,8 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
         Object.assign(options.plugins, this.chartOptionsService.getChartHeader(
-            this.getChartTitle(), this.corpus.name, this.queryModel, this.getVisualizationOptions()
+            this.getChartTitle(), this.corpus.name, this.queryModel.queryText,
+            this.queryModel, this.getVisualizationOptions()
         ));
         options.scales.xAxis.type = 'category';
         (options.scales.xAxis as any).title.text = xAxisLabel;

@@ -8,21 +8,24 @@ export class ChartOptionsService {
 
     constructor(private paramService: ParamService) { }
 
-    getChartHeader(chartType: string, corpusName: string, queryModel?: QueryModel, visualizationOptions?: string) {
+    getChartHeader(chartType: string, corpusName: string, queryText?: string, queryModel?: QueryModel, visualizationOptions?: string) {
         let subtitle = [
             `Searched corpus: ${corpusName}`
         ]
-        if (queryModel.queryText) {
+        if (queryText) {
             subtitle.push(`Query: ${queryModel.queryText}`);
         }
-        const fields = this.representFields(queryModel);
-        if (fields) {
-            subtitle.push(`Searched in fields: ${fields}`);
+        if (queryModel) {
+            const fields = this.representFields(queryModel);
+            if (fields) {
+                subtitle.push(`Searched in fields: ${fields}`);
+            }
+            const filters = this.representFilters(queryModel);
+            if (filters) {
+                subtitle.push(`Search filters: ${filters}`);
+            }
         }
-        const filters = this.representFilters(queryModel);
-        if (filters) {
-            subtitle.push(`Search filters: ${filters}`);
-        }
+
         if (visualizationOptions) {
             subtitle.push(`Visualization options: ${visualizationOptions}`)
         }
@@ -47,6 +50,8 @@ export class ChartOptionsService {
         }
 
     }
+
+    public representQuery() {}
 
     private representFields(queryModel: QueryModel): string {
         return queryModel.fields ? `${queryModel.fields.join(',')}` : ``

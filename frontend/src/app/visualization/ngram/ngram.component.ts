@@ -115,7 +115,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     setupChartTitle() {
         this.chartTitle = this.chartOptionsService.getChartHeader(
-            'Most frequent collocations', this.corpus.name, this.queryModel, this.parametersToString()
+            'Most frequent collocations', this.corpus.name, this.queryModel.queryText,
+            this.queryModel, this.parametersToString()
         )
     }
 
