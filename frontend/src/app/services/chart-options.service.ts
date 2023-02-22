@@ -31,9 +31,6 @@ export class ChartOptionsService {
         }
 
         return {
-            legend: {
-                display: false,
-            },
             title: {
                 display: true,
                 text: chartType,

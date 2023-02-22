@@ -151,6 +151,7 @@ export class JoyplotComponent implements OnChanges {
         const xLabel = `${this.quantity} by ${this.comparedByQuantity}`;
 
         return {
+            devicePixelRatio: 4,
             aspectRatio: 24 / (4 + numberOfRows),
             elements: {
                 point: {
@@ -196,8 +197,11 @@ export class JoyplotComponent implements OnChanges {
                     }
                 },
             },
-            plugins: Object.assign(
-                this.chartTitle, {
+            plugins: {
+                ...this.chartTitle,
+                legend: {
+                    display: false,
+                },
                 filler: {
                     propagate: true,
                 },
@@ -225,7 +229,7 @@ export class JoyplotComponent implements OnChanges {
                         }
                     }
                 }
-            })
+            }
         };
     }
 

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services/index';
+import { ChartOptionsService, WordmodelsService } from '../../services/index';
 import * as _ from 'lodash';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
@@ -27,7 +27,8 @@ export class RelatedWordsComponent implements OnChanges {
 
     faCheck = faCheck;
 
-    constructor(private wordModelsService: WordmodelsService) { }
+    constructor(private wordModelsService: WordmodelsService,
+        private chartOptionsService: ChartOptionsService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus || changes.queryText) {
@@ -37,6 +38,10 @@ export class RelatedWordsComponent implements OnChanges {
 
     getData(): void {
         this.showLoading(this.getTotalData());
+    }
+
+    chartTitle() {
+        return this.chartOptionsService.getChartHeader('Nearest neighbours', this.corpus.name, this.queryText);
     }
 
 

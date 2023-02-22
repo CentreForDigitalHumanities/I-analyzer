@@ -158,6 +158,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     makeChart(data: ChartData, style: 'line'|'bar'): void {
         const options: ChartOptions = {
+            devicePixelRatio: 4,
             elements: {
                 line: {
                     tension: 0, // disables bezier curves
@@ -176,6 +177,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 },
             },
             plugins: {
+                ...this.chartOptions,
                 legend: {
                     display: true,
                     labels: {}

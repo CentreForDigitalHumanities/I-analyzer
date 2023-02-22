@@ -76,6 +76,7 @@ export abstract class BarchartDirective
     @Output() error = new EventEmitter();
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
+        devicePixelRatio: 4,
         scales: {
             xAxis: {
                 title: { display: true },
@@ -96,6 +97,9 @@ export abstract class BarchartDirective
             axis: 'x',
         },
         plugins: {
+            legend: {
+                display: false,
+            },
             zoom: {
                 zoom: {
                     mode: 'x',
