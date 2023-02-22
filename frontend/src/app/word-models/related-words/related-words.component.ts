@@ -40,7 +40,7 @@ export class RelatedWordsComponent implements OnChanges {
         this.showLoading(this.getTotalData());
     }
 
-    chartTitle() {
+    get chartTitle() {
         return this.chartOptionsService.getChartHeader('Nearest neighbours', this.corpus.name, this.queryText);
     }
 

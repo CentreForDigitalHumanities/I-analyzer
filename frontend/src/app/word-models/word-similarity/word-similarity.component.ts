@@ -43,7 +43,7 @@ export class WordSimilarityComponent implements OnChanges {
         this.getData();
     }
 
-    chartTitle() {
+    get chartTitle() {
         return this.chartOptionsService.getChartHeader('Word similarity', this.corpus.name, this.queryText);
     }
 

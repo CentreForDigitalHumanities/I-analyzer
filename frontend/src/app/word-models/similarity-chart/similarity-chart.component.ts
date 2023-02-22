@@ -177,7 +177,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 },
             },
             plugins: {
-                ...this.chartOptions,
+                ...this.chartTitle,
                 legend: {
                     display: true,
                     labels: {}

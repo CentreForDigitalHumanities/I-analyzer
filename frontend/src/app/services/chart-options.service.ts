@@ -13,7 +13,7 @@ export class ChartOptionsService {
             `Searched corpus: ${corpusName}`
         ]
         if (queryText) {
-            subtitle.push(`Query: ${queryModel.queryText}`);
+            subtitle.push(`Query: ${queryText}`);
         }
         if (queryModel) {
             const fields = this.representFields(queryModel);
