@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RelatedWordsComponent } from './related-words.component';
 import { commonTestBed } from '../../common-test-bed';
+import { mockCorpus } from '../../../mock-data/corpus';
 
 describe('RelatedWordsComponent', () => {
   let component: RelatedWordsComponent;
@@ -13,6 +14,7 @@ describe('RelatedWordsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RelatedWordsComponent);
     component = fixture.componentInstance;
+    component.corpus = mockCorpus;
     fixture.detectChanges();
   });
 
