@@ -17,7 +17,13 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     itemToDownload: Download;
 
-    constructor(private downloadService: DownloadService, private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService, private notificationService: NotificationService) {
+    constructor(
+        private downloadService: DownloadService,
+        private apiService: ApiService,
+        corpusService: CorpusService,
+        private elasticSearchService: ElasticSearchService,
+        private notificationService: NotificationService
+    ) {
         super(corpusService);
     }
 

@@ -21,8 +21,8 @@ export class HistoryDirective {
         });
     }
 
-    sortByDate<Item extends Download|QueryDb>(downloads: Item[]): Item[] {
-        return downloads.sort((a, b) =>
+    sortByDate<Item extends Download|QueryDb>(items: Item[]): Item[] {
+        return items.sort((a, b) =>
             new Date(b.started).getTime() - new Date(a.started).getTime()
         );
     }

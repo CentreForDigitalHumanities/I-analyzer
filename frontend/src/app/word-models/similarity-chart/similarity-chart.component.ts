@@ -227,7 +227,6 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         if (this.chart) {
             this.chart.data = data;
             this.chart.options = options;
-            console.log(options);
             this.chart.update();
         } else {
             this.chart = new Chart('chart', {
