@@ -15,12 +15,12 @@ describe('NgramComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NgramComponent);
     component = fixture.componentInstance;
-    component.queryModel = <any>{
+    component.queryModel = {
         queryText: 'testing',
         filters: []
     };
-    component.corpus = <any>MockCorpusResponse['test1'];
-    component.visualizedField = <any>{name: 'speech'};
+    component.corpus = MockCorpusResponse[0] as any;
+    component.visualizedField = {name: 'speech'} as any;
     component.asTable = false;
     component.palette = ['yellow', 'blue'];
 
