@@ -11,12 +11,9 @@ import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, U
     Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
-    catchError,
-    concatMap,
     filter,
     switchMap,
     take,
-    tap,
 } from 'rxjs/operators';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034

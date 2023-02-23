@@ -19,4 +19,9 @@ export class WordmodelsServiceMock {
     public getRelatedWords() {
         return this.get('get_wordcloud_data');
     }
+
+    public wordModelsDocumentationRequest() {
+        return Promise.resolve({documentation: 'Some interesting documentation'});
+    }
+
 }

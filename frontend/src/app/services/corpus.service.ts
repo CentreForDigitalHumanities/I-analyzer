@@ -10,8 +10,7 @@ import { Corpus, CorpusField, DocumentContext, SearchFilter, SearchFilterData } 
 
 @Injectable()
 export class CorpusService {
-    private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(undefined);
-
+    private currentCorpusSubject = new BehaviorSubject<Corpus>(undefined);
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
     public corporaPromise: Promise<Corpus[]>;
