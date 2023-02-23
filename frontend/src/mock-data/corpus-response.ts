@@ -1,8 +1,8 @@
 /**
- * Mock corpus data as would be returned by the Flask service.
+ * Mock corpus data as would be returned by the backend
  */
-export const MockCorpusResponse = {
-    test1: {
+export const MockCorpusResponse = [
+    {
         name: 'test1',
         server_name: 'default',
         es_doctype: 'article',
@@ -14,7 +14,7 @@ export const MockCorpusResponse = {
         max_date: { day: 31, hour: 0, minute: 0, month: 12, year: 2010 },
         min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 }
     },
-    test2: {
+    {
         name: 'test2',
         server_name: 'default',
         es_doctype: 'article',
@@ -24,7 +24,7 @@ export const MockCorpusResponse = {
         max_date: { day: 31, hour: 0, minute: 0, month: 12, year: 2010 },
         min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 }
     },
-};
+];
 
 export type MockCorpusName = keyof (typeof MockCorpusResponse);
 export const MockCorpusRoles =

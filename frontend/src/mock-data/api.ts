@@ -21,7 +21,7 @@ export class ApiServiceMock {
     }
 
     public searchHistory() {
-        return Promise.resolve({ queries: [] });
+        return Promise.resolve([]);
     }
 
     public getWordcloudData() {
