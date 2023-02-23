@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from addcorpus.load_corpus import load_corpus
 from rest_framework.exceptions import NotFound
+from users.models import CustomUser
+from typing import Dict, Any
 
 def corpus_name_from_request(request):
         '''
@@ -25,6 +27,16 @@ def corpus_name_from_request(request):
         )
 
         return corpus
+
+
+def filter_user_corpora(corpora: Dict[str, Any], user: CustomUser) -> Dict[str, any]:
+    '''Filter all available corpora to only
+    include the ones the user has access to'''
+    return {name: definition
+            for (name, definition) in corpora.items()
+            if user.has_access(name)
+            }
+
 
 class CorpusAccessPermission(permissions.BasePermission):
     message = 'You do not have permission to access this corpus'

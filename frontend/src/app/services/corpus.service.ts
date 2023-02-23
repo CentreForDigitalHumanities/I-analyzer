@@ -74,11 +74,7 @@ export class CorpusService {
     }
 
     private async parseCorpusList(data: any): Promise<Corpus[]> {
-        await this.authService.getCurrentUserPromise();
-        const availableCorpora = data.filter((corpus) =>
-            this.authService.getCurrentUser().canAccessCorpus(corpus.name)
-        );
-        return availableCorpora.map(this.parseCorpusItem);
+        return data.map(this.parseCorpusItem);
     }
 
     private parseCorpusItem = (data: any): Corpus => {
