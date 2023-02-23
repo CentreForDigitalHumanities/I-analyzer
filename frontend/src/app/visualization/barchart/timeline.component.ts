@@ -160,10 +160,11 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
-        Object.assign(options.plugins, this.chartOptionsService.getChartHeader(
+        const header = this.chartOptionsService.getChartHeader(
             this.getChartTitle(), this.corpus.name, this.queryModel.queryText,
             this.queryModel, this.getVisualizationOptions()
-        ));
+        );
+        Object.assign(options.plugins, header);
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;
         xAxis.type = 'time';
