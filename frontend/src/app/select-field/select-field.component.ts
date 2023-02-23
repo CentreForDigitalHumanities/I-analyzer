@@ -49,7 +49,7 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
         if (!queryFields) {
             this.selectedFields = [];
         } else {
-            this.selectedFields = this.availableFields.filter( field => queryFields.find(name => field.name === name) );
+            this.selectedFields = this.optionFields.filter( field => queryFields.find(name => field.name === name) );
         }
     }
 
@@ -103,12 +103,13 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
 
     public toggleField() {
         if ( !this.selectedFields.length ) {
+            if (this.filterCriterion === 'csv') return;
             this.setParams({ fields: null });
         }
         else {
             this.uiSelected = this.selectedFields.map(field => field.name);
             const fields = this.uiSelected.join(',');
-
+            if (this.filterCriterion === 'csv') return;
             this.setParams({ fields: fields });
         }
     }
