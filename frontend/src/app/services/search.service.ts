@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import {
     Corpus,
@@ -28,7 +27,6 @@ export class SearchService {
         private authService: AuthService,
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
-        private logService: LogService
     ) {
         window['apiService'] = this.apiService;
     }
@@ -42,9 +40,6 @@ export class SearchService {
         from: number,
         size: number
     ): Promise<SearchResults> {
-        this.logService.info(
-            `Requested additional results for: ${JSON.stringify(queryModel)}`
-        );
         const results = await this.elasticSearchService.loadResults(
             corpus,
             queryModel,
@@ -129,11 +124,6 @@ export class SearchService {
         queryModel: QueryModel,
         corpus: Corpus
     ): Promise<SearchResults> {
-        this.logService.info(
-            `Requested flat results for query: ${
-                queryModel.queryText
-            }, with filters: ${JSON.stringify(queryModel.filters)}`
-        );
         const user = await this.authService.getCurrentUserPromise();
         const query = new QueryDb(queryModel, corpus.name, user.id);
         query.started = new Date(Date.now());

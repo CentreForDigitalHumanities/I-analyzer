@@ -4,7 +4,6 @@ import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
 import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
-import { LogService } from './log.service';
 import { UserService } from './user.service';
 import { UserServiceMock } from '../../mock-data/user';
 import { SessionService } from './session.service';
@@ -26,7 +25,6 @@ describe('CorpusService', () => {
                 ApiRetryService,
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
-                LogService,
                 { provide: UserService, useValue: userServiceMock },
                 SessionService,
             ],
