@@ -9,7 +9,7 @@ The corpus class should define the following properties:
 
 - `title`: Title to be used in the interface.
 - `description`: Short description, appears as a subtitle in the interface.
-- `data_directory`: Path to the source files. Always this from configuration.
+- `data_directory`: Path to the source files. Always get this from the setttings.
 - `min_date`, `max_date`: The minimum and maximum dates for documents.
 - `es_index`: the name of the index in elasticsearch.
 - `image`: a path or url to the image used for the corpus in the interface.
@@ -42,21 +42,14 @@ In addition to the properties above, CSV corpora have the following optional pro
 - `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.
 - `required_field`: rows with this field empty will be skipped.
 
-## Config file
-The config files can be used to define global variables that may be depend on the environment. Please use the following naming convention.
+## Settings file
+The django settings can be used to configure variables that may be depend on the environment. Please use the following naming convention.
 
 ```python
-CORPUSNAME_ES_INDEX = 'dutchbanking' # the name that elasticsearch gives to the index
 CORPUSNAME_DATA = '/MyData/CorpusData' # the directory where the xml / html or other files are located
-CORPUSNAME_MIN_DATE = datetime(year=1957, month=1, day=1) # default start date of indexing
-CORPUSNAME_MAX_DATE = datetime(year=2008, month=12, day=31) # default end date of indexing
-CORPUSNAME_TITLE = 'MyTitle' # title as displayed in frontend corpus selection menu
-CORPUSNAME_DESCRIPTION = 'MyDescription' # description as displayed in corpus selection menu
-CORPUSNAME_IMAGE = '/Location/Of/Image.jpg' # location of image as displayed in corpus selection menu
-CORPUSNAME_ES_SETTING = ... # any corpus-specific settings, such as custom analyzers
+CORPUSNAME_ES_INDEX = 'dutchbanking' # the name that elasticsearch gives to the index
+CORPUSNAME_SCAN_IMAGE_TYPE = 'image/png' #mimetype of document media
 ```
-
-You do not need to define all of these variables in the config: they may also be defined statically in the corpus definition, if there is no reason to configure them depending on the environment.
 
 These can be retrieved in the corpus definition, for example:
 
@@ -72,6 +65,8 @@ class Times(XMLCorpus):
     es_index = getattr(settings, 'TIMES_ES_INDEX', 'times')
     ...
 ```
+
+Note that for a property like the elasticsearch index, we define a default value but make it possible to override this in the settings file.
 
 ### Corpus selection
 
@@ -91,10 +86,10 @@ The key of the corpus must match the name of the corpus class (but lowercase/hyp
 `settings.py` imports all information in `settings_local.py`. If a variable is defined in both, `settings_local` overrules `settings`. All sensitive information (server names, user names, passwords) should be in `settings_local.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment.
 
 ## Elasticsearch
-Once the corpus definition and associated global variables are added, the only remaining step is to make the Elasticsearch index. By running `yarn django index corpusname`, information is extracted and sent to Elasticsearch.
+Once the corpus definition and associated settings are added, the only remaining step is to make the Elasticsearch index. By running `yarn django index corpusname`, information is extracted and sent to Elasticsearch.
 Optional flags:
 - `-s 1990-01-01` sets different start date for indexing
 - `-e 2000-12-31` sets different end data for indexing
-- `-d` specifies that an existing index of `CORPUSNAME_ES_INDEX` should be deleted first (if not specified, defaults to `False`, meaning that extra data can be added while existing data is not overwritten)
+- `-d` specifies that an existing index of the same name should be deleted first (if not specified, defaults to `False`, meaning that extra data can be added while existing data is not overwritten)
 
 The start and end date flags are passed on the `sources` function of the corpus (see above). If you did not utilise them there, they will not do anything.
