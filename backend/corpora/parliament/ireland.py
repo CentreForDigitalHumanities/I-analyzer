@@ -446,7 +446,7 @@ class ParliamentIreland(Parliament, Corpus):
     min_date = datetime(year=1919, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
     data_directory = settings.PP_IRELAND_DATA
-    es_index = settings.PP_IRELAND_INDEX
+    es_index = getattr(settings, 'PP_IRELAND_INDEX', 'parliament-ireland')
     image = 'ireland.png'
     description_page = 'ireland.md'
     language = None # corpus uses multiple languages, so we will not be using language-specific analyzers

@@ -32,7 +32,7 @@ class Troonredes(XMLCorpus):
     min_date = datetime(year=1814, month=1, day=1)
     max_date = datetime(year=2018, month=12, day=31)
     data_directory = settings.TROONREDES_DATA
-    es_index = settings.TROONREDES_ES_INDEX
+    es_index = getattr(settings, 'TROONREDES_ES_INDEX', 'troonredes')
     image = 'troon.jpg'
     word_model_path = getattr(settings, 'TROONREDES_WM', None)
 

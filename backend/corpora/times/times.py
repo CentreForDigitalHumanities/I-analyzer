@@ -28,7 +28,7 @@ class Times(XMLCorpus):
     min_date = datetime(year=1785, month=1, day=1)
     max_date = datetime(year=2010, month=12, day=31)
     data_directory = settings.TIMES_DATA
-    es_index = settings.TIMES_ES_INDEX
+    es_index = getattr(settings, 'TIMES_ES_INDEX', 'times')
     image = 'times.jpg'
     scan_image_type = settings.TIMES_SCAN_IMAGE_TYPE
     description_page = 'times.md'

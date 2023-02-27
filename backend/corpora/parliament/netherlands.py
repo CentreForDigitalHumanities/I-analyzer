@@ -129,7 +129,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     data_directory_recent = settings.PP_NL_RECENT_DATA
     word_model_path = getattr(settings, 'PP_NL_WM', None)
 
-    es_index = settings.PP_NL_INDEX
+    es_index = getattr(settings, 'PP_NL_INDEX', 'parliament-netherlands')
     image = 'netherlands.jpg'
     description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'

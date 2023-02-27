@@ -29,7 +29,7 @@ class Periodicals(XMLCorpus):
     min_date = datetime(1800,1,1)
     max_date = datetime(1900,1,1)
     data_directory = settings.PERIODICALS_DATA
-    es_index = settings.PERIODICALS_ES_INDEX
+    es_index = getattr(settings, 'PERIODICALS_ES_INDEX', 'periodicals')
     image = 'Fleet_Street.jpg'
     scan_image_type = settings.PERIODICALS_SCAN_IMAGE_TYPE
     description_page = '19thCenturyUKPeriodicals.md'

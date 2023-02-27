@@ -13,7 +13,7 @@ def times_test_settings(settings):
         'times': join(settings.BASE_DIR, 'corpora/times/times.py')
     }
     settings.TIMES_DATA = join(settings.BASE_DIR, 'addcorpus/tests')
-    settings.TIMES_ES_INDEX = 'times'
+    settings.TIMES_ES_INDEX = 'times-test'
     settings.TIMES_IMAGE = 'times.jpg'
     settings.TIMES_SCAN_IMAGE_TYPE = 'image/png'
 

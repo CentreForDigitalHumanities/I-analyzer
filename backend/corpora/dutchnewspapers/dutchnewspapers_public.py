@@ -27,7 +27,7 @@ class DutchNewspapersPublic(XMLCorpus):
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = settings.DUTCHNEWSPAPERS_DATA
-    es_index = settings.DUTCHNEWSPAPERS_ES_INDEX
+    es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
 
     tag_toplevel = 'text'

@@ -85,18 +85,14 @@ CORPUS_DEFINITIONS = {}
 
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 
-DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
 DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
 
-DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
 # remember to set this in config.py
 DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
 
-TIMES_ES_INDEX = 'times'
 TIMES_DATA = '/mnt/times'
 TIMES_SCAN_IMAGE_TYPE = 'image/png'
 
-TML_ES_INDEX = 'tml'
 TML_DATA = '/mnt/tml'
 
 GO_SCAN_IMAGE_TYPE = 'application/pdf'

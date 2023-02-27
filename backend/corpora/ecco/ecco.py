@@ -27,7 +27,7 @@ class Ecco(XMLCorpus):
     max_date = datetime(year=1800, month=12, day=31)
 
     data_directory = settings.ECCO_DATA
-    es_index = settings.ECCO_ES_INDEX
+    es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
     scan_image_type = settings.ECCO_SCAN_IMAGE_TYPE
     es_settings = None

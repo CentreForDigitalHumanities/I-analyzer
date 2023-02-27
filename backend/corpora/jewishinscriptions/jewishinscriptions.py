@@ -20,7 +20,7 @@ class JewishInscriptions(XMLCorpus):
     min_date = datetime(year=769, month=1, day=1)
     max_date = datetime(year=849, month=12, day=31)
     data_directory = settings.JEWISH_INSCRIPTIONS_DATA
-    es_index = settings.JEWISH_INSCRIPTIONS_ES_INDEX
+    es_index = getattr(settings, 'JEWISH_INSCRIPTIONS_ES_INDEX', 'jewishinscriptions')
     image = 'jewish_inscriptions.jpg'
     visualize = []
 

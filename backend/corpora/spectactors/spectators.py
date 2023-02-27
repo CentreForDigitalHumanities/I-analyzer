@@ -27,7 +27,7 @@ class Spectators(XMLCorpus):
     min_date = datetime()
     max_date = datetime()
     data_directory = settings.SPECTATORS_DATA
-    es_index = settings.SPECTATORS_ES_INDEX
+    es_index = getattr(settings, 'SPECTATORS_ES_INDEX', 'spectators')
 
     tag_toplevel = 'article'
     tag_entry = 'content'
