@@ -82,7 +82,7 @@ CORPUS_DEFINITIONS = {}
 
 ###### CORPUS VARIABLES #######
 
-DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
+
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
 DUTCHANNUALREPORTS_MAP = {}
@@ -97,12 +97,9 @@ DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
 # remember to set this in config.py
 DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
 
-GOODREADS_DESCRIPTION_PAGE = 'goodreads.md'
-
 TIMES_ES_INDEX = 'times'
 TIMES_DATA = '/mnt/times'
 TIMES_SCAN_IMAGE_TYPE = 'image/png'
-TIMES_DESCRIPTION_PAGE = 'times.md'
 
 TML_ES_INDEX = 'tml'
 TML_DATA = '/mnt/tml'
@@ -115,7 +112,6 @@ ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
 ECCO_SCAN_IMAGE_TYPE = 'application/pdf'
 
 PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
-PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
 
 PP_UK_WM = None

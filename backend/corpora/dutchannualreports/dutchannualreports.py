@@ -26,7 +26,7 @@ class DutchAnnualReports(XMLCorpus):
     es_index = settings.DUTCHANNUALREPORTS_ES_INDEX
     image = 'dutchannualreports.jpg'
     scan_image_type = settings.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
-    description_page = settings.DUTCHANNUALREPORTS_DESCRIPTION_PAGE
+    description_page = 'dutchannualreports.md'
     allow_image_download = settings.DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD
     word_model_path = settings.DUTCHANNUALREPORTS_WM
 

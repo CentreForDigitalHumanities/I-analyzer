@@ -37,7 +37,6 @@ class GuardianObserver(XMLCorpus):
     es_index = settings.GO_ES_INDEX
     image = 'guardianobserver.jpg'
     scan_image_type = settings.GO_SCAN_IMAGE_TYPE
-    #description_page = settings.GO_DESCRIPTION_PAGE']
 
     tag_toplevel = 'Record'
 

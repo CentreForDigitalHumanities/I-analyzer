@@ -29,7 +29,7 @@ class GoodReads(CSVCorpus):
     data_directory = settings.GOODREADS_DATA
     es_index = settings.GOODREADS_ES_INDEX
     image = 'DioptraL.png'
-    description_page = settings.GOODREADS_DESCRIPTION_PAGE
+    description_page = 'goodreads.md'
     visualize = []
 
     # New data members

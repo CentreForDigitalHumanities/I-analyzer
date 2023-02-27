@@ -31,7 +31,7 @@ class Times(XMLCorpus):
     es_index = settings.TIMES_ES_INDEX
     image = 'times.jpg'
     scan_image_type = settings.TIMES_SCAN_IMAGE_TYPE
-    description_page = settings.TIMES_DESCRIPTION_PAGE
+    description_page = 'times.md'
 
     tag_toplevel = 'issue'
     tag_entry = 'article'

@@ -32,7 +32,7 @@ class Periodicals(XMLCorpus):
     es_index = settings.PERIODICALS_ES_INDEX
     image = 'Fleet_Street.jpg'
     scan_image_type = settings.PERIODICALS_SCAN_IMAGE_TYPE
-    description_page = settings.PERIODICALS_DESCRIPTION_PAGE
+    description_page = '19thCenturyUKPeriodicals.md'
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'

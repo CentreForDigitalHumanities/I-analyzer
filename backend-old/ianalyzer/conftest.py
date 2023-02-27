@@ -32,9 +32,7 @@ class UnittestConfig:
     CORPUS_DEFINITIONS = {}
     TIMES_DATA = 'addcorpus/tests'
     TIMES_ES_INDEX = 'ianalyzer-times'
-    TIMES_IMAGE = 'times.jpg'
     TIMES_SCAN_IMAGE_TYPE = 'image/png'
-    TIMES_DESCRIPTION_PAGE = 'times.md'
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"

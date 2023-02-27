@@ -16,7 +16,6 @@ def times_test_settings(settings):
     settings.TIMES_ES_INDEX = 'times'
     settings.TIMES_IMAGE = 'times.jpg'
     settings.TIMES_SCAN_IMAGE_TYPE = 'image/png'
-    settings.TIMES_DESCRIPTION_PAGE = 'times.md'
 
 
 
