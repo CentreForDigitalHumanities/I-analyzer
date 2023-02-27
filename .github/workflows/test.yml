@@ -52,7 +52,6 @@ jobs:
     - name: Test with pytest
       run: |
         cd backend
-        cp ianalyzer/default_config.py ianalyzer/config.py
         pytest
     - name: Test Angular
       run: |
