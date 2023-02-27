@@ -84,7 +84,6 @@ export class CorpusService {
             data.name,
             data.title,
             data.description,
-            data.es_doctype,
             data.es_index,
             allFields,
             this.parseDate(data.min_date),

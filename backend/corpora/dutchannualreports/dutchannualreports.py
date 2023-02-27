@@ -24,7 +24,6 @@ class DutchAnnualReports(XMLCorpus):
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = settings.DUTCHANNUALREPORTS_DATA
     es_index = settings.DUTCHANNUALREPORTS_ES_INDEX
-    es_doctype = settings.DUTCHANNUALREPORTS_ES_DOCTYPE
     image = settings.DUTCHANNUALREPORTS_IMAGE
     scan_image_type = settings.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
     description_page = settings.DUTCHANNUALREPORTS_DESCRIPTION_PAGE

@@ -47,7 +47,6 @@ The config files can be used to define global variables that may be depend on th
 
 ```python
 CORPUSNAME_ES_INDEX = 'dutchbanking' # the name that elasticsearch gives to the index
-CORPUSNAME_ES_DOCTYPE = 'page' # typically corresponds to `tag_toplevel` in the corpus definition
 CORPUSNAME_DATA = '/MyData/CorpusData' # the directory where the xml / html or other files are located
 CORPUSNAME_MIN_DATE = datetime(year=1957, month=1, day=1) # default start date of indexing
 CORPUSNAME_MAX_DATE = datetime(year=2008, month=12, day=31) # default end date of indexing

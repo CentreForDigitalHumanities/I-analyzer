@@ -17,14 +17,13 @@ updated_docs = 0
 
 def add_images(corpus_definition, page_size):
     index = corpus_definition.es_index
-    doc_type = corpus_definition.es_doctype
     corpus_dir = os.path.join(
         corpus_definition.data_directory, 'TDA_GDA', 'TDA_GDA_1785-2009')
     size = page_size
     scroll = settings.SERVERS['default']['scroll_timeout']
 
     # Collect initial page
-    page = init_search(index, doc_type, size, scroll)
+    page = init_search(index, size, scroll)
     total_hits = page['hits']['total']
     scroll_size = len(page['hits']['hits'])
 
@@ -36,7 +35,7 @@ def add_images(corpus_definition, page_size):
         sid = page['_scroll_id']
 
         # Process current batch of hits
-        process_hits(page['hits']['hits'], index, doc_type, corpus_dir)
+        process_hits(page['hits']['hits'], index, corpus_dir)
 
         # Scroll to next page
         page = es.scroll(scroll_id=sid, scroll=scroll)
@@ -48,22 +47,21 @@ def add_images(corpus_definition, page_size):
     logger.info("Updated {} documents".format(updated_docs))
 
 
-def init_search(index, doc_type, size, scroll):
+def init_search(index, size, scroll):
     return es.search(
         index=index,
         body={"_source": ["date", "page"]},
-        doc_type=doc_type,
         params={"scroll": scroll, "size": size}
     )
 
 
-def process_hits(hits, index, doc_type, corpus_dir):
+def process_hits(hits, index, corpus_dir):
     for doc in hits:
         date, page = doc['_source']['date'], doc['_source']['page']
         es_doc_id = doc['_id']
         image_path = compose_image_path(date, page, corpus_dir)
         if image_path:
-            update_document(index, doc_type, es_doc_id, image_path)
+            update_document(index, es_doc_id, image_path)
 
 
 def compose_image_path(date_string, page, corpus_dir):

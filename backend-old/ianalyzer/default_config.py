@@ -82,7 +82,6 @@ CORPUS_DEFINITIONS = {}
 
 ###### CORPUS VARIABLES #######
 
-DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
@@ -91,7 +90,6 @@ DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
 DUTCHANNUALREPORTS_WM = None
 
-DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
@@ -107,14 +105,12 @@ GOODREADS_IMAGE = 'DioptraL.png'
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 TIMES_ES_INDEX = 'times'
-TIMES_ES_DOCTYPE = 'article'
 TIMES_DATA = '/mnt/times'
 TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'image/png'
 TIMES_DESCRIPTION_PAGE = 'times.md'
 
 TML_ES_INDEX = 'tml'
-TML_ES_DOCTYPE = 'article'
 TML_DATA = '/mnt/tml'
 TML_IMAGE = 'tml.jpg'
 

@@ -13,7 +13,6 @@ def rechtspraak_test_settings(settings):
     settings.RECHTSPRAAK_DATA = op.join(here, 'tests', 'data')
     settings.RECHTSPRAAK_IMAGE = 'troon.jpg'
     settings.RECHTSPRAAK_ES_INDEX = 'rechtspraak'
-    settings.RECHTSPRAAK_ES_DOCTYPE = 'article'
 
 @pytest.fixture
 def test_corpus(rechtspraak_test_settings):

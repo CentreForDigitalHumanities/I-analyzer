@@ -33,7 +33,6 @@ class Troonredes(XMLCorpus):
     max_date = datetime(year=2018, month=12, day=31)
     data_directory = settings.TROONREDES_DATA
     es_index = settings.TROONREDES_ES_INDEX
-    es_doctype = settings.TROONREDES_ES_DOCTYPE
     image = settings.TROONREDES_IMAGE
     word_model_path = settings.TROONREDES_WM
 
