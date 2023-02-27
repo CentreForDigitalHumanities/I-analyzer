@@ -20,7 +20,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     es_index = settings.PP_GERMANY_NEW_INDEX
     image = 'germany-new.jpeg'
     language = 'german'
-    word_model_path = settings.PP_DE_WM
+    word_model_path = getattr(settings, 'PP_DE_WM', None)
 
     field_entry = 'id'
     required_field = 'speech_content'

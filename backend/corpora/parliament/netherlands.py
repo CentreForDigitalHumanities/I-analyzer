@@ -127,7 +127,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     max_date = datetime(year=2020, month=12, day=31)
     data_directory = settings.PP_NL_DATA
     data_directory_recent = settings.PP_NL_RECENT_DATA
-    word_model_path = settings.PP_NL_WM
+    word_model_path = getattr(settings, 'PP_NL_WM', None)
 
     es_index = settings.PP_NL_INDEX
     image = 'netherlands.jpg'

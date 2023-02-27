@@ -39,7 +39,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     max_date = datetime(year=2021, month=12, day=31)
     es_index = settings.PP_UK_INDEX
     image = 'uk.jpeg'
-    word_model_path = settings.PP_UK_WM
+    word_model_path = getattr(settings, 'PP_UK_WM', None)
     language = 'english'
     description_page = 'uk.md'
     field_entry = 'speech_id'

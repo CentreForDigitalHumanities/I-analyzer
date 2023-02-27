@@ -25,12 +25,10 @@ def parliament_corpora_settings(settings):
     settings.PP_ALIAS = 'parliament'
     settings.PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
     settings.PP_UK_INDEX = 'parliament-uk'
-    settings.PP_UK_WM = None
 
     settings.PP_NL_DATA = os.path.join(here, 'tests', 'data', 'netherlands')
     settings.PP_NL_RECENT_DATA = os.path.join(here, 'tests', 'data', 'netherlands-recent')
     settings.PP_NL_INDEX = 'parliament-netherlands'
-    settings.PP_NL_IMAGE = 'netherlands.jpg'
 
     settings.PP_CANADA_DATA = os.path.join(here, 'tests', 'data', 'canada')
     settings.PP_CANADA_INDEX = 'parliament-canada'
@@ -56,9 +54,3 @@ def parliament_corpora_settings(settings):
     settings.PP_DENMARK_NEW_INDEX = 'parliament-denmark-new'
     settings.PP_IRELAND_DATA = os.path.join(here, 'tests', 'data', 'ireland')
     settings.PP_IRELAND_INDEX = 'parliament-ireland'
-
-    settings.PP_UK_WM = None
-    settings.PP_DE_WM = None
-    settings.PP_FR_WM = None
-    settings.PP_CA_WM = None
-    settings.PP_NL_WM = None

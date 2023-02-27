@@ -28,7 +28,7 @@ class DutchAnnualReports(XMLCorpus):
     scan_image_type = settings.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
     description_page = 'dutchannualreports.md'
     allow_image_download = settings.DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD
-    word_model_path = settings.DUTCHANNUALREPORTS_WM
+    word_model_path = getattr(settings, 'DUTCHANNUALREPORTS_WM', None)
 
     mimetype = 'application/pdf'
 

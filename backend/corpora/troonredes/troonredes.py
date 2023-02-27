@@ -34,7 +34,7 @@ class Troonredes(XMLCorpus):
     data_directory = settings.TROONREDES_DATA
     es_index = settings.TROONREDES_ES_INDEX
     image = 'troon.jpg'
-    word_model_path = settings.TROONREDES_WM
+    word_model_path = getattr(settings, 'TROONREDES_WM', None)
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'

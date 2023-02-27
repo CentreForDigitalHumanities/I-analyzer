@@ -20,7 +20,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     image = 'france.jpeg'
     language = 'french'
     description_page = 'france.md'
-    word_model_path = settings.PP_FR_WM
+    word_model_path = getattr(settings, 'PP_FR_WM', None)
 
     field_entry = 'speech_id'
 

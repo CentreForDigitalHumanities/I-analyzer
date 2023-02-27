@@ -87,7 +87,6 @@ DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
 DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
-DUTCHANNUALREPORTS_WM = None
 
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
 DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
@@ -103,8 +102,6 @@ TIMES_SCAN_IMAGE_TYPE = 'image/png'
 TML_ES_INDEX = 'tml'
 TML_DATA = '/mnt/tml'
 
-TROONREDES_WM = None
-
 GO_SCAN_IMAGE_TYPE = 'application/pdf'
 
 ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
@@ -112,12 +109,6 @@ ECCO_SCAN_IMAGE_TYPE = 'application/pdf'
 
 PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
 
-
-PP_UK_WM = None
-PP_DE_WM = None
-PP_FR_WM = None
-PP_CA_WM = None
-PP_NL_WM = None
 
 #################
 

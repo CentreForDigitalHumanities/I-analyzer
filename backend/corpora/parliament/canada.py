@@ -25,7 +25,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     required_field = 'content'
 
     document_context = document_context(sort_field=None)
-    word_model_path = settings.PP_CA_WM
+    word_model_path = getattr(settings, 'PP_CA_WM', None)
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
