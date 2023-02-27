@@ -89,7 +89,6 @@ DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
 DUTCHANNUALREPORTS_WM = None
 
-DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
 DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
 

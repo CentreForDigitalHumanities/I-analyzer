@@ -93,8 +93,7 @@ class DutchNewspapersPublic(XMLCorpus):
                         })
                         yield full_path, meta_dict
 
-    titlefile = join(corpus_dir('dutchnewspapers-public'),
-     settings.DUTCHNEWSPAPERS_TITLES_FILE)
+    titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
     paper_count = len(papers)
