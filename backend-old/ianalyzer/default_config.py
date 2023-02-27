@@ -84,8 +84,6 @@ CORPUS_DEFINITIONS = {}
 
 
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
-DUTCHANNUALREPORTS_MAP = {}
-DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
 
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
 DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py

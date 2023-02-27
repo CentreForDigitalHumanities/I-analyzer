@@ -42,8 +42,7 @@ class DutchAnnualReports(XMLCorpus):
 
     dutchannualreports_map = {}
 
-    with open(op.join(corpus_dir('dutchannualreports'),
-     settings.DUTCHANNUALREPORTS_MAP_FILE)) as f:
+    with open(op.join(corpus_dir('dutchannualreports'), 'dutchannualreports_mapping.csv')) as f:
         reader = csv.DictReader(f)
         for line in reader:
             dutchannualreports_map[line['abbr']] = line['name']
