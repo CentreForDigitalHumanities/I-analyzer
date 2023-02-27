@@ -28,7 +28,7 @@ class Ecco(XMLCorpus):
 
     data_directory = settings.ECCO_DATA
     es_index = settings.ECCO_ES_INDEX
-    image = settings.ECCO_IMAGE
+    image = 'ecco.jpg'
     scan_image_type = settings.ECCO_SCAN_IMAGE_TYPE
     es_settings = None
 

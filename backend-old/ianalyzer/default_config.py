@@ -82,7 +82,6 @@ CORPUS_DEFINITIONS = {}
 
 ###### CORPUS VARIABLES #######
 
-DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
@@ -90,7 +89,6 @@ DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
 DUTCHANNUALREPORTS_WM = None
 
-DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
 DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
@@ -100,40 +98,25 @@ DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
 DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
 
 GOODREADS_DESCRIPTION_PAGE = 'goodreads.md'
-GOODREADS_IMAGE = 'DioptraL.png'
-
-JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 TIMES_ES_INDEX = 'times'
 TIMES_DATA = '/mnt/times'
-TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'image/png'
 TIMES_DESCRIPTION_PAGE = 'times.md'
 
 TML_ES_INDEX = 'tml'
 TML_DATA = '/mnt/tml'
-TML_IMAGE = 'tml.jpg'
 
-TROONREDES_IMAGE = 'troon.jpg'
 TROONREDES_WM = None
 
 GO_SCAN_IMAGE_TYPE = 'application/pdf'
-GO_IMAGE = 'guardianobserver.jpg'
 
 ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
-ECCO_IMAGE = 'ecco.jpg'
 ECCO_SCAN_IMAGE_TYPE = 'application/pdf'
 
 PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
-PERIODICALS_IMAGE = 'Fleet_Street.jpg'
 PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
-PP_UK_IMAGE = 'uk.jpeg'
-PP_NL_IMAGE = 'netherlands.jpg'
-PP_GERMANY_NEW_IMAGE = 'germany-new.jpeg'
-PP_GERMANY_OLD_IMAGE = 'germany-old.jpeg'
-PP_CANADA_IMAGE = 'canada.jpeg'
-PP_FR_IMAGE = 'france.jpeg'
 
 PP_UK_WM = None
 PP_DE_WM = None

@@ -130,7 +130,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     word_model_path = settings.PP_NL_WM
 
     es_index = settings.PP_NL_INDEX
-    image = settings.PP_NL_IMAGE
+    image = 'netherlands.jpg'
     description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'

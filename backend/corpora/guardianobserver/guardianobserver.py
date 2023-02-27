@@ -35,7 +35,7 @@ class GuardianObserver(XMLCorpus):
     max_date = datetime(year=2003, month=12, day=31)
     data_directory = settings.GO_DATA
     es_index = settings.GO_ES_INDEX
-    image = settings.GO_IMAGE
+    image = 'guardianobserver.jpg'
     scan_image_type = settings.GO_SCAN_IMAGE_TYPE
     #description_page = settings.GO_DESCRIPTION_PAGE']
 

@@ -27,7 +27,7 @@ class Tml(HTMLCorpus):
     max_date = datetime(year=1699, month=12, day=31)
     data_directory = settings.TML_DATA
     es_index = settings.TML_ES_INDEX
-    image = settings.TML_IMAGE
+    image = 'tml.jpg'
 
     tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
     tag_entry = ''

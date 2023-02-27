@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
-
+import os
 
 class Corpus(object):
     '''
@@ -120,7 +120,8 @@ class Corpus(object):
     @property
     def image(self):
         '''
-        Absolute url to static image.
+        Name of the corpus image. Should be relative path from a directory 'images'
+        in the same directory as the corpus definition file.
         '''
         raise NotImplementedError()
 

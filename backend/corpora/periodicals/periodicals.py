@@ -30,7 +30,7 @@ class Periodicals(XMLCorpus):
     max_date = datetime(1900,1,1)
     data_directory = settings.PERIODICALS_DATA
     es_index = settings.PERIODICALS_ES_INDEX
-    image = settings.PERIODICALS_IMAGE
+    image = 'Fleet_Street.jpg'
     scan_image_type = settings.PERIODICALS_SCAN_IMAGE_TYPE
     description_page = settings.PERIODICALS_DESCRIPTION_PAGE
 

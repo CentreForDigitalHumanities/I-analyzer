@@ -25,7 +25,6 @@ def parliament_corpora_settings(settings):
     settings.PP_ALIAS = 'parliament'
     settings.PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
     settings.PP_UK_INDEX = 'parliament-uk'
-    settings.PP_UK_IMAGE = 'uk.jpeg'
     settings.PP_UK_WM = None
 
     settings.PP_NL_DATA = os.path.join(here, 'tests', 'data', 'netherlands')
@@ -35,22 +34,16 @@ def parliament_corpora_settings(settings):
 
     settings.PP_CANADA_DATA = os.path.join(here, 'tests', 'data', 'canada')
     settings.PP_CANADA_INDEX = 'parliament-canada'
-    settings.PP_CANADA_IMAGE = 'canada.jpeg'
     settings.PP_GERMANY_NEW_DATA = os.path.join(here, 'tests', 'data', 'germany-new')
     settings.PP_GERMANY_NEW_INDEX = 'parliament-germany-new'
-    settings.PP_GERMANY_NEW_IMAGE = 'germany-new.jpeg'
     settings.PP_GERMANY_OLD_DATA = os.path.join(here, 'tests', 'data', 'germany-old')
     settings.PP_GERMANY_OLD_INDEX = 'parliament-germany-old'
-    settings.PP_GERMANY_OLD_IMAGE= 'germany-old.jpeg'
     settings.PP_FR_INDEX = 'parliament-france'
     settings.PP_FR_DATA = os.path.join(here, 'tests', 'data', 'france')
-    settings.PP_FR_IMAGE = 'france.jpeg'
     settings.PP_SWEDEN_INDEX = 'parliament-sweden'
     settings.PP_SWEDEN_DATA = os.path.join(here, 'tests', 'data', 'sweden')
-    settings.PP_SWEDEN_IMAGE = 'sweden.jpg'
     settings.PP_SWEDEN_OLD_INDEX = 'parliament-sweden-old'
     settings.PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
-    settings.PP_SWEDEN_OLD_IMAGE = 'sweden-old.jpg'
     settings.PP_FINLAND_INDEX = 'parliament-finland'
     settings.PP_FINLAND_DATA = os.path.join(here, 'tests', 'data', 'finland')
     settings.PP_NORWAY_INDEX = 'parliament-norway'

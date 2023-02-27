@@ -21,7 +21,7 @@ class JewishInscriptions(XMLCorpus):
     max_date = datetime(year=849, month=12, day=31)
     data_directory = settings.JEWISH_INSCRIPTIONS_DATA
     es_index = settings.JEWISH_INSCRIPTIONS_ES_INDEX
-    image = settings.JEWISH_INSCRIPTIONS_IMAGE
+    image = 'jewish_inscriptions.jpg'
     visualize = []
 
     # Data overrides from .common.XMLCorpus

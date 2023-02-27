@@ -18,7 +18,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     max_date = datetime(year=2021, month=12, day=31)
     data_directory = settings.PP_GERMANY_NEW_DATA
     es_index = settings.PP_GERMANY_NEW_INDEX
-    image = settings.PP_GERMANY_NEW_IMAGE
+    image = 'germany-new.jpeg'
     language = 'german'
     word_model_path = settings.PP_DE_WM
 

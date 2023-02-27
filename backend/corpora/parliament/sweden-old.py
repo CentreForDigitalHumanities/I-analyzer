@@ -50,7 +50,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
 
     language = 'swedish'
     description_page = 'sweden-old.md'
-    image = settings.PP_SWEDEN_OLD_IMAGE
+    image =  'sweden-old.jpg'
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(field = 'book_id')

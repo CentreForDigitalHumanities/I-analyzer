@@ -29,7 +29,7 @@ class Times(XMLCorpus):
     max_date = datetime(year=2010, month=12, day=31)
     data_directory = settings.TIMES_DATA
     es_index = settings.TIMES_ES_INDEX
-    image = settings.TIMES_IMAGE
+    image = 'times.jpg'
     scan_image_type = settings.TIMES_SCAN_IMAGE_TYPE
     description_page = settings.TIMES_DESCRIPTION_PAGE
 

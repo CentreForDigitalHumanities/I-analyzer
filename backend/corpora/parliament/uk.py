@@ -38,7 +38,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     min_date = datetime(year=1803, month=1, day=1)
     max_date = datetime(year=2021, month=12, day=31)
     es_index = settings.PP_UK_INDEX
-    image = settings.PP_UK_IMAGE
+    image = 'uk.jpeg'
     word_model_path = settings.PP_UK_WM
     language = 'english'
     description_page = 'uk.md'

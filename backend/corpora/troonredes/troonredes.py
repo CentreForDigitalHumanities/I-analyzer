@@ -33,7 +33,7 @@ class Troonredes(XMLCorpus):
     max_date = datetime(year=2018, month=12, day=31)
     data_directory = settings.TROONREDES_DATA
     es_index = settings.TROONREDES_ES_INDEX
-    image = settings.TROONREDES_IMAGE
+    image = 'troon.jpg'
     word_model_path = settings.TROONREDES_WM
 
     tag_toplevel = 'doc'

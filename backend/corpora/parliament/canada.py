@@ -18,7 +18,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     min_date = datetime(year=1901, month=1, day=1)
     data_directory = settings.PP_CANADA_DATA
     es_index = settings.PP_CANADA_INDEX
-    image = settings.PP_CANADA_IMAGE
+    image = 'canada.jpeg'
     language = 'english'
     description_page = 'canada.md'
     field_entry = 'speech_id'
