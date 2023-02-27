@@ -31,7 +31,7 @@ class Periodicals(XMLCorpus):
     data_directory = settings.PERIODICALS_DATA
     es_index = getattr(settings, 'PERIODICALS_ES_INDEX', 'periodicals')
     image = 'Fleet_Street.jpg'
-    scan_image_type = settings.PERIODICALS_SCAN_IMAGE_TYPE
+    scan_image_type = getattr(settings, 'PERIODICALS_SCAN_IMAGE_TYPE', 'image/jpeg')
     description_page = '19thCenturyUKPeriodicals.md'
 
     tag_toplevel = 'articles'

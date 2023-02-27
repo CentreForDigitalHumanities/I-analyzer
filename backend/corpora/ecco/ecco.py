@@ -29,7 +29,7 @@ class Ecco(XMLCorpus):
     data_directory = settings.ECCO_DATA
     es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
-    scan_image_type = settings.ECCO_SCAN_IMAGE_TYPE
+    scan_image_type = getattr(settings, 'ECCO_SCAN_IMAGE_TYPE', 'application/pdf')
     es_settings = None
 
     tag_toplevel = 'pageContent'

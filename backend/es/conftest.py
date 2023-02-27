@@ -20,7 +20,6 @@ def times_test_settings(settings):
 
     settings.TIMES_DATA = os.path.join(_here, '../addcorpus/tests')
     settings.TIMES_ES_INDEX = 'times-test'
-    settings.TIMES_SCAN_IMAGE_TYPE = 'image/png'
 
 CORPUS_NAME = 'times'
 

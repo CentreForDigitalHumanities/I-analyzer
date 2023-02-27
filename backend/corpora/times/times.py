@@ -30,7 +30,7 @@ class Times(XMLCorpus):
     data_directory = settings.TIMES_DATA
     es_index = getattr(settings, 'TIMES_ES_INDEX', 'times')
     image = 'times.jpg'
-    scan_image_type = settings.TIMES_SCAN_IMAGE_TYPE
+    scan_image_type = getattr(settings, 'TIMES_SCAN_IMAGE_TYPE', 'image/png')
     description_page = 'times.md'
 
     tag_toplevel = 'issue'

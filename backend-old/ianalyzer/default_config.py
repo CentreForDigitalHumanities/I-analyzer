@@ -80,29 +80,6 @@ CORPUS_SERVER_NAMES = {
 
 CORPUS_DEFINITIONS = {}
 
-###### CORPUS VARIABLES #######
-
-
-DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
-
-DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
-
-# remember to set this in config.py
-DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
-
-TIMES_DATA = '/mnt/times'
-TIMES_SCAN_IMAGE_TYPE = 'image/png'
-
-TML_DATA = '/mnt/tml'
-
-GO_SCAN_IMAGE_TYPE = 'application/pdf'
-
-ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
-ECCO_SCAN_IMAGE_TYPE = 'application/pdf'
-
-PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
-
-
 #################
 
 # Celery configuration
