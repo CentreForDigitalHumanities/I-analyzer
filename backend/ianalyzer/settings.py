@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import warnings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -199,4 +200,10 @@ CELERY_BROKER_URL = 'redis://'
 CELERY_RESULT_BACKEND = 'redis://'
 
 #This needs to be the last line of the settings.py, so that all settings can be overridden.
-from ianalyzer.settings_local import *
+try:
+    from ianalyzer.settings_local import *
+except:
+    warnings.warn(
+        'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
+        Warning
+    )
