@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import warnings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,11 +35,16 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'livereload',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'revproxy',
     'users',
     'addcorpus',
@@ -50,6 +56,8 @@ INSTALLED_APPS = [
     'wordmodels',
     'media',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -195,4 +203,10 @@ CELERY_RESULT_BACKEND = 'redis://'
 BASE_URL = 'http://localhost:4200'
 
 #This needs to be the last line of the settings.py, so that all settings can be overridden.
-from ianalyzer.settings_local import *
+try:
+    from ianalyzer.settings_local import *
+except:
+    warnings.warn(
+        'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
+        Warning
+    )

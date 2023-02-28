@@ -36,7 +36,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     min_date = datetime(year=1809, month=1, day=1)
     max_date = datetime(year=1919, month=12, day=31)
     data_directory = settings.PP_SWEDEN_OLD_DATA
-    es_index = settings.PP_SWEDEN_OLD_INDEX
+    es_index = getattr(settings, 'PP_SWEDEN_OLD_INDEX', 'parliament-sweden-old')
 
 
     document_context = constants.document_context(
@@ -50,7 +50,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
 
     language = 'swedish'
     description_page = 'sweden-old.md'
-    image = settings.PP_SWEDEN_OLD_IMAGE
+    image =  'sweden-old.jpg'
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(field = 'book_id')

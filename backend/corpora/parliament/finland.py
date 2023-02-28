@@ -43,7 +43,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
     description = 'Speeches from the eduskunta'
     min_date = datetime(year=1907, month=1, day=1)
     data_directory = settings.PP_FINLAND_DATA
-    es_index = settings.PP_FINLAND_INDEX
+    es_index = getattr(settings, 'PP_FINLAND_INDEX', 'parliament-finland')
 
     def sources(self, start, end):
         for xml_file in glob('{}/**/*.xml'.format(self.data_directory), recursive=True):

@@ -104,7 +104,6 @@ export class AuthService implements OnDestroy {
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            result.corpora,
             isSolisLogin
         );
     }
@@ -122,7 +121,6 @@ export class AuthService implements OnDestroy {
             parsed['username'],
             parsed['is_admin'],
             parsed['download_limit'],
-            parsed['corpora'],
             parsed['isSolisLogin']
         );
     }

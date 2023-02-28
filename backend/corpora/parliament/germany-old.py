@@ -18,10 +18,10 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     min_date = datetime(year=1867, month=1, day=1)
     max_date = datetime(year=1942, month=12, day=31)
     data_directory = settings.PP_GERMANY_OLD_DATA
-    es_index = settings.PP_GERMANY_OLD_INDEX
-    image = settings.PP_GERMANY_OLD_IMAGE
+    es_index = getattr(settings, 'PP_GERMANY_OLD_INDEX', 'parliament-germany-old')
+    image = 'germany-old.jpeg'
     language = 'german'
-    word_model_path = settings.PP_DE_WM
+    word_model_path = getattr(settings, 'PP_DE_WM', None)
 
     description_page = 'germany-old.md'
 

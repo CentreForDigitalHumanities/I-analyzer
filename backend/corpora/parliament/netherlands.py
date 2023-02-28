@@ -127,10 +127,10 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     max_date = datetime(year=2020, month=12, day=31)
     data_directory = settings.PP_NL_DATA
     data_directory_recent = settings.PP_NL_RECENT_DATA
-    word_model_path = settings.PP_NL_WM
+    word_model_path = getattr(settings, 'PP_NL_WM', None)
 
-    es_index = settings.PP_NL_INDEX
-    image = settings.PP_NL_IMAGE
+    es_index = getattr(settings, 'PP_NL_INDEX', 'parliament-netherlands')
+    image = 'netherlands.jpg'
     description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'

@@ -16,11 +16,11 @@ class ParliamentFrance(Parliament, CSVCorpus):
     description = "Speeches from the 3rd, 4th and 5th republic of France"
     min_date = datetime(year=1881, month=1, day=1)
     data_directory = settings.PP_FR_DATA
-    es_index = settings.PP_FR_INDEX
-    image = settings.PP_FR_IMAGE
+    es_index = getattr(settings, 'PP_FR_INDEX', 'parliament-france')
+    image = 'france.jpeg'
     language = 'french'
     description_page = 'france.md'
-    word_model_path = settings.PP_FR_WM
+    word_model_path = getattr(settings, 'PP_FR_WM', None)
 
     field_entry = 'speech_id'
 

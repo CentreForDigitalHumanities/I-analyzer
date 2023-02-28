@@ -42,7 +42,6 @@ export class UserService implements OnDestroy {
                 parsed['username'],
                 parsed['isAdmin'],
                 parsed['downloadLimit'],
-                parsed['corpora'],
                 parsed['isSolisLogin']
             );
         } else {
@@ -151,7 +150,6 @@ export class UserService implements OnDestroy {
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            result.corpora,
             isSolisLogin
         );
 
