@@ -4,7 +4,6 @@ import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
 import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
-import { LogService } from './log.service';
 import { UserService } from './user.service';
 import { UserServiceMock } from '../../mock-data/user';
 import { SessionService } from './session.service';
@@ -26,7 +25,6 @@ describe('CorpusService', () => {
                 ApiRetryService,
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
-                LogService,
                 { provide: UserService, useValue: userServiceMock },
                 SessionService,
             ],
@@ -43,8 +41,9 @@ describe('CorpusService', () => {
     ));
 
     it('should parse the list of corpora', async () => {
-        apiServiceMock.fakeResult['corpus'] = {
-            test1: {
+        apiServiceMock.fakeResult['corpus'] = [
+            {
+                name: 'test1',
                 title: 'Test 1',
                 description: 'Test description 1.',
                 es_index: 'test1',
@@ -62,7 +61,8 @@ describe('CorpusService', () => {
                 allow_image_download: false,
                 word_models_present: false,
             },
-            test2: {
+            {
+                name: 'test2',
                 title: 'Test 2',
                 description: 'Test description 2.',
                 es_index: 'test2',
@@ -80,14 +80,15 @@ describe('CorpusService', () => {
                 allow_image_download: true,
                 word_models_present: true,
             },
-        };
+        ];
         const items = await service.get();
         expect(items.map((item) => item.name)).toEqual(['test1', 'test2']);
     });
 
     it('should parse filters', () => {
-        apiServiceMock.fakeResult['corpus'] = {
-            times: {
+        apiServiceMock.fakeResult['corpus'] = [
+            {
+                name: 'times',
                 server_name: 'default',
                 title: 'Times',
                 description: 'This is a description.',
@@ -196,7 +197,7 @@ describe('CorpusService', () => {
                 allow_image_download: false,
                 word_models_present: true,
             },
-        };
+        ];
 
         return service.get().then((items) => {
             const mockMultipleChoiceData: SearchFilterData = {

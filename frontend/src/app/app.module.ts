@@ -27,7 +27,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
-    ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+    ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService,
+    UserService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
@@ -59,7 +60,8 @@ import { HistogramComponent } from './visualization/barchart/histogram.component
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
-import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
+import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent,
+    DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
@@ -216,6 +218,10 @@ export const declarations: any[] = [
     WordSimilarityComponent,
 ];
 
+// AoT requires an exported function for factories
+export const resourceHandlerFactory = (http: HttpClient) =>
+    new ResourceHandlerHttpClient(http);
+
 export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
@@ -260,7 +266,6 @@ export const providers: any[] = [
     DownloadService,
     ElasticSearchService,
     HighlightService,
-    LogService,
     NotificationService,
     QueryService,
     SearchService,
@@ -281,7 +286,3 @@ export const providers: any[] = [
 })
 export class AppModule {}
 
-// AoT requires an exported function for factories
-export function resourceHandlerFactory(http: HttpClient) {
-    return new ResourceHandlerHttpClient(http);
-}

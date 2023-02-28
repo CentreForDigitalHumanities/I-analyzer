@@ -21,7 +21,7 @@ import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 import { VisualizationService } from './services/visualization.service';
 import { visualizationServiceMock } from '../mock-data/visualization';
 
-export function commonTestBed() {
+export const commonTestBed = () => {
     const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
     filteredImports.push(RouterTestingModule.withRoutes(appRoutes));
     const filteredProviders = providers.filter(provider => !(
@@ -73,7 +73,7 @@ export function commonTestBed() {
             providers: filteredProviders
         })
     };
-}
+};
 
 export class MockElementRef {
  nativeElement = {};

@@ -220,21 +220,6 @@ def create_success_response(user):
 
     return response
 
-@api.route('/log', methods=['POST'])
-@login_required
-def api_log():
-    if not request.json:
-        abort(400)
-    msg_type = request.json['type']
-    msg = request.json['msg']
-
-    if msg_type == 'info':
-        current_app.logger.info(msg)
-    else:
-        current_app.logger.error(msg)
-
-    return jsonify({'success': True})
-
 
 @api.route('/logout', methods=['POST'])
 def api_logout():

@@ -139,15 +139,6 @@ export class ApiService extends Resource {
         TaskResult
     >;
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/log',
-    })
-    public log: ResourceMethod<
-        { msg: string; type: 'info' | 'error' },
-        { success: boolean }
-    >;
-
     public saveQuery(
         options: QueryDb
     ) {
