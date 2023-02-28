@@ -7,7 +7,7 @@ class DutchNewsPapersAll(DutchNewspapersPublic):
     title = "Dutch Newspapers (Delpher)"
     description = "Collection of all Dutch newspapers by the KB"
     data_directory = settings.DUTCHNEWSPAPERS_ALL_DATA
-    es_index = settings.DUTCHNEWSPAPERS_ALL_ES_INDEX
+    es_index = getattr(settings, 'DUTCHNEWSPAPERS_ALL_ES_INDEX', 'dutchnewspapers-all')
     max_date = datetime(year=1995, month=12, day=31)
 
     def update_body(self, doc=None):

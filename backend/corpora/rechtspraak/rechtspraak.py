@@ -34,9 +34,8 @@ class Rechtspraak(XMLCorpus):
     min_date = datetime(year=1900, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=6)
     data_directory = settings.RECHTSPRAAK_DATA
-    es_index = settings.RECHTSPRAAK_ES_INDEX
-    es_doctype = settings.RECHTSPRAAK_ES_DOCTYPE
-    image = settings.RECHTSPRAAK_IMAGE
+    es_index = getattr(settings, 'RECHTSPRAAK_ES_INDEX', 'rechtspraak')
+    image = 'rechtszaal.jpeg'
     toplevel_zip_file = 'OpenDataUitspraken.zip'
 
     tag_toplevel = 'open-rechtspraak'

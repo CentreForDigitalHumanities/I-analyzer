@@ -23,13 +23,12 @@ class DutchAnnualReports(XMLCorpus):
     min_date = datetime(year=1957, month=1, day=1)
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = settings.DUTCHANNUALREPORTS_DATA
-    es_index = settings.DUTCHANNUALREPORTS_ES_INDEX
-    es_doctype = settings.DUTCHANNUALREPORTS_ES_DOCTYPE
-    image = settings.DUTCHANNUALREPORTS_IMAGE
-    scan_image_type = settings.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
-    description_page = settings.DUTCHANNUALREPORTS_DESCRIPTION_PAGE
-    allow_image_download = settings.DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD
-    word_model_path = settings.DUTCHANNUALREPORTS_WM
+    es_index = getattr(settings, 'DUTCHANNUALREPORTS_ES_INDEX', 'dutchannualreports')
+    image = 'dutchannualreports.jpg'
+    scan_image_type = getattr(settings, 'DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE', 'application/pdf')
+    description_page = 'dutchannualreports.md'
+    allow_image_download = getattr(settings, 'DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD', True)
+    word_model_path = getattr(settings, 'DUTCHANNUALREPORTS_WM', None)
 
     mimetype = 'application/pdf'
 
@@ -43,8 +42,7 @@ class DutchAnnualReports(XMLCorpus):
 
     dutchannualreports_map = {}
 
-    with open(op.join(corpus_dir('dutchannualreports'),
-     settings.DUTCHANNUALREPORTS_MAP_FILE)) as f:
+    with open(op.join(corpus_dir('dutchannualreports'), 'dutchannualreports_mapping.csv')) as f:
         reader = csv.DictReader(f)
         for line in reader:
             dutchannualreports_map[line['abbr']] = line['name']

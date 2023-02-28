@@ -38,7 +38,7 @@ class ParliamentDenmarkNew(Parliament, CSVCorpus):
     min_date = datetime(year=2009, month=1, day=1)
     max_date = datetime(year=2016, month=12, day=31)
     data_directory = settings.PP_DENMARK_NEW_DATA
-    es_index = settings.PP_DENMARK_NEW_INDEX
+    es_index = getattr(settings, 'PP_DENMARK_NEW_INDEX', 'parliament-denmark-new')
     image = 'denmark.jpg'
     description_page = 'denmark-new.md'
     language = 'danish'

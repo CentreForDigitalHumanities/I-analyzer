@@ -27,9 +27,9 @@ class GoodReads(CSVCorpus):
     min_date=datetime(2007, 1, 1)
     max_date=datetime(2022, 12, 31)
     data_directory = settings.GOODREADS_DATA
-    es_index = settings.GOODREADS_ES_INDEX
-    image = settings.GOODREADS_IMAGE
-    description_page = settings.GOODREADS_DESCRIPTION_PAGE
+    es_index = getattr(settings, 'GOODREADS_ES_INDEX', 'goodreads')
+    image = 'DioptraL.png'
+    description_page = 'goodreads.md'
     visualize = []
 
     # New data members

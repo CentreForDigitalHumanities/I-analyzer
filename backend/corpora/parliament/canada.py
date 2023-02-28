@@ -17,15 +17,15 @@ class ParliamentCanada(Parliament, CSVCorpus):
     description = "Speeches from House of Commons"
     min_date = datetime(year=1901, month=1, day=1)
     data_directory = settings.PP_CANADA_DATA
-    es_index = settings.PP_CANADA_INDEX
-    image = settings.PP_CANADA_IMAGE
+    es_index = getattr(settings, 'PP_CANADA_INDEX', 'parliament-canada')
+    image = 'canada.jpeg'
     language = 'english'
     description_page = 'canada.md'
     field_entry = 'speech_id'
     required_field = 'content'
 
     document_context = document_context(sort_field=None)
-    word_model_path = settings.PP_CA_WM
+    word_model_path = getattr(settings, 'PP_CA_WM', None)
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

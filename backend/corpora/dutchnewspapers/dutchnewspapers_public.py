@@ -27,9 +27,8 @@ class DutchNewspapersPublic(XMLCorpus):
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = settings.DUTCHNEWSPAPERS_DATA
-    es_index = settings.DUTCHNEWSPAPERS_ES_INDEX
-    es_doctype = settings.DUTCHNEWSPAPERS_ES_DOCTYPE
-    image = settings.DUTCHNEWSPAPERS_IMAGE
+    es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
+    image = 'dutchnewspapers.jpg'
 
     tag_toplevel = 'text'
     tag_entry = 'p'
@@ -94,8 +93,7 @@ class DutchNewspapersPublic(XMLCorpus):
                         })
                         yield full_path, meta_dict
 
-    titlefile = join(corpus_dir('dutchnewspapers-public'),
-     settings.DUTCHNEWSPAPERS_TITLES_FILE)
+    titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
     paper_count = len(papers)

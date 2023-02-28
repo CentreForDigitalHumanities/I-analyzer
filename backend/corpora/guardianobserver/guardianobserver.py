@@ -34,11 +34,9 @@ class GuardianObserver(XMLCorpus):
     min_date = datetime(year=1791, month=1, day=1)
     max_date = datetime(year=2003, month=12, day=31)
     data_directory = settings.GO_DATA
-    es_index = settings.GO_ES_INDEX
-    es_doctype = settings.GO_ES_DOCTYPE
-    image = settings.GO_IMAGE
-    scan_image_type = settings.GO_SCAN_IMAGE_TYPE
-    #description_page = settings.GO_DESCRIPTION_PAGE']
+    es_index = getattr(settings, 'GO_ES_INDEX', 'guardianobserver')
+    image = 'guardianobserver.jpg'
+    scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
 
     tag_toplevel = 'Record'
 
@@ -204,7 +202,7 @@ class GuardianObserver(XMLCorpus):
                             "image_path": image_path
                         }
                     }
-                    update_document(self.es_index, self.es_doctype, document, update_body)
+                    update_document(self.es_index, document, update_body)
                     # define subdirectory in the zip archive
                     filename = join(correct_file.split('/')[0], target_filename)
                     break
