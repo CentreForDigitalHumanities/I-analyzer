@@ -12,7 +12,9 @@ from download import tasks
 here = os.path.abspath(os.path.dirname(__file__))
 
 @pytest.fixture()
-def csv_directory(settings):
+def csv_directory(settings, tmpdir):
+    dir =  tmpdir.mkdir('/csv_files')
+    settings.CSV_FILES_PATH = str(dir)
     return settings.CSV_FILES_PATH
 
 @pytest.fixture()
@@ -54,7 +56,7 @@ def mock_corpus_specs(mock_corpus):
     return specs[mock_corpus]
 
 @pytest.fixture()
-def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus):
+def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus, csv_directory):
     '''generate a results csv for the mock corpus corpus based on a match_all query'''
 
     fields = mock_corpus_specs['fields']
