@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { CorpusField, FoundDocument, Corpus } from '../models/index';
+import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
 
 
 @Component({
@@ -25,7 +25,7 @@ export class DocumentViewComponent implements OnChanges {
     public document: FoundDocument;
 
     @Input()
-    public query: string;
+    public queryModel: QueryModel;
 
     @Input()
     public corpus: Corpus;
@@ -44,6 +44,7 @@ export class DocumentViewComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
+        console.log(this.queryModel)
         this.tabIndex = this.documentTabIndex;
     }
 
@@ -53,5 +54,19 @@ export class DocumentViewComponent implements OnChanges {
 
     isUrlField(field: CorpusField) {
         return field.name === 'url' || field.name.startsWith('url_');
+    }
+
+    /**
+     * Checks if user has selected fields in the queryModel and whether current field is among them
+     * Used to check which fields need to be highlighted
+     */
+    selectedFieldsContain(field: CorpusField) {
+        if (this.queryModel && this.queryModel.fields && this.queryModel.fields.includes(field.name)) {
+            return true;
+        } else if (this.queryModel && !this.queryModel.fields) {
+            return true;  // if there are no selected fields, return true for all fields
+        } else {
+            return false;
+        }
     }
 }
