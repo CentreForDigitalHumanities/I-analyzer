@@ -3,9 +3,8 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings, searchFilterDataFromField, contextFilterFromField } from '../models';
+import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings, searchFilterDataFromField, contextFilterFromField, Corpus } from '../models';
 import { SearchService } from './search.service';
-import { faCubesStacked } from '@fortawesome/free-solid-svg-icons';
 
 interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
@@ -184,6 +183,32 @@ export class ParamService {
 
     setQueryFromParams(params: ParamMap): string {
         return params.get('query');
+    }
+
+    generateCaptionFromParams(params:ParamMap, corpus: Corpus): string[] {
+        let output = [`Searched corpus: ${corpus.name}`];
+        const query = params.get('query');
+        if (query) {
+            output.push(`Query: ${query}`);
+        }
+        const fields = params.get('fields')
+        if (fields) {
+            output.push(`Searched in fields: ${fields}`);
+        }
+        const fieldNames = corpus.fields.map(f => f.name);
+        const filters = _.intersection(fieldNames, params.keys);
+        if (filters.length) {
+            const filterInformation = filters.map(
+                filter => `${filter}=${decodeURIComponent(params.get(filter))}`
+            );
+            output.push(`Search filters: ${filterInformation.join('&')}`);
+        }
+        const visualizationOptions = _.difference(params.keys, ['query', 'fields', ...fieldNames]);
+        if (visualizationOptions.length) {
+            const visualizationSettings = visualizationOptions.map(option => `${option}=${params.get(option)}`);
+            output.push(`Visualization options: ${visualizationSettings.join('&')}`);
+        }
+        return output
     }
 
 }
