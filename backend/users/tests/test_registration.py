@@ -18,6 +18,9 @@ def test_register_verification(client, db, django_user_model):
         username=creds['username'])
     assert db_user
 
+    # Check if basic group was assigned
+    assert db_user.groups.get(name='basic')
+
     # Check if registration mail was sent
     box = mail.outbox
     assert len(box) == 1
