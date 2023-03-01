@@ -50,10 +50,7 @@ def es_settings(language = None, stopword_analyzer = False, stemming_analyzer = 
     - `stopword_analyzer`: define an analyser that removes stopwords.
     - `stemming_analyzer`: define an analyser that removes stopwords and performs stemming.
     '''
-
-    settings = {
-        'index': {'number_of_replicas': 0}
-    }
+    settings = {}
 
     if stopword_analyzer or stemming_analyzer:
         settings["analysis"] = {

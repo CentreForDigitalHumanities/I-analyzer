@@ -11,13 +11,13 @@
             </span>
             <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
                 [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
-                iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                iaBalloon="{{(activeFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left">
                 <i class="fa fa-filter"></i>
             </span>
         </p>
     </div>
-    <ng-container *ngFor="let field of corpus.fields.concat(adHocFilterFields)">
+    <ng-container *ngFor="let field of corpusFields">
         <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': field.searchFilter.useAsFilter}">
             <div class="field has-addons">
                 <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
@@ -31,7 +31,7 @@
                         iaBalloonPosition="down-left">
                         <i class="fa fa-trash"></i>
                     </button>
-                    <button class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': field.searchFilter.useAsFilter}"
+                    <button *ngIf="field.searchFilter.currentData !== field.searchFilter.defaultData" class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': field.searchFilter.useAsFilter}"
                         (click)="toggleFilter(field.searchFilter)" iaBalloon="{{field.searchFilter.useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
                         iaBalloonPosition="down-left">
                         <i class="fa fa-filter"></i>
@@ -44,7 +44,7 @@
             <ng-container *ngIf="!field.searchFilter.adHoc" [ngSwitch]="field.searchFilter.defaultData.filterType">
                 <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [filter]="field.searchFilter" [grayedOut]="grayOutFilters" (update)="updateFilterData($event)"></ia-boolean-filter>
                 <ia-date-filter *ngSwitchCase="'DateFilter'" [filter]="field.searchFilter" [grayedOut]="grayOutFilters"
-                    [inputChanged]="inputChanged" (update)="updateFilterData($event)"></ia-date-filter>
+                    (update)="updateFilterData($event)"></ia-date-filter>
                 <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="field.searchFilter" [grayedOut]="grayOutFilters" [optionsAndCounts]="multipleChoiceData[field.name]" (update)="updateFilterData($event)"></ia-multiple-choice-filter>
                 <ia-range-filter *ngSwitchCase="'RangeFilter'" [filter]="field.searchFilter" [grayedOut]="grayOutFilters" (update)="updateFilterData($event)"></ia-range-filter>
             </ng-container>
