@@ -6,15 +6,13 @@ Script to index the data into ElasticSearch.
 
 import sys
 
-from datetime import datetime
-
 import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
 from flask import current_app
 
 from ianalyzer.factories.elasticsearch import elasticsearch
-from .es_alias import get_new_version_number
+from .es_alias import alias, get_new_version_number
 
 import logging
 logger = logging.getLogger('indexing')
@@ -46,11 +44,10 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        if not settings.get('index'):
-            settings['index'] = {
-                'number_of_replicas' : 0,
-                'number_of_shards': 6
-            }
+        settings['index'] = {
+            'number_of_replicas' : 0,
+            'number_of_shards': 6
+        }
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
@@ -96,31 +93,33 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
     corpus_server = current_app.config['SERVERS'][
         current_app.config['CORPUS_SERVER_NAMES'][corpus_name]]
-    # Do bulk operation
-    for result in es_helpers.bulk(
-        client,
-        actions,
-        chunk_size=corpus_server['chunk_size'],
-        max_chunk_bytes=corpus_server['max_chunk_bytes'],
-        timeout=corpus_server['bulk_timeout'],
-        stats_only=True,  # We want to know how many documents were added
-    ):
-        logger.info('Indexed documents ({}).'.format(result))
+
+    for success, info in es_helpers.streaming_bulk(client, actions, chunk_size=corpus_server['chunk_size'], max_chunk_bytes=corpus_server['max_chunk_bytes']):
+        if not success:
+            logger.error(f"FAILED INDEX: {info}")
 
 
 
-def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, prod):
+
+def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, add, clear, prod, rollover):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),
         end.strftime('%Y-%m-%d')
     ))
 
+    if rollover and not prod:
+        logger.info('rollover flag is set but prod flag not set -- no effect')
+
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
-    # import pdb; pdb.set_trace()
+
+    if mappings_only:
+        logger.info('Created index `{}` with mappings only.'.format(corpus_definition.es_index))
+        return
+
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
     logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
@@ -132,3 +131,8 @@ def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, pro
             settings={'number_of_replicas': 1},
             index=corpus_definition.es_index
         )
+        if rollover:
+            logger.info('Adjusting alias for index  `{}`'.format(
+                corpus_definition.es_index))
+            alias(corpus_name, corpus_definition) # not deleting old index, so we can roll back
+

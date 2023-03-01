@@ -89,6 +89,7 @@ DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
 DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
+DUTCHANNUALREPORTS_WM = None
 
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
@@ -118,6 +119,7 @@ TML_DATA = '/mnt/tml'
 TML_IMAGE = 'tml.jpg'
 
 TROONREDES_IMAGE = 'troon.jpg'
+TROONREDES_WM = None
 
 GO_SCAN_IMAGE_TYPE = 'application/pdf'
 GO_IMAGE = 'guardianobserver.jpg'
@@ -138,6 +140,10 @@ PP_CANADA_IMAGE = 'canada.jpeg'
 PP_FR_IMAGE = 'france.jpeg'
 
 PP_UK_WM = None
+PP_DE_WM = None
+PP_FR_WM = None
+PP_CA_WM = None
+PP_NL_WM = None
 
 #################
 
@@ -147,9 +153,5 @@ CELERY_BACKEND = 'redis://'
 CSV_FILES_PATH = '<abs_path_to_backend>/api/csv_files'
 
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
-
-# Word model information for related words visualization
-WM_COMPLETE_FN = "complete.pkl"
-WM_BINNED_FN = "binned.pkl"
 
 WORDCLOUD_LIMIT = 10000

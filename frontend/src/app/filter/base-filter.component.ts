@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import { SearchFilter, SearchFilterData } from '../models/index';
 
@@ -10,6 +11,8 @@ import { SearchFilter, SearchFilterData } from '../models/index';
     template: ''
 })
 export abstract class BaseFilterComponent<T extends SearchFilterData> {
+    @Input() inputChanged: Subject<void>;
+
     @Input()
     public filter: SearchFilter<T>;
 
@@ -23,7 +26,7 @@ export abstract class BaseFilterComponent<T extends SearchFilterData> {
      */
     public data: any; // holds the user data
 
-    public useAsFilter: boolean = false;
+    public useAsFilter = false;
 
     constructor() {
     }

@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from "@angular/core";
-import { Subscription } from "rxjs";
+import { Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { Notification, NotificationService } from '../services/notification.service';
 
@@ -8,7 +8,7 @@ const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['c
     warning: 'is-warning',
     danger: 'is-danger',
     success: 'is-success'
-}
+};
 
 @Component({
     selector: 'ia-notifications',
@@ -26,11 +26,12 @@ export class NotificationsComponent implements OnDestroy {
     }
 
     private showNotification(notification: Notification) {
-        let notificationDisplay: NotificationDisplay = {
+        const notificationDisplay: NotificationDisplay = {
             canDelete: true,
             fadeOut: false,
             message: notification.message,
-            class: notificationClassMap[notification.type]
+            class: notificationClassMap[notification.type],
+            link: notification.link,
         };
 
         this.notifications.push(notificationDisplay);
@@ -42,7 +43,7 @@ export class NotificationsComponent implements OnDestroy {
         notification.canDelete = false;
         notification.fadeOut = true;
         setTimeout(() => {
-            this.notifications = this.notifications.filter(candidate => candidate != notification);
+            this.notifications = this.notifications.filter(candidate => candidate !== notification);
             if (notification.timeout) {
                 clearTimeout(notification.timeout);
             }
@@ -55,10 +56,14 @@ export class NotificationsComponent implements OnDestroy {
 }
 
 interface NotificationDisplay {
-    canDelete: boolean,
-    fadeOut: boolean,
-    message: string,
+    canDelete: boolean;
+    fadeOut: boolean;
+    message: string;
     // class type of the Bulma notification
-    class: 'is-primary' | 'is-info' | 'is-success' | 'is-warning' | 'is-danger',
-    timeout?
+    class: 'is-primary' | 'is-info' | 'is-success' | 'is-warning' | 'is-danger';
+    timeout?;
+    link?: {
+        text: string;
+        route: string[];
+    };
 }

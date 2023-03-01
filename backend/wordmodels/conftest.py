@@ -8,12 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 TEST_VOCAB_SIZE = 200
 TEST_DIMENSIONS = 20
-TEST_BINS = {
-    'mock-svd-ppmi-corpus': [(1810, 1839), (1840, 1869), (1870, 1899)],
-    'mock-wordvec-corpus': [(1880, 1900), (1900, 1920), (1920, 1940)]
-}
-WM_MOCK_CORPORA = ['mock-svd-ppmi-corpus', 'mock-wordvec-corpus']
-WM_TYPES = ['svd_ppmi', 'word2vec']
+TEST_BINS = [(1810, 1839), (1840, 1869), (1870, 1899)]
 
 class UnittestConfig:
     SECRET_KEY = b'dd5520c21ee49d64e7f78d3220b2be1dde4eb4a0933c8baf'
@@ -22,15 +17,13 @@ class UnittestConfig:
     DEBUG = True
     TESTING = True
     CORPORA = {
-        'mock-svd-ppmi-corpus': os.path.join(here, 'tests', 'mock_svd_ppmi_corpus.py'),
-        'mock-wordvec-corpus': os.path.join(here, 'tests', 'mock_wordvec_corpus.py'),
+        'mock-corpus': os.path.join(here, 'tests', 'mock_corpus.py'),
     }
     SERVERS = {
         'default': config.SERVERS['default']
     }
     CORPUS_SERVER_NAMES = {
-        'mock-wordvec-corpus': 'default',
-        'mock-svd-ppmi-corpus': 'default'
+        'mock-corpus': 'default',
     }
     CORPUS_DEFINITIONS = {}
 
@@ -47,3 +40,8 @@ def test_app(request):
 
     with app.app_context():
         yield app
+
+@pytest.fixture
+def mock_corpus(test_app):
+    ''' return the first key of the CORPORA dict '''
+    return next(iter(test_app.config['CORPORA'].keys()))

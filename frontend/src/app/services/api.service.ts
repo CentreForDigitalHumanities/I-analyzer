@@ -1,19 +1,19 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
-import { Resource, ResourceAction, ResourceParams,
-    ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
+import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType,
+    IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument,
+    TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult,
+    Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
-    catchError,
-    concatMap,
     filter,
     switchMap,
     take,
-    tap,
 } from 'rxjs/operators';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -22,18 +22,18 @@ type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
 /**
  * Describes the values as expected and returned by the server.
  */
-type QueryDb<TDateType> = {
-    query: string,
-    corpus_name: string,
-    started?: TDateType,
-    completed?: TDateType,
-    aborted: boolean,
-    transferred: number,
+interface QueryDb<TDateType> {
+    query: string;
+    corpus_name: string;
+    started?: TDateType;
+    completed?: TDateType;
+    aborted: boolean;
+    transferred: number;
     total_results: {
-        value: number,
-        relation: string
-    }
-};
+        value: number;
+        relation: string;
+    };
+}
 
 @Injectable()
 @ResourceParams()
@@ -56,7 +56,7 @@ export class ApiService extends Resource {
     })
     public wordcloud: ResourceMethod<
     WordcloudParameters,
-        { success: false, message: string } | { success: true, data: AggregateResult[] }>;
+        { success: false; message: string } | { success: true; data: AggregateResult[] }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -64,17 +64,17 @@ export class ApiService extends Resource {
     })
     public wordcloudTasks: ResourceMethod<
         WordcloudParameters,
-        { success: false, message: string } | { success: true, task_ids: string[] }>;
+        { success: false; message: string } | { success: true; task_ids: string[] }>;
 
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/task_status/{task_id}'
+        method: ResourceRequestMethod.Post,
+        path: '/task_status'
     })
-    public getTaskStatus: ResourceMethod<
-    { task_id: string},
-    { success: false, message: string } | { success: true, done: false } |
-    { success: true, done: true, results: any }
+    public getTasksStatus: ResourceMethod<
+    { task_ids: string[]},
+    { success: false; message: string } | { success: true; done: false } |
+    { success: true; done: true; results: any }
     >;
 
     @ResourceAction({
@@ -90,9 +90,9 @@ export class ApiService extends Resource {
         path: '/ngram_tasks'
     })
     public ngramTasks: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: string, freq_compensation?: boolean,
-            subfield?: string, max_size_per_interval?: number, number_of_ngrams?: number, date_field: string, },
-        { success: false, message: string } | { success: true, task_ids: string[] }>;
+        { es_query: EsQuery; corpus_name: string; field: string; ngram_size?: number; term_position?: string; freq_compensation?: boolean;
+            subfield?: string; max_size_per_interval?: number; number_of_ngrams?: number; date_field: string; },
+        { success: false; message: string } | { success: true; task_ids: string[] }>;
 
 
     @ResourceAction({
@@ -116,8 +116,8 @@ export class ApiService extends Resource {
         path: '/request_full_data'
     })
     public requestFullData: ResourceMethod<
-        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[] } |
-        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[] },
+        { visualization: 'date_term_frequency'; parameters: DateTermFrequencyParameters[]; corpus: string } |
+        { visualization: 'aggregate_term_frequency'; parameters: AggregateTermFrequencyParameters[]; corpus: string },
         TaskResult>;
 
     @ResourceAction({
@@ -130,7 +130,7 @@ export class ApiService extends Resource {
         path: '/log'
     })
     public log: ResourceMethod<
-        { msg: string, type: 'info' | 'error' },
+        { msg: string; type: 'info' | 'error' },
         { success: boolean }>;
 
     @ResourceAction({
@@ -138,8 +138,8 @@ export class ApiService extends Resource {
         path: '/login'
     })
     public login: ResourceMethod<
-        { username: string, password: string },
-        { success: boolean, id: number, username: string, corpora: AccessibleCorpus[], downloadLimit: number | null }>;
+        { username: string; password: string },
+        { success: boolean; id: number; username: string; corpora: AccessibleCorpus[]; downloadLimit: number | null }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -152,18 +152,18 @@ export class ApiService extends Resource {
         path: '/query'
     })
     public query: ResourceMethod<QueryDb<Date> & {
-        id?: number,
+        id?: number;
         /**
          * Mark the query as started, and use the server time for determining this timestamp.
          */
-        markStarted: boolean,
+        markStarted: boolean;
         /**
          * Mark the query as completed, and use the server time for determining this timestamp.
          */
-        markCompleted: boolean,
+        markCompleted: boolean;
     }, QueryDb<string> & {
-        id: number,
-        userID: number
+        id: number;
+        userID: number;
     }>;
 
     @ResourceAction({
@@ -173,24 +173,36 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number, route: string },
-        { success: false, message: string } | any >;
+        LimitedResultsDownloadParameters,
+        { success: false; message: string } | any >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/csv/{id}',
+        responseBodyType: ResourceResponseBodyType.Blob,
+        asResourceResponse: true
+    })
+    public csv: ResourceMethod<
+        { id: number } | ({ id: number } & DownloadOptions),
+        { success: false; message: string } | any >;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/download_task'
     })
     public downloadTask: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
-        { success: false, message: string } | { success: true, task_ids: string[] } | any >;
+        ResultsDownloadParameters,
+        { success: false; message: string } | { success: true; task_ids: string[] } | any >;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/register'
     })
     public register: ResourceMethod<
-        { username: string, email: string, password: string },
-        { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
+        { username: string; email: string; password: string },
+        { success: boolean; is_valid_username: boolean; is_valid_email: boolean }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -198,15 +210,15 @@ export class ApiService extends Resource {
     })
     public requestReset: ResourceMethod<
         { email: string },
-        { success: boolean, message: string }>;
+        { success: boolean; message: string }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/reset_password'
     })
     public resetPassword: ResourceMethod<
-        { password: string, token: string },
-        { success: boolean, message?: string, username?: string }
+        { password: string; token: string },
+        { success: boolean; message?: string; username?: string }
     >;
 
     @ResourceAction({
@@ -215,7 +227,7 @@ export class ApiService extends Resource {
     })
     public solisLogin: IResourceMethod<
     { },
-    { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
+    { success: boolean; id: number; username: string; role: UserRole; downloadLimit: number | null; queries: Query[] }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -228,6 +240,13 @@ export class ApiService extends Resource {
         path: '/search_history'
     })
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/downloads'
+    })
+    public downloads: ResourceMethod<void, Download[]>;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -244,22 +263,25 @@ export class ApiService extends Resource {
         path: '/request_media'
     })
     public requestMedia: ResourceMethod<
-        { corpus_index: string, document: FoundDocument },
-        { success: false } | { success: true, media: string[], info?: ImageInfo }
+        { corpus_index: string; document: FoundDocument },
+        { success: false } | { success: true; media: string[]; info?: ImageInfo }
         >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/download_pdf/{corpus_index}/{filepath}',
     })
-    public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
+    public downloadPdf: IResourceMethod<{ corpus_index: string; filepath: string }, any>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/corpusdescription/{corpus}/{filename}',
         responseBodyType: ResourceResponseBodyType.Text
     })
-    public corpusdescription: ResourceMethod<{ filename: string, corpus: string }, any>;
+    public corpusdescription: ResourceMethod<{ filename: string; corpus: string }, any>;
+
+
+
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
@@ -270,16 +292,16 @@ export class ApiService extends Resource {
         return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
     }
 
-    private taskDone(response: { success: false, message: string } | { success: true, done: false } |
-        { success: true, done: true, results: AggregateResult[]|NgramResults }) {
+    private tasksDone<ExpectedResult>(response: { success: false; message: string } | { success: true; done: false } |
+        { success: true; done: true; results: ExpectedResult[] }) {
         return response.success === false || response.done === true;
     }
 
-    public pollTask(id): Promise<{ success: false, message: string } | { success: true, done: false } |
-    { success: true, done: true, results: TermFrequencyResult[]|NgramResults|AggregateResult[] }> {
+    public pollTasks<ExpectedResult>(ids: string[]): Promise<{ success: false; message: string } | { success: true; done: false } |
+    { success: true; done: true; results: ExpectedResult[] }> {
         return timer(0, 5000).pipe(
-            switchMap((_) => this.getTaskStatus({'task_id': id})),
-            filter(this.taskDone),
+            switchMap((_) => this.getTasksStatus({task_ids: ids})),
+            filter(this.tasksDone),
             take(1)
         ).toPromise();
     }

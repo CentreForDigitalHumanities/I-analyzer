@@ -17,12 +17,12 @@ export class ScanPdfComponent implements OnChanges {
 
     public pdfFile: any;
 
-    public pdfNotFound: boolean = false;
+    public pdfNotFound = false;
 
     public path: URL;
     public page: number;
 
-    public isLoaded: boolean = false;
+    public isLoaded = false;
 
     constructor(private apiService: ApiService) {
     }
@@ -44,15 +44,15 @@ export class ScanPdfComponent implements OnChanges {
     }
 
     /**
-         * callback for ng2-pdf-viewer loadcomplete event,
-         * fires after all pdf data is received and loaded by the viewer.
-         */
+     * callback for ng2-pdf-viewer loadcomplete event,
+     * fires after all pdf data is received and loaded by the viewer.
+     */
     afterLoadComplete() {
         this.isLoaded = true;
     }
 
     onError(error: any) {
-        console.log(error)
+        console.log(error);
     }
 
     // code to implement scrolling with the mouse wheel
@@ -60,7 +60,7 @@ export class ScanPdfComponent implements OnChanges {
     // leaving in in case we want to implement this later
     // @HostListener('mousewheel', ['$event']) onMousewheel(event) {
     //     if(event.wheelDelta>0){
-    //        this.zoomIn(); 
+    //        this.zoomIn();
     //     }
     //     if(event.wheelDelta<0){
     //         this.zoomOut();

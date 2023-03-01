@@ -3,7 +3,6 @@ import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
-import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
@@ -22,8 +21,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     @Input() public queryModel: QueryModel;
 
     public allVisualizationFields: CorpusField[];
-
-    public histogramDocumentLimit = 10000;
 
     public showTableButtons: boolean;
 
@@ -110,6 +107,13 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     async initialize() {
         this.setupDropdowns();
         this.showTableButtons = true;
+        if (!this.allVisualizationFields.length) {
+            this.noVisualizations = true;
+        } else {
+            this.noVisualizations = false;
+            this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
+            this.updateParams();
+        }
     }
 
     teardown() {
@@ -131,14 +135,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
             this.setVisualizationType(params.get('visualize'));
             const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
             this.setVisualizedField(visualizedField);
-        } else {
-            if (!this.allVisualizationFields.length) {
-                this.noVisualizations = true;
-            } else {
-                this.noVisualizations = false;
-                this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
-                this.updateParams();
-            }
         }
         this.visualizationTypeDropdownValue = this.visDropdown.find(
             item => item.value === this.visualizationType) || this.visDropdown[0];
@@ -174,6 +170,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.visualExists = true;
 
         this.visualizedField = selectedField;
+        this.visualizedFieldDropdownValue = this.fieldDropdown.find(
+            item => item.value === this.visualizedField);
+
         this.foundNoVisualsMessage = 'Retrieving data...';
     }
 
@@ -203,15 +202,15 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         const node = document.getElementById(this.chartElementId(this.visualizationType));
 
         htmlToImage.toPng(node)
-          .then(function (dataUrl) {
+          .then((dataUrl) => {
             const img = new Image();
             img.src = dataUrl;
-            const anchor = document.createElement("a");
+            const anchor = document.createElement('a');
             anchor.href = dataUrl;
             anchor.download = filenamestring;
             anchor.click();
           })
-          .catch(function (error) {
+          .catch(function(error) {
             this.notificationService.showMessage('oops, something went wrong!', error);
           });
 
@@ -231,7 +230,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     get imageFileName(): string {
         if (this.visualizationType && this.corpus && this.visualizedField) {
-            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
         }
     }
 }

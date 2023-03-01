@@ -10,8 +10,7 @@ import { Corpus, CorpusField, DocumentContext, SearchFilter, SearchFilterData } 
 
 @Injectable()
 export class CorpusService {
-    private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(undefined);
-
+    private currentCorpusSubject = new BehaviorSubject<Corpus>(undefined);
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
     public corporaPromise: Promise<Corpus[]>;
@@ -21,6 +20,7 @@ export class CorpusService {
 
     /**
      * Sets a corpus and returns a boolean indicating whether the corpus exists and is accessible.
+     *
      * @param corpusName Name of the corpus
      */
     public set(corpusName: string): Promise<boolean> {
@@ -39,8 +39,15 @@ export class CorpusService {
         });
     }
 
-    public get(): Promise<Corpus[]> {
-        if (this.corporaPromise) {
+    /**
+     * retrieve the available corpora
+     *
+     * @param refresh if `true`, forces the corpus list to be requested from the backend
+     * regardless of whether a list of corpora has already been loaded.
+     * @returns Promise object with list of all corpora
+     */
+    public get(refresh = false): Promise<Corpus[]> {
+        if (!refresh && this.corporaPromise) {
             return this.corporaPromise;
         } else {
             this.corporaPromise = this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
@@ -129,10 +136,10 @@ export class CorpusService {
                 break;
         }
         return {
-            fieldName: fieldName,
+            fieldName,
             description: filter.description,
             useAsFilter: false,
-            defaultData: defaultData,
+            defaultData,
             currentData: defaultData
         };
     }
@@ -149,8 +156,8 @@ export class CorpusService {
         return moment(date).format().slice(0, 10);
     }
 
-    private parseDocumentContext (
-        data: {context_fields: string[]|null, sort_field: string|null, context_display_name: string|null, sort_direction: 'string'|null},
+    private parseDocumentContext(
+        data: {context_fields: string[]|null; sort_field: string|null; context_display_name: string|null; sort_direction: 'string'|null},
         allFields: CorpusField[]
     ): DocumentContext {
         if (!data || !data.context_fields) {

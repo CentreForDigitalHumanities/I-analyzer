@@ -7,9 +7,10 @@ export const environment = {
     production: false,
     appName: 'I-Analyzer',
     aboutPage: 'ianalyzer',
-    apiUrl: '/api',
-    adminUrl: '/admin',
+    apiUrl: '/api/',
+    adminUrl: '/admin/',
     wordModelsUrl: '/wordmodels/',
     logos: [
-    ]
+    ],
+    showSolis: true
 };

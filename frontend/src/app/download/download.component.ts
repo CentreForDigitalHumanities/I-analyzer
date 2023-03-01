@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
-import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel } from '../models/index';
 
 const highlightFragmentSize = 50;
 
@@ -22,10 +22,17 @@ export class DownloadComponent implements OnChanges {
     public availableCsvFields: CorpusField[];
 
     public isDownloading: boolean;
-    public isModalActive: boolean = false;
-    public isModalActiveError: boolean = false;
+    public isModalActive = false;
+    public isModalActiveError = false;
+
+    public pendingDownload: PendingDownload;
 
     private resultsCutoff = 1000;
+
+    private downloadsPageLink = {
+        text: 'view downloads',
+        route: ['/download-history']
+    };
 
     constructor(private downloadService: DownloadService, private notificationService: NotificationService) { }
 
@@ -57,30 +64,49 @@ export class DownloadComponent implements OnChanges {
      */
     public chooseDownloadMethod() {
         if (this.resultsCount < this.resultsCutoff) {
-            this.isDownloading = true;
-            this.downloadService.download(
-                this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount, this.route, highlightFragmentSize
-            ).then( results => {
-                this.isDownloading = false;
-            }).catch( error => {
-                this.isDownloading = false;
-                this.notificationService.showMessage(error);
-            });
+            this.directDownload();
         } else {
-            this.downloadService.downloadTask(
-                this.corpus, this.queryModel, this.getCsvFields(), this.route, highlightFragmentSize
-            ).then( results => {
-                if (results.success === false) {
-                    this.notificationService.showMessage(results.message);
-                } else {
-                    this.notificationService.showMessage(
-                        'Downloading CSV file... A link will be sent to your email address shortly.', 'success'
-                    );
-                }
-            }).catch( error => {
-                this.notificationService.showMessage(error);
-            });
+            this.longDownload();
         }
+    }
+
+    /** results can be downloaded directly: show menu to pick file options */
+    private directDownload() {
+        this.pendingDownload = { download_type: 'search_results' };
+    }
+
+    /** download short file directly */
+    public confirmDirectDownload(options: DownloadOptions) {
+        this.isDownloading = true;
+        this.downloadService.download(
+            this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount, this.route, highlightFragmentSize, options
+        ).catch( error => {
+            this.notificationService.showMessage(error);
+        }).then(() => {
+            this.isDownloading = false;
+            this.pendingDownload = undefined;
+        }
+        );
+    }
+
+    /** start backend task to create csv file */
+    private longDownload() {
+        this.downloadService.downloadTask(
+            this.corpus, this.queryModel, this.getCsvFields(), this.route, highlightFragmentSize
+        ).then( results => {
+            if (results.success === false) {
+                this.notificationService.showMessage(results.message, 'danger');
+            } else {
+                this.notificationService.showMessage(
+                    'Downloading CSV file... A link will be sent to your email address shortly.', 'success',
+                    this.downloadsPageLink,
+                );
+            }
+        }).catch( error => {
+            this.notificationService.showMessage(error, 'danger');
+        });
+
+
     }
 
     public selectCsvFields(selection: CorpusField[]) {
@@ -90,7 +116,9 @@ export class DownloadComponent implements OnChanges {
     private getCsvFields(): CorpusField[] {
         if (this.selectedCsvFields === undefined) {
             return this.corpus.fields.filter(field => field.csvCore);
-        } else { return this.selectedCsvFields; }
+        } else {
+ return this.selectedCsvFields;
+}
     }
 
 

@@ -1,4 +1,4 @@
-import { Component, DoCheck, OnInit } from '@angular/core';
+import { Component, DoCheck, OnChanges, OnInit } from '@angular/core';
 
 import * as moment from 'moment';
 
@@ -31,14 +31,15 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> imp
         }
     }
 
+
     getDisplayData(filter: SearchFilter<DateFilterData>) {
-        let data = filter.currentData;
+        const data = filter.currentData;
         return {
             min: new Date(data.min),
             max: new Date(data.max),
             minYear: this.minYear,
             maxYear: this.maxYear
-        }
+        };
     }
 
     /**
@@ -46,7 +47,7 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> imp
      */
     getFilterData(): SearchFilter<DateFilterData> {
         this.filter.currentData = {
-            filterType: "DateFilter",
+            filterType: 'DateFilter',
             min: this.formatDate(this.data.min),
             max: this.formatDate(this.data.max)
         };

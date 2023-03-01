@@ -9,9 +9,10 @@ from flask_login import login_required, current_user
 
 from ianalyzer import config_fallback as config
 from ianalyzer.factories.elasticsearch import elasticsearch
-from . import es
 from .search import get_index
+from flask import Blueprint
 
+es = Blueprint('es', __name__)
 logger = logging.getLogger(__name__)
 
 
@@ -21,8 +22,8 @@ def require_access(corpus_name):
         abort(401)  # Unauthorized
 
 
-@ es.route('/<corpus_name>/_search', methods=['POST'])
-@ login_required
+@es.route('/<corpus_name>/_search', methods=['POST'])
+@login_required
 def forward_search(corpus_name):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)

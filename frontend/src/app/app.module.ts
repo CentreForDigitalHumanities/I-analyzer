@@ -8,7 +8,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { NgxMdModule } from 'ngx-md';
 import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
@@ -28,7 +27,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
-    ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+    ElasticSearchService, ParamService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
@@ -49,17 +48,17 @@ import { TimelineComponent } from './visualization/barchart/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
-import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
+import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './history/search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
-import { RegistrationComponent } from './registration/registration.component';
+import { RegistrationComponent } from './login/registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { HistogramComponent } from './visualization/barchart/histogram.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { RequestResetComponent } from './reset-password/request-reset.component';
-import { PaginationComponent } from './pagination/pagination.component';
+import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
+import { RequestResetComponent } from './login/reset-password/request-reset.component';
+import { PaginationComponent } from './search/pagination/pagination.component';
 import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
@@ -70,7 +69,7 @@ import { BarchartOptionsComponent } from './visualization/barchart/barchart-opti
 import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
-import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
+import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
@@ -81,6 +80,10 @@ import { TermComparisonEditorComponent } from './visualization/barchart/term-com
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
 import { FooterComponent } from './footer/footer.component';
+import { DownloadHistoryComponent } from './history/download-history/download-history.component';
+import { HistoryDirective } from './history/history.directive';
+import { DownloadOptionsComponent } from './download/download-options/download-options.component';
+import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
 
 
 export const appRoutes: Routes = [
@@ -136,6 +139,10 @@ export const appRoutes: Routes = [
         component: SearchHistoryComponent
     },
     {
+        path: 'download-history',
+        component: DownloadHistoryComponent
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
@@ -155,18 +162,22 @@ export const declarations: any[] = [
     DialogComponent,
     DocumentViewComponent,
     DownloadComponent,
+    DownloadHistoryComponent,
+    DownloadOptionsComponent,
     DropdownComponent,
     ErrorComponent,
     FilterManagerComponent,
     FooterComponent,
     FreqtableComponent,
     FullDataButtonComponent,
+    HistoryDirective,
     HomeComponent,
     HighlightPipe,
     HistogramComponent,
     HighlightSelectorComponent,
     ImageViewComponent,
     ImageNavigationComponent,
+    JoyplotComponent,
     LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
@@ -225,7 +236,6 @@ export const imports: any[] = [
     }),
     MenuModule,
     MultiSelectModule,
-    NgxMdModule.forRoot(),
     PdfViewerModule,
     ResourceModule.forRoot({
         handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
@@ -248,6 +258,7 @@ export const providers: any[] = [
     HighlightService,
     LogService,
     NotificationService,
+    ParamService,
     QueryService,
     SearchService,
     SessionService,
@@ -279,7 +290,5 @@ export function resourceHandlerFactory(http: HttpClient) {
 }
 
 export function initApp(api: ApiService): Function {
-    return (): Promise<any> => {
-        return api.ensureCsrf();
-    };
+    return (): Promise<any> => api.ensureCsrf();
 }

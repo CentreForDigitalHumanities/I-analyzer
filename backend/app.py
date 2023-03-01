@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 
 from ianalyzer import config_fallback as config
-from ianalyzer.models import User, Role, db, Corpus, Visualization
+from ianalyzer.models import User, Role, db, Corpus
 from ianalyzer.factories.app import flask_app
 from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
@@ -67,7 +67,7 @@ def admin(name, pwd):
     'If not set, indexing will stop at corpus maximum date.'
 )
 @click.option(
-    '--delete', '-d',
+    '--delete', '-d', is_flag=True,
     help='Define whether the current index should be deleted' +
     '(turned off by default)'
 )
@@ -75,6 +75,11 @@ def admin(name, pwd):
     '--update', '-u', is_flag=True,
     help='Set this to true to update an index' +
     '(adding / changing fields in documents)'
+)
+@click.option(
+    '--mappings_only', '-m', is_flag=True,
+    help='''Set this to true if you only want to create the index with mappings
+        without adding data to it. This is useful e.g. before a remote reindex.'''
 )
 @click.option(
     '--add', '-a', is_flag=True,
@@ -85,7 +90,11 @@ def admin(name, pwd):
     '--prod', '-p', is_flag=True, help='''Specifies if this is NOT a local indexing operation.
         This influences index settings in particular'''
 )
-def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
+@click.option(
+    '--rollover', '-r', is_flag=True, help='''Specifies that the alias of the index should be adjusted.
+        (Only applicable if -prod is True)'''
+)
+def es(corpus, start, end, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -130,7 +139,7 @@ def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
             logging.critical(e)
             raise
     else:
-        perform_indexing(corpus, this_corpus, start_index, end_index, add, delete, prod)
+        perform_indexing(corpus, this_corpus, start_index, end_index, mappings_only, add, delete, prod, rollover)
 
 @app.cli.command()
 @click.option(
@@ -180,26 +189,6 @@ def append_corpus_role(user, corpus):
         db.session.add(role_corpus)
     if role_corpus not in user.role.corpora:
         user.role.corpora.append(role_corpus)
-
-@app.cli.command()
-@click.option(
-    '--corpus', '-c', help='Optional. If not specified, cache is cleared for a specific corpus rather than all.'
-)
-@click.option(
-    '--type', '-t', help='Optional. If specified, cache is cleared for a specific visualisation type rather than all. Possible values are `termfrequency`, `wordcloud`, `ngram`'
-)
-def clearcache(corpus, type):
-    if corpus and type:
-        db.session.query(Visualization).filter_by(corpus_name = corpus, visualization_type = type).delete()
-    elif corpus:
-        db.session.query(Visualization).filter_by(corpus_name = corpus).delete()
-    elif type:
-        db.session.query(Visualization).filter_by(visualization_type = type).delete()
-    else:
-        db.session.query(Visualization).delete()
-
-    db.session.commit()
-
 
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)

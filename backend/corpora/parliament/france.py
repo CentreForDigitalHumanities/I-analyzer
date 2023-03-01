@@ -9,7 +9,6 @@ from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.formatting import underscore_to_space
-from corpora.parliament.utils.es_settings import parliament_es_settings
 from corpora.parliament.utils.constants import document_context
 
 class ParliamentFrance(Parliament, CSVCorpus):
@@ -21,6 +20,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     image = current_app.config['PP_FR_IMAGE']
     language = 'french'
     description_page = 'france.md'
+    word_model_path = current_app.config['PP_FR_WM']
 
     field_entry = 'speech_id'
 

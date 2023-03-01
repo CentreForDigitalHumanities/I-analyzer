@@ -5,7 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
-
+import os
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_PASSWORD = 254
@@ -13,13 +13,17 @@ MAX_LENGTH_EMAIL = 254
 DOWNLOAD_LIMIT = 10000
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_CORPUS_NAME = 254
+MAX_LENGTH_FILENAME = 254
 
-
-db = SQLAlchemy()
+db = SQLAlchemy(
+    session_options={
+        'expire_on_commit': False
+    }
+)
 
 
 '''
-   connects corpus id to role id 
+   connects corpus id to role id
 '''
 corpora_roles = db.Table(
     'corpora_roles',
@@ -78,7 +82,7 @@ class User(db.Model):
     '''
     Whether the user has provided the correct credentials.
     '''
-    
+
     download_limit = db.Column(db.Integer, default=DOWNLOAD_LIMIT)
     '''
     How high the download limit for the user is.
@@ -97,6 +101,8 @@ class User(db.Model):
     '''
     Which queries the user has performed.
     '''
+
+    downloads = db.relationship('Download', back_populates='user')
 
     def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None, saml=False):
         self.username = username
@@ -152,10 +158,10 @@ class User(db.Model):
                 return True
         return False
 
-    def has_role(self, role):        
+    def has_role(self, role):
         return self.role.name == role
 
-        
+
 
 
 class Query(db.Model):
@@ -240,30 +246,55 @@ class Corpus(db.Model):
         return self.name
 
 
-class Visualization(db.Model):
-    '''
-    Cached results for a visualisation
-    '''
-
+class Download(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    corpus_name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
-    visualization_type = db.Column(db.String(MAX_LENGTH_NAME))
+    started = db.Column(db.DateTime())
+    completed = db.Column(db.DateTime())
+    download_type = db.Column(db.String(MAX_LENGTH_NAME))
+    corpus_name = db.Column(db.String(MAX_LENGTH_CORPUS_NAME))
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     parameters = db.Column(db.Text())
-    started = db.Column(db.DateTime)
-    completed = db.Column(db.DateTime)
-    result = db.Column(db.JSON())
+    filename = db.Column(db.String(MAX_LENGTH_FILENAME))
+    user = db.relationship('User', back_populates='downloads')
 
-    def __init__(self, visualization_type, corpus_name, parameters):
-        self.visualization_type = visualization_type
+    def __init__(self, download_type, corpus_name, parameters, user):
+        self.download_type = download_type
         self.corpus_name = corpus_name
         self.parameters = parameters
+        self.user = user
         self.started = datetime.now()
-        self.completed = None
-        self.result = None
-    
+
     def __repr__(self):
-        return f'Visualisation #{self.id}: {self.visualization_type} of {self.corpus_name} corpus made at {self.started}'
-    
+        return f'Download #{self.id}: {self.download_type} of {self.corpus_name} corpus made at {self.started}'
+
     @property
     def is_done(self):
         return self.completed != None
+
+    @property
+    def status(self):
+        if self.is_done and self.filename:
+            return 'done'
+        elif self.is_done:
+            return 'error'
+        else:
+            return 'working'
+
+    def serialize(self):
+        '''Convert to json-friendly format'''
+
+        if self.filename:
+            _, filename = os.path.split(self.filename)
+        else:
+            filename = None
+
+        return {
+            'id': self.id,
+            'started': self.started,
+            'completed': self.completed,
+            'download_type': self.download_type,
+            'corpus': self.corpus_name,
+            'parameters': self.parameters,
+            'filename': filename,
+            'status': self.status,
+        }

@@ -26,8 +26,7 @@
               "node_modules/font-awesome/css/font-awesome.min.css",
               "src/imageviewer.scss"
             ],
-            "scripts": [
-            ],
+            "scripts": [],
             "aot": false,
             "vendorChunk": true,
             "extractLicenses": false,
@@ -68,7 +67,6 @@
                   "with": "src/environments/environment.git.ts"
                 }
               ]
-
             }
           },
           "defaultConfiguration": ""
@@ -97,8 +95,7 @@
             "karmaConfig": "./karma.conf.js",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [
-            ],
+            "scripts": [],
             "styles": [
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/primeng.css",
@@ -107,6 +104,15 @@
             ],
             "assets": [
               "src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }
@@ -136,5 +142,8 @@
     "@schematics/angular:directive": {
       "prefix": "ia"
     }
+  },
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }

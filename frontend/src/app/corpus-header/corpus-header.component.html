@@ -4,8 +4,8 @@
             <div class="level-right">
                 <div class="level-item">
                     <h1 class="title">
-                        <span *ngIf="currentPage == 'search'">Search</span>
-                        <span *ngIf="currentPage == 'word-models'">Word models of</span>
+                        <span *ngIf="currentPage === 'search'">Search</span>
+                        <span *ngIf="currentPage === 'word-models'">Word models of</span>
                         <a class="corpus-name" [routerLink]="['/home']">&ldquo;{{corpus.title}}&rdquo;</a>
                     </h1>
                 </div>
@@ -30,7 +30,7 @@
                 <div class="field has-addons">
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/search', corpus.name]"
-                            [class.is-primary]="currentPage == 'search'"
+                            [class.is-primary]="currentPage === 'search'"
                             iaBalloon="Search documents in this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
                                 <fa-icon [icon]="searchIcon">search</fa-icon>
@@ -39,7 +39,7 @@
                     </div>
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/word-models', corpus.name]"
-                            [class.is-primary]="currentPage == 'word-models'"
+                            [class.is-primary]="currentPage === 'word-models'"
                             iaBalloon="Explore word models of this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
                                 <fa-icon [icon]="wordModelsIcon">word models</fa-icon>

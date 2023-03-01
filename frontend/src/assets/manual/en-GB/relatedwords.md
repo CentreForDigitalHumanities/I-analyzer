@@ -1,3 +1,25 @@
-This graph shows the words which appear in the same contexts as the query term, over the whole dataset, and how similar they are to the query term within each time window. The similarity score is based on [singular value decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) of a word-document matrix, for which all word counts have been transformed with positive [pointwise mutual information](https://en.wikipedia.org/wiki/Pointwise_mutual_information) ([Levy, Goldberg & Dagan, 2015](https://www.transacl.org/ojs/index.php/tacl/article/view/570)). As in [latent semantic analysis](https://en.wikipedia.org/wiki/Latent_semantic_analysis), the vectors for each word in this matrix can be compared. If words appear in the same context (i.e., in the same "topics"), their vectors are more alike, which is reflected in a higher cosine similarity. To show this graph, one word matrix has been computed for the whole corpus. Prior to calculating the matrix, stop words are removed from the vocabulary. From this word-topic matrix, the five most similar words for the query term are selected (excluding the query term itself). Separate matrices were computed for consecutive time frames of one decennium (the mean of which is shown on the x-axis), and for each decennium, the similarity of the query term to the overall most similar words is computed and shown. This means that we don't necessarily get to see the words which are most similar for one specific time frame. Please also note that this visualization always represents the texts from the whole corpus (and its subsets per time frame), which means it is not affected by selections you may have applied in filters.
+This graph shows the words which appear in the same contexts as the query term across the entire corpus.
 
-Currently, Related Words Query is available for the corpora "Dutch Annual Reports" and "Troonredes". Word models for other corpora will be added as soon as possible.
+## Word models
+
+The similarity scores are based on [word embeddings](https://en.wikipedia.org/wiki/Word_embedding). The algorithm to compute these embeddings depends on the corpus, and is described in the corpus documentation (click 'models' at the top of the page).
+
+For each corpus that includes word embeddings, we have trained a model of the complete corpus, and separate models for consecutive time frames. Thus, we can compute the overall similarity between terms, and say how this similarity develops over time.
+
+If words appear in the same context, their vectors are more alike, which is reflected in a higher cosine similarity. Words that appear in the same context are likely to have related meanings: you can think of synonyms like `big` and `large`, but also antonyms like `black` and `white`, or simply words that are associated with the same topic, like `bank` and `financial`.
+
+## The related words graph
+
+The line graph includes the words with the highest similarity to your query term. This is the similarity across the entire corpus. The graph shows how these similarities develop over time, by showing the similarity per time frame. (This is based on the model from that timeframe, see above.)
+
+Because words are selected based on their overall similarity, the line graph may not include the words that are most similar within a _specific_ timeframe.
+
+You can select the `bar` view to view the most similar terms for each timeframe individually. In the bar view, the similar words are selected for that specific timeframe: they include the nearest neighbours in that time window, but not necessarily the nearest neighbours across the whole corpus.
+
+### Selecting terms
+
+If you want to select a few terms to compare, you can click terms in the legend to hide them in the graph. If you want a clean graph with just a few selected terms (without crossed-out terms in the legend), you can also use the 'compare similarity' tab of the word models page. In that graph, you can enter the specific terms you want to compare to your query term.
+
+## Zooming
+
+You can zoom in on the x-axis by dragging the mouse. Double click on the graph to reset the zoom level.

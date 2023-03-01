@@ -8,15 +8,21 @@ export class NotificationService {
 
     public observable = this.subject.asObservable();
 
-    public showMessage(message: string, type: Notification['type'] = 'warning') {
-        this.subject.next({ message, type });
+    public showMessage(message: string, type: Notification['type'] = 'warning', link?: NotificationLink) {
+        this.subject.next({ message, type, link });
     }
 }
 
+interface NotificationLink {
+    text: string;
+    route: string[];
+}
+
 export interface Notification {
-    message: string,
+    message: string;
     /**
      * Notification type
      */
-    type: 'info' | 'warning' | 'danger' | 'success'
+    type: 'info' | 'warning' | 'danger' | 'success';
+    link?: NotificationLink;
 }

@@ -9,7 +9,7 @@ export class WordmodelsServiceMock {
     }
 
     public abortTasks() {
-        return {'success': true};
+        return {success: true};
     }
 
     public get(path: string): Promise<any> {
@@ -19,4 +19,9 @@ export class WordmodelsServiceMock {
     public getRelatedWords() {
         return this.get('get_wordcloud_data');
     }
+
+    public wordModelsDocumentationRequest() {
+        return Promise.resolve({documentation: 'Some interesting documentation'});
+    }
+
 }

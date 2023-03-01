@@ -3,7 +3,7 @@
         <p class="control" iaBalloon="Only the first {{downloadLimit}} results will be in the file!"
             [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
             <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
-                (click)="chooseDownloadMethod()" [disabled]="resultsCount==0">
+                (click)="chooseDownloadMethod()" [disabled]="resultsCount===0">
                 <span class="icon is-small">
                     <i class="fa fa-download"></i>
                 </span>
@@ -11,10 +11,12 @@
             </button>
         </p>
         <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
-            <ia-select-field [availableFields]="availableCsvFields" [filterCriterion]=" 'csv' "
-                [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false" [corpus] = "corpus"
+            <ia-select-field [corpusFields]="corpus.fields" [filterCriterion]=" 'csv' "
                 (selectedFields)="selectCsvFields($event)">
             </ia-select-field>
         </p>
     </div>
 </div>
+
+<ia-download-options [download]="pendingDownload" (cancel)="pendingDownload = undefined"
+    (confirm)="confirmDirectDownload($event)"></ia-download-options>

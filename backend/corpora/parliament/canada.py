@@ -11,7 +11,6 @@ from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
-from corpora.parliament.utils.es_settings import parliament_es_settings
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
@@ -26,6 +25,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     required_field = 'content'
 
     document_context = document_context(sort_field=None)
+    word_model_path = current_app.config['PP_CA_WM']
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

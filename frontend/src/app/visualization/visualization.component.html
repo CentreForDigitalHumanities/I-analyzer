@@ -18,17 +18,17 @@
     <div class="column">
         <label class="field" *ngIf="fieldDropdown">
             <label class="label">
-                <span *ngIf="visualizationType == 'resultscount' || visualizationType == 'termfrequency'">
+                <span *ngIf="visualizationType === 'resultscount' || visualizationType === 'termfrequency'">
                     Compare frequency by:
                 </span>
-                <span *ngIf="visualizationType == 'wordcloud' || visualizationType == 'ngram'">
+                <span *ngIf="visualizationType === 'wordcloud' || visualizationType === 'ngram'">
                     Count frequencies in:
                 </span>
             </label>
             <div class="control">
                 <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="visualizedFieldDropdownValue"
                     (onChange)="changeVisualizedField($event.value)"></ia-dropdown>
-                <input *ngIf="fieldDropdown.length == 1" class="input is-static" type="text" [value]="visualizedFieldDropdownValue.label">
+                <input *ngIf="fieldDropdown.length === 1" class="input is-static" type="text" [value]="visualizedFieldDropdownValue.label">
             </div>
         </label>
     </div>
@@ -81,7 +81,7 @@
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [asTable]="freqtable" [palette]="palette"
-                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-ngram>
         </ng-container>
     </div>
 </ng-container>

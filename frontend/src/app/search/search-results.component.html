@@ -13,7 +13,7 @@
             {{results.total.value}} results.
             Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
         </h2>
-        <ng-content *ngIf="!(queryText==null || queryText=='')" select="ia-highlight-selector"></ng-content>
+        <ng-content *ngIf="!(queryText===null || queryText==='')" select="ia-highlight-selector"></ng-content>
     </div>
 
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">

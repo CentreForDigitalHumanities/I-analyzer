@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
 import { ApiService, NotificationService, SearchService } from '../../services/index';
-import { Chart, ChartOptions } from 'chart.js';
+import { Chart, ChartOptions, ChartType } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult } from '../../models';
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -42,7 +43,9 @@ export abstract class BarchartDirective
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
-    documentLimit = 10000; // maximum number of documents to search through for term frequency
+    chartType: 'bar' | 'line' | 'scatter' = 'bar';
+
+    documentLimit = 5000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -85,7 +88,7 @@ export abstract class BarchartDirective
                 title: { display: true, text: 'Frequency' },
                 grid: { drawBorder: true, drawOnChartArea: false, },
                 ticks: {
-                    callback: (value, index, values) => this.formatValue(value as number),
+                    callback: (value, index, values) => this.formatValue(this.normalizer)(value as number),
                 },
                 min: 0,
             }
@@ -155,9 +158,10 @@ export abstract class BarchartDirective
         return _.some(relevantChanges, change => !_.isEqual(change.currentValue, change.previousValue));
     }
 
-    /** update graph after changes to the normalisation menu (i.e. normalizer) */
-    onOptionChange(normalizer: 'raw'|'percent'|'documents'|'terms') {
-        this.normalizer = normalizer;
+    /** update graph after changes to the chart settings (i.e. normalizer and chart type) */
+    onOptionChange(chartParameters: ChartParameters) {
+        this.normalizer = chartParameters.normalizer;
+        this.chartType = chartParameters.chartType;
         if (this.rawData && this.chart) {
             this.prepareChart();
         }
@@ -200,7 +204,7 @@ export abstract class BarchartDirective
     /** make a blank series object */
     newSeries(queryText: string): BarchartSeries<DataPoint> {
         return {
-            queryText: queryText,
+            queryText,
             data: [],
             total_doc_count: 0,
             searchRatio: 1.0,
@@ -290,6 +294,7 @@ export abstract class BarchartDirective
      * - Converts to the relevant DataPoint type using `aggregateResultToDataPoint`
      * - Adds the total document count and search ratio for retrieving term frequencies.
      * - Adds the relative document count.
+     *
      * @param result result from aggregation search
      * @param series series object that this data belongs to
      * @param setSearchRatio whether the search ratio should be reset. Defaults to `true`,
@@ -303,9 +308,9 @@ export abstract class BarchartDirective
         const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
         data = this.includeRelativeDocCount(data, total_doc_count);
         return {
-            data: data,
-            total_doc_count: total_doc_count,
-            searchRatio: searchRatio,
+            data,
+            total_doc_count,
+            searchRatio,
             queryText: series.queryText,
         };
     }
@@ -318,7 +323,7 @@ export abstract class BarchartDirective
     includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
         return data.map(item => {
             const result = _.clone(item);
-            result.relative_doc_count = result.total_doc_count / total;
+            result.relative_doc_count = result.doc_count / total;
             return result;
         });
     }
@@ -326,7 +331,7 @@ export abstract class BarchartDirective
     /**
      * Check whether any series found more documents than the document limit.
      * This means that not all documents will be read when counting term frequency.
-    */
+     */
      checkDocumentLimitExceeded(rawData: typeof this.rawData): typeof this.rawData {
         this.documentLimitExceeded = rawData.find(series => series.searchRatio < 1) !== undefined;
         return rawData;
@@ -362,12 +367,13 @@ export abstract class BarchartDirective
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
         return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
             if (result.success === true) {
-                return this.apiService.pollTask(result.task_id);
+                return this.apiService.pollTasks<TermFrequencyResult>(result.task_ids);
             }
         }).then(res => {
             if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results as TermFrequencyResult[], series);
+                return this.processSeriesTermFrequency(res.results, series);
             } else {
+                this.error.emit(res['message'] || 'could not load results');
                 return series;
             }
         });
@@ -396,6 +402,7 @@ export abstract class BarchartDirective
 
     /**
      * add term frequency data to a DataPoint object
+     *
      * @param result output from request for term frequencies
      * @param cat DataPoint object where the data should be added
      */
@@ -403,7 +410,7 @@ export abstract class BarchartDirective
         cat.match_count = data.match_count;
         cat.total_doc_count = data.total_doc_count;
         cat.token_count = data.token_count;
-        cat.matches_by_doc_count = data.match_count / data.total_doc_count,
+        cat.matches_by_doc_count = data.match_count / data.total_doc_count;
         cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
         return cat;
     }
@@ -430,7 +437,11 @@ export abstract class BarchartDirective
         this.fullDataRequest().then(() =>
             this.notificationService.showMessage(
                 'Full data requested! You will receive an email when your download is ready.',
-                'success'
+                'success',
+                {
+                    text: 'view downloads',
+                    route: ['/download-history']
+                }
             )
         ).catch(error => {
             console.error(error);
@@ -453,6 +464,7 @@ export abstract class BarchartDirective
     /** code to be executed when zooming in, or when parameters are updated while zoomed in */
     onZoomIn(chart, triggeredByDataUpdate = false) { }
     /** options for the chart.
+     *
      * @param datasets array of dataset objects for the chart
      */
     abstract chartOptions(datasets);
@@ -465,13 +477,13 @@ export abstract class BarchartDirective
 
         this.chart = new Chart('barchart',
             {
-                type: 'bar',
+                type: this.chartType,
                 data: {
-                    labels: labels,
-                    datasets: datasets
+                    labels,
+                    datasets
                 },
                 plugins: [ Zoom ],
-                options: options
+                options
             }
         );
 
@@ -488,7 +500,8 @@ export abstract class BarchartDirective
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
-        this.chart.options = this.chartOptions(datasets)
+        this.chart.config.type = this.chartType;
+        this.chart.options = this.chartOptions(datasets);
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
         this.chart.options.plugins.legend.display = datasets.length > 1;
@@ -524,20 +537,19 @@ export abstract class BarchartDirective
         }
     }
 
-    /** based on current parameters, get a formatting function for y-axis values */
-    get formatValue(): (value?: number) => string|undefined {
-        if (this.normalizer === 'percent') {
+    formatValue(normalizer: string): (value?: number) => string|undefined {
+        if (normalizer === 'percent') {
             return (value?: number) => {
                 if (value !== undefined && value !== null) {
                     return `${_.round(100 * value, 1)}%`;
                 }
             };
-        } else if (this.normalizer === 'documents' || this.normalizer === 'terms') {
+        } else if (normalizer === 'documents' || normalizer === 'terms') {
             return (value: number) => {
                 if (value !== undefined && value !== null) {
                     return value.toPrecision(2);
                 }
-            }
+            };
         } else {
             return (value: number) => {
                 if (value !== undefined && value !== null) {
@@ -625,7 +637,7 @@ export abstract class BarchartDirective
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
             const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
-            return `Frequency of '${queryTexts.join(", ")}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
+            return `Frequency of '${queryTexts.join(', ')}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
             }
     }
 

@@ -1,12 +1,14 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnDestroy } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
+import * as _ from 'lodash';
+
 
 @Component({
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
     styleUrls: ['./dropdown.component.scss'],
-    host: { 'class': 'control' }
+    host: { class: 'control' }
 })
 export class DropdownComponent<T> implements OnDestroy {
     @Input()
@@ -33,6 +35,8 @@ export class DropdownComponent<T> implements OnDestroy {
 
     private changeSubject = new Subject<T | undefined>();
     private changeSubscription: Subscription;
+
+    private lodash = _;
 
     constructor(private elementRef: ElementRef) {
         // don't trigger a lot of events when a user is quickly looping through the options

@@ -38,33 +38,33 @@ describe('CorpusService', () => {
         expect(corpusService).toBeTruthy();
     }));
 
-    it('should parse the list of corpora', async() => {
+    it('should parse the list of corpora', async () => {
         apiServiceMock.fakeResult['corpus'] = {
-            'test1': {
-                'title': 'Test 1',
-                'description': 'Test description 1.',
-                'es_doctype': 'article',
-                'es_index': 'test1',
-                'overview_fields': [],
-                'fields': [],
-                'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
-                'min_date': { 'day': 1, 'hour': 0, 'minute': 0, 'month': 1, 'year': 1785 },
-                'scan_image_type': 'png',
-                'allow_image_download': false,
-                'word_models_present': false
+            test1: {
+                title: 'Test 1',
+                description: 'Test description 1.',
+                es_doctype: 'article',
+                es_index: 'test1',
+                overview_fields: [],
+                fields: [],
+                max_date: { day: 31, hour: 0, minute: 0, month: 12, year: 2010 },
+                min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
+                scan_image_type: 'png',
+                allow_image_download: false,
+                word_models_present: false
             },
-            'test2': {
-                'title': 'Test 2',
-                'description': 'Test description 2.',
-                'es_doctype': 'article',
-                'es_index': 'test2',
-                'overview_fields': [],
-                'fields': [],
-                'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
-                'min_date': { 'day': 1, 'hour': 0, 'minute': 0, 'month': 1, 'year': 1785 },
-                'scan_image_type': 'jpg',
-                'allow_image_download': true,
-                'word_models_present': true
+            test2: {
+                title: 'Test 2',
+                description: 'Test description 2.',
+                es_doctype: 'article',
+                es_index: 'test2',
+                overview_fields: [],
+                fields: [],
+                max_date: { day: 31, hour: 0, minute: 0, month: 12, year: 2010 },
+                min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
+                scan_image_type: 'jpg',
+                allow_image_download: true,
+                word_models_present: true
             },
         };
         const items = await service.get();
@@ -73,104 +73,104 @@ describe('CorpusService', () => {
 
     it('should parse filters', () => {
         apiServiceMock.fakeResult['corpus'] = {
-            'times': {
-                'server_name': 'default',
-                'title': 'Times',
-                'description': 'This is a description.',
-                'es_doctype': 'article',
-                'es_index': 'times',
-                'fields': [{
-                    'description': 'Banking concern to which the report belongs.',
-                    'es_mapping': { 'type': 'keyword' },
-                    'hidden': true,
-                    'sortable': false,
-                    'primary_sort': false,
-                    'searchable': true,
-                    'downloadable': false,
-                    'name': 'bank',
-                    'display_name': 'Bank',
-                    'results_overview': false,
-                    'csv_core': false,
-                    'search_field_core': false,
-                    'visualizations': ['resultscount', 'termfrequency'],
-                    'visualization_sort': 'key',
-                    'search_filter': {
-                        'name': 'MultipleChoiceFilter',
-                        'description': 'Search only within these banks.',
-                        'fieldName': 'bank',
-                        'useAsFilter': false,
-                        'option_count': 42
+            times: {
+                server_name: 'default',
+                title: 'Times',
+                description: 'This is a description.',
+                es_doctype: 'article',
+                es_index: 'times',
+                fields: [{
+                    description: 'Banking concern to which the report belongs.',
+                    es_mapping: { type: 'keyword' },
+                    hidden: true,
+                    sortable: false,
+                    primary_sort: false,
+                    searchable: true,
+                    downloadable: false,
+                    name: 'bank',
+                    display_name: 'Bank',
+                    results_overview: false,
+                    csv_core: false,
+                    search_field_core: false,
+                    visualizations: ['resultscount', 'termfrequency'],
+                    visualization_sort: 'key',
+                    search_filter: {
+                        name: 'MultipleChoiceFilter',
+                        description: 'Search only within these banks.',
+                        fieldName: 'bank',
+                        useAsFilter: false,
+                        option_count: 42
                     }
                 },
                 {
-                    'description': 'Year of the financial report.',
-                    'es_mapping': { 'type': 'integer' },
-                    'hidden': false,
-                    'sortable': true,
-                    'primary_sort': true,
-                    'searchable': false,
-                    'downloadable': true,
-                    'name': 'year',
-                    'results_overview': true,
-                    'csv_core': true,
-                    'search_field_core': false,
-                    'histogram': false,
-                    'visualizations': ['resultscount', 'termfrequency'],
-                    'visualization_sort': 'key',
-                    'search_filter': {
-                        'name': 'RangeFilter',
-                        'description': 'Restrict the years from which search results will be returned.',
-                        'fieldName': 'year',
-                        'useAsFilter': false,
-                        'lower': 1785,
-                        'upper': 2010
+                    description: 'Year of the financial report.',
+                    es_mapping: { type: 'integer' },
+                    hidden: false,
+                    sortable: true,
+                    primary_sort: true,
+                    searchable: false,
+                    downloadable: true,
+                    name: 'year',
+                    results_overview: true,
+                    csv_core: true,
+                    search_field_core: false,
+                    histogram: false,
+                    visualizations: ['resultscount', 'termfrequency'],
+                    visualization_sort: 'key',
+                    search_filter: {
+                        name: 'RangeFilter',
+                        description: 'Restrict the years from which search results will be returned.',
+                        fieldName: 'year',
+                        useAsFilter: false,
+                        lower: 1785,
+                        upper: 2010
                     }
                 },
                 {   // example from people & parliament
-                    'description': 'The transcribed speech',
-                    'display_name': 'Speech',
-                    'display_type': 'text_content',
-                    'es_mapping': {
-                        'type': 'text',
-                        'term_vector': 'with_positions_offsets',
-                        'analyzer': 'standard',
-                        'fields': {
-                            'clean': {
-                                'type': 'text',
-                                'analyzer': 'clean',
-                                'term_vector': 'with_positions_offsets'
+                    description: 'The transcribed speech',
+                    display_name: 'Speech',
+                    display_type: 'text_content',
+                    es_mapping: {
+                        type: 'text',
+                        term_vector: 'with_positions_offsets',
+                        analyzer: 'standard',
+                        fields: {
+                            clean: {
+                                type: 'text',
+                                analyzer: 'clean',
+                                term_vector: 'with_positions_offsets'
                             },
-                            'stemmed': {
-                                'type': 'text',
-                                'analyzer': 'stemmed',
-                                'term_vector': 'with_positions_offsets'
+                            stemmed: {
+                                type: 'text',
+                                analyzer: 'stemmed',
+                                term_vector: 'with_positions_offsets'
                             },
-                            'length': {
-                                'type': 'token_count',
-                                'analyzer': 'standard'
+                            length: {
+                                type: 'token_count',
+                                analyzer: 'standard'
                             }
                         }
                     },
-                    'hidden': false,
-                    'indexed': true,
-                    'sortable': false,
-                    'primary_sort': false,
-                    'searchable': true,
-                    'downloadable': true,
-                    'name': 'speech',
-                    'results_overview': true,
-                    'csv_core': false,
-                    'search_field_core': true,
-                    'term_frequency': false,
-                    'visualizations': ['wordcloud', 'ngram'],
-                    'visualization_sort': null,
+                    hidden: false,
+                    indexed: true,
+                    sortable: false,
+                    primary_sort: false,
+                    searchable: true,
+                    downloadable: true,
+                    name: 'speech',
+                    results_overview: true,
+                    csv_core: false,
+                    search_field_core: true,
+                    term_frequency: false,
+                    visualizations: ['wordcloud', 'ngram'],
+                    visualization_sort: null,
                 }],
-                'min_date': { 'day': 1, 'hour': 0, 'minute': 0, 'month': 1, 'year': 1785 },
-                'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
-                'image': '/static/no-image.jpg',
-                'scan_image_type': 'png',
-                'allow_image_download': false,
-                'word_models_present': true,
+                min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
+                max_date: { day: 31, hour: 0, minute: 0, month: 12, year: 2010 },
+                image: '/static/no-image.jpg',
+                scan_image_type: 'png',
+                allow_image_download: false,
+                word_models_present: true,
             },
         };
 

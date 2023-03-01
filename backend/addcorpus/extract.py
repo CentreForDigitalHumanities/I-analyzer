@@ -147,8 +147,9 @@ class XML(Extractor):
                  multiple=False,  # Whether to abandon the search after the first element
                  secondary_tag={
                      'tag': None,
-                     'match': None
-                 },  # Whether the tag's content should match a given string
+                     'match': None,
+                     'exact': None,
+                 },  # Whether the tag's content should match a given metadata field ('match') or string ('exact')
                  external_file={  # Whether to search other xml files for this field, and the file tag these files should have
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
@@ -204,8 +205,12 @@ class XML(Extractor):
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:
-            sibling = soup.find(
-                self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
+            # match metadata field
+            if self.secondary_tag.get('match') is not None:
+                match_string = metadata[self.secondary_tag['match']]
+            elif self.secondary_tag.get('exact') is not None:
+                match_string = self.secondary_tag['exact']
+            sibling = soup.find(self.secondary_tag['tag'], string=match_string)
             if sibling:
                 return sibling.parent.find(tag)
 

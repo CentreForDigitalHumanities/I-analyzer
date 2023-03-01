@@ -9,13 +9,13 @@ import { CookieService } from 'ngx-cookie-service';
 import { appRoutes, declarations, imports, providers } from './app.module';
 
 import { ApiServiceMock } from '../mock-data/api';
-import * as corpus from '../mock-data/corpus-response';
+import { CorpusServiceMock } from '../mock-data/corpus';
 import { DialogServiceMock } from '../mock-data/dialog';
 import { ElasticSearchServiceMock } from '../mock-data/elastic-search';
 import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
 import { UserServiceMock } from '../mock-data/user';
-import { ApiService, CorpusService, DialogService, ElasticSearchService, QueryService, SearchService, UserService } from './services';
+import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService } from './services';
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 import { VisualizationService } from './services/visualization.service';
@@ -33,7 +33,7 @@ export function commonTestBed() {
             }),
         },
         {
-            provide: CorpusService
+            provide: CorpusService, useValue: new CorpusServiceMock()
         },
         {
             provide: APP_INITIALIZER,
@@ -85,4 +85,6 @@ export function csrfProviderFactory(inject: Injector, provider: ApiService, cook
     };
 }
 
-export class MockElementRef { nativeElement = {}; }
+export class MockElementRef {
+ nativeElement = {};
+}

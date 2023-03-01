@@ -1,0 +1,15 @@
+[
+    {
+        "xml_url": "https://data.oireachtas.ie/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/mul@/main.xml",
+        "debate_uri": "https://data.oireachtas.ie/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/main",
+        "house_uri": {
+            "showAs": "Select Committee on Agriculture, Food and the Marine",
+            "committeeCode": "select_committee_on_agriculture_food_and_the_marine",
+            "chamberType": "committee",
+            "houseCode": "dail",
+            "houseNo": "31",
+            "uri": "https://data.oireachtas.ie/ie/oireachtas/committee/dail/31/select_committee_on_agriculture_food_and_the_marine"
+        },
+        "file": "data.oireachtas.ie#akn#ie#debateRecord#select_committee_on_agriculture_food_and_the_marine#2014-12-09#debate#main.xml"
+    }
+]

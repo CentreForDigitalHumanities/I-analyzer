@@ -46,7 +46,7 @@ class ParliamentDenmark(Parliament, CSVCorpus):
     required_field = 'text'
 
     document_context = {
-        'context_fields': 'book_id',
+        'context_fields': ['book_id'],
         'sort_field': 'sequence',
         'context_display_name': 'book',
         'sort_direction': 'asc',
@@ -112,10 +112,10 @@ class ParliamentDenmark(Parliament, CSVCorpus):
 
     def __init__(self):
         self.fields = [
+            self.date_earliest, self.date_latest,
             self.book_label, self.book_id,
             self.country,
             self.chamber,
-            self.date_earliest, self.date_latest,
             self.page,
             self.speech,
             self.speech_id,

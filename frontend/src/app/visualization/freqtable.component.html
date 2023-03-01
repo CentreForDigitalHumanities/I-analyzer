@@ -18,7 +18,7 @@
                 </td>
             </tr>
         </ng-template>
-    </p-table>    
+    </p-table>
 </div>
 
 <div class="level">
@@ -26,14 +26,18 @@
         <div class="level-item" *ngIf="wideFormatColumn !== undefined" iaBalloon="change the format for the table">
             <div class="field has-addons">
                 <div class="control">
-                    <button class="button" [class.is-primary]="format == 'long'" (click)="setFormat('long')">long format</button>
+                    <button class="button" [class.is-primary]="format === 'long'" (click)="setFormat('long')">long format</button>
                 </div>
                 <div class="control">
-                    <button class="button" [class.is-primary]="format == 'wide'" (click)="setFormat('wide')">wide format</button>
+                    <button class="button" [class.is-primary]="format === 'wide'" (click)="setFormat('wide')">wide format</button>
                 </div>
             </div>
         </div>
+        <div class="level-item" *ngIf="!disableFullTable">
+            <button class="button" [class.is-primary]="fullTableToggle == true" (click)="toggleFullTable()">Show extra columns</button>
+        </div>
     </div>
+
     <div class="level-right">
         <div class="level-item">
             <a class="button" (click)="downloadTable()">

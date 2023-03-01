@@ -31,41 +31,41 @@ export class Corpus implements ElasticSearchIndex {
 
 }
 
-export type ElasticSearchIndex = {
-    doctype: DocumentType,
-    index: string,
-    serverName: string
-};
+export interface ElasticSearchIndex {
+    doctype: DocumentType;
+    index: string;
+    serverName: string;
+}
 
 export type DocumentType = 'article';
 
-export type DocumentContext = {
-    contextFields: CorpusField[],
-    sortField?: CorpusField,
-    sortDirection?: 'asc'|'desc',
-    displayName: string,
-};
+export interface DocumentContext {
+    contextFields: CorpusField[];
+    sortField?: CorpusField;
+    sortDirection?: 'asc'|'desc';
+    displayName: string;
+}
 
-export type CorpusField = {
-    description: string,
-    displayName: string,
+export interface CorpusField {
+    description: string;
+    displayName: string;
     /**
      * How the field value should be displayed.
      * text_content: Main text content of the document
      */
-    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
-    resultsOverview?: boolean,
-    csvCore?: boolean,
-    searchFieldCore?: boolean,
-    visualizations?: string[],
-    visualizationSort?: string,
-    multiFields?: string[],
-    hidden: boolean,
-    sortable: boolean,
-    primarySort: boolean,
-    searchable: boolean,
-    downloadable: boolean,
-    name: string,
-    searchFilter: SearchFilter<SearchFilterData> | null,
+    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean';
+    resultsOverview?: boolean;
+    csvCore?: boolean;
+    searchFieldCore?: boolean;
+    visualizations?: string[];
+    visualizationSort?: string;
+    multiFields?: string[];
+    hidden: boolean;
+    sortable: boolean;
+    primarySort: boolean;
+    searchable: boolean;
+    downloadable: boolean;
+    name: string;
+    searchFilter: SearchFilter<SearchFilterData> | null;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
-};
+}

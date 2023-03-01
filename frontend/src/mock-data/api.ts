@@ -9,7 +9,7 @@ export class ApiServiceMock {
     }
 
     public abortTasks() {
-        return {'success': true};
+        return {success: true};
     }
 
     public get(path: string): Promise<any> {
@@ -21,14 +21,22 @@ export class ApiServiceMock {
     }
 
     public ensureCsrf(): Promise<any> {
-        return Promise.resolve({'success': true});
+        return Promise.resolve({success: true});
     }
 
     public search_history() {
-        return Promise.resolve({'queries': []});
+        return Promise.resolve({queries: []});
     }
 
     public getWordcloudData() {
         return this.get('get_wordcloud_data');
+    }
+
+    public pollTasks() {
+        return Promise.resolve([{}]);
+    }
+
+    public downloads() {
+        return Promise.resolve([]);
     }
 }

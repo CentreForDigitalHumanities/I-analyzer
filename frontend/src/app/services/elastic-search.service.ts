@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
+    AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField } from '../models/index';
 
 
 import * as _ from 'lodash';
@@ -39,8 +39,8 @@ export class ElasticSearchService {
         let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
             query = {
-                'query': {
-                    'bool': {
+                query: {
+                    bool: {
                         must: clause,
                         filter: this.mapFilters(queryModel.filters),
                     }
@@ -48,7 +48,7 @@ export class ElasticSearchService {
             };
         } else {
             query = {
-                'query': clause
+                query: clause
             };
         }
 
@@ -65,26 +65,77 @@ export class ElasticSearchService {
                 pre_tags: ['<span class="highlight">'],
                 post_tags: ['</span>'],
                 order: 'score',
-                fields: highlightFields.map( field => {
-                    return { [field.name]: { }
-                };
-            })
+                fields: highlightFields.map( field => ({ [field.name]: { }
+                }))
             };
         }
 
         return query;
     }
 
+    public esQueryToQueryModel(query: EsQuery, corpus: Corpus): QueryModel {
+        const queryText = this.queryTextFromEsSearchClause(query.query);
+        const filters = this.filtersFromEsQuery(query, corpus);
+
+        if (filters.length) {
+            return { queryText, filters };
+        } else {
+            return { queryText };
+        }
+    }
+
+    private queryTextFromEsSearchClause(query: EsSearchClause | BooleanQuery): string {
+        const clause = 'bool' in query ? query.bool.must : query;
+
+        if ('simple_query_string' in clause) {
+            return clause.simple_query_string.query;
+        }
+    }
+
+    private filtersFromEsQuery(query: EsQuery, corpus: Corpus): SearchFilter<SearchFilterData>[] {
+        if ('bool' in query.query) {
+            const filters = query.query.bool.filter;
+            return filters.map(filter => this.esFilterToSearchFilter(filter, corpus));
+        }
+        return [];
+    }
+
+    private esFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
+        let field: CorpusField;
+        let fieldName: string;
+        let value: any;
+
+        if ('term' in filter) { // boolean filter
+            fieldName = _.keys(filter.term)[0];
+            value = filter.term[fieldName];
+        } else if ('terms' in filter) { // multiple choice filter
+            fieldName = _.keys(filter.terms)[0];
+            value = filter.terms[fieldName];
+        } else { // range or date filter
+            fieldName = _.keys(filter.range)[0];
+            value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
+        }
+        field = corpus.fields.find(f => f.name === fieldName);
+        const filterData = searchFilterDataFromField(field, value);
+        return {
+            fieldName: field.name,
+            description: field.searchFilter.description,
+            useAsFilter: true,
+            currentData: filterData,
+            defaultData: field.searchFilter.defaultData,
+        };
+    }
+
     /**
-    * Construct the aggregator, based on kind of field
-    * Date fields are aggregated in year intervals
-    */
+     * Construct the aggregator, based on kind of field
+     * Date fields are aggregated in year intervals
+     */
     makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
         const aggregation = {
             terms: {
                 field: aggregator,
-                size: size,
-                min_doc_count: min_doc_count
+                size,
+                min_doc_count
             }
         };
         return aggregation;
@@ -104,8 +155,8 @@ export class ElasticSearchService {
     private async execute<T>(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
         return this.client.search<T>({
             index: index.name,
-            from: from,
-            size: size,
+            from,
+            size,
             body: esQuery
         });
     }
@@ -186,6 +237,7 @@ export class ElasticSearchService {
 
     /**
      * Extract relevant information from dictionary returned by ES
+     *
      * @param response
      * @param queryModel
      * @param alreadyRetrieved
@@ -212,30 +264,28 @@ export class ElasticSearchService {
     }
 
     /**
-    * Convert filters from query model into elasticsearch form
-    */
+     * Convert filters from query model into elasticsearch form
+     */
     private mapFilters(filters: SearchFilter<SearchFilterData>[]): EsFilter[] {
         return filters.map(filter => {
             switch (filter.currentData.filterType) {
                 case 'BooleanFilter':
-                    return { 'term': { [filter.fieldName]: filter.currentData.checked } };
+                    return { term: { [filter.fieldName]: filter.currentData.checked } };
                 case 'MultipleChoiceFilter':
                     return {
-                        'terms': {
-                            [filter.fieldName]: _.map(filter.currentData.selected, f => {
-                                return decodeURIComponent(f);
-                            })
+                        terms: {
+                            [filter.fieldName]: _.map(filter.currentData.selected, f => decodeURIComponent(f))
                         }
                     };
                 case 'RangeFilter':
                     return {
-                        'range': {
+                        range: {
                             [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max }
                         }
                     };
                 case 'DateFilter':
                     return {
-                        'range': {
+                        range: {
                             [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max, format: 'yyyy-MM-dd' }
                         }
                     };
@@ -247,14 +297,14 @@ export class ElasticSearchService {
 interface Connection {
     client: Client;
     config: {
-        overviewQuerySize: number,
-        scrollPagesize: number,
-        scrollTimeout: string
+        overviewQuerySize: number;
+        scrollPagesize: number;
+        scrollTimeout: string;
     };
 }
 
 export type EsQuerySorted = EsQuery & {
-    sort: { [fieldName: string]: 'desc' | 'asc' }[]
+    sort: { [fieldName: string]: 'desc' | 'asc' }[];
 };
 
 export interface EsQuery {
@@ -262,13 +312,13 @@ export interface EsQuery {
     completed?: Date;
     query: EsSearchClause | BooleanQuery;
     highlight?: {};
-    transferred?: Number;
+    transferred?: number;
 }
 
 interface BooleanQuery {
     'bool': {
-        must: EsSearchClause,
-        filter: EsFilter[],
+        must: EsSearchClause;
+        filter: EsFilter[];
     };
 }
 
@@ -278,10 +328,10 @@ interface MatchAll {
 
 interface SimpleQueryString {
     simple_query_string: {
-        query: string,
-        fields?: string[],
-        lenient: true,
-        default_operator: 'or'
+        query: string;
+        fields?: string[];
+        lenient: true;
+        default_operator: 'or';
     };
 }
 
@@ -290,31 +340,31 @@ type EsSearchClause = MatchAll | SimpleQueryString;
 interface EsDateFilter {
     range: {
         [field: string]: {
-            gte: string,
-            lte: string,
-            format: 'yyyy-MM-dd'
-        }
+            gte: string;
+            lte: string;
+            format: 'yyyy-MM-dd';
+        };
     };
 }
 
 interface EsTermsFilter {
     terms: {
-        [field: string]: string[]
+        [field: string]: string[];
     };
 }
 
 interface EsBooleanFilter {
     term: {
-        [field: string]: boolean
+        [field: string]: boolean;
     };
 }
 
 interface EsRangeFilter {
     range: {
         [field: string]: {
-            gte: number,
-            lte: number
-        }
+            gte: number;
+            lte: number;
+        };
     };
 }
 
@@ -331,7 +381,7 @@ export class Client {
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
         const url = `es/${searchParams.index}/_search`;
         const optionDict = {
-            'size': searchParams.size.toString()
+            size: searchParams.size.toString()
         };
         if (searchParams.from) {
             optionDict['from'] = searchParams.from.toString();
@@ -345,8 +395,8 @@ export class Client {
 
 export interface SearchParams {
     index: string;
-    size: Number;
-    from?: Number;
+    size: number;
+    from?: number;
     body: EsQuery;
 }
 
@@ -355,9 +405,9 @@ export interface SearchResponse {
     timed_out: boolean;
     hits: {
         total: {
-            value: number,
-            relation: string
-        }
+            value: number;
+            relation: string;
+        };
         max_score: number;
         hits: Array<SearchHit>;
     };
