@@ -44,8 +44,6 @@ export class DocumentViewComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
-        console.log(this.queryModel)
-        console.log(this.queryModel)
         this.tabIndex = this.documentTabIndex;
     }
 
