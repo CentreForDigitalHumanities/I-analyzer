@@ -36,7 +36,8 @@ class ParliamentNorway(Parliament, CSVCorpus):
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
-            year = re.search(r'\d{4}', csv_file)
+            _, filename = os.path.split(csv_file)
+            year = re.search(r'\d{4}', filename)
             if year:
                 date = datetime(year=int(year.group(0)), month=1, day=1)
                 if start <= date <= end:
