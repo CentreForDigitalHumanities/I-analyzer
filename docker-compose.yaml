@@ -19,6 +19,7 @@ services:
       MYSQL_DATABASE: $MYSQL_DATABASE
       MYSQL_USER: $MYSQL_USER
       MYSQL_PASSWORD: $MYSQL_PASSWORD
+      FLASK_DEBUG: 1
     ports:
       - 127.0.0.1:5000:5000
     volumes:
