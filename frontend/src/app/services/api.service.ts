@@ -319,4 +319,27 @@ export class ApiService extends Resource {
     public getUser() {
         return this.http.get<UserResponse>(this.authApiRoute('user'));
     }
+
+    public register2(details: {
+        username: string;
+        email: string;
+        password1: string;
+        password2: string;
+    }) {
+        return this.http.post<any>(this.authApiRoute('registration'), details);
+    }
+
+    public verify(key: string) {
+        return this.http.post<any>(
+            this.authApiRoute('registration/verify-email'),
+            { key }
+        );
+    }
+
+    public keyInfo(key: string) {
+        return this.http.post<{ username: string; email: string }>(
+            this.authApiRoute('registration/key-info'),
+            { key }
+        );
+    }
 }

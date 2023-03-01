@@ -1,62 +1,88 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { NgForm } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
+import * as _ from 'lodash';
+
+interface RegisterErrors {
+    non_field_errors?: string[];
+    email?: string[];
+    username?: string[];
+    password1?: string[];
+    password2?: string[];
+}
+
+type RegisterErrorResponse = Omit<HttpErrorResponse, 'error'> & {
+    error: RegisterErrors;
+};
 
 @Component({
-  selector: 'ia-registration',
-  templateUrl: './registration.component.html',
-  styleUrls: ['./registration.component.scss']
+    selector: 'ia-registration',
+    templateUrl: './registration.component.html',
+    styleUrls: ['./registration.component.scss'],
 })
-
 export class RegistrationComponent implements OnInit, OnDestroy {
-  public username: string;
-  public email: string;
+    public username: string;
+    public email: string;
 
-  public isValidUsername = true;
-  public isValidEmail = true;
+    public isLoading: boolean;
 
-  public isLoading: boolean;
+    public registrationSucceeded: boolean;
+    public serverError = false;
 
-  public registration_succeeded: boolean;
-  public error = false;
+    public isModalActive = false;
 
-  public isModalActive = false;
+    public errors: RegisterErrors;
 
-  constructor(private userService: UserService) {
-    //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
-    // UserService.loginActivated = true;
-  }
+    private destroy$ = new Subject<boolean>();
 
-  ngOnInit() {
+    constructor(private authService: AuthService) {}
 
-  }
-  ngOnDestroy() {
-    // UserService.loginActivated = false;
-  }
+    ngOnInit() {}
+    ngOnDestroy() {
+        this.destroy$.next(true);
+    }
 
+    toggleModal() {
+        this.isModalActive = !this.isModalActive;
+    }
 
-  toggleModal() {
-    this.isModalActive = !this.isModalActive;
-  }
+    register(signupForm: NgForm) {
+        const username: string = signupForm.value.username;
+        const email: string = signupForm.value.email;
+        this.isLoading = true;
 
-  register(signupForm: NgForm) {
-    const username: string = signupForm.value.username;
-    const email: string = signupForm.value.email;
+        this.authService
+            .register(
+                username,
+                email,
+                signupForm.value.password,
+                signupForm.value.password
+            )
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                () => this.handleSuccess(username, email),
+                (error) => this.handleErrors(error)
+            );
+    }
 
-    this.userService.register(username, email, signupForm.value.password).then(result => {
-      if (result.success) {
-        this.registration_succeeded = true;
+    handleSuccess(username, email) {
+        this.registrationSucceeded = true;
         this.username = username;
         this.email = email;
-      } else {
-        this.isValidUsername = result.is_valid_username;
-        this.isValidEmail = result.is_valid_email;
+        this.isLoading = false;
+    }
 
-        // if input is valid an error occured
-        if (result.is_valid_email && result.is_valid_username) {
-          this.error = true;
+    handleErrors(errorResponse: RegisterErrorResponse) {
+        this.isLoading = false;
+        if (errorResponse.status === 400) {
+            this.errors = errorResponse.error;
+        } else {
+            this.serverError = true;
         }
-      }
-    });
-  }
+    }
 }
+

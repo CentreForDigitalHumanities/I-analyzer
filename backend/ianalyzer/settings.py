@@ -159,13 +159,22 @@ STATICFILES_DIRS = []
 PROXY_FRONTEND = None
 
 # Authentication
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTH_USER_MODEL = 'users.CustomUser'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer'
+    'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
 }
 
+# ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
+
+SITE_ID = 1
+SITE_NAME = 'IANALYZER'
+HOST = 'localhost:8000'
 
 # Download location
 _here = os.path.abspath(os.path.dirname(__file__))
@@ -199,10 +208,10 @@ WORDCLOUD_LIMIT = 1000
 CELERY_BROKER_URL = 'redis://'
 CELERY_RESULT_BACKEND = 'redis://'
 
-#This needs to be the last line of the settings.py, so that all settings can be overridden.
+# This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:
     from ianalyzer.settings_local import *
-except:
+except Exception:
     warnings.warn(
         'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
         Warning
