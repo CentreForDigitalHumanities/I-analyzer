@@ -4,8 +4,6 @@ import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { DialogService } from '../services';
-import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
@@ -63,7 +61,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     faQuestion = faCircleQuestion;
 
     constructor(
-        private dialogService: DialogService,
         route: ActivatedRoute,
         router: Router
     ) {
@@ -197,27 +194,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         }
     }
 
-    onRequestImage() {
-        const filenamestring = `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
-        const node = document.getElementById(this.chartElementId(this.visualizationType));
-
-        htmlToImage.toPng(node)
-          .then((dataUrl) => {
-            const img = new Image();
-            img.src = dataUrl;
-            const anchor = document.createElement('a');
-            anchor.href = dataUrl;
-            anchor.download = filenamestring;
-            anchor.click();
-          })
-          .catch(function(error) {
-            this.notificationService.showMessage('oops, something went wrong!', error);
-          });
-
-    }
-
-    chartElementId(visualizationType): string {
-        if (visualizationType === 'resultscount' || visualizationType === 'termfrequency') {
+    get chartElementId(): string {
+        if (this.visualizationType === 'resultscount' || this.visualizationType === 'termfrequency') {
             return 'barchart';
         }
         if (this.visualizationType === 'ngram') {

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { DialogService } from '../../services';
+import { DialogService, NotificationService } from '../../services';
 import * as htmlToImage from 'html-to-image';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { PALETTES } from './../select-color';
@@ -20,7 +20,7 @@ export class VisualizationFooterComponent implements OnInit {
 
     faQuestion = faQuestionCircle;
 
-    constructor(private dialogService: DialogService) { }
+    constructor(private dialogService: DialogService, private notificationService: NotificationService) { }
 
     ngOnInit(): void {
     }
@@ -29,7 +29,7 @@ export class VisualizationFooterComponent implements OnInit {
         const imageFileName = this.imageFileName;
         const node = document.getElementById(this.chartElementID);
 
-        htmlToImage.toPng(node)
+        htmlToImage.toPng(node, {backgroundColor: 'white', pixelRatio: 4})
           .then((dataUrl) => {
             const img = new Image();
             img.src = dataUrl;
@@ -38,8 +38,8 @@ export class VisualizationFooterComponent implements OnInit {
             anchor.download = imageFileName || 'chart.png';
             anchor.click();
           })
-          .catch(function(error) {
-            this.notificationService.showMessage('oops, something went wrong!', error);
+          .catch((error) => {
+            this.notificationService.showMessage('Could not initiate image download', error);
           });
 
     }
