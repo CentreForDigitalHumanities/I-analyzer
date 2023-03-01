@@ -5,6 +5,8 @@ import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
+import { environment } from '../../environments/environment';
+
 @Component({
     selector: 'login',
     templateUrl: './login.component.html',
@@ -20,6 +22,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private returnUrl: string;
 
     public static activated = false;
+    public showSolis: boolean;
 
     private destroy$ = new Subject<boolean>();
 
@@ -54,6 +57,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.solislogin();
             }
         });
+        this.showSolis = environment.showSolis;
     }
 
     ngOnDestroy() {

@@ -37,21 +37,7 @@ export interface DateFilterData {
 
 export type SearchFilterType = SearchFilterData['filterType'];
 
-export const searchFilterDataToParam = (filter: SearchFilter<SearchFilterData>): string | string[] => {
-    switch (filter.currentData.filterType) {
-        case 'BooleanFilter':
-            return `${filter.currentData.checked}`;
-        case 'MultipleChoiceFilter':
-            return filter.currentData.selected as string[];
-        case 'RangeFilter':
-            return `${filter.currentData.min}:${filter.currentData.max}`;
-        case 'DateFilter':
-            return `${filter.currentData.min}:${filter.currentData.max}`;
-    }
-};
-
-export const searchFilterDataFromParam = (
-    filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData => {
+export function searchFilterDataFromSettings(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
     switch (filterType) {
         case 'BooleanFilter':
             return { filterType, checked: value[0] === 'true' };
@@ -100,10 +86,13 @@ const parseMinMax = (value: string[]): [string, string] => {
     }
 };
 
-export const adHocFilterFromField = (field: CorpusField): SearchFilter<SearchFilterData> => ({
-    fieldName: field.name,
-    description: `Search only within this ${field.displayName}`,
-    useAsFilter: true,
-    adHoc: true,
-    currentData: undefined,
-});
+export function contextFilterFromField(field: CorpusField, value?: string): SearchFilter<SearchFilterData> {
+    const currentValue = value ? searchFilterDataFromField(field, [value]) : undefined;
+    return {
+        fieldName: field.name,
+        description: `Search only within this ${field.displayName}`,
+        useAsFilter: true,
+        adHoc: true,
+        currentData: currentValue
+    };
+}

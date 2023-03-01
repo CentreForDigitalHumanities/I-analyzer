@@ -6,8 +6,6 @@ Script to index the data into ElasticSearch.
 
 import sys
 
-from datetime import datetime
-
 import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
@@ -46,11 +44,10 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        if not settings.get('index'):
-            settings['index'] = {
-                'number_of_replicas' : 0,
-                'number_of_shards': 6
-            }
+        settings['index'] = {
+            'number_of_replicas' : 0,
+            'number_of_shards': 6
+        }
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
@@ -97,15 +94,14 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
     corpus_server = settings.SERVERS[
         settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
     # Do bulk operation
-    for result in es_helpers.bulk(
+    for success, info in es_helpers.streaming_bulk(
         client,
         actions,
         chunk_size=corpus_server['chunk_size'],
         max_chunk_bytes=corpus_server['max_chunk_bytes'],
-        timeout=corpus_server['bulk_timeout'],
-        stats_only=True,  # We want to know how many documents were added
     ):
-        logger.info('Indexed documents ({}).'.format(result))
+        if not success:
+            logger.error(f"FAILED INDEX: {info}")
 
 
 
