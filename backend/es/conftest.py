@@ -10,7 +10,7 @@ from es import es_index
 from users.models import CustomUser
 from addcorpus.models import Corpus
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def mock_corpus():
     return 'times'
 
@@ -20,7 +20,7 @@ def corpus_definition(mock_corpus):
     yield corpus
 
 
-@pytest.fixture()
+@pytest.fixture(scope='module')
 def es_forward_client(mock_corpus):
     """
     Create and populate an index for the mock corpus in elasticsearch.

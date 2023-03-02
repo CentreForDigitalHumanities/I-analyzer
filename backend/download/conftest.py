@@ -18,8 +18,8 @@ def csv_directory(settings, tmpdir):
     return settings.CSV_FILES_PATH
 
 
-@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus'])
-def mock_corpus(request, mock_corpora_in_db):
+@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus'], scope='session')
+def mock_corpus(request):
     '''Return the name of a mock corpus'''
 
     return request.param

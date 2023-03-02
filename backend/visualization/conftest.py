@@ -11,7 +11,7 @@ from redis import Redis
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'])
+@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'], scope='session')
 def mock_corpus(request):
     '''Return the name of a mock corpus'''
 
@@ -45,7 +45,7 @@ def mock_corpus_specs(mock_corpus):
     }
     return specs[mock_corpus]
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def test_es_client(mock_corpus):
     """
     Initialise an elasticsearch client. Skip if no connection can be made.
@@ -72,7 +72,7 @@ def clear_test_corpus(es_client, corpus_name):
     index = corpus.es_index
     es_client.indices.delete(index = index)
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def index_mock_corpus(mock_corpus, test_es_client):
     '''Create and populate an index for the mock corpus.'''
 
