@@ -21,74 +21,55 @@ def corpus_definition(mock_corpus):
 
 
 @pytest.fixture(scope='module')
-def es_forward_client(mock_corpus):
+def es_forward_client(es_client, mock_corpus):
     """
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
-    client = elasticsearch(mock_corpus)
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
 
     # add data from mock corpus
     corpus = load_corpus(mock_corpus)
-    es_index.create(client, corpus, False, True, False)
-    es_index.populate(client, mock_corpus, corpus)
+    es_index.create(es_client, corpus, False, True, False)
+    es_index.populate(es_client, mock_corpus, corpus)
 
-    client.index(index=corpus.es_index, document={'content': 'banana'})
+    es_client.index(index=corpus.es_index, document={'content': 'banana'})
 
     # ES is "near real time", so give it a second before we start searching the index
     sleep(1)
-    yield client
+    yield es_client
     # delete index when done
-    client.indices.delete(index='times-test')
+    es_client.indices.delete(index='times-test')
 
 @pytest.fixture()
-def es_index_client(mock_corpus):
+def es_index_client(es_client, mock_corpus):
     """
-    Create an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
+    After tests, removes any indices created for the mock corpus.
     """
-    client = elasticsearch(mock_corpus)
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
 
-    yield client
+    yield es_client
     # delete indices when done
-    indices = client.indices.get(index='times-test*')
+    indices = es_client.indices.get(index='times-test*')
     for index in indices.keys():
-        client.indices.delete(index=index)
+        es_client.indices.delete(index=index)
 
 @pytest.fixture()
-def es_alias_client(mock_corpus):
+def es_alias_client(es_client, mock_corpus):
     """
     Create multiple indices with version numbers for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
-    client = elasticsearch(mock_corpus)
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
-
     # add data from mock corpus
     corpus = load_corpus(mock_corpus)
-    es_index.create(client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
-    client.indices.create(index='times-test-2')
-    client.indices.create(index='times-test-bla-3')
+    es_index.create(es_client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
+    es_client.indices.create(index='times-test-2')
+    es_client.indices.create(index='times-test-bla-3')
 
-    yield client
+    yield es_client
     # delete index when done
-    indices = client.indices.get(index='times-test*')
+    indices = es_client.indices.get(index='times-test*')
     for index in indices.keys():
-        client.indices.delete(index=index)
+        es_client.indices.delete(index=index)
 
 @pytest.fixture()
 def times_user(db, mock_corpus):
