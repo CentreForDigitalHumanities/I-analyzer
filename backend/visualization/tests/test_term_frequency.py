@@ -1,7 +1,5 @@
-from visualization import term_frequency
-import pytest
+from visualization import term_frequency, tasks
 import csv
-from ianalyzer.elasticsearch import elasticsearch
 
 
 def test_extract_data_for_term_frequency(mock_corpus, select_small_mock_corpus):
@@ -164,39 +162,4 @@ def make_query(query_text=None, search_in_fields=None):
 
 
     return query
-
-@pytest.mark.xfail(reason = 'cannot connect to celery', run=False)
-def test_timeline_full_data(mock_corpus, select_large_mock_corpus, index_mock_corpus, mock_corpus_specs):
-    min_year = mock_corpus_specs['min_date'].year
-    max_year = mock_corpus_specs['max_date'].year
-    full_data_parameters = [{
-        'es_query': make_query(query_text = 'the', search_in_fields=['content']),
-        'corpus_name': mock_corpus,
-        'field_name': 'date',
-        'bins': [
-            {
-                'start_date': '{}-01-01'.format(year),
-                'end_date': '{}-12-31'.format(year),
-                'size': 10,
-            }
-            for year in range(min_year, max_year + 2)
-       ],
-        'unit': 'year'
-    }]
-
-    _, filename = tasks.timeline_term_frequency_full_data(None, full_data_parameters)
-
-    with open(filename) as f:
-        reader = csv.DictReader(f)
-        rows = list(row for row in reader)
-
-        total_expectations = {
-            'Total documents': mock_corpus_specs['total_docs'],
-            'Term frequency': mock_corpus_specs['total_docs'] * 2, # 2 hits per document
-            'Relative term frequency (by # documents)': 2 * len(full_data_parameters[0]['bins'])
-        }
-
-        for column, expected_total in total_expectations.items():
-            total = sum(float(row[column]) for row in rows)
-            assert total == expected_total
 
