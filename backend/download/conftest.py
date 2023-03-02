@@ -63,8 +63,3 @@ def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus, csv_direc
     filename = tasks.make_csv(results, request_json)
 
     return filename
-
-
-@pytest.fixture()
-def mock_corpora_in_db(db):
-    load_all_corpora()

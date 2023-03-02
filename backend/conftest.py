@@ -1,5 +1,6 @@
 import pytest
 from ianalyzer.elasticsearch import elasticsearch
+from addcorpus.load_corpus import load_all_corpora
 
 # user credentials and logged-in api clients
 
@@ -69,3 +70,9 @@ def es_client():
 
     return client
 
+# mock corpora
+
+@pytest.fixture()
+def mock_corpora_in_db(db):
+    '''Make sure the mock corpora are included in the database'''
+    load_all_corpora()
