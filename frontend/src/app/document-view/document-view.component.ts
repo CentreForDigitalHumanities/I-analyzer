@@ -84,7 +84,7 @@ export class DocumentViewComponent implements OnChanges {
             }
             return highlighted;
         } else {
-            console.log(field.name);
+            return this.document.fieldValues[field.name];
         }
     }
 }
