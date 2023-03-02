@@ -45,7 +45,6 @@ export class DocumentViewComponent implements OnChanges {
 
     ngOnChanges() {
         this.tabIndex = this.documentTabIndex;
-        console.log(this.document.highlight);
     }
 
     changeTabIndex(index: number) {
