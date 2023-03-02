@@ -93,6 +93,7 @@ export class CorpusService {
             visualizations: data.visualizations,
             visualizationSort: data.visualization_sort,
             multiFields: data['es_mapping']?.fields ? Object.keys(data['es_mapping'].fields) : undefined,
+            positionsOffsets: data.term_vector == 'with_positions_offsets',
             hidden: data.hidden,
             sortable: data.sortable,
             primarySort: data.primary_sort,

@@ -60,6 +60,7 @@ export interface CorpusField {
     visualizations?: string[];
     visualizationSort?: string;
     multiFields?: string[];
+    positionsOffsets?: boolean;
     hidden: boolean;
     sortable: boolean;
     primarySort: boolean;

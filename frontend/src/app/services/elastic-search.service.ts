@@ -66,7 +66,7 @@ export class ElasticSearchService {
                 post_tags: ['</span>'],
                 order: 'score',
                 fields: highlightFields.map( function(field) {
-                    return field.displayType == "text_content" ? // add matched_fields for stemmed highlighting
+                    return field.displayType == "text_content" && field.positionsOffsets ? // add matched_fields for stemmed highlighting
                     ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
                     ({ [field.name]: { }
                 })})
