@@ -45,20 +45,6 @@ def mock_corpus_specs(mock_corpus):
     }
     return specs[mock_corpus]
 
-@pytest.fixture(scope='session')
-def test_es_client(mock_corpus):
-    """
-    Initialise an elasticsearch client. Skip if no connection can be made.
-    """
-    client = elasticsearch(mock_corpus)
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
-
-    return client
-
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus(corpus_name)
     index.create(es_client, corpus, False, True, False)

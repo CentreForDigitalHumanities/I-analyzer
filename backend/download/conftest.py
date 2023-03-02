@@ -4,7 +4,7 @@ import os
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 from download.tests.mock_corpora.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
-from visualization.conftest import test_es_client, index_mock_corpus, select_small_mock_corpus, select_large_mock_corpus
+from visualization.conftest import index_mock_corpus, select_small_mock_corpus, select_large_mock_corpus
 from addcorpus.load_corpus import load_all_corpora
 from visualization.query import MATCH_ALL
 from download import tasks
