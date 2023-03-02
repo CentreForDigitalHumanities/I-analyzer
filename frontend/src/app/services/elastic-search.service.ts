@@ -70,14 +70,8 @@ export class ElasticSearchService {
                     ({ [field.name]: {"type": "fvh",
                     "matched_fields": ["speech", "speech.stemmed"] }}): ({ [field.name]: { }
                 })})
+
             }
-        if (query.highlight['fields'].indexOf({'speech': {}}) != -1) {
-            console.log('hurray!')
-        }
-        for (let item of query.highlight['fields']) {
-            if (JSON.stringify(item) == JSON.stringify({"speech": {}}))
-                console.log(`hello: ${JSON.stringify(item)}`);
-        }
         }
 
         return query;
