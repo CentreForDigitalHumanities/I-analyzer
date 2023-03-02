@@ -11,17 +11,8 @@ from redis import Redis
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-@pytest.fixture()
-def mock_corpus_settings(settings):
-    '''Add mock corpora to settings'''
-
-    settings.CORPORA = {
-        'small-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'small_mock_corpus.py'),
-        'large-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'large_mock_corpus.py')
-    }
-
 @pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'])
-def mock_corpus(request, mock_corpus_settings):
+def mock_corpus(request):
     '''Return the name of a mock corpus'''
 
     return request.param

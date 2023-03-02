@@ -17,18 +17,9 @@ def csv_directory(settings, tmpdir):
     settings.CSV_FILES_PATH = str(dir)
     return settings.CSV_FILES_PATH
 
-@pytest.fixture()
-def mock_corpus_settings(settings):
-    '''Add mock corpora to settings'''
-
-    settings.CORPORA = {
-        'small-mock-corpus': os.path.join(here, '..', 'visualization', 'tests', 'mock_corpora', 'small_mock_corpus.py'),
-        'large-mock-corpus': os.path.join(here, '..', 'visualization', 'tests', 'mock_corpora', 'large_mock_corpus.py'),
-        'multilingual-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'multilingual_mock_corpus.py')
-    }
 
 @pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus'])
-def mock_corpus(request, mock_corpus_settings, mock_corpora_in_db):
+def mock_corpus(request, mock_corpora_in_db):
     '''Return the name of a mock corpus'''
 
     return request.param
@@ -75,5 +66,5 @@ def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus, csv_direc
 
 
 @pytest.fixture()
-def mock_corpora_in_db(db, mock_corpus_settings):
+def mock_corpora_in_db(db):
     load_all_corpora()
