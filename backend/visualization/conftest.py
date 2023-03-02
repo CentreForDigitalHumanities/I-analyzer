@@ -11,7 +11,7 @@ from redis import Redis
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'], scope='session')
+@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'], scope='module')
 def mock_corpus(request):
     '''Return the name of a mock corpus'''
 
@@ -58,7 +58,7 @@ def clear_test_corpus(es_client, corpus_name):
     index = corpus.es_index
     es_client.indices.delete(index = index)
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def index_mock_corpus(mock_corpus, test_es_client):
     '''Create and populate an index for the mock corpus.'''
 
