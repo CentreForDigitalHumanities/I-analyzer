@@ -77,7 +77,8 @@ export class DocumentViewComponent implements OnChanges {
 
     highlightedInnerHtml(field: CorpusField) {
         let highlighted = this.document.fieldValues[field.name];
-        if (this.document.highlight && field.name in this.document.highlight) {
+        if (this.document.highlight && field.name in this.document.highlight &&
+            this.selectedFieldsContain(field)) {
             for (let highlight of this.document.highlight[field.name]) {
                 const stripped_highlight = this.stripTags(highlight);
                 highlighted = highlighted.replace(stripped_highlight, highlight);
