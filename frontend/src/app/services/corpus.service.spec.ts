@@ -195,6 +195,7 @@ describe('CorpusService', () => {
                 visualizations: ['resultscount', 'termfrequency'],
                 visualizationSort: 'key',
                 multiFields: undefined,
+                positionsOffsets: undefined,
                 hidden: true,
                 sortable: false,
                 primarySort: false,
@@ -225,6 +226,7 @@ describe('CorpusService', () => {
                 visualizations: ['resultscount', 'termfrequency'],
                 visualizationSort: 'key',
                 multiFields: undefined,
+                positionsOffsets: undefined,
                 searchFilter: {
                     description: 'Restrict the years from which search results will be returned.',
                     fieldName: 'year',
@@ -248,6 +250,7 @@ describe('CorpusService', () => {
                 visualizations: ['wordcloud', 'ngram'],
                 visualizationSort: null,
                 multiFields: ['clean', 'stemmed', 'length'],
+                positionsOffsets: true,
                 searchFilter: null,
                 searchFieldCore: true,
                 mappingType: 'text',
