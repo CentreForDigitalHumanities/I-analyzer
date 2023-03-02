@@ -99,8 +99,8 @@ class FullDataDownloadTaskView(APIView):
 
         try:
             task_chain = tasks.download_full_data(request.data, request.user)
-            task_chain.apply_async()
-            return Response({'task_ids': [task_chain.id]})
+            result = task_chain.apply_async()
+            return Response({'task_ids': [result.id]})
         except Exception as e:
             logger.error(e)
             raise APIException('Download failed: server error')
