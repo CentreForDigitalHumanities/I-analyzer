@@ -72,15 +72,13 @@ def es_alias_client(es_client, mock_corpus):
         es_client.indices.delete(index=index)
 
 @pytest.fixture()
-def times_user(db, mock_corpus):
-    username = 'times-user'
-    password = 'secret'
+def times_user(auth_user, mock_corpus):
     group = Group.objects.create(name='times-access')
-    user = CustomUser.objects.create(username=username, password=password)
     load_all_corpora()
     corpus = Corpus.objects.get(name=mock_corpus)
     corpus.groups.add(group)
     corpus.save()
-    user.groups.add(group)
-    user.save()
-    return user
+    auth_user.groups.add(group)
+    auth_user.save()
+    yield auth_user
+    group.delete()
