@@ -31,6 +31,7 @@ def main_content_mapping(token_counts = True, stopword_analysis = False, stemmin
                 "term_vector": "with_positions_offsets",
             }
         mapping['fields'] = multifields
+        mapping['term_vector'] = "with_positions_offsets"  # include char positions on _source for highlighting too
 
     return mapping
 
