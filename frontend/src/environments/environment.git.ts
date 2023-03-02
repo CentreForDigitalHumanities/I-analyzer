@@ -4,5 +4,6 @@ export const environment = {
     aboutPage: 'people-parliament.md',
     apiUrl: '/api',
     adminUrl: '/admin',
-    logos: []
+    logos: [],
+    showSolis: true
 };

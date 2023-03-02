@@ -5,9 +5,8 @@ from wordmodels.utils import transform_query, index_to_term
 
 def term_similarity(wm, term1, term2):
     matrix = wm['matrix']
-    analyzer = wm['analyzer']
-    transformed1 = transform_query(term1, analyzer)
-    transformed2 = transform_query(term2, analyzer)
+    transformed1 = transform_query(term1)
+    transformed2 = transform_query(term2)
     vocab = wm['vocab']
     if transformed1 in vocab and transformed2 in vocab:
         similarity = matrix.similarity(transformed1, transformed2)
@@ -18,9 +17,8 @@ def find_n_most_similar(wm, query_term, n):
     with its vocabulary and analyzer,
     determine which n terms match the given query term best
     """
-    analyzer = wm['analyzer']
     vocab = wm['vocab']
-    transformed_query = transform_query(query_term, analyzer)
+    transformed_query = transform_query(query_term)
     matrix = wm['matrix']
     results = most_similar_items(matrix, vocab, transformed_query, n)
     return [{

@@ -14,12 +14,13 @@ end = datetime.strptime('1970-12-31','%Y-%m-%d')
 def mock_client(es_index_client):
     return es_index_client
 
-@pytest.mark.parametrize("prod, expected", [(True, "ianalyzer-test-times-1"), (False, "ianalyzer-test-times")])
+
+@pytest.mark.parametrize("prod, expected", [(True, "times-test-1"), (False, "times-test")])
 def test_prod_flag(es_index_client, corpus_definition, prod, expected):
     perform_indexing(
         CORPUS_NAME, corpus_definition, start, end,
         mappings_only=True, add=False, clear=False, prod=prod, rollover=False)
-    indices = es_index_client.indices.get(index='ianalyzer-test*')
+    indices = es_index_client.indices.get(index='times-test*')
     assert expected in list(indices.keys())
 
 @pytest.mark.parametrize("mappings_only, expected", [(False, 2), (True, 0)])
@@ -28,7 +29,7 @@ def test_mappings_only_flag(es_index_client, corpus_definition, mappings_only, e
         CORPUS_NAME, corpus_definition, start, end,
         mappings_only=mappings_only, add=False, clear=False, prod=False, rollover=False)
     sleep(1)
-    res = es_index_client.count(index='ianalyzer-test*')
+    res = es_index_client.count(index='times-test*')
     assert res.get('count') == expected
 
 def test_add_clear(es_index_client, corpus_definition):
@@ -36,18 +37,18 @@ def test_add_clear(es_index_client, corpus_definition):
         CORPUS_NAME, corpus_definition, start, end,
         mappings_only=True, add=False, clear=False, prod=False, rollover=False
     )
-    res = es_index_client.count(index='ianalyzer-test*')
+    res = es_index_client.count(index='times-test*')
     assert res.get('count') == 0
     perform_indexing(
         CORPUS_NAME, corpus_definition, start, end,
         mappings_only=False, add=True, clear=False, prod=False, rollover=False
     )
     sleep(1)
-    res = es_index_client.count(index='ianalyzer-test*')
+    res = es_index_client.count(index='times-test*')
     assert res.get('count') == 2
     perform_indexing(
         CORPUS_NAME, corpus_definition, start, end,
         mappings_only=True, add=False, clear=True, prod=False, rollover=False
     )
-    res = es_index_client.count(index='ianalyzer-test*')
+    res = es_index_client.count(index='times-test*')
     assert res.get('count') == 0

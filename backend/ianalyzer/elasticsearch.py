@@ -14,7 +14,9 @@ def elasticsearch(corpus_name):
             'scheme': 'http'
     }
     kwargs = {
-        'request_timeout': 30, 'max_retries': 10, 'retry_on_timeout': True,
+        'max_retries': 15,
+        'retry_on_timeout': True,
+        'timeout': 30
     }
     if server_config.get('certs_location') and server_config.get('api_key'):
         # settings to connect via SSL are present

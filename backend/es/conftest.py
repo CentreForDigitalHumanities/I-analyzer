@@ -53,7 +53,7 @@ def es_forward_client(times_test_settings):
     sleep(1)
     yield client
     # delete index when done
-    client.indices.delete(index='ianalyzer-test-times')
+    client.indices.delete(index='times-test')
 
 @pytest.fixture()
 def es_index_client(times_test_settings):
@@ -70,7 +70,7 @@ def es_index_client(times_test_settings):
 
     yield client
     # delete indices when done
-    indices = client.indices.get(index='ianalyzer-test*')
+    indices = client.indices.get(index='times-test*')
     for index in indices.keys():
         client.indices.delete(index=index)
 
@@ -90,12 +90,12 @@ def es_alias_client(times_test_settings):
     # add data from mock corpus
     corpus = load_corpus('times')
     es_index.create(client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
-    client.indices.create(index='ianalyzer-test-times-2')
-    client.indices.create(index='ianalyzer-test-times-bla-3')
+    client.indices.create(index='times-test-2')
+    client.indices.create(index='times-test-bla-3')
 
     yield client
     # delete index when done
-    indices = client.indices.get(index='ianalyzer-test*')
+    indices = client.indices.get(index='times-test*')
     for index in indices.keys():
         client.indices.delete(index=index)
 

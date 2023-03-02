@@ -10,5 +10,6 @@ export const environment = {
     apiUrl: '/api/',
     adminUrl: '/admin/',
     logos: [
-    ]
+    ],
+    showSolis: true
 };

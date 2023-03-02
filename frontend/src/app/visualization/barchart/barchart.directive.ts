@@ -4,9 +4,9 @@ import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import * as _ from 'lodash';
 
 import { ApiService, NotificationService, SearchService } from '../../services/index';
-import { Chart, ChartOptions } from 'chart.js';
+import { Chart, ChartOptions, ChartType } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult } from '../../models';
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -42,6 +42,8 @@ export abstract class BarchartDirective
 
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
+
+    chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
     documentLimit = 5000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
@@ -156,9 +158,10 @@ export abstract class BarchartDirective
         return _.some(relevantChanges, change => !_.isEqual(change.currentValue, change.previousValue));
     }
 
-    /** update graph after changes to the normalisation menu (i.e. normalizer) */
-    onOptionChange(normalizer: 'raw'|'percent'|'documents'|'terms') {
-        this.normalizer = normalizer;
+    /** update graph after changes to the chart settings (i.e. normalizer and chart type) */
+    onOptionChange(chartParameters: ChartParameters) {
+        this.normalizer = chartParameters.normalizer;
+        this.chartType = chartParameters.chartType;
         if (this.rawData && this.chart) {
             this.prepareChart();
         }
@@ -471,7 +474,7 @@ export abstract class BarchartDirective
 
         this.chart = new Chart('barchart',
             {
-                type: 'bar',
+                type: this.chartType,
                 data: {
                     labels,
                     datasets
@@ -494,6 +497,7 @@ export abstract class BarchartDirective
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
+        this.chart.config.type = this.chartType;
         this.chart.options = this.chartOptions(datasets);
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;

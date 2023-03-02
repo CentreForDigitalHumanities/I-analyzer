@@ -1,6 +1,7 @@
 import os
 from os.path import basename, exists, join, splitext
 import pickle
+from string import punctuation
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
 
@@ -18,7 +19,6 @@ def load_word_models(corpus, binned=False):
         w2v_list.remove(full_model)
     except:
        raise(Exception("No full word model found for this corpus."))
-    analyzer = get_analyzer(corpus)
     if binned:
         w2v_list.sort()
         wm = [
@@ -26,7 +26,6 @@ def load_word_models(corpus, binned=False):
                     "start_year": get_year(wm_file, 1),
                     "end_year": get_year(wm_file, 2),
                     "matrix": KeyedVectors.load_word2vec_format(wm_file, binary=True),
-                    "analyzer": analyzer,
                     "vocab": get_vocab(wm_file)
                 }
             for wm_file in w2v_list
@@ -37,7 +36,6 @@ def load_word_models(corpus, binned=False):
             "start_year": get_year(full_model, 1),
             "end_year": get_year(full_model, 2),
             "matrix": model,
-            "analyzer": analyzer,
             "vocab": get_vocab(full_model)
         }
     return wm
@@ -50,16 +48,10 @@ def get_vocab(kv_filename):
 def get_year(kv_filename, position):
     return int(splitext(basename(kv_filename))[0].split('_')[position])
 
-def get_analyzer(corpus):
-    analyzer_file = glob('{}/*analyzer.pkl'.format(corpus.word_model_path))[0]
-    with open(analyzer_file, 'rb') as f:
-        return pickle.load(f)
-
 def word_in_model(query_term, corpus, max_distance = 2):
     model = load_word_models(corpus)
-    analyzer = model['analyzer']
     vocab = model['vocab']
-    transformed_query = transform_query(query_term, analyzer)
+    transformed_query = transform_query(query_term)
 
     if transformed_query in model['vocab']:
         return { 'exists': True }
@@ -83,14 +75,19 @@ def load_wm_documentation(corpus_string):
     else:
         return None
 
-def transform_query(query, analyzer):
-    transformed = analyzer(query)
+def transform_query(query):
+    if not has_whitespace(query):
+        transformed = strip_punctuation(query).lower()
+        return transformed if transformed != '' else None
 
-    if len(transformed) == 1:
-        return transformed[0]
+def has_whitespace(query):
+    return ' ' in query
+
+def strip_punctuation(query):
+    return query.strip(punctuation)
 
 def term_to_index(query, model):
-    transformed = transform_query(query, model['analyzer'])
+    transformed = transform_query(query)
     if transformed and transformed in model['vocab']:
         return model['transformer'].vocabulary_[transformed]
 
