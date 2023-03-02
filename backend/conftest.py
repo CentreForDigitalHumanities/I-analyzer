@@ -55,7 +55,7 @@ def admin_client(client, admin_user, admin_credentials):
 # elasticsearch
 
 @pytest.fixture(scope='session')
-def test_es_client():
+def es_client():
     """
     Initialise an elasticsearch client for the default elasticsearch cluster. Skip if no connection can be made.
     """

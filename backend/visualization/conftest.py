@@ -59,12 +59,12 @@ def clear_test_corpus(es_client, corpus_name):
     es_client.indices.delete(index = index)
 
 @pytest.fixture(scope='module')
-def index_mock_corpus(mock_corpus, test_es_client):
+def index_mock_corpus(mock_corpus, es_client):
     '''Create and populate an index for the mock corpus.'''
 
-    index_test_corpus(test_es_client, mock_corpus)
+    index_test_corpus(es_client, mock_corpus)
     yield mock_corpus
-    clear_test_corpus(test_es_client, mock_corpus)
+    clear_test_corpus(es_client, mock_corpus)
 
 @pytest.fixture()
 def corpus_user(transactional_db, mock_corpus): # use transactional_db instead of db for async task support

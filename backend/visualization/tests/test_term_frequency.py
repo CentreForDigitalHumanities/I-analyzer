@@ -1,6 +1,7 @@
 from visualization import term_frequency
 import pytest
 import csv
+from ianalyzer.elasticsearch import elasticsearch
 
 
 def test_extract_data_for_term_frequency(mock_corpus, select_small_mock_corpus):
@@ -32,7 +33,7 @@ def test_extract_data_for_term_frequency(mock_corpus, select_small_mock_corpus):
     }
     assert aggregators == aggregators_target
 
-def test_match_count(mock_corpus, test_es_client, select_small_mock_corpus, index_mock_corpus):
+def test_match_count(mock_corpus, es_client, select_small_mock_corpus, index_mock_corpus):
     """Test counting matches of the search term"""
 
     frequencies = [
@@ -54,17 +55,17 @@ def test_match_count(mock_corpus, test_es_client, select_small_mock_corpus, inde
     for text, freq in frequencies:
         query = make_query(query_text=text)
         fieldnames, aggregators = term_frequency.extract_data_for_term_frequency(mock_corpus, query)
-        match_count = term_frequency.get_match_count(test_es_client, query, mock_corpus, 100, fieldnames)
+        match_count = term_frequency.get_match_count(es_client, query, mock_corpus, 100, fieldnames)
         assert match_count == freq
 
-def test_total_docs_and_tokens(test_es_client, mock_corpus, index_mock_corpus, mock_corpus_specs):
+def test_total_docs_and_tokens(es_client, mock_corpus, index_mock_corpus, mock_corpus_specs):
     """Test total document counter"""
 
 
     query = make_query(query_text='*', search_in_fields=['content'])
 
     fieldnames, aggregators = term_frequency.extract_data_for_term_frequency(mock_corpus, query)
-    total_doc_count, token_count = term_frequency.get_total_docs_and_tokens(test_es_client, query, mock_corpus, aggregators)
+    total_doc_count, token_count = term_frequency.get_total_docs_and_tokens(es_client, query, mock_corpus, aggregators)
     assert total_doc_count == mock_corpus_specs['total_docs']
     assert token_count == (mock_corpus_specs['total_words'] if mock_corpus_specs['has_token_counts'] else None)
 
