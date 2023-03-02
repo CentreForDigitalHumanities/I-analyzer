@@ -3,12 +3,12 @@ from visualization.tests.test_term_frequency import make_query
 from download import tasks
 import pytest
 
-@pytest.mark.skip(reason='test takes a while - run when needed')
-def test_timeline_full_data(mock_corpus, select_large_mock_corpus, index_mock_corpus, mock_corpus_specs):
+def test_timeline_full_data(mock_corpus, select_small_mock_corpus, index_mock_corpus, mock_corpus_specs):
     min_year = mock_corpus_specs['min_date'].year
     max_year = mock_corpus_specs['max_date'].year
+    search_fields = [mock_corpus_specs['content_field']]
     full_data_parameters = [{
-        'es_query': make_query(query_text = 'the', search_in_fields=['content']),
+        'es_query': make_query(query_text = 'the', search_in_fields=search_fields),
         'corpus_name': mock_corpus,
         'field_name': 'date',
         'bins': [
@@ -30,13 +30,14 @@ def test_timeline_full_data(mock_corpus, select_large_mock_corpus, index_mock_co
         reader = csv.DictReader(f)
         rows = list(row for row in reader)
 
+        expected_frequency = 2
         total_expectations = {
             'Total documents': mock_corpus_specs['total_docs'],
-            'Term frequency': mock_corpus_specs['total_docs'] * 2, # 2 hits per document
-            'Relative term frequency (by # documents)': 2 * len(full_data_parameters[0]['bins'])
+            'Term frequency': expected_frequency, # 2 hits per document
+            'Relative term frequency (by # documents)': expected_frequency
         }
 
         for column, expected_total in total_expectations.items():
-            total = sum(float(row[column]) for row in rows)
+            total = sum(float(row[column] or 0) for row in rows)
             assert total == expected_total
 
