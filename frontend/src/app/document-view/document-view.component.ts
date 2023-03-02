@@ -45,6 +45,7 @@ export class DocumentViewComponent implements OnChanges {
 
     ngOnChanges() {
         this.tabIndex = this.documentTabIndex;
+        console.log(this.document.highlight);
     }
 
     changeTabIndex(index: number) {
@@ -66,6 +67,24 @@ export class DocumentViewComponent implements OnChanges {
             return true;  // if there are no selected fields, return true for all fields
         } else {
             return false;
+        }
+    }
+
+    stripTags(htmlString: string){
+        const parseHTML= new DOMParser().parseFromString(htmlString, 'text/html');
+        return parseHTML.body.textContent || '';
+      }
+
+    highlightedInnerHtml(field: CorpusField) {
+        let highlighted = this.document.fieldValues[field.name];
+        if (this.document.highlight && field.name in this.document.highlight) {
+            for (let highlight of this.document.highlight[field.name]) {
+                const stripped_highlight = this.stripTags(highlight);
+                highlighted = highlighted.replace(stripped_highlight, highlight);
+            }
+            return highlighted;
+        } else {
+            console.log(field.name);
         }
     }
 }

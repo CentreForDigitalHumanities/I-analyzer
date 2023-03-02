@@ -45,6 +45,10 @@
                     <div class="content" *ngIf="document.fieldValues[field.name] && selectedFieldsContain(field)" [innerHtml]="document.fieldValues[field.name] | highlight:queryModel.queryText"></div>
                     <div class="content" *ngIf="document.fieldValues[field.name] && !selectedFieldsContain(field)" [innerHtml]="document.fieldValues[field.name]"></div>
                 </ng-container>
+                <h3>BREAK</h3>
+                <ng-container *ngFor="let field of contentFields">
+                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="highlightedInnerHtml(field)"></div>
+                </ng-container>
             </div>
             <div *ngIf="tabIndex==1">
                 <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
