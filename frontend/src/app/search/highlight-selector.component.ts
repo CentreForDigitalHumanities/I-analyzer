@@ -51,8 +51,6 @@ export class HighlightSelectorComponent extends ParamDirective {
             highlightSize -= 100;
         } else if (instruction == 'off') {
             highlightSize = 0;
-        } else if (instruction == 'custom') {
-            highlightSize = event.target.value;
         }
         this.setParams({ highlight: highlightSize !== 0 ? highlightSize : null });
     }
