@@ -1,6 +1,31 @@
 <div class="contextbox">
-    <h2 class="subtitle">Context (no. of characters):</h2>
-    <p class="control" iaBalloon="Leave blank or set to 0 to turn off highlighting" iaBalloonLength="medium" iaBalloonPosition="right">
-        <input class="input" type="number" (change)="updateHighlightSize($event)">
-    </p>
+    <div>
+        <h2 class="subtitle highlights-subtitle">Highlights:</h2>
+    </div>
+    <div class="column is-narrow">
+        <div class="field has-addons">
+            <div class="extended-selector">
+                <div *ngIf="highlight!=0"  class="field has-addons">
+                    <div class="control" iaBalloon="Increase/decrease preview size" iaBalloonLength="medium" iaBalloonPosition="right">
+                        <button class="button is-light" (click)="updateHighlightSize($event, 'more')">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <button class="button is-light" (click)="updateHighlightSize($event, 'less')">
+                            <i class="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Buttons for switching between table and graphical representation -->
+            <div class="control" iaBalloon="Toggle preview and highlights" iaBalloonLength="medium" iaBalloonPosition="right">
+                <button class="button" [class.is-primary]="highlight!=0" [disabled]="queryText==null||queryText==''" (click)="updateHighlightSize($event, 'on')">
+                    ON
+                </button>
+                <button class="button" [class.is-primary]="highlight==0" (click)="updateHighlightSize($event, 'off')">
+                    OFF
+                </button>
+            </div>
+        </div>
+
+    </div>
 </div>

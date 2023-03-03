@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { ParamDirective } from '../param/param-directive';
@@ -18,8 +18,16 @@ export class HighlightSelectorComponent extends ParamDirective {
       super(route, router);
     }
 
+    @Input() queryText;
+
     initialize() {
 
+    }
+
+    ngOnChanges() {
+        if (this.queryText == '' || this.queryText == null) {
+            this.setParams({ highlight: null });
+        }
     }
 
     teardown() {
@@ -31,9 +39,20 @@ export class HighlightSelectorComponent extends ParamDirective {
     }
 
 
-    updateHighlightSize(event) {
-        const highlightSize = event.target.value;
-        this.setParams({ highlight: highlightSize !== "0" ? highlightSize : null });
+    updateHighlightSize(event, instruction?: string) {
+        let highlightSize = this.highlight;
+        if (instruction == 'on' && highlightSize == 0) {
+            highlightSize = 100;
+        } else if (instruction == 'more' && highlightSize < 800) {
+            highlightSize += 100;
+        } else if (instruction == 'less' && highlightSize > 120) {
+            highlightSize -= 100;
+        } else if (instruction == 'off') {
+            highlightSize = 0;
+        } else if (instruction == 'custom') {
+            highlightSize = event.target.value;
+        }
+        this.setParams({ highlight: highlightSize !== 0 ? highlightSize : null });
     }
 
 }
