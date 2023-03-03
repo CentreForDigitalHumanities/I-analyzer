@@ -27,6 +27,8 @@ export class HighlightSelectorComponent extends ParamDirective {
     ngOnChanges() {
         if (this.queryText == '' || this.queryText == null) {
             this.setParams({ highlight: null });
+        } else {
+            this.setParams({ highlight: 100 });
         }
     }
 
