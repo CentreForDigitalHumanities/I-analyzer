@@ -48,7 +48,11 @@
                                 <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
                                     <td>
                                         <ng-container *ngFor="let highlight of document.highlight[field.name]">
-                                            <tr><div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div></tr>
+                                            <tr>
+                                                <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
+                                                <!-- insert ellipsis [...] in between snippets or at the end of a single snippet -->
+                                                <p *ngIf="highlight != document.highlight[field.name][document.highlight[field.name].length-1]">[...]</p>
+                                            </tr>
                                         </ng-container>
                                     </td>
                                 </ng-container>
