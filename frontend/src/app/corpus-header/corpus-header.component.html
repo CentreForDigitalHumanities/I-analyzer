@@ -6,6 +6,7 @@
                     <h1 class="title">
                         <span *ngIf="currentPage === 'search'">Search</span>
                         <span *ngIf="currentPage === 'word-models'">Word models of</span>
+                        <span *ngIf="currentPage === 'document'">Document in</span>
                         <a class="corpus-name" [routerLink]="['/home']">&ldquo;{{corpus.title}}&rdquo;</a>
                     </h1>
                 </div>
