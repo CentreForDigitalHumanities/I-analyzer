@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import * as _ from 'lodash';
 import { combineLatest } from 'rxjs';
 import { Corpus, FoundDocument } from '../models';
 import { CorpusService, ElasticSearchService } from '../services';
@@ -13,6 +14,8 @@ export class DocumentPageComponent implements OnInit {
     corpus: Corpus;
     documentId: string;
     document: FoundDocument;
+
+    documentNotFound: boolean;
 
     constructor(
         private corpusService: CorpusService,
@@ -32,9 +35,10 @@ export class DocumentPageComponent implements OnInit {
     }
 
     getDocument(id: string) {
-        this.elasticSearchService.getDocumentById(id, this.corpus).then(
-            document => this.document = document
-        );
+        this.elasticSearchService.getDocumentById(id, this.corpus).then(document => {
+            this.document = document;
+            this.documentNotFound = _.isUndefined(this.document);
+        });
     }
 
 }
