@@ -100,7 +100,8 @@ export const appRoutes: Routes = [
     },
     {
         path: 'document/:corpus/:id',
-        component: DocumentPageComponent
+        component: DocumentPageComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'login',
