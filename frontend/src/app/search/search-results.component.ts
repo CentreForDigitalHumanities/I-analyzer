@@ -4,7 +4,7 @@ import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryMode
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import * as _ from 'lodash';
-import { faBookOpen, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search-results',
@@ -70,7 +70,7 @@ export class SearchResultsComponent implements OnChanges {
     public documentTabIndex: number;
 
     contextIcon = faBookOpen;
-
+    linkIcon = faLink;
     faArrowLeft = faArrowLeft;
     faArrowRight = faArrowRight;
 

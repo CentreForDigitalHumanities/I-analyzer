@@ -27,7 +27,7 @@
                     </button>
                 </div>
             </div>
-            <div class="level-left" *ngIf="wordModelsPresent">
+            <div class="level-left" *ngIf="wordModelsPresent || currentPage === 'document'">
                 <div class="field has-addons">
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/search', corpus.name]"
@@ -38,7 +38,7 @@
                             </span>
                         </a>
                     </div>
-                    <div class="control">
+                    <div class="control" *ngIf="wordModelsPresent">
                         <a class="button is-medium" [routerLink]="['/word-models', corpus.name]"
                             [class.is-primary]="currentPage === 'word-models'"
                             iaBalloon="Explore word models of this corpus" iaBalloonPosition="up-right">
