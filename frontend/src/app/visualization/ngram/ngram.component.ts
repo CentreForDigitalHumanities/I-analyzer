@@ -64,7 +64,18 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     initialize(): void {
-
+        this.currentParameters = {
+            size: this.sizeOptions[0].value,
+            positions: this.positionsOptions[0].value,
+            freqCompensation: this.freqCompensationOptions[0].value,
+            analysis: 'none',
+            maxDocuments: 50,
+            numberOfNgrams: 10,
+            dateField: 'date',
+        }
+        this.setParams(
+            this.currentParameters
+        );
     }
 
     teardown(): void {
@@ -100,15 +111,13 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     setParameters(params: Params) {
         this.currentParameters = {
-            size: parseInt(params.get('size'), 10) || this.sizeOptions[0].value,
-            positions: params.get('positions') || this.positionsOptions[0].value,
-            freqCompensation: params.get('freqCompensation') !==  undefined ?
-                params.get('freqCompensation') === 'true' :
-                this.freqCompensationOptions[0].value,
-            analysis: params.get('analysis') || 'none',
-            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 50,
-            numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
-            dateField: params.get('dateField') || 'date',
+            size: parseInt(params.get('size'), 10),
+            positions: params.get('positions'),
+            freqCompensation: params.get('freqCompensation') === 'true',
+            analysis: params.get('analysis'),
+            maxDocuments: parseInt(params.get('maxDocuments'), 10),
+            numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10),
+            dateField: params.get('dateField'),
         };
     }
 
@@ -198,8 +207,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         this.currentParameters[parameter] = value;
 
         if (parameter === 'size' && value) {
- this.setPositionsOptions(value);
-}
+            this.setPositionsOptions(value);
+        }
 
         this.parametersChanged = true;
     }

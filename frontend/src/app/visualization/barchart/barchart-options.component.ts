@@ -63,31 +63,27 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         }
         this.chartParameters.emit(chartParameters);
         const route = {};
-        if (this.currentNormalizer !== 'raw' || 'terms') {
-            route['normalize'] = this.currentNormalizer;
-        } else {
-            route['normalize'] = null;
-            }
-
+        route['normalize'] = this.currentNormalizer;
         this.setParams(route);
     }
 
-    initialize() {}
+    initialize() {
+        if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+            this.currentNormalizer = 'raw';
+        } else {
+            this.currentNormalizer = 'terms';
+        }
+        this.setParams(
+            {'normalize': this.currentNormalizer}
+        );
+    }
 
     teardown() {
         this.setParams(barChartSetNull);
     }
 
     setStateFromParams(params: Params) {
-        if (params.has('normalize')) {
-            this.currentNormalizer = params.get('normalize') as Normalizer;
-        } else {
-            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
-                this.currentNormalizer = 'raw';
-            } else {
-                this.currentNormalizer = 'terms';
-            }
-        }
+        this.currentNormalizer = params.get('normalize') as Normalizer;
         if (params.has('visualizeTerm')) {
             this.queries = params.getAll('visualizeTerm');
             this.showEdit = true;
