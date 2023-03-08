@@ -83,5 +83,4 @@ export class SearchService {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
     }
 
-
 }

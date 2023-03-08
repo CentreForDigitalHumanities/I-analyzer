@@ -1,1 +1,9 @@
-<p>document-page works!</p>
+<div class="container">
+    <div class="section">
+        <h1 class="title">{{corpus.name}}</h1>
+        <h2 class="subtitle">{{documentId}}</h2>
+    </div>
+    <div class="section" *ngIf="document">
+        <ia-document-view [document]="document" [corpus]="corpus" [fields]="corpus.fields"></ia-document-view>
+    </div>
+</div>
