@@ -1,11 +1,11 @@
-import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/core';
+import { DoCheck, Input, Component } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../param/param-directive';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params, QueryParamsHandling, Router } from '@angular/router';
 
 
 
@@ -14,7 +14,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent extends ParamDirective implements DoCheck, OnChanges {
+export class VisualizationComponent extends ParamDirective implements DoCheck {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
 
@@ -73,12 +73,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         }
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.queryModel || changes.corpus) {
-            this.initialize();
-        }
-    }
-
     setupDropdowns() {
         this.allVisualizationFields = [];
         if (this.corpus && this.corpus.fields) {
@@ -109,7 +103,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         } else {
             this.noVisualizations = false;
             this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
-            this.updateParams();
+            this.updateParams(true);
         }
     }
 
@@ -137,10 +131,10 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
             item => item.value === this.visualizationType) || this.visDropdown[0];
     }
 
-    updateParams() {
+    updateParams(guardParams=false) {
         this.params['visualize'] = this.visualizationType;
         this.params['visualizedField'] = this.visualizedField.name;
-        this.setParams(this.params);
+        this.setParams(this.params, guardParams);
     }
 
     setVisualizationType(visType: string) {

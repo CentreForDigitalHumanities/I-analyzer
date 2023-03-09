@@ -73,9 +73,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         } else {
             this.currentNormalizer = 'terms';
         }
-        this.setParams(
-            {'normalize': this.currentNormalizer}
-        );
+        this.setParams({'normalize': this.currentNormalizer}, true);
     }
 
     teardown() {

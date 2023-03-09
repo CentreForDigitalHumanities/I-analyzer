@@ -73,9 +73,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             numberOfNgrams: 10,
             dateField: 'date',
         }
-        this.setParams(
-            this.currentParameters
-        );
+        this.setParams(this.currentParameters, true);
     }
 
     teardown(): void {
