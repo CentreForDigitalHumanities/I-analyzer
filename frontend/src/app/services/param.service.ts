@@ -195,7 +195,7 @@ export class ParamService {
     makeContextParams(document: FoundDocument, corpus: Corpus): any {
         const contextSpec = corpus.documentContext;
 
-        const queryText = undefined;
+        const queryText = '';
 
         const contextFields = contextSpec.contextFields
             .filter(field => ! corpus.fields.find(f => f.name === field.name));
