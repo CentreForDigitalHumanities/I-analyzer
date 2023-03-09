@@ -116,54 +116,9 @@ export class CorpusService {
         searchable: data.searchable,
         downloadable: data.downloadable,
         name: data.name,
-        searchFilter: data['search_filter']
-            ? this.parseSearchFilter(data['search_filter'], data['name'])
-            : null,
+        searchFilter: data['search_filter'] || null,
         mappingType: data.es_mapping?.type,
     });
-
-    private parseSearchFilter(
-        filter: any,
-        fieldName: string
-    ): SearchFilter<SearchFilterData> {
-        let defaultData: any;
-        switch (filter.name) {
-            case 'BooleanFilter':
-                defaultData = {
-                    filterType: filter.name,
-                    checked: false,
-                };
-                break;
-            case 'MultipleChoiceFilter':
-                defaultData = {
-                    filterType: filter.name,
-                    optionCount: filter.option_count,
-                    selected: [],
-                };
-                break;
-            case 'RangeFilter':
-                defaultData = {
-                    filterType: filter.name,
-                    min: filter.lower,
-                    max: filter.upper,
-                };
-                break;
-            case 'DateFilter':
-                defaultData = {
-                    filterType: filter.name,
-                    min: this.formatDate(new Date(filter.lower)),
-                    max: this.formatDate(new Date(filter.upper)),
-                };
-                break;
-        }
-        return {
-            fieldName,
-            description: filter.description,
-            useAsFilter: false,
-            defaultData,
-            currentData: defaultData,
-        };
-    }
 
     private parseDate(date: any): Date {
         // months are zero-based!
@@ -174,13 +129,6 @@ export class CorpusService {
             date.hour,
             date.minute
         );
-    }
-
-    /**
-     * Return a string of the form 0123-04-25.
-     */
-    private formatDate(date: Date): string {
-        return moment(date).format().slice(0, 10);
     }
 
     private parseDocumentContext(

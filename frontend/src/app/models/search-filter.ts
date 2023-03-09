@@ -1,7 +1,9 @@
 import * as moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { CorpusField } from './corpus';
-import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter } from './elasticsearch';
+import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
+import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
+    RangeFilterOptions } from './search-filter-options';
 
 abstract class SearchFilter<FilterData> {
 	corpusField: CorpusField;
@@ -43,7 +45,7 @@ abstract class SearchFilter<FilterData> {
         };
     }
 
-	abstract makeDefaultData(filterOptions): FilterData;
+	abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
 
 	abstract dataFromValue(value: any): FilterData;
 
@@ -63,7 +65,7 @@ interface DateFilterData {
 }
 
 export class DateFilter extends SearchFilter<DateFilterData> {
-	makeDefaultData(filterOptions) {
+	makeDefaultData(filterOptions: DateFilterOptions) {
 		return {
 			min: this.parseDate(filterOptions.min),
 			max: this.parseDate(filterOptions.max)
@@ -114,8 +116,8 @@ export class DateFilter extends SearchFilter<DateFilterData> {
 
 export class BooleanFilter extends SearchFilter<boolean> {
 
-    makeDefaultData(filterOptions: any) {
-        return filterOptions.checked;
+    makeDefaultData(filterOptions: BooleanFilterOptions) {
+        return false;
     }
 
     dataFromValue(value: any): boolean {
@@ -142,7 +144,7 @@ export class BooleanFilter extends SearchFilter<boolean> {
 type MultipleChoiceFilterData = string[];
 
 export class MultipleChoiceFilter extends SearchFilter<MultipleChoiceFilterData> {
-    makeDefaultData(filterOptions: any): MultipleChoiceFilterData {
+    makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
     }
 
@@ -173,7 +175,7 @@ interface RangeFilterData {
 }
 
 export class RangeFilter extends SearchFilter<RangeFilterData> {
-    makeDefaultData(filterOptions: any): RangeFilterData {
+    makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
 			min: filterOptions.lower,
 			max: filterOptions.upper
@@ -203,6 +205,30 @@ export class RangeFilter extends SearchFilter<RangeFilterData> {
                     gte: this.currentData.min,
                     lte: this.currentData.max,
                 }
+            }
+        };
+    }
+}
+
+export class AdHocFilter extends SearchFilter<any> {
+    makeDefaultData(filterOptions: FilterOptions) {}
+
+    dataFromValue(value: any) {
+        return value;
+    }
+
+    dataFromString(value: string) {
+        return value;
+    }
+
+    dataToString(data: any): string {
+        return data.toString();
+    }
+
+    toEsFilter(): EsTermFilter {
+        return {
+            term: {
+                [this.corpusField.name]: this.currentData
             }
         };
     }
