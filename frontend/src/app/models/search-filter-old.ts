@@ -75,7 +75,7 @@ export const searchFilterDataFromField = (field: CorpusField, value: string[]): 
     }
 };
 
-const parseMinMax = (value: string[]): [string, string] => {
+export const parseMinMax = (value: string[]): [string, string] => {
     const term = value[0];
     if (term.split(':').length === 2) {
         return term.split(':') as [string, string];
