@@ -156,7 +156,7 @@ export class AuthService implements OnDestroy {
     }
 
     public register(username, email, password1, password2) {
-        return this.apiService.register2({
+        return this.apiService.register({
             username,
             email,
             password1,

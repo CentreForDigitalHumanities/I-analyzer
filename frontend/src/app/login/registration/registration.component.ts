@@ -60,7 +60,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 username,
                 email,
                 signupForm.value.password,
-                signupForm.value.password
+                signupForm.value.passwordconfirm
             )
             .pipe(takeUntil(this.destroy$))
             .subscribe(

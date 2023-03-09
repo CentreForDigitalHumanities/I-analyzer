@@ -44,7 +44,7 @@ flask_table_columns = {
 
 def extract_row_data(values, table):
     columns = flask_table_columns[table]
-    return {col: value for col, value in zip(columns, values)}
+    return dict(zip(columns, values))
 
 
 def import_table_data(directory, table):
@@ -115,7 +115,7 @@ def save_flask_user(row):
 
     # add an Allauth verified email address
     EmailAddress.objects.create(
-        user=user, email=user.email, verified=True, primary=True)
+        user=user, email=user.email, verified=row['active'], primary=True)
 
 
 def save_flask_corpus(row):

@@ -156,21 +156,6 @@ export class UserService implements OnDestroy {
         return this.currentUser;
     }
 
-    /**
-     * Registration of new user.
-     */
-    public register(
-        username: string,
-        email: string,
-        password: string
-    ): Promise<{
-        success: boolean;
-        is_valid_username: boolean;
-        is_valid_email: boolean;
-    }> {
-        return this.apiService.register({ username, email, password });
-    }
-
     public async logout(
         notifyServer: boolean = true,
         redirectToLogout: boolean = true
