@@ -1,4 +1,4 @@
-import { SearchFilter, SearchFilterData } from './search-filter';
+import { SearchFilter, SearchFilterData } from './search-filter-old';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
