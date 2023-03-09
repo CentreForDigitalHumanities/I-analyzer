@@ -5,7 +5,7 @@ import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, 
 import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions } from './search-filter-options';
 
-abstract class SearchFilter<FilterData> {
+abstract class AbstractSearchFilter<FilterData> {
 	corpusField: CorpusField;
 	defaultData: FilterData;
 	data: BehaviorSubject<FilterData>;
@@ -64,7 +64,7 @@ interface DateFilterData {
 	max: Date;
 }
 
-export class DateFilter extends SearchFilter<DateFilterData> {
+export class DateFilter extends AbstractSearchFilter<DateFilterData> {
 	makeDefaultData(filterOptions: DateFilterOptions) {
 		return {
 			min: this.parseDate(filterOptions.min),
@@ -114,7 +114,7 @@ export class DateFilter extends SearchFilter<DateFilterData> {
     }
 }
 
-export class BooleanFilter extends SearchFilter<boolean> {
+export class BooleanFilter extends AbstractSearchFilter<boolean> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
         return false;
@@ -143,7 +143,7 @@ export class BooleanFilter extends SearchFilter<boolean> {
 
 type MultipleChoiceFilterData = string[];
 
-export class MultipleChoiceFilter extends SearchFilter<MultipleChoiceFilterData> {
+export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFilterData> {
     makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
     }
@@ -174,7 +174,7 @@ interface RangeFilterData {
     max: number;
 }
 
-export class RangeFilter extends SearchFilter<RangeFilterData> {
+export class RangeFilter extends AbstractSearchFilter<RangeFilterData> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
 			min: filterOptions.lower,
@@ -210,7 +210,7 @@ export class RangeFilter extends SearchFilter<RangeFilterData> {
     }
 }
 
-export class AdHocFilter extends SearchFilter<any> {
+export class AdHocFilter extends AbstractSearchFilter<any> {
     makeDefaultData(filterOptions: FilterOptions) {}
 
     dataFromValue(value: any) {
@@ -244,3 +244,5 @@ const parseMinMax = (value: string[]): [string, string] => {
         return [value[0], value[1]];
     }
 };
+
+export type SearchFilter = DateFilter | MultipleChoiceFilter | RangeFilter | BooleanFilter | AdHocFilter;

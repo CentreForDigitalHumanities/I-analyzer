@@ -1,6 +1,11 @@
-import {SearchFilter } from '../models/index';
+import { ParamMap } from '@angular/router';
+import * as _ from 'lodash';
+import { Subject } from 'rxjs';
+import { Corpus, CorpusField, SortBy, SortDirection } from '../models/index';
 import { EsQuery } from '../services';
-import { SearchFilterData } from './search-filter-old';
+import { highlightFromParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
+    sortSettingsToParams } from '../utils/params';
+import { SearchFilter } from './search-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -55,18 +60,95 @@ export class QueryDb {
     public total_results: number;
 }
 
-/** This is the client's representation of the query by the user, shared between components */
-export interface QueryModel {
-    queryText: string;
-    fields?: string[];
-    filters?: SearchFilter<SearchFilterData>[];
-    sortBy?: string;
-    sortAscending?: boolean;
-    highlight?: number;
-}
-
 /** These are the from / size parameters emitted by the pagination component */
 export interface SearchParameters {
     from: number;
     size: number;
+}
+
+export class QueryModel {
+    corpus: Corpus;
+	queryText: string;
+	searchFields: CorpusField[];
+	filters: SearchFilter[] = [];
+	sortBy: SortBy = 'default';
+	sortDirection: SortDirection;
+    highlightSize: number;
+
+	update = new Subject<void>();
+
+    constructor(corpus: Corpus) {
+		this.corpus = corpus;
+	}
+
+	setQueryText(text?: string) {
+		this.queryText = text;
+		this.update.next();
+	}
+
+	addFilter(filter: SearchFilter) {
+		this.filters.push(filter);
+		filter.data.subscribe(data => {
+			this.update.next();
+		});
+	}
+
+    setFromParams(params: ParamMap) {
+		this.queryText = queryFromParams(params);
+        this.searchFields = searchFieldsFromParams(params, this.corpus);
+        [this.sortBy, this.sortDirection] = sortSettingsFromParams(params, this.corpus.fields);
+		this.highlightSize = highlightFromParams(params);
+		this.update.next();
+	}
+
+    /**sortFromParams
+     * reset values to a blank query for the corpus
+     */
+	reset(): void {
+		this.queryText = undefined;
+		this.searchFields = undefined;
+		this.filters = [];
+		this.sortBy = 'default';
+		this.sortDirection = undefined;
+		this.update.next();
+	}
+
+    /**
+     * make a clone of the current query.
+     * optionally include querytext or a filter for the new query.
+     */
+	clone(queryText?: string, addFilter?: SearchFilter) {
+		const newQuery = _.clone(this); // or cloneDeep?
+		if (queryText !== undefined) {
+			newQuery.setQueryText(queryText);
+		}
+		if (addFilter) {
+			newQuery.addFilter(addFilter);
+		}
+		return newQuery;
+	}
+
+    toRouteParam(): {[param: string]: any} {
+		const queryTextParams = { query: this.queryText } || {};
+        const searchFieldsParams = { fields:
+            this.searchFields ? this.searchFields.map(f => f.name).join(',') : null
+        };
+		const filterParams = this.filters.map(f => f.toRouteParam());
+        const sortParams = sortSettingsToParams(this.sortBy, this.sortDirection);
+        const highlightParams = this.highlightSize ? { highlight: this.highlightSize } : {};
+
+        return {
+            ...queryTextParams,
+            ...searchFieldsParams,
+            ...filterParams,
+            ...sortParams,
+            ...highlightParams,
+        };
+	}
+
+	// toEsQuery(): EsQuery {
+	// 	return {
+    //         query: {}
+    //     };
+	// }
 }
