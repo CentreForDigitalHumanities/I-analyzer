@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField } from '../models/index';
+    AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField,
+    EsFilter, EsDateFilter, EsRangeFilter, EsTermsFilter, EsBooleanFilter,
+    EsSearchClause, BooleanQuery, MatchAll } from '../models/index';
 
 
 import * as _ from 'lodash';
@@ -337,66 +339,7 @@ export interface EsQuery {
     transferred?: number;
 }
 
-interface BooleanQuery {
-    'bool': {
-        must: EsSearchClause;
-        filter: EsFilter[];
-    };
-}
 
-interface MatchAll {
-    match_all: {};
-}
-
-interface SimpleQueryString {
-    simple_query_string: {
-        query: string;
-        fields?: string[];
-        lenient: true;
-        default_operator: 'or';
-    };
-}
-
-type EsSearchClause = MatchAll | SimpleQueryString;
-
-interface EsDateFilter {
-    range: {
-        [field: string]: {
-            gte: string;
-            lte: string;
-            format: 'yyyy-MM-dd';
-        };
-    };
-}
-
-interface EsTermFilter {
-    term: {
-        [field: string]: string;
-    };
-}
-
-interface EsTermsFilter {
-    terms: {
-        [field: string]: string[];
-    };
-}
-
-interface EsBooleanFilter {
-    term: {
-        [field: string]: boolean;
-    };
-}
-
-interface EsRangeFilter {
-    range: {
-        [field: string]: {
-            gte: number;
-            lte: number;
-        };
-    };
-}
-
-type EsFilter = EsDateFilter | EsTermFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 interface Aggregator {
     name: string;
