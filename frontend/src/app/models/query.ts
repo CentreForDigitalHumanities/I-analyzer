@@ -3,8 +3,10 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { Corpus, CorpusField, SortBy, SortDirection } from '../models/index';
 import { EsQuery } from '../services';
+import { combineSearchClauseAndFilters, makeEsSearchClause, makeHighlightSpecification, makeSortSpecification } from '../utils/es-query';
 import { highlightFromParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
     sortSettingsToParams } from '../utils/params';
+import { sortByDefault } from '../utils/sort';
 import { SearchFilter } from './search-filter';
 
 /** This is the query object as it is saved in the database.*/
@@ -81,6 +83,15 @@ export class QueryModel {
 		this.corpus = corpus;
 	}
 
+    /** sort direction to be used in searching: replaces 'default' with the default value */
+    private get actualSortBy(): CorpusField|'relevance' {
+        if (this.sortBy !== 'default') {
+            return this.sortBy;
+        } else {
+            return sortByDefault(this.corpus);
+        }
+    }
+
 	setQueryText(text?: string) {
 		this.queryText = text;
 		this.update.next();
@@ -146,9 +157,16 @@ export class QueryModel {
         };
 	}
 
-	// toEsQuery(): EsQuery {
-	// 	return {
-    //         query: {}
-    //     };
-	// }
+	toEsQuery(): EsQuery {
+        const searchClause = makeEsSearchClause(this.queryText, this.searchFields);
+        const filters = this.filters.map(filter => filter.toEsFilter());
+        const query = combineSearchClauseAndFilters(searchClause, filters);
+
+        const sort = makeSortSpecification(this.actualSortBy, this.sortDirection);
+        const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);
+
+        return {
+            ...query, ...sort, ...highlight
+        };
+	}
 }

@@ -10,6 +10,7 @@ const mockFilterOptions: BooleanFilterOptions = {
     description: 'Use this filter to decide whether or not this field is great',
 };
 
+/** a keyword field with a boolean filter */
 export const mockField = new CorpusField({
     name: 'great_field',
     description: 'A really wonderful field',
@@ -31,6 +32,7 @@ export const mockField = new CorpusField({
     required: false,
 });
 
+/** a text content field */
 export const mockField2 = new CorpusField({
     name: 'speech',
     description: 'A content field',
@@ -52,6 +54,7 @@ export const mockField2 = new CorpusField({
     required: false,
 });
 
+/** a keyword field with sorting option */
 export const mockField3 = new CorpusField({
     name: 'ordering',
     description: 'A field which can be sorted on',
@@ -73,6 +76,7 @@ export const mockField3 = new CorpusField({
     required: false,
 });
 
+/** a date field */
 export const mockFieldDate = new CorpusField({
     name: 'date',
     display_name: 'Date',

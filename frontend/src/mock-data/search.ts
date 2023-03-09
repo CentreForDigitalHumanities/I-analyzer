@@ -1,4 +1,5 @@
-import { AggregateQueryFeedback, Corpus, CorpusField, QueryModel, SearchFilter, SearchFilterData } from '../app/models/index';
+import { SearchFilter } from '../app/models/search-filter';
+import { AggregateQueryFeedback, Corpus, CorpusField, QueryModel } from '../app/models/index';
 
 export class SearchServiceMock {
     public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
@@ -21,21 +22,22 @@ export class SearchServiceMock {
     public async getRelatedWords() {}
 
     createQueryModel(
-        queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],
+        corpus: Corpus,
+        queryText: string = '', fields: CorpusField[] | null = null, filters: SearchFilter[] = [],
         sortField: CorpusField = null, sortAscending = false, highlight: number = null
     ): QueryModel {
-        const model: QueryModel = {
-            queryText,
-            filters,
-            sortBy: sortField ? sortField.name : undefined,
-            sortAscending
-        };
-        if (fields) {
-            model.fields = fields;
+        const model = new QueryModel(corpus);
+        model.setQueryText(queryText);
+        model.searchFields = fields;
+        filters.forEach(model.addFilter);
+
+        if (sortField) {
+            model.sortBy = sortField;
+            model.sortDirection = sortAscending ? 'asc' : 'desc';
         }
-        if (highlight) {
-            model.highlight = highlight;
-        }
+
+        model.highlightSize = highlight;
+
         return model;
     }
 }

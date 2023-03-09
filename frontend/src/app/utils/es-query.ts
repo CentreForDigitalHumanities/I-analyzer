@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as _ from 'lodash';
-import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll, SimpleQueryString } from '../models';
-import { sortDirectionFromBoolean } from './sort';
-
+import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll, SimpleQueryString, SortDirection } from '../models';
+import { EsQuery } from '../services';
 
 // conversion from query model -> elasticsearch query language
 
@@ -41,13 +40,17 @@ export const makeBooleanQuery = (query: EsSearchClause, filters: EsFilter[]): Bo
     }
 });
 
+export const combineSearchClauseAndFilters = (searchClause: EsSearchClause, filters?: EsFilter[]): EsQuery => {
+    const query = (filters && filters.length) ? makeBooleanQuery(searchClause, filters) : searchClause;
+    return { query };
+};
 
-export const makeSortSpecification = (sortBy: string, sortAscending: boolean) => {
-    if (!sortBy) {
+export const makeSortSpecification = (sortBy: CorpusField|'relevance', sortDirection: SortDirection) => {
+    if (sortBy === 'relevance') {
         return {};
     } else {
         const sortByField = {
-            [sortBy]: sortDirectionFromBoolean(sortAscending)
+            [sortBy.name]: sortDirection
         };
         return {
             sort: [sortByField]
@@ -55,11 +58,11 @@ export const makeSortSpecification = (sortBy: string, sortAscending: boolean) =>
     }
 };
 
-export const makeHighlightSpecification = (corpusFields: CorpusField[], queryText?: string, highlightSize?: number) => {
+export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, highlightSize?: number) => {
     if (!queryText || !highlightSize) {
         return {};
     }
-    const highlightFields = corpusFields.filter(field => field.searchable);
+    const highlightFields = corpus.fields.filter(field => field.searchable);
     return {
         highlight: {
             fragment_size: highlightSize,

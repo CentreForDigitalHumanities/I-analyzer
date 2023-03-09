@@ -1,6 +1,7 @@
-import { Corpus, SortBy } from '../models';
+import { Corpus, CorpusField, SortBy } from '../models';
 
-export const sortByDefault = (corpus: Corpus): SortBy =>
+/** get the default sortBy for a corpus */
+export const sortByDefault = (corpus: Corpus): CorpusField|'relevance' =>
     corpus.fields.find(field => field.primarySort) || 'relevance';
 
 export const sortDirectionFromBoolean = (sortAscending: boolean): 'asc'|'desc' =>
