@@ -192,4 +192,26 @@ export class ParamService {
         return params.get('query');
     }
 
+    makeContextParams(document: FoundDocument, corpus: Corpus): any {
+        const contextSpec = corpus.documentContext;
+
+        const queryText = undefined;
+
+        const contextFields = contextSpec.contextFields
+            .filter(field => ! corpus.fields.find(f => f.name === field.name));
+
+        contextFields.forEach(field => {
+            field.searchFilter = contextFilterFromField(field, document.fieldValues[field.name]);
+        });
+
+        const filterParams = this.makeFilterParams(contextFields);
+        const sortParams = this.makeSortParams(
+            contextSpec.sortField,
+            contextSpec.sortDirection
+        );
+
+        return { query: queryText,  ...filterParams, ...sortParams };
+
+    }
+
 }

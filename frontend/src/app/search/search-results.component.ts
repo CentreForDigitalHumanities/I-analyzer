@@ -145,7 +145,7 @@ export class SearchResultsComponent implements OnChanges {
 
     public goToContext(document: FoundDocument) {
         this.showDocument = false;
-        this.contextEvent.emit(document.fieldValues);
+        this.contextEvent.emit(document);
     }
 
     get contextDisplayName(): string {

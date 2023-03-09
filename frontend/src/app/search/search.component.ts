@@ -3,7 +3,8 @@ import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField,
+    FoundDocument} from '../models/index';
 import { CorpusService, DialogService, ParamService, UserService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 
@@ -119,6 +120,11 @@ export class SearchComponent extends ParamDirective {
         this.setParams({ query: this.queryText });
     }
 
+    public goToContext(document: FoundDocument) {
+        const params = this.paramService.makeContextParams(document, this.corpus);
+        this.setParams(params);
+    }
+
     /**
      * Escape field names these so they won't interfere with any other parameter (e.g. query)
      */
@@ -131,25 +137,4 @@ export class SearchComponent extends ParamDirective {
         }
     }
 
-    public goToContext(contextValues: Object) {
-        const contextSpec = this.corpus.documentContext;
-
-        this.queryText = undefined;
-
-        let contextFields = contextSpec.contextFields
-            .filter(field => ! this.filterFields.find(f => f.name === field.name))
-
-        contextFields.forEach(field => {
-            field.searchFilter = contextFilterFromField(field, contextValues[field.name])
-        })
-
-        const filterParams = this.paramService.makeFilterParams(contextFields);
-        const sortParams = this.paramService.makeSortParams(
-            contextSpec.sortField,
-            contextSpec.sortDirection
-        )
-
-        this.setParams({ ...filterParams, ...sortParams });
-
-    }
 }
