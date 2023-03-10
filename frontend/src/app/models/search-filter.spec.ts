@@ -1,37 +1,10 @@
-import { CorpusField } from './corpus';
+import { mockFieldDate } from '../../mock-data/corpus';
 import { DateFilter } from './search-filter';
 
 describe('DateFilter', () => {
-    const mockField: CorpusField = {
-        name: 'date',
-        displayName: 'Date',
-        description: '',
-        displayType: 'date',
-        hidden: false,
-        sortable: true,
-        primarySort: false,
-        searchable: false,
-        downloadable: true,
-        searchFilter: {
-            fieldName: 'date',
-            description: '',
-            useAsFilter: true,
-            currentData: {
-                filterType: 'DateFilter',
-                min: '1800-01-01',
-                max: '1899-12-31'
-            },
-            defaultData: {
-                filterType: 'DateFilter',
-                min: '1800-01-01',
-                max: '1899-12-31'
-            }
-        },
-        mappingType: 'date',
-    };
 
     it('should create', () => {
-        const filter = new DateFilter(mockField);
+        const filter = new DateFilter(mockFieldDate);
         expect(filter).toBeTruthy();
         expect(filter.currentData).toEqual({
             min: new Date(Date.parse('Jan 01 1800')),
@@ -40,13 +13,13 @@ describe('DateFilter', () => {
     });
 
     it('should convert to string', () => {
-        const filter = new DateFilter(mockField);
+        const filter = new DateFilter(mockFieldDate);
         const dataAsString = filter.dataToString(filter.currentData);
         expect(filter.dataFromString(dataAsString)).toEqual(filter.currentData);
     });
 
     it('should set data from a value', () => {
-        const filter = new DateFilter(mockField);
+        const filter = new DateFilter(mockFieldDate);
         const date = new Date(Date.parse('Jan 01 1850'));
         filter.setToValue(date);
         expect(filter.currentData).toEqual({
@@ -56,7 +29,7 @@ describe('DateFilter', () => {
     });
 
     it('should convert to an elasticsearch filter', () => {
-        const filter = new DateFilter(mockField);
+        const filter = new DateFilter(mockFieldDate);
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             range: {

@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import * as _ from 'lodash';
+import { mockField } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 
 import { CorpusField } from '../models/index';
@@ -38,38 +40,26 @@ describe('Search Results Component', () => {
                 relation: 'gte'
             }
         };
-        component.corpus = <any>{
+        component.corpus = {
             fields
-        };
+        } as any;
         component.fromIndex = 0;
         component.resultsPerPage = 20;
         fixture.detectChanges();
     });
 
-    function createField(name: string): CorpusField {
-        return {
-            name,
-            displayName: name,
-            description: 'Description',
-            displayType: 'text',
-            searchFilter: null,
-            hidden: false,
-            sortable: true,
-            primarySort: false,
-            searchable: false,
-            downloadable: true,
-            mappingType: 'keyword',
-        };
-    }
+    const createField = (name: string): CorpusField => {
+        const field = _.cloneDeep(mockField);
+        field.name = name;
+        return field;
+    };
 
-    function createDocument(
+    const createDocument = (
         fieldValues: { [name: string]: string },
         id: string,
         relevance: number,
         highlight?: {[fieldName: string]: string[]}
-        ) {
-        return { id, relevance, fieldValues, highlight };
-    }
+        ) => ({ id, relevance, fieldValues, highlight });
 
     it('should be created', () => {
         expect(component).toBeTruthy();

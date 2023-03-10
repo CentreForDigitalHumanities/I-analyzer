@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './search-filter';
 import { FilterOptions } from './search-filter-options';
 
 // corresponds to the corpus definition on the backend.
@@ -43,14 +45,38 @@ export interface DocumentContext {
     displayName: string;
 }
 
-export interface CorpusField {
+export type FieldDisplayType = 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean';
+
+/** Corpus field info as sent by the backend api */
+export interface ApiCorpusField {
+    name: string;
+    display_name: string;
+    display_type: FieldDisplayType;
+    description: string;
+    search_filter: FilterOptions | null;
+    results_overview: boolean;
+    csv_core: boolean;
+    search_field_core: boolean;
+    visualizations: string[];
+    visualization_sort: string | null;
+    es_mapping: any;
+    indexed: boolean;
+    hidden: boolean;
+    required: boolean;
+    sortable: boolean;
+    primary_sort: boolean;
+    searchable: boolean;
+    downloadable: boolean;
+}
+
+export class CorpusField {
     description: string;
     displayName: string;
     /**
      * How the field value should be displayed.
      * text_content: Main text content of the document
      */
-    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean';
+    displayType: FieldDisplayType;
     resultsOverview?: boolean;
     csvCore?: boolean;
     searchFieldCore?: boolean;
@@ -63,6 +89,44 @@ export interface CorpusField {
     searchable: boolean;
     downloadable: boolean;
     name: string;
-    searchFilter: FilterOptions | null;
+    filterOptions: FilterOptions | null;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
+
+    constructor(data: ApiCorpusField) {
+        this.description = data.description;
+        this.displayName = data.display_name || data.name;
+        this.displayType = data.display_type || data['es_mapping']?.type;
+        this.resultsOverview = data.results_overview;
+        this.csvCore = data.csv_core;
+        this.searchFieldCore = data.search_field_core;
+        this.visualizations = data.visualizations;
+        this.visualizationSort = data.visualization_sort;
+        this.multiFields = data['es_mapping']?.fields
+            ? Object.keys(data['es_mapping'].fields)
+            : undefined;
+        this.hidden = data.hidden;
+        this.sortable = data.sortable;
+        this.primarySort = data.primary_sort;
+        this.searchable = data.searchable;
+        this.downloadable = data.downloadable;
+        this.name = data.name;
+        this.filterOptions = data['search_filter'] || null;
+        this.mappingType = data.es_mapping?.type;
+    }
+
+    /** make a SearchFilter for this field */
+    makeSearchFilter(): SearchFilter {
+		const filterClasses = {
+			date: DateFilter,
+			multiple_choice: MultipleChoiceFilter,
+			boolean: BooleanFilter,
+			range: RangeFilter,
+		};
+		const Filter = _.get(
+			filterClasses,
+			this.filterOptions?.name,
+			AdHocFilter
+		);
+		return new Filter(this);
+	}
 }

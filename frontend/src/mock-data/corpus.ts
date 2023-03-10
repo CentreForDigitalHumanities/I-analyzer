@@ -1,61 +1,104 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { BehaviorSubject } from 'rxjs';
 import { findByName } from '../app/utils/utils';
-import { BooleanFilterData, Corpus, CorpusField, SearchFilter } from '../app/models';
+import { BooleanFilterOptions } from '../app/models/search-filter-options';
+import { Corpus, CorpusField } from '../app/models';
 
-const mockFilterData: BooleanFilterData = {
+const mockFilterOptions: BooleanFilterOptions = {
     checked: false,
-    filterType: 'BooleanFilter',
-};
-
-export const mockFilter: SearchFilter<BooleanFilterData> = {
-    fieldName: 'great_field',
+    name: 'BooleanFilter',
     description: 'Use this filter to decide whether or not this field is great',
-    currentData: mockFilterData,
-    defaultData: mockFilterData,
-    useAsFilter: true,
 };
 
-export const mockField: CorpusField = {
+export const mockField = new CorpusField({
     name: 'great_field',
     description: 'A really wonderful field',
-    displayName: 'Greatest field',
-    displayType: 'keyword',
-    mappingType: 'keyword',
+    display_name: 'Greatest field',
+    display_type: 'keyword',
+    es_mapping: {type: 'keyword'},
     hidden: false,
     sortable: false,
-    primarySort: false,
+    primary_sort: false,
     searchable: false,
     downloadable: false,
-    searchFilter: mockFilter
-};
+    search_filter: mockFilterOptions,
+    results_overview: true,
+    search_field_core: true,
+    csv_core: true,
+    visualizations: [],
+    visualization_sort: null,
+    indexed: true,
+    required: false,
+});
 
-export const mockField2: CorpusField = {
+export const mockField2 = new CorpusField({
     name: 'speech',
     description: 'A content field',
-    displayName: 'Speechiness',
-    displayType: 'text',
-    mappingType: 'text',
+    display_name: 'Speechiness',
+    display_type: 'text',
+    es_mapping: {type: 'text'},
     hidden: false,
     sortable: false,
-    primarySort: false,
+    primary_sort: false,
     searchable: true,
     downloadable: true,
-    searchFilter: null
-};
+    search_filter: null,
+    results_overview: true,
+    search_field_core: true,
+    csv_core: true,
+    visualizations: [],
+    visualization_sort: null,
+    indexed: true,
+    required: false,
+});
 
-export const mockField3: CorpusField = {
+export const mockField3 = new CorpusField({
     name: 'ordering',
     description: 'A field which can be sorted on',
-    displayName: 'Sort me',
-    displayType: 'integer',
-    mappingType: 'keyword',
+    display_name: 'Sort me',
+    display_type: 'integer',
+    es_mapping: {type: 'keyword'},
     hidden: false,
     sortable: true,
-    primarySort: false,
+    primary_sort: false,
     searchable: false,
     downloadable: true,
-    searchFilter: null
-};
+    results_overview: true,
+    search_filter: null,
+    search_field_core: false,
+    csv_core: true,
+    visualizations: [],
+    visualization_sort: null,
+    indexed: true,
+    required: false,
+});
+
+export const mockFieldDate = new CorpusField({
+    name: 'date',
+    display_name: 'Date',
+    description: '',
+    display_type: 'date',
+    hidden: false,
+    sortable: true,
+    primary_sort: false,
+    searchable: false,
+    downloadable: true,
+    search_filter: {
+        name: 'DateFilter',
+        lower: '1800-01-01',
+        upper: '1899-12-31',
+        description: ''
+    },
+    es_mapping: {type: 'date'},
+    results_overview: true,
+    search_field_core: false,
+    csv_core: true,
+    visualizations: [],
+    visualization_sort: null,
+    indexed: true,
+    required: false,
+});
+
 
 export const mockCorpus: Corpus = {
     name: 'test1',

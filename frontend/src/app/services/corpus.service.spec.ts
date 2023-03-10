@@ -12,6 +12,7 @@ import { Corpus } from '../models/corpus';
 import { CorpusField, SearchFilterData } from '../models/index';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
+import * as _ from 'lodash';
 
 describe('CorpusService', () => {
     let service: CorpusService;
@@ -85,7 +86,7 @@ describe('CorpusService', () => {
         expect(items.map((item) => item.name)).toEqual(['test1', 'test2']);
     });
 
-    it('should parse filters', () => {
+    it('should parse fields', () => {
         apiServiceMock.fakeResult['corpus'] = [
             {
                 name: 'times',
@@ -200,17 +201,10 @@ describe('CorpusService', () => {
         ];
 
         return service.get().then((items) => {
-            const mockMultipleChoiceData: SearchFilterData = {
-                filterType: 'MultipleChoiceFilter',
-                optionCount: 42,
-                selected: [],
-            };
-            const mockRangeData: SearchFilterData = {
-                filterType: 'RangeFilter',
-                min: 1785,
-                max: 2010,
-            };
-            const allFields: CorpusField[] = [
+            expect(items.length).toBe(1);
+            const corpus = _.first(items);
+
+            const fieldData = [
                 {
                     description: 'Banking concern to which the report belongs.',
                     displayName: 'Bank',
@@ -227,12 +221,10 @@ describe('CorpusService', () => {
                     searchable: true,
                     downloadable: false,
                     name: 'bank',
-                    searchFilter: {
+                    filterOptions: {
+                        name: 'MultipleChoiceFilter',
                         description: 'Search only within these banks.',
-                        fieldName: 'bank',
-                        useAsFilter: false,
-                        defaultData: mockMultipleChoiceData,
-                        currentData: mockMultipleChoiceData,
+                        option_count: 42,
                     },
                     mappingType: 'keyword',
                 },
@@ -252,13 +244,13 @@ describe('CorpusService', () => {
                     visualizations: ['resultscount', 'termfrequency'],
                     visualizationSort: 'key',
                     multiFields: undefined,
-                    searchFilter: {
+                    filterOptions: {
                         description:
                             'Restrict the years from which search results will be returned.',
-                        fieldName: 'year',
-                        useAsFilter: false,
-                        defaultData: mockRangeData,
-                        currentData: mockRangeData,
+                        name: 'RangeFilter',
+                        lower: 1785,
+                        upper: 2010,
+
                     },
                     mappingType: 'integer',
                 },
@@ -277,27 +269,17 @@ describe('CorpusService', () => {
                     visualizations: ['wordcloud', 'ngram'],
                     visualizationSort: null,
                     multiFields: ['clean', 'stemmed', 'length'],
-                    searchFilter: null,
+                    filterOptions: null,
                     searchFieldCore: true,
                     mappingType: 'text',
                 },
             ];
-            expect(items).toEqual([
-                new Corpus(
-                    'default',
-                    'times',
-                    'Times',
-                    'This is a description.',
-                    'times',
-                    allFields,
-                    new Date(1785, 0, 1, 0, 0),
-                    new Date(2010, 11, 31, 0, 0),
-                    '/static/no-image.jpg',
-                    'png',
-                    false,
-                    true
-                ),
-            ]);
+
+            _.zip(corpus.fields, fieldData).map(([result, expected]) => {
+                _.mapKeys(expected, key => {
+                    expect(result[key]).toEqual(expected[key]);
+                });
+            });
         });
     });
 });

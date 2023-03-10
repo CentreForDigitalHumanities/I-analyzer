@@ -98,27 +98,7 @@ export class CorpusService {
         );
     };
 
-    private parseField = (data: any): CorpusField => ({
-        description: data.description,
-        displayName: data.display_name || data.name,
-        displayType: data.display_type || data['es_mapping']?.type,
-        resultsOverview: data.results_overview,
-        csvCore: data.csv_core,
-        searchFieldCore: data.search_field_core,
-        visualizations: data.visualizations,
-        visualizationSort: data.visualization_sort,
-        multiFields: data['es_mapping']?.fields
-            ? Object.keys(data['es_mapping'].fields)
-            : undefined,
-        hidden: data.hidden,
-        sortable: data.sortable,
-        primarySort: data.primary_sort,
-        searchable: data.searchable,
-        downloadable: data.downloadable,
-        name: data.name,
-        searchFilter: data['search_filter'] || null,
-        mappingType: data.es_mapping?.type,
-    });
+    private parseField = (data: any): CorpusField => new CorpusField(data);
 
     private parseDate(date: any): Date {
         // months are zero-based!
