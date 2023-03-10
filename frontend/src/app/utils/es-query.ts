@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as _ from 'lodash';
-import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll, SimpleQueryString, SortDirection } from '../models';
+import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
+    QueryModel,
+    SimpleQueryString, SortDirection } from '../models';
 import { EsQuery } from '../services';
+import { SearchFilter } from '../models/search-filter';
 
 // conversion from query model -> elasticsearch query language
 
@@ -76,3 +79,37 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
     };
 };
 
+// conversion from elasticsearch query language -> query model
+
+export const esQueryToQueryModel = (query: EsQuery, corpus: Corpus): QueryModel => {
+    const model = new QueryModel(corpus);
+    model.setQueryText(queryTextFromEsSearchClause(query.query));
+    const filters = filtersFromEsQuery(query, corpus);
+    filters.forEach(filter => model.addFilter(filter));
+    return model;
+};
+
+const queryTextFromEsSearchClause = (query: EsSearchClause | BooleanQuery | EsFilter): string => {
+    const clause = 'bool' in query ? query.bool.must : query;
+
+    if ('simple_query_string' in clause) {
+        return clause.simple_query_string.query;
+    }
+};
+
+const filtersFromEsQuery = (query: EsQuery, corpus: Corpus): SearchFilter[] => {
+    if ('bool' in query.query) {
+        const filters = query.query.bool.filter;
+        return filters.map(filter => esFilterToSearchFilter(filter, corpus));
+    }
+    return [];
+};
+
+const esFilterToSearchFilter = (esFilter: EsFilter, corpus: Corpus): SearchFilter => {
+    const filterType = _.first(_.keys(esFilter)) as 'term'|'terms'|'range';
+    const fieldName = _.first(_.keys(esFilter[filterType]));
+    const field = corpus.fields.find(f => f.name === fieldName);
+    const filter = field.makeSearchFilter();
+    filter.data.next(filter.dataFromEsFilter(esFilter as any)); // we know that the esFilter is of the correct type
+    return filter;
+};

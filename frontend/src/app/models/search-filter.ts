@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { CorpusField } from './corpus';
@@ -5,14 +6,14 @@ import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, 
 import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions } from './search-filter-options';
 
-abstract class AbstractSearchFilter<FilterData> {
+abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	corpusField: CorpusField;
 	defaultData: FilterData;
 	data: BehaviorSubject<FilterData>;
 
 	constructor(corpusField: CorpusField) {
 		this.corpusField = corpusField;
-		this.defaultData = this.makeDefaultData(corpusField.searchFilter.defaultData);
+		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
 		this.data = new BehaviorSubject<FilterData>(this.defaultData);
 	}
 
@@ -56,7 +57,9 @@ abstract class AbstractSearchFilter<FilterData> {
 	/**
 	 * export as filter specification in elasticsearch query language
 	 */
-	abstract toEsFilter(): EsFilter;
+	abstract toEsFilter(): EsFilterType;
+
+    abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
 }
 
 interface DateFilterData {
@@ -64,11 +67,11 @@ interface DateFilterData {
 	max: Date;
 }
 
-export class DateFilter extends AbstractSearchFilter<DateFilterData> {
+export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilter> {
 	makeDefaultData(filterOptions: DateFilterOptions) {
 		return {
-			min: this.parseDate(filterOptions.min),
-			max: this.parseDate(filterOptions.max)
+			min: this.parseDate(filterOptions.lower),
+			max: this.parseDate(filterOptions.upper)
 		};
 	}
 
@@ -105,6 +108,13 @@ export class DateFilter extends AbstractSearchFilter<DateFilterData> {
 		};
 	}
 
+    dataFromEsFilter(esFilter: EsDateFilter): DateFilterData {
+        const data = _.first(_.values(esFilter.range));
+        const min = this.parseDate(data.gte);
+        const max = this.parseDate(data.lte);
+        return { min, max };
+    }
+
 	private formatDate(date: Date): string {
 		return moment(date).format('YYYY-MM-DD');
 	}
@@ -114,7 +124,7 @@ export class DateFilter extends AbstractSearchFilter<DateFilterData> {
     }
 }
 
-export class BooleanFilter extends AbstractSearchFilter<boolean> {
+export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
         return false;
@@ -139,11 +149,16 @@ export class BooleanFilter extends AbstractSearchFilter<boolean> {
             }
         };
     }
+
+    dataFromEsFilter(esFilter: EsBooleanFilter): boolean {
+        const data = _.first(_.values(esFilter.term));
+        return data;
+    }
 }
 
 type MultipleChoiceFilterData = string[];
 
-export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFilterData> {
+export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFilterData, EsTermsFilter> {
     makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
     }
@@ -167,6 +182,10 @@ export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFil
             }
         };
     }
+
+    dataFromEsFilter(esFilter: EsTermsFilter): MultipleChoiceFilterData {
+        return _.first(_.values(esFilter.terms));
+    }
 }
 
 interface RangeFilterData {
@@ -174,7 +193,7 @@ interface RangeFilterData {
     max: number;
 }
 
-export class RangeFilter extends AbstractSearchFilter<RangeFilterData> {
+export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
 			min: filterOptions.lower,
@@ -208,9 +227,16 @@ export class RangeFilter extends AbstractSearchFilter<RangeFilterData> {
             }
         };
     }
+
+    dataFromEsFilter(esFilter: EsRangeFilter): RangeFilterData {
+        const data = _.first(_.values(esFilter.range));
+        const min = data.gte;
+        const max = data.lte;
+        return { min, max };
+    }
 }
 
-export class AdHocFilter extends AbstractSearchFilter<any> {
+export class AdHocFilter extends AbstractSearchFilter<any, EsTermFilter> {
     makeDefaultData(filterOptions: FilterOptions) {}
 
     dataFromValue(value: any) {
@@ -231,6 +257,11 @@ export class AdHocFilter extends AbstractSearchFilter<any> {
                 [this.corpusField.name]: this.currentData
             }
         };
+    }
+
+    dataFromEsFilter(esFilter: EsTermFilter): string {
+        const data = _.first(_.values(esFilter.term));
+        return data;
     }
 }
 
