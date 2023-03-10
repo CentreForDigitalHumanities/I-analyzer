@@ -104,6 +104,18 @@ export class QueryModel {
 		});
 	}
 
+    removeFilter(filter: SearchFilter) {
+        this.removeFiltersForField(filter.corpusField);
+    }
+
+    removeFiltersForField(field: CorpusField) {
+        const filterIndex = () => this.filters.findIndex(filter => filter.corpusField.name === field.name);
+        while (filterIndex() !== -1) {
+            this.filters.splice(filterIndex());
+        }
+        this.update.next();
+    }
+
     setFromParams(params: ParamMap) {
 		this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
