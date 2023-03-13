@@ -56,6 +56,15 @@ def get_search_fields(query):
 
     return fields
 
+def set_search_fields(query, fields):
+    '''Set the search fields for a query'''
+
+    if get_query_text(query) == None:
+        return query
+    else:
+        query['query']['bool']['must']['simple_query_string']['fields'] = fields
+        return query
+
 def get_filters(query):
     """Get the list of filters in a query, or `None` if there are none."""
     try:
