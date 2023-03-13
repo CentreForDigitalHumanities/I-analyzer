@@ -18,30 +18,34 @@ def set_query_text(query, text):
     if get_query_text(query):
         new_query['query']['bool']['must']['simple_query_string']['query'] = text
 
-    elif query['query']['bool']['must']:
-        new_query['query']['bool']['must'] = {
-            "simple_query_string": {
-                "query": text,
-                "lenient": True,
-                "default_operator": "or"
-            }
-        }
+    elif 'bool' in query['query'] and query['query']['bool']['must']:
+        new_query['query']['bool']['must'] = format_query_text(text)
 
     else:
         new_query['query'] ={
             "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": text,
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
+                "must": format_query_text(text),
                 "filter": []
             }
         }
 
     return new_query
+
+def format_query_text(query_text = None):
+    '''Render the portion of the query that specifies the query text. Either simple_query_string,
+    or match_all if the query text is None.'''
+
+    if query_text:
+        return {'simple_query_string':
+            {
+                'query': query_text,
+                'lenient': True,
+                'default_operator':'or'
+            }
+        }
+    else:
+        return {'match_all': {}}
+
 
 def get_search_fields(query):
     """Get the search fields specified in the query."""
