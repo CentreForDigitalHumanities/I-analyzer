@@ -11,6 +11,7 @@ import json
 from django.conf import settings
 import warnings
 from allauth.account.models import EmailAddress
+from api.query_model_to_es_query import query_model_to_es_query
 
 
 def adapt_password_encoding(flask_encoded):
@@ -135,9 +136,11 @@ def null_to_none(value):
 
 
 def save_flask_query(row):
+    query_model = json.loads(row['query'])
+    es_query = query_model_to_es_query(query_model)
     query = Query(
         id=row['id'],
-        query_json=json.loads(row['query']),
+        query_json=es_query,
         corpus=Corpus.objects.get(name=row['corpus_name']),
         user=CustomUser.objects.get(id=row['userID']),
         completed=null_to_none(row['completed']),
