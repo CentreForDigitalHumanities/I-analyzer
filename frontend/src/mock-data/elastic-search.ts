@@ -10,7 +10,8 @@ export class ElasticSearchServiceMock {
 
     esQueryToQueryModel(query: EsQuery, corpus: Corpus): QueryModel {
         return {
-            queryText: ''
+            queryText: '',
+            filters: []
         };
     }
 

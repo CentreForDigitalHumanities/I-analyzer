@@ -81,7 +81,7 @@ export class ElasticSearchService {
         if (filters.length) {
             return { queryText, filters };
         } else {
-            return { queryText };
+            return { queryText, filters: [] };
         }
     }
 
@@ -137,14 +137,14 @@ export class ElasticSearchService {
             fieldName = _.keys(filter.range)[0];
             value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
         }
-        const field: CorpusField = corpus.fields.find(f => f.name === fieldName);
+        const field = corpus.fields.find(f => f.name === fieldName);
         const filterData = searchFilterDataFromField(field, value);
         return {
             fieldName: field.name,
-            description: field.searchFilter.description,
+            description: field.searchFilter?.description || '',
             useAsFilter: true,
             currentData: filterData,
-            defaultData: field.searchFilter.defaultData,
+            defaultData: field.searchFilter?.defaultData,
         };
     }
 

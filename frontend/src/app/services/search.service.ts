@@ -81,7 +81,8 @@ export class SearchService {
         corpus: Corpus
     ): Promise<SearchResults> {
         const user = await this.authService.getCurrentUserPromise();
-        const query = new QueryDb(queryModel, corpus.name, user.id);
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, corpus.fields);
+        const query = new QueryDb(esQuery, corpus.name, user.id);
         query.started = new Date(Date.now());
         const results = await this.elasticSearchService.search(
             corpus,
