@@ -19,10 +19,18 @@ cases = [
         {'queryText':None,'filters':[{'fieldName':'date','description':'Search only within this time range.','useAsFilter':True,'defaultData':{'filterType':'DateFilter','min':'1815-01-01','max':'2022-12-31'},'currentData':{'filterType':'DateFilter','min':'1900-01-01','max':'2000-12-31'}}]},
         {'query':{'bool':{'must':{'match_all':{}},'filter':[{'range':{'date':{'gte':'1900-01-01','lte':'2000-12-31','format':'yyyy-MM-dd'}}}]}}},
     ), (
+        'range filter',
+        {'queryText':None,'filters':[{'fieldName':'year','description':'Restrict the years from which search results will be returned.','useAsFilter':True,'defaultData':{'filterType':'RangeFilter','min':1957,'max':2008},'currentData':{'filterType':'RangeFilter','min':1967,'max':1989}}],'sortAscending':True},
+        {'query':{'bool':{'must':{'match_all':{}},'filter':[{'range':{'year':{'gte':1967,'lte':1989}}}]}}}
+    ), (
         'terms filter',
         {'queryText':None,'filters':[{'fieldName':'chamber','description':'Search only in debates from the selected chamber(s)','useAsFilter':True,'defaultData':{'filterType':'MultipleChoiceFilter','optionCount':2,'selected':[]},'currentData':{'filterType':'MultipleChoiceFilter','selected':['Eerste%20Kamer']}}]},
         {'query':{'bool':{'must':{'match_all':{}},'filter':[{'terms':{'chamber':['Eerste Kamer']}}]}}},
     ), (
+        'boolean filter',
+        {'queryText':None,'filters':[{'fieldName':'has_content','description':'Accept only articles that have available text content.','useAsFilter':True,'defaultData':{'filterType':'BooleanFilter','checked':False},'currentData':{'filterType':'BooleanFilter','checked':True}}],'sortBy':'date','sortAscending':True},
+        {'query':{'bool':{'must':{'match_all':{}},'filter':[{'term':{'has_content':True}}]}},'sort':[{'date':'asc'}]}
+    ),(
         'sort by field',
         {'queryText':None,'filters':[],'sortBy':'date','sortAscending':True},
         {'query':{'bool':{'must':{'match_all':{}},'filter':[]}},'sort':[{'date':'asc'}]},
