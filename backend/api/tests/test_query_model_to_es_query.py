@@ -1,5 +1,7 @@
 import pytest
 from api.query_model_to_es_query import query_model_to_es_query
+from api.es_query_to_query_model import es_query_to_query_model
+from copy import deepcopy
 
 cases = [
     (
@@ -47,3 +49,20 @@ def get_name(case): return case[0]
 def test_query_model_to_es_query(name, query_model, es_query):
     result = query_model_to_es_query(query_model)
     assert result == es_query
+
+@pytest.mark.parametrize('name,query_model,es_query', cases, ids=map(get_name, cases))
+def test_es_query_to_query_model(name, query_model, es_query):
+    result = es_query_to_query_model(es_query)
+
+    # clean up the model to remove some data that is irrelevant for querying
+    # and thus not represented in es_query
+    # it's not relevant for the search history either, so we don't need it
+
+    model_copy = deepcopy(query_model)
+    if 'sortBy' not in model_copy and 'sortAscending' in model_copy:
+        del model_copy['sortAscending']
+    for filter in model_copy['filters']:
+        filter['description'] = ''
+        del filter['defaultData']
+
+    assert result == model_copy
