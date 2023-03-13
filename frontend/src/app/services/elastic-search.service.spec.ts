@@ -83,7 +83,8 @@ describe('ElasticSearchService', () => {
 
         const querymodels: QueryModel[] = [
             {
-                queryText: 'test'
+                queryText: 'test',
+                filters: [],
             },
             {
                 queryText: 'test',
