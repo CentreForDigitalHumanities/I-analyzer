@@ -29,7 +29,7 @@ cases = [
     ), (
         'highlight',
         {'queryText':'test','filters':[],'sortAscending':True,'highlight':10},
-        {'query':{'bool':{'must':{'simple_query_string':{'query':'test','lenient':True,'default_operator':'or'}},'filter':[]}},'highlight':{'fragment_size':10,'pre_tags':['<span class=\'highlight\'>'],'post_tags':['</span>'],'order':'score','fields':[{'id':{}},{'title':{}},{'content':{}}]}}
+        {'query':{'bool':{'must':{'simple_query_string':{'query':'test','lenient':True,'default_operator':'or'}},'filter':[]}},'highlight':{'fragment_size':10}}
     )
 ]
 

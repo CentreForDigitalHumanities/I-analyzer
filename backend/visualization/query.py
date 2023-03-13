@@ -145,6 +145,11 @@ def set_sort(query, sort_by, sort_direction):
     query['sort'] = specification
     return query
 
+def set_highlight(query, fragment_size):
+    specification = { 'fragment_size': fragment_size }
+    query['highlight'] = specification
+    return query
+
 def remove_query(query):
     """
     Remove the query part of the query object
