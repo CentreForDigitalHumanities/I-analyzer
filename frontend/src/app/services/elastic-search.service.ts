@@ -52,7 +52,7 @@ export class ElasticSearchService {
         if (filters.length) {
             return { queryText, filters };
         } else {
-            return { queryText };
+            return { queryText, filters: [] };
         }
     }
 
@@ -112,10 +112,10 @@ export class ElasticSearchService {
         const filterData = searchFilterDataFromField(field, value);
         return {
             fieldName: field.name,
-            description: field.searchFilter.description,
+            description: field.searchFilter?.description || '',
             useAsFilter: true,
             currentData: filterData,
-            defaultData: field.searchFilter.defaultData,
+            defaultData: field.searchFilter?.defaultData,
         };
     }
 

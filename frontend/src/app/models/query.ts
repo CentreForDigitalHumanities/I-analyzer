@@ -1,10 +1,11 @@
 import {SearchFilter } from '../models/index';
+import { EsQuery } from '../services';
 import { SearchFilterData } from './search-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
     constructor(
-        query: QueryModel,
+        esQuery: EsQuery,
         /**
          * Name of the corpus for which the query was performed.
          */
@@ -14,7 +15,7 @@ export class QueryDb {
          * User that performed this query.
          */
         public user: number) {
-        this.query_json = query;
+        this.query_json = esQuery;
     }
 
     /**
@@ -25,7 +26,8 @@ export class QueryDb {
     /**
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
-    public query_json: QueryModel;
+    public query_json: EsQuery;
+    queryModel?: QueryModel;
 
     /**
      * Time the first document was sent.
