@@ -134,6 +134,17 @@ def make_term_filter(field, value):
         }
     }
 
+def set_sort(query, sort_by, sort_direction):
+    '''sets the 'sort' specification for a query.
+    Parameters:
+    - `query`: elasticsearch query
+    - `sort_by`: string; the name of the field by which you want to sort
+    - `direction`: either `'asc'` or `'desc'`
+    '''
+    specification = [{sort_by:sort_direction}]
+    query['sort'] = specification
+    return query
+
 def remove_query(query):
     """
     Remove the query part of the query object
