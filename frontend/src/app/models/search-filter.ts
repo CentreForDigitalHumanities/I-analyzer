@@ -188,7 +188,7 @@ export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFil
     }
 }
 
-interface RangeFilterData {
+export interface RangeFilterData {
     min: number;
     max: number;
 }

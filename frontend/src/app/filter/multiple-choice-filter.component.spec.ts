@@ -17,7 +17,8 @@ describe('MultipleChoiceFilterComponent', () => {
     component = fixture.componentInstance;
     component.optionsAndCounts = [{key: 'Andy', doc_count: 2}, {key: 'Lou', doc_count: 3}];
     component.data = {
-        options: ['Andy', 'Lou']
+        options: ['Andy', 'Lou'],
+        selected: [],
     };
     fixture.detectChanges();
   });

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { mockCorpus3, mockFieldDate } from 'src/mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
+import { PotentialFilter, QueryModel } from '../models';
 
 import { DateFilterComponent } from './date-filter.component';
 
@@ -15,24 +17,11 @@ describe('DateFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DateFilterComponent);
     component = fixture.componentInstance;
-    component.filter = {
-        fieldName: 'Publication date',
-        description: 'When this book was published',
-        useAsFilter: false,
-        defaultData: {
-            filterType: 'DateFilter',
-            min: '1099-01-01',
-            max: '1300-12-31'
-        },
-        currentData: {
-            filterType: 'DateFilter',
-            min: '1111-01-01',
-            max: '1299-12-31'
-        }
-    };
+    const queryModel = new QueryModel(mockCorpus3);
+    component.filter = new PotentialFilter(mockFieldDate, queryModel);
     component.data = {
-        minYear: 1099,
-        maxYear: 1300
+        min: new Date('Jan 1 1810'),
+        max: new Date('Dec 31 1820')
     };
     fixture.detectChanges();
   });

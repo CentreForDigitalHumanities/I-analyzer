@@ -3,22 +3,25 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import * as _ from 'lodash';
 
 import { BaseFilterComponent } from './base-filter.component';
-import { SearchFilter, MultipleChoiceFilterData, AggregateResult } from '../models';
+import { SearchFilter, AggregateResult, PotentialFilter, MultipleChoiceFilter } from '../models';
 
 @Component({
   selector: 'ia-multiple-choice-filter',
   templateUrl: './multiple-choice-filter.component.html',
   styleUrls: ['./multiple-choice-filter.component.scss']
 })
-export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilterData> implements OnChanges {
+export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilter> {
+    @Input() potentialFilter: PotentialFilter;
     @Input() public optionsAndCounts: AggregateResult[];
 
-    ngOnChanges() {
-        this.provideFilterData();
-    }
+    data: {
+        options: string[];
+        selected: string[];
+    } = {
+        options: [], selected: []
+    };
 
-    getDisplayData(filter: SearchFilter<MultipleChoiceFilterData>) {
-        this.data = filter.currentData;
+    getDisplayData(filter: MultipleChoiceFilter) {
         let options = [];
         if (this.optionsAndCounts) {
             options = _.sortBy(
@@ -26,17 +29,13 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
                 o => o.label
             );
         } else {
-options = [1, 2, 3];
-} // dummy array to make sure the component loads
-        return { options, selected: this.data.selected };
+            options = [1, 2, 3];
+        } // dummy array to make sure the component loads
+        return { options, selected: filter.currentData };
     }
 
-    getFilterData(): SearchFilter<MultipleChoiceFilterData> {
-        this.filter.currentData = {
-            filterType: 'MultipleChoiceFilter',
-            selected: this.data.selected
-        };
-        return this.filter;
+    getFilterData(): string[] {
+        return this.data.selected;
     }
 
 

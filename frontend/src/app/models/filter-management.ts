@@ -37,6 +37,12 @@ export class PotentialFilter {
         }
     }
 
+    activate() {
+        if (!this.useAsFilter) {
+            this.toggle();
+        }
+    }
+
     reset() {
         this.deactivate();
         this.filter.reset();

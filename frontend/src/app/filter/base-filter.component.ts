@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { SearchFilter, SearchFilterData } from '../models/index';
+import { PotentialFilter, SearchFilter } from '../models/index';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -10,51 +10,54 @@ import { SearchFilter, SearchFilterData } from '../models/index';
 @Component({
     template: ''
 })
-export abstract class BaseFilterComponent<T extends SearchFilterData> {
+export abstract class BaseFilterComponent<SearchFilterClass extends SearchFilter> implements OnChanges {
     @Input() inputChanged: Subject<void>;
 
     @Input()
-    public filter: SearchFilter<T>;
+    public filter: PotentialFilter;
 
     @Input()
     public grayedOut: boolean;
-
-    @Output('update') public updateEmitter = new EventEmitter<SearchFilter<T>>();
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
      */
     public data: any; // holds the user data
 
-    public useAsFilter = false;
-
     constructor() {
+    }
+
+    ngOnChanges(changes): void {
+        if (changes.filter) {
+            this.filter.filter.data.subscribe(this.provideFilterData.bind(this));
+        }
     }
 
     provideFilterData() {
         if (this.filter) {
-            this.data = this.getDisplayData(this.filter);
-            this.useAsFilter = this.filter.useAsFilter;
+            this.data = this.getDisplayData(this.filter.filter as SearchFilterClass);
         }
     }
-
-    abstract getDisplayData(filter: SearchFilter<T>);
-
-    /**
-     * Create a new version of the filter data from the user input.
-     */
-    abstract getFilterData(): SearchFilter<T>;
 
     /**
      * Trigger a change event.
      */
     update() {
+        const data = this.getFilterData();
+        this.filter.filter.data.next(data);
         if (this.data.selected && this.data.selected.length === 0) {
-            this.useAsFilter = false;
+            this.filter.deactivate();
         } else {
-            this.useAsFilter = true; // update called through user input
+            this.filter.activate(); // update called through user input
         }
-        this.filter.useAsFilter = this.useAsFilter;
-        this.updateEmitter.emit(this.getFilterData());
     }
+
+
+    abstract getDisplayData(filter: SearchFilterClass);
+
+    /**
+     * Create a new version of the filter data from the user input.
+     */
+    abstract getFilterData(): typeof this.filter.filter.currentData;
+
 }

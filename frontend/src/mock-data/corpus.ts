@@ -134,6 +134,21 @@ export const mockCorpus2: Corpus = {
     fields: [mockField2]
 };
 
+export const mockCorpus3: Corpus = {
+    name: 'test3',
+    serverName: 'default',
+    index: 'test3',
+    title: 'Test corpus 3',
+    description: 'This corpus is for mocking',
+    minDate: new Date(),
+    maxDate: new Date(),
+    image: 'test.jpg',
+    scan_image_type: 'pdf',
+    allow_image_download: false,
+    word_models_present: false,
+    fields: [mockField, mockField2, mockField3, mockFieldDate]
+};
+
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);
     public currentCorpus = this.currentCorpusSubject.asObservable();
