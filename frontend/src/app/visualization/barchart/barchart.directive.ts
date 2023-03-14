@@ -4,9 +4,11 @@ import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import * as _ from 'lodash';
 
 import { ApiService, NotificationService, SearchService } from '../../services/index';
-import { Chart, ChartOptions, ChartType } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
+import { Chart, ChartOptions } from 'chart.js';
+import {
+    AggregateResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
+} from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../../utils/select-color';
@@ -276,9 +278,8 @@ export abstract class BarchartDirective
         } else {
             const mainContentFields = this.corpus.fields.filter(field =>
                 field.searchable && (field.displayType === 'text_content'));
-            const queryModelCopy = _.cloneDeep(queryModel);
-            queryModelCopy.fields = mainContentFields.map(field => field.name);
-
+            const queryModelCopy = queryModel.clone();
+            queryModelCopy.searchFields = mainContentFields;
             return queryModelCopy;
         }
     }
@@ -564,7 +565,7 @@ export abstract class BarchartDirective
 
     /** return a copy of a query model with the query text set to the given value */
     setQueryText(query: QueryModel, queryText: string): QueryModel {
-        const queryModelCopy = _.cloneDeep(query);
+        const queryModelCopy = query.clone();
         queryModelCopy.queryText = queryText;
         return queryModelCopy;
     }

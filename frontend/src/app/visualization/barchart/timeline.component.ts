@@ -269,11 +269,11 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
      * Add a date filter to a query model restricting it to the provided min and max values.
      */
     addQueryDateFilter(query: QueryModel, min: Date, max: Date): QueryModel {
-        const queryModelCopy = _.cloneDeep(query);
+        const queryModelCopy = query.clone();
         // download zoomed in results
         const filter = this.visualizedField.makeSearchFilter();
         filter.data.next({ min, max });
-        queryModelCopy.filters.push(filter);
+        queryModelCopy.addFilter(filter);
         return queryModelCopy;
     }
 
