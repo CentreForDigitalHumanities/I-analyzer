@@ -1,6 +1,7 @@
 import { CorpusField } from './corpus';
 import { QueryModel } from './query';
 import { SearchFilter } from './search-filter';
+import { SearchFilterType } from './search-filter-old';
 
 export class PotentialFilter {
     filter: SearchFilter;
@@ -15,6 +16,10 @@ export class PotentialFilter {
         if (!corpusField.filterOptions) {
             this.adHoc = true;
         }
+    }
+
+    get filterType(): SearchFilterType {
+        return this.corpusField.filterOptions?.name;
     }
 
     toggle() {

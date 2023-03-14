@@ -62,7 +62,7 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
 }
 
-interface DateFilterData {
+export interface DateFilterData {
 	min: Date;
 	max: Date;
 }

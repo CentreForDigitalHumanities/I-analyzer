@@ -27,7 +27,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
-    ElasticSearchService, ParamService, HighlightService, NotificationService, SearchService, SessionService,
+    ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService,
     UserService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
@@ -280,7 +280,6 @@ export const providers: any[] = [
     ElasticSearchService,
     HighlightService,
     NotificationService,
-    ParamService,
     QueryService,
     SearchService,
     SessionService,
