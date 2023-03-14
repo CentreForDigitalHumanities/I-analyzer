@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { mockCorpus3, mockField } from 'src/mock-data/corpus';
+import { mockCorpus3, mockField } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
 import { PotentialFilter, QueryModel } from '../models';

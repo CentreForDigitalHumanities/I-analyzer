@@ -4,7 +4,7 @@ import { commonTestBed } from '../common-test-bed';
 
 import { RangeFilterComponent } from './range-filter.component';
 import { PotentialFilter, QueryModel } from '../models';
-import { mockCorpus3, mockField3 } from 'src/mock-data/corpus';
+import { mockCorpus3, mockField3 } from '../../mock-data/corpus';
 
 describe('RangeFilterComponent', () => {
   let component: RangeFilterComponent;
