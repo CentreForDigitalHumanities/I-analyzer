@@ -6,6 +6,7 @@ import { FilterManagerComponent } from './filter-manager.component';
 import { mockCorpus, mockCorpus2, mockFilter } from '../../mock-data/corpus';
 import { convertToParamMap } from '@angular/router';
 import { findByName } from '../utils/utils';
+import { QueryModel } from '../models';
 
 describe('FilterManagerComponent', () => {
   let component: FilterManagerComponent;
@@ -19,33 +20,30 @@ describe('FilterManagerComponent', () => {
     fixture = TestBed.createComponent(FilterManagerComponent);
     component = fixture.componentInstance;
     component.corpus = mockCorpus;
+    component.queryModel = new QueryModel(mockCorpus);
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.searchFilters.length).toEqual(1);
+    expect(component.potentialFilters.length).toEqual(1);
   });
 
   it('resets filters when corpus changes', () => {
     component.corpus = mockCorpus2;
-    component.initialize();
-    expect(component.searchFilters.length).toEqual(0);
+    component.queryModel = new QueryModel(mockCorpus2);
+    fixture.detectChanges();
+    expect(component.potentialFilters.length).toEqual(0);
     component.corpus = mockCorpus;
-    component.initialize();
-    expect(component.searchFilters.length).toEqual(1);
-  });
-
-  it('parses parameters to filters', () => {
-    expect(component.activeFilters.length).toEqual(0);
-    const params = convertToParamMap({great_field: 'checked'});
-    component.setStateFromParams(params);
-    expect(component.activeFilters.length).toEqual(1);
+    component.queryModel = new QueryModel(mockCorpus);
+    fixture.detectChanges();
+    expect(component.potentialFilters.length).toEqual(1);
   });
 
   it('toggles filters on and off', async() => {
-    findByName(component.corpusFields, 'great_field').searchFilter.useAsFilter = true;
-    const params = component.filtersChanged();
-    expect(Object.keys(params)).toContain('great_field');
+    const filter = component.potentialFilters.find(f => f.corpusField.name === 'great_field');
+    expect(component.queryModel.filters.length).toBe(0);
+    component.toggleFilter(filter);
+    expect(component.queryModel.filters.length).toBe(1);
   });
 });
