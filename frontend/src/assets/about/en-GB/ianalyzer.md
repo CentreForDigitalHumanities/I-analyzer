@@ -20,7 +20,7 @@ The source code of I-analyzer is not publicly available at the moment, but we in
 
 Below are some publications about I-analyzer corpora.
 
-- Ortal-Paz Saar (2021). [PEACE: The portal on Jewish funerary culture](https://www.morressier.com/o/event/5fd2237e54bbb7f516f76f1b/article/5fd8d8c83d762219be34f4fb)
+- Ortal-Paz Saar (2021). [The PEACE portal: Revisiting the sea of stone](https://doi.org/10.5281/zenodo.4889490)
 - Haidee Kotze, Berit Janssen, Corina Koolen, Luka van der Plas, & Gys-Walt van Egdom (2021). [Norms, affect and evaluation in the reception of literary translations in multilingual online reading communities: Deriving cognitive-evaluative templates from big data](https://www.jbe-platform.com/content/journals/10.1075/tcb.00060.kot)
 - Pasi Ihalainen, Berit Janssen, Jani Marjanen, & Ville Vaara (2022). [Building and testing a comparative interface on Northwest European historical parliamentary debates : Relative term frequency analysis of British representative democracy](http://ceur-ws.org/Vol-3133/paper04.pdf)
 
