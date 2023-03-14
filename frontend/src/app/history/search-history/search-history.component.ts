@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as _ from 'lodash';
+import { esQueryToQueryModel } from '../../utils/es-query';
 import { QueryDb } from '../../models/index';
-import { CorpusService, SearchService, QueryService, ParamService, ElasticSearchService } from '../../services/index';
+import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
 
 @Component({
@@ -14,11 +15,9 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: QueryDb[];
     public displayCorpora = false;
     constructor(
-        private paramService: ParamService,
         corpusService: CorpusService,
         private queryService: QueryService,
         private router: Router,
-        private elasticSearchService: ElasticSearchService,
     ) {
         super(corpusService);
     }
@@ -35,16 +34,15 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
 
     addQueryModel(query?: QueryDb) {
         const corpus = this.corpora.find(c => c.name === query.corpus);
-        query.queryModel = this.elasticSearchService.esQueryToQueryModel(query.query_json, corpus);
+        query.queryModel = esQueryToQueryModel(query.query_json, corpus);
         return query;
     }
 
     returnToSavedQuery(query: QueryDb) {
-        const route = this.paramService.queryModelToRoute(query.queryModel);
-        this.router.navigate(['/search', query.corpus, route]);
+        const params = query.queryModel.toRouteParam();
+        this.router.navigate(['/search', query.corpus, params]);
         if (window) {
             window.scrollTo(0, 0);
         }
     }
-
 }
