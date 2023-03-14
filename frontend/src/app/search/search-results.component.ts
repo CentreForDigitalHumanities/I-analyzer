@@ -50,8 +50,6 @@ export class SearchResultsComponent implements OnChanges {
 
     public fromIndex = 0;
 
-    public queryText: string;
-
     public imgSrc: Uint8Array;
 
     /**
@@ -78,10 +76,9 @@ export class SearchResultsComponent implements OnChanges {
 
     ngOnChanges() {
         if (this.queryModel !== null) {
-            this.queryText = this.queryModel.queryText;
             this.fromIndex = 0;
             this.maximumDisplayed = this.user.downloadLimit ? this.user.downloadLimit : 10000;
-            this.search();
+            this.queryModel.update.subscribe(() => this.search());
         }
     }
 

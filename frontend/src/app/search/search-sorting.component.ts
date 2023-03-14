@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { CorpusField } from '../models';
+import { CorpusField, QueryModel } from '../models';
 import { ParamDirective } from '../param/param-directive';
 import { sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
 import { sortDirectionFromBoolean } from '../utils/sort';

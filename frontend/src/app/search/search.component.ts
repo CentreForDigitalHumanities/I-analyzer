@@ -3,8 +3,7 @@ import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField, SearchFilterData,
-    SearchFilter,
+import { Corpus, CorpusField, ResultOverview, QueryModel, User, SearchFilter,
     FoundDocument} from '../models/index';
 import { CorpusService, DialogService, ParamService, SearchService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
@@ -81,10 +80,7 @@ export class SearchComponent extends ParamDirective {
 
     setStateFromParams(params: ParamMap) {
         this.queryText = params.get('query');
-        const queryModel = this.paramService.queryModelFromParams(params, this.corpus.fields);
-        if (!_.isEqual(this.queryModel, queryModel)) {
-            this.queryModel = queryModel;
-        }
+        this.queryModel.setFromParams(params);
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
     }
@@ -124,12 +120,7 @@ export class SearchComponent extends ParamDirective {
     }
 
     public search() {
-        this.setParams({ query: this.queryText });
-    }
-
-    public goToContext(document: FoundDocument) {
-        const params = makeContextParams(document, this.corpus);
-        this.setParams(params);
+        this.queryModel.setQueryText(this.queryText);
     }
 
     /**
@@ -139,9 +130,35 @@ export class SearchComponent extends ParamDirective {
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name !== corpus.name) {
             this.corpus = corpus;
-            this.filterFields = this.corpus.fields.filter(field => field.searchFilter);
-            this.queryModel = {queryText: ''};
+            this.setQueryModel();
         }
     }
 
+    private setQueryModel() {
+        this.queryModel = new QueryModel(this.corpus);
+        this.queryModel.update.subscribe(() => {
+            this.setParams(this.queryModel.toRouteParam());
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    public goToContext(contextValues: any) {
+        const contextSpec = this.corpus.documentContext;
+
+        const queryModel = new QueryModel(this.corpus);
+
+        const contextFields = contextSpec.contextFields
+            .filter(field => ! this.filterFields.find(f => f.name === field.name));
+
+        contextFields.forEach(field => {
+            const filter = field.makeSearchFilter();
+            filter.setToValue(contextValues[field.name]);
+            queryModel.addFilter(filter);
+        });
+
+        queryModel.sortBy = contextSpec.sortField;
+        queryModel.sortDirection = contextSpec.sortDirection;
+
+        this.setParams(queryModel.toRouteParam());
+    }
 }
