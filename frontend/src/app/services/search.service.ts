@@ -4,14 +4,8 @@ import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { QueryService } from './query.service';
 import {
-    Corpus,
-    CorpusField,
-    QueryModel,
-    SearchFilter,
-    SearchResults,
-    AggregateQueryFeedback,
-    SearchFilterData,
-    QueryDb,
+    Corpus, QueryModel, SearchResults,
+    AggregateQueryFeedback, QueryDb
 } from '../models/index';
 import { AuthService } from './auth.service';
 
@@ -46,42 +40,12 @@ export class SearchService {
         return results;
     }
 
-    /**
-     * Construct a dictionary representing an ES query.
-     *
-     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
-     * @param fields Optional list of fields to restrict the queryString to.
-     * @param filters A list of dictionaries representing the ES DSL.
-     */
-    public createQueryModel(
-        queryText: string = '',
-        fields: string[] | null = null,
-        filters: SearchFilter<SearchFilterData>[] = [],
-        sortField: CorpusField = null,
-        sortAscending = false,
-        highlight: number = null
-    ): QueryModel {
-        const model: QueryModel = {
-            queryText,
-            filters,
-            sortBy: sortField ? sortField.name : undefined,
-            sortAscending,
-        };
-        if (fields) {
-            model.fields = fields;
-        }
-        if (highlight) {
-            model.highlight = highlight;
-        }
-        return model;
-    }
-
     public async search(
         queryModel: QueryModel,
         corpus: Corpus
     ): Promise<SearchResults> {
         const user = await this.authService.getCurrentUserPromise();
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, corpus.fields);
+        const esQuery = queryModel.toEsQuery();
         const query = new QueryDb(esQuery, corpus.name, user.id);
         query.started = new Date(Date.now());
         const results = await this.elasticSearchService.search(
