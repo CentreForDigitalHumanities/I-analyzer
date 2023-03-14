@@ -122,6 +122,11 @@ export class QueryModel {
         this.update.next();
     }
 
+    setHighlight(size?: number) {
+        this.highlightSize = size;
+        this.update.next();
+    }
+
     setFromParams(params: ParamMap) {
 		this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);

@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { QueryModel } from '../models';
 
-import { ParamDirective } from '../param/param-directive';
-import { highlightFromParams } from '../utils/params';
 
 const HIGHLIGHT = 200;
 
@@ -11,29 +9,27 @@ const HIGHLIGHT = 200;
   templateUrl: './highlight-selector.component.html',
   styleUrls: ['./highlight-selector.component.scss']
 })
-export class HighlightSelectorComponent extends ParamDirective {
+export class HighlightSelectorComponent implements OnChanges {
+    @Input() queryModel: QueryModel;
     public highlight: number = HIGHLIGHT;
 
-    constructor(route: ActivatedRoute, router: Router) {
-      super(route, router);
+    constructor() {
     }
 
-    initialize() {
-
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
+        }
     }
 
-    teardown() {
-        this.setParams({ highlight: null });
-    }
-
-    setStateFromParams(params: ParamMap) {
-        this.highlight = highlightFromParams(params);
+    setStateFromQueryModel() {
+        this.highlight = this.queryModel.highlightSize;
     }
 
 
     updateHighlightSize(event) {
         const highlightSize = event.target.value;
-        this.setParams({ highlight: highlightSize !== "0" ? highlightSize : null });
+        this.queryModel.setHighlight(highlightSize);
     }
 
 }
