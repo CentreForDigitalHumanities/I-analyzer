@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Component, Input, OnChanges } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
-import { CorpusField } from '../models/index';
+import { CorpusField, QueryModel } from '../models/index';
 import { ParamDirective } from '../param/param-directive';
 import { searchFieldsFromParams } from '../utils/params';
 

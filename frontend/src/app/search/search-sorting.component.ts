@@ -1,9 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CorpusField, QueryModel } from '../models';
-import { ParamDirective } from '../param/param-directive';
-import { sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
-import { sortDirectionFromBoolean } from '../utils/sort';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -12,16 +8,9 @@ const defaultValueType = 'alpha';
     styleUrls: ['./search-sorting.component.scss'],
     host: { class: 'field has-addons' }
 })
-export class SearchSortingComponent extends ParamDirective {
-    @Input()
-    public set fields(fields: CorpusField[]) {
-        this.sortableFields = fields.filter(field => field.sortable);
-    }
+export class SearchSortingComponent implements OnChanges {
+    @Input() queryModel: QueryModel;
 
-    private sortData: {
-        field: CorpusField
-        ascending: boolean
-    }
     public ascending = true;
     public primarySort: CorpusField;
     public sortField: CorpusField;
@@ -30,23 +19,28 @@ export class SearchSortingComponent extends ParamDirective {
     public sortableFields: CorpusField[];
     public showFields = false;
 
+    private sortData: {
+        field: CorpusField;
+        ascending: boolean;
+    };
+
+
+    constructor() {}
+
     public get sortType(): SortType {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
     }
 
-    initialize() {
-        this.primarySort = this.sortableFields.find(field => field.primarySort);
-        this.sortField = this.primarySort;
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
+        }
     }
 
-    teardown() {
-        this.setParams({ sort: null });
-    }
-
-    setStateFromParams(params: ParamMap) {
-        this.sortData = sortSettingsFromParams(params, this.sortableFields);
-        this.sortField = this.sortData.field;
-        this.ascending = this.sortData.ascending;
+    setStateFromQueryModel(queryModel: QueryModel) {
+        this.sortField = (queryModel.actualSortBy as CorpusField);
+        this.ascending = queryModel.sortDirection === 'asc';
     }
 
     public toggleSortType() {
@@ -70,8 +64,7 @@ export class SearchSortingComponent extends ParamDirective {
     }
 
     private updateSort() {
-        const setting = sortSettingsToParams(this.sortField, sortDirectionFromBoolean(this.ascending));
-        this.setParams(setting);
+        this.queryModel.setSort(this.sortField,  this.ascending? 'asc': 'desc');
     }
 }
 

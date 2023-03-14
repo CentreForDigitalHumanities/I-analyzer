@@ -1,11 +1,9 @@
-import {Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User, SearchFilter,
-    FoundDocument} from '../models/index';
-import { CorpusService, DialogService, ParamService, SearchService } from '../services/index';
+import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
+import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { makeContextParams } from '../utils/document-context';
 import { AuthService } from '../services/auth.service';
@@ -55,7 +53,6 @@ export class SearchComponent extends ParamDirective {
     constructor(
         private authService: AuthService,
         private corpusService: CorpusService,
-        private paramService: ParamService,
         private dialogService: DialogService,
         route: ActivatedRoute,
         router: Router

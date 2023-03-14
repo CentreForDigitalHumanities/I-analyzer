@@ -84,7 +84,7 @@ export class QueryModel {
 	}
 
     /** sort direction to be used in searching: replaces 'default' with the default value */
-    private get actualSortBy(): CorpusField|'relevance' {
+    get actualSortBy(): CorpusField|'relevance' {
         if (this.sortBy !== 'default') {
             return this.sortBy;
         } else {
@@ -113,6 +113,12 @@ export class QueryModel {
         while (filterIndex() !== -1) {
             this.filters.splice(filterIndex());
         }
+        this.update.next();
+    }
+
+    setSort(sortBy: SortBy, sortDirection: SortDirection) {
+        this.sortBy = sortBy;
+        this.sortDirection = sortDirection;
         this.update.next();
     }
 
