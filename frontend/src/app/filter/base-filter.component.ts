@@ -11,8 +11,6 @@ import { PotentialFilter, SearchFilter } from '../models/index';
     template: ''
 })
 export abstract class BaseFilterComponent<SearchFilterClass extends SearchFilter> implements OnChanges {
-    @Input() inputChanged: Subject<void>;
-
     @Input()
     public filter: PotentialFilter;
 

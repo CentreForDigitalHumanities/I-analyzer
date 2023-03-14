@@ -2,7 +2,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 import * as _ from 'lodash';
-import { Subject } from 'rxjs';
 
 import { PotentialFilter, Corpus, SearchFilter, QueryModel, MultipleChoiceFilterOptions, AggregateData } from '../models/index';
 import { SearchService } from '../services';
@@ -15,8 +14,6 @@ import { SearchService } from '../services';
 export class FilterManagerComponent implements OnChanges {
     @Input() public corpus: Corpus;
     @Input() queryModel: QueryModel;
-
-    inputChanged = new Subject<void>();
 
     public potentialFilters: PotentialFilter[] = [];
 
@@ -40,7 +37,6 @@ export class FilterManagerComponent implements OnChanges {
             this.potentialFilters = this.corpus.fields.map(field => new PotentialFilter(field, this.queryModel));
             this.queryModel.update.subscribe(this.onQueryModelUpdate.bind(this));
         }
-        this.inputChanged.next();
     }
 
     onQueryModelUpdate() {

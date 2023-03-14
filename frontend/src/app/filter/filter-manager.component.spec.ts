@@ -3,9 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { mockCorpus, mockCorpus2, mockFilter } from '../../mock-data/corpus';
-import { convertToParamMap } from '@angular/router';
-import { findByName } from '../utils/utils';
+import { mockCorpus, mockCorpus2 } from '../../mock-data/corpus';
 import { QueryModel } from '../models';
 
 describe('FilterManagerComponent', () => {
@@ -40,7 +38,7 @@ describe('FilterManagerComponent', () => {
     expect(component.potentialFilters.length).toEqual(1);
   });
 
-  it('toggles filters on and off', async() => {
+  it('toggles filters on and off', async () => {
     const filter = component.potentialFilters.find(f => f.corpusField.name === 'great_field');
     expect(component.queryModel.filters.length).toBe(0);
     component.toggleFilter(filter);
