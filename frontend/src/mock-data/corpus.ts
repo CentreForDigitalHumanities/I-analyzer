@@ -37,7 +37,7 @@ export const mockField2 = new CorpusField({
     name: 'speech',
     description: 'A content field',
     display_name: 'Speechiness',
-    display_type: 'text',
+    display_type: 'text_content',
     es_mapping: {type: 'text'},
     hidden: false,
     sortable: false,

@@ -609,12 +609,9 @@ export abstract class BarchartDirective
 
     get searchFields(): string {
         if (this.corpus && this.queryModel) {
-            const searchFields = this.selectSearchFields(this.queryModel).fields;
+            const searchFields = this.selectSearchFields(this.queryModel).searchFields;
 
-            const displayNames = searchFields.map(fieldName => {
-                const field = findByName(this.corpus.fields, fieldName);
-                return field.displayName;
-            });
+            const displayNames = searchFields.map(field => field.displayName);
 
             return displayNames.join(', ');
         }
