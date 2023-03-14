@@ -1,4 +1,4 @@
-import { TestBed, inject, fakeAsync } from '@angular/core/testing';
+import { TestBed, inject } from '@angular/core/testing';
 
 import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
@@ -8,10 +8,7 @@ import { UserService } from './user.service';
 import { UserServiceMock } from '../../mock-data/user';
 import { SessionService } from './session.service';
 
-import { Corpus } from '../models/corpus';
-import { CorpusField, SearchFilterData } from '../models/index';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
 import * as _ from 'lodash';
 
 describe('CorpusService', () => {

@@ -2,14 +2,11 @@ import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 
-import * as moment from 'moment';
 
 import {
     Corpus,
     CorpusField,
-    DocumentContext,
-    SearchFilter,
-    SearchFilterData,
+    DocumentContext
 } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';

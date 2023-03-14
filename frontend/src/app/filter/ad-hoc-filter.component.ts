@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { AdHocFilter, SearchFilter, SearchFilterData } from '../models';
+import { Component } from '@angular/core';
+import { AdHocFilter, } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
 
 @Component({
