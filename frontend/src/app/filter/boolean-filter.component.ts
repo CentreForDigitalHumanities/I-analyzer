@@ -8,16 +8,17 @@ import { BooleanFilter } from '../models';
   templateUrl: './boolean-filter.component.html',
   styleUrls: ['./boolean-filter.component.scss']
 })
-export class BooleanFilterComponent extends BaseFilterComponent<BooleanFilter> {
+export class BooleanFilterComponent extends BaseFilterComponent<boolean, BooleanFilter> {
     data: boolean;
 
-    getDisplayData(filter: BooleanFilter) {
-        const data = filter.currentData;
-        return data;
+    onFilterSet(filter: BooleanFilter) {}
+
+    getDisplayData(filterData: boolean): boolean {
+        return filterData;
     }
 
-    getFilterData(): boolean {
-        return this.data;
+    getFilterData(data: boolean): boolean {
+        return data;
     }
 
 }

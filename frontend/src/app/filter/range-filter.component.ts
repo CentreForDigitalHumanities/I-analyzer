@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { SearchFilter, RangeFilterData, RangeFilter } from '../models';
+import { RangeFilterData, RangeFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
 
 @Component({
@@ -8,21 +8,23 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> implements OnInit {
-    data: [number, number];
+export class RangeFilterComponent extends BaseFilterComponent<[number, number], RangeFilter> {
+    min: number;
+    max: number;
 
-    ngOnInit() {
-        this.provideFilterData();
+    onFilterSet(filter: RangeFilter): void {
+        this.min = filter.defaultData.min;
+        this.max = filter.defaultData.max;
     }
 
-    getDisplayData(filter: RangeFilter) {
-        return [filter.currentData.min, filter.currentData.max];
+    getDisplayData(filterData: RangeFilterData): [number, number] {
+        return [filterData.min, filterData.max];
     }
 
-    getFilterData(): RangeFilterData {
+    getFilterData(value: [number, number]): RangeFilterData {
         return {
-            min: this.data[0],
-            max: this.data[1],
+            min: value[0],
+            max: value[1],
         };
     }
 

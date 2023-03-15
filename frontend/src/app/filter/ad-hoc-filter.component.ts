@@ -7,15 +7,16 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './ad-hoc-filter.component.html',
   styleUrls: ['./ad-hoc-filter.component.scss']
 })
-export class AdHocFilterComponent extends BaseFilterComponent<AdHocFilter> {
+export class AdHocFilterComponent extends BaseFilterComponent<any, AdHocFilter> {
     data: any;
 
-    getDisplayData(filter: AdHocFilter) {
-        return filter.currentData;
+    onFilterSet() {}
+
+    getDisplayData(filterData: any) {
+        return filterData;
     }
 
-    getFilterData(): any {
-        return this.data;
+    getFilterData(data): any {
+        return data;
     }
-
 }

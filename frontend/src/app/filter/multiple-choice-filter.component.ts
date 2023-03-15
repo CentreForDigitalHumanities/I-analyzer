@@ -10,33 +10,24 @@ import { SearchFilter, AggregateResult, PotentialFilter, MultipleChoiceFilter } 
   templateUrl: './multiple-choice-filter.component.html',
   styleUrls: ['./multiple-choice-filter.component.scss']
 })
-export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilter> {
-    @Input() potentialFilter: PotentialFilter;
-    @Input() public optionsAndCounts: AggregateResult[];
+export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[], MultipleChoiceFilter> {
+    options: { label: string; value: string; doc_count: number }[];
 
-    data: {
-        options: string[];
-        selected: string[];
-    } = {
-        options: [], selected: []
+    @Input()
+    set optionsAndCounts(value: AggregateResult[]) {
+        this.options = _.sortBy(
+            value.map(x => ({ label: x.key, value: encodeURIComponent(x.key), doc_count: x.doc_count })),
+            o => o.label
+        );
     };
 
-    getDisplayData(filter: MultipleChoiceFilter) {
-        let options = [];
-        if (this.optionsAndCounts) {
-            options = _.sortBy(
-                this.optionsAndCounts.map(x => ({ label: x.key, value: encodeURIComponent(x.key), doc_count: x.doc_count })),
-                o => o.label
-            );
-        } else {
-            options = [1, 2, 3];
-        } // dummy array to make sure the component loads
-        return { options, selected: filter.currentData };
+    onFilterSet(filter: MultipleChoiceFilter): void {}
+
+    getDisplayData(filterData: string[]): string[] {
+        return filterData;
     }
 
-    getFilterData(): string[] {
-        return this.data.selected;
+    getFilterData(data: string[]): string[] {
+        return data;
     }
-
-
 }

@@ -10,32 +10,27 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends BaseFilterComponent<DateFilter> implements OnInit {
+export class DateFilterComponent extends BaseFilterComponent<DateFilterData, DateFilter> {
     public minDate: Date;
     public maxDate: Date;
     public minYear: number;
     public maxYear: number;
 
-    ngOnInit() {
-        this.provideFilterData();
-        this.minDate = this.filter.filter.defaultData.min;
-        this.maxDate = this.filter.filter.defaultData.max;
+    onFilterSet(filter: DateFilter): void {
+        this.minDate = filter.defaultData.min;
+        this.maxDate = filter.defaultData.max;
         this.minYear = this.minDate.getFullYear();
         this.maxYear = this.maxDate.getFullYear();
     }
 
-    getDisplayData(filter: DateFilter) {
-        const data = filter.currentData;
-        return {
-            min: new Date(data.min),
-            max: new Date(data.max),
-        };
+    getDisplayData(filterData: DateFilterData) {
+        return filterData;
     }
 
     /**
      * Create a new version of the filter data from the user input.
      */
-    getFilterData(): DateFilterData {
-        return this.data;
+    getFilterData(data): DateFilterData {
+        return data;
     }
 }
