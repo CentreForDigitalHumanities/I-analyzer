@@ -10,7 +10,7 @@
                 <i class="fa fa-trash"></i>
             </span>
             <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
-                [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
+                [ngClass]="{'is-primary is-medium': potentialFilters.length > 0}" (click)="toggleActiveFilters()"
                 iaBalloon="{{(activeFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left">
                 <i class="fa fa-filter"></i>
@@ -46,7 +46,7 @@
             <ng-container *ngIf="!filter.adHoc" [ngSwitch]="filter.filterType">
                 <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [filter]="filter" [grayedOut]="grayOutFilters" ></ia-boolean-filter>
                 <ia-date-filter *ngSwitchCase="'DateFilter'" [filter]="filter" [grayedOut]="grayOutFilters"></ia-date-filter>
-                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="filter" [grayedOut]="grayOutFilters" [optionsAndCounts]="multipleChoiceData[field.name]"></ia-multiple-choice-filter>
+                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="filter" [grayedOut]="grayOutFilters"></ia-multiple-choice-filter>
                 <ia-range-filter *ngSwitchCase="'RangeFilter'" [filter]="filter" [grayedOut]="grayOutFilters"></ia-range-filter>
             </ng-container>
         </div>
