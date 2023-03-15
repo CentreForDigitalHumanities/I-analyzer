@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import * as _ from 'lodash';
-import { mockField } from '../../mock-data/corpus';
+import { mockCorpus, mockField } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 
-import { CorpusField } from '../models/index';
+import { CorpusField, QueryModel } from '../models/index';
 
 import { SearchResultsComponent } from './search-results.component';
 
@@ -40,11 +40,13 @@ describe('Search Results Component', () => {
                 relation: 'gte'
             }
         };
-        component.corpus = {
-            fields
-        } as any;
+        component.corpus = _.merge(mockCorpus, fields);
         component.fromIndex = 0;
         component.resultsPerPage = 20;
+        const query = new QueryModel(component.corpus);
+        query.setQueryText('wally');
+        query.setHighlight(10);
+        component.queryModel = query;
         fixture.detectChanges();
     });
 
