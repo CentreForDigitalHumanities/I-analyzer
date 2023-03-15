@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { Corpus, CorpusField, SortBy, SortDirection } from '../models/index';
 import { EsQuery } from '../services';
 import { combineSearchClauseAndFilters, makeEsSearchClause, makeHighlightSpecification, makeSortSpecification } from '../utils/es-query';
-import { highlightFromParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
+import { filtersFromParams, highlightFromParams, queryFiltersToParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
     sortSettingsToParams } from '../utils/params';
 import { sortByDefault } from '../utils/sort';
 import { SearchFilter } from './search-filter';
@@ -108,6 +108,11 @@ export class QueryModel {
         this.removeFiltersForField(filter.corpusField);
     }
 
+    /** get an active search filter on this query for the field (undefined if none exists) */
+    filterForField(field: CorpusField): SearchFilter {
+        return this.filters.find(filter => filter.corpusField.name === field.name);
+    }
+
     removeFiltersForField(field: CorpusField) {
         const filterIndex = () => this.filters.findIndex(filter => filter.corpusField.name === field.name);
         while (filterIndex() !== -1) {
@@ -130,6 +135,7 @@ export class QueryModel {
     setFromParams(params: ParamMap) {
 		this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
+        this.filters = filtersFromParams(params, this.corpus);
         [this.sortBy, this.sortDirection] = sortSettingsFromParams(params, this.corpus.fields);
 		this.highlightSize = highlightFromParams(params);
 		this.update.next();
@@ -163,13 +169,11 @@ export class QueryModel {
 	}
 
     toRouteParam(): {[param: string]: any} {
-		const queryTextParams = { query: this.queryText } || {};
-        const searchFieldsParams = { fields:
-            this.searchFields ? this.searchFields.map(f => f.name).join(',') : null
-        };
-		const filterParams = this.filters.map(f => f.toRouteParam());
+		const queryTextParams =  { query: this.queryText || null };
+        const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = sortSettingsToParams(this.sortBy, this.sortDirection);
-        const highlightParams = this.highlightSize ? { highlight: this.highlightSize } : {};
+        const highlightParams = { highlight: this.highlightSize  || null };
+        const filterParams = queryFiltersToParams(this);
 
         return {
             ...queryTextParams,

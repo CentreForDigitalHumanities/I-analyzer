@@ -133,6 +133,7 @@ export class SearchComponent extends ParamDirective {
 
     private setQueryModel() {
         this.queryModel = new QueryModel(this.corpus);
+        this.queryModel.setFromParams(this.route.snapshot.paramMap);
         this.queryModel.update.subscribe(() => {
             this.setParams(this.queryModel.toRouteParam());
         });
