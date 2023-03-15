@@ -12,7 +12,7 @@
         </p>
         <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
             <ia-select-field [corpusFields]="corpus.fields" [filterCriterion]=" 'csv' "
-                (selectedFields)="selectCsvFields($event)">
+                (selection)="selectCsvFields($event)">
             </ia-select-field>
         </p>
     </div>
