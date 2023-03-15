@@ -31,12 +31,16 @@ describe('FilterManagerComponent', () => {
     component.corpus = mockCorpus2;
     component.queryModel = new QueryModel(mockCorpus2);
     fixture.detectChanges();
-    expect(component.potentialFilters.length).toEqual(0);
+    expect(component.potentialFilters.length).toEqual(1);
+    expect(component.potentialFilters[0].adHoc).toBeTrue();
+
     component.corpus = mockCorpus;
     component.queryModel = new QueryModel(mockCorpus);
     fixture.detectChanges();
     expect(component.potentialFilters.length).toEqual(1);
-  });
+    expect(component.potentialFilters[0].adHoc).toBeFalse();
+
+});
 
   it('toggles filters on and off', async () => {
     const filter = component.potentialFilters.find(f => f.corpusField.name === 'great_field');

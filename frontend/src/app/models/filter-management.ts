@@ -15,6 +15,8 @@ export class PotentialFilter {
         this.useAsFilter = false;
         if (!corpusField.filterOptions) {
             this.adHoc = true;
+        } else {
+            this.adHoc = false;
         }
     }
 

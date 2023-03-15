@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -11,9 +11,25 @@ import { SearchService } from '../services';
     templateUrl: './filter-manager.component.html',
     styleUrls: ['./filter-manager.component.scss']
 })
-export class FilterManagerComponent implements OnChanges {
-    @Input() public corpus: Corpus;
-    @Input() queryModel: QueryModel;
+export class FilterManagerComponent {
+    @Input()
+    get corpus(): Corpus {
+        return this._corpus;
+    }
+    set corpus(corpus: Corpus) {
+        this._corpus = corpus;
+        this.setPotentialFilters();
+    }
+
+    @Input()
+    get queryModel(): QueryModel {
+        return this._queryModel;
+    }
+    set queryModel(model: QueryModel) {
+        this._queryModel = model;
+        this.setPotentialFilters();
+        model.update.subscribe(this.onQueryModelUpdate.bind(this));
+    }
 
     public potentialFilters: PotentialFilter[] = [];
 
@@ -24,6 +40,9 @@ export class FilterManagerComponent implements OnChanges {
         [fieldName: string]: any[];
     } = {};
 
+    private _corpus: Corpus;
+    private _queryModel: QueryModel;
+
     constructor(
         private searchService: SearchService,) {
     }
@@ -32,16 +51,14 @@ export class FilterManagerComponent implements OnChanges {
         return this.queryModel.filters;
     }
 
-    ngOnChanges() {
-        if (this.corpus && this.queryModel && !this.potentialFilters) {
+    setPotentialFilters() {
+        if (this.corpus && this.queryModel) {
             this.potentialFilters = this.corpus.fields.map(field => new PotentialFilter(field, this.queryModel));
-            this.queryModel.update.subscribe(this.onQueryModelUpdate.bind(this));
         }
     }
 
     onQueryModelUpdate() {
         this.aggregateSearchForMultipleChoiceFilters();
-
     }
 
     /**

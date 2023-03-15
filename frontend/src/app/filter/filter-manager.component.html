@@ -17,7 +17,7 @@
             </span>
         </p>
     </div>
-    <ng-container *ngFor="let potentialFilter of potentialFilters">
+    <ng-container *ngFor="let filter of potentialFilters">
         <div class="box filter-container" *ngIf="!filter.adHoc || filter.useAsFilter" [ngClass]="{'on': filter.useAsFilter}">
             <div class="field has-addons">
                 <div class="control is-expanded" iaBalloon="{{ filter.description }}"
@@ -26,7 +26,7 @@
                         }}</label>
                 </div>
                 <p class="control">
-                    <button *ngIf="field.filter.useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
+                    <button *ngIf="filter.useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
                         (click)="filter.reset()" iaBalloon="Reset this filter to its default values"
                         iaBalloonPosition="down-left">
                         <i class="fa fa-trash"></i>
