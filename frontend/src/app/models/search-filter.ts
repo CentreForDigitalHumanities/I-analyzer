@@ -168,7 +168,10 @@ export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFil
     }
 
     dataFromString(value: string): MultipleChoiceFilterData {
-        return value.split(',');
+        if (value.length) {
+            return value.split(',');
+        }
+        return [];
     }
 
     dataToString(data: MultipleChoiceFilterData): string {

@@ -1,11 +1,17 @@
-import { mockFieldDate } from '../../mock-data/corpus';
-import { DateFilter } from './search-filter';
+import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
+import { DateFilter, MultipleChoiceFilter } from './search-filter';
 
 describe('DateFilter', () => {
+    const field = mockFieldDate;
+    let filter: DateFilter;
+
+    beforeEach(() => {
+        filter = new DateFilter(field);
+    });
 
     it('should create', () => {
-        const filter = new DateFilter(mockFieldDate);
         expect(filter).toBeTruthy();
+        expect(filter.currentData).toEqual(filter.defaultData);
         expect(filter.currentData).toEqual({
             min: new Date(Date.parse('Jan 01 1800')),
             max: new Date(Date.parse('Dec 31 1899'))
@@ -13,13 +19,11 @@ describe('DateFilter', () => {
     });
 
     it('should convert to string', () => {
-        const filter = new DateFilter(mockFieldDate);
-        const dataAsString = filter.dataToString(filter.currentData);
-        expect(filter.dataFromString(dataAsString)).toEqual(filter.currentData);
+        expect(filter.dataFromString(filter.dataToString(filter.currentData)))
+            .toEqual(filter.currentData);
     });
 
     it('should set data from a value', () => {
-        const filter = new DateFilter(mockFieldDate);
         const date = new Date(Date.parse('Jan 01 1850'));
         filter.setToValue(date);
         expect(filter.currentData).toEqual({
@@ -29,7 +33,6 @@ describe('DateFilter', () => {
     });
 
     it('should convert to an elasticsearch filter', () => {
-        const filter = new DateFilter(mockFieldDate);
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             range: {
@@ -40,5 +43,57 @@ describe('DateFilter', () => {
                 }
             }
         });
+    });
+
+    it('should parse an elasticsearch filter', () => {
+        const esFilter = filter.toEsFilter();
+        expect(filter.dataFromEsFilter(esFilter)).toEqual(filter.currentData);
+    });
+});
+
+describe('MultipleChoiceFilter', () => {
+    const field = mockFieldMultipleChoice;
+    let filter: MultipleChoiceFilter;
+
+    beforeEach(() => {
+        filter = new MultipleChoiceFilter(field);
+    });
+
+    it('should create', () => {
+        expect(filter).toBeTruthy();
+        expect(filter.currentData).toEqual(filter.defaultData);
+        expect(filter.currentData).toEqual([]);
+    });
+
+    it('should convert to string', () => {
+        expect(filter.dataFromString(filter.dataToString(filter.currentData)))
+            .toEqual(filter.currentData);
+
+        // non-empty value
+        filter.data.next(['a', 'b']);
+        expect(filter.dataFromString(filter.dataToString(filter.currentData)))
+            .toEqual(filter.currentData);
+
+    });
+
+    it('should set data from a value', () => {
+        const value = 'a great value';
+        filter.setToValue(value);
+        expect(filter.currentData).toEqual([value]);
+    });
+
+    it('should convert to an elasticsearch filter', () => {
+        filter.data.next(['wow!']);
+        const esFilter = filter.toEsFilter();
+        expect(esFilter).toEqual({
+            terms: {
+                greater_field: ['wow!']
+            }
+        });
+    });
+
+    it('should parse an elasticsearch filter', () => {
+        const esFilter = filter.toEsFilter();
+        expect(filter.dataFromEsFilter(esFilter)).toEqual(filter.currentData);
     });
 });

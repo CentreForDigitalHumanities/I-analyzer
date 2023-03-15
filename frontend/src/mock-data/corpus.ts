@@ -32,6 +32,32 @@ export const mockField = new CorpusField({
     required: false,
 });
 
+/* a keyword field with a multiple choice filter */
+export const mockFieldMultipleChoice = new CorpusField({
+    name: 'greater_field',
+    description: 'A even more wonderful field',
+    display_name: 'Greater field',
+    display_type: 'keyword',
+    es_mapping: {type: 'keyword'},
+    hidden: false,
+    sortable: false,
+    primary_sort: false,
+    searchable: false,
+    downloadable: false,
+    search_filter: {
+        name: 'MultipleChoiceFilter',
+        option_count: 10,
+        description: 'Select your favourite values!'
+    },
+    results_overview: true,
+    search_field_core: true,
+    csv_core: true,
+    visualizations: [],
+    visualization_sort: null,
+    indexed: true,
+    required: false,
+});
+
 /** a text content field */
 export const mockField2 = new CorpusField({
     name: 'speech',
