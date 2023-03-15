@@ -41,7 +41,7 @@ describe('FilterManagerComponent', () => {
   it('toggles filters on and off', async () => {
     const filter = component.potentialFilters.find(f => f.corpusField.name === 'great_field');
     expect(component.queryModel.filters.length).toBe(0);
-    component.toggleFilter(filter);
+    filter.toggle();
     expect(component.queryModel.filters.length).toBe(1);
   });
 });

@@ -77,13 +77,6 @@ export class FilterManagerComponent implements OnChanges {
             response => response.aggregations);
     }
 
-    toggleFilter(filter: PotentialFilter) {
-        filter.toggle();
-    }
-
-    resetFilter(filter: PotentialFilter) {
-        filter.reset();
-    }
 
     public toggleActiveFilters() {
         if (this.activeFilters.length) {
