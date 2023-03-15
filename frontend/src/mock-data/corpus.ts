@@ -93,7 +93,12 @@ export const mockField3 = new CorpusField({
     searchable: false,
     downloadable: true,
     results_overview: true,
-    search_filter: null,
+    search_filter: {
+        name: 'RangeFilter',
+        description: 'Filter me',
+        lower: 0,
+        upper: 100,
+    },
     search_field_core: false,
     csv_core: true,
     visualizations: [],

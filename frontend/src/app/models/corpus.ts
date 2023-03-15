@@ -89,7 +89,7 @@ export class CorpusField {
     searchable: boolean;
     downloadable: boolean;
     name: string;
-    filterOptions: FilterOptions | null;
+    filterOptions: FilterOptions;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
 
     constructor(data: ApiCorpusField) {
@@ -110,17 +110,17 @@ export class CorpusField {
         this.searchable = data.searchable;
         this.downloadable = data.downloadable;
         this.name = data.name;
-        this.filterOptions = data['search_filter'] || null;
+        this.filterOptions = data['search_filter'];
         this.mappingType = data.es_mapping?.type;
     }
 
     /** make a SearchFilter for this field */
     makeSearchFilter(): SearchFilter {
 		const filterClasses = {
-			date: DateFilter,
-			multiple_choice: MultipleChoiceFilter,
-			boolean: BooleanFilter,
-			range: RangeFilter,
+			DateFilter,
+			MultipleChoiceFilter,
+			BooleanFilter,
+			RangeFilter,
 		};
 		const Filter = _.get(
 			filterClasses,
