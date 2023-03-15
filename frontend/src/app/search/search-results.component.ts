@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
 
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
@@ -75,9 +76,10 @@ export class SearchResultsComponent implements OnChanges {
     constructor(private searchService: SearchService) { }
 
     ngOnChanges() {
-        if (this.queryModel !== null) {
+        if (this.queryModel) {
             this.fromIndex = 0;
             this.maximumDisplayed = this.user.downloadLimit ? this.user.downloadLimit : 10000;
+            this.search();
             this.queryModel.update.subscribe(() => this.search());
         }
     }
