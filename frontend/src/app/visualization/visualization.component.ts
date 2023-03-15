@@ -202,7 +202,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
 
     get imageFileName(): string {
         if (this.visualizationType && this.corpus && this.visualizedField) {
-            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.pdf`;
         }
     }
 }

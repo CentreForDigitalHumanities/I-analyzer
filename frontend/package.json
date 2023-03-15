@@ -48,6 +48,7 @@
     "font-awesome": "^4.7.0",
     "html-to-image": "^1.9.0",
     "iv-viewer": "^2.0.1",
+    "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "marked": "^4.1.1",
     "moment": "^2.29.4",
