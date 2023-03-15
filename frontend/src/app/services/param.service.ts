@@ -185,7 +185,7 @@ export class ParamService {
         return params.get('query');
     }
 
-    generateCaptionFromParams(params:ParamMap, corpus: Corpus): string[] {
+    setCaptionFromParams(params:ParamMap, corpus: Corpus): string[] {
         let output = [`Searched corpus: ${corpus.name}`];
         const query = params.get('query');
         if (query) {

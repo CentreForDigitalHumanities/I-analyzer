@@ -1,10 +1,12 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { DialogService, NotificationService } from '../../services';
 import { jsPDF } from "jspdf";
-import * as htmlToImage from 'html-to-image';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+
+import { DialogService, NotificationService, ParamService } from '../../services';
 import { PALETTES } from './../select-color';
+import { ActivatedRoute } from '@angular/router';
+import { Corpus } from '../../models';
 
 @Component({
   selector: 'ia-visualization-footer',
@@ -16,39 +18,33 @@ export class VisualizationFooterComponent implements OnInit {
     @Input() chartElementID: string;
     @Input() imageFileName: string;
     @Input() tableView: boolean; // whether we are viewing the table: hides the palette and image download
+    @Input() corpus: Corpus;
 
     @Output() palette = new BehaviorSubject<string[]>(PALETTES[0]);
 
     faQuestion = faQuestionCircle;
 
-    constructor(private dialogService: DialogService, private notificationService: NotificationService) { }
+    constructor(private dialogService: DialogService,
+        private paramService: ParamService, private route: ActivatedRoute) { }
 
     ngOnInit(): void {
     }
 
     onRequestImage() {
-        const imageFileName = this.imageFileName;
         const node = document.getElementById(this.chartElementID) as HTMLCanvasElement;
-        // const data = node.toDataURL("image/png", 1.0);
+        const scaleRatio = node.width / node.height;
+        const caption = this.paramService.setCaptionFromParams(this.route.snapshot.queryParamMap, this.corpus)
+        const imageHeight = 340;
 
         const pdf = new jsPDF('landscape', 'pt', 'a5');
-        pdf.addImage(node, 'PNG', 0, 0, 600, 320, 'canvas', 'MEDIUM', 0);
-        pdf.setFontSize(12);
-        pdf.text("Caption text", 0, 330);
+        pdf.addImage(node, 'PNG', 5, 0, imageHeight * scaleRatio, imageHeight, 'canvas', 'MEDIUM', 0);
+        pdf.setFontSize(8);
+        pdf.setTextColor('gray');
+        pdf.text(caption, 5, 345, {maxWidth: 590});
+        pdf.setFontSize(6);
+        pdf.setTextColor('blue');
+        pdf.textWithLink(window.location.href, 5, 380, {maxWidth: 590})
         pdf.save(this.imageFileName);
-
-        // htmlToImage.toPng(node, {backgroundColor: 'white', pixelRatio: 4})
-        //   .then((dataUrl) => {
-        //     const img = new Image();
-        //     img.src = dataUrl;
-        //     const anchor = document.createElement('a');
-        //     anchor.href = dataUrl;
-        //     anchor.download = imageFileName || 'chart.png';
-        //     anchor.click();
-        //   })
-        //   .catch((error) => {
-        //     this.notificationService.showMessage('Could not initiate image download', error);
-        //   });
 
     }
 
