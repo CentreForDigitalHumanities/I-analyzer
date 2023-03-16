@@ -9,6 +9,7 @@ import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
 
 
 import * as _ from 'lodash';
+import { findByName } from '../utils/utils';
 
 
 @Injectable()
@@ -139,7 +140,7 @@ export class ElasticSearchService {
             fieldName = _.keys(filter.range)[0];
             value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
         }
-        const field: CorpusField = corpus.fields.find(f => f.name === fieldName);
+        const field: CorpusField = findByName(corpus.fields, fieldName);
         const filterData = searchFilterDataFromField(field, value);
         return {
             fieldName: field.name,

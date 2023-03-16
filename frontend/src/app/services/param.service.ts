@@ -6,6 +6,7 @@ import { ParamMap } from '@angular/router';
 import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings,
     contextFilterFromField, FoundDocument, Corpus } from '../models';
 import { SearchService } from './search.service';
+import { findByName } from '../utils/utils';
 
 interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
@@ -160,7 +161,7 @@ export class ParamService {
                     ascending: sortAscending
                 };
             }
-            sortField = corpusFields.find(field => field.name === sortParam);
+            sortField = findByName(corpusFields, sortParam);
         } else {
             sortField = corpusFields.find(field => field.primarySort);
         }
@@ -198,7 +199,7 @@ export class ParamService {
         const queryText = '';
 
         const contextFields = contextSpec.contextFields
-            .filter(field => ! corpus.fields.find(f => f.name === field.name));
+            .filter(field => ! findByName(corpus.fields, field.name));
 
         contextFields.forEach(field => {
             field.searchFilter = contextFilterFromField(field, document.fieldValues[field.name]);

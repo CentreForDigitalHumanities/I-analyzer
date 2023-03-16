@@ -9,6 +9,7 @@ import { AggregateData, Corpus, MultipleChoiceFilterData, SearchFilter,
 import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services/param.service';
+import { findByName } from '../utils/utils';
 
 
 @Component({
@@ -125,7 +126,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
      * @param filterData
      */
     public updateFilterData(filter: SearchFilter<SearchFilterData>) {
-        this.corpusFields.find(f => f.name === filter.fieldName).searchFilter = filter;
+        findByName(this.corpusFields, filter.fieldName).searchFilter = filter;
         this.filtersChanged();
     }
 
