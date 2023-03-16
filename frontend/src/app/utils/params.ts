@@ -1,6 +1,7 @@
 import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
+import { findByName } from './utils';
 import * as _ from 'lodash';
 
 /** omit keys that mapp to null */
@@ -45,7 +46,7 @@ export const sortSettingsFromParams = (params: ParamMap, corpusFields: CorpusFie
         if ( sortParam === 'relevance' ) {
             return [sortParam, sortAscending ? 'asc' : 'desc'];
         }
-        sortBy = corpusFields.find(field => field.name === sortParam);
+        sortBy = findByName(corpusFields, sortParam);
     } else {
         sortBy = 'default';
     }

@@ -7,6 +7,7 @@ import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { makeContextParams } from '../utils/document-context';
 import { AuthService } from '../services/auth.service';
+import { findByName } from '../utils/utils';
 
 @Component({
     selector: 'ia-search',
@@ -146,7 +147,7 @@ export class SearchComponent extends ParamDirective {
         const queryModel = new QueryModel(this.corpus);
 
         const contextFields = contextSpec.contextFields
-            .filter(field => ! this.filterFields.find(f => f.name === field.name));
+            .filter(field => ! findByName(this.filterFields, field.name));
 
         contextFields.forEach(field => {
             const filter = field.makeSearchFilter();

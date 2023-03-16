@@ -5,6 +5,7 @@ import { esQueryToQueryModel } from '../../utils/es-query';
 import { QueryDb } from '../../models/index';
 import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
+import { findByName } from '../../utils/utils';
 
 @Component({
     selector: 'search-history',
@@ -33,7 +34,7 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     }
 
     addQueryModel(query?: QueryDb) {
-        const corpus = this.corpora.find(c => c.name === query.corpus);
+        const corpus = findByName(this.corpora, query.corpus);
         query.queryModel = esQueryToQueryModel(query.query_json, corpus);
         return query;
     }

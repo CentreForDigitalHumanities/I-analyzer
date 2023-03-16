@@ -5,6 +5,7 @@ import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
     QueryModel,
     SimpleQueryString, SortDirection } from '../models';
 import { EsQuery } from '../services';
+import { findByName } from './utils';
 import { SearchFilter } from '../models/search-filter';
 
 // conversion from query model -> elasticsearch query language
@@ -108,7 +109,7 @@ const filtersFromEsQuery = (query: EsQuery, corpus: Corpus): SearchFilter[] => {
 const esFilterToSearchFilter = (esFilter: EsFilter, corpus: Corpus): SearchFilter => {
     const filterType = _.first(_.keys(esFilter)) as 'term'|'terms'|'range';
     const fieldName = _.first(_.keys(esFilter[filterType]));
-    const field = corpus.fields.find(f => f.name === fieldName);
+    const field = findByName(corpus.fields, fieldName);
     const filter = field.makeSearchFilter();
     filter.data.next(filter.dataFromEsFilter(esFilter as any)); // we know that the esFilter is of the correct type
     return filter;
