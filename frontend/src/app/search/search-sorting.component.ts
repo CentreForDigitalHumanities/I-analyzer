@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CorpusField, QueryModel } from '../models';
 
 const defaultValueType = 'alpha';
@@ -8,22 +8,15 @@ const defaultValueType = 'alpha';
     styleUrls: ['./search-sorting.component.scss'],
     host: { class: 'field has-addons' }
 })
-export class SearchSortingComponent implements OnChanges {
+export class SearchSortingComponent implements OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
 
     public ascending = true;
-    public primarySort: CorpusField;
     public sortField: CorpusField;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
     public showFields = false;
-
-    private sortData: {
-        field: CorpusField;
-        ascending: boolean;
-    };
-
 
     constructor() {}
 
@@ -34,13 +27,27 @@ export class SearchSortingComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel) {
+            this.setSortableFields();
             this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
         }
     }
 
-    setStateFromQueryModel(queryModel: QueryModel) {
-        this.sortField = (queryModel.actualSortBy as CorpusField);
-        this.ascending = queryModel.sortDirection === 'asc';
+    ngOnDestroy(): void {
+        this.queryModel.setSort('default', 'desc');
+    }
+
+    setSortableFields() {
+        this.sortableFields = this.queryModel.corpus.fields.filter(field => field.sortable);
+        this.setStateFromQueryModel();
+    }
+
+    setStateFromQueryModel() {
+        if (this.queryModel.actualSortBy === 'relevance') {
+            this.sortField = undefined;
+        } else {
+            this.sortField = (this.queryModel.actualSortBy as CorpusField);
+        }
+        this.ascending = this.queryModel.sortDirection === 'asc';
     }
 
     public toggleSortType() {
@@ -64,7 +71,9 @@ export class SearchSortingComponent implements OnChanges {
     }
 
     private updateSort() {
-        this.queryModel.setSort(this.sortField,  this.ascending? 'asc': 'desc');
+        const sortBy = this.sortField || 'relevance';
+        const direction = this.ascending ? 'asc': 'desc';
+        this.queryModel.setSort(sortBy,  direction);
     }
 }
 

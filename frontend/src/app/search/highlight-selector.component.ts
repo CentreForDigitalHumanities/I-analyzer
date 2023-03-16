@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { QueryModel } from '../models';
 
 
@@ -9,7 +9,7 @@ const HIGHLIGHT = 200;
   templateUrl: './highlight-selector.component.html',
   styleUrls: ['./highlight-selector.component.scss']
 })
-export class HighlightSelectorComponent implements OnChanges {
+export class HighlightSelectorComponent implements OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
     public highlight: number = HIGHLIGHT;
 
@@ -18,8 +18,13 @@ export class HighlightSelectorComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel) {
+            this.setStateFromQueryModel();
             this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
         }
+    }
+
+    ngOnDestroy(): void {
+        this.queryModel.setHighlight(undefined);
     }
 
     setStateFromQueryModel() {
