@@ -2,11 +2,12 @@ import { SearchFilter } from '../app/models/search-filter';
 import { AggregateQueryFeedback, Corpus, CorpusField, QueryModel } from '../app/models/index';
 
 export class SearchServiceMock {
-    public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
+    public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: [{name: string}]): Promise<AggregateQueryFeedback> {
+        const name = aggregator[0].name;
         return {
             completed: false,
             aggregations: {
-                aggregator: [{
+                [name]: [{
                     key: '1999',
                     doc_count: 200
                 }, {
@@ -19,6 +20,7 @@ export class SearchServiceMock {
             }
         };
     }
+
     public async getRelatedWords() {}
 
     createQueryModel(
