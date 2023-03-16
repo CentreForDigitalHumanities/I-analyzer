@@ -17,7 +17,7 @@ describe('MultipleChoiceFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MultipleChoiceFilterComponent);
     component = fixture.componentInstance;
-    component.options = [{value: 'Andy', label: 'Andy', doc_count: 2}, {value: 'Lou', label: 'Lou', doc_count: 3}];
+    // component.options = [{value: 'Andy', label: 'Andy', doc_count: 2}, {value: 'Lou', label: 'Lou', doc_count: 3}];
     const query = new QueryModel(mockCorpus);
     component.filter = new PotentialFilter(mockFieldMultipleChoice, query);
     fixture.detectChanges();

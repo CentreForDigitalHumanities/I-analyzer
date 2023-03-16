@@ -43,7 +43,7 @@ export abstract class BaseFilterComponent<Data, SearchFilterClass extends Search
     update(data: Data) {
         const filterData = this.getFilterData(data);
         this.filter.filter.data.next(filterData);
-        if ((data as any).selected && (data as any).selected.length === 0) {
+        if ((data as any) && (data as any).length === 0) {
             this.filter.deactivate();
         } else {
             this.filter.activate(); // update called through user input
