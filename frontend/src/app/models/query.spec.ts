@@ -1,8 +1,6 @@
 import { mockField2, mockFieldDate } from '../../mock-data/corpus';
-import { EsQuery } from '../services';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
-import { EsSearchClause } from './elasticsearch';
 import { DateFilter } from './search-filter';
 import { convertToParamMap } from '@angular/router';
 
@@ -78,7 +76,6 @@ describe('QueryModel', () => {
 
         const filter = new DateFilter(mockFieldDate);
         filter.setToValue(new Date('Jan 1 1850'));
-
         query.addFilter(filter);
 
         expect(query.toRouteParam()).toEqual({
@@ -112,5 +109,21 @@ describe('QueryModel', () => {
         query.setFromParams(params);
         expect(query.queryText).toEqual('test');
         expect(query.filters.length).toBe(1);
+    });
+
+    it('should clone', () => {
+        query.setQueryText('test');
+        const filter = new DateFilter(mockFieldDate);
+        filter.setToValue(new Date('Jan 1 1850'));
+        query.addFilter(filter);
+
+        const clone = query.clone();
+
+        query.setQueryText('different test');
+        expect(clone.queryText).toEqual('test');
+
+        filter.setToValue(new Date('Jan 2 1850'));
+        expect(query.filters[0].currentData.min).toEqual(new Date('Jan 2 1850'));
+        expect(clone.filters[0].currentData.min).toEqual(new Date('Jan 1 1850'));
     });
 });

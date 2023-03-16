@@ -141,7 +141,7 @@ export class QueryModel {
 		this.update.next();
 	}
 
-    /**sortFromParams
+    /**
      * reset values to a blank query for the corpus
      */
 	reset(): void {
@@ -159,12 +159,14 @@ export class QueryModel {
      */
 	clone(queryText?: string, addFilter?: SearchFilter) {
 		const newQuery = _.clone(this); // or cloneDeep?
-		if (queryText !== undefined) {
+        if (queryText !== undefined) {
 			newQuery.setQueryText(queryText);
 		}
 		if (addFilter) {
 			newQuery.addFilter(addFilter);
 		}
+        // deep clone filters so they are disconnected from the current query
+        newQuery.filters = _.cloneDeep(newQuery.filters);
 		return newQuery;
 	}
 
