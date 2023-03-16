@@ -145,6 +145,9 @@ export abstract class BarchartDirective
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (changes.queryModel) {
+            this.queryModel.update.subscribe(this.refreshChart.bind(this));
+        }
         // new doc counts should be requested if query has changed
         if (this.changesRequireRefresh(changes)) {
             this.refreshChart();
