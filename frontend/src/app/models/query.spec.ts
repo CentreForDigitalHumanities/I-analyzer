@@ -1,7 +1,7 @@
 import { mockField2, mockFieldDate } from '../../mock-data/corpus';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
-import { DateFilter } from './search-filter';
+import { DateFilter, SearchFilter } from './search-filter';
 import { convertToParamMap } from '@angular/router';
 
 const corpus: Corpus = {
@@ -24,13 +24,37 @@ const corpus: Corpus = {
 
 describe('QueryModel', () => {
     let query: QueryModel;
+    let filter: SearchFilter;
 
     beforeEach(() => {
         query = new QueryModel(corpus);
     });
 
+    beforeEach(() => {
+        filter = new DateFilter(mockFieldDate);
+        filter.setToValue(new Date('Jan 1 1850'));
+
+    });
+
     it('should create', () => {
         expect(query).toBeTruthy();
+    });
+
+    it('should signal updates', () => {
+        let updates = 0;
+        query.update.subscribe(() => updates += 1);
+
+        query.setQueryText('test');
+        expect(updates).toBe(1);
+
+        query.addFilter(filter);
+        expect(updates).toBe(2);
+
+        query.removeFilter(filter);
+        expect(updates).toBe(3);
+
+        query.reset();
+        expect(updates).toBe(4);
     });
 
     it('should convert to an elasticsearch query', () => {
@@ -74,8 +98,6 @@ describe('QueryModel', () => {
             highlight: null,
         });
 
-        const filter = new DateFilter(mockFieldDate);
-        filter.setToValue(new Date('Jan 1 1850'));
         query.addFilter(filter);
 
         expect(query.toRouteParam()).toEqual({
@@ -113,8 +135,6 @@ describe('QueryModel', () => {
 
     it('should clone', () => {
         query.setQueryText('test');
-        const filter = new DateFilter(mockFieldDate);
-        filter.setToValue(new Date('Jan 1 1850'));
         query.addFilter(filter);
 
         const clone = query.clone();

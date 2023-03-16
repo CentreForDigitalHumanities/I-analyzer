@@ -113,6 +113,7 @@ export class QueryModel {
         return this.filters.find(filter => filter.corpusField.name === field.name);
     }
 
+    /** remove all filters that apply to a corpus field */
     removeFiltersForField(field: CorpusField) {
         const filterIndex = () => this.filters.findIndex(filter => filter.corpusField.name === field.name);
         while (filterIndex() !== -1) {
@@ -132,6 +133,7 @@ export class QueryModel {
         this.update.next();
     }
 
+    /** set the query values from a parameter map */
     setFromParams(params: ParamMap) {
 		this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
@@ -157,7 +159,7 @@ export class QueryModel {
      * make a clone of the current query.
      * optionally include querytext or a filter for the new query.
      */
-	clone(queryText?: string, addFilter?: SearchFilter) {
+	clone(queryText: string = undefined, addFilter: SearchFilter = undefined) {
 		const newQuery = _.clone(this); // or cloneDeep?
         if (queryText !== undefined) {
 			newQuery.setQueryText(queryText);
@@ -170,6 +172,7 @@ export class QueryModel {
 		return newQuery;
 	}
 
+    /** convert the query to a parameter map */
     toRouteParam(): {[param: string]: any} {
 		const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
@@ -186,6 +189,7 @@ export class QueryModel {
         };
 	}
 
+    /** convert the query to an elasticsearch query */
 	toEsQuery(): EsQuery {
         const searchClause = makeEsSearchClause(this.queryText, this.searchFields);
         const filters = this.filters.map(filter => filter.toEsFilter());
