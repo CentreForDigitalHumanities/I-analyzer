@@ -34,10 +34,6 @@ export class FilterManagerComponent {
     public showFilters: boolean;
     public grayOutFilters: boolean;
 
-    public multipleChoiceData: {
-        [fieldName: string]: any[];
-    } = {};
-
     private _corpus: Corpus;
     private _queryModel: QueryModel;
 
