@@ -9,7 +9,7 @@ import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, 
     BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
 import { findByName, showLoading } from '../../utils/utils';
 

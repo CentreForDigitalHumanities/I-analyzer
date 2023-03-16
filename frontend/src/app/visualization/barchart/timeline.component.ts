@@ -8,7 +8,7 @@ import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDa
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
 import { showLoading } from '../../utils/utils';
 
 
