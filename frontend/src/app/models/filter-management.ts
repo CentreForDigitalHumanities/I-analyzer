@@ -1,7 +1,7 @@
 import { CorpusField } from './corpus';
 import { QueryModel } from './query';
 import { SearchFilter } from './search-filter';
-import { SearchFilterType } from './search-filter-old';
+import { SearchFilterType } from './search-filter-options';
 
 export class PotentialFilter {
     filter: SearchFilter;

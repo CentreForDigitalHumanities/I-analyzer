@@ -1,5 +1,7 @@
 // Types for serialised filter options for a corpus by the API
 
+export type SearchFilterType = 'DateFilter' | 'MultipleChoiceFilter' | 'RangeFilter' | 'BooleanFilter';
+
 export interface HasDescription {
     description: string;
 }
