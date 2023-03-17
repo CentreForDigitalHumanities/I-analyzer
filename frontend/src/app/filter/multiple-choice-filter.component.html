@@ -1,4 +1,4 @@
-<div class="mc" *ngIf="data$ | async as data">
+<div class="mc">
     <p-multiSelect [disabled]="grayedOut" [filter]="options.length>=6" [options]="options" [maxSelectedLabels]=1
             placeholder="Choose" [ngModel]="data" (onChange)="update($event.value)">
         <ng-template let-item pTemplate="item">

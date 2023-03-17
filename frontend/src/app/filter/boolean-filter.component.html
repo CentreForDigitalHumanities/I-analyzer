@@ -1,4 +1,4 @@
-<div class="bool" *ngIf="data$ | async as data">
-    <p-checkbox [ngModel]="data" [disabled]="grayedOut" binary="true" (onChange)="update($event)"></p-checkbox>
-    {{data | titlecase }}
+<div class="bool" *ngIf="filter">
+    <p-checkbox [ngModel]="filter.filter.currentData" [disabled]="grayedOut" binary="true" (onChange)="update($event)"></p-checkbox>
+    {{data | json | titlecase }}
 </div>

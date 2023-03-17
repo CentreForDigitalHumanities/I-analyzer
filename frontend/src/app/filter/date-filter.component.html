@@ -1,4 +1,4 @@
-<div class="daterange" *ngIf="data$ | async as data">
+<div class="daterange">
     <p-calendar [disabled]="grayedOut" [ngModel]="data.min" [minDate]="minDate" [maxDate]="data.max"
         [monthNavigator]="true" [yearNavigator]="true" yearRange="{{minYear}}:{{maxYear}}"
         (onSelect)="update($event)" (onClose)="update($event.target.value)" dateFormat="dd-mm-yy"></p-calendar>

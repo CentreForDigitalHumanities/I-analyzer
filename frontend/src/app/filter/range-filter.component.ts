@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { RangeFilterData, RangeFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
@@ -8,7 +8,7 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<[number, number], RangeFilter> {
+export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> {
     min: number;
     max: number;
 

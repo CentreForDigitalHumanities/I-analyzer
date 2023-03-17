@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-
-import * as moment from 'moment';
+import { Component } from '@angular/core';
 
 import { DateFilterData, DateFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
@@ -10,7 +8,7 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends BaseFilterComponent<DateFilterData, DateFilter> {
+export class DateFilterComponent extends BaseFilterComponent<DateFilterData> {
     public minDate: Date;
     public maxDate: Date;
     public minYear: number;
@@ -21,16 +19,5 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData, Dat
         this.maxDate = filter.defaultData.max;
         this.minYear = this.minDate.getFullYear();
         this.maxYear = this.maxDate.getFullYear();
-    }
-
-    getDisplayData(filterData: DateFilterData) {
-        return filterData;
-    }
-
-    /**
-     * Create a new version of the filter data from the user input.
-     */
-    getFilterData(data): DateFilterData {
-        return data;
     }
 }

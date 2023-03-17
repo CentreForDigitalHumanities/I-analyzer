@@ -1,9 +1,9 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component } from '@angular/core';
 
 import * as _ from 'lodash';
 
 import { BaseFilterComponent } from './base-filter.component';
-import { SearchFilter, AggregateResult, PotentialFilter, MultipleChoiceFilter, AggregateData, QueryModel, MultipleChoiceFilterOptions } from '../models';
+import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../models';
 import { SearchService } from '../services';
 
 @Component({
@@ -11,7 +11,7 @@ import { SearchService } from '../services';
   templateUrl: './multiple-choice-filter.component.html',
   styleUrls: ['./multiple-choice-filter.component.scss']
 })
-export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[], MultipleChoiceFilter> {
+export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]> {
     options: { label: string; value: string; doc_count: number }[] = [];
 
     constructor(private searchService: SearchService) {
@@ -20,14 +20,8 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[],
 
     onFilterSet(filter: MultipleChoiceFilter): void {
         this.getOptions();
-    }
+        this.filter.filter.data.subscribe(data => this.deactivateWhenEmpty());
 
-    getDisplayData(filterData: string[]): string[] {
-        return filterData;
-    }
-
-    getFilterData(data: string[]): string[] {
-        return data;
     }
 
     private async getOptions(): Promise<void> {
@@ -42,6 +36,14 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[],
                     o => o.label
                 )
             );
+    }
+
+    private deactivateWhenEmpty() {
+        if (this.filter.filter.data.value.length === 0) {
+            this.filter.deactivate();
+        } else {
+            this.filter.activate(); // update called through user input
+        }
     }
 
 }
