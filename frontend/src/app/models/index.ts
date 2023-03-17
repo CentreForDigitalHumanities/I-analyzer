@@ -5,7 +5,7 @@ export * from './search-filter';
 export * from './search-filter-options';
 export * from './filter-management';
 export * from './search-results';
-export * from './sort-event';
+export * from './sort';
 export * from './user';
 export * from './user-role';
 export * from './visualization';
