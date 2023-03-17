@@ -25,31 +25,26 @@ export class SearchService {
      * Load results for requested page
      */
     public async loadResults(
-        corpus: Corpus,
         queryModel: QueryModel,
         from: number,
         size: number
     ): Promise<SearchResults> {
         const results = await this.elasticSearchService.loadResults(
-            corpus,
             queryModel,
             from,
             size
         );
-        results.fields = corpus.fields.filter((field) => field.resultsOverview);
+        results.fields = queryModel.corpus.fields.filter((field) => field.resultsOverview);
         return results;
     }
 
-    public async search(
-        queryModel: QueryModel,
-        corpus: Corpus
+    public async search(queryModel: QueryModel
     ): Promise<SearchResults> {
         const user = await this.authService.getCurrentUserPromise();
         const esQuery = queryModel.toEsQuery();
-        const query = new QueryDb(esQuery, corpus.name, user.id);
+        const query = new QueryDb(esQuery, queryModel.corpus.name, user.id);
         query.started = new Date(Date.now());
         const results = await this.elasticSearchService.search(
-            corpus,
             queryModel
         );
         query.total_results = results.total.value;
@@ -57,7 +52,7 @@ export class SearchService {
         this.queryService.save(query);
 
         return {
-            fields: corpus.fields.filter((field) => field.resultsOverview),
+            fields: queryModel.corpus.fields.filter((field) => field.resultsOverview),
             total: results.total,
             documents: results.documents,
         } as SearchResults;

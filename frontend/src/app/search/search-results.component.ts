@@ -95,10 +95,7 @@ export class SearchResultsComponent implements OnChanges {
 
     private search() {
         this.isLoading = true;
-        this.searchService.search(
-            this.queryModel,
-            this.corpus
-        ).then(results => {
+        this.searchService.search(this.queryModel).then(results => {
             this.results = results;
             this.results.documents.map((d, i) => d.position = i + 1);
             this.searched(this.queryModel.queryText, this.results.total.value);
@@ -119,7 +116,7 @@ export class SearchResultsComponent implements OnChanges {
         this.isLoading = true;
         this.fromIndex = searchParameters.from;
         this.resultsPerPage = searchParameters.size;
-        this.results = await this.searchService.loadResults(this.corpus, this.queryModel, searchParameters.from, searchParameters.size);
+        this.results = await this.searchService.loadResults(this.queryModel, searchParameters.from, searchParameters.size);
         this.results.documents.map( (d, i) => d.position = i + searchParameters.from + 1 );
         this.isLoading = false;
     }

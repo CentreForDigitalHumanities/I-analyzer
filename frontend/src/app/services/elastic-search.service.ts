@@ -126,14 +126,13 @@ export class ElasticSearchService {
 
 
     public async search(
-        corpusDefinition: Corpus,
         queryModel: QueryModel,
         size?: number,
     ): Promise<SearchResults> {
         const esQuery = queryModel.toEsQuery();
 
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage);
+        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage);
         return this.parseResponse(response);
     }
 
@@ -142,12 +141,11 @@ export class ElasticSearchService {
      * Load results for requested page
      */
     public async loadResults(
-        corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
         const esQuery = queryModel.toEsQuery();
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage, from);
+        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage, from);
         return this.parseResponse(response);
     }
 
