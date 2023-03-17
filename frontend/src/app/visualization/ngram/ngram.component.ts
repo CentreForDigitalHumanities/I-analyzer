@@ -64,7 +64,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     initialize(): void {
-        this.currentParameters = {
+        const params = {
             size: this.sizeOptions[0].value,
             positions: this.positionsOptions[0].value,
             freqCompensation: this.freqCompensationOptions[0].value,
@@ -73,7 +73,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             numberOfNgrams: 10,
             dateField: 'date',
         }
-        this.setParams(this.currentParameters, true);
+        this.setParams(params, true);
     }
 
     teardown(): void {
@@ -82,8 +82,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     setStateFromParams(params: ParamMap) {
-        this.setParameters(params);
-        this.loadGraph();
+        if (params.has('size')) {
+            this.setParameters(params);
+            this.loadGraph();
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -100,10 +102,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             } else {
                 this.analysisOptions = undefined;
             }
-        }
-
-        if (this.currentParameters) {
-            this.loadGraph();
         }
     }
 

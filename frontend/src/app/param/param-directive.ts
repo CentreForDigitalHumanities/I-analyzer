@@ -35,13 +35,13 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
         if (guardParams) {
             this.guardParams(params);
         }
-        this.router.navigate(
+        _.defer(() => this.router.navigate(
             ['.'],
             { relativeTo: this.route,
             queryParams: params,
             queryParamsHandling: 'merge'
             },
-        );
+        ));
     }
 
     /**
