@@ -20,8 +20,6 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]>
 
     onFilterSet(filter: MultipleChoiceFilter): void {
         this.getOptions();
-        this.filter.filter.data.subscribe(data => this.deactivateWhenEmpty());
-
     }
 
     private async getOptions(): Promise<void> {
@@ -37,13 +35,4 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]>
                 )
             );
     }
-
-    private deactivateWhenEmpty() {
-        if (this.filter.filter.data.value.length === 0) {
-            this.filter.deactivate();
-        } else {
-            this.filter.activate(); // update called through user input
-        }
-    }
-
 }

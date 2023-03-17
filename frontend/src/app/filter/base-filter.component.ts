@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Component, Input } from '@angular/core';
+import * as _ from 'lodash';
 
 import { PotentialFilter } from '../models/index';
 
@@ -35,10 +36,10 @@ export abstract class BaseFilterComponent<FilterData> {
      * Trigger a change event.
      */
     update(data: FilterData) {
-        this.filter.filter.data.next(data);
+        this.filter.set(data);
     }
 
     /** possible administration when the filter is set, e.g. setting data limits */
-    abstract onFilterSet(filter: typeof this.filter.filter): void;
+    abstract onFilterSet(filter): void;
 
 }

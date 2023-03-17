@@ -4,21 +4,21 @@
             <h4 class="title">Filters</h4>
         </div>
         <p class="control" style="float:right">
-            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
+            <span *ngIf="anyActiveFilters$ | async" class="button icon filter-icon is-primary is-active is-medium is-round"
                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                 iaBalloonPosition="down-left">
                 <i class="fa fa-trash"></i>
             </span>
-            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
-                [ngClass]="{'is-primary is-medium': potentialFilters.length > 0}" (click)="toggleActiveFilters()"
-                iaBalloon="{{(activeFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+            <span *ngIf="anyNonDefaultFilters$ | async" class="button icon filter-icon is-inverted is-round is-primary is-medium"
+                (click)="toggleActiveFilters()"
+                iaBalloon="{{(anyActiveFilters$ | async) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left">
                 <i class="fa fa-filter"></i>
             </span>
         </p>
     </div>
     <ng-container *ngFor="let filter of potentialFilters">
-        <div class="box filter-container" *ngIf="!filter.adHoc || filter.useAsFilter" [ngClass]="{'on': filter.useAsFilter}">
+        <div class="box filter-container" *ngIf="!filter.adHoc || filter.useAsFilter.value" [ngClass]="{'on': filter.useAsFilter.value}">
             <div class="field has-addons">
                 <div class="control is-expanded" iaBalloon="{{ filter.description }}"
                     iaBalloonPosition="up-left" iaBalloonLength="fit">
@@ -26,15 +26,15 @@
                         }}</label>
                 </div>
                 <p class="control">
-                    <button *ngIf="filter.useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
+                    <button *ngIf="(filter.filter.isDefault$ | async) === false" class="button icon filter-icon is-primary is-inverted is-round"
                         (click)="filter.reset()" iaBalloon="Reset this filter to its default values"
                         iaBalloonPosition="down-left">
                         <i class="fa fa-trash"></i>
                     </button>
-                    <button *ngIf="filter.filter.currentData !== filter.filter.defaultData"
+                    <button *ngIf="(filter.filter.isDefault$ | async) === false"
                         class="button icon filter-icon is-primary is-inverted is-round"
-                        [ngClass]="{'is-primary': filter.useAsFilter}"
-                        (click)="filter.toggle()" iaBalloon="{{filter.useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
+                        [ngClass]="{'is-primary': filter.useAsFilter.value}"
+                        (click)="filter.toggle()" iaBalloon="{{filter.useAsFilter.value ? 'Disable this filter' : 'Enable this filter'}}"
                         iaBalloonPosition="down-left">
                         <i class="fa fa-filter"></i>
                     </button>

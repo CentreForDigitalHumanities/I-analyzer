@@ -31,10 +31,7 @@ export class SearchComponent extends ParamDirective {
      * Whether the total number of hits exceeds the download limit.
      */
     public hasLimitedResults = false;
-    /**
-     * Hide the filters by default, unless an existing search is opened containing filters.
-     */
-    public showFilters = true;
+
     public user: User;
     protected corpusSubscription: Subscription;
 

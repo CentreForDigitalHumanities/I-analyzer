@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
@@ -20,6 +21,12 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
     get currentData() {
 		return this.data?.value;
 	}
+
+    get isDefault$(): Observable<boolean> {
+        return this.data.asObservable().pipe(
+            map(data => _.isEqual(data, this.defaultData))
+        );
+    }
 
 	reset() {
 		this.data.next(this.defaultData);
@@ -42,7 +49,7 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 
     toRouteParam(): {[param: string]: any} {
         return {
-            [this.corpusField.name]: this.dataToString(this.currentData)
+            [this.corpusField.name]: this.dataToString(this.currentData) || null
         };
     }
 

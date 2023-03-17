@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import * as _ from 'lodash';
 
 import { DateFilterData, DateFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
@@ -20,4 +21,10 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> {
         this.minYear = this.minDate.getFullYear();
         this.maxYear = this.maxDate.getFullYear();
     }
+
+    updateProperty(property: 'min'|'max', date: Date) {
+        const value = _.merge(_.clone(this.data), {[property]: date});
+        this.update(value);
+    }
+
 }

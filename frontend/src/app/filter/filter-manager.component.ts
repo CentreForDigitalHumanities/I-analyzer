@@ -2,8 +2,10 @@
 import { Component, Input } from '@angular/core';
 
 import * as _ from 'lodash';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { PotentialFilter, Corpus, SearchFilter, QueryModel} from '../models/index';
+import { PotentialFilter, Corpus, SearchFilter, QueryModel } from '../models/index';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -31,7 +33,6 @@ export class FilterManagerComponent {
 
     public potentialFilters: PotentialFilter[] = [];
 
-    public showFilters: boolean;
     public grayOutFilters: boolean;
 
     private _corpus: Corpus;
@@ -42,6 +43,24 @@ export class FilterManagerComponent {
 
     get activeFilters(): SearchFilter[] {
         return this.queryModel.filters;
+    }
+
+    get anyActiveFilters$(): Observable<boolean> {
+        if (this.potentialFilters) {
+            const statuses = this.potentialFilters.map(filter => filter.useAsFilter);
+            return combineLatest(statuses).pipe(
+                map(values => _.some(values)),
+            );
+        }
+    }
+
+    get anyNonDefaultFilters$(): Observable<boolean> {
+        if (this.potentialFilters) {
+            const statuses = this.potentialFilters.map(filter => filter.filter.isDefault$);
+            return combineLatest(statuses).pipe(
+                map(values => !_.every(values)),
+            );
+        }
     }
 
     setPotentialFilters() {
@@ -56,13 +75,13 @@ export class FilterManagerComponent {
         } else {
             // if we don't have active filters, set all filters to active which don't use default data
             const filtersWithSettings = this.potentialFilters.filter(pFilter =>
-                pFilter.filter.currentData === pFilter.filter.defaultData);
+                !_.isEqual(pFilter.filter.currentData, pFilter.filter.defaultData));
             filtersWithSettings.forEach(filter => filter.toggle());
         }
     }
 
     public resetAllFilters() {
-        this.activeFilters.forEach(filter => {
+        this.potentialFilters.forEach(filter => {
             filter.reset();
         });
     }

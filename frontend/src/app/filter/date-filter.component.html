@@ -1,8 +1,8 @@
 <div class="daterange">
     <p-calendar [disabled]="grayedOut" [ngModel]="data.min" [minDate]="minDate" [maxDate]="data.max"
         [monthNavigator]="true" [yearNavigator]="true" yearRange="{{minYear}}:{{maxYear}}"
-        (onSelect)="update($event)" (onClose)="update($event.target.value)" dateFormat="dd-mm-yy"></p-calendar>
+        (onSelect)="updateProperty('min', $event)" dateFormat="dd-mm-yy"></p-calendar>
     <p-calendar [disabled]="grayedOut" [ngModel]="data.max" [maxDate]="maxDate"
         [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{minYear}}:{{maxYear}}"
-        (onSelect)="update($event)" (onClose)="update($event.target.value)" dateFormat="dd-mm-yy"></p-calendar>
+        (onSelect)="updateProperty('max', $event)" dateFormat="dd-mm-yy"></p-calendar>
 </div>
