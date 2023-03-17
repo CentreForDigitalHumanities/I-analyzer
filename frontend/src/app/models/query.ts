@@ -144,18 +144,6 @@ export class QueryModel {
 	}
 
     /**
-     * reset values to a blank query for the corpus
-     */
-	reset(): void {
-		this.queryText = undefined;
-		this.searchFields = undefined;
-		this.filters = [];
-		this.sortBy = 'default';
-		this.sortDirection = undefined;
-		this.update.next();
-	}
-
-    /**
      * make a clone of the current query.
      * optionally include querytext or a filter for the new query.
      */

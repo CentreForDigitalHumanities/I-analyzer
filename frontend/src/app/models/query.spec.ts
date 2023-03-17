@@ -53,8 +53,6 @@ describe('QueryModel', () => {
         query.removeFilter(filter);
         expect(updates).toBe(3);
 
-        query.reset();
-        expect(updates).toBe(4);
     });
 
     it('should convert to an elasticsearch query', () => {
