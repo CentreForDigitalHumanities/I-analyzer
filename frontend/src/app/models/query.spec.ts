@@ -66,10 +66,15 @@ describe('QueryModel', () => {
 
         expect(query.toEsQuery()).toEqual({
             query: {
-                simple_query_string: {
-                    query: 'test',
-                    lenient: true,
-                    default_operator: 'or',
+                bool: {
+                    must: {
+                        simple_query_string: {
+                            query: 'test',
+                            lenient: true,
+                            default_operator: 'or',
+                        }
+                    },
+                    filter: []
                 }
             }
         });

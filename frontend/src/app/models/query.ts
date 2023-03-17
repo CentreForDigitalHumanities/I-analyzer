@@ -179,9 +179,8 @@ export class QueryModel {
 
     /** convert the query to an elasticsearch query */
 	toEsQuery(): EsQuery {
-        const searchClause = makeEsSearchClause(this.queryText, this.searchFields);
         const filters = this.filters.map(filter => filter.toEsFilter());
-        const query = combineSearchClauseAndFilters(searchClause, filters);
+        const query = combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
 
         const sort = makeSortSpecification(this.actualSortBy, this.sortDirection);
         const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);

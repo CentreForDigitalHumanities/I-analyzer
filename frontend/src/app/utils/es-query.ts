@@ -44,8 +44,14 @@ export const makeBooleanQuery = (query: EsSearchClause, filters: EsFilter[]): Bo
     }
 });
 
-export const combineSearchClauseAndFilters = (searchClause: EsSearchClause, filters?: EsFilter[]): EsQuery => {
-    const query = (filters && filters.length) ? makeBooleanQuery(searchClause, filters) : searchClause;
+export const combineSearchClauseAndFilters = (queryText: string, filters: EsFilter[], searchFields?: CorpusField[]): EsQuery => {
+    let query: MatchAll | BooleanQuery;
+    if (queryText || filters.length) {
+        const searchClause = makeEsSearchClause(queryText, searchFields);
+        query = makeBooleanQuery(searchClause, filters);
+    } else {
+        query = matchAll;
+    }
     return { query };
 };
 
