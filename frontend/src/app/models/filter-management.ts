@@ -13,7 +13,13 @@ export class PotentialFilter {
     adHoc?: boolean;
 
     constructor(public corpusField: CorpusField, public queryModel: QueryModel) {
-        this.filter = corpusField.makeSearchFilter();
+        if (queryModel.filterForField(corpusField)) {
+            this.filter = queryModel.filterForField(corpusField);
+            this.useAsFilter.next(true);
+        } else {
+            this.filter = corpusField.makeSearchFilter();
+        }
+
         if (!corpusField.filterOptions) {
             this.adHoc = true;
         } else {
