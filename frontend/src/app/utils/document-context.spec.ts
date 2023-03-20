@@ -17,11 +17,10 @@ describe('document context utils', () => {
     };
 
     it('should create a document context link', () => {
-        const link = makeContextParams(document, corpus);
-        expect(link).toEqual({
+        const params = makeContextParams(document, corpus);
+        expect(params).toEqual({
             date: '1900-01-01:1900-01-01',
             sort: 'ordering,asc'
         });
-
     });
 });

@@ -162,7 +162,7 @@ export class QueryModel {
 
     /** convert the query to a parameter map */
     toRouteParam(): {[param: string]: any} {
-		const queryTextParams =  { query: this.queryText || null };
+        const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = sortSettingsToParams(this.sortBy, this.sortDirection);
         const highlightParams = { highlight: this.highlightSize  || null };
@@ -177,10 +177,8 @@ export class QueryModel {
         };
 	}
 
-    /** convert this link to an array describing the route, which can be used to create a routerlink */
-    toRoute(): any[] {
-        const params = omitNullParameters(this.toRouteParam());
-        return ['/search', this.corpus.name, params];
+    toQueryParams() {
+        return omitNullParameters(this.toRouteParam());
     }
 
     /** convert the query to an elasticsearch query */

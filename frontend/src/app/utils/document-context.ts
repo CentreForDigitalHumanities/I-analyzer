@@ -19,5 +19,6 @@ const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryMod
 
 export const makeContextParams = (document: FoundDocument, corpus: Corpus): any => {
     const queryModel = documentContextQuery(corpus, document);
-    return queryModel.toRouteParam();
+    return queryModel.toQueryParams();
 };
+

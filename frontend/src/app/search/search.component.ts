@@ -68,12 +68,9 @@ export class SearchComponent extends ParamDirective {
     teardown() {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
-        this.setParams( {query: null });
     }
 
     setStateFromParams(params: ParamMap) {
-        this.queryText = params.get('query');
-        this.queryModel.setFromParams(params);
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
     }
@@ -128,9 +125,12 @@ export class SearchComponent extends ParamDirective {
     }
 
     private setQueryModel() {
-        this.queryModel = new QueryModel(this.corpus);
-        this.queryModel.setFromParams(this.route.snapshot.paramMap);
+        const queryModel = new QueryModel(this.corpus);
+        queryModel.setFromParams(this.route.snapshot.queryParamMap);
+        this.queryModel = queryModel;
+        this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {
+            this.queryText = this.queryModel.queryText || undefined;
             this.setParams(this.queryModel.toRouteParam());
         });
     }
