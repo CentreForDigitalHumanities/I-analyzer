@@ -1,6 +1,6 @@
 import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Subject } from 'rxjs';
+import { combineLatest, Subject, Subscription } from 'rxjs';
 import { Corpus, CorpusField, SortConfiguration, } from '../models/index';
 import { EsQuery } from '../services';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
@@ -79,6 +79,8 @@ export class QueryModel {
 
 	update = new Subject<void>();
 
+    private filterSubscription: Subscription;
+
     constructor(corpus: Corpus) {
 		this.corpus = corpus;
         this.sort = new SortConfiguration(this.corpus);
@@ -92,9 +94,7 @@ export class QueryModel {
 
 	addFilter(filter: SearchFilter) {
 		this.filters.push(filter);
-		filter.data.subscribe(data => {
-			this.update.next();
-		});
+        this.subscribeToFilterUpdates();
 	}
 
     removeFilter(filter: SearchFilter) {
@@ -108,11 +108,12 @@ export class QueryModel {
 
     /** remove all filters that apply to a corpus field */
     removeFiltersForField(field: CorpusField) {
-        const filterIndex = () => this.filters.findIndex(filter => filter.corpusField.name === field.name);
-        while (filterIndex() !== -1) {
-            this.filters.splice(filterIndex());
+        if (this.filterForField(field)) {
+            _.remove(this.filters,
+                filter => filter.corpusField.name === field.name
+            );
+            this.subscribeToFilterUpdates();
         }
-        this.update.next();
     }
 
     setHighlight(size?: number) {
@@ -124,7 +125,7 @@ export class QueryModel {
     setFromParams(params: ParamMap) {
 		this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
-        this.filters = filtersFromParams(params, this.corpus);
+        filtersFromParams(params, this.corpus).forEach(filter => this.addFilter(filter));
         this.sort.setFromParams(params);
 		this.highlightSize = highlightFromParams(params);
 		this.update.next();
@@ -180,4 +181,19 @@ export class QueryModel {
             ...query, ...sort, ...highlight
         };
 	}
+
+    private subscribeToFilterUpdates() {
+        if (this.filterSubscription) {
+            this.filterSubscription.unsubscribe();
+        }
+        if (this.filters.length) {
+            this.filterSubscription = combineLatest(
+                this.filters.map(f => f.data)
+            ).subscribe(() => this.update.next());
+        } else {
+            this.filterSubscription = undefined;
+            this.update.next();
+        }
+    }
+
 }

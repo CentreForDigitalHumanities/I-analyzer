@@ -414,6 +414,7 @@ export abstract class BarchartDirective
     getSeriesDocumentData(
         series: BarchartSeries<DataPoint>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
     ): Promise<BarchartSeries<DataPoint>> {
+        console.log(queryModel);
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
 
         return this.requestSeriesDocCounts(queryModelCopy).then(result =>

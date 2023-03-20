@@ -1,7 +1,7 @@
-import { mockField2, mockFieldDate } from '../../mock-data/corpus';
+import { mockField2, mockFieldDate, mockFieldMultipleChoice } from '../../mock-data/corpus';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
-import { DateFilter, SearchFilter } from './search-filter';
+import { DateFilter, MultipleChoiceFilter, SearchFilter } from './search-filter';
 import { convertToParamMap } from '@angular/router';
 
 const corpus: Corpus = {
@@ -19,12 +19,14 @@ const corpus: Corpus = {
     fields: [
         mockField2,
         mockFieldDate,
+        mockFieldMultipleChoice,
     ],
 };
 
 describe('QueryModel', () => {
     let query: QueryModel;
     let filter: SearchFilter;
+    let filter2: SearchFilter;
 
     beforeEach(() => {
         query = new QueryModel(corpus);
@@ -34,6 +36,8 @@ describe('QueryModel', () => {
         filter = new DateFilter(mockFieldDate);
         filter.setToValue(new Date('Jan 1 1850'));
 
+        filter2 = new MultipleChoiceFilter(mockFieldMultipleChoice);
+        filter2.setToValue(['hooray!']);
     });
 
     it('should create', () => {
@@ -52,6 +56,31 @@ describe('QueryModel', () => {
 
         query.removeFilter(filter);
         expect(updates).toBe(3);
+
+    });
+
+    it('should remove filters', () => {
+        let updates = 0;
+        query.update.subscribe(() => updates += 1);
+
+        query.addFilter(filter);
+        query.addFilter(filter2);
+
+        expect(query.filters.length).toBe(2);
+        expect(updates).toBe(2);
+
+        filter.setToValue(new Date('Jan 1 1860'));
+
+        expect(updates).toBe(3);
+
+        query.removeFilter(filter);
+
+        expect(query.filters.length).toBe(1);
+        expect(updates).toBe(4);
+
+        filter.setToValue(new Date('Jan 1 1870'));
+
+        expect(updates).toBe(4);
 
     });
 
@@ -86,6 +115,7 @@ describe('QueryModel', () => {
             fields: null,
             speech: null,
             date: null,
+            greater_field: null,
             sort: null,
             highlight: null
         });
@@ -97,6 +127,7 @@ describe('QueryModel', () => {
             fields: null,
             speech: null,
             date: null,
+            greater_field: null,
             sort: null,
             highlight: null,
         });
@@ -108,6 +139,7 @@ describe('QueryModel', () => {
             fields: null,
             speech: null,
             date: '1850-01-01:1850-01-01',
+            greater_field: null,
             sort: null,
             highlight: null,
         });
@@ -120,6 +152,7 @@ describe('QueryModel', () => {
             fields: null,
             speech: null,
             date: null,
+            greater_field: null,
             sort: null,
             highlight: null
         });
