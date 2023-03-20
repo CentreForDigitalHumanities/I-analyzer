@@ -107,11 +107,6 @@ export const appRoutes: Routes = [
         canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
-        path: 'document/:corpus/:id',
-        component: DocumentPageComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
-    },
-    {
         path: 'login',
         component: LoginComponent,
     },
