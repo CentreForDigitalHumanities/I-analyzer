@@ -136,6 +136,18 @@ describe('QueryModel', () => {
         expect(query.filters.length).toBe(1);
     });
 
+    it('should formulate a link', () => {
+        query.setQueryText('test');
+        query.addFilter(filter);
+
+        const link = query.toRoute();
+        expect(link).toEqual([
+            '/search',
+            'mock-corpus',
+            { query: 'test', date: '1850-01-01:1850-01-01' }
+        ]);
+    });
+
     it('should clone', () => {
         query.setQueryText('test');
         query.addFilter(filter);

@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { Corpus, CorpusField, SortBy, SortDirection } from '../models/index';
 import { EsQuery } from '../services';
-import { combineSearchClauseAndFilters, makeEsSearchClause, makeHighlightSpecification, makeSortSpecification } from '../utils/es-query';
-import { filtersFromParams, highlightFromParams, queryFiltersToParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
-    sortSettingsToParams } from '../utils/params';
+import { combineSearchClauseAndFilters, makeHighlightSpecification, makeSortSpecification } from '../utils/es-query';
+import { filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
+    queryFromParams, searchFieldsFromParams, sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
 import { sortByDefault } from '../utils/sort';
 import { SearchFilter } from './search-filter';
 
@@ -176,6 +176,12 @@ export class QueryModel {
             ...highlightParams,
         };
 	}
+
+    /** convert this link to an array describing the route, which can be used to create a routerlink */
+    toRoute(): any[] {
+        const params = omitNullParameters(this.toRouteParam());
+        return ['/search', this.corpus.name, params];
+    }
 
     /** convert the query to an elasticsearch query */
 	toEsQuery(): EsQuery {
