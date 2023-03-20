@@ -5,7 +5,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, EsSearchClause, BooleanQuery, EsFilter
+    AggregateQueryFeedback, EsSearchClause, BooleanQuery,
+    EsFilter
 } from '../models/index';
 import * as _ from 'lodash';
 
