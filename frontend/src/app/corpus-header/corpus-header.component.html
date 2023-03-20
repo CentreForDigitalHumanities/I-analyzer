@@ -6,6 +6,7 @@
                     <h1 class="title">
                         <span *ngIf="currentPage === 'search'">Search</span>
                         <span *ngIf="currentPage === 'word-models'">Word models of</span>
+                        <span *ngIf="currentPage === 'document'">Document in</span>
                         <a class="corpus-name" [routerLink]="['/home']">&ldquo;{{corpus.title}}&rdquo;</a>
                     </h1>
                 </div>
@@ -26,7 +27,7 @@
                     </button>
                 </div>
             </div>
-            <div class="level-left" *ngIf="wordModelsPresent">
+            <div class="level-left" *ngIf="wordModelsPresent || currentPage === 'document'">
                 <div class="field has-addons">
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/search', corpus.name]"
@@ -37,7 +38,7 @@
                             </span>
                         </a>
                     </div>
-                    <div class="control">
+                    <div class="control" *ngIf="wordModelsPresent">
                         <a class="button is-medium" [routerLink]="['/word-models', corpus.name]"
                             [class.is-primary]="currentPage === 'word-models'"
                             iaBalloon="Explore word models of this corpus" iaBalloonPosition="up-right">

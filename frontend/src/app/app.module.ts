@@ -84,6 +84,7 @@ import { DownloadHistoryComponent } from './history/download-history/download-hi
 import { HistoryDirective } from './history/history.directive';
 import { DownloadOptionsComponent } from './download/download-options/download-options.component';
 import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
+import { DocumentPageComponent } from './document-page/document-page.component';
 
 
 export const appRoutes: Routes = [
@@ -95,6 +96,11 @@ export const appRoutes: Routes = [
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
+    },
+    {
+        path: 'document/:corpus/:id',
+        component: DocumentPageComponent,
         canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
@@ -160,6 +166,7 @@ export const declarations: any[] = [
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
+    DocumentPageComponent,
     DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,
