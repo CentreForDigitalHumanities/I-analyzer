@@ -40,6 +40,5 @@ export abstract class BaseFilterComponent<FilterData> {
     }
 
     /** possible administration when the filter is set, e.g. setting data limits */
-    abstract onFilterSet(filter): void;
-
+    onFilterSet(filter): void {};
 }

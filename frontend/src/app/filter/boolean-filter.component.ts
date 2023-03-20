@@ -9,7 +9,4 @@ import { BooleanFilter } from '../models';
   styleUrls: ['./boolean-filter.component.scss']
 })
 export class BooleanFilterComponent extends BaseFilterComponent<boolean> {
-
-    onFilterSet(filter: BooleanFilter) {}
-
 }

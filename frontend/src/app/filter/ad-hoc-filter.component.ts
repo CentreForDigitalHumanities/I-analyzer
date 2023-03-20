@@ -8,7 +8,4 @@ import { BaseFilterComponent } from './base-filter.component';
   styleUrls: ['./ad-hoc-filter.component.scss']
 })
 export class AdHocFilterComponent extends BaseFilterComponent<any> {
-
-    onFilterSet(filter: AdHocFilter) {}
-
 }
