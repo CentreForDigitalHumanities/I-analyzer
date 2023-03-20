@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { CorpusField, QueryModel } from '../models';
+import { CorpusField, QueryModel, SortConfiguration } from '../models';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -20,6 +20,10 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
 
     constructor() {}
 
+    get sortConfiguration(): SortConfiguration {
+        return this.queryModel.sort;
+    }
+
     public get sortType(): SortType {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
     }
@@ -33,7 +37,7 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.queryModel.setSort('default', 'desc');
+        this.sortConfiguration.reset();
     }
 
     setSortableFields() {
@@ -42,17 +46,17 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     }
 
     setStateFromQueryModel() {
-        if (this.queryModel.actualSortBy === 'relevance') {
+        if (this.sortConfiguration.actualSortBy === 'relevance') {
             this.sortField = undefined;
         } else {
-            this.sortField = (this.queryModel.actualSortBy as CorpusField);
+            this.sortField = (this.sortConfiguration.actualSortBy as CorpusField);
         }
-        this.ascending = this.queryModel.sortDirection === 'asc';
+        this.ascending = this.sortConfiguration.sortDirection.value === 'asc';
     }
 
     public toggleSortType() {
-        this.ascending = !this.ascending;
-        this.updateSort();
+        const direction = this.ascending ? 'desc' : 'asc';
+        this.sortConfiguration.setSortDirection(direction);
     }
 
     public toggleShowFields() {
@@ -62,18 +66,10 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     public changeField(field: CorpusField | undefined) {
         if (field === undefined) {
             this.valueType = defaultValueType;
-            this.ascending = false;
         } else {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }
-        this.sortField = field;
-        this.updateSort();
-    }
-
-    private updateSort() {
-        const sortBy = this.sortField || 'relevance';
-        const direction = this.ascending ? 'asc': 'desc';
-        this.queryModel.setSort(sortBy,  direction);
+        this.sortConfiguration.setSortBy(field || 'relevance');
     }
 }
 

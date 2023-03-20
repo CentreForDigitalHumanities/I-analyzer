@@ -1,12 +1,13 @@
 import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
-import { Corpus, CorpusField, SortBy, SortDirection } from '../models/index';
+import { Corpus, CorpusField, SortConfiguration, } from '../models/index';
 import { EsQuery } from '../services';
-import { combineSearchClauseAndFilters, makeHighlightSpecification, makeSortSpecification } from '../utils/es-query';
-import { filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
-    queryFromParams, searchFieldsFromParams, sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
-import { sortByDefault } from '../utils/sort';
+import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
+import {
+    filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
+    queryFromParams, searchFieldsFromParams
+} from '../utils/params';
 import { SearchFilter } from './search-filter';
 
 /** This is the query object as it is saved in the database.*/
@@ -73,24 +74,16 @@ export class QueryModel {
 	queryText: string;
 	searchFields: CorpusField[];
 	filters: SearchFilter[] = [];
-	sortBy: SortBy = 'default';
-	sortDirection: SortDirection;
+    sort: SortConfiguration;
     highlightSize: number;
 
 	update = new Subject<void>();
 
     constructor(corpus: Corpus) {
 		this.corpus = corpus;
+        this.sort = new SortConfiguration(this.corpus);
+        this.sort.configuration$.subscribe(() => this.update.next());
 	}
-
-    /** sort direction to be used in searching: replaces 'default' with the default value */
-    get actualSortBy(): CorpusField|'relevance' {
-        if (this.sortBy !== 'default') {
-            return this.sortBy;
-        } else {
-            return sortByDefault(this.corpus);
-        }
-    }
 
 	setQueryText(text?: string) {
 		this.queryText = text;
@@ -122,12 +115,6 @@ export class QueryModel {
         this.update.next();
     }
 
-    setSort(sortBy: SortBy, sortDirection: SortDirection) {
-        this.sortBy = sortBy;
-        this.sortDirection = sortDirection;
-        this.update.next();
-    }
-
     setHighlight(size?: number) {
         this.highlightSize = size;
         this.update.next();
@@ -138,7 +125,7 @@ export class QueryModel {
 		this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
         this.filters = filtersFromParams(params, this.corpus);
-        [this.sortBy, this.sortDirection] = sortSettingsFromParams(params, this.corpus.fields);
+        this.sort.setFromParams(params);
 		this.highlightSize = highlightFromParams(params);
 		this.update.next();
 	}
@@ -164,7 +151,7 @@ export class QueryModel {
     toRouteParam(): {[param: string]: any} {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
-        const sortParams = sortSettingsToParams(this.sortBy, this.sortDirection);
+        const sortParams = this.sort.toRouteParam();
         const highlightParams = { highlight: this.highlightSize  || null };
         const filterParams = queryFiltersToParams(this);
 
@@ -186,7 +173,7 @@ export class QueryModel {
         const filters = this.filters.map(filter => filter.toEsFilter());
         const query = combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
 
-        const sort = makeSortSpecification(this.actualSortBy, this.sortDirection);
+        const sort = this.sort.toEsQuerySort();
         const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);
 
         return {
