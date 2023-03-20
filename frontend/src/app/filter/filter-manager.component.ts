@@ -33,8 +33,6 @@ export class FilterManagerComponent {
 
     public potentialFilters: PotentialFilter[] = [];
 
-    public grayOutFilters: boolean;
-
     private _corpus: Corpus;
     private _queryModel: QueryModel;
 

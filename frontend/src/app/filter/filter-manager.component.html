@@ -44,10 +44,10 @@
                 <ia-ad-hoc-filter [filter]="filter"></ia-ad-hoc-filter>
             </ng-container>
             <ng-container *ngIf="!filter.adHoc" [ngSwitch]="filter.filterType">
-                <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [filter]="filter" [grayedOut]="grayOutFilters" ></ia-boolean-filter>
-                <ia-date-filter *ngSwitchCase="'DateFilter'" [filter]="filter" [grayedOut]="grayOutFilters"></ia-date-filter>
-                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="filter" [grayedOut]="grayOutFilters"></ia-multiple-choice-filter>
-                <ia-range-filter *ngSwitchCase="'RangeFilter'" [filter]="filter" [grayedOut]="grayOutFilters"></ia-range-filter>
+                <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [filter]="filter"></ia-boolean-filter>
+                <ia-date-filter *ngSwitchCase="'DateFilter'" [filter]="filter"></ia-date-filter>
+                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="filter"></ia-multiple-choice-filter>
+                <ia-range-filter *ngSwitchCase="'RangeFilter'" [filter]="filter"></ia-range-filter>
             </ng-container>
         </div>
     </ng-container>

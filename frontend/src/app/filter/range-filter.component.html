@@ -1,5 +1,5 @@
 <div class="range">
     <span>{{data.min}} - {{data.max}}</span>
-    <p-slider [animate]="true" [disabled]="grayedOut" [ngModel]="getDisplayData(data)"
+    <p-slider [animate]="true" [ngModel]="getDisplayData(data)"
         [range]="true" [min]="min" [max]="max" (onSlideEnd)="update(getFilterData($event))"></p-slider>
 </div>

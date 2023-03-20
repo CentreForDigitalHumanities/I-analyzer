@@ -12,8 +12,6 @@ import { PotentialFilter } from '../models/index';
     template: ''
 })
 export abstract class BaseFilterComponent<FilterData> {
-    @Input() grayedOut: boolean;
-
     private _filter: PotentialFilter;
 
     constructor() { }

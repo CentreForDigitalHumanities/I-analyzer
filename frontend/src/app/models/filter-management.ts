@@ -9,8 +9,6 @@ export class PotentialFilter {
     filter: SearchFilter;
     useAsFilter = new BehaviorSubject<boolean>(false);
     description: string;
-    showReset?: boolean;
-    grayedOut?: boolean;
     adHoc?: boolean;
 
     constructor(public corpusField: CorpusField, public queryModel: QueryModel) {

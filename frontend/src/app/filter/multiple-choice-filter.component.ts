@@ -33,6 +33,6 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]>
                     aggregations.map(x => ({ label: x.key, value: encodeURIComponent(x.key), doc_count: x.doc_count })),
                     o => o.label
                 )
-            );
+            ).catch(() => this.options = []);
     }
 }
