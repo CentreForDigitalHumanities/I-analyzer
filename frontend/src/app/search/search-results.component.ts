@@ -6,6 +6,7 @@ import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import * as _ from 'lodash';
 import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
+import { makeContextParams } from '../utils/document-context';
 
 @Component({
     selector: 'ia-search-results',
@@ -36,9 +37,6 @@ export class SearchResultsComponent implements OnChanges {
 
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
-
-    @Output('viewContext')
-    public contextEvent = new EventEmitter<any>();
 
     public isLoading = false;
     public isScrolledDown: boolean;
@@ -139,11 +137,6 @@ export class SearchResultsComponent implements OnChanges {
         this.documentTabIndex = 0;
     }
 
-    public goToContext(document: FoundDocument) {
-        this.showDocument = false;
-        this.contextEvent.emit(document);
-    }
-
     get contextDisplayName(): string {
         if (this.corpus && this.corpus.documentContext) {
             return this.corpus.documentContext.displayName;
@@ -196,5 +189,9 @@ export class SearchResultsComponent implements OnChanges {
             return _.every(contextFields, field => notBlank(document.fieldValues[field.name]));
         }
         return false;
+    }
+
+    contextParams(document: FoundDocument) {
+        return makeContextParams(document, this.corpus);
     }
 }

@@ -177,7 +177,13 @@ export const mockCorpus3: Corpus = {
     scan_image_type: 'pdf',
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField, mockField2, mockField3, mockFieldDate]
+    fields: [mockField, mockField2, mockField3, mockFieldDate],
+    documentContext: {
+        contextFields: [mockFieldDate],
+        displayName: 'day',
+        sortField: mockField3,
+        sortDirection: 'asc'
+    }
 };
 
 export class CorpusServiceMock {

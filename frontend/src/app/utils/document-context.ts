@@ -1,23 +1,23 @@
-import { contextFilterFromField, Corpus, FoundDocument } from '../models';
-import { omitNullParameters, searchFiltersToParams, sortSettingsToParams } from './params';
+import { Corpus, FoundDocument, QueryModel } from '../models';
 
-export const makeContextParams = (document: FoundDocument, corpus: Corpus): any => {
-    const contextSpec = corpus.documentContext;
+const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryModel => {
+    const queryModel = new QueryModel(corpus);
 
-    const queryText = null;
+    const spec = corpus.documentContext;
 
-    const contextFields = contextSpec.contextFields;
-
-    contextFields.forEach(field => {
-        field.searchFilter = contextFilterFromField(field, document.fieldValues[field.name]);
+    spec.contextFields.forEach(field => {
+        const filter = field.makeSearchFilter();
+        filter.setToValue(document.fieldValues[field.name]);
+        queryModel.addFilter(filter);
     });
 
-    const filterParams = searchFiltersToParams(contextFields);
-    const sortParams = sortSettingsToParams(
-        contextSpec.sortField,
-        contextSpec.sortDirection
-    );
+    queryModel.sortBy = spec.sortField || 'default';
+    queryModel.sortDirection = spec.sortDirection;
 
-    const params = { query: queryText,  ...filterParams, ...sortParams };
-    return omitNullParameters(params);
+    return queryModel;
+};
+
+export const makeContextParams = (document: FoundDocument, corpus: Corpus): any => {
+    const queryModel = documentContextQuery(corpus, document);
+    return queryModel.toRouteParam();
 };

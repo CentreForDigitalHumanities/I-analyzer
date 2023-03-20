@@ -5,9 +5,7 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
 import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
-import { makeContextParams } from '../utils/document-context';
 import { AuthService } from '../services/auth.service';
-import { findByName } from '../utils/utils';
 
 @Component({
     selector: 'ia-search',
@@ -135,26 +133,5 @@ export class SearchComponent extends ParamDirective {
         this.queryModel.update.subscribe(() => {
             this.setParams(this.queryModel.toRouteParam());
         });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    public goToContext(contextValues: any) {
-        const contextSpec = this.corpus.documentContext;
-
-        const queryModel = new QueryModel(this.corpus);
-
-        const contextFields = contextSpec.contextFields
-            .filter(field => ! findByName(this.filterFields, field.name));
-
-        contextFields.forEach(field => {
-            const filter = field.makeSearchFilter();
-            filter.setToValue(contextValues[field.name]);
-            queryModel.addFilter(filter);
-        });
-
-        queryModel.sortBy = contextSpec.sortField;
-        queryModel.sortDirection = contextSpec.sortDirection;
-
-        this.setParams(queryModel.toRouteParam());
     }
 }

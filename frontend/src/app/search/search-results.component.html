@@ -99,7 +99,7 @@
                     <span>Link</span>
                 </a>
                 &nbsp;
-                <a *ngIf="hasContext(viewDocument)" (click)="goToContext(viewDocument)"
+                <a *ngIf="hasContext(viewDocument)" [routerLink]="['/search', corpus.name]" [queryParams]="contextParams(viewDocument)"
                 iaBalloon="view all documents from this {{contextDisplayName}}">
                     <span class="icon">
                         <fa-icon [icon]="contextIcon"></fa-icon>
