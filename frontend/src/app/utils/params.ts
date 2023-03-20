@@ -2,7 +2,6 @@ import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
 import { findByName } from './utils';
-import * as _ from 'lodash';
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
