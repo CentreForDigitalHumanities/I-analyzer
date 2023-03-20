@@ -40,8 +40,8 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     }
 
     returnToSavedQuery(query: QueryDb) {
-        const params = query.queryModel.toRouteParam();
-        this.router.navigate(['/search', query.corpus, params]);
+        this.router.navigate(query.queryModel.toRoute(),
+            {queryParams: query.queryModel.toQueryParams()});
         if (window) {
             window.scrollTo(0, 0);
         }
