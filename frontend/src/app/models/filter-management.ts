@@ -8,6 +8,7 @@ import { SearchFilterType } from './search-filter-options';
 export class PotentialFilter {
     filter: SearchFilter;
     useAsFilter = new BehaviorSubject<boolean>(false);
+    description: string;
     showReset?: boolean;
     grayedOut?: boolean;
     adHoc?: boolean;
@@ -21,10 +22,13 @@ export class PotentialFilter {
         }
 
         if (!corpusField.filterOptions) {
+            this.description = `View results from this ${corpusField.displayName}`;
             this.adHoc = true;
         } else {
+            this.description = corpusField.filterOptions.description;
             this.adHoc = false;
         }
+
         this.filter.isDefault$.subscribe(this.deactivateWhenDefault.bind(this));
     }
 
