@@ -46,11 +46,9 @@ export const sortSettingsFromParams = (params: ParamMap, corpusFields: CorpusFie
             return [sortParam, sortAscending ? 'asc' : 'desc'];
         }
         sortBy = findByName(corpusFields, sortParam);
-    } else {
-        sortBy = 'default';
     }
     return [
-        sortBy,
+        sortBy || 'default',
         sortAscending ? 'asc' : 'desc'
     ];
 };
