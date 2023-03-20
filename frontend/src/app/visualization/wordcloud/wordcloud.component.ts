@@ -1,13 +1,16 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges,
-    ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges,
+    ViewChild, ViewEncapsulation
+} from '@angular/core';
 
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
 import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
-import { DialogService, SearchService, ApiService } from '../../services/index';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { ApiService } from '../../services/index';
+import { BehaviorSubject } from 'rxjs';
 import { VisualizationService } from '../../services/visualization.service';
+import { showLoading } from '../../utils/utils';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -33,7 +36,6 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         { key: 'doc_count', label: 'Frequency' }
     ];
 
-
     public significantText: AggregateResult[];
     public disableLoadMore = false;
     private tasksToCancel: string[] = [];
@@ -49,6 +51,10 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     constructor(private visualizationService: VisualizationService, private apiService: ApiService) { }
 
+    get readyToLoad() {
+        return (this.corpus && this.visualizedField && this.queryModel && this.palette);
+    }
+
     ngOnInit() {
         if (this.resultsCount > 0) {
             this.disableLoadMore = this.resultsCount < this.batchSize;
@@ -60,35 +66,37 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if ((this.corpus && this.visualizedField && this.queryModel && this.batchSize && this.palette)  &&
-            (changes.corpus || changes.visualizedField || changes.queryModel || changes.batchSize)) {
-            this.loadData(this.batchSize);
+        if (this.readyToLoad  &&
+            (changes.corpus || changes.visualizedField || changes.queryModel)) {
+            if (changes.queryModel) {
+                this.queryModel.update.subscribe(this.loadData.bind(this));
+            }
+            this.loadData();
         } else {
-            this.onDataLoaded();
+            this.makeChart();
         }
     }
 
-    loadData(size: number = null) {
-        this.isLoading.next(true);
-        this.visualizationService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
-            this.significantText = result;
-            this.onDataLoaded();
-        })
-        .catch(this.emitError.bind(this));
+    loadData() {
+        showLoading(
+            this.isLoading,
+            this.visualizationService.getWordcloudData(
+                this.visualizedField.name, this.queryModel, this.corpus.name, this.batchSize
+            ).then(this.onDataLoaded.bind(this)).catch(this.emitError.bind(this))
+        );
     }
 
     loadMoreData() {
-        this.isLoading.next(true);
-        const queryModel = this.queryModel;
-        if (queryModel) {
-            this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(response => {
-                this.tasksToCancel = response;
-                this.apiService.pollTasks<AggregateResult[]>(response).then( outcome => {
-                    const result = outcome[0];
-                    this.significantText = result;
-                    this.onDataLoaded();
-                });
-            }).catch(this.emitError.bind(this));
+        if (this.readyToLoad) {
+            showLoading(
+                this.isLoading,
+                this.visualizationService.getWordcloudTasks(this.visualizedField.name, this.queryModel, this.corpus.name).then(response => {
+                    this.tasksToCancel = response;
+                    return this.apiService.pollTasks<AggregateResult[]>(response).then( outcome =>
+                        this.onDataLoaded(outcome[0])
+                    );
+                }).catch(this.emitError.bind(this))
+            );
         }
     }
 
@@ -96,8 +104,12 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         this.error.emit(error.message);
     }
 
-    onDataLoaded() {
-        this.isLoading.next(false);
+    onDataLoaded(result: AggregateResult[]) {
+        this.significantText = result;
+        this.makeChart();
+    }
+
+    makeChart() {
         this.chartElement = this.chartContainer.nativeElement;
         d3.select('svg.wordcloud').remove();
         const inputRange = d3.extent(this.significantText.map(d => d.doc_count)) as number[];
