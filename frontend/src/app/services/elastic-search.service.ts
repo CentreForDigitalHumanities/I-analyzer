@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
@@ -84,7 +85,29 @@ export class ElasticSearchService {
         }
     }
 
-    private queryTextFromEsSearchClause(query: EsSearchClause | BooleanQuery): string {
+    getDocumentById(id: string, corpus: Corpus): Promise<FoundDocument> {
+        const query = {
+            body: {
+                query: {
+                    term: {
+                        _id: id,
+                    }
+                }
+            },
+            size: 1,
+            index: corpus.index,
+        };
+        return this.client.search(query).then(this.firstDocumentFromResponse.bind(this));
+    }
+
+    private firstDocumentFromResponse(response: SearchResponse): FoundDocument {
+        const parsed = this.parseResponse(response);
+        if (parsed.documents.length) {
+            return _.first(parsed.documents);
+        }
+    }
+
+    private queryTextFromEsSearchClause(query: EsSearchClause | BooleanQuery | EsFilter): string {
         const clause = 'bool' in query ? query.bool.must : query;
 
         if ('simple_query_string' in clause) {
@@ -101,7 +124,6 @@ export class ElasticSearchService {
     }
 
     private esFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
-        let field: CorpusField;
         let fieldName: string;
         let value: any;
 
@@ -115,7 +137,7 @@ export class ElasticSearchService {
             fieldName = _.keys(filter.range)[0];
             value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
         }
-        field = corpus.fields.find(f => f.name === fieldName);
+        const field: CorpusField = corpus.fields.find(f => f.name === fieldName);
         const filterData = searchFilterDataFromField(field, value);
         return {
             fieldName: field.name,
@@ -254,13 +276,13 @@ export class ElasticSearchService {
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: SearchHit, maxScore: number) {
-        return <FoundDocument>{
+    private hitToDocument(hit: SearchHit, maxScore: number): FoundDocument {
+        return {
             id: hit._id,
             relevance: hit._score / maxScore,
             fieldValues: Object.assign({ id: hit._id }, hit._source),
             highlight: hit.highlight,
-        };
+        } as FoundDocument;
     }
 
     /**
@@ -310,7 +332,7 @@ export type EsQuerySorted = EsQuery & {
 export interface EsQuery {
     aborted?: boolean;
     completed?: Date;
-    query: EsSearchClause | BooleanQuery;
+    query: EsSearchClause | BooleanQuery | EsFilter;
     highlight?: {};
     transferred?: number;
 }
@@ -347,6 +369,12 @@ interface EsDateFilter {
     };
 }
 
+interface EsTermFilter {
+    term: {
+        [field: string]: string;
+    };
+}
+
 interface EsTermsFilter {
     terms: {
         [field: string]: string[];
@@ -368,7 +396,7 @@ interface EsRangeFilter {
     };
 }
 
-type EsFilter = EsDateFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
+type EsFilter = EsDateFilter | EsTermFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 interface Aggregator {
     name: string;
