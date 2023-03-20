@@ -86,7 +86,7 @@ export class QueryModel {
 	}
 
 	setQueryText(text?: string) {
-		this.queryText = text;
+		this.queryText = text || undefined;
 		this.update.next();
 	}
 

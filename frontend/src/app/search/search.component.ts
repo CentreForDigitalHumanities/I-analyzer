@@ -130,7 +130,7 @@ export class SearchComponent extends ParamDirective {
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {
-            this.queryText = this.queryModel.queryText || undefined;
+            this.queryText = this.queryModel.queryText;
             this.setParams(this.queryModel.toRouteParam());
         });
     }
