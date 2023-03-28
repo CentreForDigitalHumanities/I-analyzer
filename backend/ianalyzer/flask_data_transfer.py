@@ -133,11 +133,13 @@ def null_to_none(value):
     '''return None if the value is `'\\N'`, i.e. null'''
     return value if value != '\\N' else None
 
+def load_json_value(string_value):
+    return json.loads(string_value.replace('\\\\', '\\'))
 
 def save_flask_query(row):
     query = Query(
         id=row['id'],
-        query_json=json.loads(row['query']),
+        query_json=load_json_value(row['query']),
         corpus=Corpus.objects.get(name=row['corpus_name']),
         user=CustomUser.objects.get(id=row['userID']),
         completed=null_to_none(row['completed']),
@@ -159,7 +161,7 @@ def save_flask_download(row):
         download_type=row['download_type'],
         corpus=Corpus.objects.get(name=row['corpus_name']),
         user=CustomUser.objects.get(id=row['user_id']),
-        parameters=json.loads(row['parameters']),
+        parameters=load_json_value(row['parameters']),
         filename=os.path.relpath(row['filename'], settings.CSV_FILES_PATH),
     )
     download.save()
