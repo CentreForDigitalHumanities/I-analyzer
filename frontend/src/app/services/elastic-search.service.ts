@@ -10,6 +10,7 @@ import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
 
 import * as _ from 'lodash';
 import { findByName } from '../utils/utils';
+import { makeSimpleQueryString, matchAll } from '../utils/es-query';
 
 
 @Injectable()
@@ -24,20 +25,9 @@ export class ElasticSearchService {
     public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
         if (queryModel.queryText) {
-            clause = {
-                simple_query_string: {
-                    query: queryModel.queryText,
-                    lenient: true,
-                    default_operator: 'or'
-                }
-            };
-            if (queryModel.fields) {
-                clause.simple_query_string.fields = queryModel.fields;
-            }
+            clause = makeSimpleQueryString(queryModel.queryText, fields);
         } else {
-            clause = {
-                match_all: {}
-            };
+            clause = matchAll;
         }
 
         let query: EsQuery | EsQuerySorted;
