@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { combineLatest } from 'rxjs';
@@ -39,8 +39,13 @@ export class DocumentPageComponent implements OnInit {
 
     get contextLink(): any {
         if (this.document && this.corpus) {
-            const params = makeContextParams(this.document, this.corpus);
-            return ['/search',  this.corpus.name, params];
+            return ['/search', this.corpus.name];
+        }
+    }
+
+    get contextQueryParams(): any {
+        if (this.document && this.corpus) {
+            return makeContextParams(this.document, this.corpus);
         }
     }
 
