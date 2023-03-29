@@ -4,7 +4,8 @@ import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { combineLatest } from 'rxjs';
 import { Corpus, FoundDocument } from '../models';
-import { CorpusService, ElasticSearchService, ParamService } from '../services';
+import { CorpusService, ElasticSearchService } from '../services';
+import { makeContextParams } from '../utils/document-context';
 
 @Component({
   selector: 'ia-document-page',
@@ -24,7 +25,6 @@ export class DocumentPageComponent implements OnInit {
         private corpusService: CorpusService,
         private elasticSearchService: ElasticSearchService,
         private activatedRoute: ActivatedRoute,
-        private paramService: ParamService,
     ) { }
 
     get hasContext(): boolean {
@@ -39,7 +39,7 @@ export class DocumentPageComponent implements OnInit {
 
     get contextLink(): any {
         if (this.document && this.corpus) {
-            const params = this.paramService.makeContextParams(this.document, this.corpus);
+            const params = makeContextParams(this.document, this.corpus);
             return ['/search',  this.corpus.name, params];
         }
     }

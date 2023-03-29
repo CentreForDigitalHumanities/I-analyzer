@@ -3,12 +3,11 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { CorpusField, QueryModel, contextFilterFromField, FoundDocument, Corpus } from '../models';
+import { CorpusField, QueryModel } from '../models';
 import { SearchService } from './search.service';
-import { findByName } from '../utils/utils';
 import {
     filtersFromParams, highlightFromParams, paramForFieldName, queryFromParams, searchFieldsFromParams,
-    searchFilterDataToParam, searchFiltersToParams, sortSettingsFromParams, sortSettingsToParams
+    searchFilterDataToParam, sortSettingsFromParams
 } from '../utils/params';
 
 @Injectable()
@@ -62,29 +61,6 @@ export class ParamService {
             nullableParams.forEach( param => route[param] = null);
         }
         return route;
-    }
-
-
-    makeContextParams(document: FoundDocument, corpus: Corpus): any {
-        const contextSpec = corpus.documentContext;
-
-        const queryText = '';
-
-        const contextFields = contextSpec.contextFields
-            .filter(field => ! findByName(corpus.fields, field.name));
-
-        contextFields.forEach(field => {
-            field.searchFilter = contextFilterFromField(field, document.fieldValues[field.name]);
-        });
-
-        const filterParams = searchFiltersToParams(contextFields);
-        const sortParams = sortSettingsToParams(
-            contextSpec.sortField,
-            contextSpec.sortDirection
-        );
-
-        return { query: queryText,  ...filterParams, ...sortParams };
-
     }
 
 }

@@ -3,6 +3,12 @@ import * as _ from 'lodash';
 import { contextFilterFromField, CorpusField, SearchFilter, SearchFilterData, searchFilterDataFromSettings } from '../models';
 import { findByName } from './utils';
 
+/** omit keys that mapp to null */
+export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
+    const nullKeys = _.keys(params).filter(key => params[key] === null);
+    return _.omit(params, nullKeys);
+};
+
 export const queryFromParams = (params: ParamMap): string =>
     params.get('query');
 
