@@ -11,7 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-              "deployUrl": "/static/",
+            "baseHref": "/",
               "outputPath": "dist",
               "index": "src/index.html",
               "main": "src/main.ts",
@@ -72,15 +72,17 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "frontend:build"
-          },
+        "options": {},
           "configurations": {
             "production": {
               "browserTarget": "frontend:build:production"
+            },
+            "development": {
+                "browserTarget": "frontend:build"
             }
-          }
         },
+        "defaultConfiguration": "development"
+    },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
