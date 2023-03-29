@@ -43,9 +43,7 @@ export class ApiServiceMock {
         const fakeResults = {
             'ngram-task-id': fakeNgramResult,
         };
-        const response = ids.map(id =>
-            _.get(fakeResults, id, {})
-        );
+        const response = ids.map((id) => _.get(fakeResults, id, {}));
         return Promise.resolve(response);
     }
 
@@ -55,5 +53,9 @@ export class ApiServiceMock {
 
     public getUser() {
         return of(mockUserResponse);
+    }
+
+    public keyInfo() {
+        return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
     }
 }

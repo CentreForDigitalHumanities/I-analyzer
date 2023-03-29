@@ -86,69 +86,80 @@ import { DownloadHistoryComponent } from './history/download-history/download-hi
 import { HistoryDirective } from './history/history.directive';
 import { DownloadOptionsComponent } from './download/download-options/download-options.component';
 import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
+import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
+import { DocumentPageComponent } from './document-page/document-page.component';
 
 
 export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard],
+    },
+    {
+        path: 'document/:corpus/:id',
+        component: DocumentPageComponent,
         canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
     },
     {
         path: 'login/:activated',
-        component: LoginComponent
+        component: LoginComponent,
     },
     {
         path: 'registration',
-        component: RegistrationComponent
+        component: RegistrationComponent,
     },
     {
         path: 'reset',
-        component: RequestResetComponent
+        component: RequestResetComponent,
     },
     {
         path: 'reset-password/:token',
-        component: ResetPasswordComponent
+        component: ResetPasswordComponent,
     },
     {
         path: 'privacy',
-        component: PrivacyComponent
+        component: PrivacyComponent,
     },
     {
         path: 'home',
         component: HomeComponent,
-        canActivate: [LoggedOnGuard]
+        canActivate: [LoggedOnGuard],
     },
     {
         path: 'manual/:identifier',
-        component: ManualComponent
+        component: ManualComponent,
     },
     {
         path: 'about',
-        component: AboutComponent
+        component: AboutComponent,
     },
     {
         path: 'search-history',
-        component: SearchHistoryComponent
+        component: SearchHistoryComponent,
     },
     {
         path: 'download-history',
-        component: DownloadHistoryComponent
+        component: DownloadHistoryComponent,
+    },
+    {
+        path: 'confirm-email/:key',
+        component: VerifyEmailComponent,
     },
     {
         path: '',
         redirectTo: 'home',
-        pathMatch: 'full'
-    }
+        pathMatch: 'full',
+    },
 ];
 
 export const declarations: any[] = [
@@ -162,6 +173,7 @@ export const declarations: any[] = [
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
+    DocumentPageComponent,
     DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,
@@ -211,6 +223,7 @@ export const declarations: any[] = [
     TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,
+    VerifyEmailComponent,
     VisualizationComponent,
     VisualizationFooterComponent,
     WordcloudComponent,

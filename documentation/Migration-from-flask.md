@@ -78,6 +78,15 @@ Some notes:
 - The script expects to run on an **empty** database, as it will also copy object IDs.
 - If your mySQL database had a role named 'admin', its users will be made superusers with access to the admin interface.
 
+Now you need to make sure that your new database is aware of the newest object IDs, or it will attempt to create new rows with duplicate IDs. Run the following commands from the backend:
+
+```bash
+python manage.py sqlsequencereset users | python manage.py dbshell
+python manage.py sqlsequencereset addcorpus | python manage.py dbshell
+python manage.py sqlsequencereset api | python manage.py dbshell
+python manage.py sqlsequencereset download | python manage.py dbshell
+```
+
 ## Add local settings
 
 In `backend/ianalyzer`, make a file `settings_local.py`. Transfer relevant local settings you had configured in your `config.py` file for Flask.

@@ -155,6 +155,23 @@ export class AuthService implements OnDestroy {
         );
     }
 
+    public register(username, email, password1, password2) {
+        return this.apiService.register({
+            username,
+            email,
+            password1,
+            password2,
+        });
+    }
+
+    public verify(key: string) {
+        return this.apiService.verify(key);
+    }
+
+    public keyInfo(key: string) {
+        return this.apiService.keyInfo(key);
+    }
+
     public showLogin(returnUrl?: string) {
         this.router.navigate(
             ['/login'],
