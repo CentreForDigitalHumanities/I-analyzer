@@ -7,6 +7,7 @@ import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDa
     contextFilterFromField, FoundDocument, Corpus } from '../models';
 import { SearchService } from './search.service';
 import { findByName } from '../utils/utils';
+import { highlightFromParams, queryFromParams, searchFieldsFromParams } from '../utils/params';
 
 interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
@@ -28,9 +29,9 @@ export class ParamService {
         // copy fields so the state in components is isolated
         const fields = _.cloneDeep(corpusFields);
         const activeFilters = this.setFiltersFromParams(params, fields);
-        const highlight = this.setHighlightFromParams(params);
-        const query = this.setQueryFromParams(params);
-        const queryFields = this.setSearchFieldsFromParams(params);
+        const highlight = highlightFromParams(params);
+        const query = queryFromParams(params);
+        const queryFields = searchFieldsFromParams(params);
         const sortSettings = this.setSortFromParams(params, fields);
         return this.searchService.createQueryModel(
             query, queryFields, activeFilters, sortSettings.field, sortSettings.ascending, highlight);
@@ -174,23 +175,6 @@ export class ParamService {
     makeSortParams(sortField: CorpusField, direction: string): {sort: string} {
         const fieldName = sortField !== undefined ? sortField.name : 'relevance';
         return {sort:`${fieldName},${direction}`};
-    }
-
-    // --- set query fields, highlight and query text from params --- //
-
-    setSearchFieldsFromParams(params: ParamMap): string[] | null {
-        if (params.has('fields')) {
-            const selectedSearchFields = params.get('fields').split(',');
-            return selectedSearchFields;
-        }
-    }
-
-    setHighlightFromParams(params: ParamMap): number {
-        return Number(params.get('highlight'));
-    }
-
-    setQueryFromParams(params: ParamMap): string {
-        return params.get('query');
     }
 
     makeContextParams(document: FoundDocument, corpus: Corpus): any {
