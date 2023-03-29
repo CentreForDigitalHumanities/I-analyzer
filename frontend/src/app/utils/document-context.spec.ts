@@ -37,6 +37,7 @@ describe('document context utils', () => {
         image: '',
         scan_image_type: '',
         allow_image_download: true,
+        doctype: 'article',
         word_models_present: false,
         documentContext: {
             contextFields: [dateField],
