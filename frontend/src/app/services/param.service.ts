@@ -7,7 +7,7 @@ import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDa
     contextFilterFromField, FoundDocument, Corpus } from '../models';
 import { SearchService } from './search.service';
 import { findByName } from '../utils/utils';
-import { highlightFromParams, queryFromParams, searchFieldsFromParams } from '../utils/params';
+import { highlightFromParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
 
 interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
@@ -32,7 +32,7 @@ export class ParamService {
         const highlight = highlightFromParams(params);
         const query = queryFromParams(params);
         const queryFields = searchFieldsFromParams(params);
-        const sortSettings = this.setSortFromParams(params, fields);
+        const sortSettings = sortSettingsFromParams(params, fields);
         return this.searchService.createQueryModel(
             query, queryFields, activeFilters, sortSettings.field, sortSettings.ascending, highlight);
     }
@@ -148,35 +148,6 @@ export class ParamService {
         }
     }
 
-    // --- sort params --- //
-
-    setSortFromParams(params: ParamMap, corpusFields: CorpusField[]): {field: CorpusField; ascending: boolean} {
-        let sortField: CorpusField;
-        let sortAscending = true;
-        if (params.has('sort')) {
-            const [sortParam, ascParam] = params.get('sort').split(',');
-            sortAscending = ascParam === 'asc';
-            if ( sortParam === 'relevance' ) {
-                return {
-                    field: undefined,
-                    ascending: sortAscending
-                };
-            }
-            sortField = findByName(corpusFields, sortParam);
-        } else {
-            sortField = corpusFields.find(field => field.primarySort);
-        }
-        return {
-            field: sortField,
-            ascending: sortAscending
-        };
-    }
-
-    makeSortParams(sortField: CorpusField, direction: string): {sort: string} {
-        const fieldName = sortField !== undefined ? sortField.name : 'relevance';
-        return {sort:`${fieldName},${direction}`};
-    }
-
     makeContextParams(document: FoundDocument, corpus: Corpus): any {
         const contextSpec = corpus.documentContext;
 
@@ -190,7 +161,7 @@ export class ParamService {
         });
 
         const filterParams = this.makeFilterParams(contextFields);
-        const sortParams = this.makeSortParams(
+        const sortParams = sortSettingsToParams(
             contextSpec.sortField,
             contextSpec.sortDirection
         );
