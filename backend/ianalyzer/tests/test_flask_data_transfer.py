@@ -108,7 +108,7 @@ def test_save_queries(db):
     import_and_save_all_data(flask_test_data_dir)
 
     queries = Query.objects.all()
-    assert len(queries) == 10
+    assert len(queries) == 11
 
     query = Query.objects.get(id='507')
 
