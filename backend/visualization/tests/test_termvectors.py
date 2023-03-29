@@ -24,10 +24,7 @@ def test_tokens(termvectors_result):
         assert token['term'] == word
         assert token['ttf'] == 1 # title has no duplicate words
 
-def test_find_matches(test_es_client, termvectors_result):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
-
+def test_find_matches(es_client, termvectors_result):
     title_terms = termvectors.get_terms(termvectors_result, 'title')
     title_tokens = termvectors.get_tokens(title_terms, sort = True)
 
@@ -47,7 +44,7 @@ def test_find_matches(test_es_client, termvectors_result):
     ]
 
     for query_text, expected_matches in cases:
-        matches = list(termvectors.token_matches(title_tokens, query_text, 'ianalyzer-mock-corpus', 'title', test_es_client))
+        matches = list(termvectors.token_matches(title_tokens, query_text, 'ianalyzer-mock-corpus', 'title', es_client))
         assert len(matches) == expected_matches
 
 QUERY_ANALYSIS_CASES = [
@@ -92,17 +89,17 @@ def test_query_components():
         assert sorted(components) == sorted(case['components']) # ignore order
 
 
-def test_query_analysis(test_es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
+def test_query_analysis(es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
     corpus = load_corpus(mock_corpus)
     es_index = corpus.es_index
 
     for case in QUERY_ANALYSIS_CASES:
-        analyzed = termvectors.analyze_query(case['query_text'], es_index, 'content.clean', test_es_client)
+        analyzed = termvectors.analyze_query(case['query_text'], es_index, 'content.clean', es_client)
         assert sorted(analyzed) == sorted(case['analyzed'])
 
 
 @pytest.fixture
-def termvectors_result(test_es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
+def termvectors_result(es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
     corpus = load_corpus(mock_corpus)
     es_index = corpus.es_index
 
@@ -113,11 +110,11 @@ def termvectors_result(test_es_client, mock_corpus, index_mock_corpus, select_sm
             }
         }
     }
-    result = search.search(mock_corpus, frankenstein_query, test_es_client)
+    result = search.search(mock_corpus, frankenstein_query, es_client)
     hit = search.hits(result)[0]
     id = hit['_id']
 
-    termvectors_result = test_es_client.termvectors(
+    termvectors_result = es_client.termvectors(
         index=es_index,
         id=id,
         term_statistics=True,
