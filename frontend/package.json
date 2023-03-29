@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "npm run serve & npm run test",
     "serve": "ng serve --proxy-config proxy.conf.json",
-    "build": "ng build --configuration=production --aot --deploy-url='/static/'",
+    "build": "ng build --configuration=production --aot",
     "build-local": "ng build --aot",
     "build-git": "ng build --configuration git --aot",
     "test": "ng test --source-map=false",

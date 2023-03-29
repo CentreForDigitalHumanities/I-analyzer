@@ -11,29 +11,28 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
-            "assets": [
-              "src/assets"
-            ],
-            "styles": [
-              "node_modules/primeicons/primeicons.css",
-              "node_modules/primeng/resources/primeng.min.css",
-              "src/styles.scss",
-              "node_modules/font-awesome/css/font-awesome.min.css",
-              "src/imageviewer.scss"
-            ],
-            "scripts": [],
-            "aot": false,
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
+              "deployUrl": "/static/",
+              "outputPath": "dist",
+              "index": "src/index.html",
+              "main": "src/main.ts",
+              "tsConfig": "src/tsconfig.app.json",
+              "polyfills": "src/polyfills.ts",
+              "assets": ["src/assets"],
+              "styles": [
+                  "node_modules/primeicons/primeicons.css",
+                  "node_modules/primeng/resources/primeng.min.css",
+                  "src/styles.scss",
+                  "node_modules/font-awesome/css/font-awesome.min.css",
+                  "src/imageviewer.scss"
+              ],
+              "scripts": [],
+              "aot": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "buildOptimizer": false,
+              "sourceMap": true,
+              "optimization": false,
+              "namedChunks": true
           },
           "configurations": {
             "production": {
