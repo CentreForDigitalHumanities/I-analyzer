@@ -10,7 +10,7 @@ import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
 
 import * as _ from 'lodash';
 import { findByName } from '../utils/utils';
-import { makeSimpleQueryString, matchAll } from '../utils/es-query';
+import { makeBooleanQuery, makeEsSearchClause, makeHighlightSpecification, makeSortSpecification, } from '../utils/es-query';
 
 
 @Injectable()
@@ -23,22 +23,12 @@ export class ElasticSearchService {
     }
 
     public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
-        let clause: EsSearchClause;
-        if (queryModel.queryText) {
-            clause = makeSimpleQueryString(queryModel.queryText, fields);
-        } else {
-            clause = matchAll;
-        }
+        const clause: EsSearchClause = makeEsSearchClause(queryModel.queryText, fields);
 
         let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
             query = {
-                query: {
-                    bool: {
-                        must: clause,
-                        filter: this.mapFilters(queryModel.filters),
-                    }
-                }
+                query: makeBooleanQuery(clause, this.mapFilters(queryModel.filters))
             };
         } else {
             query = {
@@ -46,23 +36,11 @@ export class ElasticSearchService {
             };
         }
 
-        if (queryModel.sortBy) {
-            (query as EsQuerySorted).sort = [{
-                [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
-            }];
-        }
+        const sort = makeSortSpecification(queryModel.sortBy, queryModel.sortAscending);
+        _.merge(query, sort);
 
-        if (fields && queryModel.queryText && queryModel.highlight) {
-            const highlightFields = fields.filter(field => field.searchable);
-            query.highlight = {
-                fragment_size: queryModel.highlight,
-                pre_tags: ['<span class="highlight">'],
-                post_tags: ['</span>'],
-                order: 'score',
-                fields: highlightFields.map( field => ({ [field.name]: { }
-                }))
-            };
-        }
+        const highlight = makeHighlightSpecification(fields, queryModel.queryText, queryModel.highlight);
+        _.merge(query, highlight);
 
         return query;
     }
