@@ -5,12 +5,12 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
 import { AggregateData, Corpus, MultipleChoiceFilterData, SearchFilter,
-    SearchFilterData, CorpusField, contextFilterFromField } from '../models/index';
+    SearchFilterData, CorpusField } from '../models/index';
 import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services/param.service';
 import { findByName } from '../utils/utils';
-import { filtersFromParams, paramForFieldName } from '../utils/params';
+import { filtersFromParams, paramForFieldName, searchFilterDataToParam } from '../utils/params';
 
 
 @Component({
@@ -168,7 +168,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         });
         newFilters.forEach(filter => {
             const paramName = paramForFieldName(filter.fieldName);
-            const value = filter.useAsFilter? this.paramService.searchFilterDataToParam(filter) : null;
+            const value = filter.useAsFilter? searchFilterDataToParam(filter) : null;
             params[paramName] = value;
         });
         this.setParams(params);

@@ -102,3 +102,31 @@ const applyFilterSettings = (filterSettings: SearchFilterSettings, corpusFields:
  */
 export const paramForFieldName = (fieldName: string) =>
     `${fieldName}`;
+
+
+// --- set params from filters --- //
+
+export const searchFiltersToParams = (fields: CorpusField[]) => {
+    const params = {};
+    fields.forEach( field => {
+        const paramName = paramForFieldName(field.name);
+        const value = field.searchFilter.useAsFilter? searchFilterDataToParam(field.searchFilter) : null;
+        params[paramName] = value;
+    });
+
+    return params;
+};
+
+export const searchFilterDataToParam = (filter: SearchFilter<SearchFilterData>): string => {
+    switch (filter.currentData.filterType) {
+        case 'BooleanFilter':
+            return `${filter.currentData.checked}`;
+        case 'MultipleChoiceFilter':
+            return filter.currentData.selected.join(',');
+        case 'RangeFilter':
+            return `${filter.currentData.min}:${filter.currentData.max}`;
+        case 'DateFilter':
+            return `${filter.currentData.min}:${filter.currentData.max}`;
+    }
+};
+

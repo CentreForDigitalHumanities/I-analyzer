@@ -3,12 +3,13 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings,
-    contextFilterFromField, FoundDocument, Corpus } from '../models';
+import { CorpusField, QueryModel, contextFilterFromField, FoundDocument, Corpus } from '../models';
 import { SearchService } from './search.service';
 import { findByName } from '../utils/utils';
-import { filtersFromParams, highlightFromParams, paramForFieldName, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
-    sortSettingsToParams } from '../utils/params';
+import {
+    filtersFromParams, highlightFromParams, paramForFieldName, queryFromParams, searchFieldsFromParams,
+    searchFilterDataToParam, searchFiltersToParams, sortSettingsFromParams, sortSettingsToParams
+} from '../utils/params';
 
 @Injectable()
 export class ParamService {
@@ -40,7 +41,7 @@ export class ParamService {
 
         for (const filter of queryModel.filters.map(data => ({
                 param: paramForFieldName(data.fieldName),
-                value: this.searchFilterDataToParam(data)
+                value: searchFilterDataToParam(data)
             }))) {
             route[filter.param] = filter.value;
         }
@@ -64,32 +65,6 @@ export class ParamService {
     }
 
 
-    // --- set params from filters --- //
-
-    makeFilterParams(fields: CorpusField[]) {
-        const params = {};
-        fields.forEach( field => {
-            const paramName = paramForFieldName(field.name);
-            const value = field.searchFilter.useAsFilter? this.searchFilterDataToParam(field.searchFilter) : null;
-            params[paramName] = value;
-        });
-
-        return params;
-    }
-
-    searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string {
-        switch (filter.currentData.filterType) {
-            case 'BooleanFilter':
-                return `${filter.currentData.checked}`;
-            case 'MultipleChoiceFilter':
-                return filter.currentData.selected.join(',');
-            case 'RangeFilter':
-                return `${filter.currentData.min}:${filter.currentData.max}`;
-            case 'DateFilter':
-                return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
-    }
-
     makeContextParams(document: FoundDocument, corpus: Corpus): any {
         const contextSpec = corpus.documentContext;
 
@@ -102,7 +77,7 @@ export class ParamService {
             field.searchFilter = contextFilterFromField(field, document.fieldValues[field.name]);
         });
 
-        const filterParams = this.makeFilterParams(contextFields);
+        const filterParams = searchFiltersToParams(contextFields);
         const sortParams = sortSettingsToParams(
             contextSpec.sortField,
             contextSpec.sortDirection
