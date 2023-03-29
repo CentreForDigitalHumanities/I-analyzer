@@ -10,6 +10,7 @@ import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services/param.service';
 import { findByName } from '../utils/utils';
+import { filtersFromParams, paramForFieldName } from '../utils/params';
 
 
 @Component({
@@ -50,7 +51,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     setStateFromParams(params: ParamMap) {
-        this.activeFilters = this.paramService.setFiltersFromParams(
+        this.activeFilters = filtersFromParams(
             params, this.corpusFields
         );
         this.aggregateSearchForMultipleChoiceFilters(params);
@@ -58,9 +59,9 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     teardown() {
-        let params = {}
+        const params = {};
         this.activeFilters.forEach(filter => {
-            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+            const paramName = paramForFieldName(filter.fieldName);
             params[paramName] = null;
         });
         this.setParams(params);
@@ -157,7 +158,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         this.activeFilters.forEach(filter => {
             // set any params for previously active filters to null
             if (!newFilters.map(f => f.fieldName).find(name => name === filter.fieldName)) {
-                const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+                const paramName = paramForFieldName(filter.fieldName);
                 params[paramName] = null;
                 if (filter.adHoc) {
                     // also set sort null in case of an adHoc filter
@@ -166,7 +167,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
             }
         });
         newFilters.forEach(filter => {
-            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+            const paramName = paramForFieldName(filter.fieldName);
             const value = filter.useAsFilter? this.paramService.searchFilterDataToParam(filter) : null;
             params[paramName] = value;
         });

@@ -7,28 +7,18 @@ import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDa
     contextFilterFromField, FoundDocument, Corpus } from '../models';
 import { SearchService } from './search.service';
 import { findByName } from '../utils/utils';
-import { highlightFromParams, queryFromParams, searchFieldsFromParams, sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
-
-interface SearchFilterSettings {
-    [fieldName: string]: SearchFilterData;
-}
+import { filtersFromParams, highlightFromParams, paramForFieldName, queryFromParams, searchFieldsFromParams, sortSettingsFromParams,
+    sortSettingsToParams } from '../utils/params';
 
 @Injectable()
 export class ParamService {
 
     constructor(private searchService: SearchService) { }
 
-    /***
-     * Utility function to convert field name to string
-     */
-    public getParamForFieldName(fieldName: string) {
-        return `${fieldName}`;
-    }
-
     public queryModelFromParams(params: ParamMap, corpusFields: CorpusField[]) {
         // copy fields so the state in components is isolated
         const fields = _.cloneDeep(corpusFields);
-        const activeFilters = this.setFiltersFromParams(params, fields);
+        const activeFilters = filtersFromParams(params, fields);
         const highlight = highlightFromParams(params);
         const query = queryFromParams(params);
         const queryFields = searchFieldsFromParams(params);
@@ -49,7 +39,7 @@ export class ParamService {
         }
 
         for (const filter of queryModel.filters.map(data => ({
-                param: this.getParamForFieldName(data.fieldName),
+                param: paramForFieldName(data.fieldName),
                 value: this.searchFilterDataToParam(data)
             }))) {
             route[filter.param] = filter.value;
@@ -73,61 +63,13 @@ export class ParamService {
         return route;
     }
 
-    //------- set filters from params  ----//
-
-    /**
-     * Set the filter data from the query parameters and return whether any filters were actually set.
-     */
-    setFiltersFromParams(params: ParamMap, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] {
-        const filterSettings = this.filterSettingsFromParams(params, corpusFields);
-        return this.applyFilterSettings(filterSettings, corpusFields);
-    }
-
-    filterSettingsFromParams(params: ParamMap, corpusFields: CorpusField[]): SearchFilterSettings {
-        const settings = {};
-        corpusFields.forEach(field => {
-            const param = this.getParamForFieldName(field.name);
-            if (params.has(param)) {
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] === '') {
-                    filterSettings = [];
-                }
-                const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
-                const data = searchFilterDataFromSettings(filterType, filterSettings, field);
-                settings[field.name] = data;
-            }
-        });
-
-        return settings;
-    }
-
-    applyFilterSettings(filterSettings: SearchFilterSettings, corpusFields: CorpusField[]) {
-        corpusFields.forEach(field => {
-            if (_.has(filterSettings, field.name)) {
-                const searchFilter = field.searchFilter || contextFilterFromField(field);
-                const data = filterSettings[field.name];
-                searchFilter.currentData = data;
-                searchFilter.useAsFilter = true;
-                field.searchFilter = searchFilter;
-            } else {
-                if (field.searchFilter) {
-                    field.searchFilter.useAsFilter = false;
-                    if (field.searchFilter.adHoc) {
-                        field.searchFilter = null;
-                    }
-                }
-            }
-        });
-
-        return corpusFields.filter( field => field.searchFilter && field.searchFilter.useAsFilter ).map( field => field.searchFilter );
-    }
 
     // --- set params from filters --- //
 
     makeFilterParams(fields: CorpusField[]) {
         const params = {};
         fields.forEach( field => {
-            const paramName = this.getParamForFieldName(field.name);
+            const paramName = paramForFieldName(field.name);
             const value = field.searchFilter.useAsFilter? this.searchFilterDataToParam(field.searchFilter) : null;
             params[paramName] = value;
         });

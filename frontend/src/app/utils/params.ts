@@ -1,5 +1,6 @@
 import { ParamMap } from '@angular/router';
-import { CorpusField } from '../models';
+import * as _ from 'lodash';
+import { contextFilterFromField, CorpusField, SearchFilter, SearchFilterData, searchFilterDataFromSettings } from '../models';
 import { findByName } from './utils';
 
 export const queryFromParams = (params: ParamMap): string =>
@@ -44,3 +45,60 @@ export const sortSettingsFromParams = (params: ParamMap, corpusFields: CorpusFie
     };
 };
 
+
+interface SearchFilterSettings {
+    [fieldName: string]: SearchFilterData;
+}
+
+/**
+ * Set the filter data from the query parameters and return whether any filters were actually set.
+ */
+export const filtersFromParams = (params: ParamMap, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] => {
+    const filterSettings = filterSettingsFromParams(params, corpusFields);
+    return applyFilterSettings(filterSettings, corpusFields);
+};
+
+const filterSettingsFromParams = (params: ParamMap, corpusFields: CorpusField[]): SearchFilterSettings => {
+    const settings = {};
+    corpusFields.forEach(field => {
+        const param = paramForFieldName(field.name);
+        if (params.has(param)) {
+            let filterSettings = params.get(param).split(',');
+            if (filterSettings[0] === '') {
+                filterSettings = [];
+            }
+            const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
+            const data = searchFilterDataFromSettings(filterType, filterSettings, field);
+            settings[field.name] = data;
+        }
+    });
+
+    return settings;
+};
+
+const applyFilterSettings = (filterSettings: SearchFilterSettings, corpusFields: CorpusField[]) => {
+    corpusFields.forEach(field => {
+        if (_.has(filterSettings, field.name)) {
+            const searchFilter = field.searchFilter || contextFilterFromField(field);
+            const data = filterSettings[field.name];
+            searchFilter.currentData = data;
+            searchFilter.useAsFilter = true;
+            field.searchFilter = searchFilter;
+        } else {
+            if (field.searchFilter) {
+                field.searchFilter.useAsFilter = false;
+                if (field.searchFilter.adHoc) {
+                    field.searchFilter = null;
+                }
+            }
+        }
+    });
+
+    return corpusFields.filter( field => field.searchFilter && field.searchFilter.useAsFilter ).map( field => field.searchFilter );
+};
+
+/***
+ * Convert field name to string
+ */
+export const paramForFieldName = (fieldName: string) =>
+    `${fieldName}`;
