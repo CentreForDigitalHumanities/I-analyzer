@@ -20,8 +20,10 @@ export class VisualizationFooterComponent implements OnInit {
 
     faQuestion = faQuestionCircle;
 
-    constructor(private dialogService: DialogService,
-      private notificationService: NotificationService) { }
+    constructor(
+      private dialogService: DialogService,
+      private notificationService: NotificationService
+    ) { }
 
     ngOnInit(): void {
     }
@@ -39,7 +41,7 @@ export class VisualizationFooterComponent implements OnInit {
             anchor.download = imageFileName || 'chart.png';
             anchor.click();
           })
-          .catch(function(error) {
+          .catch((error) => {
             this.notificationService.showMessage('Image creation failed.', error);
           });
 
