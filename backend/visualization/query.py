@@ -66,11 +66,11 @@ def set_search_fields(query, fields):
         return query
 
 def get_filters(query):
-    """Get the list of filters in a query, or `None` if there are none."""
+    """Get the list of filters in a query. Returns an empty list if there are none."""
     try:
         filters = query['query']['bool']['filter']
     except KeyError:
-        filters = None
+        filters = []
 
     return filters
 
