@@ -24,7 +24,7 @@
         "watch-back": "yarn livereload-back & yarn watch-test-back",
         "start": "yarn start-front & yarn start-back & yarn watch-back",
         "build": "yarn front yarn build",
-        "build-p": "yarn front yarn build --prod",
+        "build-p": "yarn front yarn build",
         "collectstatic-p": "cd backend && python manage.py collectstatic --noinput -v 0 --settings collect --pythonpath ..",
         "clean-static": "rm -rf static || rd /S /Q static",
         "static-p": "yarn build-p && yarn clean-static && yarn collectstatic-p",

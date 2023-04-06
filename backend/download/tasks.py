@@ -48,6 +48,23 @@ def create_query(request_json):
     return re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
 
 
+def try_download(tasks_func, download):
+    '''
+    Try initialising a task chain for a download. Marks the download
+    as failed in the database when the chain cannot be set up.
+
+    Parameters:
+    - `task_func`: a nullary function that outputs a celery task chain
+    - `download`: a Download object
+    '''
+
+    try:
+        return tasks_func()
+    except Exception as e:
+        logger.exception('Could not create celery task')
+        complete_failed_download(None, e, None, download.id)
+        raise e
+
 def download_search_results(request_json, user):
     '''
     Complete chain for downloading search results. Get results from elasticsearch
@@ -60,14 +77,14 @@ def download_search_results(request_json, user):
 
     download = Download.objects.create(download_type='search_results', corpus=corpus, parameters=request_json, user=user)
 
-    return chain(
+    make_chain = lambda: chain(
         download_scroll.s(request_json, download_limit),
         make_csv.s(request_json),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
 
-
+    return try_download(make_chain, download)
 
 @shared_task()
 def make_term_frequency_csv(results_per_series, parameters_per_series):
@@ -156,9 +173,11 @@ def download_full_data(request_json, user):
     download = Download.objects.create(
         download_type=visualization_type, corpus=corpus, parameters=parameters, user=user)
 
-    return chain(
+    make_chain = lambda : chain(
         task,
         make_term_frequency_csv.s(parameters),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
+
+    return try_download(make_chain, download)

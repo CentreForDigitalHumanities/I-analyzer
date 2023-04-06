@@ -11,17 +11,8 @@ from redis import Redis
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-@pytest.fixture()
-def mock_corpus_settings(settings):
-    '''Add mock corpora to settings'''
-
-    settings.CORPORA = {
-        'small-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'small_mock_corpus.py'),
-        'large-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'large_mock_corpus.py')
-    }
-
-@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'])
-def mock_corpus(request, mock_corpus_settings):
+@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'], scope='module')
+def mock_corpus(request):
     '''Return the name of a mock corpus'''
 
     return request.param
@@ -54,20 +45,6 @@ def mock_corpus_specs(mock_corpus):
     }
     return specs[mock_corpus]
 
-@pytest.fixture()
-def test_es_client(mock_corpus):
-    """
-    Initialise an elasticsearch client. Skip if no connection can be made.
-    """
-    client = elasticsearch(mock_corpus)
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
-
-    return client
-
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus(corpus_name)
     index.create(es_client, corpus, False, True, False)
@@ -81,13 +58,13 @@ def clear_test_corpus(es_client, corpus_name):
     index = corpus.es_index
     es_client.indices.delete(index = index)
 
-@pytest.fixture()
-def index_mock_corpus(mock_corpus, test_es_client):
+@pytest.fixture(scope='module')
+def index_mock_corpus(mock_corpus, es_client):
     '''Create and populate an index for the mock corpus.'''
 
-    index_test_corpus(test_es_client, mock_corpus)
+    index_test_corpus(es_client, mock_corpus)
     yield mock_corpus
-    clear_test_corpus(test_es_client, mock_corpus)
+    clear_test_corpus(es_client, mock_corpus)
 
 @pytest.fixture()
 def corpus_user(transactional_db, mock_corpus): # use transactional_db instead of db for async task support
@@ -119,24 +96,4 @@ def basic_query():
                 "filter": []
             }
         }
-    }
-
-@pytest.fixture
-def redis_connection(settings):
-    '''check if we can connect to redis, skip otherwise'''
-    r = Redis.from_url(settings.CELERY_RESULT_BACKEND)
-
-    try:
-        r.set('test_key', 'test_value')
-    except:
-        pytest.skip()
-
-@pytest.fixture
-def celery_config(redis_connection, settings):
-    '''configure celery settings for test session,
-    includes trying redis connection, this fixture is automatically
-    used by the celery worker in the tests'''
-    return {
-        'broker_url': settings.CELERY_BROKER_URL,
-        'result_backend': settings.CELERY_RESULT_BACKEND
     }

@@ -4,7 +4,7 @@ import os
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 from download.tests.mock_corpora.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
-from visualization.conftest import test_es_client, index_mock_corpus, select_small_mock_corpus, select_large_mock_corpus
+from visualization.conftest import index_mock_corpus, select_small_mock_corpus, select_large_mock_corpus
 from addcorpus.load_corpus import load_all_corpora
 from visualization.query import MATCH_ALL
 from download import tasks
@@ -17,18 +17,9 @@ def csv_directory(settings, tmpdir):
     settings.CSV_FILES_PATH = str(dir)
     return settings.CSV_FILES_PATH
 
-@pytest.fixture()
-def mock_corpus_settings(settings):
-    '''Add mock corpora to settings'''
 
-    settings.CORPORA = {
-        'small-mock-corpus': os.path.join(here, '..', 'visualization', 'tests', 'mock_corpora', 'small_mock_corpus.py'),
-        'large-mock-corpus': os.path.join(here, '..', 'visualization', 'tests', 'mock_corpora', 'large_mock_corpus.py'),
-        'multilingual-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'multilingual_mock_corpus.py')
-    }
-
-@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus'])
-def mock_corpus(request, mock_corpus_settings, mock_corpora_in_db):
+@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus'], scope='module')
+def mock_corpus(request):
     '''Return the name of a mock corpus'''
 
     return request.param
@@ -72,8 +63,3 @@ def all_results_csv(mock_corpus, mock_corpus_specs, index_mock_corpus, csv_direc
     filename = tasks.make_csv(results, request_json)
 
     return filename
-
-
-@pytest.fixture()
-def mock_corpora_in_db(db, mock_corpus_settings):
-    load_all_corpora()

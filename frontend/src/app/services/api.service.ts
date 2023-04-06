@@ -65,41 +65,45 @@ export class ApiService extends Resource {
         method: ResourceRequestMethod.Post,
         path: '/visualization/wordcloud',
     })
-    public wordcloud: ResourceMethod<
-        WordcloudParameters,
-        AggregateResult[]
-    >;
-
+    public wordcloud: ResourceMethod<WordcloudParameters, AggregateResult[]>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: 'visualization/wordcloud_task',
     })
-    public wordcloudTasks: ResourceMethod<
-        WordcloudParameters,
-        TaskResult
-    >;
+    public wordcloudTasks: ResourceMethod<WordcloudParameters, TaskResult>;
 
-    public getTasksStatus<ExpectedResult>(tasks: TaskResult): Promise<TasksOutcome<ExpectedResult>> {
-        return this.http.post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks).toPromise();
+    public getTasksStatus<ExpectedResult>(
+        tasks: TaskResult
+    ): Promise<TasksOutcome<ExpectedResult>> {
+        return this.http
+            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
+            .toPromise();
     }
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/abort_tasks',
     })
-    public abortTasks: ResourceMethod<
-        TaskResult,
-        { success: true }
-    >;
+    public abortTasks: ResourceMethod<TaskResult, { success: true }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/visualization/ngram',
     })
     public ngramTasks: ResourceMethod<
-        { es_query: EsQuery; corpus_name: string; field: string; ngram_size?: number; term_position?: string; freq_compensation?: boolean;
-            subfield?: string; max_size_per_interval?: number; number_of_ngrams?: number; date_field: string; },
+        {
+            es_query: EsQuery;
+            corpus_name: string;
+            field: string;
+            ngram_size?: number;
+            term_position?: string;
+            freq_compensation?: boolean;
+            subfield?: string;
+            max_size_per_interval?: number;
+            number_of_ngrams?: number;
+            date_field: string;
+        },
         TaskResult
     >;
 
@@ -139,12 +143,8 @@ export class ApiService extends Resource {
         TaskResult
     >;
 
-    public saveQuery(
-        options: QueryDb
-    ) {
-        return this.http
-            .post('/api/search_history/', options)
-            .toPromise();
+    public saveQuery(options: QueryDb) {
+        return this.http.post('/api/search_history/', options).toPromise();
     }
 
     @ResourceAction({
@@ -153,16 +153,13 @@ export class ApiService extends Resource {
         responseBodyType: ResourceResponseBodyType.Blob,
         asResourceResponse: true,
     })
-    public download: ResourceMethod<
-        LimitedResultsDownloadParameters,
-        any
-    >;
+    public download: ResourceMethod<LimitedResultsDownloadParameters, any>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/download/csv/{id}',
         responseBodyType: ResourceResponseBodyType.Blob,
-        asResourceResponse: true
+        asResourceResponse: true,
     })
     public csv: ResourceMethod<
         { id: number } | ({ id: number } & DownloadOptions),
@@ -173,23 +170,7 @@ export class ApiService extends Resource {
         method: ResourceRequestMethod.Post,
         path: '/download/search_results_task',
     })
-    public downloadTask: ResourceMethod<
-        ResultsDownloadParameters,
-        TaskResult
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/register',
-    })
-    public register: ResourceMethod<
-        { username: string; email: string; password: string },
-        {
-            success: boolean;
-            is_valid_username: boolean;
-            is_valid_email: boolean;
-        }
-    >;
+    public downloadTask: ResourceMethod<ResultsDownloadParameters, TaskResult>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -285,14 +266,24 @@ export class ApiService extends Resource {
     }
 
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
-        return timer(0, 5000).pipe(
-            switchMap((_) => this.getTasksStatus<ExpectedResult>({task_ids: ids})),
-            filter(this.tasksDone),
-            take(1)
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        ).toPromise().then(result => new Promise((resolve, reject) =>
-                result.status === 'done' ? resolve(result.results) : reject()
-        ));
+        return timer(0, 5000)
+            .pipe(
+                switchMap((_) =>
+                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
+                ),
+                filter(this.tasksDone),
+                take(1)
+                // eslint-disable-next-line @typescript-eslint/no-shadow
+            )
+            .toPromise()
+            .then(
+                (result) =>
+                    new Promise((resolve, reject) =>
+                        result.status === 'done'
+                            ? resolve(result.results)
+                            : reject()
+                    )
+            );
     }
 
     public corpus() {
@@ -316,5 +307,28 @@ export class ApiService extends Resource {
 
     public getUser() {
         return this.http.get<UserResponse>(this.authApiRoute('user'));
+    }
+
+    public register(details: {
+        username: string;
+        email: string;
+        password1: string;
+        password2: string;
+    }) {
+        return this.http.post<any>(this.authApiRoute('registration'), details);
+    }
+
+    public verify(key: string) {
+        return this.http.post<any>(
+            this.authApiRoute('registration/verify-email'),
+            { key }
+        );
+    }
+
+    public keyInfo(key: string) {
+        return this.http.post<{ username: string; email: string }>(
+            this.authApiRoute('registration/key-info'),
+            { key }
+        );
     }
 }

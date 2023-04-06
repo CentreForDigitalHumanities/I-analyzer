@@ -67,7 +67,7 @@ def search_results_csv(results, fields, query):
 
 
 def term_frequency_csv(queries, results, field_name, unit = None):
-    has_token_counts = results[0].get('token_count', None)
+    has_token_counts = results[0].get('token_count', None) != None
     query_column = ['Query'] if len(queries) > 1 else []
     freq_columns = ['Term frequency', 'Relative term frequency (by # documents)', 'Total documents']
     token_columns = ['Relative term frequency (by # words)', 'Total word count'] if has_token_counts else []

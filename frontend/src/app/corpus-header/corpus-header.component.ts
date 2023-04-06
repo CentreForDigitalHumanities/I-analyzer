@@ -11,7 +11,7 @@ import { DialogService } from '../services';
 })
 export class CorpusHeaderComponent implements OnChanges, OnInit {
     @Input() corpus: Corpus;
-    @Input() currentPage: 'search'|'word-models';
+    @Input() currentPage: 'search'|'word-models'|'document';
     @Input() modelDocumentation: string;
 
     searchIcon = faMagnifyingGlass;
