@@ -21,3 +21,4 @@ pandas
 celery
 Redis
 pypdf2
+openpyxl
