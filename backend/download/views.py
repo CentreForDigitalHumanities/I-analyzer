@@ -1,17 +1,21 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from download.serializers import DownloadSerializer
-from download.models import Download
-from django.http.response import FileResponse
-from django.conf import settings
-from download import convert_csv, tasks
-import os
-from rest_framework.exceptions import ValidationError, APIException, PermissionDenied, NotFound
-from es import download as es_download
-from rest_framework.permissions import IsAuthenticated
-from addcorpus.permissions import CorpusAccessPermission, corpus_name_from_request
 import logging
+import os
+
+from addcorpus.models import Corpus
+from addcorpus.permissions import (CorpusAccessPermission,
+                                   corpus_name_from_request)
+from django.conf import settings
+from django.http.response import FileResponse
+from download import convert_csv, tasks
+from download.models import Download
+from download.serializers import DownloadSerializer
+from es import download as es_download
+from rest_framework.exceptions import (APIException, NotFound,
+                                       PermissionDenied, ValidationError)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
 logger = logging.getLogger()
 
@@ -43,10 +47,16 @@ class ResultsDownloadView(APIView):
             raise ValidationError(detail='Download failed: too many documents requested')
 
         try:
-            corpus = corpus_name_from_request(request)
-            search_results = es_download.normal_search(corpus, request.data['es_query'], request.data['size'])
+            corpus_name = corpus_name_from_request(request)
+            corpus = Corpus.objects.get(name=corpus_name)
+            search_results = es_download.normal_search(
+                corpus_name, request.data['es_query'], request.data['size'])
             csv_path = tasks.make_csv(search_results, request.data)
             directory, filename = os.path.split(csv_path)
+            # Create download for download history
+            download = Download.objects.create(
+                download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
+            download.complete(filename=filename)
             return send_csv_file(directory, filename, 'search_results', request.data['encoding'])
         except Exception as e:
             logger.error(e)
