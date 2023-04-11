@@ -1,5 +1,5 @@
 import pytest
-
+from allauth.account.models import EmailAddress
 
 @pytest.fixture
 def user_credentials():
@@ -21,6 +21,10 @@ def auth_user(django_user_model, user_credentials):
         username=user_credentials['username'],
         password=user_credentials['password'],
         email=user_credentials['email'])
+    EmailAddress.objects.create(user=user,
+                                email=user.email,
+                                verified=True,
+                                primary=True)
     return user
 
 
@@ -39,6 +43,10 @@ def admin_user(django_user_model, admin_credentials):
         username=admin_credentials['username'],
         password=admin_credentials['password'],
         email=admin_credentials['email'])
+    EmailAddress.objects.create(user=user,
+                                email=user.email,
+                                verified=True,
+                                primary=True)
     return user
 
 

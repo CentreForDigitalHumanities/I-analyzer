@@ -63,10 +63,10 @@ export class MenuComponent implements OnDestroy, OnInit {
                 if (user) {
                     this.currentUser = user;
                     this.isAdmin = this.currentUser.isAdmin;
+                    this.setMenuItems();
                 } else {
                     this.isAdmin = false;
                 }
-                this.setMenuItems();
             },
             (_error) => {
                 this.currentUser = undefined;

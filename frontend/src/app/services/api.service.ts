@@ -173,24 +173,6 @@ export class ApiService extends Resource {
     public downloadTask: ResourceMethod<ResultsDownloadParameters, TaskResult>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/request_reset',
-    })
-    public requestReset: ResourceMethod<
-        { email: string },
-        { success: boolean; message: string }
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/reset_password',
-    })
-    public resetPassword: ResourceMethod<
-        { password: string; token: string },
-        { success: boolean; message?: string; username?: string }
-    >;
-
-    @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/solislogin',
     })
@@ -331,6 +313,30 @@ export class ApiService extends Resource {
         return this.http.post<{ username: string; email: string }>(
             this.authApiRoute('registration/key-info'),
             { key }
+        );
+    }
+
+    public requestResetPassword(email: string) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/reset'),
+            { email }
+        );
+    }
+
+    public resetPassword(
+        uid: string,
+        token: string,
+        newPassword1: string,
+        newPassword2: string
+    ) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/reset/confirm'),
+            {
+                uid,
+                token,
+                new_password1: newPassword1,
+                new_password2: newPassword2,
+            }
         );
     }
 }
