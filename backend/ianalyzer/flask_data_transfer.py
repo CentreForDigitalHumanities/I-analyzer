@@ -139,11 +139,16 @@ def load_json_value(string_value):
     return json.loads(string_value.replace('\\\\', '\\'))
 
 def save_flask_query(row):
+    user_id = null_to_none(row['userID'])
+
+    if not user_id:
+        return
+
     query = Query(
         id=row['id'],
         query_json=load_json_value(row['query']),
         corpus=Corpus.objects.get(name=row['corpus_name']),
-        user=CustomUser.objects.get(id=row['userID']),
+        user=CustomUser.objects.get(id=user_id),
         completed=null_to_none(row['completed']),
         aborted=null_to_none(row['aborted']),
         transferred=null_to_none(row['transferred']),
