@@ -93,7 +93,7 @@ def save_flask_user(row):
         password='',  # we will set the password below
         email=row['email'],
         download_limit=row['download_limit'],
-        saml=row['saml'],
+        saml=null_to_none(row['saml']),
     )
     user.save()
 
