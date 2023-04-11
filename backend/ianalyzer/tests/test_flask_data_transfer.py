@@ -73,6 +73,9 @@ def test_save_legacy_user(db):
     admin = users[0]
     assert admin.username == 'admin'
     assert admin.email == 'admin@ianalyzer.nl'
+    assert admin.is_superuser
+    assert admin.is_staff
+    assert not admin.saml
     assert list(admin.groups.all()) == [Group.objects.get(
         name='basic'), Group.objects.get(name='admin')]
 
@@ -80,7 +83,9 @@ def test_save_legacy_user(db):
     assert allauth_email.email == admin.email
     assert allauth_email.verified
 
-
+    saml = users[1]
+    assert not saml.is_superuser
+    assert saml.saml
 
 def test_save_corpora(db):
     import_and_save_table(flask_test_data_dir, 'role', save_flask_group)

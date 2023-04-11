@@ -90,7 +90,7 @@ def save_flask_user(row):
     user = CustomUser(
         id=row['id'],
         username=row['username'],
-        password='nonsense',  # we will set the password below
+        password='',  # we will set the password below
         email=row['email'],
         download_limit=row['download_limit'],
         saml=row['saml'],
@@ -106,12 +106,14 @@ def save_flask_user(row):
         user.save()
 
     # now set the password hash
-    password_hash = adapt_password_encoding(row['password'])
-    with connection.cursor() as cursor:
-        cursor.execute(
-            'UPDATE users_customuser SET password = %s WHERE id = %s',
-            [password_hash, row['id']]
-        )
+    old_hash = null_to_none(row['password']) # for saml users, password can be null
+    if old_hash:
+        new_hash = adapt_password_encoding(old_hash)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'UPDATE users_customuser SET password = %s WHERE id = %s',
+                [new_hash, row['id']]
+            )
 
     # add an Allauth verified email address
     EmailAddress.objects.create(
