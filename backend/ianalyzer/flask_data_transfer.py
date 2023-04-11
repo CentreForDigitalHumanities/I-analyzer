@@ -144,10 +144,15 @@ def save_flask_query(row):
     if not user_id:
         return
 
+    corpus_name = row['corpus_name']
+    if not Corpus.objects.filter(name=corpus_name):
+        # some queries refer to corpus names that no longer exist
+        return
+
     query = Query(
         id=row['id'],
         query_json=load_json_value(row['query']),
-        corpus=Corpus.objects.get(name=row['corpus_name']),
+        corpus=Corpus.objects.get(name=corpus_name),
         user=CustomUser.objects.get(id=user_id),
         completed=null_to_none(row['completed']),
         aborted=null_to_none(row['aborted']),
