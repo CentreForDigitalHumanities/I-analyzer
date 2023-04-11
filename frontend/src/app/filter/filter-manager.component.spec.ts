@@ -5,6 +5,7 @@ import { commonTestBed } from '../common-test-bed';
 import { FilterManagerComponent } from './filter-manager.component';
 import { mockCorpus, mockCorpus2, mockFilter } from '../../mock-data/corpus';
 import { convertToParamMap } from '@angular/router';
+import { findByName } from '../utils/utils';
 
 describe('FilterManagerComponent', () => {
   let component: FilterManagerComponent;
@@ -43,7 +44,7 @@ describe('FilterManagerComponent', () => {
   });
 
   it('toggles filters on and off', async() => {
-    component.corpusFields.find( field => field.name === 'great_field').searchFilter.useAsFilter = true;
+    findByName(component.corpusFields, 'great_field').searchFilter.useAsFilter = true;
     const params = component.filtersChanged();
     expect(Object.keys(params)).toContain('great_field');
   });

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { ParamDirective } from '../param/param-directive';
-import { ParamService } from '../services/param.service';
+import { highlightFromParams } from '../utils/params';
 
 const HIGHLIGHT = 200;
 
@@ -14,7 +14,7 @@ const HIGHLIGHT = 200;
 export class HighlightSelectorComponent extends ParamDirective {
     public highlight: number = HIGHLIGHT;
 
-    constructor(route: ActivatedRoute, router: Router, private paramService: ParamService) {
+    constructor(route: ActivatedRoute, router: Router) {
       super(route, router);
     }
 
@@ -27,7 +27,7 @@ export class HighlightSelectorComponent extends ParamDirective {
     }
 
     setStateFromParams(params: ParamMap) {
-        this.highlight = this.paramService.setHighlightFromParams(params);
+        this.highlight = highlightFromParams(params);
     }
 
 

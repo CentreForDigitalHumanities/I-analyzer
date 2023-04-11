@@ -8,6 +8,7 @@ import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { findByName } from '../utils/utils';
 
 
 
@@ -133,7 +134,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {
             this.setVisualizationType(params.get('visualize'));
-            const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
+            const visualizedField = findByName(this.corpus.fields, params.get('visualizedField'));
             this.setVisualizedField(visualizedField);
         }
         this.visualizationTypeDropdownValue = this.visDropdown.find(

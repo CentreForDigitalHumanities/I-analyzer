@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DialogService, NotificationService } from '../../services';
 import * as htmlToImage from 'html-to-image';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
-import { PALETTES } from './../select-color';
+import { PALETTES } from '../../utils/select-color';
 
 @Component({
   selector: 'ia-visualization-footer',
