@@ -19,9 +19,7 @@ export class SearchServiceMock {
         };
     }
     public async getRelatedWords() {}
-    public getParamForFieldName(fieldName: string) {
- return `${fieldName}`;
-}
+
     createQueryModel(
         queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],
         sortField: CorpusField = null, sortAscending = false, highlight: number = null

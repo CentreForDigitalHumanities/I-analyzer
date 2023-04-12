@@ -1,10 +1,10 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { CorpusField } from '../models/index';
 import { ParamDirective } from '../param/param-directive';
-import { ParamService } from '../services';
+import { searchFieldsFromParams } from '../utils/params';
 
 @Component({
     selector: 'ia-select-field',
@@ -29,8 +29,9 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
 
     constructor(
         route: ActivatedRoute,
-        router: Router,
-        private paramService: ParamService) { super(route, router) }
+        router: Router) {
+            super(route, router);
+    }
 
     initialize() {
         this.availableFields = this.getAvailableSearchFields(this.corpusFields);
@@ -46,7 +47,7 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
     }
 
     setStateFromParams(params: ParamMap) {
-        const queryFields = this.paramService.setSearchFieldsFromParams(params);
+        const queryFields = searchFieldsFromParams(params);
         if (!queryFields) {
             this.selectedFields = this.filterCoreFields();
         } else {

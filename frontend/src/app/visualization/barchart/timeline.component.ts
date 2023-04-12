@@ -8,7 +8,8 @@ import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDa
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
+import { showLoading } from '../../utils/utils';
 
 
 @Component({
@@ -213,7 +214,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
         if ((this.currentTimeCategory !== previousTimeCategory) ||
             (triggeredByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
-            this.showLoading(
+            showLoading(
+                this.isLoading,
                 this.loadZoomedInData(
                     chart,
                     min, max,

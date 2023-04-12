@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, DocumentContext, SearchFilter, SearchFilterData } from '../models/index';
+import { findByName } from '../utils/utils';
 
 @Injectable()
 export class CorpusService {
@@ -28,8 +29,8 @@ export class CorpusService {
             // no need to retrieve the corpus again if nothing changed
             return Promise.resolve(true);
         }
-        return this.get().then(all => {
-            const corpus = all.find(c => c.name === corpusName);
+        return this.get().then((all) => {
+            const corpus = findByName(all, corpusName);
             if (!corpus) {
                 return false;
             } else {
