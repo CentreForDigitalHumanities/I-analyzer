@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import warnings
 
-from ianalyzer.settings_base import *
+from ianalyzer.common_settings import *
 
 
 # Quick-start development settings - unsuitable for production
