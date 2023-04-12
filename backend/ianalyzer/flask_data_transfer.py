@@ -91,10 +91,10 @@ def save_flask_user(row):
     user = CustomUser(
         id=row['id'],
         username=row['username'],
-        password='nonsense',  # we will set the password below
+        password='',  # we will set the password below
         email=row['email'],
         download_limit=row['download_limit'],
-        saml=row['saml'],
+        saml=null_to_none(row['saml']),
     )
     user.save()
 
@@ -107,12 +107,14 @@ def save_flask_user(row):
         user.save()
 
     # now set the password hash
-    password_hash = adapt_password_encoding(row['password'])
-    with connection.cursor() as cursor:
-        cursor.execute(
-            'UPDATE users_customuser SET password = %s WHERE id = %s',
-            [password_hash, row['id']]
-        )
+    old_hash = null_to_none(row['password']) # for saml users, password can be null
+    if old_hash:
+        new_hash = adapt_password_encoding(old_hash)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'UPDATE users_customuser SET password = %s WHERE id = %s',
+                [new_hash, row['id']]
+            )
 
     # add an Allauth verified email address
     EmailAddress.objects.create(
@@ -134,15 +136,28 @@ def null_to_none(value):
     '''return None if the value is `'\\N'`, i.e. null'''
     return value if value != '\\N' else None
 
+def load_json_value(string_value):
+    return json.loads(string_value.replace('\\\\', '\\'))
 
 def save_flask_query(row):
-    query_model = json.loads(row['query'])
+    user_id = null_to_none(row['userID'])
+
+    if not user_id:
+        return
+
+    corpus_name = row['corpus_name']
+    if not Corpus.objects.filter(name=corpus_name):
+        # some queries refer to corpus names that no longer exist
+        return
+
+    query_model = load_json_value(row['query'])
     es_query = query_model_to_es_query(query_model)
+
     query = Query(
         id=row['id'],
         query_json=es_query,
-        corpus=Corpus.objects.get(name=row['corpus_name']),
-        user=CustomUser.objects.get(id=row['userID']),
+        corpus=Corpus.objects.get(name=corpus_name),
+        user=CustomUser.objects.get(id=user_id),
         completed=null_to_none(row['completed']),
         aborted=null_to_none(row['aborted']),
         transferred=null_to_none(row['transferred']),
@@ -162,7 +177,7 @@ def save_flask_download(row):
         download_type=row['download_type'],
         corpus=Corpus.objects.get(name=row['corpus_name']),
         user=CustomUser.objects.get(id=row['user_id']),
-        parameters=json.loads(row['parameters']),
+        parameters=load_json_value(row['parameters']),
         filename=os.path.relpath(row['filename'], settings.CSV_FILES_PATH),
     )
     download.save()

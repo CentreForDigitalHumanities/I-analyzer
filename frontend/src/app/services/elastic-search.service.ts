@@ -407,7 +407,7 @@ export class Client {
     constructor(private http: HttpClient) {
     }
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `api/es/${searchParams.index}/_search`;
+        const url = `/api/es/${searchParams.index}/_search`;
         const optionDict = {
             size: searchParams.size.toString()
         };

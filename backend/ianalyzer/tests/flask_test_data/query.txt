@@ -8,3 +8,4 @@
 514	{"queryText": null, "filters": [], "sortBy": "date", "sortAscending": false}	2022-12-12 11:39:52	\N	0	1	0	parliament-canada	226062
 515	{"queryText": null, "filters": [], "sortBy": "date", "sortAscending": false}	2022-12-12 15:28:50	\N	0	1	0	parliament-uk	431532
 516	{"queryText": null, "filters": [], "sortBy": "date", "sortAscending": false}	2022-12-12 16:03:06	\N	0	1	0	parliament-uk	431532
+150	{"queryText": "\\"representative democracy\\"", "filters": [], "sortAscending": false}	2022-02-21 16:02:13	\N	0	1	0	parliament-uk	837
