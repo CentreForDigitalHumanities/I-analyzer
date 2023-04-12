@@ -1,4 +1,4 @@
-def main_content_mapping(token_counts = True, stopword_analysis = False, stemming_analysis = False):
+def main_content_mapping(token_counts = True, stopword_analysis = False, stemming_analysis = False, term_vector_toplevel=False):
     '''
     Mapping for the main content field. Options:
 
@@ -8,9 +8,13 @@ def main_content_mapping(token_counts = True, stopword_analysis = False, stemmin
     '''
 
     mapping = {
-        'type': 'text',
-        'term_vector': 'with_positions_offsets' # include char positions on _source for highlighting too
+        'type': 'text'
     }
+
+    if term_vector_toplevel:
+        mapping.update({
+        'term_vector': 'with_positions_offsets' # include char positions on _source for highlighting too
+    })
 
     if any([token_counts, stopword_analysis, stemming_analysis]):
         multifields = {}
