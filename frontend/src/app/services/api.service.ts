@@ -46,7 +46,7 @@ export class ApiService extends Resource {
     private apiUrl: string;
     private authApiUrl = 'users';
     private authApiRoute = (route: string): string =>
-        `${this.authApiUrl}/${route}/`;
+        `/${this.authApiUrl}/${route}/`;
 
     constructor(restHandler: ResourceHandler, private http: HttpClient) {
         super(restHandler);

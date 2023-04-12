@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { APP_BASE_HREF, CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -290,6 +290,7 @@ export const providers: any[] = [
     TitleCasePipe,
     CookieService,
     WordmodelsService,
+    { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
 @NgModule({

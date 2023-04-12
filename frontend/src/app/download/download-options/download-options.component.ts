@@ -17,7 +17,11 @@ export class DownloadOptionsComponent implements OnChanges {
 
     format: 'long'|'wide';
 
-    constructor() { }
+    hasConfirmed = false;
+
+    constructor() {
+        this.confirm.subscribe(() => this.hasConfirmed = true);
+    }
 
     /** whether the current download is a term frequency download */
     get isTermFrequency(): boolean {
