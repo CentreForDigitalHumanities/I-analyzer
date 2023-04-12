@@ -13,6 +13,7 @@ import {
 } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
+import { findByName } from '../utils/utils';
 
 @Injectable()
 export class CorpusService {
@@ -45,7 +46,7 @@ export class CorpusService {
             return Promise.resolve(true);
         }
         return this.get().then((all) => {
-            const corpus = all.find((c) => c.name === corpusName);
+            const corpus = findByName(all, corpusName);
             if (!corpus) {
                 return false;
             } else {

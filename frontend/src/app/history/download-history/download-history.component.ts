@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { Corpus, Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
 import { ApiService, CorpusService, DownloadService, ElasticSearchService, EsQuery, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
+import { findByName } from '../../utils/utils';
 
 @Component({
     selector: 'ia-download-history',
@@ -54,7 +55,7 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         const parameters: DownloadParameters = JSON.parse(download.parameters);
         const esQueries =  'es_query' in parameters ?
             [parameters.es_query] : parameters.map(p => p.es_query);
-        const corpus = this.corpora.find(c => c.name === download.corpus);
+        const corpus = findByName(this.corpora, download.corpus);
         return esQueries.map(esQuery => this.elasticSearchService.esQueryToQueryModel(esQuery, corpus));
     }
 
@@ -68,9 +69,9 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         const parameters: DownloadParameters = JSON.parse(download.parameters);
         const fieldNames =  'fields' in parameters ?
             parameters.fields : [parameters[0].field_name];
-        const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
+        const corpus = findByName(this.corpora, download.corpus);
         const fields = fieldNames.map(fieldName =>
-            corpus.fields.find(field => field.name === fieldName).displayName
+            findByName(corpus.fields, fieldName).displayName
         );
         return _.join(fields, ', ');
     }

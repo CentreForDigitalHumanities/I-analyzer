@@ -9,8 +9,9 @@ import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, 
     BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
+import { findByName, showLoading } from '../../utils/utils';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -223,18 +224,11 @@ export abstract class BarchartDirective
      * This function should be called after (potential) changes to parameters.
      */
     prepareChart() {
-        this.showLoading(
+        showLoading(
+            this.isLoading,
             this.loadData()
         );
     }
-
-    /** execute a process with loading spinner */
-    async showLoading(promise) {
-        this.isLoading.next(true);
-        await promise;
-        this.isLoading.next(false);
-    }
-
 
     /** load data for the graph (if needed), update the graph and freqtable. */
     loadData(): Promise<void> {
@@ -618,7 +612,7 @@ export abstract class BarchartDirective
             const searchFields = this.selectSearchFields(this.queryModel).fields;
 
             const displayNames = searchFields.map(fieldName => {
-                const field = this.corpus.fields.find(f => f.name === fieldName);
+                const field = findByName(this.corpus.fields, fieldName);
                 return field.displayName;
             });
 
