@@ -8,13 +8,8 @@ import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFro
     FoundDocument} from '../models/index';
 import { CorpusService, DialogService, ParamService, SearchService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
+import { makeContextParams } from '../utils/document-context';
 import { AuthService } from '../services/auth.service';
-
-const HIGHLIGHT = 200;
-
-interface SearchFilterSettings {
-    [fieldName: string]: SearchFilterData;
-}
 
 @Component({
     selector: 'ia-search',
@@ -133,7 +128,7 @@ export class SearchComponent extends ParamDirective {
     }
 
     public goToContext(document: FoundDocument) {
-        const params = this.paramService.makeContextParams(document, this.corpus);
+        const params = makeContextParams(document, this.corpus);
         this.setParams(params);
     }
 

@@ -2,7 +2,8 @@ import { Component, Input } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { CorpusField } from '../models';
 import { ParamDirective } from '../param/param-directive';
-import { ParamService } from '../services';
+import { sortSettingsFromParams, sortSettingsToParams } from '../utils/params';
+import { sortDirectionFromBoolean } from '../utils/sort';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -33,14 +34,6 @@ export class SearchSortingComponent extends ParamDirective {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
     }
 
-    constructor(
-        route: ActivatedRoute,
-        router: Router,
-        private paramService: ParamService
-    ) {
-        super(route, router);
-    }
-
     initialize() {
         this.primarySort = this.sortableFields.find(field => field.primarySort);
         this.sortField = this.primarySort;
@@ -51,7 +44,7 @@ export class SearchSortingComponent extends ParamDirective {
     }
 
     setStateFromParams(params: ParamMap) {
-        this.sortData = this.paramService.setSortFromParams(params, this.sortableFields);
+        this.sortData = sortSettingsFromParams(params, this.sortableFields);
         this.sortField = this.sortData.field;
         this.ascending = this.sortData.ascending;
     }
@@ -77,7 +70,7 @@ export class SearchSortingComponent extends ParamDirective {
     }
 
     private updateSort() {
-        const setting = this.paramService.makeSortParams(this.sortField, this.ascending? 'asc': 'desc');
+        const setting = sortSettingsToParams(this.sortField, sortDirectionFromBoolean(this.ascending));
         this.setParams(setting);
     }
 }

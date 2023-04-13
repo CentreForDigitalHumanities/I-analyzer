@@ -22,10 +22,4 @@ describe('ParamService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should parse field parameters', () => {
-    const params = convertToParamMap({'fields': 'speech,speaker'});
-    let fields = service.setSearchFieldsFromParams(params);
-    expect(fields.length).toEqual(2);
-    expect(fields).toContain('speech');
-  })
 });
