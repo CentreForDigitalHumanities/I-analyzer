@@ -1,4 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
+import { findByName } from '../app/utils/utils';
 import { BooleanFilterData, Corpus, CorpusField, SearchFilter } from '../app/models';
 
 const mockFilterData: BooleanFilterData = {
@@ -96,7 +97,7 @@ export class CorpusServiceMock {
 
     public set(corpusName='test1'): Promise<boolean> {
         return this.get().then(all => {
-            const corpus = all.find(c => c.name === corpusName);
+            const corpus = findByName(all, corpusName);
             if (!corpus) {
                 return false;
             } else {

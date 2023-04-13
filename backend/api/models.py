@@ -5,7 +5,7 @@ from addcorpus.models import Corpus
 class Query(models.Model):
     query_json = models.JSONField(help_text='Search query JSON. Uses elasticseach query DSL')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE, to_field='name', related_name='queries')
-    started = models.DateTimeField(auto_now_add=True)
+    started = models.DateTimeField(auto_now_add=True, null = True)
     completed = models.DateTimeField(null=True)
     aborted = models.BooleanField(default=False, help_text='Whether the download was prematurely ended')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='queries')

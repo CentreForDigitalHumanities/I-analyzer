@@ -5,10 +5,12 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
 import { AggregateData, Corpus, MultipleChoiceFilterData, SearchFilter,
-    SearchFilterData, CorpusField, contextFilterFromField } from '../models/index';
+    SearchFilterData, CorpusField } from '../models/index';
 import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services/param.service';
+import { findByName } from '../utils/utils';
+import { filtersFromParams, paramForFieldName, searchFilterDataToParam } from '../utils/params';
 
 
 @Component({
@@ -49,7 +51,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     setStateFromParams(params: ParamMap) {
-        this.activeFilters = this.paramService.setFiltersFromParams(
+        this.activeFilters = filtersFromParams(
             params, this.corpusFields
         );
         this.aggregateSearchForMultipleChoiceFilters(params);
@@ -57,9 +59,9 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     teardown() {
-        let params = {}
+        const params = {};
         this.activeFilters.forEach(filter => {
-            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+            const paramName = paramForFieldName(filter.fieldName);
             params[paramName] = null;
         });
         this.setParams(params);
@@ -125,7 +127,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
      * @param filterData
      */
     public updateFilterData(filter: SearchFilter<SearchFilterData>) {
-        this.corpusFields.find(f => f.name === filter.fieldName).searchFilter = filter;
+        findByName(this.corpusFields, filter.fieldName).searchFilter = filter;
         this.filtersChanged();
     }
 
@@ -156,7 +158,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         this.activeFilters.forEach(filter => {
             // set any params for previously active filters to null
             if (!newFilters.map(f => f.fieldName).find(name => name === filter.fieldName)) {
-                const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+                const paramName = paramForFieldName(filter.fieldName);
                 params[paramName] = null;
                 if (filter.adHoc) {
                     // also set sort null in case of an adHoc filter
@@ -165,8 +167,8 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
             }
         });
         newFilters.forEach(filter => {
-            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
-            const value = filter.useAsFilter? this.paramService.searchFilterDataToParam(filter) : null;
+            const paramName = paramForFieldName(filter.fieldName);
+            const value = filter.useAsFilter? searchFilterDataToParam(filter) : null;
             params[paramName] = value;
         });
         this.setParams(params);

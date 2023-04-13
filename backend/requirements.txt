@@ -84,6 +84,8 @@ elasticsearch==8.6.0
     # via -r requirements.in
 elementpath==4.1.0
     # via xmlschema
+et-xmlfile==1.1.0
+    # via openpyxl
 exceptiongroup==1.1.0
     # via pytest
 execnet==1.9.0
@@ -125,6 +127,8 @@ numpy==1.24.1
     #   simpful
 oauthlib==3.2.2
     # via requests-oauthlib
+openpyxl==3.1.2
+    # via -r requirements.in
 packaging==23.0
     # via pytest
 pandas==1.5.3

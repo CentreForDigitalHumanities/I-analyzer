@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { APP_BASE_HREF, CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -87,6 +87,8 @@ import { HistoryDirective } from './history/history.directive';
 import { DownloadOptionsComponent } from './download/download-options/download-options.component';
 import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
+import { DocumentPageComponent } from './document-page/document-page.component';
+
 
 export const appRoutes: Routes = [
     {
@@ -98,6 +100,11 @@ export const appRoutes: Routes = [
         path: 'word-models/:corpus',
         component: WordModelsComponent,
         canActivate: [CorpusGuard, LoggedOnGuard],
+    },
+    {
+        path: 'document/:corpus/:id',
+        component: DocumentPageComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'login',
@@ -166,6 +173,7 @@ export const declarations: any[] = [
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
+    DocumentPageComponent,
     DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,
@@ -282,6 +290,7 @@ export const providers: any[] = [
     TitleCasePipe,
     CookieService,
     WordmodelsService,
+    { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
 @NgModule({

@@ -7,7 +7,7 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramDataPoint,
     TermFrequencyResult} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
