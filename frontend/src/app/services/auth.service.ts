@@ -92,19 +92,17 @@ export class AuthService implements OnDestroy {
      * Transforms backend user response to User object
      *
      * @param result User response data
-     * @param isSolisLogin Flag for SAML login
      * @returns User object
      */
     private transformUserResponse(
-        result: UserResponse,
-        isSolisLogin: boolean = false
+        result: UserResponse
     ): User {
         return new User(
             result.id,
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            isSolisLogin
+            result.saml
         );
     }
 
@@ -121,7 +119,7 @@ export class AuthService implements OnDestroy {
             parsed['username'],
             parsed['is_admin'],
             parsed['download_limit'],
-            parsed['isSolisLogin']
+            parsed['isSamlLogin']
         );
     }
 
@@ -144,10 +142,13 @@ export class AuthService implements OnDestroy {
         );
     }
 
-    public logout(redirectToLogin: boolean = false) {
+    public logout(isSamlLogin: boolean = false, redirectToLogin: boolean = false) {
+        this.purgeAuth();
+        if (isSamlLogin) {
+            window.location.href = 'users/saml2/logout/';
+        }
         return this.apiService.logout().pipe(
             tap(() => {
-                this.purgeAuth();
                 if (redirectToLogin) {
                     this.showLogin();
                 }
