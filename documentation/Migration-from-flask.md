@@ -107,3 +107,11 @@ python manage.py sqlsequencereset download | python manage.py dbshell
 ## Add local settings
 
 In `backend/ianalyzer`, make a file `settings_local.py`. Transfer relevant local settings you had configured in your `config.py` file for Flask.
+
+## Transfer downloads
+
+In the flask backend, the default storage location for CSV files was `/backend/api/csv_files/`.
+
+In a development environment, the new default location is `/backend/download/csv_files/`. (This can be configured in settings.) You will have to move the contents of your CSV directory here if you want to keep your download history.
+
+For a production environment, the csv files need to be moved from the old flask server to the new django server. Check the deployment settings for the new location of the downloads. (This should be outside of the repository.)
