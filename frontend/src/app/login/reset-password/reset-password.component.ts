@@ -74,7 +74,7 @@ export class ResetPasswordComponent implements OnInit {
             this.message = _.join(_.values(err));
         } else {
             this.resetSucceeded = false;
-            this.message = _.join(_.values(err));
+            this.message = 'Something unexpected went wrong. Please try again.';
         }
     }
 }
