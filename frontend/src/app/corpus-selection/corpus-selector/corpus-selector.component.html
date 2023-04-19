@@ -16,6 +16,13 @@
             <div class="content">
                 {{corpus.description}}
             </div>
+
+            <div class="block">
+                <p class="heading">Language: <strong>Dutch</strong></p>
+                <p class="heading">Type: <strong>Parliamentary debates</strong></p>
+                <p class="heading">Date: <strong>{{minYear}}-{{maxYear}}</strong></p>
+            </div>
+
         </div>
         <footer class="card-footer">
             <a class="card-footer-item" [routerLink]="['/search', corpus.name]">
