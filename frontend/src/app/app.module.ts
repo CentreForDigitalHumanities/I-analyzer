@@ -88,6 +88,7 @@ import { DownloadOptionsComponent } from './download/download-options/download-o
 import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
+import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
 
 
 export const appRoutes: Routes = [
@@ -171,6 +172,7 @@ export const declarations: any[] = [
     BooleanFilterComponent,
     CorpusHeaderComponent,
     CorpusSelectionComponent,
+    CorpusSelectorComponent,
     DateFilterComponent,
     DialogComponent,
     DocumentPageComponent,
