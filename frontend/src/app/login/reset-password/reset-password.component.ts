@@ -52,6 +52,12 @@ export class ResetPasswordComponent implements OnInit {
             );
     }
 
+    onPasswordChange() {
+        if (this.passwordRejected) {
+            this.passwordRejected = false;
+        }
+    }
+
     private handleSuccess(response: { detail: string }) {
         this.isLoading = false;
         this.resetSucceeded = true;
