@@ -1,33 +1,45 @@
-<a role="link" (click)="navigateToCorpus($event)">
-    <div class="card">
-        <div class="card-image">
-            <figure class="image is-4by3">
-                <img src="/api/corpus/image/{{corpus.name}}/{{corpus.image}}" alt="{{corpus.title}}">
-            </figure>
+<div class="block columns corpus-container">
+    <div class="column is-3 image-column">
+        <div class=corpus-image>
+            <img src="/api/corpus/image/{{corpus.name}}/{{corpus.image}}" alt="{{corpus.title}}">
         </div>
-        <div class="card-content">
-            <h2 class="title-content">
-                {{corpus.title}}
-                    <button *ngIf="corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="down-left" (click)="showMoreInfo()">
-                        <i class="moreInfoLink fa fa-info-circle card-info-icon"></i>
-                    </button>
-                <hr>
-                </h2>
-            <div class="content">
-                {{corpus.description}}
-            </div>
-
-            <div class="block">
-                <p class="heading">Language: <strong>Dutch</strong></p>
-                <p class="heading">Type: <strong>Parliamentary debates</strong></p>
-                <p class="heading">Date: <strong>{{minYear}}-{{maxYear}}</strong></p>
-            </div>
-
-        </div>
-        <footer class="card-footer">
-            <a class="card-footer-item" [routerLink]="['/search', corpus.name]">
-                <span>Explore</span>
-            </a>
-        </footer>
     </div>
-</a>
+    <div class="card-content column">
+        <div class="columns is-vcentered title-row">
+            <h2 class="title-content column" [routerLink]="['/search', corpus.name]">
+                {{corpus.title}}
+            </h2>
+            <div class="column is-narrow">
+                <button class="moreInfoLink" *ngIf="corpus.descriptionpage"
+                iaBalloon="More information" iaBalloonPosition="down-left" (click)="showMoreInfo()">
+                <i class=" fa fa-info-circle info-icon"></i>
+            </button>
+
+            </div>
+        </div>
+
+        <hr class="title-divider">
+
+        <div class="content">
+            {{corpus.description}}
+        </div>
+
+        <div class="columns align-bottom">
+            <div class="column">
+                <div class="block">
+                    <p class="heading">Language: <strong>Dutch</strong></p>
+                    <p class="heading">Type: <strong>Parliamentary debates</strong></p>
+                    <p class="heading">Period: <strong>{{minYear}}-{{maxYear}}</strong></p>
+                </div>
+            </div>
+            <div class="column is-narrow explore-column">
+                <a class="button corpus-action" [routerLink]="['/search', corpus.name]">
+                    <span class="icon">
+                        <fa-icon [icon]="searchIcon"></fa-icon>
+                    </span>
+                    <span>Explore</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

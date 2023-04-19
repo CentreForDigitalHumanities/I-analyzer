@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Corpus } from '../../models';
 import { DialogService } from '../../services';
 import { Router } from '@angular/router';
+import { faInfoCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'ia-corpus-selector',
@@ -10,6 +11,9 @@ import { Router } from '@angular/router';
 })
 export class CorpusSelectorComponent implements OnInit {
     @Input() corpus: Corpus;
+
+    infoIcon = faInfoCircle;
+    searchIcon = faSearch;
 
     constructor(private dialogService: DialogService, private router: Router) { }
 
