@@ -76,13 +76,13 @@ djangorestframework==3.14.0
     # via
     #   -r requirements.in
     #   dj-rest-auth
-djangosaml2==1.5.5
+djangosaml2==1.5.6
     # via -r requirements.in
 elastic-transport==8.4.0
     # via elasticsearch
 elasticsearch==8.6.0
     # via -r requirements.in
-elementpath==4.1.0
+elementpath==4.1.1
     # via xmlschema
 et-xmlfile==1.1.0
     # via openpyxl
@@ -147,7 +147,7 @@ pyfume==0.2.25
     # via fuzzytm
 pyjwt[crypto]==2.6.0
     # via django-allauth
-pyopenssl==23.0.0
+pyopenssl==23.1.1
     # via pysaml2
 pypdf2==3.0.1
     # via -r requirements.in
@@ -234,7 +234,7 @@ vine==5.0.0
     #   kombu
 wcwidth==0.2.6
     # via prompt-toolkit
-xmlschema==2.2.2
+xmlschema==2.2.3
     # via pysaml2
 zipp==3.15.0
     # via importlib-resources
