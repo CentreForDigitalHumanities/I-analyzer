@@ -7,6 +7,34 @@
             Select a corpus to search through
         </h2>
         <hr>
+
+        <form class="columns">
+            <div class="column field">
+                <label class="label">Language</label>
+                <div class="control">
+                    <ia-dropdown [options]="['English', 'Dutch', 'French']" [canDeselect]="true" placeholder="Any"></ia-dropdown>
+                </div>
+            </div>
+            <div class="column field">
+                <label class="label">Category</label>
+                <div class="control">
+                    <ia-dropdown [options]="['Newspaper', 'Parliamentary debates']" [canDeselect]="true" placeholder="Any"></ia-dropdown>
+                </div>
+            </div>
+            <div class="column field">
+                <label class="label">Period</label>
+                <div class="control">
+                    <p-calendar name="minYear" [(ngModel)]="minDate" view="year" dateFormat="yy"></p-calendar>
+                    <p-calendar name="maxYear" [(ngModel)]="maxDate" view="year" dateFormat="yy"></p-calendar>
+                </div>
+            </div>
+            <div class="column field is-grouped is-grouped-right">
+                <div class="control">
+                    <button class="button is-primary" type="submit">Filter</button>
+                </div>
+            </div>
+        </form>
+
         <article>
             <div>
                 <div class="block" *ngFor="let item of items">
