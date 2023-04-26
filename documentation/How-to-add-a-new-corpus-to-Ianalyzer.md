@@ -14,6 +14,8 @@ The corpus class should define the following properties:
 - `es_index`: the name of the index in elasticsearch.
 - `image`: a path or url to the image used for the corpus in the interface.
 - `fields`: a list of `Field` objects. See [defining corpus fields](./Defining-corpus-fields.md).
+- `languages`: a list of ISO 639 codes of the languages used in your corpus. Check the list in `backend/addcorpus/constants`: you may need to expand it. Corpus languages are intended as a way for users to select interesting datasets, so only include languages for which your corpus contains a meaningful amount of data. The list should go from most to least frequent.
+- `category`: the type of data in the corpus. The list of options is in `backend/addcorpus/constants`.
 
 The following properties are optional:
 - `es_alias`: an alias for the index in elasticsearch.
