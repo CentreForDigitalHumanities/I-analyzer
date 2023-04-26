@@ -22,6 +22,13 @@ from addcorpus.load_corpus import corpus_dir
 
 
 class DutchNewspapersPublic(XMLCorpus):
+    '''
+    The public portion of KB newspapers
+
+    Note for django settings: unlike other corpora, this one cannot have any
+    variation in the key: it MUST be `'dutchnewspapers-public'`
+    '''
+
     title = "Public Dutch Newspapers"
     description = "Publicly available collection of Dutch newspapers by the KB"
     min_date = datetime(year=1600, month=1, day=1)

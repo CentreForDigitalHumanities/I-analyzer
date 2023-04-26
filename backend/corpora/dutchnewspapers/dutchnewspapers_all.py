@@ -4,6 +4,14 @@ from datetime import datetime
 from corpora.dutchnewspapers.dutchnewspapers_public import DutchNewspapersPublic
 
 class DutchNewsPapersAll(DutchNewspapersPublic):
+    '''
+    The complete KB newspapers
+
+    Note that the parent class DutchNewspapersPublic cannot be evaluated
+    without being added to the corpora in django settings - hence it is not possible
+    to use this corpus without including the public counterpart in your environment.
+    '''
+
     title = "Dutch Newspapers (Delpher)"
     description = "Collection of all Dutch newspapers by the KB"
     data_directory = settings.DUTCHNEWSPAPERS_ALL_DATA
