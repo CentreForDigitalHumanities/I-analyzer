@@ -35,6 +35,7 @@ class Parliament(Corpus):
     data_directory = 'bogus'
 
     language = 'english'
+    category = 'parliament'
 
     @property
     def es_settings(self):

@@ -2,6 +2,7 @@
 Language options for corpora.
 '''
 LANGUAGES = [
+    ('afrikaans', 'Afrikaans'),
     ('arabic', 'Arabic'),
     ('azerbaijani', 'Azerbaijani'),
     ('basque', 'Basque'),
@@ -13,17 +14,20 @@ LANGUAGES = [
     ('english', 'English'),
     ('finnish', 'Finnish'),
     ('french', 'French'),
+    ('gaelic', 'Gaelic'),
     ('german', 'German'),
     ('greek', 'Greek'),
     ('hebrew', 'Hebrew'),
     ('hinglish', 'Hinglish'),
     ('hungarian', 'Hungarian'),
     ('indonesian', 'Indonesian'),
+    ('irish', 'Irish'),
     ('italian', 'Italian'),
     ('kazakh', 'Kazakh'),
+    ('latin', 'Latin'),
     ('nepali', 'Nepali'),
     ('norwegian', 'Norwegian'),
-    ('portuguese'),
+    ('portuguese', 'Portuguese'),
     ('romanian', 'Romanian'),
     ('russian', 'Russian'),
     ('slovene', 'Slovene'),
@@ -31,6 +35,9 @@ LANGUAGES = [
     ('swedish', 'Swedish'),
     ('tajik', 'Tajik'),
     ('turkish', 'Turkish'),
+    ('welsh', 'Welsh'),
+    ('var', 'Various'),
+    ('', 'Unknown')
 ]
 
 '''

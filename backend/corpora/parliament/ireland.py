@@ -451,6 +451,7 @@ class ParliamentIreland(Parliament, Corpus):
     description_page = 'ireland.md'
     language = None # corpus uses multiple languages, so we will not be using language-specific analyzers
     es_settings = {'index': {'number_of_replicas': 0}} # do not include analyzers in es_settings
+    languages = ['english', 'irish']
 
     @property
     def subcorpora(self):

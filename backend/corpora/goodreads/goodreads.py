@@ -31,6 +31,8 @@ class GoodReads(CSVCorpus):
     image = 'DioptraL.png'
     description_page = 'goodreads.md'
     visualize = []
+    languages = ['english', 'spanish', 'italian', 'portuguese', 'french',  'dutch', 'german', 'arabic', 'afrikaans', 'swedish', 'var'] # languages with > 1000 docs
+    category = 'review'
 
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
