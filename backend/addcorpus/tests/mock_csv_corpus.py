@@ -17,6 +17,9 @@ class MockCSVCorpus(CSVCorpus):
     data_directory = os.path.join(here, 'csv_example')
     field_entry = 'character'
 
+    language = 'english'
+    category = 'book'
+
     def sources(self, start, end):
         for filename in os.listdir(self.data_directory):
             full_path = os.path.join(self.data_directory, filename)

@@ -136,6 +136,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
     language = 'dutch'
 
+    category = 'parliament'
+
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
 
