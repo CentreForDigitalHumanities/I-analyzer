@@ -11,9 +11,6 @@ export class CorpusSelectionComponent implements OnInit {
     @Input()
     public items: Corpus[];
 
-    minDate = new Date('01/01/1800');
-    maxDate = new Date(Date.now());
-
     constructor() { }
 
     ngOnInit() {
