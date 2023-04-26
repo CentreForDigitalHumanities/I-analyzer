@@ -3,6 +3,7 @@ import { Corpus } from '../../models';
 import { DialogService } from '../../services';
 import { Router } from '@angular/router';
 import { faInfoCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'ia-corpus-selector',
@@ -23,6 +24,10 @@ export class CorpusSelectorComponent implements OnInit {
 
     get maxYear() {
         return this.corpus.maxDate.getFullYear();
+    }
+
+    get languages() {
+        return this.corpus.languages.join(', ');
     }
 
     ngOnInit(): void {
