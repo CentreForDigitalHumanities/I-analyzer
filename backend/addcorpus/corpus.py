@@ -70,10 +70,7 @@ class Corpus(object):
         correspond to an item in addcorpus.constants.LANGUAGES, so it
         can be serialised
         '''
-        if hasattr(self, 'language'):
-            return [self.language]
-        else:
-            raise NotImplementedError
+        return ['']
 
     @property
     def category(self):

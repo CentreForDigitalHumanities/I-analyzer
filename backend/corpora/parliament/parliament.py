@@ -34,12 +34,11 @@ class Parliament(Corpus):
     image = 'parliament.jpeg'
     data_directory = 'bogus'
 
-    language = 'english'
     category = 'parliament'
 
     @property
     def es_settings(self):
-        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
 
     # overwrite below in child class if you need to extract the (converted) transcription

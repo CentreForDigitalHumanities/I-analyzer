@@ -29,7 +29,7 @@ class DutchNewspapersPublic(XMLCorpus):
     data_directory = settings.DUTCHNEWSPAPERS_DATA
     es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
-    language = 'dutch'
+    languages = ['nl']
     category = 'newspaper'
 
     tag_toplevel = 'text'

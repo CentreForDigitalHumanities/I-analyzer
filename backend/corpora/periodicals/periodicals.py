@@ -33,7 +33,7 @@ class Periodicals(XMLCorpus):
     image = 'Fleet_Street.jpg'
     scan_image_type = getattr(settings, 'PERIODICALS_SCAN_IMAGE_TYPE', 'image/jpeg')
     description_page = '19thCenturyUKPeriodicals.md'
-    language = 'english'
+    languages = ['en']
     category = 'periodical'
 
     tag_toplevel = 'articles'

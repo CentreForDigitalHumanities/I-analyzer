@@ -449,9 +449,8 @@ class ParliamentIreland(Parliament, Corpus):
     es_index = getattr(settings, 'PP_IRELAND_INDEX', 'parliament-ireland')
     image = 'ireland.png'
     description_page = 'ireland.md'
-    language = None # corpus uses multiple languages, so we will not be using language-specific analyzers
     es_settings = {'index': {'number_of_replicas': 0}} # do not include analyzers in es_settings
-    languages = ['english', 'irish']
+    languages = ['en', 'ga']
 
     @property
     def subcorpora(self):

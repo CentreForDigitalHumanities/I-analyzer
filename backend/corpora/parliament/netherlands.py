@@ -134,7 +134,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
-    language = 'dutch'
+    languages = ['nl']
 
     category = 'parliament'
 

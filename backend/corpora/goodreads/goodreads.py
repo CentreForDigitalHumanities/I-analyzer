@@ -31,7 +31,7 @@ class GoodReads(CSVCorpus):
     image = 'DioptraL.png'
     description_page = 'goodreads.md'
     visualize = []
-    languages = ['english', 'spanish', 'italian', 'portuguese', 'french',  'dutch', 'german', 'arabic', 'afrikaans', 'swedish', 'var'] # languages with > 1000 docs
+    languages = ['en', 'es', 'it', 'pt', 'fr',  'nl', 'de', 'ar', 'af', 'sv', ''] # languages with > 1000 docs
     category = 'review'
 
     # New data members

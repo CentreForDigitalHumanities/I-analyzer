@@ -17,7 +17,7 @@ class MockCSVCorpus(CSVCorpus):
     data_directory = os.path.join(here, 'csv_example')
     field_entry = 'character'
 
-    language = 'english'
+    languages = ['en']
     category = 'book'
 
     def sources(self, start, end):

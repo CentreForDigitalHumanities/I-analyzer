@@ -31,7 +31,7 @@ class Ecco(XMLCorpus):
     image = 'ecco.jpg'
     scan_image_type = getattr(settings, 'ECCO_SCAN_IMAGE_TYPE', 'application/pdf')
     es_settings = None
-    languages = ['english', 'welsh', 'irish', 'gaelic'] # according to gale's documentation
+    languages = ['en', 'cy', 'ga', 'gd'] # according to gale's documentation
     category = 'book'
 
     tag_toplevel = 'pageContent'

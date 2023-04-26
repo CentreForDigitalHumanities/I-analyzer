@@ -37,7 +37,7 @@ class GuardianObserver(XMLCorpus):
     es_index = getattr(settings, 'GO_ES_INDEX', 'guardianobserver')
     image = 'guardianobserver.jpg'
     scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
-    language = 'english'
+    languages = ['en']
     category = 'newspaper'
 
     tag_toplevel = 'Record'
