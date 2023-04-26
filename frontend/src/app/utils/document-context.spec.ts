@@ -49,7 +49,9 @@ describe('document context utils', () => {
             mockField2,
             mockField3,
             dateField,
-        ]
+        ],
+        languages: ['English'],
+        category: 'Tests',
     };
 
     const document: FoundDocument = {

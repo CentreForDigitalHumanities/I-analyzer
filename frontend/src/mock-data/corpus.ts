@@ -69,7 +69,9 @@ export const mockCorpus: Corpus = {
     scan_image_type: 'pdf',
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField]
+    fields: [mockField],
+    languages: ['English'],
+    category: 'Tests'
 };
 
 export const mockCorpus2: Corpus = {
@@ -84,7 +86,9 @@ export const mockCorpus2: Corpus = {
     scan_image_type: 'pdf',
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField2]
+    fields: [mockField2],
+    languages: ['English'],
+    category: 'Tests'
 };
 
 export class CorpusServiceMock {

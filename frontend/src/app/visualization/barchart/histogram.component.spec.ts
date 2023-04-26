@@ -17,6 +17,8 @@ const MOCK_CORPUS: Corpus = {
     scan_image_type: 'nothing',
     allow_image_download: false,
     word_models_present: false,
+    languages: ['English'],
+    category: 'Tests',
     fields: [
         {
             name: 'content',

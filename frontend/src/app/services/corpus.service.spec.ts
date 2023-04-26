@@ -93,6 +93,8 @@ describe('CorpusService', () => {
                 title: 'Times',
                 description: 'This is a description.',
                 es_index: 'times',
+                languages: ['English'],
+                category: 'Tests',
                 fields: [
                     {
                         description:
@@ -295,7 +297,9 @@ describe('CorpusService', () => {
                     '/static/no-image.jpg',
                     'png',
                     false,
-                    true
+                    true,
+                    ['English'],
+                    'Tests'
                 ),
             ]);
         });
