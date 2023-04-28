@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Corpus } from '../../models';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import * as _ from 'lodash';
 
 @Component({
@@ -12,7 +12,10 @@ export class CorpusFilterComponent implements OnInit {
     @Input() corpora: Corpus[];
     @Output() filtered = new Subject<Corpus[]>();
 
-    maxDate = new Date(Date.now());
+    selectedLanguage = new BehaviorSubject<string>(undefined);
+    selectedCategory = new BehaviorSubject<string>(undefined);
+    selectedMinDate = new BehaviorSubject<Date>(undefined);
+    selectedMaxDate = new BehaviorSubject<Date>(undefined);
 
     constructor() { }
 
@@ -21,6 +24,10 @@ export class CorpusFilterComponent implements OnInit {
             const dates = this.corpora.map(corpus => corpus.minDate);
             return _.min(dates);
         }
+    }
+
+    get maxDate(): Date {
+        return new Date(Date.now());
     }
 
     get languages(): string[] {
@@ -32,6 +39,12 @@ export class CorpusFilterComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        combineLatest([
+            this.selectedLanguage,
+            this.selectedCategory,
+            this.selectedMinDate,
+            this.selectedMaxDate
+        ]).subscribe(values => this.filterCorpora(...values));
     }
 
     collectOptions(property): string[] {
@@ -39,6 +52,32 @@ export class CorpusFilterComponent implements OnInit {
             this.corpora || [],
             property
         ) as string[]).sort();
+    }
+
+    filterCorpora(language?: string, category?: string, minDate?: Date, maxDate?: Date): void {
+        if (this.corpora) {
+            const filter = this.corpusFilter(language, category, minDate, maxDate);
+            const filtered = this.corpora.filter(filter);
+            this.filtered.next(filtered);
+        }
+    }
+
+    corpusFilter(language?: string, category?: string, minDate?: Date, maxDate?: Date): ((a: Corpus) => boolean) {
+        return (corpus) => {
+            if (language && !corpus.languages.includes(language)) {
+                return false;
+            }
+            if (category && corpus.category !== category) {
+                return false;
+            }
+            if (minDate && corpus.maxDate < minDate) {
+                return false;
+            }
+            if (maxDate && corpus.minDate > maxDate) {
+                return false;
+            }
+            return true;
+        };
     }
 
 }

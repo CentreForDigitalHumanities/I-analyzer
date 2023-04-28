@@ -63,8 +63,8 @@ export const mockCorpus: Corpus = {
     index: 'test1',
     title: 'Test corpus',
     description: 'This corpus is for mocking',
-    minDate: new Date(),
-    maxDate: new Date(),
+    minDate: new Date('1800-01-01'),
+    maxDate: new Date('1900-01-01'),
     image: 'test.jpg',
     scan_image_type: 'pdf',
     allow_image_download: false,
@@ -80,15 +80,15 @@ export const mockCorpus2: Corpus = {
     index: 'test2',
     title: 'Test corpus 2',
     description: 'This corpus is for mocking',
-    minDate: new Date(),
-    maxDate: new Date(),
+    minDate: new Date('1850-01-01'),
+    maxDate: new Date('2000-01-01'),
     image: 'test.jpg',
     scan_image_type: 'pdf',
     allow_image_download: false,
     word_models_present: false,
     fields: [mockField2],
-    languages: ['English'],
-    category: 'Tests'
+    languages: ['English', 'French'],
+    category: 'Different tests'
 };
 
 export class CorpusServiceMock {
