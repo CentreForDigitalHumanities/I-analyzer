@@ -2,6 +2,9 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { Corpus } from '../../models';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import * as _ from 'lodash';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs-compat';
 
 @Component({
     selector: 'ia-corpus-filter',
@@ -17,7 +20,16 @@ export class CorpusFilterComponent implements OnInit {
     selectedMinDate = new BehaviorSubject<Date>(undefined);
     selectedMaxDate = new BehaviorSubject<Date>(undefined);
 
+    selection: [BehaviorSubject<string>, BehaviorSubject<string>, BehaviorSubject<Date>, BehaviorSubject<Date>]
+         = [this.selectedLanguage, this.selectedCategory, this.selectedMinDate, this.selectedMaxDate];
+
+    canReset: Observable<boolean> = combineLatest(this.selection).pipe(
+        map(values => _.some(values, value => !_.isUndefined(value)))
+    );
+
     maxDate = new Date(Date.now());
+
+    resetIcon = faTimes;
 
     constructor() { }
 
@@ -38,12 +50,7 @@ export class CorpusFilterComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        combineLatest([
-            this.selectedLanguage,
-            this.selectedCategory,
-            this.selectedMinDate,
-            this.selectedMaxDate
-        ]).subscribe(values => this.filterCorpora(...values));
+        combineLatest(this.selection).subscribe(values => this.filterCorpora(...values));
     }
 
     collectOptions(property): string[] {
@@ -78,6 +85,10 @@ export class CorpusFilterComponent implements OnInit {
             }
             return true;
         };
+    }
+
+    reset() {
+        this.selection.forEach(subject => subject.next(undefined));
     }
 
 }
