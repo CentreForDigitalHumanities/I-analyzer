@@ -27,8 +27,6 @@ export class CorpusFilterComponent implements OnInit {
         map(values => _.some(values, value => !_.isUndefined(value)))
     );
 
-    maxDate = new Date(Date.now());
-
     resetIcon = faTimes;
 
     constructor() { }
@@ -37,6 +35,13 @@ export class CorpusFilterComponent implements OnInit {
         if (this.corpora) {
             const dates = this.corpora.map(corpus => corpus.minDate);
             return _.min(dates);
+        }
+    }
+
+    get maxDate(): Date {
+        if (this.corpora) {
+            const dates = this.corpora.map(corpus => corpus.maxDate);
+            return _.max(dates);
         }
     }
 
