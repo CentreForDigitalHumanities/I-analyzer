@@ -17,6 +17,8 @@ export class CorpusFilterComponent implements OnInit {
     selectedMinDate = new BehaviorSubject<Date>(undefined);
     selectedMaxDate = new BehaviorSubject<Date>(undefined);
 
+    maxDate = new Date(Date.now());
+
     constructor() { }
 
     get minDate(): Date {
@@ -26,9 +28,6 @@ export class CorpusFilterComponent implements OnInit {
         }
     }
 
-    get maxDate(): Date {
-        return new Date(Date.now());
-    }
 
     get languages(): string[] {
         return this.collectOptions('languages');
@@ -48,10 +47,11 @@ export class CorpusFilterComponent implements OnInit {
     }
 
     collectOptions(property): string[] {
-        return _.uniq(_.flatMap(
+        const values = _.flatMap(
             this.corpora || [],
             property
-        ) as string[]).sort();
+        ) as string[];
+        return _.uniq(values).sort();
     }
 
     filterCorpora(language?: string, category?: string, minDate?: Date, maxDate?: Date): void {
