@@ -1,0 +1,4404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE TEI.2 PUBLIC "-//DBNL//DTD TEI.2 XML//NL" "https://www.dbnl.org/xml/dtd/teixlite.dtd">
+<TEI.2>
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title type="main">Het singende nachtegaeltje</title>
+                <author>Cornelis Maertsz.</author>
+            </titleStmt>
+            <editionStmt>
+                <edition>
+                    Dit bestand biedt, behoudens een aantal hierna te noemen ingrepen, een diplomatische weergave van <hi rend="i">Het singende nachtegaeltje</hi> van                      Cornelis Maertsz. in de eerste druk uit 1671.</edition>
+                <respStmt>
+                    <resp>
+                        <corr>p. 9: 4 → 5: ‘5 Wel aen, ghy schoone, en ghy nette ieught.’</corr>
+                        <corr>p. 28: david → David: ‘Heeft David in sijn tooren.’</corr>
+                        <corr>p. 41: Veriogen → Verioegen: ‘Verioegen, en sloegen'</corr>
+                        <corr>p. 42: 4. → 3.: ‘3. Weest wellekom Vorsten van Iacobs geslacht.’</corr>
+                        <corr>p. 43: thiemael → thienmael: ‘g' Hebt thiemael, den Philisteen meer ontbloot.’</corr>
+                        <corr>p. 48: leveu → leven: En geeft niemant in't leven.’</corr>
+                        <corr>p. 62: vulcht → vlucht: ‘Soo dacht hy met een snelle vlucht.’</corr>
+                        <corr>p. 63: Hemles → Hemels: ‘Soo comt des Hemels Heer.’</corr>
+                        <corr>p. 67: Danneer → Wanneer: ‘Wanneer als hy op rijst in de kimmen.’</corr>
+                        <corr>p. 69: Buyttn → Buyten: ‘Buyten 't spoor, en buyten 't padt.’</corr>
+                        <corr>p. 69: 3 → 2.: ‘2. 't Geselschap dat u hier toe-lacht.’</corr>
+                        <corr>p. 72: in het origineel is een gedeelte van de tekst slecht leesbaar. De redactie heeft de tekst tussen vierkante haken aangevuld: ‘De                           [y]delhe[y]t der Rijckdommen.’</corr>
+                        <corr>p. 72: in het origineel is een gedeelte van de tekst slecht leesbaar. De redactie heeft de tekst tussen vierkante haken aangevuld:                               'Stem: Doe ic lest wandeld[e] over de Helder.’</corr>
+                        <corr>p. 75: sonde → soude: ‘Dus heerlijck soude werden opgetoyt.’</corr>
+                        <corr>p. 86: bruyseu → bruysen: ‘Haer gollefjes doet bruysen.’</corr>
+                        <corr>p. 86: 5. → 4.: ‘4. Die van laveeren dwers, en langhs.’</corr>
+                        <corr>p. 94: aenschowen → aenschouwen: ‘3. Daer sulje aenschouwen.’</corr>
+                        <corr>p. 96: FN → EN: ‘EN roemt niet van u Landt, noch Stadt.’</corr>
+                        <corr>p. 97: 8. → 3.: ‘3. Den Noor-man hackt gestaegh in 't Wout.’</corr>
+                        <corr>p. 108: koop mans goedt → koop-mans goedt: ‘4. Dan sal al des koop-mans goedt.’</corr>
+                        <corr>p. 110: 3. → 7.: ‘7. Maer soud' ick nu singen uyt.’</corr>
+                        <corr>p. 118: lnsten → lusten: ‘5. Wie soud' lusten nu te schieten.’</corr>
+                        <corr>p. 121: in het origineel is een gedeelte van de tekst onleesbaar. In deze digitale editie is ‘[...]’ geplaatst: Wanneer hy flau[...]r en                          naer.’</corr>
+                        <corr>p. 123: verbldt → verblijdt: ‘'t Zy men is verblijdt.’</corr>
+                        <corr>p. 127: vlas → vals: ‘Geen vals geruchte smeet.’, 'En haet vals sweeren.’</corr>
+                        <corr>p. 127: nytsuyght → uytsuyght: ‘Sijn naesten niet uytsuyght.’</corr>
+                        <corr>p. 127: nytstorten → uytstorten: ‘4. Die sijn gemoedt voor Gode kan uytstorten.’</corr>
+                        <corr>p. 138: fruy → fury: ‘10. Den satan valt in fury aen.’</corr>
+                        <corr>p. 139: flaverny → slaverny: ‘Van des satans slaverny.’</corr>
+                        <corr>p. 141: voleck → vloeck: ‘Sonde, Satan, Wet en vloeck.’</corr>
+                        <corr>p. 144: Steeren → Sterren: ‘Bij de Sterren.’</corr>
+                        <corr>p. 148: wreeet → wreet: ‘Als hy verstont dit wreet bedrijf.’</corr>
+                        <corr>p. 148: Eu → En: ‘5. Eu stapte mee een rassche voet.’</corr>
+                        <corr>p. 151: wrecken → wercken: ‘Het aerdtsche lichaem, en sijn wercken.’</corr>
+                        <corr>p. 159: 4. → 5.: ‘5. Wel wieje dan zijt, en laet u hert.’</corr>
+                        <corr>p. 161: 4. → 3.: ‘3. Komt Ierusalems Vier-schaer.’</corr>
+                        <corr>p. 164: Ie → In: ‘In't eerst veel goedts in t' lest veel straf.’</corr>
+                        <corr>p. 165: deu → den: ‘2. In den Eersten quammer voort.’</corr>
+                        <corr>p. 165: duysterhendt → duysterheydt: ‘Inde duysterheydt.’</corr>
+                        <corr>p. 171: Vermeedert → Vermeerdert: ‘Vermeerdert alle daegh.’</corr>
+                        <corr>p. 187: Het foutieve paginanummer 107 is verbeterd in 187.</corr>
+                        <corr>p. 192: Nn → Nu: ‘Nu noodige vruchten al rijp, en gans.’</corr>
+                        <corr>p. 194: Massouw → Nassouw: ‘Stem: Treurt edel huys Nassouw.’</corr>
+                        <corr>p. 196: gemeeen → gemeen: ‘Dat is dan in 't gemeen.’</corr>
+                        <corr>p. 196: in het origineel is een gedeelte van de tekst slecht leesbaar. De redactie heeft de tekst tussen vierkante haken aangevuld:                              'D[u]s aengeprickelt, soude.’</corr>
+                        <corr>p. 222: minmermeer → nimmermeer: ‘En nimmermeer.’</corr>
+                        <corr>p. 223: bijjven → blijven: ‘Hoe kan met Godt ons Vni blijven.’</corr>
+                        <corr>p. 224: vreuhtbare → vreuchtbare: ‘Veldt-Sangh, Op 't vreuchtbare ghewas in Iulius 1654.’</corr>
+                        <corr>p. 230: ougeluck → ongeluck: ‘My een ongeluck aentreft.’</corr>
+                        <corr>p. 233: schnnent → schijnent: ‘Als dan alleen, wanneer door 't schijnent' licht.’</corr>
+                        <corr>p. 234: d'outucht → d'ontucht: ‘Wanneer d'ontucht haer swang're wangen lost.’</corr>
+                        <corr>p. 239: 1645 → 1654: ‘Wellekomst, Aen Iuffr. Geertruyde Maria Bailly. Gekomen tot Wervershoof den 5. September 1654.’</corr>
+                        <corr>p. 240: Vrouwet → Vrouwe,: ‘WElkom, welkom waerde Vrouwe.’</corr>
+                        <corr>p. 244: nn → nu: ‘Doe nu ons Vaderlandt.’</corr>
+                        <corr>p. 246: lnst → lust: ‘Ghy die aen lust, en weeldt.’</corr>
+                                            </resp>
+                </respStmt>
+            </editionStmt>
+            <extent><!-- aantal pagina's --></extent>
+            <scandetails>
+                <scan type="1">
+                    <extent-detail><!-- pagina range van een sectie --></extent-detail>
+                    <empty-page><!-- specificeer de lege pagina's hier --></empty-page>
+                    <!-- <insert after="na deze pagina begint de insert"> aantal insert pagina's </insert> -->
+                    <insert after=""></insert>
+                </scan>
+                <scan type="fol2">
+                    <empty-page>A1v</empty-page>
+                    <!-- <insert after="na deze pagina begint de insert"> aantal insert pagina's </insert> -->
+                    <insert after=""></insert>
+                   </scan>
+            </scandetails>
+            <publicationStmt>
+                <idno type="titelcode">maer005sing01_01</idno>
+                <idno type="format">DBNL-TEI 1</idno>
+                <availability>
+                    <p>2012 dbnl</p>
+                </availability>
+            </publicationStmt>
+            <notesStmt>
+                <note>DSOLmetadata:yes</note>
+            </notesStmt>
+            <sourceDesc>
+                <bibl>
+                    <idno type="isbn"></idno>
+                    <idno type="usedcopy">exemplaar universiteitsbibliotheek Leiden, signatuur: 1197 H 21</idno>
+                </bibl>
+                <p>Cornelis Maertsz., <hi rend="i">Het singende nachtegaeltje.</hi> Michiel de Groot, Amsterdam 1671.</p>
+                <p>&nbsp;</p>
+            </sourceDesc>
+        </fileDesc>
+        <encodingDesc>
+            <projectDesc>
+                <p>Wijze van coderen: standaard</p>
+                <p></p>
+            </projectDesc>
+        </encodingDesc>
+        <profileDesc>
+            <langUsage>
+                <language id="nl">Nederlands</language>
+            </langUsage>
+        </profileDesc>
+        <ebook>
+            <bibl>
+                <title type="main">Het singende nachtegaeltje</title>
+                <author>Cornelis Maertsz.</author>
+                <idno></idno>
+                <imprint>
+                    <date></date>
+                    <publisher></publisher>
+                    <pubPlace></pubPlace>
+                </imprint>
+            </bibl>
+            <idno type="isbn"></idno>
+            <order>
+                <price curr="euro"></price>
+                <link></link>
+            </order>
+            <blurb><p></p></blurb>
+            <titlepage><p></p></titlepage>
+            <colofon><p></p></colofon>
+        </ebook>
+        <pod>
+            <bibl>
+                <title type="main">Het singende nachtegaeltje</title>
+                <author>Cornelis Maertsz.</author>
+                <idno></idno>
+                <imprint>
+                    <date></date>
+                    <publisher></publisher>
+                    <pubPlace></pubPlace>
+                </imprint>
+            </bibl>
+            <idno type="isbn"></idno>
+            <order>
+                <price curr="euro"></price>
+                <link></link>
+            </order>
+            <blurb><p></p></blurb>
+            <titlepage><p></p></titlepage>
+            <colofon><p></p></colofon>
+        </pod>
+        <revisionDesc>
+            <change>
+                <date>2012-09-17</date>
+                <respStmt>
+                    <name type="person">SW</name>
+                </respStmt>
+                <item>colofon toegevoegd</item>
+            </change>
+        </revisionDesc>
+    </teiHeader>
+<text><body><cf><div type="chapter">
+
+<pb n="1"/>
+<p>&nbsp;</p>
+<p><hi rend="i">Het singende Nachtegaeltje</hi></p>
+<p>Quelende soetelijck, tot stichtelijck vermaeck voor de Christelijck Ieught.</p>
+<p><hi rend="i">Door.</hi></p>
+<p><hi rend="i">Cornelis Maertsz. tot Wervers hoof.</hi></p>
+    <p><hi rend="i">'t Amsterdam</hi> Voor <hi rend="i">Michiel de Groot</hi>, Boek-Verkooper op den Nieuwen Dijck, <hi rend="i">1671</hi>.</p></div></cf>
+<div type="chapter">
+
+    <interpGrp>
+        <interp type="primair" value="meer121"/>
+    </interpGrp>
+<pb n="3"/>
+<head rend="h3">Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts</head>
+<lg type="poem"><l>SOo wort de schrand're Rey der vloeiende <hi rend="i">Poëten</hi></l>
+<l>Door u, o waerde Vriend! vervult,</l>
+<l>Soo wort uw' Naam met Eer vergult,</l>
+<l>En door de Lof-bazuin roem rughtigh uitgekreten,</l>
+<pb n="4"/>
+<l>De <hi rend="i">Dight-kunst</hi> scheen wel eer in <hi rend="i">Amstel</hi> silte Plassen</l>
+<l rend="; 1tab">Alleen te sitten op haer throon,</l>
+<l rend="; 1tab">Maar ghy stelt in uw' Dight ten toon</l>
+<l>Dat in ons <hi rend="i">Wervershoof</hi> nogh eed'ler vrughten wassen.</l>
+<l>Want't baat niet dat men kan een yd'le Pen beswang'ren</l>
+<l rend="; 1tab">Met wonderlijck Gedight,</l>
+<l rend="; 1tab">Indienmen niet en stight,</l>
+<l>Maer met een Heydensch rot vervult de Mond der Sang'ren.</l>
+<l>Ghy soeckt de Af-breuk van het Rijck des Helschen lagers.</l>
+<pb n="5"/>
+<l rend="; 1tab">Dies ghy een Heiligh Ooghwit raakt,</l>
+<l rend="; 1tab">En onse Ieught sticht en vermaakt</l>
+<l>Soo volght ghy 't saligh Spoor des Ioodschen <hi rend="i">Harpe-Slagers</hi>.</l>
+<l>Treet voort dien Eerbaan in, en laat geen Aardsch gewemel</l>
+<l rend="; 1tab">V hind'ren in soo eed'len Saak,</l>
+<l rend="; 1tab">Soo streckt uw 'Lands-lien tot een Baak</l>
+<l>En voert ons dart'le Ieughd al singende ten Hemel.</l>
+</lg><l rend="; 2tab">H. Vander Meer.</l>
+</div>
+<div type="chapter">
+
+<pb n="6"/>
+<head rend="h3">Toe-eygeninge</head>
+    <div type="section">
+<head rend="4"><hi rend="i">Aen de singende Ieught.</hi></head>
+<lg type="poem"><l><hi rend="i">S</hi>Oete jonckheyt, groene spruyties,</l>
+<l>Die uyt keelties, soet als fluyties,</l>
+<l rend="; 1tab">Met een suyck'ren gallem singht,</l>
+<l rend="; 1tab">Dat het al in vreught op springht:</l>
+<l>Ionge Dochters, soete liefies,</l>
+<l>Minnaers-veulties, herte diefies,</l>
+<l rend="; 1tab">Die door Honich soet geluyt,</l>
+<l rend="; 1tab">Treckt mijn hert ter ooren uyt,</l>
+<l>En laet het in wellust semmen,</l>
+<l>Ende lobb'ren in u stemmen,</l>
+<pb n="7"/>
+<l rend="; 1tab">Ende baden in de klanck,</l>
+<l rend="; 1tab">Van uw' ziel-suygende sanck</l>
+<l>t' Wijl dat op u roode lipjes</l>
+<l>Even als koralen klipjes,</l>
+<l rend="; 1tab">'t Swacke hobbelende boot</l>
+<l rend="; 1tab">Van mijn hert, in stucken stoot.</l>
+<l>Aengename Iongelingen,</l>
+<l>Afgeveerdight tot het singen,</l>
+<l rend="; 1tab">Minnaers van dat soet geslacht,</l>
+<l rend="; 1tab">Dat ick mee seer hooge acht.</l>
+<l>Ghy wordt nu van my gebeden,</l>
+<l>Om wat by my in te treden:</l>
+<l rend="; 1tab">Koom dan binnen, want ick nu</l>
+<l rend="; 1tab">Eensjes singen sal voor u.</l>
+</lg></div></div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0001"/> </interpGrp>
+<pb n="8"/>
+<head rend="h3">[O Soete Ieught! Die in u jeughde zijt]</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Periosta</hi>.</head>
+<lg type="poem"><l><hi rend="i">O</hi> Soete Ieught! Die in u jeghde zijt</l>
+<l>Des werelts pronck: en yder 't herte steelt,</l>
+<l>Als ghy met sangh, in uwe vreugde blijdt,</l>
+<l>Door soeten galm, veel droeve smerten heelt,</l>
+<l>Ghy jaegt my oock mijn leet ter kelen uyt,</l>
+<l>Door het geschal, op Keel en Veel, en Fluyt.</l>
+<l rend="; 1tab">2 Niet als ghy singht 't geen tegen deughden strijt,</l>
+<l>En door ontucht de kuyssche ziele smet:</l>
+<l>Ach! doet dat niet, schoon ghy in vreugden zijt,</l>
+<l>Satan dees strick tot u vernielen set,</l>
+<l>En 't is vergift voor yder eerbaer hert,</l>
+<l>'t Welck knaegt de deugt tot sy onweerbaer wert</l>
+<pb n="9"/>
+<l rend="; 1tab">3 Maer als ghy sticht al wie u singen hoort,</l>
+<l>En deught, en vreugt, al met malkander mengt</l>
+<l>En Godes lof seer soet doet bringen voor,</l>
+<l>Of nutte leer, den een aen d' ander schenckt:</l>
+<l>En offert soo u stem, en sijnen keel,</l>
+<l>In uwe jeught, aen Godt tot sijnen deel.</l>
+<l rend="; 1tab">4 Voor u o jeught, die na dees dingen poogt,</l>
+<l>Dicht ick onlanghs seer menigh stichtlijck liet,</l>
+<l>'t Welck is een werk daer uyt ghy singhen mooght</l>
+<l>Wat goets en soets: in't welck ghy lichtlijck siet</l>
+<l>Wat dat de reyne lust, en vreughde scheelt,</l>
+<l>Van 't geen door-gaens de yd'le ieughde speelt.</l>
+<l rend="; 1tab">5 Wel aen, ghy schoone, en ghy nette ieught,</l>
+<pb n="10"/>
+<l>Ick schenck dit werck aen u uyt goeden wil,</l>
+<l>'t Welck u niet toont een vuyl besmette vreught,</l>
+<l>Maer't hout de lusten in haer woeden stil,</l>
+<l>'t Wijl 't door vermaeck doet vry van smerten gaen:</l>
+<l>Wel neem dan dit geschenck van herten aen,</l>
+<l>&nbsp;</l>
+<l rend="; 1tab">Van u lieven, ende waertsten,</l>
+<l rend="; 1tab">Die u mint,</l>
+<l>&nbsp;</l>
+<l><hi rend="i">Cornelis Maertsen.</hi></l>
+</lg>
+</div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0002"/> </interpGrp>
+    <pb n="11"/>
+    <div type="section">
+<head rend="h3">De stemme der Wijsheyt. Proverb. 1. 20.</head>
+<head rend="h4">Stemme: <hi rend="i">O Karsnacht</hi>:</head>
+<lg type="poem"><l><hi rend="i">D</hi>E wijsheydt die is uytgevaren,</l>
+<l>Om haer aen 't volck te openbaren,</l>
+<l>En daerom roeptse over-luyt</l>
+<l>In al de poorten van de steden,</l>
+<l>En al waer vele menschen treden,</l>
+<l>Aldus voor 't volck haer reden uyt:</l>
+<pb n="12"/>
+<l rend="; 1tab">2 Hoe lang, o dwase, domme sinnen!</l>
+<l>Wilt ghy de dwaesheydt dus beminnen,</l>
+<l>En gaen op spotters wegen voort:</l>
+<l>Sal noyt de tucht uw' sin op-scherpen?</l>
+<l>Of sult ghy alle tijdt verwerpen,</l>
+<l>Des Heeren wil, en wet, en woort?</l>
+<l rend="; 1tab">3 Wild och uw' gangen omme-keeren,</l>
+<l>En schikt u gangh nae mijn begeeren,</l>
+<l>En neemt de tucht van herten aen:</l>
+<l>En ick sal alsdan u verklaren</l>
+<l>Des levens padt, en openbaren</l>
+<l>Aen u, den weg die ghy moet gaen.</l>
+<l rend="; 1tab">4 Maer als ick roep uyt alle krachten,</l>
+<l>En niemandt op mijn stem wilt achten,</l>
+<l>Noch luysteren na mijn geseght:</l>
+<l>En streck mijn handt uyt haer te vaten,</l>
+<pb n="13"/>
+<l>En niemandt hem wil leyden laten,</l>
+<l>Noch wijcken van sijn boosen weg:</l>
+<l rend="; 1tab">5 Soo sal ick dan, als haer comt drucken</l>
+<l>Den noodt, in doodt, en ongelucken,</l>
+<l>Oock lacchen in haer tegenspoen:</l>
+<l>En helpen niet wanneerse klagen:</l>
+<l>Maer spotten dan, wanneer de plagen,</l>
+<l>Van schrick, en angst haer sterven doen.</l>
+<l rend="; 1tab">6 Daerom dat sy de ware leere,</l>
+<l>Aen haer gegeven van den Heere,</l>
+<l>Niet hebben in haer doen betracht:</l>
+<l>En daer-en-boven, t' allen tijden,</l>
+<l>Al mijn straffen en kastijden,</l>
+<l>Niet aengenomen, maer veracht.</l>
+<l rend="; 1tab">7 Laet haer dan wederom ter degen,</l>
+<l>De vruchten van haer boose wegen</l>
+<pb n="14"/>
+<l>Op eten, totse worden sat:</l>
+<l>Want onheyl, ramp, en ongelucken,</l>
+<l>Die spruyten uyt al sulcke stucken,</l>
+<l>En wassen, op 't Godloose pat.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0003"/> </interpGrp>
+<head rend="h3">Volmaekten zegen. Psal. 144:12. 15.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Ghy loderlijcke Sylvia.</hi></head>
+<lg type="poem"><l><hi rend="i">O </hi>Groot geluck! Voor die 't geniet,</l>
+<l>O! zegen rijcke stroomen,</l>
+<l>Die in sijn huys, sijn Soonen siet</l>
+<l>Op wassen, als de Boomen:</l>
+<l>Dat is een saeck // daer door vermaeck,</l>
+<l>En eere werde becoomen.</l>
+<l rend="; 1tab">2. Geluckigh, die behalven dien,</l>
+<l>Sijn dochters magh aenschouwen,</l>
+<pb n="15"/>
+<l>(Daer in men 't beelde des deughts can sien)</l>
+<l>Als steenen uyt-gehouwen,</l>
+<l>Die kant, en net // den Meester set,</l>
+<l>In kostlijcke gebouwen.</l>
+<l rend="; 1tab">3. En die sijn Schuuren zijn vol graen,</l>
+<l>Daer elck vindt sijn behagen:</l>
+<l>Diens Schapen op de Weyden gaen,</l>
+<l>En duysent iongen dragen:</l>
+<l>Daer door 't getal // vermeeren sal,</l>
+<l>En wassen alle dagen.</l>
+<l rend="; 1tab">4. Die sijn Ossen even staegh</l>
+<l>Gaen in de velden ploegen,</l>
+<l>Dat sy haer Heere alle daegh</l>
+<l>Veel vruchten door toevoegen:</l>
+<l>Die soo bevint // hoe veel hy wint,</l>
+<l>En schept daer in genoegen.</l>
+<pb n="16"/>
+<l rend="; 1tab">5. die van geen schade, noch verlies,</l>
+<l>Sijn leven comt te hooren,</l>
+<l>Noch krijght geen tijdingh onder dies</l>
+<l>Dat hy wat heeft verlooren:</l>
+<l>Noch geenen tijdt // een moort-gekrijt</l>
+<l>Komt klincken in sijn ooren.</l>
+<l rend="; 1tab">6. Geluckigh is een Mensch sijn staet,</l>
+<l>Die dit is toe-gevallen:</l>
+<l>Maer Saligh, in den hooghsten graet,</l>
+<l>Ia Saligh boven allen</l>
+<l>Is hy, die Godt // self tot een lot,</l>
+<l>En deel is toe-gevallen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0004"/> </interpGrp>
+<head rend="h3">May Liet</head>
+<div type="section">
+<head rend="h4"><hi rend="i">Stemme: Edel Karsouw.</hi></head>
+<lg type="poem"><pb n="17"/>
+<l><hi rend="i">D</hi>E soete Mey</l>
+<l>Verciert het velt met bloemen,</l>
+<l>En alderhande kruyt,</l>
+<l>Seer veelderley</l>
+<l>Dat niet en is te noemen,</l>
+<l>Nu uyt daer aerde spruyt.</l>
+<l>De lucht is vol g'luyt,</l>
+<l>Vol sangh, door 't quinckeleeren</l>
+<l>Van 't gediert // dat hene swiert</l>
+<l>Op hare rasse veeren.</l>
+<l rend="; 1tab">2. De tijdt voor heen, </l>
+<l>De Lente, en de Winter,</l>
+<l>Ons nu niet meerder bijt:</l>
+<l>Maer yder een </l>
+<l>Nu tegenwoordigh vindter</l>
+<l>Al gants een ander tijdt</l>
+<pb n="18"/>
+<l>Weest nu oock verblijt,</l>
+<l>En wilt den Heere loven,</l>
+<l>Want al't goet, dat ons ontmoet</l>
+<l>Dat komt alleen van boven.</l>
+<l rend="; 1tab">3. Al wat verdort</l>
+<l>Sijn cieraet had verlooren</l>
+<l>En 't leven was ontgaen,</l>
+<l>Dat selve wordt</l>
+<l>Nu wederom herbooren,</l>
+<l>En komt uyt 't graf opstaen,</l>
+<l>Kruyt, en Gras en Graen,</l>
+<l>Steeckt nu het hooftjen buyten,</l>
+<l>En in jeught, vol soete vreught,</l>
+<l>Komt lieffelijck uyt-spruyten.</l>
+<l rend="; 1tab">4. Lof zy u Heer,</l>
+<l>Bestuurder der nature,</l>
+<pb n="19"/>
+<l>Die aen ons staegh gedenckt:</l>
+<l>En altijdt weer</l>
+<l>Na 's Winters kout besuren</l>
+<l>De soete Mey ons schenckt,</l>
+<l>En den Somer brenght,</l>
+<l>Die met sijn rijcke gaven,</l>
+<l>Ons staegh doet // met overvloet</l>
+<l>En alle noodruft laven.</l>
+<l rend="; 1tab">5. Kroont weer dit Iaer</l>
+<l>Met u goedtgunsticheden,</l>
+<l>En sent u zegen neer, </l>
+<l>Geeft oock daer naer,</l>
+<l>Dat wy in rust en vreden</l>
+<l>Besorgen uwe eer:</l>
+<l>Ende geeft, o Heer;</l>
+<l>Dat wy na u behagen.</l>
+<pb n="20"/>
+<l>In 't gemoet, staegh vruchten goedt,</l>
+<l>Tot uwer eere dragen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0005"/> </interpGrp>
+<head rend="h3">Minne-spiegel.</head>
+<div type="section">
+<head rend="h4"><hi rend="i">Stem: Ick quam in een Boomgaerdetjen.</hi></head>
+<lg type="poem"><l><hi rend="i">M</hi>En siet de Min, en haren dwangh,</l>
+<l>In Iacob in haer kracht,</l>
+<l>Een dienst van veerthien jaren langh,</l>
+<l>Wort by hem kort geacht,</l>
+<l>Alleenelijck om dat hy tot sijn loone</l>
+<l>Den minnelijcken Rachel wacht.</l>
+<l rend="; 1tab">2. Als niemandt hem onthouden dorst</l>
+<l>Ontrent het open velt,</l>
+<l>Wt oorsaeck dat de koude vorst</l>
+<l>Daer bits, en vinnich knelt,</l>
+<pb n="21"/>
+<l>Brant hy van liefde, ende wordet nimmer </l>
+<l>Ia sijn verhert gedult ontstelt.</l>
+<l rend="; 1tab">3. Als oock de Son door heeten brant</l>
+<l>De nacht uyt 't velt verjaeght,</l>
+<l>En door sijn vlam doet spleten 't landt,</l>
+<l>Hy 't altemael verdraght:</l>
+<l>Noch ys, noch vyer en kond hem nauliks krenken</l>
+<l>Door suyv're liefde tot die maeght.</l>
+<l rend="; 1tab">4. Wie is hy, die niet loven sal</l>
+<l>Dees Minnaer, en Vriendin:</l>
+<l>Geluckigh zijn so boven al,</l>
+<l>Die dus uyt reyne min</l>
+<l>Te samen voegen, herten ende handen:</l>
+<l>Ick wensch geen ander Huys-gesin.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0006"/> </interpGrp>
+<head rend="h3">Dina geschent</head>
+<div type="section">
+<pb n="22"/>
+<head rend="h4"><hi rend="i">Het Singende
+<lb/>
+Stemme: O boole domme jeught.</hi></head>
+<lg type="poem"><l><hi rend="i">G</hi>Hy Dochters jongh, en teer,</l>
+<l>Die geern vermeyen gaet,</l>
+<l>Komt siet eens hoe u eer,</l>
+<l>Dan in perijckel staet,</l>
+<l>En hoe dit soet vermaeck</l>
+<l>Vermenghelt is met gal</l>
+<l>Dees' saeck, dees' saeck, dees' saeck,</l>
+<l>Ick u vertoonen sal.</l>
+<l rend="; 1tab">3. Dina niet wel bedacht,</l>
+<l>Vingh eens het reysen aen,</l>
+<l>En lette op de dracht,</l>
+<l>Daer mee de Meysjes gaen:</l>
+<l>En om oock self daer by,</l>
+<l>Wat meerder nieuws te doen,</l>
+<l>Kleed sy, kleed sy, kleed sy</l>
+<pb n="23"/>
+<l>Haer in een vreemt fatsoen.</l>
+<l rend="; 1tab">3. Doe sy dus moy, en schoon,</l>
+<l>De Landen ommegingh,</l>
+<l>Soo saegh haer Hemors Soon,</l>
+<l>Een dertel iongelingh,</l>
+<l>Die met sijn ooge sweeft,</l>
+<l>Ontrent haer moye dracht,</l>
+<l>En heeft, en heeft, en heeft</l>
+<l>Die schoone Maeght verkracht</l>
+<l rend="; 1tab">4. Doe dit nu was geschiet,</l>
+<l>Denck eens, wat ongemack,</l>
+<l>Dat onheyl, en verdriet,</l>
+<l>Vyt dese daet ontstack:</l>
+<l>Daer wort veel bloot gestort,</l>
+<l>En wie in Sichem woont,</l>
+<l>Die wort, die wort, die wort,</l>
+<pb n="24"/>
+<l>Niet van het sweert verschoont.</l>
+<l rend="; 1tab">5. Twee Broeders seer verstoort,</l>
+<l>Om dese vuyle schant,</l>
+<l>Begingen dese moort,</l>
+<l>Self met haer eygen handt.</l>
+<l>Den ouden Iacob treurd,</l>
+<l>En nam't geweldigh swaer,</l>
+<l>En scheurd, en scheurd, en scheurd,</l>
+<l>Het hert schier van malkaer.</l>
+<l rend="; 1tab">6. En Dina mist haer eer,</l>
+<l>Daer elck sijn roem op draeght,</l>
+<l>En sy en word niet meer</l>
+<l>Gereeckent voor een Maeght</l>
+<l>Niet een woordt meer en staet,</l>
+<l>Van haer, den Bybel deur:</l>
+<l>Ick haet, dees daet, en laet</l>
+<l>Voortaen oock na van heur.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0007"/> </interpGrp>
+    <interpGrp>
+        <interp type="primair" value="16710115"/>
+    </interpGrp>
+<pb n="25"/>
+<head rend="h3">Op een Swellingh aen mijn Aengesicht.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Ach droom hoe quelt ghy mijn gedachten?</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>At is ieught, en't leflijck bloosen</l>
+<l>Van hare<hi rend="i">n</hi> verw? 't zin meerder niet als Roose<hi rend="i">n</hi></l>
+<l>Die wel schoon, staen ten toon,</l>
+<l>Cierelijck te proncken,</l>
+<l>Root als bloodt // wonder soet // ende doet</l>
+<l>Het gesicht van yder daer op loncken:</l>
+<l>Maer als 't onweer daer opblaest,</l>
+<l>Dan is al haer schoonheydt haest,</l>
+<pb n="26"/>
+<l>Geheel te niet, als ware het versoncken.</l>
+<l rend="; 1tab">2. Even alsoo zijn de schoonheden:</l>
+<l>Een moy aenschijn, het ciersel van de leden,</l>
+<l>Dat nu staet // tot cieraet,</l>
+<l>Als een Son te schijnen,</l>
+<l>Kloec en hel // eenen swel // terstont fel,</l>
+<l>Al de schoonheydt veerdigh doen verdwijnen:</l>
+<l>'t Blomtien dat soo aerdigh tierd,</l>
+<l>Is dan in der haest ontcierd,</l>
+<l>Men siet het sonder schoonheyt treurigh quijnen.</l>
+<l rend="; 1tab">3. Sulcken les kan ick heden lesen</l>
+<l>In mijn aensicht, en in mijn eygen wesen:</l>
+<l>Want als ick // my bekick,</l>
+<l>'k Sie dan mijn wanghen,</l>
+<l>Noch onlangh // glad en blanck, nu vol stanck,</l>
+<l>Ende vol van buylen etter hangen:</l>
+<pb n="27"/>
+<l>Soo dat als men my besiet,</l>
+<l>Ick gelijck my selven niet:</l>
+<l>Maer 't schijnt, ik heb een ander hooft ontfangen.</l>
+<l rend="; 1tab">4. Druck dit in 't hert, ghy jonge lieden,</l>
+<l>En leert hier door, de trots, en hoogh-moet moet vliede<hi rend="i">n</hi></l>
+<l>Draeght geen roem // op een bloem</l>
+<l>Teerder als de Roosen,</l>
+<l>V aenschijn // kan haest zijn // gelijck mijn,</l>
+<l>Als een bloemtjen dat nu is bevroosen</l>
+<l>'s Werelts schoon, en't jeughlijck moy,</l>
+<l>Dat kan even als het hoy,</l>
+<l>Sijn groen verliesen, in seer korte poosen.</l>
+</lg><l rend="; 1tab">Den 25. Iannarius 1671.</l>
+</div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0008"/> </interpGrp>
+<head rend="h3">Davids Huwelijck met Abigael.</head>
+<div type="section">
+<pb n="28"/>
+<head rend="h4"><hi rend="i">Stemme: Ick roep u Hemelsche Vader aen.</hi><hi rend="i"></hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>En goet verstant, een wijs beleyt,</l>
+<l>Verciert ons 't gantsche leven:</l>
+<l>En die sijn dingen met bescheyt,</l>
+<l>In goede billickheyt,</l>
+<l>Voorsichtigh wel beleyt,</l>
+<l>Die wordt daer door verheven</l>
+<l rend="; 1tab">2. En 't is een saeck die seker gaet,</l>
+<l>Wt wrevelmoedigh wesen,</l>
+<l>Dat daer uyt voor gevolgh ontstaet,</l>
+<l>Dat yder een hem haet:</l>
+<l>Het welcke is een quaet,</l>
+<l>Dat elck behoort te vreesen.</l>
+<l rend="; 1tab">3. Een groote straf, een swaer verdriet,</l>
+<l>Heeft David in sijn tooren,</l>
+<pb n="29"/>
+<l>den Nabal (die hem niet ontsiet,</l>
+<l>dat hy een volck verstiet,</l>
+<l>daer van hy dinst geniet)</l>
+<l>Seer heftelijck gesworen.</l>
+<l rend="; 1tab">4. Maer Abigail gingh hem te moet,</l>
+<l>Om hem eerst aen te spreken,</l>
+<l>En doe sy viel den Vorst te voet,</l>
+<l>Veranderd' hem 't gemoet,</l>
+<l>Soo datse david doet,</l>
+<l>Sijn quaden aenslagh breken.</l>
+<l rend="; 1tab">5. door haer soet en vriend'lijk gelaet, </l>
+<l>En haer geschickte zeden:</l>
+<l>En daer en boven door haer daet,</l>
+<l>Soo maecktse dat het quaet</l>
+<l>Van haer geslachte gaet:</l>
+<l>En dit was hare reden.</l>
+</lg></div>
+<div type="section">
+    <interpGrp> <interp type="song" value="maer005sing01_0009"/> </interpGrp> 
+<pb n="30"/>
+<head rend="h4"><hi rend="i">Stemme: Schoonste Nymphje in het wout.</hi><hi rend="i"></hi></head>
+<lg type="poem"><l><hi rend="i">A</hi>Ch! gesalfde van den Heer,</l>
+<l>Vol van eer,</l>
+<l>Hoor u Maeght geduldigh spreken,</l>
+<l>Nabal is een heyloos man,</l>
+<l>Daerom dan,</l>
+<l>Laet doch na om dat te wreken.</l>
+<l rend="; 1tab">2. Nabal deed u dit verdriet,</l>
+<l>Daer ick niet</l>
+<l>Wiste van de gantsche sake:</l>
+<l>Toornt om soo een sot niet meer</l>
+<l>Vromen Heer,</l>
+<l>God bewaer u voor dees wraek.</l>
+<l rend="; 1tab">3. God is Richter over al,</l>
+<pb n="31"/>
+<l>En hy sal </l>
+<l>Selver Nabal daer om straffen:</l>
+<l>Siet, hier brengh ick een geschenck,</l>
+<l>Ende denck,</l>
+<l>Dit u krijghs-volck te beschaffen.</l>
+<l rend="; 1tab">4. Wreeckt doch lieve David niet</l>
+<l>V verdriet,</l>
+<l>Nabal is u roed ontwossen:</l>
+<l>God die selver voor ugaet,</l>
+<l>Sal uyt smaet,</l>
+<l>En verdriet u eens verlossen.</l>
+<l rend="; 1tab">5. Dit te wreken is Gods saeck,</l>
+<l>Laet de wraeck,</l>
+<l>Dan aen hem bevolen blijven:</l>
+<l>Ende soo wanneer als dan </l>
+<l>Een Tyran</l>
+<pb n="32"/>
+<l>V soud soecken te verdrijven,</l>
+<l rend="; 1tab">6. Sal u ziele vry van last,</l>
+<l>Sterck en vast,</l>
+<l>In Gods hoopken zijn gebonden</l>
+<l>Maer u boose vyant sal</l>
+<l>Over al</l>
+<l>Zijn geslingert in het ronde.</l>
+<l rend="; 1tab">7. Ende als de grooten Godt,</l>
+<l>V stelt tot</l>
+<l>Eenen Heer, en Vorst van allen,</l>
+<l>Soo en sal't knagen noyt,</l>
+<l>Datje oyt,</l>
+<l>Yemant in u toorn deed' vallen.</l>
+<l rend="; 1tab">8. En de Heer op 's Hemels troon,</l>
+<l>Sal tot loon,</l>
+<l>V sijn milde zegen schencken:</l>
+<pb n="33"/>
+<l>En daer na soo sult ghy weer,</l>
+<l>Vromen Heer,</l>
+<l>Vwe Maeght in gunst gedencken.</l>
+</lg></div>
+<div type="section">
+    <interpGrp> <interp type="song" value="maer005sing01_0010"/> </interpGrp>
+<head rend="h4">Stem: <hi rend="i">Roosemont die lagh gedoocken</hi>.</head>
+<lg type="poem"><l><hi rend="i">D</hi>Oe de Koningh dit aenhoorde,</l>
+<l>Liet hy van de wrake of,</l>
+<l>En na 't sluyten van haer woorde</l>
+<l>Riep hy uyt tot haren lof:</l>
+<l>d'Alderhoogste lof en eer,</l>
+<l>Zij bewaert voor God den Heer:</l>
+<l rend="; 1tab">2. Maer naest hem, zijt ghy gezegent,</l>
+<l>O! ghy zegen-rijcke mont:</l>
+<l>Waerje my hier niet bejegent,</l>
+<l>'k Had u volck in 't hert gewont,</l>
+<pb n="34"/>
+<l>En u mannelijck geslacht,</l>
+<l>d' Een, met d' ander omgebracht.</l>
+<l rend="; 1tab">3. Oock ontfingh hy haer geschencken,</l>
+<l>Ende seyde: Treckt nu voort,</l>
+<l>En wilt om geen onheyl dencken,</l>
+<l>Want ick heb u stem verhoort:</l>
+<l>Gaet na huys, en weest gerust</l>
+<l>Want mijn toorn is uyt-geblust.</l>
+<l rend="; 1tab">4. Doe de Son nu met sijn wagen</l>
+<l>Thienmael had rondom gereen,</l>
+<l>Heeft God self den dwaes geslagen,</l>
+<l>Nabals hert word als een steen,</l>
+<l>En het leven tornt hem af,</l>
+<l>Ende Nabal zijght in't graf.</l>
+<l rend="; 1tab">5. Dit klonck strack in alle ooren,</l>
+<l>Nabals wreetheyt is ten ent,</l>
+<pb n="35"/>
+<l>Yder een quam dit te vooren,</l>
+<l>En 't word David oock bekent:</l>
+<l>Doe hy nu dees saeck verstont,</l>
+<l>Opend' hy aldus sijn mont:</l>
+<l rend="; 1tab">6. Wie en soud u, Heer, niet prijsen?</l>
+<l>Noch u geven lof, en danck?</l>
+<l>Wie soud u geen eer bewijsen,</l>
+<l>Al sijn leve dagen lanck?</l>
+<l>Ghy hebt al mijn spt, en smaet,</l>
+<l>Nu gewroocken metter daet.</l>
+<l rend="; 1tab">7. Heere, gy deed my beletten,</l>
+<l>Dat ick in mijn ongedult,</l>
+<l>My niet in u plaets gingh setten</l>
+<l>'t Welck geweest had sware schult:</l>
+<l>Wat my soo een mensche doet</l>
+<l>Ghy, O Heere! wreecken moet.</l>
+<pb n="36"/>
+<l rend="; 1tab">8. Ghy neemt oock de wraeck in hande,</l>
+<l>Ende wreeckt mijn swaer verdriet:</l>
+<l>Nabal maeckt ghy heel te schande,</l>
+<l>En ghy brenght hem gants te niet,</l>
+<l>Ia verslaet hem in het stof.</l>
+<l>V zy Heere, Eeuwigh Lof.</l>
+</lg></div>
+<div type="section">
+    <interpGrp> <interp type="song" value="maer005sing01_0011"/> </interpGrp>
+<head rend="h4">Stem: <hi rend="i">Laura sat laest aen een Beeck</hi>.</head>
+<lg type="poem"><l><hi rend="i">D</hi>Avid die nu had verstaen</l>
+<l>Van des Nabals haestigh sterven,</l>
+<l>Dachte strack van stonden aen:</l>
+<l>Nu sal ick het best verwerven,</l>
+<l>Van al Nabals rijcke erven,</l>
+<l>Dat is sijnen wijsen Vrou:</l>
+<l>Daer wil ick door mijn Booden</l>
+<pb n="37"/>
+<l>Abigael laten nooden,</l>
+<l>Tot mijn gade in de Trou.</l>
+<l rend="; 1tab">2. Hier op geeft hy sijn bevel,</l>
+<l>Aen de dienaers van de Koningh,</l>
+<l>En sy reysen ras, en snel,</l>
+<l>By de Vrou in hare wooningh,</l>
+<l>En met een beleefde tooningh,</l>
+<l>Seggen sy dit voor haer uyt:</l>
+<l>Weest gegroet, ghy wijse Vrouwe:</l>
+<l>David die versoeckt in trouwe,</l>
+<l>V te hebben tot sijn Bruydt.</l>
+<l rend="; 1tab">3. Hier op sijne op haer wangh,</l>
+<l>Roode pleckjes voort-gebroocken,</l>
+<l>Evenwel ten duurd niet langh</l>
+<l>Of sy heeft haer mondt ontloocken,</l>
+<l>En in vreughden uyt-gesproocken:</l>
+<pb n="38"/>
+<l>Ick ben tot dees saeck bereyt.</l>
+<l>Daer mee reysden sy te samen,</l>
+<l>Tot dat sy by David quamen,</l>
+<l>Daer hy hare komst verbeydt.</l>
+<l rend="; 1tab">4. Daer wordt dese wijse Vrou,</l>
+<l>Met de Vorst gepaert in dughden,</l>
+<l>En het gantsche landt wort nou</l>
+<l>Wacker, en sprong op van vreughde:</l>
+<l>Yder een hem seer verheugde,</l>
+<l>Om dat Abigail niet meer,</l>
+<l>Sal een stuuren kop verdragen,</l>
+<l>Maer een wijsen Vorst behagen,</l>
+<l>Siet, dus seltsaem wreckt de Heer.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0012"/> </interpGrp>
+<pb n="39"/>
+<head rend="h3">Minnaers Compasjen.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Poliphemus aen de strande.</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>Oe de hoogen Godt op eerde</l>
+<l>Eerst formeerde</l>
+<l>'t Edel menschelijck geslacht,</l>
+<l>Heeft hy Adam, en sijn Vrouwe,</l>
+<l>In de trouwe.</l>
+<l>Met sijn eygen handt gebracht.</l>
+<l rend="; 1tab">2. Noch op heden, in de sinne,</l>
+<l>Woont de minne</l>
+<l>Daer door dat het wijf, en man,</l>
+<l>d' Een aen d' ander geeft te smaken.</l>
+<pb n="40"/>
+<l>Sulck vermaken</l>
+<l>Als haer niemandt geven kan.</l>
+<l rend="; 1tab">2. Dese lust, des menschen leven:</l>
+<l>In geschreven</l>
+<l>Doet hem soecken sonder rust,</l>
+<l>Tot hy in 't getal der menschen</l>
+<l>Na sijn wenschen,</l>
+<l>Vint sijn lief, en herten lust.</l>
+<l rend="; 1tab">4. Maer in't soecken, en bejagen</l>
+<l>Moet we vragen</l>
+<l>'t Oogemerck van ware deught,</l>
+<l>Soo sal onse trouw ons geven</l>
+<l>Al ons leven,</l>
+<l>Reyne lust, en vaste vreught,</l>
+<l rend="; 1tab">5. 't Is veel grooter schat van weerden</l>
+<l>Als op eerden</l>
+<pb n="41"/>
+<l>Al de rijckdom geeft aen ons,</l>
+<l>Datmen in ons jonge ieughde</l>
+<l>Reyne deughde</l>
+<l>Beyde brenght op 't pluymen-dons.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0013"/> </interpGrp>
+<head rend="h3">Rey der Israelitische Vrouwen. 1. Samuel 18:6.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Als Bocksvoetje speelt &amp;c.</hi></head>
+<lg type="poem"><l><hi rend="i">A</hi>Ls Saul, en David den vyant in 't velt</l>
+<l>Verioegen, en sloegen</l>
+<l>Haer met gewelt,</l>
+<l>En quamen in 't Hof // soo worde haer lof,</l>
+<pb n="42"/>
+<l>Door 't gantsche landt Cana seer hoogh vermelt.</l>
+<l rend="; 1tab">2. De vrouwen in't Israelitische landt,</l>
+<l>Die namen, te samen</l>
+<l>Den vedel in d'handt,</l>
+<l>En springende voort // men singende hoort</l>
+<l>Aldus haer schateren door het landt.</l>
+<l rend="; 1tab">3. Weest wellekom Vorsten van Iacobs geslacht</l>
+<l>Ghy helden, in velden,</l>
+<l>Seer dabber geacht;</l>
+<l>Den vyandt besweeck // wanneer hy u keeck,</l>
+<l>Noch meer wanneer hy beproefde u macht.</l>
+<l rend="; 1tab">4. Wel laet ons nu Saul veel lof, en veel eer</l>
+<l>Bewijsen, en prijsen</l>
+<l>Die dapperen Heer,</l>
+<l>Die selver op 't landt // met eygener handt,</l>
+<l>In't Heydens geslacht sloegh duysent ter neer.</l>
+<pb n="43"/>
+<l rend="; 1tab">5. Maer singt noch veel hooger, o vrouwe<hi rend="i">n</hi> gedans</l>
+<l>Wy moete, begroete,</l>
+<l>En setten de krans</l>
+<l>Op David sijn hooft: Een yder nu looft</l>
+<l>Dees eenighst, dees Fenix, het puyck der Mans.</l>
+<l rend="; 1tab">6. Hy heefter thien-duysent alleenlijck gedoot</l>
+<l>En velde, die helde</l>
+<l>Seer machtigh en groot:</l>
+<l>V daden zijn meer // als Sauls, uw' Heer,</l>
+<l>g' Hebt thiemael, den Philisteen meer ontbloot.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0014"/> </interpGrp>
+<head rend="h3">Salomons Gebedt. 2. Paral.1.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Roosemont. Waer ghy vliet.</hi></head>
+<lg type="poem"><pb n="44"/>
+<l><hi rend="i">D</hi>Es Hemels licht verdween,</l>
+<l>Doe het groote licht verscheen,</l>
+<l>Dat te boven gaet, de vlammende Son,</l>
+<l>En hem openbaerd aen Solomon:</l>
+<l>Namentlijck doe God, quam van boven af,</l>
+<l>En hem dit antwoordt gaf:</l>
+<l>Salomon eyscht ghy</l>
+<l>Nu vrymoedelijk van my,</l>
+<l>Wat dat u lust, en wat het zy.</l>
+<l rend="; 1tab">2. Salomon hier op seydt:</l>
+<l>Ghy hebt die Barmhertigheydt</l>
+<l>Aen David gedaen, dat ick sijnen Soon,</l>
+<l>Na hem ben gevolght, of sijnen troon,</l>
+<l>Tot een Hooft van 't volck: en ik ben noch ionck,</l>
+<l>En 't volck dat ghy my schonck,</l>
+<l>Is sulck een getal,</l>
+<pb n="45"/>
+<l>Dat niemant tellen sal,</l>
+<l>En desen wachten op my al.</l>
+<l rend="; 1tab">3. Daerom ghy wijsen Heer,</l>
+<l>Sendt op my een straeltjen neer</l>
+<l>Van u Hemels licht: op dat ick nu voort,</l>
+<l>Dit volck leyden magh, soo het behoort.</l>
+<l>Doe antwoorde Godt: nadien dat het wit</l>
+<l>Van 't gene ghy my bidt,</l>
+<l>Niet is machtigh goedt,</l>
+<l>Noch oock niet uw's vyandts bloedt,</l>
+<l>Noch niet dat ghy langh leven moet.</l>
+<l rend="; 1tab">4. Maer alleen dat verstant</l>
+<l>In u herte zy geplant,</l>
+<l>Dat ghy Iocobs, stam, leyden meught in dees,</l>
+<l>Na mijn wil, en woort, in mijne vrees.</l>
+<l>Soo geef ick u verstant, wijsheyt, overvloet,</l>
+<pb n="46"/>
+<l>Rijckdom, schatten, en goet,</l>
+<l>En oock lof, en eer,</l>
+<l>Alsoo datmen sulcken Heer</l>
+<l>Niet en sal vinden immermeer.</l>
+<l rend="; 1tab">5. Hier mee de Heer verdween,</l>
+<l>En voer na den Hemel heen.</l>
+<l>Ende Salomon, kreegh oock van den Heer,</l>
+<l>Wijsheydt, en verstant, rijckdom, en eer:</l>
+<l>Ia sulck een verstant, datmen nergens niet</l>
+<l>Sijnes gelijcken siet</l>
+<l>Silver, ende Gout,</l>
+<l>Ende kostlijck Ebben hout,</l>
+<l>Kreegh hy oock mede menigh-fout.</l>
+<l rend="; 1tab">6. Salomon hier in speelt</l>
+<l>Aen ons allen een voorbeelt,</l>
+<l>Dat hy het verstant, acht in sijn gemoet,</l>
+<pb n="47"/>
+<l>Meerder weert te zijn, als 't aertsche goedt.</l>
+<l>Daer is oock geen schat, ons soo nut als dit:</l>
+<l>Want die dien schat, besit</l>
+<l>Heeft een instrument,</l>
+<l>Daer door dat hy tot hem went,</l>
+<l>Edele schatten sonder ent.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0015"/> </interpGrp>
+<head rend="h3">Gierigheydt.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Van de drie Dortsche Maeghden.</hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>En Mensch die hoord te weten,</l>
+<l>Datmen niet leeft om t' eeten,</l>
+<l>maer eet op dat men leeft:</l>
+<l>Dit moetmen wel bemercken</l>
+<pb n="48"/>
+<l>In alle onse wercken,</l>
+<l>Wat oorsaeck wercken heeft.</l>
+<l rend="; 1tab">2. Maer die dit niet wel weten,</l>
+<l>En deerlijck is beseten</l>
+<l>Met dwase gierigheyt,</l>
+<l>Die werckt niet om te leven,</l>
+<l>Maer heeft hem gants begeven</l>
+<l>Te leven om arbeydt.</l>
+<l rend="; 1tab">3. Hy slaet hem self met roeden,</l>
+<l>En leeft dus in armoeden,</l>
+<l>Soo lange tot hy sterft:</l>
+<l>En geeft niemant in't leven,</l>
+<l>Maer moet het alles geven,</l>
+<l>Aen eenen die het erft.</l>
+<l rend="; 1tab">4. Dus dunckt my kan ick mercken,</l>
+<l>Dat hy is als een vercken,</l>
+<pb n="49"/>
+<l>Dat, t' wijle dat het leeft</l>
+<l>Ons niet met al doet geven:</l>
+<l>Maer na zijn gnortigh leven</l>
+<l>Ons vele leckers geeft.</l>
+<l rend="; 1tab">5. Hy is oock als de Peerde,</l>
+<l>Die ploegen gaen op eerde,</l>
+<l>Met moeylijck ongenucht:</l>
+<l>Maer van 't verdrietigh ploeghen,</l>
+<l>Van 't sweeten, en van 't swoegen, </l>
+<l>En treckse self geen vrucht.</l>
+<l rend="; 1tab">6. Men siet oock in hem blijcken,</l>
+<l>Een Esel sijng practijcken,</l>
+<l>Die dickmael seer bedroft,</l>
+<l>Met sware ongemacken,</l>
+<l>Draeght kostelijcke packen,</l>
+<l>Daer hy noyt self van proeft.</l>
+<pb n="50"/>
+<l rend="; 1tab">7. My denckt hy doet oock mede</l>
+<l>Gelijck een Hondt eens dede,</l>
+<l>Die op een Hoy-hoop lagh,</l>
+<l>Waer hy niet van woud' eten,</l>
+<l>En heeft wel luyd' gekreten,</l>
+<l>Wanneer hy yemandt sagh.</l>
+<l rend="; 1tab">8. jammerlijcke menschen:</l>
+<l>Die staegh om rijckdom wenschen,</l>
+<l>En woelen sonder rust,</l>
+<l>Om eens vermaeck te vatten,</l>
+<l>Maer al des werelt schatten</l>
+<l>Verzaken noyt haer lust.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0016"/> </interpGrp>
+<pb n="51"/>
+<head rend="h3">Minnaers Noort-ster.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Het daget in den Osten.</hi></head>
+<lg type="poem"><l><hi rend="i">M</hi>Y dunckt dat eenen veugel,</l>
+<l>Ellendigh is geplaecht,</l>
+<l>Die niet meer als een vleugel</l>
+<l>Op sijn kleyn lijfjen draeght:</l>
+<l>Die kan hem na behagen</l>
+<l>Niet wegh dragen.</l>
+<l rend="; 1tab">2. Soo is 't oock met een herre</l>
+<l>Die op een wiegel loopt,</l>
+<l>Want sulck een rijedt niet verre</l>
+<l>Of is wel dra gesloopt,</l>
+<l>Dan scheurt het een, en't ander</l>
+<l>Van malkander.</l>
+<pb n="52"/>
+<l rend="; 1tab">3. Hier op soo denck ick stracken,</l>
+<l>Hier aen sien ick nou,</l>
+<l>Het leet, en ongemacken,</l>
+<l>Des menschen buyten trou:</l>
+<l>Want hem ontmoeten alle</l>
+<l>Ongevalle.</l>
+<l rend="; 1tab">4. De man met sijne Vrouwe,</l>
+<l>Die is een vleesch, en been,</l>
+<l>En daerom buyten trouwe,</l>
+<l>Is elck de helft van een:</l>
+<l>Dus moet we dese deelen</l>
+<l>t' Samen heelen.</l>
+<l rend="; 1tab">5. En soecken na genoegen</l>
+<l>Een ander weder-helft,</l>
+<l>Om die ons toe te voegen,</l>
+<l>En t' smelten aen ons self,</l>
+<pb n="53"/>
+<l>Om dus twee halve saken</l>
+<l>Een te maken.</l>
+<l rend="; 1tab">6. Alleen staet dit te myen,</l>
+<l>Dat sonder goedt bestuur, </l>
+<l>Wy niet bestaen te vryen</l>
+<l>Een ongelijck partuur:</l>
+<l>Dat soud' ons onlust geven </l>
+<l>Al ons leven.</l>
+<l rend="; 1tab">7. Men siet het noyt gebeuren</l>
+<l>Dat yemandt Laken sneedt,</l>
+<l>Van twee verscheyden kleuren,</l>
+<l>En nayd' het aen een kleedt:</l>
+<l>Of die dit doen, zijn sotten,</l>
+<l>Meet te spotten.</l>
+<l rend="; 1tab">8. Of saeghje twee Hant-schoene,</l>
+<l>d' een nieu, en d' ander oudt,</l>
+<pb n="54"/>
+<l>d' Een geel, en d' ander groene,</l>
+<l>Ick weet, ghy seggen soudt,</l>
+<l>Dit past niet, d' een, en d' ander,</l>
+<l>By malkander.</l>
+<l rend="; 1tab">9. Kiest dan tot u vriendinne,</l>
+<l>Een die u wel gelijckt,</l>
+<l>Opdat u hert, en sinne,</l>
+<l>Van haer niet af en wijckt,</l>
+<l>Maer dat gy liefd' mooght dragen,</l>
+<l>Al u dagen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0017"/> </interpGrp>
+<head rend="h3">Geestelijck Snoep-mes Matth.3:7.8.9</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Florida, soo het wesen magh.</hi></head>
+<lg type="poem"><pb n="55"/>
+<l><hi rend="i">D</hi>Oe eertijdts Iohannes vernam</l>
+<l>Dat menigh tot sijn Doopsel quam</l>
+<l>Met Phariseus gebreecken,</l>
+<l>En dat hy sagh, oock meenigh een</l>
+<l>'t Welck was een Saduceen,</l>
+<l>Begon hy dus te spreecken:</l>
+<l rend="; 1tab">2. Ghy boose Adderen geslacht,</l>
+<l>Wie heeft de bootschap u gebracht,</l>
+<l>Om Godes toorn t' ontvluchten?</l>
+<l>Indien ghy soeckt na Godts genaet,</l>
+<l>Soo toont ons metter daet</l>
+<l>Nu boetveerdige vruchten.</l>
+<l rend="; 1tab">3. En seght niet: wy zijn soo een stam,</l>
+<l>Diens wortel is den Abraham,</l>
+<l>Dit magh geen reden strecken:</l>
+<l>Want soo ons Godt sijn macht liet sien,</l>
+<pb n="56"/>
+<l>Hy kond uyt soo een stien,</l>
+<l>Een Abraham kindt verwecken.</l>
+<l rend="; 1tab">4. Ick segh u volgens mijn bescheyt,</l>
+<l>De Bijl is heden aen-geleyt,</l>
+<l>En veerdigh zijn de handen.</l>
+<l>Om uyt te roepen onverschoont</l>
+<l>Wat Boom geen vreucht en toont,</l>
+<l>Om die dan te verbranden.</l>
+<l rend="; 1tab">5. Ick doope wel voor u gesicht,</l>
+<l>Een doop, doe ons tot boet verplicht?</l>
+<l>Maer die my na komt loopen,</l>
+<l>Die is veel weerdiger als ick,</l>
+<l>Die sal sijn volk gelick,</l>
+<l>Met sijn geest, en vyer doopen.</l>
+<l rend="; 1tab">6. Sijn wan heeft hy in d' hant geree,</l>
+<l>Te suyveren sijn dersch daer mee:</l>
+<pb n="57"/>
+<l>En sal met sijne handen</l>
+<l>De Terw vergaren in de schuur,</l>
+<l>Maer sal het kaf in't vuur,</l>
+<l>In eeuwigheydt doen branden.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0018"/> </interpGrp>
+<head rend="h3">Dwase Hoovaerdigheydt.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Prins Robbaert.</hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>En Aexter was eens bloot en kael,</l>
+<l>En had niet op sijn huyt,</l>
+<l>Sijn bonte veeren altemael</l>
+<l>Waren ghevallen uyt,</l>
+<l>Dies klaeghde hy met groot hert-seer</l>
+<l>De vogelen zijn leet</l>
+<pb n="58"/>
+<l>Woud' schencken tot sijn kleet.</l>
+<l rend="; 1tab">2. Een yder was hier willigh toe,</l>
+<l>En hebben dat gedaen,</l>
+<l>Op dat hy in sijne arremoe</l>
+<l>Van koud' niet sou vergaen:</l>
+<l>Dit alle vog'len 't samen doen,</l>
+<l>Elck pluckt een veertjen uyt,</l>
+<l>Soo dat men root, en geel, en groen,</l>
+<l>Sagh blincken op sijn huyt.</l>
+<l rend="; 1tab">3. Doe nu den Aexter hem bekeeck</l>
+<l>Hy van hem self verschiet,</l>
+<l>En seyd, wie is't, die my geleeck?</l>
+<l>Ick vind soo eenen niet:</l>
+<l>Dus komt, o Vogels! nu ten toon,</l>
+<l>Ghy alle te gelick,</l>
+<l>En siet of yemandt wel soo schoon</l>
+<pb n="59"/>
+<l>En cierlijck pronckt als ick.</l>
+<l rend="; 1tab">4. Daer quaem wel haest een grooten som,</l>
+<l>Van vogels kleyn, en groot,</l>
+<l>Elck nam sijn pluymtjen wederom,</l>
+<l>Daer word' hy weder bloot,</l>
+<l>En stont daer met sijn naeckten huyt,</l>
+<l>Gants kael en sonder kleet.</l>
+<l>Hy schreyde bey sijn oogen uyt,</l>
+<l>Maer 't holp niet tot sijn leet.</l>
+<l rend="; 1tab">5. Dit toont so aerdigh als het mach,</l>
+<l>Een pronckaert sijn bedrijf,</l>
+<l>Die naeckt, en kael, quam voor den dagh,</l>
+<l>En had gants niet om 't lijf:</l>
+<l>Maer op dat hy dus niet versmacht,</l>
+<l>En door de koud' vergaet,</l>
+<l>Soo neemt hy meenigh beest sijn vacht</l>
+<pb n="60"/>
+<l>En maeckt hem een gewaet.</l>
+<l rend="; 1tab">6. Als nu den pronckaert, dit gewaet,</l>
+<l>Rondom sijn lijf bekijckt,</l>
+<l>Soo denckt hy met een trots gelaet,</l>
+<l>Wie is't, die my gelijckt:</l>
+<l>Maer dat elck 't sijne na hem trock,</l>
+<l>Dat hy hem heeft gedaen,</l>
+<l>Daer soud' den geck tot yders jock,</l>
+<l>Met bloote billen staen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0019"/> </interpGrp>
+<head rend="h3">Hooghmoedt voor den Val.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Prins Robbert.</hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>En Aep die eenen vreemden lust</l>
+<l>In sijn gedachten kreegh,</l>
+<pb n="61"/>
+<l>Was in hem zelven niet gerust,</l>
+<l>Te blijven hier om leegh,</l>
+<l>Hy sagh de swier der Vog'len aen,</l>
+<l>Tot boven in de Lucht,</l>
+<l>En dachte, ick wil mede gaen,</l>
+<l>En trecken op de vlucht,</l>
+<l rend="; 1tab">2. Hy maeckte vleugelen van Was,</l>
+<l>Aen elcke zyde een,</l>
+<l>En daer mee was hy wel te pas,</l>
+<l>Want daer op vloogh hy heen:</l>
+<l>De grillen in sijn malle kruyn,</l>
+<l>Die dreven hem om hoogh,</l>
+<l>Geen spitse toorn, noch hooge duyn,</l>
+<l>Daer hy niet op en vloogh.</l>
+<l rend="; 1tab">3. Ten lesten door sijn dwase sucht</l>
+<l>Die dagelijcks aenwon,</l>
+<pb n="62"/>
+<l>Soo dacht hy met een snelle vlucht</l>
+<l>Te vliegen op de Son:</l>
+<l>Maer desen dwasen overlegh,</l>
+<l>Die word' in't eynde vals,</l>
+<l>De Son die smolt zijn vleug'len wegh,</l>
+<l>Hy viel, en brack sijn hals.</l>
+<l rend="; 1tab">4. Een die met ander lieden gelt</l>
+<l>Hem meent te maken rijck,</l>
+<l>Door dien dat hem den hooghmoet quelt,</l>
+<l>Is oock dees Aep gelijck:</l>
+<l>Hy met een op-geblasen moet,</l>
+<l>t' Onvreden in sijn staet,</l>
+<l>Gaet hoopen t' samen goedt op goedt,</l>
+<l>En staegh hy hooger gaet,</l>
+<l rend="; 1tab">5. Dan ist dat hy met nijdt aensiet,</l>
+<l>De gene die regeert,</l>
+<pb n="63"/>
+<l>En hoe een yder 't hoogh gebiedt</l>
+<l>Met kromme knien eert,</l>
+<l>Dies Fyselt hy hem selven op,</l>
+<l>Tot hooge macht en eer,</l>
+<l>Tot dat hy op den hooghsten top,</l>
+<l>Sit proncken als een Heer.</l>
+<l rend="; 1tab">6. Maer wanneer hy in hooge macht</l>
+<l>De Son wil zijn gelijck,</l>
+<l>En over al de swarte nacht</l>
+<l>Wil jaghen uyt sijn rijck,</l>
+<l>Alleen door glans van sijn cieraet,</l>
+<l>Soo comt des Hemels Heer,</l>
+<l>En smelt sijn trotsen, hoogen staet:</l>
+<l>Daer Valt den Aep dan neer.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0020"/> </interpGrp>
+<pb n="64"/>
+<head rend="h3">Boere Philosophy.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Princesse hier koom ick by nacht.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Ilje wercken op goe voet,</l>
+<l>Dan soo moet</l>
+<l>Ghy wel letten wat elck doet:</l>
+<l>Ghy moet yder Beest bestuure</l>
+<l>Na de drift, na di drift van sijn natuure.</l>
+<l rend="; 1tab">2. Heb je eenen moedigh Paert,</l>
+<l>Schatten waert,</l>
+<l>Laet het volgen sijnen aert,</l>
+<l>En laet het u selven dragen,</l>
+<l>Of het moet of het moet gaen voor de wagen.</l>
+<l rend="; 1tab">3. Hebj' een Os, soo stelt hem vroegh</l>
+<l>Voor de ploegh,</l>
+<pb n="65"/>
+<l>Want het is hem spuls genoegh:</l>
+<l>Maer kan hy dat niet betrachten,</l>
+<l>Weyt hem ver, weyt hem ver, en wilt hem slachte<hi rend="i">n</hi></l>
+<l rend="; 1tab">4. Hebje Koeyen, geeft haer Gras,</l>
+<l>Op haer pas,</l>
+<l>Anders het noyt voordeel was:</l>
+<l>Want sy moeten der van leven,</l>
+<l>En dan oock, en dan oock haer Melleck geven</l>
+<l rend="; 1tab">5. Hebje Verckens, geeft haer veel</l>
+<l>Garsten meel,</l>
+<l>Yder rijckelijck sijn deel:</l>
+<l>Geeft haer wey van uwe Koeyen,</l>
+<l>Want sy moet, want sy moeter vet van groeyen.</l>
+<l rend="; 1tab">6. Maer indien ghy hebt een Kat,</l>
+<l>Geeft het wat</l>
+<l>Van het witte Koeye nat:</l>
+<pb n="66"/>
+<l>Laet het woonen in u huysen,</l>
+<l>Want het vanght, want het vangter vele Muysen.</l>
+<l rend="; 1tab">7. En indien ghy hebt een Hoen,</l>
+<l>Wilt het voen:</l>
+<l>Wat sal 't arme diertjen doen?</l>
+<l>Daer en valt niet op te seggen,</l>
+<l>Want het doet, want het doet, ons Eyers leggen.</l>
+<l rend="; 1tab">8. Ende hebje noch wat meer,</l>
+<l>Als een Heer,</l>
+<l>Houdt u Beestjes frays in eer:</l>
+<l>Want men moet na reden leven,</l>
+<l>Self een Beest, self een Beest het sijne geven.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0021"/> </interpGrp>
+<pb n="67"/>
+<head rend="h3">Wereldts ghewoel.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Te may als al de vogelen singen.</hi></head>
+<lg type="poem"><l><hi rend="i">H</hi>Et is een wonder om aen te mercken,</l>
+<l>Hoe vele, en hoe verscheyden wercken</l>
+<l>De menschen wel aenvaten:</l>
+<l>Een yder die voeght hem tot het sijn,</l>
+<l>In hoog, en lage staten,</l>
+<l rend="; 1tab">2. Wanneer als wy de landen doorloopen,</l>
+<l>Wat siene wy al menschen met hoopen,</l>
+<l>In vaerten, en op wegen,</l>
+<l>Die sommige loopen met ons heen,</l>
+<l>And're komen ons tegen.</l>
+<l rend="; 1tab">3. Dat ick eens op de maen mochte klimmen,</l>
+<l>Wanneer als hy op rijst in de kimmen,</l>
+<pb n="68"/>
+<l>En gaen met hem om hoogen,</l>
+<l>Hoe frap soud' ick dit wereldts gewoel</l>
+<l>Aenschouwen met mijn oogen?</l>
+<l rend="; 1tab">4. Maer holla neen, ick heb my versonnen,</l>
+<l>Wanneer ick dus was rondom geronnen</l>
+<l>Soud' ick niet ander seggen</l>
+<l>Als, 'k heb een krimmelende Mieren-hoop</l>
+<l>Vol van mieren sien leggen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0022"/> </interpGrp>
+<head rend="h3">Bekeeringe.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Wel op, wel op, ick ga ter jacht</hi>:</head>
+<lg type="poem"><l><hi rend="i">K</hi>Eerom, keerom, o wereldts Kint:</l>
+<l>Die de sonden seer bemint:</l>
+<pb n="69"/>
+<l>Ghy gaet dwalen</l>
+<l>Buyten palen </l>
+<l>Buyten 't spoor, en buyten 't padt,</l>
+<l>Dat ingaet in des Hemels, Stadt:</l>
+<l rend="; 1tab">2. 't Geselschap dat u hier toe-lacht,</l>
+<l>Dat wordt in de Hel verwacht,</l>
+<l>En 't vermaken,</l>
+<l>Dat sy smaken,</l>
+<l>Sal haer op-breecken seer suur,</l>
+<l>Hier namaels in het Helsche vuur.</l>
+<l rend="; 1tab">3. Wijckt dan af van den boosen hoop</l>
+<l>En kiest ghy een ander loop,</l>
+<l>Eer sy hooren</l>
+<l>Godes cooren,</l>
+<l>Die opvaren doen vergramt,</l>
+<l>Als eenen vuur seer brandigh vlamt.</l>
+<pb n="70"/>
+<l rend="; 1tab">4. Valt dan oock met een yder aen,</l>
+<l>Om u sonden te verslaen,</l>
+<l>Heel te mortel,</l>
+<l>Dat den wortel</l>
+<l>Wt u hert magh zijn geroyt,</l>
+<l>En die vyanden heel verstroyt.</l>
+<l rend="; 1tab">5. Die door dick, en door dun soo heen</l>
+<l>Heeft een vuylen wegh gereen,</l>
+<l>En tot boven</l>
+<l>Is bestoven</l>
+<l>Laet dien wegh alleen niet naer</l>
+<l>Maer maeckt hem oock van smeten klaer.</l>
+<l rend="; 1tab">6. Soo zijn door sonden meenigh smet,</l>
+<l>Leelijck aen de ziel geset:</l>
+<l>Wilje wesen </l>
+<l>Reyn van desen,</l>
+<pb n="71"/>
+<l>Veeght dan al de smetten af,</l>
+<l>Die oyt de sond' u ziele gaf.</l>
+<l rend="; 1tab">7. Docht t' wijlwe door dit sterck fenijn,</l>
+<l>Selver sonder krachten zijn,</l>
+<l>Moet je klagen,</l>
+<l>Ende vragen,</l>
+<l>Waer is sulcken wijsen geest,</l>
+<l>Die my van dit gebreck geneest?</l>
+<l rend="; 1tab">8. Dan sulje hooren eenen stem,</l>
+<l>Tot u roepen, (dat van hem,</l>
+<l>Die de smerten Vwer herten </l>
+<l>Kan omkeeren in genucht)</l>
+<l>Komt tot my al die droevigh sucht</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0023"/> </interpGrp>
+<pb n="72"/>
+<head rend="h3">De [y]delhe[y]t der Rijckdommen.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Doe ic lest wandeld[e] over de Helder</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>Aer zijn geen saucen die soeter doen smaken</l>
+<l>Als doet den honger, die 't alles maeckt soet:</l>
+<l>Daer is geen suycker, die 't drinken doet maken</l>
+<l>Soo soet, en liflijck, als dorste wel doet.</l>
+<l>Oock kan om schatten, den machtigsten Vorst,</l>
+<l>Niet koopen honger, noch soeten dorst</l>
+<l>Want dese beyde zijn meerder in weert,</l>
+<l>Als al de schatten hier op der eerdt.</l>
+<l rend="; 1tab">2. Yemandt verleckert op soete lusten,</l>
+<l>Schud vry sijn bedde van pluymen wel sacht,</l>
+<l>Nochtans sal hy niet vrediger rusten,</l>
+<l>Als eenen Boer, slapend' op 't stroo by nacht.</l>
+<pb n="73"/>
+<l>Men kan om schatten, noch groote rijckdom,</l>
+<l>Geen slaep becomen in eygendom,</l>
+<l>Noch rusie koopen: ja 't is altemet,</l>
+<l>Dat rijckdom selver den slaep belet.</l>
+<l rend="; 1tab">3. En ook een mantel die rammelt van Goude</l>
+<l>En blinckt gelijcken de mane nu vol,</l>
+<l>Beschut niet meerder voor bijtende koude,</l>
+<l>Als slechte kleeren, van Schapen haer wol. </l>
+<l>En oock de huysen aen d' Hemelen hoogh,</l>
+<l>Decken niet beter, noch schuylen droogh,</l>
+<l>Als eenen stulpjen, of Boere Hoy-schuur,</l>
+<l>Het hout is mermer, als steenen muur.</l>
+<l rend="; 1tab">4. Ook smaeckt het drincken uyt gouden vaten</l>
+<l>Niet soeter, als uyt eenen pot van aerdt:</l>
+<l>Sy smake de min in hoogere staten</l>
+<l>Niet soeter, dan offer een Huys-man paerd:</l>
+<pb n="74"/>
+<l>En groote kassen, vol silver gestoud,</l>
+<l>Zijn niet van nooden tot onderhoud.</l>
+<l>Een mensch sal leven van 't gene hem voedt,</l>
+<l>Maer noyt sijn dage van overvloedt.</l>
+<l rend="; 1tab">5. Daerom soo zijn het verdwalende menschen</l>
+<l>Die altijdt woelen om rijckdom met smert.</l>
+<l>Ick wil betrachten, en meerder niet wenschen,</l>
+<l>Als noodtdroft, ende genoegen in 't hert.</l>
+<l>Want ick en brochte ter wereldt gans niet,</l>
+<l>Niemant in't sterven behouter yet.</l>
+<l>Derhalven niemandt die meerder en heeft,</l>
+<l>Als dat alleenlijck, daer hy van leeft.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0024"/> </interpGrp>
+<head rend="h3">Klachte der Godloosen.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Lest lagh ick onder eenen boom,</hi></head>
+<lg type="poem"><pb n="75"/>
+<l><hi rend="i">W</hi>Anneer als Godt zijn strengh gericht</l>
+<l>Ten jonghsten dage komt te houwen,</l>
+<l>Soo sal sijn volck, elck als een licht,</l>
+<l>Ia Son zijn, in haer glans 't aenschouwen:</l>
+<l>Maer het boos geslacht,</l>
+<l>Dat haer heeft veracht,</l>
+<l>Sal sien, wat haer dan wordt toegebracht.</l>
+<l rend="; 1tab">2. Als sy dan dus Godts kind'ren sien,</l>
+<l>Sal d' eene tot den ander spreken:</l>
+<l>Ach wee ons doch! Wel wie is dien</l>
+<l>Die daer komt als een Son voort breken?</l>
+<l>Wy en dachte noyt,</l>
+<l>Dat die gene oyt,</l>
+<l>Dus heerlijck soude werden opgetoyt.</l>
+<l rend="; 1tab">3. Wy achten haer, elck voor een dwaes,</l>
+<l>En deden niet als haer bespotten:</l>
+<pb n="76"/>
+<l>En nu zijn sy Godts volck Helaes:</l>
+<l>Maer wy zijn nu verdoemde sotten,</l>
+<l>Sy genieten rust,</l>
+<l>Eeuwigh soete lust,</l>
+<l>Terwijl dat ons vuur noyt wort uyt geblust.</l>
+<l rend="; 1tab">4. Nu siene wy het klaerlijck aen,</l>
+<l>Dat het werkeerde wegen waren,</l>
+<l>Op't welcke dat wy zijn gegaen,</l>
+<l>En daer door, aldus zijn gevaren.</l>
+<l>Wy hebben van 't quaedt,</l>
+<l>Ons eertijdts versaedt,</l>
+<l>Daer door zijn wy in een verdoemde staet.</l>
+<l rend="; 1tab">5. Mochten wy weer van vooren aen,</l>
+<l>Des werelts-dal eens gaen betreden,</l>
+<l>Wy souden beter wegen gaen,</l>
+<l>En nutter onse tijdt besteden:</l>
+<pb n="77"/>
+<l>Maer 't is al geschiedt,</l>
+<l>Klagen helpt nu niet,</l>
+<l>Ons rest niet anders als eeuwigh verdriet.</l>
+<l rend="; 2tab"><hi rend="i">Besluyt.</hi></l>
+<l rend="; 1tab">6. Wy nu, die Godt noch vrind'lijck noot,</l>
+<l>En stelt sijn genaden-deur open,</l>
+<l>Laet ons niet op den wegh ter doodt,</l>
+<l>Maer op den wegh des levens loopen,</l>
+<l>Ende houden Godt</l>
+<l>Voor ons deel, en lot,</l>
+<l>En schicken ons leven na sijn gebodt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0025"/> </interpGrp>
+<head rend="h3">Cupido's Fabel bevind ick vals.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">O schoone die my dus mart'liseert?</hi></head>
+<lg type="poem"><pb n="78"/>
+<l><hi rend="i">E</hi>En oude Fabel, van lange wijl,</l>
+<l>Stelt ons Cupido voor,</l>
+<l>Dat hy met sijne boogh, ende pijl,</l>
+<l>Des Minnaers hert schiet door,</l>
+<l>Waer uyt terstont de minne swelt,</l>
+<l>En maeckt dat hy sijn liefd' op yemant stelt.</l>
+<l rend="; 1tab">2. Men stelt hem met een fackel in d' handt,</l>
+<l>Gevult met brandent licht,</l>
+<l>Daer door hy terstont in 't ingewant</l>
+<l>Een Minne vlamme sticht:</l>
+<l>Sy schild'ren hem oock als een kindt,</l>
+<l>Sonder gesicht, en beyde oogen blindt</l>
+<l rend="; 1tab">3. Die dit versierde seer grootlijcks loogh,</l>
+<l>En die 't gelooft is mal:</l>
+<l>Een kindt, een fackel, een pijl, een boogh,</l>
+<l>Die doen hier niet metal:</l>
+<pb n="79"/>
+<l>De Minne vlam, die soete brandt,</l>
+<l>Die comt ons toe, van heel een ander kant.</l>
+<l rend="; 1tab">4. De minne die sijnen scherpen schicht</l>
+<l>My tot de ziel schoot in,</l>
+<l>Quaem aen gevlogen uyt het gesicht</l>
+<l>Van haer, die ick bemin:<lb/>
+Haer soet, en minnelijcken oogh,</l>
+<l>Was 't altemael, de pees, de pijl en boogh.</l>
+<l rend="; 1tab">5. De fackel die my in mijne jeught</l>
+<l>Het herte stack in brandt,</l>
+<l>Dat was haer reyne en witte deught,</l>
+<l>Haer zeden, en verstant:<lb/>
+En daer quam oock haer schoonheydt by,</l>
+<l>Waer by Heleen' niet te gelijcken zy.</l>
+<l rend="; 1tab">6. Maer Cupido die en wasser niet,</l>
+<l>Hy heeft my noyt geplaeght,</l>
+<pb n="80"/>
+<l>Maer die mijn hart heeft in haer gebiet,</l>
+<l>Dat is een jonge maeght:</l>
+<l>Ick swijgh wie 't is: maer segge so,</l>
+<l>mijn liefste in nu selver Cupido.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0026"/> </interpGrp>
+<head rend="h3">Valsche Vrintschup.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Ick min mijn Herder.</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>E valsche vrinde,</l>
+<l>Die ons beminde</l>
+<l>Om dat ons sake</l>
+<l>Haer konde vermake,</l>
+<l>Die neme strack de vlucht,</l>
+<l>Wanneer ons treffen, druck, en ongenucht.</l>
+<l rend="; 1tab">2. My dunckt sy icone</l>
+<pb n="81"/>
+<l>Seer fraey, en schoone,</l>
+<l>Dronckaerts maniere,</l>
+<l>Die sitten te viere</l>
+<l>Soo langh men tapt goe dranck:</l>
+<l>Maer schenckt men haer hef, sy gane haer gank.</l>
+<l rend="; 1tab">3. Dit is oock even </l>
+<l>En na het leven</l>
+<l>Gelijck als doene</l>
+<l>De bladeren groene,</l>
+<l>Die proncken den Boom schoon</l>
+<l>Somers, maer 's Winters ontvallen sijn kroon.</l>
+<l rend="; 1tab">4. Oock als de swalen, </l>
+<l>Die in de salen</l>
+<l>Ons soet toe singen,</l>
+<l>Als ons alle dingen</l>
+<l>Toe lacchen met genucht,</l>
+<pb n="82"/>
+<l>Maer 't Winters dan trecken sy op de vlucht.</l>
+<l rend="; 1tab">5. Is yemandt druckigh,</l>
+<l>Hy is geluckigh,</l>
+<l>Soo hy heeft vrinden,</l>
+<l>Die hem altijdt dienden:</l>
+<l>Maer 't is rijckst die leeft,</l>
+<l>Die gene vrienden van nooden en heeft.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0027"/> </interpGrp>
+<head rend="h3">Bruylofs-Liedt.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">De May die comt ons by seer bly.</hi></head>
+<lg type="poem"><l><hi rend="i">G</hi>Eluck, ghy die de tijdt van strijdt</l>
+<l>In 't droevigh vryen uyt-gestreden hebt,</l>
+<l>En met malkaer treet in 't begin</l>
+<pb n="83"/>
+<l>Van soo een staet daer in ghy lusten scheyt,</l>
+<l>Daer in dat ziel, en hert,</l>
+<l>T' Samen gesmolten werdt,</l>
+<l>Door vlamme van liefde, en minne-brandt.</l>
+<l>Geluckigh Iongh-paer,</l>
+<l>Nu vindt u te gaer</l>
+<l>Een soeten bandt.</l>
+<l rend="; 1tab">2. Men vint geen meerder soet, noch goedt,</l>
+<l>Dat in de wereldt yemandt soo behaeght,</l>
+<l>Als dan een minnaers hert, nu werdt</l>
+<l>In eygendom aen sijn geliede maeght.</l>
+<l>O soete lieve min,</l>
+<l>Wat hebje vreughden in?</l>
+<l>O haven van ruste! O stille Ree</l>
+<l>Daer den Bruydegom</l>
+<l>Pluckt de maeghde-blom,</l>
+<pb n="84"/>
+<l>In lust, en vree.</l>
+<l rend="; 1tab">3. Daer maeckt de Bruydt terstont gesont,</l>
+<l>Haer minnaers hart, dat sy verwondet heeft.</l>
+<l>Soo wanneer sy uyt lust hem kust,</l>
+<l>Is 't ofje hem een nieuwen leven geeft.</l>
+<l>Wel saligh is de lust,</l>
+<l>Die aldus wordt gheblust:</l>
+<l>Waer liefde en trouwe te samen gaen,</l>
+<l>Wordt de eerste wet</l>
+<l>Van Godt in geset</l>
+<l>Als dan gedaen.</l>
+<l rend="; 1tab">4. Ghy meysjes, treedt wel dra haer na,</l>
+<l>En plaeght u trouwe minnaers langer niet,</l>
+<l>Wiens herte dat ghy steelt, maer heelt</l>
+<l>Haer droeve smerten, en haer groot verdriet,</l>
+<l>Dees Bruydt die gaet u voor,</l>
+<pb n="85"/>
+<l>Treedt ghy oock in haer spoor,</l>
+<l>En volget de gangen, die sy nu gaet.</l>
+<l>Lust, en leckerheydt,</l>
+<l>Is voor u bereydt</l>
+<l>In d' Echte staet.</l>
+</lg></div></div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0028"/> </interpGrp>
+    <head type="h3">Lof sangh van de Vliet.</head>
+    <div type="section">
+<head type="h4">Stem: Voorby is 't Winters herde stoet.</head>
+<lg type="poem"><l><hi rend="i">H</hi>Ef op, mijn sangh-Godin, een Liet,</l>
+<l>En met een soet gheschater,</l>
+<l>Singh eens ter eere van de Vliet,</l>
+<l>En van haer suyver water.</l>
+<l rend="; 1tab">2. Het is een Bron vol soet genucht,</l>
+<pb n="86"/>
+<l>Sy speelt musijck met suysen,</l>
+<l>Soo wanneer als de Somer lucht</l>
+<l>Haer gollefjes doet bruysen.</l>
+<l rend="; 1tab">3. Dit ruyschende, en soet geluyt,</l>
+<l>Door 't roeren van haer stroomen,</l>
+<l>Dat lock de Steedsche jeughde uyt,</l>
+<l>Om daer mee by te komen.</l>
+<l rend="; 1tab">4. Die van laveeren dwers, en langhs,</l>
+<l>Met vlaggen op haer Schuytje,</l>
+<l>Wt 't welck men hoort veel soet gesanghs</l>
+<l>En 't spelen op het Fluytje</l>
+<l rend="; 1tab">5. De Knolle-vletter uyt de streeck,</l>
+<l>Hoort men hier mede singen:</l>
+<l>'t Vergadert al op dese Beeck,</l>
+<l>Dat vreughde kan aen bringen.</l>
+<l rend="; 1tab">6. Den Huys-man in sijn melleck-schuyt,</l>
+<pb n="87"/>
+<l>Voeght hem by de Besanen,</l>
+<l>En singende met soet geluyt,</l>
+<l>Ontreckt de Zee haer Swanen:</l>
+<l rend="; 1tab">7. Die latende de bracke Zee</l>
+<l>En hare dorre stranden,</l>
+<l>Beproncken nu de Vliet oock mee,</l>
+<l>En al die naeste landen</l>
+<l rend="; 1tab">8. De Koeten houden in het Riet,</l>
+<l>En duysent and're mede:</l>
+<l>Schier al wat men ter wereldt siet,</l>
+<l>Versamelt daer ter stede!</l>
+<l rend="; 1tab">9. De grondt die wimmelter van Vis,</l>
+<l>(Het schijne wel mirakels,)</l>
+<l>Die met vermaeck te vangen is,</l>
+<l>Met Elgers, of met Schakels.</l>
+<l rend="; 1tab">10. Of sooje maer een Fuyckjen set,</l>
+<pb n="88"/>
+<l>Ter zijden voor een Slootje,</l>
+<l>Slaept vry gerustelijck op u bedt,</l>
+<l>Des morgens hebje 't sootje.</l>
+<l rend="; 1tab">11. Des morgens legger by malkaer,</l>
+<l>De Korpers, Baers, en Snoecken:</l>
+<l>Men vanght oock licht een zood te gaer,</l>
+<l>Met Angels, en met Hoecken.</l>
+<l rend="; 1tab">12. Wanneer des winters koude Vorst</l>
+<l>Ons knelt op onse rugge,</l>
+<l>Soo stremt hy op de Vliet een korst,</l>
+<l>Een held're glasen brugge.</l>
+<l rend="; 1tab">13. Wat isser dan al reeds, en ganghs,</l>
+<l>De Peertjes, wack're Beesies,</l>
+<l>Die draven dan de Vliet al langhs,</l>
+<l>Met duysent andere Sleesies.</l>
+<l rend="; 1tab">14. Gewis, het is een soet vermaeck,</l>
+<pb n="89"/>
+<l>By dese Vliet te woonen:</l>
+<l>Hy self heeft kennis van dees saeck,</l>
+<l>Die u dit doet vertoonen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0029"/> </interpGrp>
+<head rend="h3"><hi rend="i">Seven personaedjen.</hi> Een Huys-man singht.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Wie wil hooren singen.</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>Aer is geen staet te noemen,</l>
+<l>Al schijnt een Huys-man slecht,</l>
+<l>Dat reden heeft te roemen</l>
+<l>Van sulcken ouden recht:</l>
+<l>Want Kain, en Abel beyde,</l>
+<pb n="90"/>
+<l>Die gingen op de weyde</l>
+<l>En volghden die manier,</l>
+<l>Als nu yder Huys-man hier.</l>
+<l rend="; 1tab">2. Abram dat was een Herder,</l>
+<l>Den vromen Iacob mee:</l>
+<l>En komen wy wat verder,</l>
+<l>'t Is al te doen met Vee:</l>
+<l>Iob vulde met Schapen, en Ossen,</l>
+<l>De Velden, en de Bossen:</l>
+<l>Saul een kroone droegh,</l>
+<l>En dreef even wel den ploegh.</l>
+<l rend="; 1tab">3. Wat was 't dat haer dus maeckte</l>
+<l>In desen staet gerust?</l>
+<l>'t Was om dat sy dus smaeckte</l>
+<l>Een leven vol van lust,</l>
+<l>En datse dus niet en wisten,</l>
+<pb n="91"/>
+<l>Van lagen, noch van listen,</l>
+<l>Maer hadden al het soet,</l>
+<l>In een vollen overvloedt.</l>
+<l rend="; 1tab">4. Daer hoeft gheen gelt verspilt,</l>
+<l>Gaet maer een weynigh delven,</l>
+<l>Soo hebje, watje wilt:</l>
+<l>Wy plucken al uyt den grase,</l>
+<l>De Boter, melck, en Kase.</l>
+<l rend="; 1tab">Den Acker deelt ons by,</l>
+<l>Koorn tot meel, en leck're Bry.</l>
+<l rend="; 1tab">5. Men weet van geen slampampen,</l>
+<l>Daer na de Brasser hijght,</l>
+<l>Die hondert duysen rampen,</l>
+<l>Tot loon voor 't brassen krijght.</l>
+<l>Wij soecken geen ydele eere,</l>
+<pb n="92"/>
+<l>Men acht geen zijden kleere,</l>
+<l>Ons vrolijck herte lacht</l>
+<l>Om des wereldts malle pracht.</l>
+<l rend="; 1tab">6. Want 't zijn veel beter dingen</l>
+<l>Daer op den Huys-man lonckt,</l>
+<l>De Vogeltjes die singen,</l>
+<l>En 't veldt seer cierlijck pronckt:</l>
+<l>Hy siet 'er het water stroomen,</l>
+<l>En vruchten aen de Boomen,</l>
+<l>En menigh schoonen Geest,</l>
+<l>Dan onspringht hem sijnen geest.</l>
+<l rend="; 1tab">7. Maer soo ick alle dingen,</l>
+<l>Sou' trecken in mijn sangh,</l>
+<l>Die ons vermaeck aen-bringen,</l>
+<l>Ick song ses dagen langh:</l>
+<l>Ia lichtelijck den Sondagh mede,</l>
+<pb n="93"/>
+<l>Welk ick niet geern, en dede</l>
+<l>Dies segh ick voor het slot:</l>
+<l>O! geluckigh Huys-mans lot.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0030"/> </interpGrp>
+<head rend="h3">Een Stee-man singht.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Phylis komt u buygen.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Ilie u vermaken,</l>
+<l>Met verscheyden saken?</l>
+<l>Wilie eenen staet</l>
+<l>Sien, soo soet als heunich raet?</l>
+<l>Komt dan onse Stad genaken,</l>
+<l>Ende wandelt op ons straet.</l>
+<l rend="; 1tab">2. Alles wat de Velden</l>
+<pb n="94"/>
+<l>Den Huys-man bestelden,</l>
+<l>Sijnen melck, en Room,</l>
+<l>Komen met een snellen stroom,</l>
+<l>Alles wat men hoordet melden,</l>
+<l>Komt daer, en 't is wellekoom.</l>
+<l rend="; 1tab">3. Daer sulje aenschouwen,</l>
+<l>Huysen, en Gebouwen,</l>
+<l>So schoon dat het oogh</l>
+<l>Stadigh steygert na om hoogh:</l>
+<l>Ghy sult nau u oogh betrouwen,</l>
+<l>Want 't is of het u bedroogh.</l>
+<l rend="; 1tab">4. Daer sulie aenmercken,</l>
+<l>Hondert Ambachts wercken,</l>
+<l>Alderley Fatsoen,</l>
+<l>Daer sy 't Huys gesin door voen:</l>
+<l>En 't gemeene best verstercken,</l>
+<pb n="95"/>
+<l>Want elck heeft haer werck van doen.</l>
+<l rend="; 1tab">5. Wat men kan begeeren,</l>
+<l>Eten, drincken, kleeren,</l>
+<l>En meer onder goedt,</l>
+<l>Dat een yder hebben moet,</l>
+<l>Ende niemandt magh ontbeeren,</l>
+<l>Vindt ghy daer in overvloet;</l>
+<l rend="; 1tab">6. Daer zijn hooge wallen,</l>
+<l>(Noodigh boven allen</l>
+<l>Tot des wereldts nut,</l>
+<l>Die bepland staen met geschut,</l>
+<l>'t Welck des Vyandts overvallen,</l>
+<l>In haer dullen fury stut</l>
+<l rend="; 1tab">7. Maer soud' ick uyt-singen</l>
+<l>Alle goede dingen,</l>
+<l>Die een geestigh man,</l>
+<pb n="96"/>
+<l>Van de Stadt wel seggen kan, </l>
+<l>Ick soud' hals, en keel verwringhen,</l>
+<l>'t Is dan best, ick scheyder van.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0031"/> </interpGrp>
+<head rend="h3">Een Zee-man singht.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Hoort toe matroosen al te saem.</hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>N roemt niet van u Landt, noch Stadt,</l>
+<l>Noch van u kost'lijck Vee,</l>
+<l>Want al de rijckdom, en de schat,</l>
+<l>Die komt u uyt der Zee:</l>
+<l>Ick noem met bescheydt</l>
+<l>De Schip-vaert 't wereldts hansen,</l>
+<pb n="97"/>
+<l>Daer sy haer goedt mee leyt,</l>
+<l>Van dees, in gene Landen.</l>
+<l rend="; 1tab">2. 't Rijck Indien ontsluyt sijn mijn,</l>
+<l>En levert vele Gout:</l>
+<l>En Spanjen schenckt ons soete wijn,</l>
+<l>En Vranckrijck geeft ons Sout:</l>
+<l>Van elders komt ons Glas,</l>
+<l>En Koper, Tin, en Verwen,</l>
+<l>En Pick, en Teer, en Vlas,</l>
+<l>En Roggen, ende Terwen.</l>
+<l rend="; 1tab">3. Den Noor-man hackt gestaegh in 't Wout</l>
+<l>De Boomen onder voet,</l>
+<l>Niet voor hem self: maer dat hy t' hout</l>
+<l>Na Hollandt senden doet.</l>
+<l>Denckt nu in u verstant,</l>
+<l>Wat raedt om dese dingen,</l>
+<pb n="98"/>
+<l>Van 't een in 't ander Landt,</l>
+<l>En over zee te bringen,</l>
+<l rend="; 1tab">4. Hier weet een Boots-man daetlijck raet,</l>
+<l>En komt in dit geval,</l>
+<l>Met Schepen daer hy het in laedt,</l>
+<l>En steeckt weer van de wal,</l>
+<l>Om 't grondeloose ruym</l>
+<l>In haest te overvaren,</l>
+<l>Terwijl hy peeckel-schuym</l>
+<l>Brouwt, in de soute baren.</l>
+<l rend="; 1tab">5. Als dan soo een geladen vloot</l>
+<l>Komt in de Steden aen,</l>
+<l>Al was de Neeringh daer in doodt,</l>
+<l>Sy soud' uyt 't Graf op staen.</l>
+<l>En yder een ontfonckt,</l>
+<l>En vindt dan sijn begeeren.</l>
+<pb n="99"/>
+<l>En 't gantsche Landt dat pronckt</l>
+<l>Gelijck in Bruylofts kleeren.</l>
+<l rend="; 1tab">6. Maer soo de Zee-vaert wat vervalt</l>
+<l>Het rijcke Landt ver-ermt,</l>
+<l>De Stadt verliest strack sijn gestalt,</l>
+<l>En yder Borger kermt:</l>
+<l>Maer als een volle vloot</l>
+<l>Komt zeylen in de Haven,</l>
+<l>Krijght elck weer in de schoot,</l>
+<l>Duysent, en duysent gaven.</l>
+<l rend="; 1tab">7. Maer indien dat ick in't geheel,</l>
+<l>Des Zee-vaerts nut uyt-songh,</l>
+<l>Ick hoefde wel een yseren keel, </l>
+<l>En een metalen tongh:</l>
+<l>Maer 't is de pijn niet weert,</l>
+<l>Die in mijn hooft te bringen:</l>
+<pb n="100"/>
+<l>Soo yemandt meer begeert,</l>
+<l>Die magh self meerder singen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0032"/> </interpGrp>
+<head rend="h3">Een Koop-man singht.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Ick hoor aen dees vogelen singen.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Ilje weten wat de Neeringh</l>
+<l>Aen de Stadt, en Landen schenckt?</l>
+<l>Wat de welvaert, en verkeeringh</l>
+<l>In de rijcke plaetsen brenght?</l>
+<l>Ick segh dat des Koopmans handt,</l>
+<l>In de Stadt, en in het Landt,</l>
+<l>Al de schat, en rijckdom plant.</l>
+<l rend="; 1tab">2. Schoon den Huys-man in de velde,</l>
+<pb n="101"/>
+<l>Tot verwonderingh van elck,</l>
+<l>Hondert Koeyen t' samen telde,</l>
+<l>Yder een Fonteyn van melck,</l>
+<l>Soo hy daer van niet verkocht,</l>
+<l>Was hy in een staet gebrocht,</l>
+<l>Daer hy niet in leven mocht.</l>
+<l rend="; 1tab">3. Schoon de Stad met volle Salen </l>
+<l>Op-gepropt van alle dingh,</l>
+<l>Trots, en heerlijck staet te pralen,</l>
+<l>Soo is 't noch, wat sy ontfingh,</l>
+<l>'t Zy van schatten, ende gelt,</l>
+<l>'t Zy van sterckheydt, en gewelt,</l>
+<l>'t Is door ons daer in bestelt.</l>
+<l rend="; 1tab">4. Schoon een vloot van duysent Schepen,</l>
+<l>Na de vaert, en wel-vaert tracht,</l>
+<l>Om veel waren in de slepen,</l>
+<pb n="102"/>
+<l>Soo geen koop-man haer bevracht,</l>
+<l>Blijft de waer in't selve Landt,</l>
+<l>Daer 't den Schipper eerstmael vant:</l>
+<l>En de vloot vertreckt met schant.</l>
+<l rend="; 1tab">5. Schoon een vloot oock quam gevaren,</l>
+<l>Van een verre, rijcke kust,</l>
+<l>En hier brachte duysent waren,</l>
+<l>Tot een yders vreught, en lust,</l>
+<l>Kochte niemandt van die last,</l>
+<l>Het bleef leggen by de mast:</l>
+<l>Denck eens hoe of dat wel past.</l>
+<l rend="; 1tab">6. Maer nu, wat de vreemde Landen,</l>
+<l>Ons ontsluyten uyt haer schoot,</l>
+<l>Goudt, en Sout, en alderhande</l>
+<l>Dingen, noodigh in de noot,</l>
+<l>Koopt den koop-man hier by een,</l>
+<pb n="103"/>
+<l>Stapelt het in onse Steen,</l>
+<l>Ende maeckt het elck gemeen.</l>
+<l rend="; 1tab">7. Alsoo wordt door 's koop-mans handen,</l>
+<l>Al het kostelijcke goedt,</l>
+<l>Hier gebracht in onse Landen,</l>
+<l>In een vollen overvloet.</l>
+<l>Maer hield' ick met singen aen,</l>
+<l>'k Song my dat ick niet mocht gaen</l>
+<l>Daerom laet ick 't singen staen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0033"/> </interpGrp>
+<head rend="h3">Een Krijghs-man singt</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Een Ruytertjen jongh van jaren</hi></head>
+<lg type="poem"><l><hi rend="i">I</hi>Ndienje eens willet letten</l>
+<l>Hoe 't in de Wereldt gaet,</l>
+<pb n="104"/>
+<l>Wat stijle men dient te setten,</l>
+<l>Tot steunsel van yeder staet,</l>
+<l>Gy sullet bevinden, dat Burger, noch Boer,</l>
+<l>Noch koopman noch zeman, kan drage<hi rend="i">n</hi> op schoer</l>
+<l>Des werelts welstant: maer dat het moet doen</l>
+<l>Den Krijghs-man, met Degen en Roer.</l>
+<l rend="; 1tab">2. Den Huys-man seer rijck, en prachtigh</l>
+<l>En wel versien met gheldt,</l>
+<l>Die isser nochtans niet machtigh,</l>
+<l>Te weeren het wreedt gewelt:</l>
+<l>Als komen de stroopers, en rooven sijn goedt,</l>
+<l>Verliest hy sijn rijckdom, en mede de moedt.</l>
+<l>Maer door den krijghs-man wel veylig bewaert</l>
+<l>Soo verkrijght hy weer overvloedt.</l>
+<l rend="; 1tab">3. De Steden alwaer vergaren,</l>
+<l>Schatten van Landt, en Zee,</l>
+<pb n="105"/>
+<l>Wel soude haer oock bewaren,</l>
+<l>Indien het geen Krijghs-man dee?</l>
+<l>Wanneer der een Leger de muuren beklam,</l>
+<l>Of schoonder een Backer, of wever aen quam,</l>
+<l>Och laci! wat was 't? sy souden van vrees,</l>
+<l>Wel worden kreupel, en lam.</l>
+<l rend="; 1tab">4. Schoon Zeeman al meent te zeylen,</l>
+<l>Na meenich vreemden Landt,</l>
+<l>Seer lichtlijck kan het hem feylen,</l>
+<l>Soo dat hy wordt aengerant,</l>
+<l>Van Roovers, en schuymers, en stroopers op zee:</l>
+<l>Maer voert hy krijghs-helden, en wapenen mee,</l>
+<l>Soo strooyt hy de stroopers: en vaert al voort,</l>
+<l>In rusten, ende in vree.</l>
+<l rend="; 1tab">5. Den Koop-man, die sijne goeden,</l>
+<l>Doet stuuren wijt en breedt,</l>
+<pb n="106"/>
+<l>Laet zijne Waren behoeden,</l>
+<l>Van Helden met stael bekleedt:</l>
+<l>Dit siene de Roovers, en neme de vlucht,</l>
+<l>Want yder die isser voor 't leven beducht:</l>
+<l>Dus come de ware des koop-mans aen,</l>
+<l>Tot yders vreught, en genucht.</l>
+<l rend="; 1tab">6. Wy binden met stalen banden,</l>
+<l>Den wrevel, en 't gewelt,</l>
+<l>En brengen de Dwinge landen</l>
+<l>Geknevelt al uyt het velt:</l>
+<l>Wy winnen de machtige steden van 't Landt,</l>
+<l>En strooyen het ciersel van onsen Vyandt,</l>
+<l>En voeren het in triumphe mee,</l>
+<l>En planten het in ons Landt</l>
+<l rend="; 1tab">7. Maer soud' ick al de profijten</l>
+<l>Van d' Oorlogh singen uyt,</l></lg>
+<pb n="107"/>
+<lg><l>Ick soude veel tijdt verslijten</l>
+<l>En 't singen en geeft geen buyt:</l>
+<l>Ick soude soo lange wel singen aen een,</l>
+<l>Dat 't Leger wel soude innemen drie Steen,</l>
+<l>En was ick daer niet dat speet my seer,</l>
+<l>Adieu dan: want ick treck weer heen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0034"/> </interpGrp>
+<head rend="h3">Een Medecijn-meester singht.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Seght mijn schoon Godinne.</hi></head>
+<lg type="poem"><l><hi rend="i">V</hi>Raeghje wie het meeste goedt</l>
+<l>Aen het Landt, en Steden doet?</l>
+<l>Sonder lang beraden</l>
+<l>Segh ick, dat een Meesters handt,</l>
+<pb n="108"/>
+<l>Aen de Steden, en het Landt,</l>
+<l>Doet de-nutste daden.</l>
+<l rend="; 1tab">2. Daer en wordt geen mensch verschoont,</l>
+<l>Rijck, noch arm, noch waer hy woont,</l>
+<l>In de Stadt, of dorpen,</l>
+<l>Of hy wordt licht kranck, en swack,</l>
+<l>En is pijn, en ongemack</l>
+<l>Stadigh onderworpen.</l>
+<l rend="; 1tab">3. Als haer dan een sieckt verheft,</l>
+<l>Als haer pijn, en lijden treft,</l>
+<l>Door de gantsche leden,</l>
+<l>Wat baet dan des Huys-mans Vee?</l>
+<l>Wat baet dan de grijse Zee?</l>
+<l>Wat baet dan de Steden?</l>
+<l rend="; 1tab">4. Dan sal al des koop-mans goedt,</l>
+<l>En sijn rijcken overvloedt,</l>
+<pb n="109"/>
+<l>Hem niet heylsam wesen:</l>
+<l>Dan ist met den Krijghs-man uyt,</l>
+<l>Spiets, noch Sabel, roof noch buyt,</l>
+<l>Can hem niet genesen.</l>
+<l rend="; 1tab">5. Maer de Heere heeft het kruyt,</l>
+<l>Dat hier uyt der aerde spruyt,</l>
+<l>Gemaeckt een geneester</l>
+<l>Van veel lijden, en ellent,</l>
+<l>En maeckt hare kracht bekent</l>
+<l>Aen een schrander meester.</l>
+<l rend="; 1tab">6. Die dan stelt sijn kuur te werck,</l>
+<l>Daer voor dat hy menigh sterck,</l>
+<l>En gesont doet maken,</l>
+<l>De dus door des meesters handt,</l>
+<l>Blijven in een goede stant,</l>
+<l>Al des wereldts saken.</l>
+<pb n="110"/>
+<l rend="; 1tab">7. Maer soud' ick nu singen uyt,</l>
+<l>Wat door Salf, door Smeer, en kruyt,</l>
+<l>Wy al voordeel krijgen,</l>
+<l>Ick soud singen alsoo langh,</l>
+<l>Dat ick self word' sieck en bangh,</l>
+<l>Daerom wil ick swijgen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0035"/> </interpGrp>
+<head rend="h3">Een Predicant singht.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">O schoon Kariclea</hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>En mensche van natuur,</l>
+<l>Is wel bequaem om yder Landt, en Stadt,</l>
+<l>Door neerstelijck bestuur,</l>
+<l>Te doen vervullen, met rijckdom, en schat,</l>
+<pb n="111"/>
+<l>Maer kan niet vaten in sijn gemoet,</l>
+<l>Hoe men moet winnen het hooghste goet.</l>
+<l rend="; 1tab">2. En wat comt hem te baet,</l>
+<l>Dat hy al in 't besit verkregen heeft,</l>
+<l>Rijckdom, en eer, en staet,</l>
+<l>Die hier de wereldt aen haer beminders geeft,</l>
+<l>Soo hy de wereldt voor d' Hemel kiest,</l>
+<l>En dan ten lesten die beyde verliest?</l>
+<l rend="; 1tab">3. Wat is 't, of yemandt zeylt</l>
+<l>Tot aen het ende van den Oceaen?</l>
+<l>En alle gronden peylt,</l>
+<l>En weet de werelt geheel romdom te gaen?</l>
+<l>Soo hy met enen oock niet verstaet,</l>
+<l>Wat wegh ten Hemel al binnen gaet?</l>
+<l rend="; 1tab">4. En of een Krijghs-man oock</l>
+<l>Door hem de gantsche werelt beven doet,</l>
+<pb n="112"/>
+<l>En blaest staegh vuur, en roock:</l>
+<l>Indien hy selven in sijn verwoest gemoet,</l>
+<l>Sijn eygen driften niet en bevecht,</l>
+<l>Soo blijft hy dan noch een Satans knecht.</l>
+<l rend="; 1tab">5. Dies is in Landt, noch Stadt,</l>
+<l>Schohon datse zijn vervult met machtigh goedt,</l>
+<l>Geen kostelijcker schat,</l>
+<l>Als 't woordt dat Godt ons nu heden schencken, doet,</l>
+<l>En dan den Hemel alhier gestiert,</l>
+<l>Ons Landt daer mede op't hooghst verciert.</l>
+<l rend="; 1tab">6. Het wijst ons 't hooghste goedt,</l>
+<l>En oock den wegh, op welcke men daer gaet:</l>
+<l>En oock hoe yder moet</l>
+<l>Hem dragen in sijnen wereldlijcken staet:</l>
+<l>En wat voor plichten in elck geval,</l>
+<l>Hy aen de menschen, en Godt, doen sal.</l>
+<pb n="113"/>
+<l rend="; 1tab">7. Wilt ghy van nu aen voort,</l>
+<l>Den zegen op ons Landen trecken neer,</l>
+<l>Soo draeght u na het woordt,</l>
+<l>Dat van den Hemel afcomt, van Godt de Heer.</l>
+<l>Dan wordt de wereldt zegen bereydt,</l>
+<l>En voor u selven de saligheydt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0036"/> </interpGrp>
+<head rend="h3">Nu zijn de Personadjen uyt, Dies singh ick hier op tot besluyt</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Maximilianus de Bossouw.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Ie wel bemerckt de ordeningh</l>
+<l>Van al der menschen wercken,</l>
+<pb n="114"/>
+<l>Die sal een soet en seltsaem dingh,</l>
+<l>In dat gesicht bemercken,</l>
+<l>Te weten hoe den een, en d'aer</l>
+<l>Te samen spannen met malkaer,</l>
+<l>De wereldt te verstercken.</l>
+<l rend="; 1tab">2. Niemandt die 't al uytvoeren can,</l>
+<l>Dat wel gedaen moet wesen,</l>
+<l>Nu vaten wy't te samen an,</l>
+<l>En alsoo wordt door desen,</l>
+<l>Het Landt met al sijn rijcke Steen:</l>
+<l>Ia heel de Wereldt in 't gemeen,</l>
+<l>Behouden in haer wesen.</l>
+<l rend="; 1tab">3. Dus wordt de werelt seer bequaem,</l>
+<l>Van hoogh-geleerde Mannen,</l>
+<l>Geleken by soo een lichaem,</l>
+<l>Wiens leden t'samen spannen,</l>
+<pb n="115"/>
+<l>Om elck te doen soo veel het can,</l>
+<l>Waer door dat oock het onheyl dan</l>
+<l>Verjaeght wordt, en verbannen.</l>
+<l rend="; 1tab">4. Het ooge licht de voeten voor</l>
+<l>De voet die draeght de handen:</l>
+<l>Het herte luystert door het oor,</l>
+<l>De buyck leeft door de tanden,</l>
+<l>En alsoo voort met al de rest.</l>
+<l>Soo is 't oock in't gemeene best,</l>
+<l>Van Steden, en van landen.</l>
+<l rend="; 1tab">5. Een yder blijf in sijn gelit,</l>
+<l>En doe sijn eygen saecken,</l>
+<l>Soo elck dit doet, soo sal oock dit,</l>
+<l>Des wereldts welstant maken:</l>
+<l>En't Landt in sulck accoort gestelt,</l>
+<l>Is niet te winnen door ghewelt:</l>
+<pb n="116"/>
+<l>Want 't harnast alle saken.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0037"/> </interpGrp>
+    <interpGrp>
+        <interp type="primair" value="16530810"/>
+        <interp type="primair" value="trom023"/>
+    </interpGrp>
+<head rend="h3">Rou-Klacht: Over de doodt van den Admirael Tromp:<lb/> Geschoten den thienden Augusti 1653.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Mijne Harp bekleet met rouwe.</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>Raeght nu vry geen swarte rocken,</l>
+<l>Als men eertijdts placht:</l>
+<l>Want het Landt is self betrocken</l>
+<pb n="117"/>
+<l>Met een swarte nacht:</l>
+<l>Eenen Son, tot 's wereldts wonder</l>
+<l>Van elck een beschout,</l>
+<l>Doock onlanghs in 't westen onder,</l>
+<l>En soomd' het met goudt</l>
+<l rend="; 1tab">2. Eenen muur, in 't rond gelegen</l>
+<l>Om ons Vaderlandt,</l>
+<l>Is nu onder voet gheslegen,</l>
+<l>Door des vyandts handt.</l>
+<l rend="; 1tab">Eenen onversaeghden Krijger,</l>
+<l>Waer voor Spanjen vloot,</l>
+<l>Meer als voor een Leeuw, of Tyger,</l>
+<l>Laci! die is doodt.</l>
+<l rend="; 1tab">3.<hi rend="i">Tromp,</hi> die is nu doodt geschoten,</l>
+<l>En ter neer gevelt,</l>
+<l>Nu is 't edel bloedt vergoten,</l>
+<pb n="118"/>
+<l>Van dien dapp'ren Heldt:</l>
+<l>Yder Burger hoort men weenen,</l>
+<l>Treurigh, en bedroeft:</l>
+<l>'t Gantsche Landt dat is met eenen</l>
+<l>'t Herte toe-geschroft:</l>
+<l rend="; 1tab">4. 't Bloedt verstremt my in sijn ader</l>
+<l>Door de konde schrick,</l>
+<l>Om dat Hollandts Vrede-vader</l>
+<l>Is een leefloos Lijck.</l>
+<l>Wie sal nu weer uyt Kartouwen,</l>
+<l>Swanger met het Kruydt,</l>
+<l>Donder, ende Blixem spouwen,</l>
+<l>Met een groot geluyt?</l>
+<l rend="; 1tab">5. Wie soud' lusten nu te schieten:</l>
+<l>Laet den kanon staen:</l>
+<l>En laet uyt u oogen vlieten,</l>
+<pb n="119"/>
+<l>Eenen Zee van traen.</l>
+<l>Draeght nu vry geen swarte rocken,</l>
+<l>Als men voortijdts placht:</l>
+<l>Want het Landt is self betrocken,</l>
+<l>Met een swarte nacht.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0038"/> </interpGrp>
+<head rend="h3">Lof sangh van een goede Vrouwe.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Mijn alderliefste verheven.</hi></head>
+<lg type="poem"><l><hi rend="i">J</hi>Ck voel mijn geest gedreven,</l>
+<l>En aen-geprickelt stijf,</l>
+<l>Om een Lof-sangh te geven</l>
+<l>Aen een Godtsaligh wijf,</l>
+<l>En aen haer vrom bedrijf.</l>
+<pb n="120"/>
+<l>Om dit dan te beginnen,</l>
+<l>Met in-getogen sinnen</l>
+<l>Is 't, dat ick aldus schrijf.</l>
+<l rend="; 1tab">2. Een Vrou begaeft met deughde,</l>
+<l>Is als een sonne-schijn,</l>
+<l>Die 't al verlicht in vreughde,</l>
+<l>Alwaer haer stralen zijn:</l>
+<l>Sy is een medicijn,</l>
+<l>Die met haer lieflijck wesen,</l>
+<l>Haer liefste doet genesen,</l>
+<l>Van druck, verdriet, en pijn. </l>
+<l rend="; 1tab">3. Sy is een stille haven,</l>
+<l>En ruste voor de jeught:</l>
+<l>Sy doet haer weergaed laven</l>
+<l>Met soete lust, en vreught,</l>
+<l>Daer door hem 't hert verheught:</l>
+<pb n="121"/>
+<l>Het doet sijn geest verstercken,</l>
+<l>Wanneer hy gaet bemercken,</l>
+<l>Haer wijsheydt, en haer deught.</l>
+<l rend="; 1tab">4. Sy is gelijck een wingert,</l>
+<l>Vol druyven door malkaer.</l>
+<l>Als sy haer arme slingert</l>
+<l>Om haren weder paer,</l>
+<l>Wanneer hy flau[...]r en naer.</l>
+<l>In jammer soud' versticken,</l>
+<l>Soo doetse hem verquicken,</l>
+<l>En maeckt een vrolijck paer.</l>
+<l rend="; 1tab">5. Sy is een goude kroone,</l>
+<l>Die op het hooft des mans,</l>
+<l>Pronckt cierelijck, en schoone,</l>
+<l>Meer als een Peerlen krans:</l>
+<l>Haer deught is Hemels glans:</l>
+<pb n="122"/>
+<l>Sy is een schat van minne,</l>
+<l>En oock haer Huys-gesinne</l>
+<l>Een onvervinb're schans</l>
+<l rend="; 1tab">6. Sy is een Hemels zegen,</l>
+<l>Een gave van de Heer</l>
+<l>Maer ick singh noyt ter degen</l>
+<l>Haer wel verdiende eer:</l>
+<l>Want sy verdient veel meer.</l>
+<l>Wel hem, die soo een Vrouwe</l>
+<l>Gheschoncken wordt in trouwe,</l>
+<l>Door gunste van den Heer.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0039"/> </interpGrp>
+<head rend="h3">De snelligheydt des tijdts.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Lestmael ging ick op eenen morgen.</hi></head>
+<lg type="poem"><pb n="123"/>
+<l><hi rend="i">G</hi>Elijck een Vogel die daer henen</l>
+<l>Vlieght, met een wack'ren snellen vlucht:</l>
+<l>Of als een mist, in haest verdwenen</l>
+<l>Voor 't aenschijn van de blauwe lucht,</l>
+<l>Soo is oock even</l>
+<l>'t Loopen van den Tijdt,</l>
+<l>En van ons leven,</l>
+<l>'t Zy men is verblijdt,</l>
+<l>Of droeven smerten lijdt.</l>
+<l rend="; 1tab">2. De nacht die kringht den dagh van stede,</l>
+<l>Soo doet den dagh de nacht oock mee,</l>
+<l>De Winter, en de Somer mede</l>
+<l>Die drijven oock malkaer van 't stee </l>
+<l>En al vreughde </l>
+<l>Van des wereldts soet:</l>
+<l>De groene jeughde,</l>
+<pb n="124"/>
+<l>En haer bly gemoedt,</l>
+<l>Vergaen gelijck een vloedt.</l>
+<l rend="; 1tab">3. Schoon yemant op den troon geklommen</l>
+<l>De wereldt had in sijn bedwangh</l>
+<l>Noch stut hy niet, door groote sommen</l>
+<l>Van yseren volck, de tijdt haer gangh:</l>
+<l>Ia self sy allen</l>
+<l>Sonden door de tijdt</l>
+<l>Haest neder-vallen;</l>
+<l>Want het is een strijdt </l>
+<l>Die't alles neder smijt.</l>
+<l rend="; 1tab">4. Dit wordt terstont ons voor-ghedragen,</l>
+<l>Soo haest men in den Bijbel leest,</l>
+<l>Daer staet van de ses eerste dagen,</l>
+<l>'t Is Avondt, en morgen geweest:</l>
+<l>Om dat de saken</l>
+<pb n="125"/>
+<l>Des wereldts, in 't kort</l>
+<l>Een eynde maken,</l>
+<l>Gelijck den dagh wordt </l>
+<l>In duysternis ghestort.</l>
+<l rend="; 1tab">5. Alleen wordt d' Avondt niet beschreven,</l>
+<l>Op 't lest van den sevensten dagh,</l>
+<l>Om dat ons af-beeldt het leven,</l>
+<l>Dat noyt de tijdt af-snijden magh.</l>
+<l>Bouwt dan u sinnen</l>
+<l>Niet op ydelheydt:</l>
+<l>Maer wilt beminnen</l>
+<l>'t Geen om hooge leydt,</l>
+<l>'t Welck blijft in eeuwigheydt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0040"/> </interpGrp>
+<pb n="126"/>
+<head rend="h3">Ken-tekenen van een Kindt Gods.<lb/> Psalm 15. ende 24. Iesai.33.3</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Ay schoonste Nimph? aensiet, &amp;c.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Ie ist die vry, met ongeboeyde ziele,</l>
+<l>Bevrijdt van alle kruys,</l>
+<l>Om hoogh sal gaen, als op Elias wielen</l>
+<l>Tot boven in Godts huys?</l>
+<l>En hoe moet hy, en sijn gestalte wesen,</l>
+<l>Die voor Godts toorn ('t welck is een gloet,</l>
+<l>Die al de boose gants verdoet)</l>
+<l>Niet hoeft te vreesen?</l>
+<l rend="; 1tab">2. Het is die geen die ongewoon tot liegen,</l>
+<pb n="127"/>
+<l>Geen vals geruchte smeet,</l>
+<l>Die niet een mensch sal wetende bedriegen,</l>
+<l>Of oorsaeck zijn tot leet:</l>
+<l>Die t' aller tijdt de kind'ren Godts doet eeren,</l>
+<l>Maer 't boose volck dat Godt versmaet</l>
+<l>Is vyandt door een heyl'ge haet:</l>
+    <l>En haet vals sweeren.</l>
+<l rend="; 1tab">3. Die om gewin, door vuyle boose stucken</l>
+<l>Sijn naesten niet uytsuyght,</l>
+<l>Noch die oock niet, om d' arme t' onder-drucken</l>
+<l>De Rechten omme-buyght.</l>
+<l>Die door geschenck, noch oock door boose leere,</l>
+<l>De suyv're waerheydt niet verlaet,</l>
+<l>Noch oock het goede om het quaedt,</l>
+<l>Niet doet verkeeren.</l>
+<l rend="; 1tab">4. Die sijn gemoedt voor Gode kan uytstorten,</l>
+<pb n="128"/>
+<l>En toont een suyver hert:</l>
+<l>Die door bedrogh, oock niet en sal verkorten</l>
+<l>Sijn schulde, tot yemandts smert.</l>
+<l>Die oock in tucht alsoo bedwinght sijn oogen,</l>
+<l>Dat sy niet leyden tot het quaedt:</l>
+<l>Die door des wereldts schijn-cieraert,</l>
+<l>Niet werdt bedrogen.</l>
+<l rend="; 1tab">5. Siet die is het, die daer sal gaen om hoogen</l>
+<l>En eeuwigh aldaer zijn,</l>
+<l>En alle heyl geniet voor Godes oogen,</l>
+<l>En salige aenschijn:</l>
+<l>De Hemel sal zijn stercke vestingh wesen,</l>
+<l>Daer hy met zegen overstort,</l>
+<l>In eeuwigheydt behouden wordt</l>
+<l>Sonder te vreesen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0041"/> </interpGrp>
+<pb n="129"/>
+<head rend="h3">De voorspoedt der Godloosen. Psalm 73:2. 18.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Granida Princesse.</hi></head>
+<lg type="poem"><l><hi rend="i">I</hi>Ck was schier geweken</l>
+<l>Van de rechte paden,</l>
+<l>En verdwaelt door enckel ongedult,</l>
+<l>En door nijdt ontsteken,</l>
+<l>Doe ick sagh de quaden</l>
+<l>Met rijckdom, in voorspoet opgevult:</l>
+<l>Sy schricken noyt in doodts gevaer een reys,</l>
+<l>Maer staen soo vast gelijck een sterck Paleys.</l>
+<l rend="; 1tab">2. Geene ongelucken,</l>
+<pb n="130"/>
+<l>Noch geen harde slagen,</l>
+<l>Nu gemeen by 't menschelijck geslachte,</l>
+<l>Komen haer oyt drucken.</l>
+<l>Heeft dan Godt behagen</l>
+<l>In haer quaedt, en in haer trotse pracht?<lb/>
+In wulpsche weeld' mest elck van haer hem vet,</l>
+<l>'t Wijl hy Godts volck met lasteren besmet.</l>
+<l rend="; 1tab">3. Als oock sulck een harer</l>
+<l>Sijn lippen doet open,</l>
+<l>Is 't of sijn stem van boven comt of,</l>
+<l>Dan komter als water</l>
+<l>Het volck aen geloopen,</l>
+<l>En offert aen hem seer grooten lof,</l>
+<l>En prijst seer hoog, sijn hooghmoet, en sijn trots,</l>
+<l>En vloeckt met een de lieve kind'ren Godts.</l>
+<l rend="; 1tab">4. Siet dat is ter degen</l>
+<pb n="131"/>
+<l>'t Fatsoen af geschildert,</l>
+<l>Ende haren aert gecontarfeyt:</l>
+<l>Maer ick daer en tegen,</l>
+<l>En ben noyt verwildert,</l>
+<l>En heb na Godts Wet mijn koers geleydt,</l>
+<l>Maer wordt geplaeght, alwaer ick my begeef:</l>
+<l>Is 't dan vergeefs, dat ick onstraflijck leef?</l>
+<l rend="; 1tab">5. Siet in sulcke reden</l>
+<l>Woud' ick schier uytvaren,</l>
+<l>En had oock by na haer seer genoemt:</l>
+<l>Maer dan had ick heden</l>
+<l>Godts volck die oyt waren,</l>
+<l>En nu zijn behouden, heel verdomt.</l>
+<l>Ick dachte oock:  wel waer comt dit van daen?</l>
+<l>En kond' dees saeck ten degen niet verstaen.</l>
+<l rend="; 1tab">6. Tot dat ick gingh treden</l>
+<pb n="132"/>
+<l>Op het alderleste,</l>
+<l>In Godes Huys, en in sijn Heylighdom,</l>
+<l>Daer vondt ick de reden,</l>
+<l>Waerom sy soo meste</l>
+<l>Sadt en vet: de reden is, daerom,</l>
+<l>Godt heftse hoogh, eer heyse neder-stort,</l>
+<l>Op dat haer val alsoo te grooter wordt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0042"/> </interpGrp>
+<head rend="h3">De bekeerde Moordenaer, Luc. 23.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">De Herdertjes in de nacht.</hi></head>
+<lg type="poem"><l><hi rend="i">E</hi>En moordenaer die altoos // Goddeloos</l>
+<l>Vermoorde, en verscheurde, gelijck een Beer</l>
+<pb n="133"/>
+<l>Die nimmer niet hoord</l>
+<l>Van Christus, noch sijn woordt,</l>
+<l>Die noemde aen 't Kruyce, Iesus sijn Heer.</l>
+<l>t' Wijl Petrus in de Zael</l>
+<l>Hem loochende driemael,</l>
+<l>Hem Iudas verrade: Hy selver met pijn</l>
+<l>Beladen soo seere,</l>
+<l>Riep: Waerom, Ach mijn Heere,</l>
+<l>Verlaet ghy nu mijn?</l>
+<l rend="; 1tab">2. t' Wijl yder in dit verdriet // hem verliet,</l>
+<l>En vluchte eer hy was aen 't Kruyce gehecht,</l>
+<l>Soo datter gants geen blijck</l>
+<l>Was, van zijn Koninghrijck,</l>
+<l>Sagh nochtans dees moorder sijn Konings recht</l>
+<l>t' Wijl een Apostel hingh</l>
+<l>En moorders loon ontfingh,</l>
+<pb n="134"/>
+<l>Soo worde een moorder een Euangelist:</l>
+<l>Die onlanghs seer sondight,</l>
+<l>Nu Christi lof verkondight:</l>
+<l>Wie had dat gegist?</l>
+<l rend="; 1tab">3. Ia selver dees moordenaer // was voorwaer</l>
+<l>Veel wijser als d' Apostels alle gelijck,</l>
+<l>Sy vraeghden noch daer na</l>
+<l>Sult ghy, o Heere dra</l>
+<l>Aen Israel herstellen het koninghrijck?</l>
+<l>Sy sagen Iesus aen,</l>
+<l>Voor een, die soud' verslaen</l>
+<l>De Roomsche Tyrannen, en storten haer neer.</l>
+<l>Maer desen in't sterven </l>
+<l>Die bidt des Hemels erven</l>
+<l>Van des Hemels Heer.</l>
+<l rend="; 1tab">4. Hoe konde dees mordenaer // also klaer</l>
+<pb n="135"/>
+<l>Sien, door dees dicke wolcke, en nevelen heen,</l>
+<l>Dat hy in dit ellent,</l>
+<l>De Godtheydt Iesu kent,</l>
+<l>Daer hy eenen leydts-man der moorders scheen:</l>
+<l>Het is 't geloof geweest,</l>
+<l>Gewrocht door Christi Gheest,</l>
+<l>De welcke hem Iesus dus maeckte bekent:</l>
+<l>Nu leeft hy hier boven,</l>
+<l>Om sijn Heylandt te loven</l>
+<l>Eeuwigh sonder endt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0043"/> </interpGrp>
+<head rend="h3">Vyanden der Kinderen Godts.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Voorby is's winters harde stoot.</hi></head>
+<lg type="poem"><pb n="136"/>
+<l><hi rend="i">V</hi>Oor swellen die besloten zijn</l>
+<l>Sal meer een meester vreesen,</l>
+<l>Dan of alleenelijck de pijn,</l>
+<l>Comt buyten aen te wesen.</l>
+<l rend="; 1tab">2. Op ondiep Water, voor een Klip</l>
+<l>Die loert in het verborgen,</l>
+<l>Soo draeght een Stuurman voor het Schip,</l>
+<l>De aldergrooste sorgen.</l>
+<l rend="; 1tab">3. En een voorsichtigh Capiteyn,</l>
+<l>Is voor verborgen lagen</l>
+<l>Veel meer bevreest, dan of alleyn,</l>
+<l>Maer wancken harde slagen.</l>
+<l rend="; 1tab">4. Alsoo is oock 't verdorven vlees</l>
+<l>De quaetst van ons vyanden,</l>
+<l>En darom oorsaeck, dat ons dees </l>
+<l>Bedecktlijck komt aenranden.</l>
+<pb n="137"/>
+<l rend="; 1tab">5. Sy houdt gedurigh scherpe wacht.</l>
+<l>En laet geen tijdt ontsluypen,</l>
+<l>Maer neemt op ons gestadigh acht,</l>
+<l>Ons wacht te onder-kruypen</l>
+<l>6. Den Satan heeft met haer verdrach,</l>
+<l>En loopt staegh om de kanten,</l>
+<l>En soeckt waer hy sijn Standaert magh,</l>
+<l>Op wal, en vestingh planten.</l>
+<l rend="; 1tab">7. Het vlees onthout haer by de poort,</l>
+<l>En soeckt hem in te leyden,</l>
+<l>En tracht aen dees, of d'ander oort</l>
+<l>Hem ingangh te bereyden.</l>
+<l rend="; 1tab">8. Somtijts soo vint sy inder nacht,</l>
+<l>Gants sonder sorge slapen,</l>
+<l>Die daer gesielt zijn op de wacht:</l>
+<l>Dan neemt sy haren wapen.</l>
+<pb n="138"/>
+<l rend="; 1tab">9. En roepter strack den satan by,</l>
+<l>En seydt: komt treet u binnen,</l>
+<l>Want dese stadt, voor u, en my,</l>
+<l>Die is nu licht te winnen.</l>
+<l rend="; 1tab">10. Den satan valt in fury aen</l>
+<l>En meent die stadt te rooven</l>
+<l>Maer als hy binnen is gegaen, </l>
+<l>Soo komt den Heldt van boven.</l>
+<l rend="; 1tab">11. Den Hoeder Isr'els in de lucht,</l>
+<l>Met sijn Geweer in handen,</l>
+<l>En drijft den satan op de vlucht,</l>
+<l>Soo dat hy ruymt met schanden.</l>
+<l rend="; 1tab">12. Wel looft u Godt, na rechten eys</l>
+<l>Ghy alle sijne kind'ren,</l>
+<l>Die soo den satan, en het vleys,</l>
+<l>Haer moed-wil doet verhind'ren.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0044"/> </interpGrp>
+<pb n="139"/>
+<head rend="h3">Geestelijcke triumphe.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Hey hoe helder schijnt het maentje?</hi></head>
+<lg type="poem"><l><hi rend="i">L</hi>Ooft Godt alle ghy verloste</l>
+<l>Van des satans slaverny:</l>
+<l>Al uw' vyanden die moste.</l>
+<l>V gaen laten los, en vry,</l>
+<l>Doe quam // dat Lam,</l>
+<l>Dat voor ons voldeed,</l>
+<l>En Godts toorne voor ons leed:</l>
+<l>Dat Lam // dat voor ons voldeed,</l>
+<l>En steld Godt met ons te vreed.</l>
+<l rend="; 1tab">2. Al des satans Helsche stricken,</l>
+<l>Door ons sonden sterck in kracht,</l>
+<pb n="140"/>
+<l>En de wet, die met verschricken,</l>
+<l>Den sondaer voor 't oordeel bracht,</l>
+<l>Zijn nu // voor u,</l>
+<l>Ghy die Christi zijt,</l>
+<l>Gants vernielt voor alle tijdt.</l>
+<l>Voor u // ghy die Christi zijt,</l>
+<l>Is geen schrick voor hel, of strijdt.</l>
+<l rend="; 1tab">3. Dreyght de doodt u te verworgen,</l>
+<l>Segh dan vry, O doodt! soo niet,</l>
+<l>Eertijdts hebt ghy mijn Borge</l>
+<l>Vast gehadt in u ghebiedt:</l>
+<l>Maer hy // gingh vry,</l>
+<l>Doe hy had betaelt,</l>
+<l>En mijn schulden door gehaelt.</l>
+<l>Maer ghy // doe hy had betaelt,</l>
+<l>Hebt ghy niet als schand behaelt.</l>
+<pb n="141"/>
+<l rend="; 1tab">4. Alle sijnse soo gevaren,</l>
+<l>Sonde, Satan, Wet en vloeck,</l>
+<l>Schoonse thienmael meerder waren,</l>
+<l>Noch was Christus haer te kloeck:</l>
+<l>Hy bracht // haer macht,</l>
+<l>Gantschlijck onder voet,</l>
+<l>Door sijn lijden, en sijn bloedt.</l>
+<l>Haer macht // gantschlijck onder voet,</l>
+<l>Maer ons schonck hy 't eeuwigh goedt.</l>
+<l rend="; 1tab">5. Wat sal ick nu weder geven</l>
+<l>Aen hem? schatten groot van som?</l>
+<l>O neen! Ick wil self mijn leven</l>
+<l>Schencken hem in eygendom:</l>
+<l>Ick sal // het al,</l>
+<l>Lijf, en Siele beyd,</l>
+<l>Overgeven sijn beleyd.</l>
+<pb n="142"/>
+<l>Ick sal // Lijf en Ziele beydt,</l>
+<l>Schencken hem in eeuwigheydt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0045"/> </interpGrp>
+<head rend="h3">Toe-vlucht der Geloovigen.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Polyphemus aen de strande.</hi></head>
+<lg type="poem"><l><hi rend="i">J</hi>Ck weet Heere, ghy sijt seecker,</l>
+<l>Eenen wreecker,</l>
+<l>En een straffer van het quaedt:</l>
+<l>Wilt ghy dan in toorn verbolgen,</l>
+<l>My vervolgen,</l>
+<l>Soo en weet ick geenen raedt.</l>
+<l rend="; 1tab">2. Schoon ick snelder als de veug'len,</l>
+<l>Op de vleug'len</l>
+<pb n="143"/>
+<l>Van de gulde dageraet,</l>
+<l>Vloogh aen, t'eynde van het water,</l>
+<l>Wiens geklater</l>
+<l>Staegh de wreede Rotsen slaet:</l>
+<l rend="; 1tab">3. Noch soud ick my self bedriegen,</l>
+<l>En in 't vliegen,</l>
+<l>Van uw' handt daer zijn bekayt:</l>
+<l>Want ter wereldt niet en repter</l>
+<l>Daer den Scepter</l>
+<l>Vwer handt niet overswayt.</l>
+<l rend="; 1tab">Schoon ick onder de Zee-golven</l>
+<l>My bedolve,</l>
+<l>En ick daer in't wel-sandt kroop,</l>
+<l>Om soo in die diepe kuylen </l>
+<l>V t' ontschuylen,</l>
+<l>'k Was daer mee al buyten hoop.</l>
+<pb n="144"/>
+<l rend="; 1tab">5. Schoon ick onder in der Hellen,</l>
+<l>Socht te stellen,</l>
+<l>Eenen Schuyl-plaets voor u oogh,</l>
+<l>Noch souden uw' ooge stralen</l>
+<l>Op my dalen</l>
+<l>In der Hellen, van om hoogh.</l>
+<l rend="; 1tab">6. Schoon ick mede soude derren</l>
+<l>Bij de Sterren</l>
+<l>Klimmen op een gouden stoel,</l>
+<l>My soud' al het selve schorten,</l>
+<l>Ghy soud' storten</l>
+<l>My in d' onder-aerdtsche poel.</l>
+<l rend="; 1tab">7. Schoon ick in de harde klippen </l>
+<l>Konde slippen,</l>
+<l>En haer zijn tot ingewant,</l>
+<l>Daer my Son, noch maen, noch Winden,</l>
+<pb n="145"/>
+<l>Konde vinden,</l>
+<l>Soud' my vinden uwe handt.</l>
+<l rend="; 1tab">8. Al het vluchten voor Godts tooren</l>
+<l>Is verlooren,</l>
+<l>Schoon ick was in 't stercktste slot</l>
+<l>Datter is in 't Aertsch gewemel,</l>
+<l>Onder d' Hemel,</l>
+<l>Ick was daer noch naeckt voor Godt.</l>
+<l rend="; 1tab">9. Sal ick dan niet angstigh beven</l>
+<l>Ende geven</l>
+<l>My de wan hoop tot een roof?</l>
+<l>O neen! Ick wil noch al hopen,</l>
+<l>En doen open</l>
+<l>'t Scherp-siend' ooge van 't geloof.</l>
+<l rend="; 1tab">10. Schuylende in Christi wonden,</l>
+<l>Daer mijn sonden</l>
+<pb n="146"/>
+<l>Voor Godts oordeel zijn bedeckt,</l>
+<l>Ende wil mijn naeckte leden</l>
+<l>Doen bekleeden</l>
+<l>Met sijn deughden onbevleckt.</l>
+<l rend="; 1tab">11. Laet dan vry Gods toorne blaken,</l>
+<l>En doen kraken</l>
+<l>Beyde Hemel, ende Aerd,</l>
+<l>Evenwel sal ick dan wesen</l>
+<l>Sonder vreesen,</l>
+<l>En in Iesum wel bewaert.</l>
+<l rend="; 1tab">12. Iacob dede my dit leeren,</l>
+<l>Die met kleeren</l>
+<l>Van sijn Broeder hem omhingh,</l>
+<l>Ende alsoo quam voor Isack,</l>
+<l>Aldaer hy strack</l>
+<l>'s Vaders zegen door ontfingh.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0046"/> </interpGrp>
+<pb n="147"/>
+<head rend="h3">Simsons Raedtsel, Iudic. 14:14.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">O saligh heyligh Bethlehem.</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>Aer quam van eenen eter spijs,</l>
+<l>En van een stercken soetigheden.</l>
+<l>Nu is de vraghe, op wat wijs</l>
+<l>Moet men dit Raedtsel recht ontleden?</l>
+<l rend="; 2tab"><hi rend="i">Antwoort.</hi></l>
+<l rend="; 1tab">2. By Timnath was een wreeden Leeuw</l>
+<l>Een Pest, en plage voor de Velden,</l>
+<l>Die staegh verweckt een moort-geschreeuw,</l>
+<l>En 't Landt in een verbaestheydt stelde.</l>
+<l rend="; 1tab">3. Een yder mensch en dorste schier</l>
+<l>Dat gantsche Landt niet eens genaken:</l>
+<pb n="148"/>
+<l>Want dat vervaerlijck Monster-dier</l>
+<l>Verscheurd haer in sijn wreede kaken.</l>
+<l rend="; 1tab">4. Maer Simson, welckets gantsche lijf</l>
+<l>Met stalen zenuwen was door-regen,</l>
+<l>Als hy verstont dit wreet bedrijf,</l>
+<l>Voeld' hy sijn geest in hem bewegen.</l>
+    <l rend="; 1tab">5. Eu stapte mee een rassche voet</l>
+<l>Na Timnaths wout, dat Beest te stooren,</l>
+<l>Daer hem dien Leeu terstont ontmoet,</l>
+<l>Die strack vergramt in heete tooren.</l>
+<l rend="; 1tab">6. En braeckt den Donder uyt sijn keel,</l>
+<l>En schoot den Blixem uyt sijn oogen,</l>
+<l>Niet anders, dan of hy geheel</l>
+<l>De Helle hadde uyt-gespogen.</l>
+<l rend="; 1tab">7. En quam met een geresen pruyck:</l>
+<l>Met krullende bebloede locken,</l>
+<pb n="149"/>
+<l>En meend' oock Simson in sijn buyck</l>
+<l>Als and're lieden op te slocken.</l>
+<l rend="; 1tab">8. Maer Simsom hief sijn handt eens op,</l>
+<l>Die hy eerst eens rondomme swayden,</l>
+<l>En trompt den Leeuw voor sijnen kop,</l>
+<l>Dat hem sijn beyde oogen draeyden.</l>
+<l rend="; 1tab">9. Daer stort dien Leeu, dat grousaem dier,</l>
+<l>Dat soo op sijn krachten steunde,</l>
+<l>En gaf een Brul, met sulck getier,</l>
+<l>Dat al het Landt rondomme dreunde.</l>
+<l rend="; 1tab">10. Simson met een metalen vuyst,</l>
+<l>Die scheurd van een, de kop, en lenden:</l>
+<l>Daer lagh dat Beest, met vuyl begruyst.</l>
+<l>En Simson gaet hem elders wenden.</l>
+<l rend="; 1tab">11. Maer als Simson daer na eens gaet</l>
+<l>Voor by dees vuyle doode prye,</l>
+<pb n="150"/>
+<l>Soo vondt hy daer in Honingh-raedt,</l>
+<l>Daer in vergadert door de Byen.</l>
+<l rend="; 1tab">12. Siet hier uyt neem ghy klaerlijck af,</l>
+<l>Soo ghy met vlijt maer wilt aenmercken,</l>
+<l>Hoe dat den eter spijse gaf,</l>
+<l>En soetigheydt quaem van den stercken.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0047"/> </interpGrp>
+<head rend="h3">De Mensche ellendigher als de Beeste.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Hoe legh ick hier in dees ellende.</hi></head>
+<lg type="poem"><l><hi rend="i">O</hi> Soete jeught weest niet hooveerdigh,</l>
+<l>Roemt niet op staet, of ed'len geest,</l>
+<l>Want, schoon al schijnt een mensch seer weerdig,</l>
+<pb n="151"/>
+<l>Noch is hy minder als een Beest:</l>
+<l>Soo wanneer wy te recht bemercken,</l>
+<l>Het aerdtsche lichaem, en sijn wercken.</l>
+<l rend="; 1tab">2. De jonge Kalveren, en Lamtjes,</l>
+<l>En al 't Gediert, die springen op,</l>
+<l>En soeckens hares moeders mamtjes:</l>
+<l>De Pilkes kruypen uyt de dop.</l>
+<l>Maer een jongh Kindt leydt lange jaren,</l>
+<l>En streckt sijn Ouders tot beswaren.</l>
+<l rend="; 1tab">3. Als and're Dieren zijn gebooren,</l>
+<l>En op de wereldt voort-gebracht,</l>
+<l>Soo koom'se met haer kleedt te vooren,</l>
+<l>Met pluymen, wol, of hayren vacht.</l>
+<l>De mensch alleen heeft naeckte leden,</l>
+<l>En and're moeten hem bekleeden.</l>
+<l rend="; 1tab">4. Een Beest dat leeft oock sonder sorgen,</l>
+<pb n="152"/>
+<l>Sonder arbeydt, en sonder sweet:</l>
+<l>En 't sorght noyt voor den dagh van morgen,</l>
+<l>Want altijdt staet sijn disch gereet.</l>
+<l>Dit magh de mensche niet gebeuren,</l>
+<l>Maer moet in 't werck hem schier verscheuren.</l>
+<l rend="; 1tab">5. Natuur heeft oock een Beest geschapen</l>
+<l>Bequaem tot tegenstant van strijt:</l>
+<l>Want yder Beest dat draeght sijn wapen,</l>
+<l>Daer mede dat het vecht, en smijt:</l>
+<l>Maer d'arme mensch en draeght geen hoorens,</l>
+<l>Geen klauwe, noch geen scherpe spoorens.</l>
+<l rend="; 1tab">6. Een Beests veerdigh op sijn benen,</l>
+<l>En afgeveerdigh tot de vlucht.</l>
+<l>Een Vogeltjen dat vlieght daer henen,</l>
+<l>Tot boven in de blauwe Lucht.</l>
+<l>Maer een mensch is seer traegh van leden,</l>
+<pb n="153"/>
+<l>En gaet heel log daer heene treden.</l>
+<l rend="; 1tab">7. Een Beest leeft ook veel meer na reden</l>
+<l>Als wel een mensche selver doet</l>
+<l>Want het is in sijn staet te vreden,</l>
+<l>Maer een mensch soeckt al meerder goedt.</l>
+<l>En dit ontciert den mensch noch 't meeste,</l>
+<l>Dat hy een dienaer is der beeste.</l>
+<l rend="; 1tab">8. En wilt ghy van de kunsten roemen,</l>
+<l>Die geschieden door 's menschen geest,</l>
+<l>Soo sal ick u eens kunsten noemen,</l>
+<l>Eerst uyt-gevonden van een beest.</l>
+<l>En hy is van veel grooter eeren,</l>
+<l>Die kunsten vindt, als diese leeren.</l>
+<l rend="; 1tab">8. Wie heeft het mets'len eerst begonnen?</l>
+<l>Het was een Swaeltien in sijn nest,</l>
+<l>En hoe het Gaern moet zijn gesponnen,</l>
+<pb n="154"/>
+<l>Leerden de spinnen alderbest.</l>
+<l>En hoemen Landen moet Regeeren,</l>
+<l>Dat mostmen van de Byen leeren.</l>
+<l rend="; 1tab">10. En hoemen sijnen stem moet wringen,</l>
+<l>In groven, en in fijnen tael,</l>
+<l>Om alsoo goedt Musijck te singen,</l>
+<l>Dat leerde ons de Nachtegael.</l>
+<l>En oock de Aerde t' onder-mijnen,</l>
+<l>Dat leerd ons Mollen, en Konijnen.</l>
+<l rend="; 1tab">11. Een Pellicaen die leerd' het laten,</l>
+<l>Door 't tappen van sijn eygen bloedt:</l>
+<l>Een Oyevaer die leerd' ons vaten</l>
+<l>Hoemen Klisteren setten moet,</l>
+<l>Een Esel leerd' in oude tijden,</l>
+<l>Datmen den Wijngaert moet besnijden.</l>
+<l rend="; 1tab">12. En om door 't Roer een schip te stieren,</l>
+<pb n="155"/>
+<l>Dat saghmen aen een Visch sijn steert.</l>
+<l>In somma: daer zijn veel manieren,</l>
+<l>Dat het Gediert ons heeft geleert.</l>
+<l>Wat wil hem dan een mensch verheffen,</l>
+<l>Daer hem de Beesten overtreffen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0048"/> </interpGrp>
+<head rend="h3">Een bekeerde Sondaresse, Luc. 7.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Ga wereldts minnaer vliet.</hi></head>
+<lg type="poem"><l><hi rend="i">G</hi>Hy die aen lust, en weelt,</l>
+<l>Lijf, Ziel, en tijdt verspeelt,</l>
+<l>Komt siet hier aen een aerdigh beeldt,</l>
+<l>'t Welck was als ghy, maer neemt voortaen,</l>
+<l>Voor 't Hels, een Hemels wesen aen.</l>
+<pb n="156"/>
+<l rend="; 1tab">2. Komt leert een nutte les</l>
+<l>Van eenen sondares,</l>
+<l>Een vuyle Hoer: maer onder des,</l>
+<l>Sy krijght berou, en wordt het moe,</l>
+<l>En neemt haer gangh na Christum toe.</l>
+<l rend="; 1tab">3. Daer sy een tranen vliet</l>
+<l>Wt hare oogen schiet,</l>
+<l>Dat niet uyt list, maer uyt verdriet:</l>
+<l>Wt d' oogen, daer de geyle min,</l>
+<l>Noch onlanghs hield haer woonplaets in.</l>
+<l rend="; 1tab">4. Het Hayr dat als een net,</l>
+<l>Tot vangen was geset,</l>
+<l>En menighs kuysheydt had besmet,</l>
+<l>Daer mee veeghd' sy de tranen af,</l>
+<l>Die sy in 't schreyen over gaf.</l>
+<l rend="; 1tab">5. De soeten Balsem mee,</l>
+<pb n="157"/>
+<l>Daer voor sy eertijdts dee</l>
+<l>Haer selven salven, doet haer wee,</l>
+<l>Dies sy 't besteedt tot Christi eer,</l>
+<l>En stort het op sijn voeten neer.</l>
+<l rend="; 1tab">6. Haer mondt tot kus besteet,</l>
+<l>In minne heyl, en heet,</l>
+<l>Die kuste oock, maer 't was uyt leet,</l>
+<l>Die kuste oock, maer 't was uyt lust,</l>
+<l>Een lust die in haer Godt berust.</l>
+<l rend="; 1tab">7. In somma: wat sy vint,</l>
+<l>Dat dul, en onbesint</l>
+<l>De ydelheden had bemint,</l>
+<l>Dat wendse om, en gaf het weer,</l>
+<l>Tot een geschencken aen haren Heer.</l>
+<l rend="; 1tab">8. En hy, die sy dit geeft,</l>
+<l>Is vriend'lijck, en beleeft,</l>
+<pb n="158"/>
+<l>'t Welck hy haer oock bewesen heeft:</l>
+<l>Want t'wijl sy drupp'len tranen laet,</l>
+<l>Soo geeft hy stroomen van genaedt.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0049"/> </interpGrp>
+<head rend="h3">Nieuwe-Jaers Liedt.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Als 't begint.</hi></head>
+<lg type="poem"><l><hi rend="i">H</hi>Et eerste daghjen in 't Nieuwe Iaer,</l>
+<l>'t Welcke ons nu is verschenen,</l>
+<l>Dat leert ons duydelijck, ende seer klaer,</l>
+<l>Hoe snel ons leven gaet daer henen.</l>
+<l rend="; 1tab">2. By dagen soo loopt het jaer ten ent,</l>
+<l>By jaren verloopt het leven:</l>
+<l>Wel dwaes is hy dan, die niet en bekent.</l>
+<pb n="159"/>
+<l>Dat men het haest moet overgeven.</l>
+<l rend="; 1tab">3. Maer wy die beter sijne geleert,</l>
+<l>Wy vinden hier groote reden,</l>
+<l>Nadien ons leven seer haestigh verkeert,</l>
+<l>Om altijdt 't leven wel te besteden.</l>
+<l rend="; 1tab">4. Seer menigh al in het jaer lest-le'en,</l>
+<l>Swom oock in den poel der sonden,</l>
+<l>De doot die ginger seer veerdigh mee heen,</l>
+<l>En 't Graf heeft al haer vreught verslonden.</l>
+<l rend="; 1tab">5. Wel wieje dan zijt, en laet u hert</l>
+<l>Niet soecken wereldts genuchten:</l>
+<l>Noch wilt oock mede in lijden en smert,</l>
+<l>Niet al te seer, noch droevigh suchten.</l>
+<l rend="; 1tab">6. Seer haestigh vergaet des wereldts soet,</l>
+<l>En het suur, en bitter mede:</l>
+<l>Maer leeft Godtsaligh, soeckt 't Hemelsche goet</l>
+<pb n="160"/>
+<l>Dat blijft ons by, altijdt in vrede.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0050"/> </interpGrp>
+<head rend="h3">Des Heeren Wijn-bergh Ies.5:1.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Tweede Carileen.</hi></head>
+<lg type="poem"><l>'<hi rend="i">K </hi>Wil de liefste die men siet,</l>
+<l>Singen voor, van mijn bemind' een Liedt,</l>
+<l>Die een Tuyn, en Wijn bergh, op den kruyn</l>
+<l>Heeft geplant,</l>
+<l>Van den vetsten heuvel in het Landt:</l>
+<l>Wat steen hy vondt, in den grondt, is terstont</l>
+<l>Wt geret,</l>
+<l>Goede rancken ingeset:</l>
+<pb n="161"/>
+<l>En een want, om den kant, vast geplant:</l>
+<l>En hy toogh</l>
+<l>In 't midden op, een toorn seer hoogh.</l>
+<l rend="; 1tab">2. En hy maeckt een wijn-pars-back:</l>
+<l>En hy groef, en dolf hem om, en stack,</l>
+<l>Ia hy wrocht, hem ter deegh, maer hy brocht</l>
+<l>Geen gewin,</l>
+<l>Hy socht vruchten, maer daer quam niet in:</l>
+<l>Wat dat hy sagh, dagh aen dagh, hy en magh</l>
+<l>'t Smaken niet,</l>
+<l>'t Geen sijn Wijn-bergh aen hem biet:</l>
+<l>Van natuur, wrang en suur, als een muur,</l>
+<l>Dor, en hert,</l>
+<l>Is de vrucht, die bekomen werdt.</l>
+<l rend="; 1tab">3. Komt Ierusalems Vier-schaer,</l>
+<l>Vonnist nu, en spreckt in 't openbaer,</l>
+<pb n="162"/>
+<l>Of een man, sijn Wijn-bergh, meer doen kan,</l>
+<l>Als ick die.</l>
+<l>Heb bewesen, en geen vrucht en sie,</l>
+<l>Wel waerom schengt? waerom brengt? waerom dengt</l>
+<l>Hy niet toe,</l>
+<l>Vruchten aen my, wat ick doe?</l>
+<l>Of ick ga, vroegh en spa, soecker na,</l>
+<l>Iaren langh,</l>
+<l>Wat ick vind, dat is suur, en wrangh.</l>
+<l rend="; 1tab">4. Wel aen Wijn-bergh, het besluyt</l>
+<l>Is gevelt: Ick sal het voeren uyt:</l>
+<l>Sijnen wout, ruck ik om, dat de kant</l>
+<l>Niet belet,</l>
+<l>Noch kan schutten, wat hem geern vertredt.</l>
+<l>Dan sal dien thuyn, op den kruyn, van dien duyn</l>
+<l>Soo verciert,</l>
+<pb n="163"/>
+<l>Zijn vertreden, van 't gediert?</l>
+<l>Ia hy sal, heel en al, door dien val,</l>
+<l>Oyt en oyt,</l>
+<l>Zijn verwoest, ende heel beroyt.</l>
+<l rend="; 1tab">5. Daer sal niet meer wassen uyt,</l>
+<l>Als onreyn, en schadelijck onkruyt:</l>
+<l>Nimmermeer, sal een wolck, aldaer neer,</l>
+<l>Wt sijn vat,</l>
+<l>Lossen sijnen Hemels water-schat.</l>
+<l>Desen wijn-gaert, quaedt vermaert, quaet van aert</l>
+<l>Quaedt van stant,</l>
+<l>Is het Israels vette Landt:</l>
+<l>En ick wacht, of 't geslacht, vreughten bracht</l>
+<l>Na mijn sin,</l>
+<l>Doch ick vind, daer maer sonden in.</l>
+<pb n="164"/>
+<l><hi rend="i">Hollandt, daer aen de Heere gaf,</hi></l>
+<l><hi rend="i">In't eerst veel goedts in t' lest veel straf:</hi></l>
+<l><hi rend="i">Het eerst uyt gunst, het lest na waerd'</hi></l>
+<l><hi rend="i">Is even soo, als dees Wijngaerd.</hi></l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0051"/> </interpGrp>
+<head rend="h3">Des Heeren weldaden.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Geswinde Bode van de min:</hi></head>
+<lg type="poem"><l><hi rend="i">G</hi>Elijck Godt met sijn wijn-bergh dee,</l>
+<l>In kana geplant,</l>
+<l>Soo doet den goeden Godt oock mee,</l>
+<l>Met ons Vaderlandt:</l>
+<l>Want de Heer // heeft dit Landt,</l>
+<pb n="165"/>
+<l>Tot sijn eer // door sijn handt</l>
+<l>Met goede // vervult in overvloet.</l>
+<l>Soo dat wijdt, en breedt,</l>
+<l>Even als een kleedt,</l>
+<l>Godts Barmhertigheydt,</l>
+<l>Worde over 't Landt gepreyt.</l>
+<l rend="; 1tab">2. In den Eersten quammer voort,</l>
+<l>Inde duysterheydt,</l>
+<l>'t Helder licht van Godes woordt,</l>
+<l>Dat ten Hemel leydt,</l>
+<l>Doe dit quam // uyt de lucht,</l>
+<l>Daer op nam // strack de vlucht</l>
+<l>'t Gespuys // en 't spoock van Babels huys.</l>
+<l>Ende hier op strack,</l>
+<l>Oock aen stucken brack,</l>
+<l>Den handt, die de ziel</l>
+<pb n="166"/>
+<l>Vast in Roomsche stricken hiel.</l>
+<l rend="; 1tab">3. Doe al de wereldt dit aenschoud,</l>
+<l>Maeckt sy haer bereydt,</l>
+<l>Dat sy met Silver, en met Goud,</l>
+<l>En meer kostlijckheydt</l>
+<l>Vol van glans // die noyt dooft,</l>
+<l>Eenen krans // op ons hooft,</l>
+<l>Ten pronck // en tot verciersel schonck:</l>
+<l>Yder Landt schonck wat,</l>
+<l>Van sijn besten schat,</l>
+<l>Alsoo wordt hier door</l>
+<l>Holland, 's werelds schat-tresoor.</l>
+<l rend="; 1tab">4. Het deense Bos, dat deel sijn hout</l>
+<l>Hier aen Hollandt mee,</l>
+<l>Daer van men duystent Schepen bouwt,</l>
+<l>Swemmend op de Zee:</l>
+<pb n="167"/>
+<l>Sulcken som // toe-gerust,</l>
+<l>Seyld' romdom: yder kust</l>
+<l>Die goot // sijn schatten uyt de schoot:</l>
+<l>Want den Indiaen</l>
+<l>Quam met silver aen,</l>
+<l>Roodt gemenght met Gout.</l>
+<l>Smanjen schonck haer wijn, en sout.</l>
+<l rend="; 1tab">5. Vranckrijck dat gaf oock wat het kon:</l>
+<l>Sweden koper sondt,</l>
+<l>En al de Rogg, die Polen won,</l>
+<l>Quam ons in de mondt:</l>
+<l>Engelandt // pluysde sacht,</l>
+<l>Met haer handt // 't Schaepjes vacht</l>
+<l>Heel af // dat sy aen Hollandt gaf.</l>
+<l rend="; 1tab">Somma, in het kort,</l>
+<l>Yder Landt dat stort,</l>
+<pb n="168"/>
+<l>'t Beste uyt sijn schoot</l>
+<l>Yeder in de Hollandts' vloot.</l>
+<l rend="; 1tab">6. En oock de Zee, seer grijs en blau,</l>
+<l>Wt haer ingewandt,</l>
+<l>Schonck Haringh, ende kabeljau.</l>
+<l>En oock self Hollandt,</l>
+<l>Word' een Hof // rijck in kruydt,</l>
+<l>Alle stof // gaf het uyt,</l>
+<l>En toond // dat Godes gunst daer woond'</l>
+<l>Want daer vloeyd' een stroom,</l>
+<l>Wit van melck, en Room,</l>
+<l>'t Scheen dat yder Gras,</l>
+<l>Een Fonteyn van suyvel was.</l>
+<l rend="; 1tab">7. Doe nu dit door des Heeren gunst,</l>
+<l>Hier quam by malkaer,</l>
+<l>Soo quamen oock natuur, en kunst,</l>
+<pb n="169"/>
+<l>Alle beyde daer,</l>
+<l>Om dit Landt // in die staet,</l>
+<l>Met haer handt // sijn cieraet</l>
+<l>Heel kant // te stellen in sijn stant:</l>
+<l>Dese maeckten rat,</l>
+<l>Yder dorp een Stadt,</l>
+<l>Yder Stadt een Rijck,</l>
+<l>'t Rijck de wereldt heel gelijck.</l>
+<l rend="; 1tab">8. Den Spanjaert door dees heerlijckheydt,</l>
+<l>Worde soo verveert,</l>
+<l>Dat hy voor onse voeten leydt,</l>
+<l>Moordt-priem, spiets, en sweert:</l>
+<l>En terstondt // men vernam,</l>
+<l>Dat een hondt // word een Lam,</l>
+<l>Daer staet // Hollandt in sijn cieraet,</l>
+<l>En blinckt dat de son</l>
+<pb n="170"/>
+<l>'t Nau verdragen kon,</l>
+<l>Ia sagh hem schier blindt.</l>
+<l>Siet dus heeft ons Godt bemint.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0052"/> </interpGrp>
+<head rend="h3">Hollandts suure Druyven.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Soo langh is't Muysjen vry.</hi></head>
+<lg type="poem"><l><hi rend="i">M</hi>Aer doe ons Vaderlandt,</l>
+<l>Door Godes milde handt</l>
+<l>Dus rijck gezegent was, soo terghd'se hem tot wraeck,</l>
+<l>En koren niet sijn dienst, maer Bacchus tot vermaeck.</l>
+<l rend="; 1tab">Sy seyden noyt te saem,</l>
+<l>Komt danckt des Heeren naem</l>
+<pb n="171"/>
+<l>Die ons dit alles geeft: en of men rijkdom krijgt</l>
+<l>Elc roemt sijn neersticheyt, terwijl hy God verswigt</l>
+<l>3. En t'wijl elck een bedenckt,</l>
+<l>Niet dat hem Godt dit schenkt,</l>
+<l>Maer sijn selfs vernuft, en kloekheyt hem dit deed,</l>
+<l>Hy 't niet tot Godes eer, maer eygen lust besteed</l>
+<l rend="; 1tab">4. Hier door soo wordt het Landt</l>
+<l>Vervult aen alle kant,</l>
+<l>Met wulpsheyt, en met pracht: en na de rijckdom wast,</l>
+<l>Wordt oock het Vaderlandt met sonden overlast.</l>
+<l rend="; 1tab">5. En of sijn rijckdom staegh</l>
+<l>Vermeerdert alle daegh,</l>
+<l>d'Eergiergheydt, en nijt, 't hooveerdige gemoet</l>
+<l>Die steeken t hooft noch op ver boven al sijn goet</l>
+<l rend="; 1tab">6. De groote gane voor,</l>
+<l>De kleyne volgen 't spoor,</l>
+<pb n="172"/>
+<l>Dus gaense met malkaer, den wegh al na de Hel,</l>
+<l>En die ten Hemel klimt, vint nau een met gesel,</l>
+<l rend="; 1tab">7. Het gantsche Landt dat blinckt:</l>
+<l>O neen! het Landt dat stinckt</l>
+<l>Van vuyle hoovaerdy, van hoog-moet en van trots,</l>
+<l>En smeert sijn vleken aen de beste kind'ren Godts</l>
+<l rend="; 1tab">8. Die nu met sijn verstant</l>
+<l>Door-loopt ons Vaderlandt,</l>
+<l>'t Is of men nu ter tijdt, geen kind'ren Godts en siet,</l>
+<l>Men siet de witte deught, de vreese Godes niet.</l>
+<l rend="; 1tab">9. De Goddeloose klap,</l>
+<l>De dulle dronckenschap,</l>
+<l>Het geyle Hoer-gesangh dat sweefter over straet:</l>
+<l>'t Is of men in het Hof, van 't snoode Romen staet.</l>
+<l rend="; 1tab">10. En t'wijl het dus toegaet,</l>
+<l>Soo klinckt op onse straet,</l>
+<pb n="173"/>
+<l>De stemme van Gots woort, gepredikt in de Kerk</l>
+<l>En roept: verbystert volck, verlaet u sondigh werck.</l>
+<l rend="; 1tab">11. Dit is te onbeleeft,</l>
+<l>Dat Godt sijn zegen geeft,</l>
+<l>Dat hy u Landt met goet, en ghy met quaet vervult:</l>
+<l>Voorseecker sijn toorn ontsteeckt om dese schult</l>
+<l rend="; 1tab">12. Dus bromt het heyligh woordt,</l>
+<l>En menigh die het hoort,</l>
+<l>Die toont dat al de kracht, hier van, in hem verdwijnt:</l>
+<l>En 't hoopken is seer kleyn dat nu als lichten schijnt</l>
+<l>13. Ia self des Heeren dagh</l>
+<l>Moet dienen tot gelagh,</l>
+<l>En ongebondentheyt! Ia 't schijnt nu voor gewis,</l>
+<l>Dat die des satans dagh, en niet des Heeren is.</l>
+<l rend="; 1tab">14. Een gruwelijcke schant,</l>
+<l>Voor u, O dertel Landt!</l>
+<pb n="174"/>
+<l>Dat ghy door Hemels gunst, met zegen overstort</l>
+<l>Vloeyt over in het Goud, en comt in deugt te kort.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0053"/> </interpGrp>
+<head rend="h3">Des Heeren plage over 't Landt.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Treurt edel huys Nassou.</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>Oe nu ons Vaderlandt.</l>
+<l>Dus tegen Godt aen kant,</l>
+<l>En terghd' hem alle dagen,Ontstack oock God de Heer,</l>
+<l>En sondt seer vele plagen,</l>
+<l>Op dese lande neer.</l>
+<l rend="; 1tab">2. De eerste trof de Staet,</l>
+    <l>Van Hollandts hooghste Raedt,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anno 1650</l>
+<pb n="175"/>
+<l>Soo dat het Hof der Grooten</l>
+<l>Verwerde in 't geheel,</l>
+<l>En worde overgoten</l>
+<l>Met twist, en met krackeel</l>
+<l rend="; 1tab">3. Wt dese twist, soo quam</l>
+<l>Een droeven Oorloghs-vlam,</l>
+<l>Die tot den Hemel brande:</l>
+    <l>Ons Leger quam gegaen,&nbsp;&nbsp;&nbsp;&nbsp;Den 29.</l>
+    <l>En rast in dese Lande,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Iulij 1650.</l>
+<l>Ons eygen Koop-stadt aen.</l>
+<l rend="; 1tab">6. Hier na noch meerder quam,</l>
+<l>Want, den Oranjen stam,</l>
+<l>Wt 't edel Hof Nassouwen,</l>
+<l>Die al het Landt verheught,</l>
+    <l>Die worde om-gehouwen,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Den 6.</l>
+    <l>In 't beste van sijn jeught.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;November</l>
+<pb n="176"/>
+    <l rend="; 1tab">5. De woeste Zee, oock wordt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anno 1650</l>
+<l>Door stercken storm geprot,</l>
+    <l>Die met sijn grijse golven,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Den 5.</l>
+    <l>Al schuymende aenkoomt,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maert</l>
+<l>En doet den dijck om colven,&nbsp;&nbsp;&nbsp;1651.</l>
+<l>Soo dat hy hene stroomt.</l>
+<l rend="; 1tab">6. Godt sondt sijn plagen mee,</l>
+<l>Tot onder 't domme Vee,</l>
+<l>Dat schier vergingh in quellingh,&nbsp;&nbsp;&nbsp;De Na somer</l>
+    <l>En meest van honger storf,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1651</l>
+<l>Door dien een vreemde swellingh,</l>
+<l>Daer mondt, en voet door kort.</l>
+<l rend="; 1tab">7. Den Hemel wort vergramt,</l>
+<l>Soo dat hy brandigh vlamt,</l>
+<l>En door de Sonne stralen</l>
+<l>Versenghd' het Gras, en kruydt:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;De Voor En</l>
+<pb n="177"/>
+    <l>En liet geen regen dalen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;somer</l>
+    <l>Ter Hemel-sluysen uyt.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1652.</l>
+<l rend="; 1tab">8. Oock vanght een Oorlogh an</l>
+    <l>Met Ons, en d'Engels-man,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gepubliceert</l>
+<l>Die met seer vele schepen,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;den 2.</l>
+    <l>Gaet swemmen over Zee:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Augusti.</l>
+<l>En geeft ons harde nepen,</l>
+<l>En neemt veel schepen mee.</l>
+<l rend="; 1tab">9. Hier door soo worde strack</l>
+<l>De Neeringh kranck en swack,</l>
+<l>Ia storf ten langen lesten,</l>
+<l>En blies het leven uyt:</l>
+<l>Ons goedt, sleept in sijn nesten</l>
+<l>Den Engels man, tot buyt.</l>
+<l rend="; 1tab">10. De doodt oock, Gods dienstknecht,</l>
+<l>Die sijn bevel uyt-recht,</l>
+<pb n="178"/>
+    <l>Schoot sijn vergifte pijlen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Het geheele</l>
+    <l>Tot in des menschen hert,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Iaer 1652.</l>
+<l>Soo dat in korte wijlen</l>
+<l>Veel volck begraven werdt.</l>
+<l rend="; 1tab">11. En eer dit Iaer was uyt,</l>
+<l>Quam 's avonds in het zuydt,&nbsp;&nbsp;&nbsp;In December</l>
+    <l>Een komeet te vooren.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1652</l>
+<l>Als of hy woud' bedien,</l>
+<l>Dat Godt sijn strenge tooren,</l>
+<l>Noch meer woud' laten sien.</l>
+<l rend="; 1tab">12. En 't is oock soo geschiet,</l>
+<l>Een Iaer vol van verdriet,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anno 1653.</l>
+<l>Qaem dese sterre volgen,</l>
+<l>En heeft door tegen spoet</l>
+<l>Verslonden en verswolgen,</l>
+<l>Seer veel van Hollandts goedt:</l>
+<pb n="179"/>
+<l rend="; 1tab">13. Ick 't alles niet verhael,</l>
+<l>Maer onsen Admirael.</l>
+    <l>Een van de beste Grooten,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Den 10.</l>
+    <l>Verlooren wy doe mee,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Augusti</l>
+<l>Van d' Engels-man geschooten,&nbsp;&nbsp;Anno 1658.</l>
+<l>By Egmont, in de zee.</l>
+<l rend="; 1tab">14. Oock word in 't Landt gestiert</l>
+    <l>Een schadelijck gediert:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;De gantsche</l>
+    <l>Veel duysenden van muysen,&nbsp;&nbsp;somer</l>
+    <l>Ia een ontelb're som,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1653.</l>
+<l>Die al het Gras af pluysen,</l>
+<l>En wroeten 't Landt voort om.</l>
+<l rend="; 1tab">15. Den Hemel sagh dit aen,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In septemb.</l>
+    <l>En schoot een vloedt van traen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1653.</l>
+<l>Al weendend' uyt sijn oogen,</l>
+<l>En maeckt het Landt, een zee:</l>
+<pb n="180"/>
+<l>Soo dat de Boeren toogen</l>
+<l>Na huys toe, met haer Vee.</l>
+<l rend="; 1tab">16. En oock een storm ontstack,</l>
+    <l>Die menigh huys verbrack:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Den 7. Ianuarij</l>
+<l>Veel schepen zijn bedorven,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1654</l>
+<l>Die op de woeste Zee,</l>
+<l>Haer spitse masten korven,</l>
+<l>En noch vergingen mee.</l>
+<l rend="; 1tab">17. En in dees storm by nacht,</l>
+<l>Daer niemandt op en dacht,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Item.</l>
+<l>Soo quam de Brandt verrasschen</l>
+<l>De Rijp, dat schoone dorp,</l>
+<l>Soo dat het in der asschen,</l>
+<l>In korten neder worp.</l>
+<l rend="; 1tab">18. Soo dat ons dagh op dagh,</l>
+<l>Nu treffe slagh op slagh:</l>
+<pb n="181"/>
+<l>O! ghy vervloeckte sonden,</l>
+<l>Door u is dit geschiedt,</l>
+<l>Dat men hier soo veel wonden,</l>
+<l>Door dese slagen, siet.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0054"/> </interpGrp>
+<head rend="h3">Genees-middel.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">O jonge jeught bly-hertigh.</hi></head>
+<lg type="poem"><l><hi rend="i">M</hi>En hoort nu Hollandt klagen,</l>
+<l>En suchten om dees plagen,</l>
+<l>Om oorlogh, en om dieren tijdt:</l>
+<l>Maer om hier van te zijn bevrijdt,</l>
+<l>Soo moetwe in dees dagen,</l>
+<l>Ons sonden eerst verjagen,</l>
+<pb n="182"/>
+<l>En maecken ons dien vyandt quijt:</l>
+<l rend="; 1tab">2. Godts toorn is niet ontsteecken</l>
+<l>Op menschen, maer gebreecken:</l>
+<l>En buyten sonden is de mensch</l>
+<l>Des Heeren lust, en herten wensch:</l>
+<l>Wel laet ons die dan kelen,</l>
+<l>Soo sal ons Godt weer heelen,</l>
+<l>En toonen ons sijn gunst allensch.</l>
+<l rend="; 1tab">3. Als Seba vlucht in Abel,</l>
+<l>Quaem David met sijn sabel,</l>
+<l>En steld hem soo geweldigh aen,</l>
+<l>Als of hy Abel woud' verslaen:</l>
+<l>Maer doe na sijn behagen,</l>
+<l>Die seba was verslagen,</l>
+<l>Is hy van Abel afgegaen.</l>
+<l rend="; 1tab">4. Soo oock, O Hollandts Borgers!</l>
+<pb n="183"/>
+<l>Gaet, stelt u tot verworgers,</l>
+<l>En keelt op sonden, dagh aen dagh,</l>
+<l>Elck een soo vele als hy magh:</l>
+<l>En Godt sal dit u slachten,</l>
+<l>Veel aengenamer achten,</l>
+<l>Als Offerhand, van beesten slagh.</l>
+<l rend="; 1tab">5. Oock moeten wy in't midden</l>
+<l>Der plagen, Godt aenbidden,</l>
+<l>Dat hy ons niet na weerde loon,</l>
+<l>Maer door sijn gunst genade toon:</l>
+<l>En dat hy in dees dagen,</l>
+<l>Ons vry maeckt van dees plagen,</l>
+<l>En ons met sijnen zegen kroon.</l>
+<l rend="; 1tab">6. En als hy na 't verschoonen</l>
+<l>Der plagen ons doet kroonen</l>
+<l>Met sijnen rijcke zegeningh,</l>
+<pb n="184"/>
+<l>En schenckt ons weder alle dingh,</l>
+<l>Soo moetwe Godt van boven,</l>
+<l>Voor sijn genade loven,</l>
+<l>Daer van ons landt sijn schat ontfingh.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0055"/> </interpGrp>
+<head rend="h3">De kleyne Werelt heeft een Iaer: De Groote, duysent na malkaer.<lb/> De Lente,</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">O Flora ydel is u roem.</hi></head>
+<lg type="poem"><l><hi rend="i">A</hi>Ls ick die son verhoogen sie,</l>
+<l>En sie hem op, na boven klimmen,</l>
+<pb n="185"/>
+<l>Wt de Zuyer kimmen,</l>
+<l>En door kracht van die,</l>
+<l>Het watter, de Lucht, en het Veldt,</l>
+<l>In eenen nieuwen Ieught gestelt,</l>
+<l>En wassen daeg'lijcks an,</l>
+<l>Soo denck ick daer op van:</l>
+<l rend="; 1tab">2. De groote wereldt die gaet voor</l>
+<l>De kleyne wereldt volght sijn schreden,</l>
+<l>En gaet hem na treden,</l>
+<l>In het selve spoor</l>
+<l>En dit alleen is het verscheel,</l>
+<l>De kleyn gaet, eens, de groot gaet veel.</l>
+<l>De kleyne in 't begin,</l>
+<l>Die brenght de Lenten in.</l>
+<l rend="; 1tab">3. Dan loopt de Son seer snel om hoogh,</l>
+<l>En doet het gantsche Velt in vreughde,</l>
+<pb n="186"/>
+<l>En een soete jeughde</l>
+<l>Vertoonen voor 't oogh:</l>
+<l>'t Is even soo, gelijck het soet,</l>
+<l>Dat in de Kindtsheydt hem op doet,</l>
+<l>Wanneerse in haer Ieught,</l>
+<l>Ons toonen groene vreught.</l>
+<l rend="; 1tab">4. Wat teyckens men van vreucht oyt sagh,</l>
+<l>Dat van het Veldt, of van de Boomen,</l>
+<l>Wy sullen bekomen,</l>
+<l>Komen voor den dagh:</l>
+<l>Soo gaet het mede met de Ieught,</l>
+<l>Men siet 't beginsel van de deught,</l>
+<l>Of oock, met siet het zaedt,</l>
+<l>Van het volgende quaedt.</l>
+<l rend="; 1tab">5. Ick sie de Son noch hooger gaen,</l>
+<l>En schild'ren 't Velt met vele Bloemen,</l>
+<pb n="187"/>
+<l>Sy zijn niet te noemen,</l>
+<l>Die men nu siet staen:</l>
+<l>Oock menigh Bloemtjen roodt, en wit,</l>
+<l>Op onse Ieught haer wangen sit</l>
+<l>Of glinst'ren doormalkaer,</l>
+<l>In 't blinckend Goudt-geel haer.</l>
+<l rend="; 1tab">6. Ick hoore nu oock dagen langh,</l>
+<l>Een soet, en aengenaem gewemel,</l>
+<l>Alsoo dat den Hemel</l>
+<l>Klinckt door een gesangh,</l>
+<l>Van duysent stemmen te gelijck,</l>
+<l>Al sonder voys, of wildt musijck</l>
+<l>Alleen gedicht uyt vreught,</l>
+<l>Gesongen uyt geneught.</l>
+<l rend="; 1tab">7. Siet hier een aerdigh tegen-beeldt,</l>
+<l>Aen het gesaagh, en aen kelen,</l>
+<pb n="188"/>
+<l>En het lieflijck spelen,</l>
+<l>Dat de jonckheydt speelt:</l>
+<l>Soo aengenaem, dat al het soet,</l>
+<l>Van Vogels daer voor wijcken moet,</l>
+<l>Als sy het aerdtsche dal,</l>
+<l>Besuyck'ren met geschal.</l>
+<l rend="; 1tab">8. Maer t'wijl de dertjes allegaer,</l>
+<l>Nu verkiesen een gesellinne,</l>
+<l>De mensch oock uyt minne,</l>
+<l>Kiest een weder-paer,</l>
+<l>Op dat hy ins dees soete mey,</l>
+<l>In soete lusten, met sijn bey,</l>
+<l>De wereldt meer verciert,</l>
+<l>Met jongh, en soet gediert.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0056"/> </interpGrp>
+<pb n="189"/>
+<head rend="h3">De Somer.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">L. Orangie.</hi></head>
+<lg type="poem"><l><hi rend="i">A</hi>Ls hem de son begeeft,</l>
+<l>Te wand'len door de kreeft,</l>
+<l>Soo dooft te met het geylste groen:</l>
+<l>En soo verandert het saysoen</l>
+<l>Der tijden // en lijden</l>
+<l>Niet meer het soet,</l>
+<l>Dat ons de lente broet:</l>
+<l>Elck kruydtjen // en spruyten</l>
+<l>Sijn groenste cieraet dan verminderen doet.</l>
+<l rend="; 1tab">2. Aldus oock openbaert</l>
+<l>Den mannelijcken aert,</l>
+<pb n="190"/>
+<l>Als dese komt dan gaet sijn gangh</l>
+<l>De lossen vreught, en soeten sangh,</l>
+<l>Het wesen // voor desen</l>
+<l>Haer aengenaem,</l>
+<l>Wordt haer dan onbequaem:</l>
+<l>De grillen // die stillen</l>
+<l>Allenghsjes, en dooven weder te saem.</l>
+<l rend="; 1tab">3. Al 't gewas, en al 't goedt,</l>
+<l>Dat heer de wereldt voedt,</l>
+<l>Of haer geneest, of oock verblijdt,</l>
+<l>'t Wast alles in des somers tijdt,</l>
+<l>Dan toone // de schoone</l>
+<l>Landen haer vrucht.</l>
+<l>De soete somer lucht,</l>
+<l>Die voedt haer // en doet haer</l>
+<l>Vruchtbaer groeyen tot een yders genucht.</l>
+<pb n="191"/>
+<l rend="; 1tab">4. Soo oock, een yder saeck,</l>
+<l>Tot nut, en tot vermaeck,</l>
+<l>Wordt van de mensche uyt gewracht,</l>
+<l>Als hy is in sijn levens kracht:</l>
+<l>De Reden // De Leden,</l>
+<l>Siel, en Lichaem,</l>
+<l>Zijn dan sterck, en bequaem,</l>
+<l>En maecken // de saecken</l>
+<l>Door de geheele wereldt aengenaem.</l>
+<l rend="; 1tab">5. Maer noyt de son stil staet,</l>
+<l>In d' alderhooghste graet:</l>
+<l>Maer soo hy quam na boven treen,</l>
+<l>Soo stapt hy weder na beneen:</l>
+<l>Dan doene // de groene</l>
+<l>Velde, den glans</l>
+<l>Verdooven, van haer krans:</l>
+<pb n="192"/>
+<l>Men vindter // en winter,</l>
+<l>Nu noodige vruchten al rijp, en gans.</l>
+<l rend="; 1tab">6. Soo oock het stercke bloedt,</l>
+<l>Dat is maer als een vloedt,</l>
+<l>En neemt haest wederom sijn keer,</l>
+<l>En dooft de mensch allenghjes weer:</l>
+<l>Dan winnen // de sinnen</l>
+<l>Niet meerder aen,</l>
+<l>Maer haesten af te gaen:</l>
+<l>Maer 't gene // voorhene,</l>
+<l>Is geleert, wort dan met vruchte gedaen.</l>
+<l rend="; 1tab">7. Die 't maeyen in den Oost,</l>
+<l>Geheel verwareloost,</l>
+<l>En niet met allen in en haelt,</l>
+<l>Wordt veeltijdts met dit loon betaelt:</l>
+<l>Als tijden, van lijden,</l>
+<pb n="193"/>
+<l>Hem komen aen,</l>
+<l>En hem met honger slaen,</l>
+<l>Dat klagend // al vragend</l>
+<l>Hy seggen sal: Och wat heb ick gedaen?</l>
+<l rend="; 1tab">8. En die hem niet begeeft,</l>
+<l>Als hy in krachten leeft,</l>
+<l>Om dan te wercken in den Oost,</l>
+<l>Daer Godt uyt deelt sijn soeten troost,</l>
+<l>En slagen // en plagen,</l>
+<l>Hem treffen aen,</l>
+<l>Soo sal hy onder 't slaen,</l>
+<l>Dan kermen: Och ermen</l>
+<l>Wat heb ick al voor een dwaerheydt begaen</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0057"/> </interpGrp>
+<pb n="194"/>
+<head rend="h3">De Herfst.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Treurt edel huys Nassouw.</hi></head>
+<lg type="poem"><l><hi rend="i">A</hi>Ls ick den Herfst aenschou,</l>
+<l>Die met een nare rou,</l>
+<l>De Velden, en de Landen,</l>
+<l>En al de Boomen stroopt,</l>
+<l>Soo dat hy alderhande</l>
+<l>Verciersel heel af sloopt:</l>
+<l rend="; 1tab">2. Soo denck ick daetlijck om</l>
+<l>Den hoogen ouderdom,</l>
+<l>Die nu geheel, en allen,</l>
+<l>Des levens groen, en loof,</l>
+<l>Verliest, en laet ontvallen,</l>
+<pb n="195"/>
+<l>En wordt soo dor, en doof.</l>
+<l rend="; 1tab">3. Wanneer den Herfst het Veldt</l>
+<l>Becomt in sijn gewelt,</l>
+<l>Het set hem strack na treuren:</l>
+<l>En 't somers groen vertreckt,</l>
+<l>Terwijl met grijse kleuren,</l>
+<l>Het landt hem overdeckt.</l>
+<l rend="; 1tab">4. Den mannelijcken glants,</l>
+<l>Vergaet oock heel, en gants,</l>
+<l>Ontrent de oude jaren:</l>
+<l>De schoonheydt die verdooft,</l>
+<l>Terwijl de grijse haren.</l>
+<l>Aenkippen op het hooft.</l>
+<l rend="; 1tab">5. En alderhande kruydt,</l>
+<l>Dat in de Lente spruyt,</l>
+<l>Of somers is gewassen,</l>
+<pb n="196"/>
+<l>Dat heeft den Herfst dan in</l>
+<l>Syn Schuuren, en sijn Kassen</l>
+<l>Tot nut van 't Huys-gesin.</l>
+<l rend="; 1tab">6. Soo oock, wat voor deught,</l>
+<l>Geleert is in de Ieught,</l>
+<l>Of in de manlijckheden,</l>
+<l>Dat is dan in 't gemeen,</l>
+<l>Van hem die leefd' na reden</l>
+<l>In d' ouderdom by een.</l>
+<l rend="; 1tab">7. Wanneer de Son gaet leegh,</l>
+<l>Dan treffen ons ter deegh,</l>
+<l>De pijlen van de koude:</l>
+<l>En dat wy door dit kruys</l>
+<l>D[u]s aengeprickelt, soude</l>
+<l>Verlangen na ons huys</l>
+<l rend="; 1tab">8. Als dan een mensch gevoelt,</l>
+<pb n="197"/>
+<l>Dat hem het bloedt' verkoelt,</l>
+<l>De krachten hem begeven:</l>
+<l>Soo noem hem vry geen mensch,</l>
+<l>Soo hy na 't Hemels leven,</l>
+<l>Niet hoopt, met al sijn wensch.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0058"/> </interpGrp>
+<head rend="h3">De Winter.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Amarilli mia bella.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Anneer de Son sijn stralen</l>
+<l>Van ons ontreckt, en op den moor doet dalen,</l>
+<l>Wordt het in onse palen</l>
+<l>Geheel ontciert: Daer blijft noch kruyt, noch lover</l>
+<l>In al de Velden over</l>
+<pb n="198"/>
+<l>Dan valt de natuur, gelijck als in 't beswijmen:</l>
+<l>En de Landen // als de zanden // aen de stranden,</l>
+<l>Wit berijmen.</l>
+<l rend="; 1tab">2. Wanneer ick hier op achte,</l>
+<l>Soo valt my in, terstont in mijn gedachte,</l>
+<l>Dus is 't met 's Menschen krachte:</l>
+<l>Als Godt de Lucht, die wy ter Neus in snuyven,</l>
+<l>Op sijn woordt, doet verstuyven,</l>
+<l>Dat is al 't geen, dat dus lang noch heeft geschenen</l>
+<l>Voor sijn sonne // nu verwonnen // nu verslonnen,</l>
+<l>Nu verdwenen.</l>
+<l rend="; 1tab">3. De Boomen op de Velde,</l>
+<l>Die door 't gewicht der vreuchten neder helde</l>
+<l>En wat ons vrucht bestelde,</l>
+<l>Staen nu gestroopt, en hebben 't al verlooren:</l>
+<l>De wat'ren zijn bevroren,</l>
+<pb n="199"/>
+<l>Dat onlangs vloeyd, is nu harder als een Nagel.</l>
+<l>'t Velt gaet schuylen, als in kuylen // door der buyien</l>
+<l>Sneeuw, en Hagel.</l>
+<l rend="; 1tab">4. Soo oock, de mensch na 't leven,</l>
+<l>En sal niet meer aen yemandt teecken geven,</l>
+<l>Van 't geen hy heeft bedreven,</l>
+<l>'t Is alles uyt: het bloet dat door sijn leden,</l>
+<l>Heeft op en neer gereden,</l>
+<l>Dat stremt tot ys: dus comt de vorst in hem selve<hi rend="i">n</hi>,</l>
+<l>En dan spoetmen // want dan doetmen // ja dan moetmen</l>
+<l>Hem bedelven.</l>
+<l rend="; 1tab">5. Daer rust hy in sijn Kamer:</l>
+<l>Geen Koninghs-hof is tot de rust bequaemer:</l>
+<l>Als de straf met sijn Hamer,</l>
+<l>Van Godt gestuurt, komt over 't Landt te sweven</l>
+<l>Om menigh slagh te geven.</l>
+<pb n="200"/>
+<l>Soo rust hy daer, om de straffe te ontschuylen,</l>
+<l>Vry van plage // vry van slage // vry van klage</l>
+<l>Vry van huylen.</l>
+<l rend="; 1tab">6. Oock sal hy daer niet wesen</l>
+<l>Voor alle tijdt: maer als komt opgeresen,</l>
+<l>Die Soone, die door desen</l>
+<l>Ver boven Son en sterren is geweken,</l>
+<l>En van daer sal voort breken,</l>
+<l>Met soo een glans, die dees Son sal doen vertrecken,</l>
+<l>Dan sal desen // opgeresen // wesens wesen</l>
+<l>Hem op-wecken.</l>
+<l rend="; 1tab">7. En brengen in de woonningh,</l>
+<l>Daer 't eeuwigh blincken aen hem geeft vertooning</l>
+<l>d' Heerlijckheydt van dien Koningh</l>
+<l>Die sterck bemuurt, met der Engelen scharen,</l>
+<l>Dus eeuwigh, sonder jaren</l>
+<pb n="201"/>
+<l>Leeft sonder end. Geeft o Heer ons al te samen,</l>
+<l>Dat na 't sterven // wy verwerven // 's Hemels erven,</l>
+<l>By u Amen.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0059"/> </interpGrp>
+<head rend="h3">Een Weeck toont ons in volle daet,<lb/> Hoe dat het met ons leven gaet</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Wel dus bedroeft Ionckvrou?</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Il yemandt in het kort</l>
+<l>Eens sien des menschen leven,</l>
+<l>Die kan 't haest sien: want 't wordt</l>
+<l>Ons in een Weeck beschreven,</l>
+<l>De vreught, en doefheydt door malkaer,</l>
+<pb n="202"/>
+<l>Ia 't leven hier, en oock hier naer,</l>
+<l>Blijckt alle weecken klaer.</l>
+<l rend="; 1tab">2. Een gantsche weeck bestaet</l>
+<l>Wt daghen, ende nachten,</l>
+<l>Wanneer den eenen gaet,</l>
+<l>Treedt d' ander op sijn wachte:</l>
+<l>En t'wijl den dagh volvoert haer plicht,</l>
+<l>Soo toont sy ons een helder licht:<lb/>
+De nacht een naer gesicht.</l>
+<l rend="; 1tab">3. Dus is ons leven mee</l>
+<l>Te saem in een geweven,</l>
+<l>Van onrust, en van vree,</l>
+<l>Van droef, en vrolijck leven.</l>
+<l>'t Is altemet een ander stuck:</l>
+<l>Somtijds beschijnt ons het geluck,</l>
+<l>Somtijdts ontmoet ons druckt.</l>
+<pb n="203"/>
+<l rend="; 1tab">4. Een weeck in haer aenvangh</l>
+<l>Brenght ons den arbeydt mede,</l>
+<l>En geeft in haer voortgangh</l>
+<l>Ons seer vermoeyde leden:</l>
+<l>Den arbeydt, met haer ommeslagh,</l>
+<l>Doet, datmen na den Saterdagh</l>
+<l>Hier wel verlangen magh.</l>
+<l rend="; 1tab">5. Dus vanght oock 't leven aen</l>
+<l>Met veel onrustigh woelen,</l>
+<l>En doet ons in 't voortgaen</l>
+<l>Veel ongemack gevoelen:</l>
+<l>Soo dat men met verlangen groot,</l>
+<l>Magh hopen Chris'lijck na de doodt,</l>
+<l>Die ons treckt uyt dees noot.</l>
+<l rend="; 1tab">6. Maer na een droeve ry</l>
+<l>Van dagen vol van woelen,</l>
+<pb n="204"/>
+<l>Komt ons den Son-dagh by,</l>
+<l>En doet ons rust gevoelen</l>
+<l>Dan werckt de ziele hare plicht,</l>
+<l>En wordt in Godes huys gesticht,</l>
+<l>Door 't soete Hemels licht.</l>
+<l rend="; 1tab">7. Dit beeldt ons 't leven af</l>
+<l>Dat Godt de ziel sal geven,</l>
+<l>(Als 't lichaem rust in 't graf.</l>
+<l>By hem, in 't eeuwigh leven</l>
+<l>Godts lof is daer haer daegh'lijcks liedt,</l>
+<l>Terwijl dat elck een vreught geniet,</l>
+<l>Als hier noyt oogh en siet.</l>
+</lg></div><div type="section"><lg type="poem"><l rend="; 1tab">Den dagh beelt ons het leven af,</l>
+<l rend="; 1tab">De nacht de doot, en 't duyster graf</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0060"/> </interpGrp>
+<pb n="205"/>
+<head rend="h3">Den Dagh.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Edel Karsouw.</hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Anneer oprijst // de Sonne in den morgen,</l>
+<l>En op gaet in sijn kracht,</l>
+<l>Hy ons aenwijst // het leven vol van sorgen,</l>
+<l>Van 't menschelijck geslacht:<lb/>
+En soo men betracht,</l>
+<l>Het menschelijcke leven,</l>
+<l>Siet men 't klaer // en by malkaer,</l>
+<l>Op eenen dagh beschreven.</l>
+<l rend="; 1tab">2. De morgen-stont // die met sijn gouden vlamme</l>
+<l>Het gantsche Landt vergult,</l>
+<l>toont ons de mont // des kints, dat an de mamme</l>
+<pb n="206"/>
+<l>V hert met vreught vervult,</l>
+<l>Als ghy aensien sult</l>
+<l>Sijn soete bolle kaecken:</l>
+<l>Sijn gesicht // en 't morgen-licht,</l>
+<l>Zijn twee gelijcke saecken.</l>
+<l rend="; 1tab">3. Het hooger gaen // der Son, in de' eerste uren,</l>
+<l>Tot hem de middagh keert,</l>
+<l>Dat wijst ons aen // den aenwas der nature</l>
+<l>Die dus haer kracht vermeert.</l>
+<l>Sooje meer begeeert,</l>
+<l>Ghy sult Bruyloft na 't trouwen,</l>
+<l>In 't onthael // van 't middagh-mael,</l>
+<l>Gneughelijck aenschouwen.</l>
+<l rend="; 1tab">4. Maer desen stant // en blijft niet in een wesen,</l>
+<l>De sonne daelt haest neer,</l>
+<l>En sijnen brandt // en heete vlam na desen,</l>
+<pb n="207"/>
+<l>Die dooft allenghsjes weer.</l>
+<l>Oock de mensch, goe seer,</l>
+<l>Hy is verciert in allen,</l>
+<l>Sal nochtans // sijn schoone glans</l>
+<l>En kracht, te met vervallen.</l>
+<l rend="; 1tab">5. Maer als de son // aleer hy komt te scheyden,</l>
+<l>Gaet na beneden toe,</l>
+<l>Wie oyt begon // te wercken, en arbeyden,</l>
+<l>Die wordt dan mat, en moe:</l>
+<l>Elck gaet na huys toe,</l>
+<l>En laet sijn arbeydts saecken, </l>
+<l>Om 't gemack // dan onder 't dack,</l>
+<l>In d' Avondt-stondt te smaecken.</l>
+<l rend="; 1tab">6. En even dat // sietmen oock soo geschieden,</l>
+<l>Op 't hooghst van 's levens trap,</l>
+<l>Dat moed en mat // in d'ouderdom, de lieden,</l>
+<pb n="208"/>
+<l>Haer krachten worden slap</l>
+<l>Maer de wetenschap</l>
+<l>Van onmacht, en swackheden,</l>
+<l>Wijst haer aen // om dan voortaen,</l>
+<l>Te rusten hare leden.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0061"/> </interpGrp>
+<head rend="h3">De Nacht.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Carileen ay wilt u niet verschuylen.</hi></head>
+<lg type="poem"><l>Als in koelt // de nacht komt overkleeden</l>
+<l>Met veldt, met een swarten schijn,</l>
+<l>Soo daelt dan op ons weer,</l>
+<l>Van boven neer</l>
+<l>De soete slaep // daer door wy in ruste zijn.</l>
+<pb n="209"/>
+<l>Dan en voelt // men in de gantsche leden,</l>
+<l>Geen vermoeytheydt, noch verdriet,</l>
+<l>Maer al het ongemack,</l>
+<l>Dat 's daeghs ons stack,</l>
+<l>Dat is door de soete slaep geheel te niet.</l>
+<l>En op dit sachte</l>
+<l>Op-geschudde dons,</l>
+<l>Troulijck over ons.</l>
+<l>En laet // het quaet // van d' Helsche macht</l>
+<l>Niet toe // dat het doe // het gene daer 't na tracht.</l>
+<l rend="; 1tab">2. 'k Hier in vind // na 't leven afgebeeldet,</l>
+<l>Den doodt, en het geen sy doet.</l>
+<l>Sy komt in swarten schijn,</l>
+<l>Van smert en pijn,</l>
+<l>Maer onder dat swert schuylt oock een ruste soet</l>
+<pb n="210"/>
+<l>Die Godts kindt // altijdt sijn smerten heeldet,</l>
+<l>En maeckt dat Godts volck vergeet</l>
+<l>Des levens ongeluck,</l>
+<l>Verdriet, en druck,</l>
+<l>Droefheyt, en ongeval: Kortlijck, al haer leet.</l>
+<l>Die Israel hoedet,</l>
+<l>Self oock in der nacht,</l>
+<l>Wanneer als woedet</l>
+<l>Des Satans geslacht,</l>
+<l>'t Welck meent // 't gebeente te rooven dan,</l>
+<l>Betemt, hy, en demt // het, dat het niet en kan</l>
+<l rend="; 1tab">3. Als dus is // de mensch in 't graf gelegen,</l>
+<l>(Even of hy in der nacht,</l>
+<l>Op 't bedde sacht gespryt,</l>
+<l>Was neer geleydt,</l>
+<l>Daer hy in stille rust na de morgen wacht,</l>
+<pb n="211"/>
+<l>Om seer fis // verquickt, hem te bewegen:</l>
+<l>De verwacht oock eenen dagh,</l>
+<l>Daer in hy los geret</l>
+<l>Wt des doodts net,</l>
+<l>In een beter leven hem begeven magh</l>
+<l>Een sulcken leven,</l>
+<l>Dat een nieuwe jeught,</l>
+<l>Aen hem sal geven,</l>
+<l>Vol van soete vreught,</l>
+<l>Daer oyt // noch noyt // den ouden dagh,</l>
+<l>Het soet // van het goedt, verderven kan, noch magh</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0062"/> </interpGrp>
+<head rend="h3">Hemelsche Vreughde.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Als Boecxvoetjen speelt.</hi></head>
+<lg type="poem"><pb n="212"/>
+<l><hi rend="i">D</hi>E zielen die vry van het lijdende vleys,</l>
+<l>Ontbonden, van sonden, gaen trecken op reys</l>
+<l>En d' Engelen schoon // uyt d' Hemelsche troon,</l>
+<l>Dan dragen by Godt in sijn hoogh Paleys.</l>
+<l rend="; 1tab">2. Die genieten aldaer het salighe goedt,</l>
+<l>En schincken, en drincken, het Hemelsche soet.</l>
+<l>En singen Godts lof // in 't Hemelsche Hof,</l>
+<l>Vol salige vreughden in haer gemoedt.</l>
+<l rend="; 1tab">3. Daer sietmen geen Sonne, en nochtans geen nacht</l>
+<l>Daer vliete, noch schiete, geen tranen noch klacht</l>
+<l>Daer licht haer geen vlam // haer Keersse is 't lam</l>
+<l>Dat voor haer benden hier is geslacht.</l>
+<l rend="; 1tab">4. Daer vreestmen geen vyandt, die ruste verstoort</l>
+<l>Van buyten, noch sluyten van binnen geen poort</l>
+<l>Geen lijden, noch pijn // en salder in zijn,</l>
+<pb n="213"/>
+<l>Soo datmen geen kermen, noch klagen hoort.</l>
+<l rend="; 1tab">5. De zielen oock self in den Hemel geleydt,</l>
+<l>Die blincken, door 't schincken van d' Heerelijckheyt:</l>
+<l>Soo datse daer zijn // in heerlijcker schijn,</l>
+<l>Als 't schijnsel der Sonne, alhier verspreyt.</l>
+<l rend="; 1tab">6. Soo dat al het blinken van koningen pracht</l>
+<l>Die troonen, of kroonen, op aerden aenbracht,</l>
+<l>Wanneer men 't gelijckt // met 't gene daer blijckt</l>
+<l>'t Is niet met allen, by 't selve geacht.</l>
+<l rend="; 1tab">7. Als nu maer een droopje de Heere ons doet</l>
+<l>Hier smaken, wy raken terstondt in 't gemoedt</l>
+<l>Vol vreughde daer van; wat sal het zijn, dan</l>
+<l>Als wy sullen smaken de gantsche vloet?</l>
+<l rend="; 1tab">8. 't Is seeker dat niemant alhier op der aerdt</l>
+<l>Kan vatten, de schatten by Gode bewaert:</l>
+<l>Hoedanigh, hoeveel // sal wesen dat deel,</l>
+<pb n="214"/>
+<l>Wordt noyt ter degen beneden verklaert.</l>
+<l rend="; 1tab">9. Dit leven dus heerlijk, daer in men den Heer</l>
+<l>Daer boven, sal loven, en singen hem eer</l>
+<l>Dat streckt hem seer wijt // ja buyten de tijdt, </l>
+<l>En daerom sal 't eyndigen nimmermeer.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0063"/> </interpGrp>
+    <interpGrp>
+    <interp type="primair" value="16540518"/>
+    <interp type="primair" value="groot01"/>
+    </interpGrp> 
+<head rend="h3"><hi rend="i">Op de Vrede</hi><lb/> Gemaeckt tusschen de E. Heeren Staten deser Landen, ende den Protector van Engelandt. Gepubliceert den 18. Mey 1654.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Wilhelmus van Nassouwe.</hi></head>
+<lg type="poem"><pb n="215"/>
+<l><hi rend="i">H</hi>Ef op u hert en handen,</l>
+<l>En danckt den goeden Godt,</l>
+<l>O vrye Nederlanden,</l>
+<l>Voor u geluckigh lot:</l>
+<l>Godt heeft ons in ons dagen</l>
+<l>Met zegen overstort,</l>
+<l>En wederom sijn plagen,</l>
+<l>En slagen, opgeschort.</l>
+<l rend="; 1tab">2. Wy hebben langh tevoren,</l>
+<l>Door sonden, boos en quaedt,</l>
+<l>Ontsteken Godes tooren:</l>
+<l>Maer hy rijck in genaedt,</l>
+<l>Die doet ons eerst waerschouwen</l>
+<l>Eer hy ten vollen slaet,</l>
+<l>Op dat ons soo mocht rouwen</l>
+<l>Ons krijtende misdaedt.</l>
+<pb n="216"/>
+<l rend="; 1tab">3. Godt sondt na onse Naesten</l>
+<l>Een wer-geest, met onvreed,</l>
+<l>Die aldaer in der haesten</l>
+<l>Het sweert trock uyt de scheed,</l>
+<l>Daer d'Engels-man mee snede</l>
+<l>Het oudt verbondt in twee:</l>
+<l>Soo dat hy al nam mede</l>
+<l>Wat Hollandt stierd' op Zee.</l>
+<l rend="; 1tab">4. Wat tonge kan nu melden</l>
+<l>'t Geen als doe is geschiedt?</l>
+<l>Want Tromp' het hooft der helden,</l>
+<l>Daer door sijn leven liet.</l>
+<l>De Neeringh-rijcke Steden,</l>
+<l>Die worden neeringhloos:</l>
+<l>De Burgery onvreden,</l>
+<l>Door schaed op schade altoos.</l>
+<pb n="217"/>
+<l rend="; 1tab">5. Dit was Godts volck een jammer,</l>
+<l>Een droefheydt, en hert seer:</l>
+<l>En hier uyt oock soo quammer</l>
+<l>Veel suchtens tot den Heer:</l>
+<l>De stemme veler volcken</l>
+<l>Quam daeghlijcks voor Godts troon,</l>
+<l>Daer drongh tot door de wolcken</l>
+<l>Een roepen, Heer verschoon.</l>
+<l rend="; 1tab">6. En Godt, die in sijn handen</l>
+<l>Het hert der Vorsten draeght,</l>
+<l>En daer door dese Landen </l>
+<l>Twee Iaren heeft geplaeght,</l>
+<l>Die doet nu weder staken</l>
+<l>Den trots van ons Vyandt,</l>
+<l>Alsoo dat hy gaet maken</l>
+<l>Een Vrede met Hollandt.</l>
+<pb n="218"/>
+<l rend="; 1tab">7. 't Is wel een gulde strale</l>
+<l>Daer door de nacht verdwijnt</l>
+<l>Die uyt des Hemels sale</l>
+<l>Op des Landen schijnt:</l>
+<l>Nu gaen de Nederlanden</l>
+<l>Weer swanger van vermaeck,</l>
+<l>Terwijl men sluyt in banden</l>
+<l>De moed-wil, en de wraeck</l>
+<l rend="; 1tab">8. Dus doet ons Godt oprijsen,</l>
+<l>Gelijck als uyt het Graf</l>
+<l>Wie soude hem niet prijsen,</l>
+<l>Die ons dit alles gaf?</l>
+<l>Het is de handt des Heeren</l>
+<l>Die alleen wonder doet,</l>
+<l>Die 't alles kan verkeeren,</l>
+<l>En schept het quaedt, en 't goedt.</l>
+<pb n="219"/>
+<l rend="; 1tab">9. Maer lieve Heer der Heeren,</l>
+<l>Bescherm-Heer van ons Staet,</l>
+<l>Wilt voortaen t' uwer eere</l>
+<l>Ons kroonen met genaedt:</l>
+<l>Siet niet aen ons gebreecken,</l>
+<l>Waer door wy menigh-werf</l>
+<l>V tergen, om te wreecken</l>
+<l>Ons quaedt, tot ons verderf.</l>
+<l rend="; 1tab">10. Breeck af de snoode lagen</l>
+<l>Tot hinder van ons Staet:</l>
+<l>Och Heere wilt verjagen</l>
+<l>Al 't geen niet recht en gaet:</l>
+<l>Ghy hebt ons vreed' gegeven,</l>
+<l>Geef daer u zegen mee:</l>
+<l>En geef ons daer beneden</l>
+<l>Voor al met u goe vree.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0064"/> </interpGrp>
+<pb n="220"/>
+<head rend="h3">Vermaninge aen de Nederlanden, by occasie<lb/> van de teghenwoordighe Vrede.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Geklaeght zy u o Heer der Heeren</hi><hi rend="i"></hi></head>
+<lg type="poem"><l><hi rend="i">W</hi>Aeck op, verstockte Nederlanden,</l>
+<l>En volgh soo niet u boose lust,</l>
+<l>Eer Godes toorn begint te branden.</l>
+<l>En set in vlam u sachte rust:</l>
+<l>Godt stelt ons vele teeckens vooren,</l>
+<l>Daer door dat hy</l>
+<l>Geduurigh roept in onse ooren:</l>
+<l>Keert u tot my.</l>
+<l rend="; 1tab">2. Onlangs dreyghd' hy ons door veel plagen</l>
+<l>En toond hem gram in alle ding</l>
+<pb n="221"/>
+<l>Maer heden nu, in onse dagen,</l>
+<l>Weckt hy ons op door zegeningh:</l>
+<l>Hy heeft sijn milde handt ontsloten,</l>
+<l>En niet gebeydt,</l>
+<l>Maer haestigh op ons neer-gegoten</l>
+<l>Sijn goedigheydt</l>
+<l rend="; 1tab">3. Dit doet hy om ons op te wecken,</l>
+<l>En af te leyden van het quaed,</l>
+<l>En door sijn goedt ons te trecken</l>
+<l>Met sachte koorden van genaed.</l>
+<l>Maer kan dit ons nu niet bewegen</l>
+<l>Tot beterschap,</l>
+<l>Soo sal hy hem in toorne tegen</l>
+<l>Ons stellen t' schrap.</l>
+<l rend="; 1tab">4. Om tot den gront ons te verderven,</l>
+<l>Gelijck een vyer dat vreeslijck vlamt</l>
+<pb n="222"/>
+<l>Waer sal dan 't schepsel troost verwerven,</l>
+<l>Als dus den schepper is vergramt?</l>
+<l>Voorwaer in Hemel, noch op Aerden,</l>
+<l>En isser dan</l>
+<l>Niet een soo sterck, noch groot in waerden</l>
+<l>Die duuren kan</l>
+<l rend="; 1tab">5. Ia alle scheps'len die wy vinden,</l>
+<l>Dat zijn al dienaers onder hem,</l>
+<l>Den Hemel, Aerd, en Zee, en winden,</l>
+<l>Staen strack bereydt op sijnen stem.</l>
+<l>Sijn pijlen heeft hy noyt verschoten,</l>
+<l>En nimmermeer</l>
+<l>Zijn sijn Fiolen leegh gegoten,</l>
+<l>Van boven neer.</l>
+<l rend="; 1tab">6. 't Is dwaesheyt van ons op te maken,</l>
+<l>En teghen Godt te kanten aen:</l>
+<pb n="223"/>
+<l>Want als sijn toorne is aen 't blaken,</l>
+<l>Soo kan geen mensch voor hem bestaen:</l>
+<l>Wel laet ons dan voor sijne slagen</l>
+<l>Seer zijn vertsaeght,</l>
+<l>En onse sonden van ons iagen,</l>
+<l>Om 't welck hy plaeght.</l>
+<l rend="; 1tab">7. Wy hebben ons met Godt verbonden</l>
+<l>Tot een parthy van sijn Vyandt,</l>
+<l>En hy voert oorlogh met de sonden:<lb/>
+Wat doen die dan in't Vaderlandt?</l>
+<l>Soo wy dien Vyandt niet verdrijven</l>
+<l>Wt onse Landt,</l>
+<l>Hoe kan met Godt ons Vni blijven</l>
+<l>In sijnen stant?</l>
+<l rend="; 1tab">8. Wel laet u dan, o Landt waerschouwen,</l>
+<l>'t Wijl't noch tijdt is om af te staen,</l>
+<pb n="224"/>
+<l>Eer Godt om dese quaede trouwe</l>
+<l>Ons als Rebellen komt te slaen.</l>
+<l>Want hy, wiens oogen zijn als Sonnen</l>
+<l>Op yder plaets,</l>
+<l>Die sal niet van ons lijden konnen</l>
+<l>Soo vele quaedts.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0065"/> </interpGrp>
+    <interpGrp>
+        <interp type="primair" value="16540000"/>
+    </interpGrp> 
+<head rend="h3">Veldt-Sangh, Op 't vreuchtbare ghewas in Iulius 1654</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Nere, schoonste van uw' gebuuren.</hi></head>
+<lg type="poem"><pb n="225"/>
+<l><hi rend="i">D</hi>Oe ick onlanghs de ruyge Velden</l>
+<l>Met mijnen gladden Zeyn beschoer,</l>
+<l>Gingh dus mijn keel Godts goedtheydt melden,</l>
+<l>In 't zegenen van yder Boer:</l>
+<l rend="; 1tab">2. Als Godt den Hemel doet verhooren,</l>
+<l>En d' Hemel weer het Aerdtsche-dal,</l>
+<l>En d' Aerde dan de Wijn, en 't Kooren,</l>
+<l>En 't Koorn de menschen over al,</l>
+<l rend="; 1tab">3. Soo komt in haest des Heeren zegen,</l>
+<l>Met rijcke schatten, veelderley,</l>
+<l>En laeft ons menschen, als de regen</l>
+<l>Het groene Kruydt doet in de mey.</l>
+<l rend="; 1tab">4. Met reden mogen wy dus seggen,</l>
+<l>In 't schoone Dorp van Wervershoof,</l>
+<l>Daer men onlanghs het Veldt sagh leggen,</l>
+<l>Seer mager, schrael, en dor, en doof.</l>
+<pb n="226"/>
+<l rend="; 1tab">5. In 't alderschoonste van de meye,</l>
+<l>Doe was het landt noch wit, en swert,</l>
+<l>Men sagh nau groene tusschen beyen,</l>
+<l>Nau Beest op 't landt gevonden werdt.</l>
+<l rend="; 1tab">6. Een yders hert was heel besloten,</l>
+<l>En toe-geschroeft door 't swaer verdriet,</l>
+<l>En 't Landt met plagen overgoten,</l>
+<l>In 't welck men Godes toorne siet.</l>
+<l rend="; 1tab">7. Wy sagen klaerlijck voor ons oogen</l>
+<l>Een grooten druck, en swaren noot,</l>
+<l>Ten zy dat Godt uyt mede doogen,</l>
+<l>Ons weer sijn milden zegen boodt.</l>
+<l rend="; 1tab">8. Godt doet oock haest sijn heyl weer toonen,</l>
+<l>Midts hy ons op het spoedighst helpt,</l>
+<l>En met sijn zegen ons doet kroonen,</l>
+<l>En met veel gaven overstelpt.</l>
+<pb n="227"/>
+<l rend="; 1tab">9. Het Landt, met jeughdigh gras besproten,</l>
+<l>Was onlanghs slijck, maer staet nu groen,</l>
+<l>Midts duysent duysent jonge loten,</l>
+<l>Haer in der haest vertoonen doen:</l>
+<l rend="; 1tab">10. Die tegen al 't vernuft, en reden,</l>
+<l>Opschieten haest, men weet niet hoe:</l>
+<l>Soo dat de gladde koeyen treden</l>
+<l>In 't Gras, by na aen d' ooren toe.</l>
+<l rend="; 1tab">11. Het hoy, dat men schier most opwegen</l>
+<l>Met al ons geldt, wanneer men 't kocht</l>
+<l>Heeft ons de Heer door sijnen zegen,</l>
+<l>In overvloedt nu toe-gebrocht.</l>
+<l rend="; 1tab">12. Hy heeft ons Koorn, en Terruw geschonken</l>
+<l>Die d' Acker siet, het is genucht:</l>
+<l>En onse Boomen staen en proncken,</l>
+<l>Met alderhande leck're vrucht.</l>
+<pb n="228"/>
+<l rend="; 1tab">13. Dus toont de Heer te met zijn krachten</l>
+<l>In wonder wercken, ongemeyn:</l>
+<l>Doe Simson woud' van dorst versmachten,</l>
+<l>Maeckt Godt een kin-back een Fonteyn.</l>
+<l rend="; 1tab">14. Elias, in gebreck van spijse,</l>
+<l>Kreegh door een Raven sijnen kost,</l>
+<l>En op een wonderbare wijse</l>
+<l>Heeft Godt Samaria verlost.</l>
+<l rend="; 1tab">15. Dus werckt de groote Godt van boven,</l>
+<l>Op dat wy in voorspoedigheydt,</l>
+<l>Niet ons vernuft en souden loven,</l>
+<l>Maer alleen sijne goedigheydt.</l>
+<l rend="; 1tab">16. Wy dancken u dan, Heer der Heeren,</l>
+<l>Voor al 't geen dat ons landt ontfingh:</l>
+<l>En wilt ons voort, tot uwer eeren,</l>
+<l>By blijven met uw zegeningh.</l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0066"/> </interpGrp>
+<pb n="229"/>
+<head rend="h3">Passien, en Reden.</head>
+<div type="section">
+<head rend="h4">Stem: <hi rend="i">Cloris aen de Water-stroomen,</hi></head>
+<lg type="poem"><l><hi rend="i">D</hi>It is licht voor elck te lesen:</l>
+<l>Sonder Passien te wesen,</l>
+<l>Dat is min zijn als een Beest:</l>
+<l>Maer soo wie hem heeft begeven,</l>
+<l>Om na Reden niet te leven,</l>
+<l>Die en heeft geen menschen geest. </l>
+<l rend="; 1tab">2 Daer was noyt yemandt op Eerde,</l>
+<l>Diese alle bey ontbeerde,</l>
+<l>Maer wel menigh mister een:</l>
+<l>Daerom is het wel een zegen,</l>
+<l>Diese beyde heeft verkregen,</l>
+<pb n="230"/>
+<l>En de Passy stuurt door Reen.</l>
+<l rend="; 1tab">3 't Strijdt de Reden niet en tegen,</l>
+<l>Dat de Passijen haer bewegen,</l>
+<l>Maer dat sy gants qualijck gaen:</l>
+<l>Daerom moet de siende Reden</l>
+<l>Voor de blinde Passy treden,</l>
+<l>Leyden die te rechte aen.</l>
+<l rend="; 1tab">4 Ick wil droef, en vrolijck wesen,</l>
+<l>Wanneer als tot beyde desen</l>
+<l>My de siende reden wijst;</l>
+<l>Maer ick wil my noyt verblijden,</l>
+<l>Noch niet suchten in mijn lijden,</l>
+<l>Dat het boven Reden rijst.</l>
+<l rend="; 1tab">5 Ick wil soo mijn vreughde stieren,</l>
+<l>Dat daer door in geen manieren</l>
+<l>My een ongeluck aentreft,</l>
+<pb n="231"/>
+<l>Ick wil alsoo matigh treuren,</l>
+<l>Dat daer door noyt sal gebeuren,</l>
+<l>Dat mijn leet daer door verheft.</l>
+<l rend="; 1tab">6 Dat in ons de Passien leven,</l>
+<l>Kan aen niemandt teecken geven</l>
+<l>Van een dwaes, of slecht verstant:</l>
+<l>Maer die ons te kennen geven,</l>
+<l>Dat sy sonder Reden leven,</l>
+<l>Zijn de Sotste die men vandt.</l>
+</lg></div></div>
+    <div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0067"/> </interpGrp>
+        <interpGrp>
+            <interp type="primair" value="meer120"/>
+            <interp type="primair" value="16540825"/>
+            <interp type="primair" value="werve001"/>
+        </interpGrp>
+<head rend="h3"><hi rend="i">Bruylofts-geschenck</hi> Op 't Huw'lijck van <hi rend="i">De. Hubertus van der Meer,</hi> Predicant tot Wevershove.
+<pb n="232"/>
+Met <lb/><hi rend="i">Iuffr. Geertruyde Maria Bailly.</hi><lb/> Getrout tot Amsterdam den 25. Augusti 1654.</head>
+<div type="section">
+<head rend="h4">Stemme: <hi rend="i">Al wat men hier in dese wereldt siet,</hi></head>
+<lg type="poem"><l><hi rend="i">A</hi>Ls van der meer op Eng'le-vleug'len vloogh,</l>
+<l>Sijn heyl'ge Ziel ontlast van teug'len, toogh</l>
+<l>Ten Hemel-waert, en sagh in 't hooge koor,</l>
+<l>Het Hemels-huys met geest'lijcke oogen door,</l>
+<pb n="233"/>
+<l rend="; 1tab">2. Daer yder ziel Godts lieflijckheden siet:</l>
+<l>Dus quam sijn geest alhier beneden niet,</l>
+<l>Als dan alleen, wanneer door 't schijnent' licht</l>
+<l>Van Godes wordt, hy 't volck tot sijnend sticht. </l>
+<l rend="; 1tab">3. Maer t' wijl om hoogh, hy heen en weder vloog,</l>
+<l>Hy eens't gesicht na d' Aerde neder boogh,</l>
+<l>Daer hem een glants als van veel Peerels t'saem</l>
+    <l>In d'oogen blonk, beneen uyt's <note place="foot" n="†"><hi rend="i">Amsterdam</hi></note> Werelts-kraem</l>
+<l rend="; 1tab">4. Dies hy om laegh gelijck een Sterre schiet,</l>
+<l>Na 't lieve licht dat hy van verre siet:</l>
+<l>Maer doe hy nu by dese Vlam-ster quam,</l>
+<l>Doe was 't Bailly' het puyck van Amsterdam.</l>
+<l rend="; 1tab">5. Een maegt wiens deugt meer als cieraden blonck,</l>
+<l>Daer aen Natuur al haer weldaden schonck:</l>
+<pb n="234"/>
+<l>Wiens lieflijck oogh van minlijckheden buurt,</l>
+<l>'t Welck sy alleen na deught en reden stuurt</l>
+<l rend="; 1tab">6. Wiens kuyssche oor noyt stem ontfangen most</l>
+<l>Wanneer d'ontucht haer swang're wangen lost.</l>
+<l>Wiens tongh bewijst, dat waerlijck dese maeght</l>
+<l>Geen aerdts, maer self een Hemels wesen draegt </l>
+<l rend="; 1tab">7. Doe van der meer dit puyck der jeught vernam</l>
+<l>En hy 't gesicht van hare deught bequaem</l>
+<l>Wiens glants dat self een Hemels schoonheydt was</l>
+<l>Is hem door dese ongewoonheydt ras</l>
+<l rend="; 1tab">8. Een vuur ontfonkt, een suyv're minne-vlam</l>
+<l>Die door't gesticht van dees vriendinne quam.</l>
+<l>En t'wijl sijn ziel tot haer getogen werdt,</l>
+<l>Sprack hy haer aen uyt een bewogen hert,</l>
+<l rend="; 1tab">9. Met soo een tael waer uyt sy klaerlijck las</l>
+<l>Dat dat de stem der minne waerlijck was.</l>
+<pb n="235"/>
+<l>Dies sy (van aerdt gelijck als hy gestelt)</l>
+<l>Oock word geboeyt en vast, door 't vry gewelt,</l>
+<l rend="; 1tab">10. Van minne dwangh, die stelt door eenen vlam</l>
+<l>Die van de deugt des minnaers hene quam</l>
+<l>Haer hert in lichten vlam, door minne-brandt:</l>
+<l>Daer smelt haer bey het hert by 't ingewandt,</l>
+<l rend="; 1tab">11. Gelijck te met de held're witte snee</l>
+<l>Door Sonne-schijn of and're hitte dee,</l>
+<l>Den Hemel die sagh dese brandt opgaen,</l>
+<l>Dies stack sy daer terstondt de handt op aen,</l>
+<l rend="; 1tab">12. Daer sy die twee te samen mee men'len dee</l>
+<l>Ia self ziel te saen dee streug'len mee.</l>
+<l>O waerd gespant dat nu in soeter vreught,</l>
+<l>Op 't Echte bedt uw' lusten boeten meught,</l>
+<l rend="; 1tab">13. En met malkaer, in minne, plegen 't soet,</l>
+<l>Dat al de vreught, en lust, opwegen doet:</l>
+<pb n="236"/>
+<l>Treedt vrolijck heen, na 't bruylofts Liedekant,</l>
+<l>Alwaer de min haer lieflijckheden plant,</l>
+<l rend="; 1tab">14. En doet op-schieten, lusten voor u bey.</l>
+<l>Maer stil mijn pen: my dunckt ick hoor een Rey,</l>
+<l>Daer yder keel klinckt als een fijne Fluyt,</l>
+<l>Op d' Echt van van der meer en sijne bruydt.</l>
+</lg></div>
+<div type="section">
+    <interpGrp> <interp type="song" value="maer005sing01_0068"/> </interpGrp>
+<head rend="h4">Stemme: <hi rend="i">Maskurade,</hi> Of: <hi rend="i">'t Visschen moet wel vreughde baren.</hi></head>
+<lg type="poem"><l><hi rend="i">O</hi>M de Echt van dees Gepaerde,</l>
+<l>t' Saem gesmolten in haer ieught,</l>
+<pb n="237"/>
+<l>Zijn de Hemel, en de aerde,</l>
+<l>Beyde vol van soeten vreught.</l>
+<l rend="; 1tab">2. 't Segen-rijcke wervershove</l>
+<l>Wordt met Hemels glants bedeckt,</l>
+<l>'t Gaet den Amstel-Staedt te boven,</l>
+<l>Daer de Sonne van vertreckt.</l>
+<l rend="; 1tab">3. Wat is 't, of haer blauwe Toorens</l>
+<l>Door wolcken henen gaen,</l>
+<l>En sy met haer spitse hoorens</l>
+<l>Dreyght te stooten aen de maen?</l>
+<l rend="; 1tab">4. Al haer glants sal heel verdwijnen,</l>
+<l>Onder 't Rou-kleedt van de nacht,</l>
+<l>Daerm' in Wervershoof het schijnen</l>
+<l>Van twee held're Sonnen wacht.</l>
+<l rend="; 1tab">5. Driemael Heyligh, eeuwigh wesen,</l>
+<l>Stichter van den Echten-staet,</l>
+<pb n="238"/>
+<l>Laet nu bloeyen over desen,</l>
+<l>Eenen stroom van Honigh-raedt.</l>
+<l rend="; 1tab">6. Laet de Bruydt in't Huw'lijck wesen</l>
+<l>Eenen Wijn-stock daer, o Heer</l>
+<l>Vwe Kercke van magh lesen</l>
+<l>Menigh iongen van der meer.</l>
+<l rend="; 1tab">7. Die uw volck noch mogen leyden,</l>
+<l>Door uw waerheydts held're schijn,</l>
+<l>Als haer ouders, alle beyden</l>
+<l>By u al ten Hemel zijn.</l>
+<l rend="; 1tab">8. Geef oock dit, O Godt daer boven,</l>
+<l>Tot ons heyl, en tot uw' lof,</l>
+<l>Dat sy zijn in wervershove</l>
+<l>Tot sy gaen in 't Hemels-Hof.</l>
+</lg><l rend="; 2tab"><hi rend="i">Anagramma.</hi></l>
+<lg type="poem"><pb n="239"/>
+<l><hi rend="i">Hubertus van der Meer.</hi></l>
+<l>Is Wervershover eer,</l>
+<l>En Bailly 's herten-lust:</l>
+<l>Dus volght hy het beleydt</l>
+<l>Van sijnen naem, welck seydt</l>
+<l><hi rend="i">Beraem hun Vrede-rust.</hi></l>
+</lg></div>
+</div>
+<div type="chapter">
+<interpGrp> <interp type="song" value="maer005sing01_0069"/> </interpGrp>
+    <interpGrp>
+        <interp type="primair" value="werve001"/>
+        <interp type="primair" value="16540905"/>
+    </interpGrp>
+<head rend="h3">Wellekomst, <hi rend="i">Aen Iuffr. Geertruyde Maria Bailly.</hi> Gekomen tot Wervershoof den 5. September 1654.</head>
+<div type="section">
+<pb n="240"/>
+<head rend="h4">Stemme: <hi rend="i">Roosemont die lagh gedoken.</hi></head>
+    <lg type="poem"><l><hi rend="i">W</hi>Elkom, welkom waerde Vrouwe,</l>
+<l>Puyck-cieraet van eer, en deught,</l>
+<l>Die den Amstel stelt in rouwe,</l>
+<l>Ende wervershoof in vreught:</l>
+<l>Elck met ernst soo 't sijne pleght,</l>
+<l>Dat het d' Hemel self beweeght.</l>
+<l rend="; 1tab">2. d' Amstel weende uyt haer oogen,</l>
+<l>Door 't verlies, van droefheydt seer:</l>
+<l>d' Hemel schoot uyt mede-doogen</l>
+<l>Oock terstondt haer tranen neer:</l>
+<l>'t Scheen haer druppen letten woud,</l>
+<l>Dat ghy niet vertrecken soud.</l>
+<l rend="; 1tab">3. Maer doe sy ter ander zijde</l>
+<l>Sagh de vreught van Wervershoof.</l>
+<pb n="241"/>
+<l>Toond' haer d' Hemel weder blijde,</l>
+<l>En sy 't swart Gordijn verschoof:</l>
+<l>Ende sloot haer druypend' nat</l>
+<l>Dicht in hooge water-vat.</l>
+<l rend="; 1tab">4. Van dat 's morgens, Phebi paerden</l>
+<l>Quamen voort met 't gulde Hooft,</l>
+<l>Tot dat 's avondts, onder d' Aerde,</l>
+<l>Thitis-plas dien Fackel dooft,</l>
+<l>Saghmen in haer aengesicht.</l>
+<l>Niet als lacchend' blinckend' licht.</l>
+<l rend="; 1tab">5. Was ons u, o waerde Vrouwe,</l>
+<l>Dat de Son dus vrolijck scheen.</l>
+<l>d' Hemel zegen voort u trouwe,</l>
+<l>Ende gun dat ghy gemeen</l>
+<l>Met uw' lieven weder-paer,</l>
+<l>Hier meught leven hondert-jaer.</l>
+</lg></div>
+</div>
+<div type="chapter">
+
+<pb n="242"/>
+<head rend="h3">Sluyt-Veers.</head>
+<lg type="poem"><l>Dit Veersje dient noch tot besluyt,</l>
+<l>En daer mee is mijn Boeckjen uyt,</l>
+<l>Is noch uw' sangh-lust niet voldaen,</l>
+<l>Soo singh het weer van voeren aen.</l>
+</lg></div>
+<div type="chapter">
+
+<pb n="243"/>
+<head rend="h3"><hi rend="i">Register der Liedekens.</hi></head>
+<div type="section">
+<head rend="h4"><hi rend="i">A</hi>.</head>
+<table>
+    <row><cell><hi rend="i">A</hi>Ch gesalfde van den Heer.</cell><cell>Pag. 30</cell></row>
+    <row><cell>Als Saul, en david den vyant in't velt.</cell><cell>41</cell></row>
+    <row><cell>Als ick de Son verhoogen sie.</cell><cell>184</cell></row>
+    <row><cell>Als hem de Son begeeft.</cell><cell>189</cell></row>
+    <row><cell>Als ick den Herfst aenschou.</cell><cell>194</cell></row>
+    <row><cell>Als in koelt, de nacht komt overkleeden</cell><cell>208</cell></row>
+    <row><cell>Als van der meer op Eng'le-vleug'len vloog.</cell><cell>232</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">D</hi>.</head>
+<table>
+    <row><cell>De wijsheydt die is uyt gevaren.</cell><cell>11</cell></row>
+    <row><cell>De soete mey</cell><cell>17</cell></row>
+ </table>
+<pb n="244"/>
+    <table>
+    <row><cell>Doe de Koningh dit aenhoorde.</cell><cell>33</cell></row>
+    <row><cell>David die nu had verstaen.</cell><cell>36</cell></row>
+    <row><cell>Doe de hoogen Godt op eerde.</cell><cell>39</cell></row>
+    <row><cell>Des Hemels licht verdween</cell><cell>44</cell></row>
+    <row><cell>Doe eertijdts Iohannes vernam.</cell><cell>55</cell></row>
+    <row><cell>Daer zijn geen saucen die soeter doen smaken</cell><cell>72</cell></row>
+    <row><cell>De valsche vrinde.</cell><cell>80</cell></row>
+    <row><cell>Daer is geen staet te noemen.</cell><cell>89</cell></row>
+    <row><cell>Draeght nu vry geen swarte rocken</cell><cell>116</cell></row>
+    <row><cell>Daer quam van eenen eter spijs.</cell><cell>147</cell></row>
+    <row><cell>Doe nu ons Vaderlandt.</cell><cell>174</cell></row>
+    <row><cell>De zielen die vry van het lijdende vleys.</cell><cell>212</cell></row>
+    <row><cell>Doe ick onlanghs de ruyge velden.</cell><cell>225</cell></row>
+    <row><cell>Dit is licht voor elck te lesen.</cell><cell>229</cell></row>
+</table>
+</div>
+<div type="section">
+<pb n="245"/>
+<head rend="h4"><hi rend="i">E</hi>.</head>
+<table>
+    <row><cell>Een goedt verstant, een wijs beleyt.</cell><cell>28</cell></row>
+    <row><cell>Een mensch die hoord te weten.</cell><cell>47</cell></row>
+    <row><cell>Een Aexter was eens bloot en kael.</cell><cell>57</cell></row>
+    <row><cell>Een Aep die eenen vreemden lust.</cell><cell>60</cell></row>
+    <row><cell>Een oude Fabel, van lange wijl.</cell><cell>78</cell></row>
+    <row><cell>En roemt niet van u Landt, noch Stadt.</cell><cell>96</cell></row>
+    <row><cell>Een mensche van natuur.</cell><cell>110</cell></row>
+    <row><cell>Een moordenaer die altoos // Goddeloos.</cell><cell>132</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">G</hi>.</head>
+<table>
+    <row><cell>Ghy dochters iongh en teer.</cell><cell>22</cell></row>
+    <row><cell>Geluck, ghy die de tijdt van strijdt.</cell><cell>82</cell></row>
+    </table>
+<pb n="246"/>
+    <table>
+    <row><cell>Gelijck een Vogel die daer henen.</cell><cell>123</cell></row>
+    <row><cell>Ghy die aen lust, en weeldt.</cell><cell>155</cell></row>
+    <row><cell>Gelijck Godt met sijn Wijnbergh dee.</cell><cell>164</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">H</hi>.</head>
+<table>
+    <row><cell>Het is een wonder om aen te mercken.</cell><cell>67</cell></row>
+    <row><cell>Hef op, mijn Sangh-Goddin een Liedt.</cell><cell>85</cell></row>
+    <row><cell>Het eerste daghjen 't Nieuwe-Iaer.</cell><cell>158</cell></row>
+    <row><cell>Hef op u hert en handen.</cell><cell>212</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">I</hi>.</head>
+<table>
+    <row><cell>Indienje eens willet letten.</cell><cell>103</cell></row>
+    <row><cell>Ick voel mijn Geest gedreven.</cell><cell>119</cell></row>
+    <row><cell>Ick was schier geweken.</cell><cell>129</cell></row>
+    <row><cell>Ick weet Heere, ghy sijt seecker.</cell><cell>142</cell></row>
+</table>
+</div>
+<div type="section">
+<pb n="247"/>
+<head rend="h4"><hi rend="i">K</hi>.</head>
+<table>
+    <row><cell>Keerom, keerom, o Wereldts Kindt</cell><cell>68</cell></row>
+    <row><cell>'k Wil de Liefste diemen siet.</cell><cell>160</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">L</hi>.</head>
+<table>
+    <row><cell>Looft Godt alle ghy verloste.</cell><cell>139</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">M</hi>.</head>
+<table>
+    <row><cell>Men siet de Min, en haren dwangh.</cell><cell>20</cell></row>
+    <row><cell>My dunckt dan eenen veugel.</cell><cell>51</cell></row>
+    <row><cell>Maer doe ons Vaderlandt.</cell><cell>170</cell></row>
+    <row><cell>Men hoort nu Hollandt klagen.</cell><cell>181</cell></row>
+</table>
+</div>
+<div type="section">
+<pb n="248"/>
+<head rend="h4"><hi rend="i">O</hi>.</head>
+<table>
+    <row><cell>O soete Ieught, die in u jeughde zijt.</cell><cell>8</cell></row>
+    <row><cell>O groot geluck voor die 't geniet.</cell><cell>14</cell></row>
+    <row><cell>O soete jeught, weest niet hooveerdigh.</cell><cell>150</cell></row>
+    <row><cell>Om de Echt van dees gepaerde.</cell><cell>237</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">V</hi>.</head>
+<table>
+    <row><cell>Vraeghje wie het meeste goedt.</cell><cell>107</cell></row>
+    <row><cell>Voor swellen die besloten zijn.</cell><cell>136</cell></row>
+</table>
+</div>
+<div type="section">
+<head rend="h4"><hi rend="i">W</hi>.</head>
+<table>
+    <row><cell>Wat is de jeught, en 't lieflijck bloosen.</cell><cell>25</cell></row>
+    <row><cell>Wilje wercken op goe voet.</cell><cell>64</cell></row>
+    </table>
+<pb n="249"/>
+    <table>
+    <row><cell>Wanneer als Godt sijn strengh gericht.</cell><cell>75</cell></row>
+    <row><cell>Wilje u vermaken.</cell><cell>93</cell></row>
+    <row><cell>Wilje weten wat de Neeringh.</cell><cell>100</cell></row>
+    <row><cell>Wie wel bemerckt de ordeningh.</cell><cell>113</cell></row>
+    <row><cell>Wie ist, die vry, met ongeboeyde ziele.</cell><cell>26</cell></row>
+    <row><cell>Wanneer de Son sijn stralen.</cell><cell>197</cell></row>
+    <row><cell>Wil yemandt in het kort.</cell><cell>201</cell></row>
+    <row><cell>Wanneer oprijst, de Sonne in den morgen.</cell><cell>209</cell></row>
+    <row><cell>Waeck op verstockte Nederlanden.</cell><cell>220</cell></row>
+    <row><cell>Welkom, welkom, waerde Vrouwe.</cell><cell>240</cell></row>
+</table>
+<p>&nbsp;</p>
+<p>FINIS.</p>
+    <cf>
+<pb n="250"/>
+<p>&nbsp;</p>
+<p><hi rend="i">Tot Harlingen,</hi></p>
+<p>&nbsp;</p>
+<p>Gedruckt by <hi rend="i">Evert Idzes van Doorn</hi>. Ordinaris Boeck-drucker deser Stede, wonende op de Bree-Plaets 1671.</p>
+<p>&nbsp;</p>
+    </cf>
+</div>
+</div>
+</body>
+</text>
+</TEI.2>
