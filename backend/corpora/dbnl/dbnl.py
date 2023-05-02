@@ -1,7 +1,8 @@
 from datetime import datetime
 import os
 from django.conf import settings
-from addcorpus.corpus import XMLCorpus
+from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.extract import Metadata, XML
 
 class DBNL(XMLCorpus):
     title = 'DBNL'
@@ -17,6 +18,18 @@ class DBNL(XMLCorpus):
 
     def sources(self, start = None, end = None):
         for filename in os.listdir(self.data_directory):
-            yield os.path.join(self.data_directory, filename), {}
+            id, *_ = filename.split('_')
+            metadata = {'id': id}
+            yield os.path.join(self.data_directory, filename), metadata
 
-    fields = [ ]
+    title_id = Field(
+        name='title_id',
+        display_name='Title ID',
+        display_type='text',
+        description='ID of the work',
+        extractor = Metadata('id')
+    )
+
+    fields = [
+        title_id,
+    ]

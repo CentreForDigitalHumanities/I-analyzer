@@ -15,8 +15,9 @@ def dbnl_corpus(settings):
 
 expected_docs = [
     {
-        'title': 'Het singende nachtegaeltje',
-        'author': 'Cornelis Maertsz.'
+        'title_id': 'maer005sing01',
+        # 'title': 'Het singende nachtegaeltje',
+        # 'author': 'Cornelis Maertsz.'
     }
 ]
 
