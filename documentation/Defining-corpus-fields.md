@@ -11,7 +11,7 @@ Various classes are defined in `backend/addcorpus/extract.py`.
 - The `Constant` extractor can be used to define a constant value.
 - The `Choice` and `Combined`, and `Backup` extractors can be used to combine multiple extractors.
 
-A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is `None`.
+A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is falsy.
 
 ## Elasticsearch mapping
 

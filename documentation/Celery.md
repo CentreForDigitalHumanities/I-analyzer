@@ -24,7 +24,7 @@ CELERY_BROKER_URL='redis://{host}:{port}/{db_number}'
 CELERY_BACKEND='redis://{host}:{port}/{db_number}'
 ```
 
-It is possible to configure your environment with a different celery backend or broker, but not recommended.
+It is possible to configure your environment with a different celery backend or broker, but not recommended. (While different backends should work the same, it is possible for bugs to occur in only some implementations.)
 
 ### Celery worker
 
