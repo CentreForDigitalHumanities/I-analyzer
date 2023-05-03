@@ -10,6 +10,7 @@ from download.models import Download
 from addcorpus.models import Corpus
 from visualization.tasks import histogram_term_frequency_tasks, timeline_term_frequency_tasks
 from visualization import query
+from download.mail import send_csv_email
 
 logger = logging.getLogger(__name__)
 
@@ -138,20 +139,8 @@ def csv_data_email(log_id, user_email, username):
     '''
 
     logger.info('should now be sending email')
-    filename = Download.objects.get(id=log_id).filename
-    link_url = settings.BASE_URL + reverse('download-csv', kwargs={'id': log_id})
-    # TODO: send email
-    # send_user_mail(
-    #     email=user_email,
-    #     username=username,
-    #     subject_line="I-Analyzer CSV download",
-    #     email_title="Download CSV",
-    #     message=f"Your file '{filename}' is ready for download.",
-    #     prompt="Click on the link below.",
-    #     link_url=link_url,
-    #     link_text="Download .csv file"
-    # )
 
+    send_csv_email(user_email, username, log_id)
 
 def download_full_data(request_json, user):
     '''

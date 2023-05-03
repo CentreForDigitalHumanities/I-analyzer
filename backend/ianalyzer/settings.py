@@ -219,3 +219,6 @@ except Exception:
         'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
         Warning
     )
+
+LOGO_LINK = 'http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'
+DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
