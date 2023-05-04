@@ -7,7 +7,7 @@ from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import Metadata, XML
 from corpora.dbnl.utils import *
 
-def author_extractor(field, extract=dict.get, join=list):
+def author_extractor(field, extract=dict.get, join=', '.join):
     '''
     Create an extractor for author metadata.
 
@@ -15,7 +15,7 @@ def author_extractor(field, extract=dict.get, join=list):
     - field: the field of the author data
     - extract(author, field): function to extract the value for each author,
      based on the author dict and the field. Defaults to `dict.get`.
-    - join(values): function to join the extracted values for each author
+    - join(values): function to join the formatted values for each author
     '''
 
     return Metadata(
@@ -130,26 +130,46 @@ class DBNL(XMLCorpus):
         extractor=author_extractor(
             ['voornaam', 'voorvoegsel', 'achternaam'],
             extract=lambda author, keys: ' '.join(author[key] for key in keys if author[key]),
-            join=', '.join
         )
     )
 
     author_id = Field(
         name='author_id',
-        extractor=author_extractor('pers_id',)
+        extractor=author_extractor('pers_id',),
     )
 
-    # jaar_geboren
-    # jaar_overlijden
-    # geb_datum
-    # overl_datum
-    # geb_plaats
-    # overl_plaats
-    # geb_plaats_code
-    # geb_land_code
-    # overl_plaats_code
-    # overl_land_code
-    # vrouw
+    author_year_of_birth = Field(
+        name='author_year_of_birth',
+        extractor=author_extractor('jaar_geboren'),
+    )
+
+    author_year_of_death = Field(
+        name='author_year_of_death',
+        extractor=author_extractor('jaar_overlijden'),
+    )
+
+    # these fields are given as proper dates in geb_datum / overl_datum
+    # but implementing them as date fields requires support for multiple values
+
+    author_place_of_birth = Field(
+        name='author_place_of_birth',
+        extractor=author_extractor('geb_plaats'),
+    )
+
+    author_place_of_death = Field(
+        name='author_place_of_death',
+        extractor=author_extractor('overl_plaats')
+    )
+
+    # gender is coded as a binary value (∈ ['1', '0'])
+    # converted to a string to be more comparable with other corpora
+    author_gender = Field(
+        name='author_gender',
+        extractor=author_extractor(
+            'vrouw',
+            # format=lambda value: {'0': 'man', '1': 'vrouw'}.get(value, None),
+        )
+    )
 
     url = Field(
         name='url',
@@ -161,7 +181,13 @@ class DBNL(XMLCorpus):
         extractor=Metadata('text_url')
     )
 
-    # genre
+    genre = Field(
+        name='genre',
+        extractor=Metadata(
+            'genre',
+            transform=', '.join,
+        )
+    )
 
     content = Field(
         name='content',
@@ -181,7 +207,13 @@ class DBNL(XMLCorpus):
         year_int,
         author,
         author_id,
+        author_year_of_birth,
+        author_place_of_birth,
+        author_year_of_death,
+        author_place_of_death,
+        # author_gender,
         url,
         url_txt,
+        # genre,
         content,
     ]

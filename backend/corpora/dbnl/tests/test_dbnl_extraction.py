@@ -2,9 +2,12 @@ import pytest
 import os
 
 from addcorpus.load_corpus import load_corpus
-from corpora.dbnl.utils import extract_metadata
+from corpora.dbnl.utils import extract_metadata, compose
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+def test_compose():
+    assert compose(str.upper, ' '.join)(['a', 'b']) == 'A B'
 
 def test_metadata_extraction():
     csv_path = os.path.join(here, 'data', 'titels_pd.csv')
@@ -34,12 +37,18 @@ expected_docs = [
         'title': 'Het singende nachtegaeltje',
         'volumes': None,
         'edition': '1ste druk',
-        'author_id': ['maer005'],
+        'author_id': 'maer005',
         'author': 'Cornelis Maertsz.',
+        'author_year_of_birth': '?',
+        'author_place_of_birth': 'Wervershoof',
+        'author_year_of_death': 'na 1671',
+        'author_place_of_death': None,
+        # 'author_gender': 'man',
         'url': 'https://dbnl.org/tekst/maer005sing01_01',
         'url_txt': 'https://dbnl.org/nieuws/text.php?id=maer005sing01',
         'year': '1671',
         'year_full': '1671',
+        # 'genre': 'poëzie',
         'content': '\n'.join([
             'Het singende Nachtegaeltje',
             'Quelende soetelijck, tot stichtelijck vermaeck voor de Christelijck Ieught.',

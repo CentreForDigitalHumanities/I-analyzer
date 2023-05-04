@@ -96,3 +96,11 @@ def update_data_with_row(data, row):
         data['auteurs'].append(author)
 
     return data
+
+def compose(*functions):
+    '''
+    Given a list of functions, returns a new function that is the composition of all
+
+    e.g. compose(str.upper, ' '.join)(['a', 'b']) == 'A B'
+    '''
+    return lambda y: reduce(lambda x, func: func(x), reversed(functions), y)
