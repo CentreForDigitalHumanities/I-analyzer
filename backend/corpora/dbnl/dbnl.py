@@ -149,6 +149,25 @@ class DBNL(XMLCorpus):
         extractor=join_extracted(Metadata('genre'))
     )
 
+    language = Field(
+        name='language',
+        extractor=XML(
+            'language',
+            toplevel=True,
+            recursive=True,
+        )
+    )
+
+    language_code = Field(
+        name='language_code',
+        extractor=XML(
+            'language',
+            attribute='id',
+            toplevel=True,
+            recursive=True,
+        )
+    )
+
     content = Field(
         name='content',
         extractor=XML(
@@ -161,7 +180,6 @@ class DBNL(XMLCorpus):
     # TODO:
     # page start
     # page stop
-    # language
 
     fields = [
         title_field,
@@ -180,5 +198,7 @@ class DBNL(XMLCorpus):
         url,
         url_txt,
         genre,
+        language,
+        language_code,
         content,
     ]
