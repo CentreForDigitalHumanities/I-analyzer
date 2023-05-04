@@ -67,3 +67,8 @@ def date_mapping(format='yyyy-MM-dd'):
         'type': 'date',
         'format': format
     }
+
+def int_mapping():
+    return {
+        'type': 'integer'
+    }

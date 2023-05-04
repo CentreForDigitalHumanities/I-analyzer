@@ -5,6 +5,8 @@ from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import Metadata, XML, Pass, Index
 from corpora.dbnl.utils import *
+from addcorpus.es_mappings import *
+from addcorpus.filters import RangeFilter, MultipleChoiceFilter
 
 class DBNL(XMLCorpus):
     title = 'DBNL'
@@ -44,43 +46,69 @@ class DBNL(XMLCorpus):
     title_field = Field(
         name='title',
         display_name='Title',
-        display_type='text',
         description='Title of the book',
-        extractor=Metadata('titel')
+        results_overview=True,
+        search_field_core=True,
+        csv_core=True,
+        extractor=Metadata('titel'),
+        es_mapping=text_mapping(),
+        visualizations=['wordcloud']
     )
 
     title_id = Field(
         name='title_id',
         display_name='Title ID',
-        display_type='text',
         description='ID of the book',
-        extractor = Metadata('id')
+        extractor = Metadata('id'),
+        es_mapping=keyword_mapping()
     )
 
     volumes = Field(
         name='volumes',
+        display_name='Volumes',
+        description='Number of volumes in which this book was published',
         extractor=Metadata('vols'),
+        es_mapping=text_mapping(),
     )
 
     # text version of the year, can include things like 'ca. 1500', '14e eeuw'
     year_full = Field(
         name='year_full',
-        extractor=Metadata('jaar')
+        display_name='Publication year',
+        description='Year of publication in text format. May describe a range.',
+        results_overview=True,
+        csv_core=True,
+        extractor=Metadata('jaar'),
+        es_mapping=text_mapping(),
     )
 
     # version of the year that is always a number
     year_int = Field(
         name='year',
-        extractor=Metadata('_jaar')
+        display_name='Publication year (est.)',
+        description='Year of publication as a number. May not be exact.',
+        extractor=Metadata('_jaar'),
+        es_mapping=int_mapping(),
+        search_filter=RangeFilter(lower=1200, upper=2020),
+        visualizations=['resultscount', 'termfrequency'],
+        sortable=True,
     )
 
     edition = Field(
         name='edition',
-        extractor=Metadata('druk')
+        display_name='Edition',
+        description='Edition of the book',
+        extractor=Metadata('druk'),
+        es_mapping=text_mapping(),
     )
 
     author = Field(
         name='author',
+        display_name='Author',
+        description='Name(s) of the author(s)',
+        results_overview=True,
+        search_field_core=True,
+        csv_core=True,
         extractor=join_extracted(
             Combined(
                 author_extractor('voornaam'),
@@ -88,22 +116,33 @@ class DBNL(XMLCorpus):
                 author_extractor('achternaam'),
                 transform=lambda values: [format_name(parts) for parts in zip(*values)]
             )
-        )
+        ),
+        es_mapping=keyword_mapping(enable_full_text_search=True),
+        visualizations=['resultscount', 'termfrequency'],
     )
 
     author_id = Field(
         name='author_id',
-        extractor=author_single_value_extractor('pers_id')
+        display_name='Author ID',
+        description='ID(s) of the author(s)',
+        extractor=author_single_value_extractor('pers_id'),
+        es_mapping=keyword_mapping(),
     )
 
     author_year_of_birth = Field(
         name='author_year_of_birth',
-        extractor=author_single_value_extractor('jaar_geboren')
+        display_name='Author year of birth',
+        description='Year in which the author(s) was(/were) born',
+        extractor=author_single_value_extractor('jaar_geboren'),
+        es_mapping=text_mapping(),
     )
 
     author_year_of_death = Field(
         name='author_year_of_death',
+        display_name='Author year of death',
+        description='Year in which the author(s) died',
         extractor=author_single_value_extractor('jaar_overlijden'),
+        es_mapping=text_mapping(),
     )
 
     # the above fields are also given as proper dates in geb_datum / overl_datum
@@ -111,18 +150,26 @@ class DBNL(XMLCorpus):
 
     author_place_of_birth = Field(
         name='author_place_of_birth',
+        display_name='Author place of birth',
+        description='Place the author(s) was(/were) born',
         extractor=author_single_value_extractor('geb_plaats'),
+        es_mapping=keyword_mapping(),
     )
 
     author_place_of_death = Field(
         name='author_place_of_death',
-        extractor=author_single_value_extractor('overl_plaats')
+        display_name='Author place of death',
+        description='Place where the author(s) died',
+        extractor=author_single_value_extractor('overl_plaats'),
+        es_mapping=keyword_mapping(),
     )
 
     # gender is coded as a binary value (∈ ['1', '0'])
     # converted to a string to be more comparable with other corpora
     author_gender = Field(
         name='author_gender',
+        display_name='Author gender',
+        description='Gender of the author(s)',
         extractor=join_extracted(
             Pass(
                 author_extractor('vrouw',),
@@ -131,55 +178,90 @@ class DBNL(XMLCorpus):
                     values
                 ),
             )
-        )
+        ),
+        es_mapping=keyword_mapping(),
+        search_filter=MultipleChoiceFilter(),
+        visualizations=['resultscount', 'termfrequency'],
     )
 
     url = Field(
         name='url',
-        extractor=Metadata('url')
+        display_name='URL',
+        description='Link to the book\'s page in DBNL',
+        extractor=Metadata('url'),
+        es_mapping=keyword_mapping(),
     )
 
     url_txt = Field(
         name = 'url_txt',
-        extractor=Metadata('text_url')
+        display_name='URL (txt file)',
+        description='Link to a .txt file with the book\'s contents',
+        extractor=Metadata('text_url'),
+        es_mapping=keyword_mapping(),
     )
 
     genre = Field(
         name='genre',
-        extractor=join_extracted(Metadata('genre'))
+        display_name='Genre',
+        description='Genre of the book',
+        extractor=join_extracted(Metadata('genre')),
+        es_mapping=keyword_mapping(),
+        search_filter=MultipleChoiceFilter(),
+        visualizations=['resultscount', 'termfrequency'],
+
     )
 
     language = Field(
         name='language',
+        display_name='Language',
+        description='Language in which the book is written',
         extractor=XML(
             'language',
             toplevel=True,
             recursive=True,
-        )
+        ),
+        es_mapping=keyword_mapping(),
+        search_filter=MultipleChoiceFilter(),
+        visualizations=['resultscount', 'termfrequency'],
     )
 
     language_code = Field(
         name='language_code',
+        display_name='Language code',
+        description='ISO code of the book\'s language',
         extractor=XML(
             'language',
             attribute='id',
             toplevel=True,
             recursive=True,
-        )
+        ),
+        es_mapping=keyword_mapping(),
     )
 
     content = Field(
         name='content',
+        display_name='Content',
+        description='Content of this section',
+        display_type='text_content',
+        results_overview=True,
+        search_field_core=True,
+        csv_core=True,
         extractor=XML(
             tag='p',
             multiple=True,
             flatten=True,
-        )
+        ),
+        es_mapping=main_content_mapping(token_counts=True),
+        visualizations=['wordcloud', 'ngram'],
     )
 
     order_in_book = Field(
         name='order_in_book',
+        display_name='Order within book',
+        description='Order of this section within the book',
         extractor=Index(),
+        es_mapping=int_mapping(),
+        sortable=True,
     )
 
     fields = [
