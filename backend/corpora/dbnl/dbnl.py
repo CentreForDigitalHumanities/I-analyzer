@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from bs4 import BeautifulSoup
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
@@ -32,6 +33,21 @@ def between_years(year, start_date, end_date):
 
     return True
 
+def find_entry_level(xml_path):
+    with open(xml_path) as xml_file:
+        soup = BeautifulSoup(xml_file, 'lxml-xml')
+
+        # potential levels of documents, in order of preference
+        levels = [
+            # { 'name': 'div', 'attrs': {'type': 'section'} },
+            { 'name': 'div', 'attrs': {'type': 'chapter'} },
+            { 'name': 'text' }
+        ]
+
+        level = next(level for level in levels if soup.find(**level))
+
+    return level
+
 class DBNL(XMLCorpus):
     title = 'DBNL'
     description = 'Digitale Bibliotheek voor de Nederlandse letteren'
@@ -42,7 +58,9 @@ class DBNL(XMLCorpus):
     image = 'dbnl-logo.jpeg'
 
     tag_toplevel = 'TEI.2'
-    tag_entry = 'text'
+
+    def tag_entry(self, metadata):
+        return metadata['xml_entry_level']
 
     def sources(self, start = None, end = None):
         xml_dir = os.path.join(self.data_directory, 'xml_pd')
@@ -52,11 +70,18 @@ class DBNL(XMLCorpus):
         for filename in os.listdir(xml_dir):
             if filename.endswith('.xml'):
                 id, *_ = filename.split('_')
-                metadata = {'id': id, **all_metadata[id]}
+                path = os.path.join(xml_dir, filename)
+                entry_level = find_entry_level(path)
+                metadata = {
+                    'id': id,
+                    'xml_entry_level': entry_level,
+                    **all_metadata[id]
+                }
+
                 year = int(metadata['_jaar'])
 
                 if between_years(year, start, end):
-                    yield os.path.join(xml_dir, filename), metadata
+                    yield path, metadata
 
     title_field = Field(
         name='title',
@@ -138,6 +163,15 @@ class DBNL(XMLCorpus):
 
     # genre
 
+    content = Field(
+        name='content',
+        extractor=XML(
+            tag='p',
+            multiple=True,
+            flatten=True,
+        )
+    )
+
     fields = [
         title_field,
         title_id,
@@ -149,4 +183,5 @@ class DBNL(XMLCorpus):
         author_id,
         url,
         url_txt,
+        content,
     ]

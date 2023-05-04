@@ -28,7 +28,6 @@ def dbnl_corpus(settings):
     }
     return 'dbnl'
 
-
 expected_docs = [
     {
         'title_id': 'maer005sing01',
@@ -41,12 +40,21 @@ expected_docs = [
         'url_txt': 'https://dbnl.org/nieuws/text.php?id=maer005sing01',
         'year': '1671',
         'year_full': '1671',
+        'content': '\n'.join([
+            'Het singende Nachtegaeltje',
+            'Quelende soetelijck, tot stichtelijck vermaeck voor de Christelijck Ieught.',
+            'Door.',
+            'Cornelis Maertsz. tot Wervers hoof.',
+            '\'t Amsterdam Voor Michiel de Groot, Boek-Verkooper op den Nieuwen Dijck, 1671.',
+        ])
     }
 ]
 
 def test_dbnl_extraction(dbnl_corpus):
     corpus = load_corpus(dbnl_corpus)
-    docs = corpus.documents()
+    docs = list(corpus.documents())
+
+    assert len(docs) == 70
 
     for actual, expected in zip(docs, expected_docs):
         assert actual == expected

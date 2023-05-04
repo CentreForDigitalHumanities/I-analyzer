@@ -302,13 +302,25 @@ class XMLCorpus(Corpus):
     @property
     def tag_toplevel(self):
         '''
-        The top-level tag in the source documents. Either a string or a function that maps metadata to a string.
+        The top-level tag in the source documents.
+
+        Can be:
+        - None
+        - A string with the name of the tag
+        - A dictionary that gives the named arguments to soup.find_all()
+        - A bound method that takes the metadata of the document as input and outputs one of the above.
         '''
 
     @property
     def tag_entry(self):
         '''
-        The tag that corresponds to a single document entry. Either a string or a function that maps metadata to a string.
+        The tag that corresponds to a single document entry.
+
+        Can be:
+        - None
+        - A string with the name of the tag
+        - A dictionary that gives the named arguments to soup.find_all()
+        - A bound method that takes the metadata of the document as input and outputs one of the above.
         '''
 
     def source2dicts(self, source):
