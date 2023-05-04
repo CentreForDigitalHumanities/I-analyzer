@@ -1,5 +1,7 @@
 from datetime import datetime
 import os
+import re
+from tqdm import tqdm
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
@@ -27,9 +29,9 @@ class DBNL(XMLCorpus):
         csv_path = os.path.join(self.data_directory, 'titels_pd.csv')
         all_metadata = extract_metadata(csv_path)
 
-        for filename in os.listdir(xml_dir):
+        for filename in tqdm(os.listdir(xml_dir)):
             if filename.endswith('.xml'):
-                id, *_ = filename.split('_')
+                id, *_ = re.split(r'_(?=\d+\.xml$)', filename, maxsplit=1)
                 path = os.path.join(xml_dir, filename)
                 entry_level = find_entry_level(path)
                 metadata = {
