@@ -357,10 +357,10 @@ class XMLCorpus(Corpus):
         required_fields = [
             field.name for field in self.fields if field.required]
         # Extract fields from the soup
-        tag = self.get_entry_tag(metadata)
+        tag = self.get_tag_requirements(self.tag_entry, metadata)
         bowl = self.bowl_from_soup(soup, metadata=metadata)
         if bowl:
-            spoonfuls = bowl.find_all(tag) if tag else [bowl]
+            spoonfuls = bowl.find_all(**tag) if tag else [bowl]
             for spoon in spoonfuls:
                 regular_field_dict = {field.name: field.extractor.apply(
                     # The extractor is put to work by simply throwing at it
@@ -387,19 +387,32 @@ class XMLCorpus(Corpus):
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
 
-    def get_entry_tag(self, metadata):
-        if type(self.tag_entry) == str:
-            return self.tag_entry
-        elif self.tag_entry is None:
-            return None
-        else:
-            return self.tag_entry(metadata)
+    def get_tag_requirements(self, specification, metadata):
+        '''
+        Get the requirements for a tag given the specification.
 
-    def get_toplevel_tag(self, metadata):
-        if type(self.tag_toplevel) == str:
-            return self.tag_toplevel
+        The specification can be:
+        - None
+        - A string with the name of the tag
+        - A dict with the named arguments to soup.find() / soup.find_all()
+        - A callable that takes the document metadata as input and outputs one of the above.
+
+        Output is either None or a dict with the arguments for soup.find() / soup.find_all()
+        '''
+
+        if callable(specification):
+            condition = specification(metadata)
         else:
-            return self.tag_toplevel(metadata)
+            condition = specification
+
+        if condition is None:
+            return None
+        elif type(condition) == str:
+            return {'name': condition}
+        elif type(condition) == dict:
+            return condition
+        else:
+            raise TypeError('Tag must be a string or dict')
 
     def external_source2dict(self, soup, external_fields, metadata):
         '''
@@ -453,11 +466,9 @@ class XMLCorpus(Corpus):
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.get_toplevel_tag(metadata)
-        if entry_tag == None:
-            entry_tag = self.get_entry_tag(metadata)
+            toplevel_tag = self.get_tag_requirements(self.tag_toplevel, metadata)
 
-        return soup.find(toplevel_tag) if toplevel_tag else soup
+        return soup.find(**toplevel_tag) if toplevel_tag else soup
 
     def metadata_from_xml(self, filename, tags):
         '''
