@@ -338,6 +338,7 @@ class XMLCorpus(Corpus):
                 extract.Constant,
                 extract.ExternalFile,
                 extract.Backup,
+                extract.Pass,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
@@ -552,6 +553,7 @@ class HTMLCorpus(XMLCorpus):
                 extract.Metadata,
                 extract.Constant,
                 extract.Backup,
+                extract.Pass,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an HTML corpus")
@@ -635,6 +637,7 @@ class CSVCorpus(Corpus):
                 extract.Constant,
                 extract.Backup,
                 extract.Metadata,
+                extract.Pass,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")

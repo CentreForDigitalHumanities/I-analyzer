@@ -1,7 +1,7 @@
 import csv
 from functools import reduce
 from bs4 import BeautifulSoup
-from addcorpus.extract import Metadata
+from addcorpus.extract import Metadata, Extractor, Combined, Pass
 
 
 empty_to_none = lambda value : value if value != '' else None
@@ -109,7 +109,7 @@ def compose(*functions):
     return lambda y: reduce(lambda x, func: func(x), reversed(functions), y)
 
 
-def author_extractor(field, extract=dict.get, join=', '.join):
+def author_extractor(field):
     '''
     Create an extractor for author metadata.
 
@@ -117,14 +117,17 @@ def author_extractor(field, extract=dict.get, join=', '.join):
     - field: the field of the author data
     - extract(author, field): function to extract the value for each author,
      based on the author dict and the field. Defaults to `dict.get`.
-    - join(values): function to join the formatted values for each author
     '''
 
     return Metadata(
         'auteurs',
-        transform=lambda authors: join(extract(author, field) for author in authors)
+        transform=lambda authors: [author.get(field) for author in authors]
     )
 
+def join_extracted(extractor):
+    return Pass(extractor, transform=', '.join)
+
+author_single_value_extractor = compose(join_extracted, author_extractor)
 
 def between_years(year, start_date, end_date):
     if start_date and year < start_date.year:
@@ -149,3 +152,6 @@ def find_entry_level(xml_path):
         level = next(level for level in levels if soup.find(**level))
 
     return level
+
+
+format_name = lambda parts: ' '.join(filter(None, parts))

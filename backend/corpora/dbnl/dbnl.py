@@ -4,49 +4,8 @@ from bs4 import BeautifulSoup
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.extract import Metadata, XML
+from addcorpus.extract import Metadata, XML, Pass, Constant
 from corpora.dbnl.utils import *
-
-def author_extractor(field, extract=dict.get, join=', '.join):
-    '''
-    Create an extractor for author metadata.
-
-    Input:
-    - field: the field of the author data
-    - extract(author, field): function to extract the value for each author,
-     based on the author dict and the field. Defaults to `dict.get`.
-    - join(values): function to join the formatted values for each author
-    '''
-
-    return Metadata(
-        'auteurs',
-        transform=lambda authors: join(extract(author, field) for author in authors)
-    )
-
-
-def between_years(year, start_date, end_date):
-    if start_date and year < start_date.year:
-        return False
-
-    if end_date and year > end_date.year:
-        return False
-
-    return True
-
-def find_entry_level(xml_path):
-    with open(xml_path) as xml_file:
-        soup = BeautifulSoup(xml_file, 'lxml-xml')
-
-        # potential levels of documents, in order of preference
-        levels = [
-            # { 'name': 'div', 'attrs': {'type': 'section'} },
-            { 'name': 'div', 'attrs': {'type': 'chapter'} },
-            { 'name': 'text' }
-        ]
-
-        level = next(level for level in levels if soup.find(**level))
-
-    return level
 
 class DBNL(XMLCorpus):
     title = 'DBNL'
@@ -127,47 +86,56 @@ class DBNL(XMLCorpus):
 
     author = Field(
         name='author',
-        extractor=author_extractor(
-            ['voornaam', 'voorvoegsel', 'achternaam'],
-            extract=lambda author, keys: ' '.join(author[key] for key in keys if author[key]),
+        extractor=join_extracted(
+            Combined(
+                author_extractor('voornaam'),
+                author_extractor('voorvoegsel'),
+                author_extractor('achternaam'),
+                transform=lambda values: [format_name(parts) for parts in zip(*values)]
+            )
         )
     )
 
     author_id = Field(
         name='author_id',
-        extractor=author_extractor('pers_id',),
+        extractor=author_single_value_extractor('pers_id')
     )
 
     author_year_of_birth = Field(
         name='author_year_of_birth',
-        extractor=author_extractor('jaar_geboren'),
+        extractor=author_single_value_extractor('jaar_geboren')
     )
 
     author_year_of_death = Field(
         name='author_year_of_death',
-        extractor=author_extractor('jaar_overlijden'),
+        extractor=author_single_value_extractor('jaar_overlijden'),
     )
 
-    # these fields are given as proper dates in geb_datum / overl_datum
+    # the above fields are also given as proper dates in geb_datum / overl_datum
     # but implementing them as date fields requires support for multiple values
 
     author_place_of_birth = Field(
         name='author_place_of_birth',
-        extractor=author_extractor('geb_plaats'),
+        extractor=author_single_value_extractor('geb_plaats'),
     )
 
     author_place_of_death = Field(
         name='author_place_of_death',
-        extractor=author_extractor('overl_plaats')
+        extractor=author_single_value_extractor('overl_plaats')
     )
 
     # gender is coded as a binary value (∈ ['1', '0'])
     # converted to a string to be more comparable with other corpora
     author_gender = Field(
         name='author_gender',
-        extractor=author_extractor(
-            'vrouw',
-            # format=lambda value: {'0': 'man', '1': 'vrouw'}.get(value, None),
+        extractor=join_extracted(
+            Pass(
+                author_extractor('vrouw',),
+                transform=lambda values: map(
+                    lambda value: {'0': 'man', '1': 'vrouw'}.get(value, None),
+                    values
+                ),
+            )
         )
     )
 
@@ -183,10 +151,7 @@ class DBNL(XMLCorpus):
 
     genre = Field(
         name='genre',
-        extractor=Metadata(
-            'genre',
-            transform=', '.join,
-        )
+        extractor=join_extracted(Metadata('genre'))
     )
 
     content = Field(
@@ -211,9 +176,9 @@ class DBNL(XMLCorpus):
         author_place_of_birth,
         author_year_of_death,
         author_place_of_death,
-        # author_gender,
+        author_gender,
         url,
         url_txt,
-        # genre,
+        genre,
         content,
     ]

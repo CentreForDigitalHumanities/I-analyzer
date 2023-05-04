@@ -125,6 +125,19 @@ class Metadata(Extractor):
     def _apply(self, metadata, *nargs, **kwargs):
         return metadata.get(self.key)
 
+class Pass(Extractor):
+    '''
+    An extractor that just passes the value of another extractor.
+
+    Useful if you want to stack multiple `transform` arguments
+    '''
+
+    def __init__(self, extractor, *nargs, **kwargs):
+        self.extractor = extractor
+        super().__init__(**kwargs)
+
+    def _apply(self, *nargs, **kwargs):
+        return self.extractor.apply(*nargs, **kwargs)
 
 class XML(Extractor):
     '''
