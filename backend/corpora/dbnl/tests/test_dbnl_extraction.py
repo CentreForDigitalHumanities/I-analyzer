@@ -57,7 +57,8 @@ expected_docs = [
             'Door.',
             'Cornelis Maertsz. tot Wervers hoof.',
             '\'t Amsterdam Voor Michiel de Groot, Boek-Verkooper op den Nieuwen Dijck, 1671.',
-        ])
+        ]),
+        'order_in_book': 0,
     }
 ]
 

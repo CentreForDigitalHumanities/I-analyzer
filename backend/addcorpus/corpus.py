@@ -330,15 +330,8 @@ class XMLCorpus(Corpus):
         '''
         # Make sure that extractors are sensible
         for field in self.fields:
-            if not isinstance(field.extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.XML,
-                extract.Metadata,
-                extract.Constant,
-                extract.ExternalFile,
-                extract.Backup,
-                extract.Pass,
+            if isinstance(field.extractor, (
+                extract.HTML, extract.CSV,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
@@ -374,13 +367,14 @@ class XMLCorpus(Corpus):
         bowl = self.bowl_from_soup(soup, metadata=metadata)
         if bowl:
             spoonfuls = bowl.find_all(**tag) if tag else [bowl]
-            for spoon in spoonfuls:
+            for i, spoon in enumerate(spoonfuls):
                 regular_field_dict = {field.name: field.extractor.apply(
                     # The extractor is put to work by simply throwing at it
                     # any and all information it might need
                     soup_top=bowl,
                     soup_entry=spoon,
-                    metadata=metadata
+                    metadata=metadata,
+                    index=i,
                 ) for field in regular_fields if field.indexed}
                 external_dict = {}
                 if external_fields:
@@ -546,14 +540,8 @@ class HTMLCorpus(XMLCorpus):
 
         # Make sure that extractors are sensible
         for field in self.fields:
-            if not isinstance(field.extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.HTML,
-                extract.Metadata,
-                extract.Constant,
-                extract.Backup,
-                extract.Pass,
+            if isinstance(field.extractor, (
+                extract.XML, extract.CSV,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an HTML corpus")
@@ -575,7 +563,7 @@ class HTMLCorpus(XMLCorpus):
         # if there is a entry level tag, with html this is not always the case
         if bowl and tag:
             # Note that this is non-recursive: will only find direct descendants of the top-level tag
-            for spoon in bowl.find_all(tag):
+            for i, spoon in enumerate(bowl.find_all(tag)):
                 # yield
                 yield {
                     field.name: field.extractor.apply(
@@ -583,7 +571,8 @@ class HTMLCorpus(XMLCorpus):
                         # any and all information it might need
                         soup_top=bowl,
                         soup_entry=spoon,
-                        metadata=metadata
+                        metadata=metadata,
+                        index=i
                     ) for field in self.fields if field.indexed
                 }
         else:
@@ -594,7 +583,7 @@ class HTMLCorpus(XMLCorpus):
                     # any and all information it might need
                     soup_top='',
                     soup_entry=soup,
-                    metadata=metadata
+                    metadata=metadata,
                 ) for field in self.fields if field.indexed
             }
 
@@ -631,13 +620,7 @@ class CSVCorpus(Corpus):
         csv.field_size_limit(sys.maxsize)
         for field in self.fields:
             if not isinstance(field.extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.CSV,
-                extract.Constant,
-                extract.Backup,
-                extract.Metadata,
-                extract.Pass,
+                extract.HTML, extract.XML
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
@@ -655,7 +638,7 @@ class CSVCorpus(Corpus):
             reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
-            for row in reader:
+            for i, row in enumerate(reader):
                 is_new_document = True
 
                 if self.required_field and not row.get(self.required_field):  # skip row if required_field is empty
@@ -670,19 +653,19 @@ class CSVCorpus(Corpus):
                         document_id = identifier
 
                 if is_new_document and rows:
-                    yield self.document_from_rows(rows, metadata)
+                    yield self.document_from_rows(rows, metadata, i)
                     rows = [row]
                 else:
                     rows.append(row)
 
             yield self.document_from_rows(rows, metadata)
 
-    def document_from_rows(self, rows, metadata):
+    def document_from_rows(self, rows, metadata, row_index):
         doc = {
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows, metadata = metadata
+                rows=rows, metadata = metadata, index=row_index
             )
             for field in self.fields if field.indexed
         }

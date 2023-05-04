@@ -139,6 +139,10 @@ class Pass(Extractor):
     def _apply(self, *nargs, **kwargs):
         return self.extractor.apply(*nargs, **kwargs)
 
+class Index(Extractor):
+    def _apply(self, index=None, *nargs, **kwargs):
+        return index
+
 class XML(Extractor):
     '''
     This extractor extracts attributes or contents from a BeautifulSoup node.

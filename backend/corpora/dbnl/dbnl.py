@@ -3,7 +3,7 @@ import os
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.extract import Metadata, XML, Pass
+from addcorpus.extract import Metadata, XML, Pass, Index
 from corpora.dbnl.utils import *
 
 class DBNL(XMLCorpus):
@@ -177,9 +177,10 @@ class DBNL(XMLCorpus):
         )
     )
 
-    # TODO:
-    # page start
-    # page stop
+    order_in_book = Field(
+        name='order_in_book',
+        extractor=Index(),
+    )
 
     fields = [
         title_field,
@@ -201,4 +202,5 @@ class DBNL(XMLCorpus):
         language,
         language_code,
         content,
+        order_in_book,
     ]
