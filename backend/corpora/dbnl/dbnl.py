@@ -1,10 +1,9 @@
 from datetime import datetime
 import os
-from bs4 import BeautifulSoup
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.extract import Metadata, XML, Pass, Constant
+from addcorpus.extract import Metadata, XML, Pass
 from corpora.dbnl.utils import *
 
 class DBNL(XMLCorpus):
@@ -79,10 +78,6 @@ class DBNL(XMLCorpus):
         name='edition',
         extractor=Metadata('druk')
     )
-
-    # ppn_o
-    # bibliotheek
-    # categorie
 
     author = Field(
         name='author',
@@ -162,6 +157,11 @@ class DBNL(XMLCorpus):
             flatten=True,
         )
     )
+
+    # TODO:
+    # page start
+    # page stop
+    # language
 
     fields = [
         title_field,
