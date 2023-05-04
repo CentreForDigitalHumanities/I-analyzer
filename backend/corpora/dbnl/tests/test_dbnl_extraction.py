@@ -39,7 +39,7 @@ expected_docs = [
         'edition': '1ste druk',
         'author_id': 'maer005',
         'author': 'Cornelis Maertsz.',
-        'author_year_of_birth': '?',
+        'author_year_of_birth': None,
         'author_place_of_birth': 'Wervershoof',
         'author_year_of_death': 'na 1671',
         'author_place_of_death': None,

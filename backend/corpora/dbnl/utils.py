@@ -124,8 +124,27 @@ def author_extractor(field):
         transform=lambda authors: [author.get(field) for author in authors]
     )
 
+def join_values(values):
+    '''
+    Join extracted values into a string with proper handling of None values.
+
+    This is intend to be used on an iterable of strings or None.
+
+    - If all values are '', None, or '?', return None
+    - If some values are non-empty strings, convert falsy values to '?' and join
+    them into a single string.
+    '''
+
+    formatted = [value or '?' for value in values]
+    if any(value != '?' for value in formatted):
+        return ', '.join(formatted)
+
 def join_extracted(extractor):
-    return Pass(extractor, transform=', '.join)
+    '''
+    Apply an extractor that outputs an iterable, and return the results
+    in a comma-joined string.
+    '''
+    return Pass(extractor, transform=join_values)
 
 author_single_value_extractor = compose(join_extracted, author_extractor)
 
