@@ -182,16 +182,17 @@ class DBNL(XMLCorpus):
     )
 
     # gender is coded as a binary value (∈ ['1', '0'])
-    # converted to a string to be more comparable with other corpora
+    # converted to a string for clarity
+    # 0 is used for men, unknown/anonymous authors, and institutions
     author_gender = Field(
         name='author_gender',
         display_name='Author gender',
         description='Gender of the author(s)',
         extractor=join_extracted(
-            Pass(
-                author_extractor('vrouw',),
+            Pass( # use look-up dict to transform values to string
+                author_extractor('vrouw'),
                 transform=lambda values: map(
-                    lambda value: {'0': 'man', '1': 'vrouw'}.get(value, None),
+                    lambda gender: {'0': 'man/unknown', '1': 'woman'}.get(gender, None),
                     values
                 ),
             )

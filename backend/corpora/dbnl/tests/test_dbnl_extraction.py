@@ -44,7 +44,7 @@ expected_docs = [
         'author_place_of_birth': 'Wervershoof',
         'author_year_of_death': 'na 1671',
         'author_place_of_death': None,
-        'author_gender': 'man',
+        'author_gender': 'man/unknown',
         'url': 'https://dbnl.org/tekst/maer005sing01_01',
         'url_txt': 'https://dbnl.org/nieuws/text.php?id=maer005sing01',
         'year': '1671',
