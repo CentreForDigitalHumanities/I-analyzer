@@ -59,7 +59,8 @@ expected_docs = [
             'Cornelis Maertsz. tot Wervers hoof.',
             '\'t Amsterdam Voor Michiel de Groot, Boek-Verkooper op den Nieuwen Dijck, 1671.',
         ]),
-        'order_in_book': 0,
+        'chapter_title': None,
+        'chapter_index': 1,
     },
     {
         'title_id': 'maer005sing01',
@@ -105,7 +106,8 @@ expected_docs = [
             'En voert ons dart\'le Ieughd al singende ten Hemel.',
             'H. Vander Meer.',
         ]),
-        'order_in_book': 1,
+        'chapter_title': 'Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts',
+        'chapter_index': 2,
     }
 ]
 

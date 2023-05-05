@@ -176,3 +176,5 @@ def find_entry_level(xml_path):
 
 
 format_name = lambda parts: ' '.join(filter(None, parts))
+
+LINE_TAG = re.compile('^(p|l|head|row|item)$')

@@ -26,7 +26,7 @@ class DBNL(XMLCorpus):
 
     document_context = {
         'context_fields': ['title_id'],
-        'sort_field': 'order_in_book',
+        'sort_field': 'chapter_index',
         'context_display_name': 'book'
     }
 
@@ -262,6 +262,36 @@ class DBNL(XMLCorpus):
         es_mapping=keyword_mapping(),
     )
 
+    chapter_title = Field(
+        name='chapter_title',
+        display_name='Chapter',
+        extractor=Backup(
+            XML(
+                tag='head',
+                recursive=True,
+                flatten=True,
+            ),
+            XML(
+                tag=LINE_TAG,
+                recursive=True,
+                flatten=True,
+            )
+        ),
+        results_overview=True,
+        search_field_core=True,
+        csv_core=True,
+        visualizations=['wordcloud'],
+    )
+
+    chapter_index = Field(
+        name='chapter_index',
+        display_name='Chapter index',
+        description='Order of this chapter within the book',
+        extractor=Index(transform=lambda x : x + 1),
+        es_mapping=int_mapping(),
+        sortable=True,
+    )
+
     content = Field(
         name='content',
         display_name='Content',
@@ -271,22 +301,13 @@ class DBNL(XMLCorpus):
         search_field_core=True,
         csv_core=True,
         extractor=XML(
-            tag=re.compile('^(p|l|head|row)$'),
+            tag=LINE_TAG,
             recursive=True,
             multiple=True,
             flatten=True,
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud', 'ngram'],
-    )
-
-    order_in_book = Field(
-        name='order_in_book',
-        display_name='Order within book',
-        description='Order of this section within the book',
-        extractor=Index(),
-        es_mapping=int_mapping(),
-        sortable=True,
     )
 
     fields = [
@@ -309,6 +330,7 @@ class DBNL(XMLCorpus):
         genre,
         language,
         language_code,
+        chapter_title,
+        chapter_index,
         content,
-        order_in_book,
     ]
