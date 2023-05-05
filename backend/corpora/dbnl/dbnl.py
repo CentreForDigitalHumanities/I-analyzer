@@ -249,7 +249,8 @@ class DBNL(XMLCorpus):
         search_field_core=True,
         csv_core=True,
         extractor=XML(
-            tag='p',
+            tag=re.compile('^(p|l|head|row)$'),
+            recursive=True,
             multiple=True,
             flatten=True,
         ),

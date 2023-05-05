@@ -1,6 +1,8 @@
 import csv
 from functools import reduce
 from bs4 import BeautifulSoup
+import re
+
 from addcorpus.extract import Metadata, Extractor, Combined, Pass
 
 

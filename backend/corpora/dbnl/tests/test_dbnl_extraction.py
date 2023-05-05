@@ -59,8 +59,55 @@ expected_docs = [
             '\'t Amsterdam Voor Michiel de Groot, Boek-Verkooper op den Nieuwen Dijck, 1671.',
         ]),
         'order_in_book': 0,
+    },
+    {
+        'title_id': 'maer005sing01',
+        'title': 'Het singende nachtegaeltje',
+        'volumes': None,
+        'edition': '1ste druk',
+        'author_id': 'maer005',
+        'author': 'Cornelis Maertsz.',
+        'author_year_of_birth': None,
+        'author_place_of_birth': 'Wervershoof',
+        'author_year_of_death': 'na 1671',
+        'author_place_of_death': None,
+        'author_gender': 'man',
+        'url': 'https://dbnl.org/tekst/maer005sing01_01',
+        'url_txt': 'https://dbnl.org/nieuws/text.php?id=maer005sing01',
+        'year': '1671',
+        'year_full': '1671',
+        'genre': 'poëzie',
+        'language': 'Nederlands',
+        'language_code': 'nl',
+        'content': '\n'.join([
+            'Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts',
+            'SOo wort de schrand\'re Rey der vloeiende Poëten',
+            'Door u, o waerde Vriend! vervult,',
+            'Soo wort uw\' Naam met Eer vergult,',
+            'En door de Lof-bazuin roem rughtigh uitgekreten,',
+            'De Dight-kunst scheen wel eer in Amstel silte Plassen',
+            'Alleen te sitten op haer throon,',
+            'Maar ghy stelt in uw\' Dight ten toon',
+            'Dat in ons Wervershoof nogh eed\'ler vrughten wassen.',
+            'Want\'t baat niet dat men kan een yd\'le Pen beswang\'ren',
+            'Met wonderlijck Gedight,',
+            'Indienmen niet en stight,',
+            'Maer met een Heydensch rot vervult de Mond der Sang\'ren.',
+            'Ghy soeckt de Af-breuk van het Rijck des Helschen lagers.',
+            'Dies ghy een Heiligh Ooghwit raakt,',
+            'En onse Ieught sticht en vermaakt',
+            'Soo volght ghy \'t saligh Spoor des Ioodschen Harpe-Slagers.',
+            'Treet voort dien Eerbaan in, en laat geen Aardsch gewemel',
+            'V hind\'ren in soo eed\'len Saak,',
+            'Soo streckt uw \'Lands-lien tot een Baak',
+            'En voert ons dart\'le Ieughd al singende ten Hemel.',
+            'H. Vander Meer.',
+        ]),
+        'order_in_book': 1,
     }
 ]
+
+
 
 def test_dbnl_extraction(dbnl_corpus):
     corpus = load_corpus(dbnl_corpus)
@@ -70,3 +117,4 @@ def test_dbnl_extraction(dbnl_corpus):
 
     for actual, expected in zip(docs, expected_docs):
         assert actual == expected
+
