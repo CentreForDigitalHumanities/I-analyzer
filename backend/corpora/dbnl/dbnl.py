@@ -71,6 +71,15 @@ class DBNL(XMLCorpus):
         es_mapping=keyword_mapping()
     )
 
+    id = Field(
+        name='id',
+        extractor=Combined(
+            Metadata('id'),
+            Index(transform=str),
+            transform='_'.join,
+        )
+    )
+
     volumes = Field(
         name='volumes',
         display_name='Volumes',
@@ -276,6 +285,7 @@ class DBNL(XMLCorpus):
     fields = [
         title_field,
         title_id,
+        id,
         volumes,
         edition,
         year_full,

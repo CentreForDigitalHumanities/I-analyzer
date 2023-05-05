@@ -35,6 +35,7 @@ expected_docs = [
     {
         'title_id': 'maer005sing01',
         'title': 'Het singende nachtegaeltje',
+        'id': 'maer005sing01_0',
         'volumes': None,
         'edition': '1ste druk',
         'author_id': 'maer005',
@@ -63,6 +64,7 @@ expected_docs = [
     {
         'title_id': 'maer005sing01',
         'title': 'Het singende nachtegaeltje',
+        'id': 'maer005sing01_1',
         'volumes': None,
         'edition': '1ste druk',
         'author_id': 'maer005',
