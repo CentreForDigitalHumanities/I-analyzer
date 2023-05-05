@@ -24,6 +24,12 @@ class DBNL(XMLCorpus):
     def tag_entry(self, metadata):
         return metadata['xml_entry_level']
 
+    document_context = {
+        'context_fields': ['title_id'],
+        'sort_field': 'order_in_book',
+        'context_display_name': 'book'
+    }
+
     def sources(self, start = None, end = None):
         xml_dir = os.path.join(self.data_directory, 'xml_pd')
         csv_path = os.path.join(self.data_directory, 'titels_pd.csv')
