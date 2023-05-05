@@ -236,6 +236,8 @@ class DBNL(XMLCorpus):
             'language',
             toplevel=True,
             recursive=True,
+            multiple=True,
+            transform=join_values,
         ),
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(),
@@ -245,12 +247,17 @@ class DBNL(XMLCorpus):
     language_code = Field(
         name='language_code',
         display_name='Language code',
-        description='ISO code of the book\'s language',
-        extractor=XML(
-            'language',
-            attribute='id',
-            toplevel=True,
-            recursive=True,
+        description='ISO code of the text\'s language',
+        extractor=Backup(
+            XML(
+                attribute='lang',
+            ),
+            XML(
+                'language',
+                attribute='id',
+                toplevel=True,
+                recursive=True,
+            ),
         ),
         es_mapping=keyword_mapping(),
     )
