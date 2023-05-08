@@ -36,14 +36,15 @@ class DBNL(XMLCorpus):
         all_metadata = extract_metadata(csv_path)
 
         for filename in tqdm(os.listdir(xml_dir)):
-            if filename.endswith('.xml'):
-                id, *_ = re.split(r'_(?=\d+\.xml$)', filename, maxsplit=1)
+           if filename.endswith('.xml'):
+                id, _ = os.path.splitext(filename)
+                metadata_id, *_ = re.split(r'_(?=\d+$)', id, maxsplit=1)
                 path = os.path.join(xml_dir, filename)
                 entry_level = find_entry_level(path)
                 metadata = {
                     'id': id,
                     'xml_entry_level': entry_level,
-                    **all_metadata[id]
+                    **all_metadata[metadata_id]
                 }
 
                 year = int(metadata['_jaar'])
@@ -75,7 +76,7 @@ class DBNL(XMLCorpus):
         name='id',
         extractor=Combined(
             Metadata('id'),
-            Index(transform=str),
+            Index(transform=lambda i: str(i).zfill(4)),
             transform='_'.join,
         )
     )

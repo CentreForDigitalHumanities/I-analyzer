@@ -62,9 +62,9 @@ def dbnl_corpus(settings):
 
 expected_docs = [
     {
-        'title_id': 'maer005sing01',
+        'title_id': 'maer005sing01_01',
         'title': 'Het singende nachtegaeltje',
-        'id': 'maer005sing01_0',
+        'id': 'maer005sing01_01_0000',
         'volumes': None,
         'edition': '1ste druk',
         'author_id': 'maer005',
@@ -92,9 +92,9 @@ expected_docs = [
         'chapter_index': 1,
     },
     {
-        'title_id': 'maer005sing01',
+        'title_id': 'maer005sing01_01',
         'title': 'Het singende nachtegaeltje',
-        'id': 'maer005sing01_1',
+        'id': 'maer005sing01_01_0001',
         'volumes': None,
         'edition': '1ste druk',
         'author_id': 'maer005',
