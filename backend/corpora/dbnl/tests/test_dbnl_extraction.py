@@ -51,7 +51,6 @@ def test_append_to_tag(xml, tag, padding, original_output, new_output):
 
     assert extractor._flatten(edited_soup) == new_output
 
-
 @pytest.fixture
 def dbnl_corpus(settings):
     settings.DBNL_DATA = os.path.join(here, 'data')
@@ -75,7 +74,6 @@ expected_docs = [
         'author_place_of_death': None,
         'author_gender': 'man/unknown',
         'url': 'https://dbnl.org/tekst/maer005sing01_01',
-        'url_txt': 'https://dbnl.org/nieuws/text.php?id=maer005sing01',
         'year': '1671',
         'year_full': '1671',
         'genre': 'poëzie',
@@ -105,7 +103,6 @@ expected_docs = [
         'author_place_of_death': None,
         'author_gender': 'man',
         'url': 'https://dbnl.org/tekst/maer005sing01_01',
-        'url_txt': 'https://dbnl.org/nieuws/text.php?id=maer005sing01',
         'year': '1671',
         'year_full': '1671',
         'genre': 'poëzie',

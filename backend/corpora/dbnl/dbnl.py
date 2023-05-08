@@ -2,27 +2,26 @@ from datetime import datetime
 import os
 import re
 from tqdm import tqdm
+import random
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.extract import Metadata, XML, Pass, Index
+from addcorpus.extract import Metadata, XML, Pass, Index, Backup, Combined
 from corpora.dbnl.utils import *
 from addcorpus.es_mappings import *
 from addcorpus.filters import RangeFilter, MultipleChoiceFilter
 
 class DBNL(XMLCorpus):
     title = 'DBNL'
-    description = 'Digitale Bibliotheek voor de Nederlandse letteren'
+    description = 'Digital Library for Dutch Literature'
     data_directory = settings.DBNL_DATA
     min_date = datetime(year=1200, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
     es_index = getattr(settings, 'DBNL_ES_INDEX', 'dbnl')
-    image = 'dbnl-logo.jpeg'
+    image = 'dbnl.png'
 
     tag_toplevel = 'TEI.2'
-
-    def tag_entry(self, metadata):
-        return metadata['xml_entry_level']
+    tag_entry = { 'name': 'div', 'attrs': {'type': 'chapter'} }
 
     document_context = {
         'context_fields': ['title_id'],
@@ -38,12 +37,10 @@ class DBNL(XMLCorpus):
         for filename in tqdm(os.listdir(xml_dir)):
            if filename.endswith('.xml'):
                 id, _ = os.path.splitext(filename)
-                metadata_id, *_ = re.split(r'_(?=\d+$)', id, maxsplit=1)
+                metadata_id, *_ = re.split(r'_(?=\d+$)', id)
                 path = os.path.join(xml_dir, filename)
-                entry_level = find_entry_level(path)
                 metadata = {
                     'id': id,
-                    'xml_entry_level': entry_level,
                     **all_metadata[metadata_id]
                 }
 
@@ -104,12 +101,14 @@ class DBNL(XMLCorpus):
     year_int = Field(
         name='year',
         display_name='Publication year (est.)',
-        description='Year of publication as a number. May not be exact.',
+        description='Year of publication as a number. May not be an estimate.',
         extractor=Metadata('_jaar'),
         es_mapping=int_mapping(),
         search_filter=RangeFilter(lower=1200, upper=2020),
         visualizations=['resultscount', 'termfrequency'],
         sortable=True,
+        visualization_sort='key',
+        primary_sort=True,
     )
 
     edition = Field(
@@ -211,14 +210,6 @@ class DBNL(XMLCorpus):
         es_mapping=keyword_mapping(),
     )
 
-    url_txt = Field(
-        name = 'url_txt',
-        display_name='URL (txt file)',
-        description='Link to a .txt file with the book\'s contents',
-        extractor=Metadata('text_url'),
-        es_mapping=keyword_mapping(),
-    )
-
     genre = Field(
         name='genre',
         display_name='Genre',
@@ -227,7 +218,6 @@ class DBNL(XMLCorpus):
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(),
         visualizations=['resultscount', 'termfrequency'],
-
     )
 
     language = Field(
@@ -251,10 +241,10 @@ class DBNL(XMLCorpus):
         display_name='Language code',
         description='ISO code of the text\'s language',
         extractor=Backup(
-            XML(
+            XML( # get the language on chapter-level if available
                 attribute='lang',
             ),
-            XML(
+            XML( #otherwise, get the (first) language for the book
                 'language',
                 attribute='id',
                 toplevel=True,
@@ -297,7 +287,7 @@ class DBNL(XMLCorpus):
     content = Field(
         name='content',
         display_name='Content',
-        description='Content of this section',
+        description='Text in this chapter',
         display_type='text_content',
         results_overview=True,
         search_field_core=True,
@@ -329,7 +319,6 @@ class DBNL(XMLCorpus):
         author_place_of_death,
         author_gender,
         url,
-        url_txt,
         genre,
         language,
         language_code,
