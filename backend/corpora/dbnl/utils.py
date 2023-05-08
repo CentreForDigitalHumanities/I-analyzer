@@ -1,6 +1,9 @@
 import csv
 from functools import reduce
 import re
+from bs4 import BeautifulSoup
+import os
+
 
 from addcorpus.extract import Metadata, Pass
 
@@ -120,6 +123,24 @@ def update_data_with_row(data, row):
         data['auteurs'].append(author)
 
     return data
+
+# === METADATA-ONLY RECORDS ===
+
+class BlankXML:
+    def __init__(self, data_directory):
+        self.filename = os.path.join(data_directory, '_.xml')
+
+    def __enter__(self):
+        # create an xml that will generate one "spoonful", i.e. one document
+        # but no actual content
+        soup = BeautifulSoup('<TEI.2><div type="chapter"></div></TEI.2>', 'lxml-xml')
+        with open(self.filename, 'w') as file:
+            file.write(soup.prettify())
+
+        return self.filename
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        os.remove(self.filename)
 
 # === UTILITY FUNCTIONS ===
 

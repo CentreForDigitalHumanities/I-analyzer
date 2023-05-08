@@ -72,3 +72,6 @@ def int_mapping():
     return {
         'type': 'integer'
     }
+
+def bool_mapping():
+    return {'type': 'boolean'}

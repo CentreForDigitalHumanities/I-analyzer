@@ -9,7 +9,7 @@ from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import Metadata, XML, Pass, Index, Backup, Combined
 from corpora.dbnl.utils import *
 from addcorpus.es_mappings import *
-from addcorpus.filters import RangeFilter, MultipleChoiceFilter
+from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
 
 class DBNL(XMLCorpus):
     title = 'DBNL'
@@ -30,24 +30,47 @@ class DBNL(XMLCorpus):
     }
 
     def sources(self, start = None, end = None):
-        xml_dir = os.path.join(self.data_directory, 'xml_pd')
         csv_path = os.path.join(self.data_directory, 'titels_pd.csv')
         all_metadata = extract_metadata(csv_path)
 
-        for filename in tqdm(os.listdir(xml_dir)):
-           if filename.endswith('.xml'):
-                id, _ = os.path.splitext(filename)
-                metadata_id, *_ = re.split(r'_(?=\d+$)', id)
-                path = os.path.join(xml_dir, filename)
+        print('Extracting XML files...')
+        for id, path in tqdm(list(self._xml_files())):
+            metadata_id, *_ = re.split(r'_(?=\d+$)', id)
+            csv_metadata = all_metadata.pop(metadata_id)
+            metadata = {
+                'id': id,
+                'has_xml': True,
+                **csv_metadata
+            }
+
+            year = int(metadata['_jaar'])
+
+            if between_years(year, start, end):
+                yield path, metadata
+
+        # we popped metadata while going through the XMLs
+        # now add data for the remaining records (without text)
+
+        print('Extracting metadata-only records...')
+        with BlankXML(self.data_directory) as blank_file:
+            for id in tqdm(all_metadata):
+                csv_metadata = all_metadata[id]
                 metadata = {
                     'id': id,
-                    **all_metadata[metadata_id]
+                    'has_xml': False,
+                    **csv_metadata
                 }
-
                 year = int(metadata['_jaar'])
-
                 if between_years(year, start, end):
-                    yield path, metadata
+                    yield blank_file, metadata
+
+    def _xml_files(self):
+        xml_dir = os.path.join(self.data_directory, 'xml_pd')
+        for filename in os.listdir(xml_dir):
+           if filename.endswith('.xml'):
+               id, _ = os.path.splitext(filename)
+               path = os.path.join(xml_dir, filename)
+               yield id, path
 
     title_field = Field(
         name='title',
@@ -279,7 +302,10 @@ class DBNL(XMLCorpus):
         name='chapter_index',
         display_name='Chapter index',
         description='Order of this chapter within the book',
-        extractor=Index(transform=lambda x : x + 1),
+        extractor=Index(
+            transform=lambda x : x + 1,
+            applicable=lambda metadata: metadata['has_xml']
+        ),
         es_mapping=int_mapping(),
         sortable=True,
     )
@@ -301,6 +327,30 @@ class DBNL(XMLCorpus):
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud', 'ngram'],
+    )
+
+    has_content = Field(
+        name='has_content',
+        display_name='Content available',
+        description='Whether the contents of this book are available on I-analyzer',
+        extractor=Metadata('has_xml'),
+        es_mapping=bool_mapping(),
+        search_filter=BooleanFilter(
+            true='Content available',
+            false='Metadata only'
+        ),
+    )
+
+    is_primary = Field(
+        name='is_primary',
+        display_name='Primary',
+        description='Whether this is the primary document for this book - each book has only one primary document',
+        extractor=Index(transform = lambda index : index == 0),
+        search_filter=BooleanFilter(
+            true='Primary',
+            false='Other',
+            description='Select only primary documents - i.e. only one result per book',
+        )
     )
 
     fields = [
@@ -325,4 +375,6 @@ class DBNL(XMLCorpus):
         chapter_title,
         chapter_index,
         content,
+        has_content,
+        is_primary,
     ]

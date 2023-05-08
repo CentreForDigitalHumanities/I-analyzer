@@ -88,26 +88,10 @@ expected_docs = [
         ]),
         'chapter_title': None,
         'chapter_index': 1,
+        'has_content': True,
+        'is_primary': True,
     },
     {
-        'title_id': 'maer005sing01_01',
-        'title': 'Het singende nachtegaeltje',
-        'id': 'maer005sing01_01_0001',
-        'volumes': None,
-        'edition': '1ste druk',
-        'author_id': 'maer005',
-        'author': 'Cornelis Maertsz.',
-        'author_year_of_birth': None,
-        'author_place_of_birth': 'Wervershoof',
-        'author_year_of_death': 'na 1671',
-        'author_place_of_death': None,
-        'author_gender': 'man',
-        'url': 'https://dbnl.org/tekst/maer005sing01_01',
-        'year': '1671',
-        'year_full': '1671',
-        'genre': 'poëzie',
-        'language': 'Nederlands',
-        'language_code': 'nl',
         'content': '\n'.join([
             'Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts',
             'SOo wort de schrand\'re Rey der vloeiende Poëten',
@@ -134,17 +118,38 @@ expected_docs = [
         ]),
         'chapter_title': 'Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts',
         'chapter_index': 2,
+        'is_primary': False,
+    }
+] + [{}] * 68 + [ # skip to the next book
+    {
+        'title_id': 'maer002alex01',
+        'title': 'Alexanders geesten',
+        'year_full': '13de eeuw',
+        'year': '1200',
+        'author_id': 'maer002',
+        'author': 'Jacob van Maerlant',
+        'url': 'https://dbnl.org/tekst/maer002alex01_01',
+        'content': None,
+        'has_content': False,
+        'is_primary': True,
+    }, { # book with multiple authors
+        'title_id': 'maer002spie00',
+        'author_id': 'maer002, uten001, velt003',
+        'author': 'Jacob van Maerlant, Philip Utenbroecke, Lodewijk van Velthem',
+        'author_year_of_birth': 'ca. 1230, ?(13de eeuw), ca. 1270',
+        'author_place_of_birth': None,
     }
 ]
-
 
 
 def test_dbnl_extraction(dbnl_corpus):
     corpus = load_corpus(dbnl_corpus)
     docs = list(corpus.documents())
 
-    assert len(docs) == 70
+    assert len(docs) == 70 + 6 # 70 chapters + 6 metadata-only books
 
     for actual, expected in zip(docs, expected_docs):
-        assert actual == expected
+        # assert that actual is a superset of expected
+        assert expected.items() <= actual.items()
+
 
