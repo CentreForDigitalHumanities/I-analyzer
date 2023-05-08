@@ -16,9 +16,10 @@ class DBNL(XMLCorpus):
     description = 'Digital Library for Dutch Literature'
     data_directory = settings.DBNL_DATA
     min_date = datetime(year=1200, month=1, day=1)
-    max_date = datetime(year=2020, month=12, day=31)
+    max_date = datetime(year=1890, month=12, day=31)
     es_index = getattr(settings, 'DBNL_ES_INDEX', 'dbnl')
     image = 'dbnl.png'
+    description_page = 'dbnl.md'
 
     tag_toplevel = 'TEI.2'
     tag_entry = { 'name': 'div', 'attrs': {'type': 'chapter'} }
