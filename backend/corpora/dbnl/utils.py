@@ -2,6 +2,7 @@ import csv
 from functools import reduce
 from bs4 import BeautifulSoup
 import re
+import copy
 
 from addcorpus.extract import Metadata, Extractor, Combined, Pass
 
@@ -178,3 +179,15 @@ def find_entry_level(xml_path):
 format_name = lambda parts: ' '.join(filter(None, parts))
 
 LINE_TAG = re.compile('^(p|l|head|row|item)$')
+
+def append_to_tag(soup, tag, filler):
+    '''
+    Insert a string before each instance of a tag.
+    '''
+
+    for tag in soup.find_all(tag):
+        tag.append(filler)
+
+    return soup
+
+tag_padder = lambda tag, filler: lambda soup: append_to_tag(soup, tag, filler)

@@ -252,7 +252,10 @@ class XML(Extractor):
         else:
             soup = self._select(soup_top if self.toplevel else soup_entry)
         if self.transform_soup_func:
-            soup = self.transform_soup_func(soup)
+            if type(soup) == bs4.element.ResultSet:
+                soup = [self.transform_soup_func(bowl) for bowl in soup]
+            else:
+                soup = self.transform_soup_func(soup)
         if not soup:
             return None
 

@@ -1,8 +1,10 @@
 import pytest
 import os
+from bs4 import BeautifulSoup
 
 from addcorpus.load_corpus import load_corpus
-from corpora.dbnl.utils import extract_metadata, compose
+from addcorpus.extract import XML
+from corpora.dbnl.utils import extract_metadata, compose, append_to_tag
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,6 +23,33 @@ def test_metadata_extraction():
     multiple_authors = data['maer002spie00']
     assert multiple_authors['titel'] == 'Spiegel historiael (5 delen)'
     assert len(multiple_authors['auteurs']) == 3
+
+append_testcases = [
+    (
+        '<row><cell>Vraeghje wie het meeste goedt.</cell><cell>107</cell></row>',
+        'cell',
+        ' ',
+        'Vraeghje wie het meeste goedt.107',
+        'Vraeghje wie het meeste goedt. 107',
+    ),
+    (
+        '<l>Nu lokken schone Prenten<lb/>\nHun beider vrolijke ogen</l>',
+        'lb',
+        '\n',
+        'Nu lokken schone Prenten Hun beider vrolijke ogen',
+        'Nu lokken schone Prenten\nHun beider vrolijke ogen',
+    ),
+]
+
+@pytest.mark.parametrize(['xml', 'tag', 'padding', 'original_output', 'new_output'], append_testcases)
+def test_append_to_tag(xml, tag, padding, original_output, new_output):
+    soup = BeautifulSoup(xml, 'lxml-xml')
+    extractor = XML(flatten=True)
+    assert extractor._flatten(soup) == original_output
+
+    edited_soup = append_to_tag(soup, tag, padding)
+
+    assert extractor._flatten(edited_soup) == new_output
 
 
 @pytest.fixture

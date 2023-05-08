@@ -306,6 +306,7 @@ class DBNL(XMLCorpus):
             recursive=True,
             multiple=True,
             flatten=True,
+            transform_soup_func=compose(tag_padder('cell', ' '), tag_padder('lb', '\n'))
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud', 'ngram'],
