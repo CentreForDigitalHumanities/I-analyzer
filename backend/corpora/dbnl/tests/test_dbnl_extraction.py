@@ -66,6 +66,7 @@ expected_docs = [
         'id': 'maer005sing01_01_0000',
         'volumes': None,
         'edition': '1ste druk',
+        'periodical': None,
         'author_id': 'maer005',
         'author': 'Cornelis Maertsz.',
         'author_year_of_birth': None,
@@ -138,6 +139,13 @@ expected_docs = [
         'author': 'Jacob van Maerlant, Philip Utenbroecke, Lodewijk van Velthem',
         'author_year_of_birth': 'ca. 1230, ?(13de eeuw), ca. 1270',
         'author_place_of_birth': None,
+    }
+] + [{}] * 3 + [
+    { # periodical
+        'title_id': 'will028belg00',
+        'author_id': 'will028',
+        'author': 'J.F. Willems',
+        'periodical': 'Belgisch Museum',
     }
 ]
 

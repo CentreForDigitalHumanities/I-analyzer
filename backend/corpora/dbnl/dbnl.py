@@ -146,6 +146,16 @@ class DBNL(XMLCorpus):
         es_mapping=text_mapping(),
     )
 
+    periodical = Field(
+        name='periodical',
+        display_name='Periodical',
+        description='Periodical in which the text appeared',
+        extractor=Metadata('periodical'),
+        es_mapping=keyword_mapping(),
+        search_filter=MultipleChoiceFilter(),
+        visualizations=['resultscount', 'termfrequency'],
+    )
+
     author = Field(
         name='author',
         display_name='Author',
@@ -385,6 +395,7 @@ class DBNL(XMLCorpus):
         id,
         volumes,
         edition,
+        periodical,
         year_full,
         year_int,
         author,

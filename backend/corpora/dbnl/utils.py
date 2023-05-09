@@ -78,6 +78,18 @@ def add_metadata_row(data, row):
 
     return data
 
+def row_periodical(row):
+    '''
+    If the row's author field describes a periodical, return its name (None otherwise)
+    '''
+
+    prefix = '[tijdschrift]'
+    name = row['achternaam']
+
+    if name.startswith(prefix):
+        return name[len(prefix):].strip()
+
+
 def row_author_data(row):
     '''Dict with all the author metadata in a row'''
     return {
@@ -89,7 +101,13 @@ def row_author_data(row):
 def data_from_row(row):
     '''Construct a new metadata item from a csv row.'''
 
-    author = row_author_data(row)
+    periodical = row_periodical(row)
+
+    if not periodical:
+        authors = [row_author_data(row)]
+    else:
+        authors = []
+
     plurals = {
         key: [value]
         for key, value in formatted_items(row)
@@ -102,7 +120,8 @@ def data_from_row(row):
     }
 
     return {
-        'auteurs': [author],
+        'auteurs': authors,
+        'periodical': periodical,
         **plurals,
         **rest
     }
@@ -118,9 +137,13 @@ def update_data_with_row(data, row):
         if row[key] not in data[key]:
             data[key].append(empty_to_none(row[key]))
 
-    author = row_author_data(row)
-    if author not in data['auteurs']:
-        data['auteurs'].append(author)
+    periodical = row_periodical(row)
+    if periodical:
+        data['periodical'] = periodical
+    else:
+        author = row_author_data(row)
+        if author not in data['auteurs']:
+            data['auteurs'].append(author)
 
     return data
 
