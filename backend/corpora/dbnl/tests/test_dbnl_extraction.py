@@ -117,9 +117,20 @@ expected_docs = [
         'chapter_title': 'Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts',
         'chapter_index': 2,
         'is_primary': False,
-    }
-] + [{}] * 68 + [ # skip to the next book
-    {
+    }, {
+        'chapter_title': 'Register der Liedekens.',
+        'content': '\n'.join([
+            'Register der Liedekens.',
+            'A.',
+            'ACh gesalfde van den Heer. Pag. 30 ',
+            'Als Saul, en david den vyant in\'t velt. 41 ',
+            'Als ick de Son verhoogen sie. 184 ',
+            'Als hem de Son begeeft. 189 ',
+            'Als ick den Herfst aenschou. 194 ',
+            'Als in koelt, de nacht komt overkleeden 208 ',
+            'Als van der meer op Eng\'le-vleug\'len vloog. 232',
+        ])
+    }, { # metadata-only book
         'title_id': 'maer002alex01',
         'title': 'Alexanders geesten',
         'year_full': '13de eeuw',
@@ -151,7 +162,7 @@ def test_dbnl_extraction(dbnl_corpus):
     corpus = load_corpus(dbnl_corpus)
     docs = list(corpus.documents())
 
-    assert len(docs) == 70 + 6 # 70 chapters + 6 metadata-only books
+    assert len(docs) == 3 + 6 # 70 chapters + 6 metadata-only books
 
     for actual, expected in zip(docs, expected_docs):
         # assert that actual is a superset of expected
