@@ -619,7 +619,7 @@ class CSVCorpus(Corpus):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
         for field in self.fields:
-            if not isinstance(field.extractor, (
+            if isinstance(field.extractor, (
                 extract.HTML, extract.XML
             )):
                 raise RuntimeError(
@@ -638,7 +638,8 @@ class CSVCorpus(Corpus):
             reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
-            for i, row in enumerate(reader):
+            index = 0
+            for row in reader:
                 is_new_document = True
 
                 if self.required_field and not row.get(self.required_field):  # skip row if required_field is empty
@@ -653,12 +654,13 @@ class CSVCorpus(Corpus):
                         document_id = identifier
 
                 if is_new_document and rows:
-                    yield self.document_from_rows(rows, metadata, i)
+                    yield self.document_from_rows(rows, metadata, index)
                     rows = [row]
+                    index += 1
                 else:
                     rows.append(row)
 
-            yield self.document_from_rows(rows, metadata)
+            yield self.document_from_rows(rows, metadata, index)
 
     def document_from_rows(self, rows, metadata, row_index):
         doc = {
