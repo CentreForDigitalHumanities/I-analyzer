@@ -4,12 +4,9 @@ from bs4 import BeautifulSoup
 
 from addcorpus.load_corpus import load_corpus
 from addcorpus.extract import XML
-from corpora.dbnl.utils import extract_metadata, compose, append_to_tag
+from corpora.dbnl.utils import extract_metadata, append_to_tag
 
 here = os.path.abspath(os.path.dirname(__file__))
-
-def test_compose():
-    assert compose(str.upper, ' '.join)(['a', 'b']) == 'A B'
 
 def test_metadata_extraction():
     csv_path = os.path.join(here, 'data', 'titels_pd.csv')

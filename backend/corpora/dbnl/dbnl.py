@@ -306,21 +306,24 @@ class DBNL(XMLCorpus):
         display_name='Language code',
         description='ISO code of the text\'s language',
         # as this may be used to set the HTML lang attribute, it forces a single value
-        extractor=Backup(
-            XML( # get the language on chapter-level if available
-                attribute='lang',
+        extractor=Pass(
+            Backup(
+                XML( # get the language on chapter-level if available
+                    attribute='lang',
+                ),
+                XML( # look for section-level code
+                    {'name': 'div', 'attrs': {'type': 'section'}},
+                    attribute='lang'
+                ),
+                XML( #otherwise, get the (first) language for the book
+                    'language',
+                    attribute='id',
+                    toplevel=True,
+                    recursive=True,
+                ),
+                transform=single_language_code,
             ),
-            XML( # look for section-level code
-                {'name': 'div', 'attrs': {'type': 'section'}},
-                attribute='lang'
-            ),
-            XML( #otherwise, get the (first) language for the book
-                'language',
-                attribute='id',
-                toplevel=True,
-                recursive=True,
-            ),
-            transform=compose(standardize_language_code, single_language_code),
+            transform=standardize_language_code,
         ),
         es_mapping=keyword_mapping(),
     )
@@ -371,7 +374,7 @@ class DBNL(XMLCorpus):
             recursive=True,
             multiple=True,
             flatten=True,
-            transform_soup_func=compose(tag_padder('cell', ' '), tag_padder('lb', '\n'))
+            transform_soup_func=pad_content,
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud', 'ngram'],

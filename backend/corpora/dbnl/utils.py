@@ -167,14 +167,6 @@ class BlankXML:
 
 # === UTILITY FUNCTIONS ===
 
-def compose(*functions):
-    '''
-    Given a list of unary functions, returns a new function that is the composition of all
-
-    e.g. compose(str.upper, ' '.join)(['a', 'b']) == 'A B'
-    '''
-    return lambda y: reduce(lambda x, func: func(x), reversed(functions), y)
-
 def author_extractor(field):
     '''
     Create an extractor for one field in the author metadata
@@ -208,7 +200,7 @@ def join_extracted(extractor):
     '''
     return Pass(extractor, transform=join_values)
 
-author_single_value_extractor = compose(join_extracted, author_extractor)
+author_single_value_extractor = lambda key: join_extracted(author_extractor(key))
 
 def between_years(year, start_date, end_date):
     if start_date and year < start_date.year:
@@ -244,10 +236,10 @@ def append_to_tag(soup, tag, padding):
 
     return soup
 
-tag_padder = lambda tag, padding: lambda soup: append_to_tag(soup, tag, padding)
-'''
-Unary shorthand: apply append_to_tag with a particular tag and padding string.
-'''
+def pad_content(node):
+    pad_cells = lambda n: append_to_tag(n, 'cell', ' ')
+    pad_linebreaks = lambda n: append_to_tag(n, 'lb', '\n')
+    return pad_cells(pad_linebreaks(node))
 
 def standardize_language_code(code):
     # ISO 639-1 -> 639-3
