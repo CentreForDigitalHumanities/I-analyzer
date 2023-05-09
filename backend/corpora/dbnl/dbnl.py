@@ -131,7 +131,10 @@ class DBNL(XMLCorpus):
         description='Year of publication as a number. May not be an estimate.',
         extractor=Metadata('_jaar'),
         es_mapping=int_mapping(),
-        search_filter=RangeFilter(lower=1200, upper=2020),
+        search_filter=RangeFilter(
+            description='Select books by publication year',
+            lower=1200, upper=2020
+        ),
         visualizations=['resultscount', 'termfrequency'],
         sortable=True,
         visualization_sort='key',
@@ -152,7 +155,9 @@ class DBNL(XMLCorpus):
         description='Periodical in which the text appeared',
         extractor=Metadata('periodical'),
         es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(),
+        search_filter=MultipleChoiceFilter(
+            description='Select texts from periodicals',
+        ),
         visualizations=['resultscount', 'termfrequency'],
     )
 
@@ -235,7 +240,9 @@ class DBNL(XMLCorpus):
             )
         ),
         es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(),
+        search_filter=MultipleChoiceFilter(
+            description='Select books based on the gender of the author(s)',
+        ),
         visualizations=['resultscount', 'termfrequency'],
     )
 
@@ -253,7 +260,9 @@ class DBNL(XMLCorpus):
         description='Genre of the book',
         extractor=join_extracted(Metadata('genre')),
         es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(),
+        search_filter=MultipleChoiceFilter(
+            description='Select books in these genres',
+        ),
         visualizations=['resultscount', 'termfrequency'],
     )
 
@@ -285,7 +294,10 @@ class DBNL(XMLCorpus):
             )
         ),
         es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(),
+        search_filter=MultipleChoiceFilter(
+            description='Select books in these languages',
+            option_count=20,
+        ),
         visualizations=['resultscount', 'termfrequency'],
     )
 
@@ -372,6 +384,7 @@ class DBNL(XMLCorpus):
         extractor=Metadata('has_xml'),
         es_mapping=bool_mapping(),
         search_filter=BooleanFilter(
+            description='Select books with text available on I-analyzer, or metadata-only books',
             true='Content available',
             false='Metadata only'
         ),
