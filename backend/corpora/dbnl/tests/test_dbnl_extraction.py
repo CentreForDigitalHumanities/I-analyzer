@@ -77,7 +77,7 @@ expected_docs = [
         'year': '1671',
         'year_full': '1671',
         'genre': 'poëzie',
-        'language': 'Nederlands',
+        'language': 'Dutch',
         'language_code': 'nl',
         'content': '\n'.join([
             'Het singende Nachtegaeltje',

@@ -21,6 +21,9 @@ class DBNL(XMLCorpus):
     image = 'dbnl.png'
     description_page = 'dbnl.md'
 
+    languages = ['nl', 'dum', 'fr', 'la', 'fy', 'lat', 'en', 'nds', 'de', 'af']
+    category = 'book'
+
     tag_toplevel = 'TEI.2'
     tag_entry = { 'name': 'div', 'attrs': {'type': 'chapter'} }
 
@@ -248,12 +251,28 @@ class DBNL(XMLCorpus):
         name='language',
         display_name='Language',
         description='Language in which the book is written',
-        extractor=XML(
-            'language',
-            toplevel=True,
-            recursive=True,
-            multiple=True,
-            transform=join_values,
+        # this extractor is similar to language_code below,
+        # but designed to accept multiple values in case of uncertainty
+        extractor=join_extracted(
+            Backup(
+                XML( # get the language on chapter-level if available
+                    attribute='lang',
+                    transform=lambda value: [value] if value else None,
+                ),
+                XML( # look for section-level codes
+                    {'name': 'div', 'attrs': {'type': 'section'}},
+                    attribute='lang',
+                    multiple=True,
+                ),
+                XML( # look in the top-level metadata
+                    'language',
+                    toplevel=True,
+                    recursive=True,
+                    multiple=True,
+                    attribute='id'
+                ),
+                transform = lambda codes: map(language_name, codes) if codes else None,
+            )
         ),
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(),
@@ -264,9 +283,14 @@ class DBNL(XMLCorpus):
         name='language_code',
         display_name='Language code',
         description='ISO code of the text\'s language',
+        # as this may be used to set the HTML lang attribute, it forces a single value
         extractor=Backup(
             XML( # get the language on chapter-level if available
                 attribute='lang',
+            ),
+            XML( # look for section-level code
+                {'name': 'div', 'attrs': {'type': 'section'}},
+                attribute='lang'
             ),
             XML( #otherwise, get the (first) language for the book
                 'language',
@@ -274,6 +298,7 @@ class DBNL(XMLCorpus):
                 toplevel=True,
                 recursive=True,
             ),
+            transform=compose(standardize_language_code, single_language_code),
         ),
         es_mapping=keyword_mapping(),
     )

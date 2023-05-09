@@ -225,3 +225,45 @@ tag_padder = lambda tag, padding: lambda soup: append_to_tag(soup, tag, padding)
 '''
 Unary shorthand: apply append_to_tag with a particular tag and padding string.
 '''
+
+def standardize_language_code(code):
+    # ISO 639-1 -> 639-3
+    replacements = {
+        'fy': 'fry',
+        'la': 'lat',
+    }
+
+    if code in replacements:
+        return replacements[code]
+
+    return code
+
+def single_language_code(code):
+    if code and '-' in code:
+        primary, *rest = code.split('-')
+        return primary
+    return code
+
+LANGUAGE_NAMES = {
+    'nl': 'Dutch',
+    'fr': 'French',
+    'lat': 'Latin',
+    'fry': 'Frisian',
+    'en': 'English',
+    'nds': 'Low German',
+    'de': 'German',
+    'af': 'Afrikaans',
+    'rus': 'Russian',
+    None: None,
+}
+
+def language_name(code):
+    if not code:
+        return None
+    codes = code.split('-')
+    standardized = map(standardize_language_code, codes)
+    names = set(map(
+        lambda code: LANGUAGE_NAMES.get(code, code),
+        standardized
+    ))
+    return '/'.join(names)
