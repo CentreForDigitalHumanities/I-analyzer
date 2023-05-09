@@ -13,17 +13,19 @@ LANGUAGES = [
     ('en', 'English'),          # stopword + stemming support
     ('fi', 'Finnish'),          # stopword + stemming support
     ('fr', 'French'),           # stopword + stemming support
+    ('fry', 'Frisian'),
     ('gd', 'Gaelic'),
     ('de', 'German'),           # stopword + stemming support
+    ('nds', 'Low German'),
     ('grc', 'Ancient Greek'),
     ('el', 'Greek'),            # stopword + stemming support
-    ('he', 'Hebrew'),           # stopword support
+    ('heb', 'Hebrew'),           # stopword support
     ('hu', 'Hungarian'),        # stopword + stemming support
     ('ind', 'Indonesian'),      # stopword + stemming support
     ('ga', 'Irish'),            # stemming support
     ('it', 'Italian'),          # stopword + stemming support
     ('kaz', 'Kazakh'),          # stopword support
-    ('la', 'Latin'),
+    ('lat', 'Latin'),
     ('ne', 'Nepali'),           # stopword support
     ('no', 'Norwegian'),        # stopword + stemming supported for bokmål; the key for both is 'norwegian'
     ('nob', 'Norwegian (Bokmål)'),
