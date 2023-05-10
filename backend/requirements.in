@@ -13,7 +13,6 @@ pytest-celery
 elasticsearch
 nltk
 beautifulsoup4
-lxml
 numpy
 textdistance
 gensim
