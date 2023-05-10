@@ -8,6 +8,8 @@ import logging
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 from addcorpus.permissions import CorpusAccessPermission
+from visualization.field_stats import report_coverage
+from addcorpus.permissions import corpus_name_from_request
 
 logger = logging.getLogger()
 
@@ -128,3 +130,15 @@ class AggregateTermFrequencyView(APIView):
         except Exception as e:
             logger.error(e)
             raise APIException('Could not set up term frequency generation.')
+
+class FieldCoverageView(APIView):
+    '''
+    Get the coverage of each field in a corpus
+    '''
+
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
+    def get(self, request, *args, **kwargs):
+        corpus = corpus_name_from_request(request)
+        report = report_coverage(corpus)
+        return Response(report)
