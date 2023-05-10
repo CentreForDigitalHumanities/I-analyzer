@@ -90,6 +90,7 @@ import { VerifyEmailComponent } from './login/verify-email/verify-email.componen
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
 import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-filter.component';
+import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 
 
 export const appRoutes: Routes = [
@@ -102,6 +103,11 @@ export const appRoutes: Routes = [
         path: 'word-models/:corpus',
         component: WordModelsComponent,
         canActivate: [CorpusGuard, LoggedOnGuard],
+    },
+    {
+        path: 'info/:corpus',
+        component: CorpusInfoComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'document/:corpus/:id',
@@ -173,6 +179,7 @@ export const declarations: any[] = [
     BooleanFilterComponent,
     CorpusFilterComponent,
     CorpusHeaderComponent,
+    CorpusInfoComponent,
     CorpusSelectionComponent,
     CorpusSelectorComponent,
     DateFilterComponent,
