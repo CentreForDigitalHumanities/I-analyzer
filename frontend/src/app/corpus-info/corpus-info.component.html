@@ -37,7 +37,9 @@
             <div *ngIf="tab === 'general'" class="content" [class.is-loading]="!description" [innerHTML]="description"></div>
 
             <div *ngIf="tab === 'fields'">
-                <ia-field-info *ngFor="let field of corpus.fields" [field]="field"></ia-field-info>
+                <div class="block" *ngFor="let field of corpus.fields">
+                    <ia-field-info  [field]="field"></ia-field-info>
+                </div>
             </div>
 
             <div *ngIf="tab === 'models'" class="content" [class.is-loading]="!wordModelDocumentation" [innerHTML]="wordModelDocumentation"></div>

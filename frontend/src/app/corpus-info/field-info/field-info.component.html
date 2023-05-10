@@ -1,1 +1,36 @@
-<p *ngIf="field">{{field.displayName}}</p>
+<details class="box" *ngIf="field && !field.hidden">
+    <summary>
+        <hgroup class="foldable-header" >
+            <h3 class="title is-5">{{field.displayName}}</h3>
+            <p class="subtitle is-6">{{field.description}}</p>
+        </hgroup>
+    </summary>
+
+    <br>
+
+    <div class="content">
+        <p>Type of data: <b>{{mappingNames[field.mappingType]}}</b></p>
+
+        <ul>
+            <li>This field {{field.searchable ? 'can' : 'cannot'}} be searched</li>
+            <li>This field {{field.searchFilter ? 'has' : 'does not have'}} a search filter</li>
+        </ul>
+
+        <ng-container *ngIf="field.displayType === 'text_content' && field.multiFields">
+            <p>
+                This field supports the following options for text analysis:
+            </p>
+            <ul>
+                <li *ngIf="field.multiFields.includes('length')">
+                    Counting the total number of words, and calculating term frequencies relative to the total word count.
+                </li>
+                <li *ngIf="field.multiFields.includes('clean')">
+                    Removing stopwords
+                </li>
+                <li  *ngIf="field.multiFields.includes('stemmed')">
+                    Stemming
+                </li>
+            </ul>
+        </ng-container>
+    </div>
+</details>

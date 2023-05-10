@@ -9,6 +9,15 @@ import { CorpusField } from '../../models';
 export class FieldInfoComponent implements OnInit {
     @Input() field: CorpusField;
 
+    mappingNames = {
+        text: 'text',
+        keyword: 'categorical',
+        integer: 'numeric',
+        float: 'numeric',
+        date: 'date',
+        boolean: 'binary'
+    };
+
     constructor() { }
 
     ngOnInit(): void {
