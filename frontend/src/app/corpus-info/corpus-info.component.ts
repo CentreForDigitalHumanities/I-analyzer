@@ -56,9 +56,13 @@ export class CorpusInfoComponent implements OnInit {
 
     setCorpus(corpus: Corpus) {
         this.corpus = corpus;
-        this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name})
+        if (corpus.descriptionpage) {
+            this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name})
             .then(marked.parse)
             .then(doc => this.description = doc);
+        } else {
+            this.currentTab.next('fields');
+        }
         this.apiService.fieldCoverage(corpus.name).then(
             result => this.fieldCoverage = result
         );

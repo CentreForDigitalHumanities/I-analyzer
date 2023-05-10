@@ -38,7 +38,7 @@
 
             <div *ngIf="tab === 'fields'">
                 <div class="block" *ngFor="let field of corpus.fields">
-                    <ia-field-info  [field]="field" [coverage]="fieldCoverage[field.name]"></ia-field-info>
+                    <ia-field-info  [field]="field" [coverage]="fieldCoverage ? fieldCoverage[field.name] : undefined"></ia-field-info>
                 </div>
             </div>
 
