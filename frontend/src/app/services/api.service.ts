@@ -249,7 +249,7 @@ export class ApiService extends Resource {
     })
     public corpusdescription: ResourceMethod<
         { filename: string; corpus: string },
-        any
+        string
     >;
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {

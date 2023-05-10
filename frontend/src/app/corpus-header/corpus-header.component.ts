@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faDiagramProject, faInfoCircle, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faDiagramProject, faInfo, faInfoCircle, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Corpus } from '../models';
 import { DialogService } from '../services';
 
@@ -16,6 +16,7 @@ export class CorpusHeaderComponent implements OnChanges, OnInit {
 
     searchIcon = faMagnifyingGlass;
     wordModelsIcon = faDiagramProject;
+    infoIcon = faInfo;
 
     wordModelsPresent: boolean;
 

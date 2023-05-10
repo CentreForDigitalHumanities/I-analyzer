@@ -1,1 +1,38 @@
-<p>corpus-info works!</p>
+<ia-corpus-header [corpus]="corpus" currentPage="info"></ia-corpus-header>
+
+<section class="section">
+    <div class="container is-readable">
+        <div class="columns">
+            <div class="column">
+                <div class="block">
+                    <p>{{corpus.description}}</p>
+                </div>
+                <div class="block">
+                    <p class="heading">Language: <strong>{{languages}}</strong></p>
+                    <p class="heading">Type: <strong>{{corpus.category}}</strong></p>
+                    <p class="heading">Period: <strong>{{minYear}}-{{maxYear}}</strong></p>
+                </div>
+            </div>
+            <div class="column is-3 image-column">
+                <div class=corpus-image>
+                    <img src="/api/corpus/image/{{corpus.name}}/{{corpus.image}}" alt="{{corpus.title}}">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+    <div class="container is-readable">
+        <div class="tabs is-boxed">
+            <ul>
+              <li class="is-active"><a>General information</a></li>
+              <li><a>Fields</a></li>
+              <li><a>Word models</a></li>
+              <li><a>License</a></li>
+            </ul>
+        </div>
+
+        <div class="content" [class.is-loading]="!description" [innerHTML]="description"></div>
+    </div>
+</section>
