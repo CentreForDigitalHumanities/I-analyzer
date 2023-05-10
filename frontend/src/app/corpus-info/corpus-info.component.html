@@ -13,26 +13,34 @@
                     <p class="heading">Period: <strong>{{minYear}}-{{maxYear}}</strong></p>
                 </div>
             </div>
-            <div class="column is-3 image-column">
-                <div class=corpus-image>
-                    <img src="/api/corpus/image/{{corpus.name}}/{{corpus.image}}" alt="{{corpus.title}}">
-                </div>
+            <div class="column is-3">
+                <img src="/api/corpus/image/{{corpus.name}}/{{corpus.image}}" alt="{{corpus.title}}">
             </div>
         </div>
     </div>
 </section>
 
-<section class="section" style="padding-top: 0;">
-    <div class="container is-readable">
+<section class="section" style="padding-top: 0;" [class.is-loading]="!corpus">
+    <div class="container is-readable" *ngIf="corpus">
         <div class="tabs is-boxed">
             <ul>
-              <li class="is-active"><a>General information</a></li>
-              <li><a>Fields</a></li>
-              <li><a>Word models</a></li>
-              <li><a>License</a></li>
+                <li *ngFor="let tab of tabs" [class.is-active]="currentTab.value === tab.name">
+                    <a *ngIf="corpus[tab.property]"
+                        role="button" (click)="currentTab.next(tab.name)">
+                        {{tab.title}}
+                    </a>
+                </li>
             </ul>
         </div>
 
-        <div class="content" [class.is-loading]="!description" [innerHTML]="description"></div>
+        <ng-container *ngIf="currentTab | async as tab">
+            <div *ngIf="tab === 'general'" class="content" [class.is-loading]="!description" [innerHTML]="description"></div>
+
+            <div *ngIf="tab === 'fields'">
+                Fields!
+            </div>
+
+            <div *ngIf="tab === 'models'" class="content" [class.is-loading]="!wordModelDocumentation" [innerHTML]="wordModelDocumentation"></div>
+        </ng-container>
     </div>
 </section>
