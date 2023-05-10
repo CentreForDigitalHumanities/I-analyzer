@@ -24,6 +24,7 @@ import {
     DateTermFrequencyParameters,
     Download,
     DownloadOptions,
+    FieldCoverage,
     FoundDocument,
     LimitedResultsDownloadParameters,
     QueryDb,
@@ -251,6 +252,12 @@ export class ApiService extends Resource {
         { filename: string; corpus: string },
         string
     >;
+
+    fieldCoverage(corpusName: string): Promise<FieldCoverage> {
+        return this.http.get<FieldCoverage>(
+            `/api/visualization/coverage/${corpusName}`,
+        ).toPromise();
+    }
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);

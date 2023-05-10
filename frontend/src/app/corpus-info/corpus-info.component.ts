@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, CorpusService, WordmodelsService } from '../services';
-import { Corpus } from '../models';
+import { Corpus, FieldCoverage } from '../models';
 import { marked } from 'marked';
 import { BehaviorSubject } from 'rxjs';
 
@@ -14,6 +14,7 @@ export class CorpusInfoComponent implements OnInit {
 
     description: string;
     wordModelDocumentation: string;
+    fieldCoverage: FieldCoverage;
 
     tabs = [
         {
@@ -58,11 +59,15 @@ export class CorpusInfoComponent implements OnInit {
         this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name})
             .then(marked.parse)
             .then(doc => this.description = doc);
+        this.apiService.fieldCoverage(corpus.name).then(
+            result => this.fieldCoverage = result
+        );
         if (this.corpus.word_models_present) {
             this.wordModelsService.wordModelsDocumentationRequest({corpus_name: this.corpus.name})
                 .then(result => marked.parse(result.documentation))
                 .then(doc => this.wordModelDocumentation = doc);
         }
     }
+
 
 }

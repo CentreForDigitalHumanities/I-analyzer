@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CorpusField } from '../../models';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'ia-field-info',
@@ -8,6 +9,7 @@ import { CorpusField } from '../../models';
 })
 export class FieldInfoComponent implements OnInit {
     @Input() field: CorpusField;
+    @Input() coverage: number;
 
     mappingNames = {
         text: 'text',
@@ -19,6 +21,14 @@ export class FieldInfoComponent implements OnInit {
     };
 
     constructor() { }
+
+    get coveragePercentage() {
+        if (this.coverage) {
+            return (this.coverage * 100).toPrecision(3);
+        } else {
+            return this.coverage; // return undefined or 0 as-is
+        }
+    }
 
     ngOnInit(): void {
     }

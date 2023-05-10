@@ -32,5 +32,13 @@
                 </li>
             </ul>
         </ng-container>
+
+        <p *ngIf="coverage !== undefined">
+            <b>{{coveragePercentage}}%</b> of the documents in this corpus have a value for this field
+        </p>
+
+        <p *ngIf="coverage === undefined">
+            Loading coverage data...
+        </p>
     </div>
 </details>
