@@ -11,7 +11,8 @@
             </h2>
             <div class="column is-narrow">
                 <button class="moreInfoLink" *ngIf="corpus.descriptionpage"
-                iaBalloon="More information" iaBalloonPosition="down-left" (click)="showMoreInfo()">
+                iaBalloon="More information" iaBalloonPosition="down-left"
+                [routerLink]="['/info', corpus.name]">
                 <i class=" fa fa-info-circle info-icon"></i>
             </button>
 

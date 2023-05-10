@@ -18,7 +18,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     user: User;
     corpus: Corpus;
-    modelDocumentation: any;
+
 
     queryText: string;
     asTable = false;
@@ -78,17 +78,9 @@ export class WordModelsComponent implements DoCheck, OnInit {
             if (!this.corpus.word_models_present) {
                 this.router.navigate(['search', this.corpus.name]);
             }
-            this.getDocumentation();
         }
     }
 
-    getDocumentation() {
-        this.wordModelsService
-            .wordModelsDocumentationRequest({ corpus_name: this.corpus.name })
-            .then((result) => {
-                this.modelDocumentation = result.documentation;
-            });
-    }
 
     submitQuery(): void {
         this.errorMessage = undefined;
