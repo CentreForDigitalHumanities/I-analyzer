@@ -18,6 +18,7 @@ LOGIN_URL = '/users/saml2/login/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SAML_CREATE_UNKNOWN_USER = True
 ACS_DEFAULT_REDIRECT_URL = 'http://localhost:4200' # redirect to this url after logging in on Identity Provider
+SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
 
 SAML_ATTRIBUTE_MAPPING = {
     "uushortid": ("username", ),
@@ -87,7 +88,7 @@ SAML_CONFIG = {
              # attributes that may be useful to have but not required
             'optional_attributes': ['eduPersonAffiliation'],
 
-            'want_response_signed': True,
+            'want_response_signed': False,
             'authn_requests_signed': True,
             'logout_requests_signed': True,
             # Indicates that Authentication Responses to this SP must
