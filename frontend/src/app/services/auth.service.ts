@@ -102,7 +102,7 @@ export class AuthService implements OnDestroy {
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            result.saml
+            result.saml != null
         );
     }
 
