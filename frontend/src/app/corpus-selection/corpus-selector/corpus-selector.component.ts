@@ -18,18 +18,6 @@ export class CorpusSelectorComponent implements OnInit {
 
     constructor(private dialogService: DialogService, private router: Router) { }
 
-    get minYear() {
-        return this.corpus.minDate.getFullYear();
-    }
-
-    get maxYear() {
-        return this.corpus.maxDate.getFullYear();
-    }
-
-    get languages() {
-        return this.corpus.languages.join(', ');
-    }
-
     ngOnInit(): void {
     }
 

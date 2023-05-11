@@ -30,6 +30,17 @@ export class Corpus implements ElasticSearchIndex {
         public documentContext?: DocumentContext,
     ) { }
 
+    get minYear(): number {
+        return this.minDate.getFullYear();
+    }
+
+    get maxYear(): number {
+        return this.maxDate.getFullYear();
+    }
+
+    get displayLanguages(): string {
+        return this.languages.join(', '); // may have to truncate long lists?
+    }
 }
 
 export interface ElasticSearchIndex {

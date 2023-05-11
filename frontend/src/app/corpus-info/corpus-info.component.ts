@@ -38,18 +38,6 @@ export class CorpusInfoComponent implements OnInit {
 
     constructor(private corpusService: CorpusService, private apiService: ApiService, private wordModelsService: WordmodelsService) { }
 
-    get minYear() {
-        return this.corpus.minDate.getFullYear();
-    }
-
-    get maxYear() {
-        return this.corpus.maxDate.getFullYear();
-    }
-
-    get languages() {
-        return this.corpus.languages.join(', ');
-    }
-
     ngOnInit(): void {
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
     }
