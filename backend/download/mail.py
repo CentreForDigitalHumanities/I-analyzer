@@ -4,8 +4,11 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.urls import reverse
 from django.conf import settings
+import logging
 
 from download.models import Download
+
+logger = logging.getLogger()
 
 def download_url(download_id):
     return settings.BASE_URL + reverse('download-csv', kwargs={'id': download_id})
@@ -35,10 +38,15 @@ def send_csv_email(user_email, username, download_id):
 
     plain_message = strip_tags(html_message)
 
-    mail.send_mail(
+    result = mail.send_mail(
         subject,
         plain_message,
         from_email,
         [user_email],
         html_message=html_message
     )
+
+    if not result:
+        logger.error(
+            f'Failed to send email to {user_email} about download #{download_id}'
+        )
