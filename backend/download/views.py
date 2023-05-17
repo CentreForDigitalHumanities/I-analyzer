@@ -10,12 +10,13 @@ from download import convert_csv, tasks
 from download.models import Download
 from download.serializers import DownloadSerializer
 from es import download as es_download
-from rest_framework.exceptions import (APIException, NotFound,
-                                       PermissionDenied, ValidationError)
+from rest_framework.exceptions import (APIException, NotFound, ParseError,
+                                       PermissionDenied)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from api.utils import check_json_keys
 
 logger = logging.getLogger()
 
@@ -36,15 +37,12 @@ class ResultsDownloadView(APIView):
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
-        for key in ['es_query', 'corpus', 'fields', 'route', 'encoding']:
-            if key not in request.data:
-                raise ValidationError(detail=f'Download failed: specification for {key} is missing')
-
+        check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
         max_size = 1000
         size = request.data.get('size', max_size)
 
         if size > max_size:
-            raise ValidationError(detail='Download failed: too many documents requested')
+            raise ParseError(detail='Download failed: too many documents requested')
 
         try:
             corpus_name = corpus_name_from_request(request)
@@ -72,12 +70,10 @@ class ResultsDownloadTaskView(APIView):
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
-        for key in ['es_query', 'corpus', 'fields', 'route']:
-            if key not in request.data:
-                raise ValidationError(detail=f'Download failed: specification for {key} is missing')
+        check_json_keys(request, ['es_query', 'corpus', 'fields', 'route'])
 
         if not request.user.email:
-            raise ValidationError(detail='Download failed: user email not known')
+            raise APIException(detail='Download failed: user email not known')
 
         # Celery task
         try:
@@ -98,14 +94,12 @@ class FullDataDownloadTaskView(APIView):
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
-        for key in ['visualization', 'parameters', 'corpus']:
-            if key not in request.data:
-                raise ValidationError(detail=f'Download failed: specification for {key} is missing')
+        check_json_keys(request, ['visualization', 'parameters', 'corpus'])
 
         visualization_type = request.data['visualization']
         known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
         if visualization_type not in known_visualisations:
-            raise ValidationError(f'Download failed: unknown visualisation type "{visualization_type}"')
+            raise ParseError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
         try:
             task_chain = tasks.download_full_data(request.data, request.user)
