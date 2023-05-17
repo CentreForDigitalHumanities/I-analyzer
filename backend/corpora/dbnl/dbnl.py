@@ -2,12 +2,11 @@ from datetime import datetime
 import os
 import re
 from tqdm import tqdm
-import random
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import Metadata, XML, Pass, Index, Backup, Combined
-from corpora.dbnl.utils import *
+import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
 from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
 
@@ -35,7 +34,7 @@ class DBNL(XMLCorpus):
 
     def sources(self, start = None, end = None):
         csv_path = os.path.join(self.data_directory, 'titels_pd.csv')
-        all_metadata = extract_metadata(csv_path)
+        all_metadata = utils.extract_metadata(csv_path)
 
         print('Extracting XML files...')
         for id, path in tqdm(list(self._xml_files())):
@@ -49,14 +48,14 @@ class DBNL(XMLCorpus):
 
             year = int(metadata['_jaar'])
 
-            if between_years(year, start, end):
+            if utils.between_years(year, start, end):
                 yield path, metadata
 
         # we popped metadata while going through the XMLs
         # now add data for the remaining records (without text)
 
         print('Extracting metadata-only records...')
-        with BlankXML(self.data_directory) as blank_file:
+        with utils.BlankXML(self.data_directory) as blank_file:
             for id in tqdm(all_metadata):
                 csv_metadata = all_metadata[id]
                 metadata = {
@@ -65,7 +64,7 @@ class DBNL(XMLCorpus):
                     **csv_metadata
                 }
                 year = int(metadata['_jaar'])
-                if between_years(year, start, end):
+                if utils.between_years(year, start, end):
                     yield blank_file, metadata
 
     def _xml_files(self):
@@ -168,12 +167,12 @@ class DBNL(XMLCorpus):
         results_overview=True,
         search_field_core=True,
         csv_core=True,
-        extractor=join_extracted(
+        extractor=utils.join_extracted(
             Combined(
-                author_extractor('voornaam'),
-                author_extractor('voorvoegsel'),
-                author_extractor('achternaam'),
-                transform=lambda values: [format_name(parts) for parts in zip(*values)]
+                utils.author_extractor('voornaam'),
+                utils.author_extractor('voorvoegsel'),
+                utils.author_extractor('achternaam'),
+                transform=lambda values: [utils.format_name(parts) for parts in zip(*values)]
             )
         ),
         es_mapping=keyword_mapping(enable_full_text_search=True),
@@ -184,7 +183,7 @@ class DBNL(XMLCorpus):
         name='author_id',
         display_name='Author ID',
         description='ID(s) of the author(s)',
-        extractor=author_single_value_extractor('pers_id'),
+        extractor=utils.author_single_value_extractor('pers_id'),
         es_mapping=keyword_mapping(),
     )
 
@@ -192,7 +191,7 @@ class DBNL(XMLCorpus):
         name='author_year_of_birth',
         display_name='Author year of birth',
         description='Year in which the author(s) was(/were) born',
-        extractor=author_single_value_extractor('jaar_geboren'),
+        extractor=utils.author_single_value_extractor('jaar_geboren'),
         es_mapping=text_mapping(),
     )
 
@@ -200,7 +199,7 @@ class DBNL(XMLCorpus):
         name='author_year_of_death',
         display_name='Author year of death',
         description='Year in which the author(s) died',
-        extractor=author_single_value_extractor('jaar_overlijden'),
+        extractor=utils.author_single_value_extractor('jaar_overlijden'),
         es_mapping=text_mapping(),
     )
 
@@ -211,7 +210,7 @@ class DBNL(XMLCorpus):
         name='author_place_of_birth',
         display_name='Author place of birth',
         description='Place the author(s) was(/were) born',
-        extractor=author_single_value_extractor('geb_plaats'),
+        extractor=utils.author_single_value_extractor('geb_plaats'),
         es_mapping=keyword_mapping(),
     )
 
@@ -219,7 +218,7 @@ class DBNL(XMLCorpus):
         name='author_place_of_death',
         display_name='Author place of death',
         description='Place where the author(s) died',
-        extractor=author_single_value_extractor('overl_plaats'),
+        extractor=utils.author_single_value_extractor('overl_plaats'),
         es_mapping=keyword_mapping(),
     )
 
@@ -230,9 +229,9 @@ class DBNL(XMLCorpus):
         name='author_gender',
         display_name='Author gender',
         description='Gender of the author(s)',
-        extractor=join_extracted(
+        extractor=utils.join_extracted(
             Pass( # use look-up dict to transform values to string
-                author_extractor('vrouw'),
+                utils.author_extractor('vrouw'),
                 transform=lambda values: map(
                     lambda gender: {'0': 'man/unknown', '1': 'woman'}.get(gender, None),
                     values
@@ -258,7 +257,7 @@ class DBNL(XMLCorpus):
         name='genre',
         display_name='Genre',
         description='Genre of the book',
-        extractor=join_extracted(Metadata('genre')),
+        extractor=utils.join_extracted(Metadata('genre')),
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Select books in these genres',
@@ -272,7 +271,7 @@ class DBNL(XMLCorpus):
         description='Language in which the book is written',
         # this extractor is similar to language_code below,
         # but designed to accept multiple values in case of uncertainty
-        extractor=join_extracted(
+        extractor=utils.join_extracted(
             Backup(
                 XML( # get the language on chapter-level if available
                     attribute='lang',
@@ -290,7 +289,7 @@ class DBNL(XMLCorpus):
                     multiple=True,
                     attribute='id'
                 ),
-                transform = lambda codes: map(language_name, codes) if codes else None,
+                transform = lambda codes: map(utils.language_name, codes) if codes else None,
             )
         ),
         es_mapping=keyword_mapping(),
@@ -321,9 +320,9 @@ class DBNL(XMLCorpus):
                     toplevel=True,
                     recursive=True,
                 ),
-                transform=single_language_code,
+                transform=utils.single_language_code,
             ),
-            transform=standardize_language_code,
+            transform=utils.standardize_language_code,
         ),
         es_mapping=keyword_mapping(),
     )
@@ -338,7 +337,7 @@ class DBNL(XMLCorpus):
                 flatten=True,
             ),
             XML(
-                tag=LINE_TAG,
+                tag=utils.LINE_TAG,
                 recursive=True,
                 flatten=True,
             )
@@ -370,11 +369,11 @@ class DBNL(XMLCorpus):
         search_field_core=True,
         csv_core=True,
         extractor=XML(
-            tag=LINE_TAG,
+            tag=utils.LINE_TAG,
             recursive=True,
             multiple=True,
             flatten=True,
-            transform_soup_func=pad_content,
+            transform_soup_func=utils.pad_content,
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud', 'ngram'],
