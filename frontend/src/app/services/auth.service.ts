@@ -12,6 +12,7 @@ import {
     distinctUntilChanged, mergeMap,
     takeUntil, tap
 } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { User, UserResponse } from '../models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
@@ -145,7 +146,7 @@ export class AuthService implements OnDestroy {
     public logout(isSamlLogin: boolean = false, redirectToLogin: boolean = false) {
         this.purgeAuth();
         if (isSamlLogin) {
-            window.location.href = 'users/saml2/logout/';
+            window.location.href = environment.samlLogoutUrl;
         }
         return this.apiService.logout().pipe(
             tap(() => {
