@@ -31,6 +31,8 @@ export class AuthService implements OnDestroy {
     // Provide the currentUser as a Promise to adapt to existing functionality
     public currentUserPromise = this.currentUser$.toPromise();
 
+    public notVerifiedMsg = 'E-mail is not verified.';
+
     // authenticated state
     private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
     public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
