@@ -1,7 +1,6 @@
 import csv
 import os
 import pandas
-from download.create_csv import SEARCH_RESULTS_DIALECT
 
 def convert_csv(directory, filename, download_type, encoding='utf-8', format = None):
     '''Convert CSV to match encoding. Returns the filename (not the full path) of the converted file.'''
@@ -16,7 +15,6 @@ def convert_csv(directory, filename, download_type, encoding='utf-8', format = N
     return filename_out
 
 def choose_dialect(download_type):
-    csv.register_dialect('resultsDialect', **SEARCH_RESULTS_DIALECT)
     dialects = {
         'search_results': 'resultsDialect',
         'date_term_frequency': 'excel',

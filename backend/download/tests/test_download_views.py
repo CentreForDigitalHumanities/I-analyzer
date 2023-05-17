@@ -2,8 +2,8 @@ from rest_framework import status
 import pytest
 import os
 import csv
-from download import create_csv
 from download.models import Download
+from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
 import io
 
@@ -108,7 +108,7 @@ def finished_download(admin_user, csv_directory, mock_corpus, select_small_mock_
     with open(filepath, 'w') as outfile:
         writer = csv.DictWriter(outfile,
             fieldnames=['content', 'date', 'genre', 'query', 'title'],
-            **create_csv.SEARCH_RESULTS_DIALECT)
+            **SEARCH_RESULTS_DIALECT)
         writer.writeheader()
         writer.writerow({
             'content': "You will rejoice to hear...",
