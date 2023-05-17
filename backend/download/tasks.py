@@ -22,7 +22,9 @@ def complete_download(filename, log_id):
 
 @shared_task()
 def complete_failed_download(request, exc, traceback, log_id):
-    logger.error('DOWNLOAD #{} FAILED'.format(log_id)) # traceback is already logged
+    # request, exc, traceback are mandatory arguments for celery error handlers
+    # they are already logged by celery, we only need to log the download ID
+    logger.error('DOWNLOAD #{} FAILED'.format(log_id))
     try:
         download = Download.objects.get(id = log_id)
         download.complete()
