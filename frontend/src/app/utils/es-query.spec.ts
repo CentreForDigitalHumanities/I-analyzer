@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { mockCorpus3, mockField, mockField2 } from '../../mock-data/corpus';
-import { makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification } from './es-query';
+import { mockField, mockCorpus3, mockField2 } from '../../mock-data/corpus';
+import { makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification } from './es-query';
 
 describe('es-query utils', () => {
     it('should make a simple query string clause', () => {
@@ -12,6 +12,15 @@ describe('es-query utils', () => {
                 fields: ['speech']
             }
         });
+    });
+
+    it('should set search fields', () => {
+        const esQuery = makeEsSearchClause('test', [mockField, mockField2]);
+        expect(esQuery['simple_query_string'].fields).toEqual(['great_field', 'speech']);
+
+        const esQuery2 = makeEsSearchClause('test', [mockField2]);
+        expect(esQuery2['simple_query_string'].fields).toEqual(['speech']);
+
     });
 
     it('should make a sort specification', () => {

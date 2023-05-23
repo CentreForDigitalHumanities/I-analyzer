@@ -23,10 +23,17 @@ export const makeSimpleQueryString = (queryText: string, searchFields?: CorpusFi
         }
     };
     if (searchFields) {
-        const fieldNames = searchFields.map(field => field.name);
-        _.set(clause, 'simple_query_string.fields', fieldNames);
+        _.set(clause, 'simple_query_string.fields', searchFields.map(searchFieldName));
     }
     return clause;
+};
+
+const searchFieldName = (field: CorpusField): string => {
+    if (field.multiFields?.includes('text')) {
+        return `${field.name}.text`;
+    } else {
+        return field.name;
+    }
 };
 
 export const makeEsSearchClause = (queryText?: string, searchFields?: CorpusField[]): EsSearchClause => {
