@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import * as _ from 'lodash';
 import { mockField, mockCorpus3, mockField2 } from '../../mock-data/corpus';
 import { makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification } from './es-query';
 
@@ -20,6 +21,11 @@ describe('es-query utils', () => {
 
         const esQuery2 = makeEsSearchClause('test', [mockField2]);
         expect(esQuery2['simple_query_string'].fields).toEqual(['speech']);
+
+
+        const multifield = _.set(_.clone(mockField), 'multiFields', ['text']);
+        const esQuery3 = makeEsSearchClause('test', [multifield, mockField2]);
+        expect(esQuery3['simple_query_string'].fields).toEqual(['great_field.text', 'speech']);
 
     });
 
