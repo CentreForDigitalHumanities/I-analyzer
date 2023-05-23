@@ -26,12 +26,12 @@ export class VisualizationService {
 
     public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: string, size: number):
         Promise<AggregateResult[]> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, []);
         return this.apiService.wordcloud({es_query: esQuery, corpus, field: fieldName, size});
     }
 
     public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<string[]> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, []);
         return this.apiService.wordcloudTasks({es_query: esQuery, corpus, field: fieldName})
             .then(result =>result['task_ids']);
     }
@@ -39,7 +39,7 @@ export class VisualizationService {
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],
     ): AggregateTermFrequencyParameters {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, []);
         return {
             corpus_name: corpus.name,
             es_query: esQuery,
@@ -59,7 +59,7 @@ export class VisualizationService {
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number; start_date: Date; end_date?: Date}[],
         unit: TimeCategory,
     ): DateTermFrequencyParameters {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, []);
         return {
             corpus_name: corpus.name,
             es_query: esQuery,
@@ -82,7 +82,7 @@ export class VisualizationService {
     }
 
     getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<TaskResult> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel, []);
         return this.apiService.ngramTasks({
             es_query: esQuery,
             corpus_name: corpusName,
