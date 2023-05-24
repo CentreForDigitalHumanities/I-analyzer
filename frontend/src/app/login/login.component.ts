@@ -53,11 +53,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         this.activatedRoute.queryParams.subscribe((params) => {
             this.hasError = params['hasError'] === 'true' || false;
-
-            // TODO: solis
-            if (params['solislogin'] === 'true') {
-                this.solislogin();
-            }
         });
         this.showSolis = environment.showSolis;
     }
@@ -78,14 +73,6 @@ export class LoginComponent implements OnInit, OnDestroy {
                 })
             )
             .subscribe(this.onLoginSuccess, this.onLoginFail);
-    }
-
-    solislogin(): void {
-        // TODO: Solis login
-        // this.isLoading = true;
-        // this.userService.solisLogin().then((result) => {
-        //     this.handleLoginResponse(result);
-        // });
     }
 
     private onLoginSuccess = () => this.router.navigateByUrl(this.returnUrl);

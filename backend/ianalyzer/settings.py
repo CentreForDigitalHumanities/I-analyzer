@@ -89,7 +89,7 @@ CELERY_RESULT_BACKEND = 'redis://'
 # This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:
     from ianalyzer.settings_local import *
-except Exception:
+except ImportError as e:
     warnings.warn(
         'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
         Warning

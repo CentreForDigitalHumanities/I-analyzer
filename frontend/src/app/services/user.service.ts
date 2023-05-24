@@ -42,7 +42,7 @@ export class UserService implements OnDestroy {
                 parsed['username'],
                 parsed['isAdmin'],
                 parsed['downloadLimit'],
-                parsed['isSolisLogin']
+                parsed['isSamlLogin']
             );
         } else {
             return false;
@@ -143,14 +143,13 @@ export class UserService implements OnDestroy {
      */
     private processLoginSucces(
         result: UserResponse,
-        isSolisLogin: boolean = false
     ): User {
         this.currentUser = new User(
             result.id,
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            isSolisLogin
+            result.saml != null
         );
 
         return this.currentUser;
@@ -163,7 +162,7 @@ export class UserService implements OnDestroy {
         let isSolisLogin = false;
 
         if (this.currentUser) {
-            isSolisLogin = this.currentUser.isSolisLogin;
+            isSolisLogin = this.currentUser.isSamlLogin;
         }
 
         this.currentUser = false;
@@ -171,7 +170,7 @@ export class UserService implements OnDestroy {
 
         if (isSolisLogin) {
             // TODO: Solis logout
-            window.location.href = 'api/init_solislogout';
+            window.location.href = 'users/saml2/ls/';
         } else {
             if (notifyServer) {
                 await this.authService.logout().toPromise();
