@@ -39,5 +39,5 @@ class KeyInfoView(APIView):
 class SamlLogoutView(LogoutView):
 
     @csrf_exempt
-    def post(self, request, *args, **wkargs):
+    def post(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
