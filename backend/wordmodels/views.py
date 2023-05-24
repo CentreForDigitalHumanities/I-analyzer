@@ -75,7 +75,7 @@ def get_word_models_documentation():
 def get_word_in_model():
     if not request.args:
         abort(400)
-    results = utils.word_in_model(
+    results = utils.word_in_models(
         request.args['query_term'],
         request.args['corpus_name']
     )

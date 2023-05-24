@@ -11,51 +11,40 @@ from flask import current_app
 from glob import glob
 
 
-def load_word_models(corpus, binned=False):
+def load_word_models(corpus):
     if type(corpus)==str:
         corpus = load_corpus(corpus)
     wv_list = glob('{}/*.wv'.format(corpus.word_model_path))
-    full_model = next((item for item in wv_list if item.endswith('full.wv')), None)
-    try:
-        wv_list.remove(full_model)
-    except:
-       raise(Exception("No full word model found for this corpus."))
-    if binned:
-        wv_list.sort()
-        wm = [
-                {
-                    "start_year": get_year(wm_file, 1),
-                    "end_year": get_year(wm_file, 2),
-                    "vectors": KeyedVectors.load(wm_file),
-                }
-            for wm_file in wv_list
-            ]
-    else:
-        model = KeyedVectors.load(full_model)
-        wm = {
-            "start_year": get_year(full_model, 1),
-            "end_year": get_year(full_model, 2),
-            "vectors": model,
-        }
+    wv_list.sort()
+    wm = [
+            {
+                "start_year": get_year(wm_file, 1),
+                "end_year": get_year(wm_file, 2),
+                "vectors": KeyedVectors.load(wm_file),
+            }
+        for wm_file in wv_list
+    ]
     return wm
 
 def get_year(kv_filename, position):
     return int(splitext(basename(kv_filename))[0].split('_')[position])
 
-def word_in_model(query_term, corpus, max_distance = 2):
-    model = load_word_models(corpus)
+def word_in_models(query_term, corpus, max_distance = 2):
+    models = load_word_models(corpus)
     transformed_query = transform_query(query_term)
-    vocab = model['vectors'].index_to_key
-    if transformed_query in vocab:
-        return { 'exists': True }
-    else:
-        is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
-        similar_keys = [term for term in vocab if is_similar(term)]
+    for model in models:
+        vocab = model['vectors'].index_to_key
+        if transformed_query in vocab:
+            return { 'exists': True }
+    # if word is not in models, return closest matches from last model in list
+    vocab = models[-1]['vectors'].index_to_key
+    is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
+    similar_keys = [term for term in vocab if is_similar(term)]
 
-        return {
-            'exists': False,
-            'similar_keys': similar_keys
-        }
+    return {
+        'exists': False,
+        'similar_keys': similar_keys
+    }
 
 
 def load_wm_documentation(corpus_string):
