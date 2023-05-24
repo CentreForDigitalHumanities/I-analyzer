@@ -32,15 +32,14 @@ def get_year(kv_filename, position):
 def word_in_models(query_term, corpus, max_distance = 2):
     models = load_word_models(corpus)
     transformed_query = transform_query(query_term)
+    vocab = set()
     for model in models:
-        vocab = model['vectors'].index_to_key
-        if transformed_query in vocab:
-            return { 'exists': True }
-    # if word is not in models, return closest matches from last model in list
-    vocab = models[-1]['vectors'].index_to_key
+        vocab.update(model['vectors'].index_to_key)
+    if transformed_query in list(vocab):
+        return { 'exists': True }
+    # if word is not in vocab, search for close matches
     is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
-    similar_keys = [term for term in vocab if is_similar(term)]
-
+    similar_keys = [term for term in list(vocab) if is_similar(term)]
     return {
         'exists': False,
         'similar_keys': similar_keys
