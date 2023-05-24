@@ -150,7 +150,7 @@ def save_flask_query(row):
         # some queries refer to corpus names that no longer exist
         return
 
-    query_model = json.loads(row['query'])
+    query_model = load_json_value(row['query'])
     es_query = query_model_to_es_query(query_model)
     query = Query(
         id=row['id'],
