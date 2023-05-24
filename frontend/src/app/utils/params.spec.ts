@@ -1,13 +1,14 @@
 import { convertToParamMap } from '@angular/router';
 import { highlightFromParams, omitNullParameters, searchFieldsFromParams } from './params';
-import { omitNullParameters } from './params';
+import { mockCorpus3, mockField2 } from '../../mock-data/corpus';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = convertToParamMap({fields: 'speech,speaker'});
-        const fields = searchFieldsFromParams(params);
+        const params = convertToParamMap({fields: 'speech,great_field'});
+        const corpus = mockCorpus3;
+        const fields = searchFieldsFromParams(params, corpus);
         expect(fields.length).toEqual(2);
-        expect(fields).toContain('speech');
+        expect(fields).toContain(mockField2);
     });
 });
 

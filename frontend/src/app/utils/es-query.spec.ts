@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { mockField2, mockField3 } from '../../mock-data/corpus';
+import { mockCorpus3, mockField, mockField2 } from '../../mock-data/corpus';
 import { makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification } from './es-query';
 
 describe('es-query utils', () => {
@@ -15,17 +15,16 @@ describe('es-query utils', () => {
     });
 
     it('should make a sort specification', () => {
-        expect(makeSortSpecification(undefined, true)).toEqual({});
-        expect(makeSortSpecification('great_field', false)).toEqual({
+        expect(makeSortSpecification('relevance', 'asc')).toEqual({});
+        expect(makeSortSpecification(mockField, 'desc')).toEqual({
             sort: [{ great_field: 'desc' }]
         });
     });
 
     it('should make a highlight specification', () => {
-        const fields = [mockField2, mockField3];
-        expect(makeHighlightSpecification(fields, 'test', undefined)).toEqual({});
+        expect(makeHighlightSpecification(mockCorpus3, 'test', undefined)).toEqual({});
 
-        expect(makeHighlightSpecification(fields, 'test', 100)).toEqual({
+        expect(makeHighlightSpecification(mockCorpus3, 'test', 100)).toEqual({
             highlight: {
                 fragment_size: 100,
                 pre_tags: ['<span class="highlight">'],

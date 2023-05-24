@@ -48,7 +48,7 @@ export class SortConfiguration {
         this.sortDirection.next(direction);
     }
 
-    toRouteParam(): {sort: string} {
+    toRouteParam(): {sort: string|null} {
         return sortSettingsToParams(this.sortBy.value, this.sortDirection.value);
     }
 

@@ -24,10 +24,10 @@ export const highlightFromParams = (params: ParamMap): number =>
 
 // sort
 
-export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): {sort?: string} => {
+export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): {sort: string|null} => {
     let sortByName: string;
     if (sortBy === 'default') {
-        return {};
+        return { sort: null };
     } else if (sortBy === 'relevance') {
         sortByName = sortBy;
     } else {
