@@ -65,15 +65,19 @@ describe('MultipleChoiceFilter', () => {
         expect(filter.currentData).toEqual([]);
     });
 
-    it('should convert to string', () => {
+    it('should convert to a string', () => {
         expect(filter.dataFromString(filter.dataToString(filter.currentData)))
             .toEqual(filter.currentData);
 
         // non-empty value
-        filter.data.next(['a', 'b']);
+        filter.data.next(['a', 'b', 'value with spaces']);
         expect(filter.dataFromString(filter.dataToString(filter.currentData)))
             .toEqual(filter.currentData);
+    });
 
+    it('should convert values to valid URI components', () => {
+        filter.data.next(['a long value']);
+        expect(filter.dataToString(filter.currentData)).not.toContain(' ');
     });
 
     it('should set data from a value', () => {
@@ -83,11 +87,11 @@ describe('MultipleChoiceFilter', () => {
     });
 
     it('should convert to an elasticsearch filter', () => {
-        filter.data.next(['wow!']);
+        filter.data.next(['wow!', 'a great selection!']);
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             terms: {
-                greater_field: ['wow!']
+                greater_field: ['wow!', 'a great selection!']
             }
         });
     });

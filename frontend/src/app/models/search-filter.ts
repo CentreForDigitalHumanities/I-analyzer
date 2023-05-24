@@ -176,13 +176,13 @@ export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFil
 
     dataFromString(value: string): MultipleChoiceFilterData {
         if (value.length) {
-            return value.split(',');
+            return value.split(',').map(decodeURIComponent);
         }
         return [];
     }
 
     dataToString(data: MultipleChoiceFilterData): string {
-        return data.join(',');
+        return data.map(encodeURIComponent).join(',');
     }
 
     toEsFilter(): EsTermsFilter {

@@ -30,7 +30,7 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]>
         this.searchService.aggregateSearch(queryModel.corpus, queryModel, [aggregator]).then(
             response => response.aggregations[this.filter.corpusField.name]).then(aggregations =>
                 this.options = _.sortBy(
-                    aggregations.map(x => ({ label: x.key, value: encodeURIComponent(x.key), doc_count: x.doc_count })),
+                    aggregations.map(x => ({ label: x.key, value: x.key, doc_count: x.doc_count })),
                     o => o.label
                 )
             ).catch(() => this.options = []);
