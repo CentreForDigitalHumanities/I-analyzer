@@ -44,7 +44,7 @@ The documentation includes a [recipe for installing the prerequisites on Debian 
 
 ## First-time setup
 
-Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml and libxmlsec1-dev is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
+For the SAML integration, the following libraries are required: xmlsec, python3-dev, libssl-dev and libsasl2-dev. This has been tested on Unix systems, but installation may be more difficult on Windows. As the dependencies on `xmlsec` are only called in the `settings_saml` module, however, they should not affect running the application when not explicitly using this settings module.
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 

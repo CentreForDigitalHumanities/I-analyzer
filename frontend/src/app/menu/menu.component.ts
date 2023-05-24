@@ -49,7 +49,8 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     public async logout() {
-        await this.authService.logout(true).toPromise();
+        const isSamlLogin = this.currentUser.isSamlLogin;
+        await this.authService.logout(isSamlLogin, true).toPromise();
         this.currentUser = undefined;
     }
 

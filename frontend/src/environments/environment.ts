@@ -9,6 +9,7 @@ export const environment = {
     aboutPage: 'ianalyzer',
     apiUrl: '/api/',
     adminUrl: '/admin/',
+    samlLogoutUrl: '/users/saml2/logout/',
     logos: [
     ],
     showSolis: true
