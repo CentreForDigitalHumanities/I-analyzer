@@ -3,7 +3,7 @@
 import * as _ from 'lodash';
 import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
     QueryModel,
-    SimpleQueryString, SortDirection } from '../models';
+    SimpleQueryString, SortBy, SortDirection } from '../models';
 import { EsQuery } from '../services';
 import { findByName } from './utils';
 import { SearchFilter } from '../models/search-filter';
@@ -62,8 +62,8 @@ export const combineSearchClauseAndFilters = (queryText: string, filters: EsFilt
     return { query };
 };
 
-export const makeSortSpecification = (sortBy: CorpusField|'relevance', sortDirection: SortDirection) => {
-    if (sortBy === 'relevance') {
+export const makeSortSpecification = (sortBy: SortBy, sortDirection: SortDirection) => {
+    if (!sortBy) {
         return {};
     } else {
         const sortByField = {

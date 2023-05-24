@@ -1,4 +1,4 @@
-import { Corpus, FoundDocument, QueryModel, SortConfiguration } from '../models';
+import { Corpus, FoundDocument, QueryModel } from '../models';
 
 const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryModel => {
     const queryModel = new QueryModel(corpus);
@@ -11,7 +11,7 @@ const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryMod
         queryModel.addFilter(filter);
     });
 
-    queryModel.sort.sortBy.next(spec.sortField || 'default');
+    queryModel.sort.sortBy.next(spec.sortField);
     queryModel.sort.sortDirection.next(spec.sortDirection);
 
     return queryModel;

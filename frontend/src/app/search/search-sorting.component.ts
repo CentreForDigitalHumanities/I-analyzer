@@ -46,11 +46,7 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     }
 
     setStateFromQueryModel() {
-        if (this.sortConfiguration.actualSortBy === 'relevance') {
-            this.sortField = undefined;
-        } else {
-            this.sortField = (this.sortConfiguration.actualSortBy as CorpusField);
-        }
+        this.sortField = this.sortConfiguration.sortBy.value;
         this.ascending = this.sortConfiguration.sortDirection.value === 'asc';
     }
 
@@ -69,7 +65,7 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
         } else {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }
-        this.sortConfiguration.setSortBy(field || 'relevance');
+        this.sortConfiguration.setSortBy(field || undefined);
     }
 }
 

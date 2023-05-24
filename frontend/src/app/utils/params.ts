@@ -1,7 +1,6 @@
 import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
-import { findByName } from './utils';
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
@@ -26,33 +25,15 @@ export const highlightFromParams = (params: ParamMap): number =>
 
 export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): {sort: string|null} => {
     let sortByName: string;
-    if (sortBy === 'default') {
-        return { sort: null };
-    } else if (sortBy === 'relevance') {
-        sortByName = sortBy;
+    if (!sortBy) {
+        sortByName = 'relevance';
     } else {
         sortByName = sortBy.name;
     }
     return { sort: `${sortByName},${direction}` };
 };
 
-export const sortSettingsFromParams = (params: ParamMap, corpusFields: CorpusField[]): [SortBy, SortDirection] => {
-    let sortBy: SortBy;
-    let sortAscending = true;
-    if (params.has('sort')) {
-        const [sortParam, ascParam] = params.get('sort').split(',');
-        sortAscending = ascParam === 'asc';
-        if ( sortParam === 'relevance' ) {
-            return [sortParam, sortAscending ? 'asc' : 'desc'];
-        }
-        sortBy = findByName(corpusFields, sortParam);
-    }
-    return [
-        sortBy || 'default',
-        sortAscending ? 'asc' : 'desc'
-    ];
-};
-
+// filters
 
 export const filtersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[] => {
     const specifiedFields = corpus.fields.filter(field => params.has(field.name));

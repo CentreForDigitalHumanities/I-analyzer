@@ -30,7 +30,7 @@ describe('es-query utils', () => {
     });
 
     it('should make a sort specification', () => {
-        expect(makeSortSpecification('relevance', 'asc')).toEqual({});
+        expect(makeSortSpecification(undefined, 'asc')).toEqual({});
         expect(makeSortSpecification(mockField, 'desc')).toEqual({
             sort: [{ great_field: 'desc' }]
         });
