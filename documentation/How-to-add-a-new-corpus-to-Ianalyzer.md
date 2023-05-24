@@ -1,7 +1,7 @@
 # How to add a new corpus to I-analzyer
 
 ## Corpus definition
-Adding a new corpus starts by adding a new corpus description `corpusname.py` to the `backend/corpora` directory. The corpus description imports global variables from `backend/ianalyzer/settings.py`. The definition file should be registered in `backend/ianalyzer/settings_local.py` under `CORPORA`. More on the use of settings below.
+Adding a new corpus starts by adding a new corpus description `corpusname.py` to the `backend/corpora` directory. The corpus description imports global variables from `backend/ianalyzer/settings.py`. The definition file should be listed under `CORPORA` in the settings. In a development environment, this should happen in `backend/ianalyzer/settings_local.py`. More on the use of settings below.
 
 The corpus definition is a python class definition, subclassing `Corpus` class, found in `addcorpus/corpus.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
 
@@ -23,15 +23,17 @@ The following properties are optional:
 - `desription_page`: filename of markdown document with a comprehensive description, located in a subdirectory `description` of the corpus definition directory.
 - `document_context`: specifies fields that define the natural grouping of documents.
 
-The corpus class should also define a function `sources(self, start, end)` which iterates source flies (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
+The corpus class should also define a function `sources(self, start, end)` which iterates source files (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 
 ### XML / HTML corpora
 
 If your source files are XML or HTML files, your corpus definition should respectively subclass `XMLCorpus` or `HTMLCorpus`.
 
 In addition to the properties above, the corpus class must define:
-- `toplevel_tag`: The highest-level tag in the source file.
-- `toplevel_entry`: The tag that corresponds to a single document entry.
+- `tag_toplevel`: The highest-level tag in the source file.
+- `tag_entry`: The tag that corresponds to a single document entry.
+
+These tags can be strings or functions that map a metadata dict to a string. Your corpus will have one document for each `tag_entry`.
 
 ### CSV corpora
 If your source files are CSV files, your corpus definition should subclass `CSVCorpus`.
@@ -40,7 +42,7 @@ The CSV files will be read row by row. You can write the definition so each docu
 
 In addition to the properties above, CSV corpora have the following optional properties:
 - `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.
-- `required_field`: rows with this field empty will be skipped.
+- `delimiter`: the delimiter for the CSV reader (`,` by default)
 
 ## Settings file
 The django settings can be used to configure variables that may be depend on the environment. Please use the following naming convention.
@@ -54,7 +56,7 @@ CORPUSNAME_SCAN_IMAGE_TYPE = 'image/png' #mimetype of document media
 These can be retrieved in the corpus definition, for example:
 
 ```python
-from flask import current_app
+from django.conf import settings
 
 class Times(XMLCorpus):
     title = "Times"
@@ -70,9 +72,7 @@ Note that for a property like the elasticsearch index, we define a default value
 
 ### Corpus selection
 
-The dictionary `CORPORA` defines the name of the corpora and their filepath. `CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests.
-
-The `CORPORA` dict is defined as
+The dictionary `CORPORA` defines the name of the corpora and their filepath. It is defined as
 
 ```python
 CORPORA = {
@@ -82,6 +82,14 @@ CORPORA = {
 
 The key of the corpus must match the name of the corpus class (but lowercase/hyphenated), so `'times'` is the key for the `Times` class. Typically, the key also matches the `es_index` of the corpus, as well as its filename.
 
+`CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests. You only need to include corpora that do not use the `'default'` server.
+
+```python
+CORPUS_SERVER_NAMES = {
+    'times': 'special_server',
+}
+```
+
 ### settings vs. settings_local
 `settings.py` imports all information in `settings_local.py`. If a variable is defined in both, `settings_local` overrules `settings`. All sensitive information (server names, user names, passwords) should be in `settings_local.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment.
 
@@ -90,6 +98,6 @@ Once the corpus definition and associated settings are added, the only remaining
 Optional flags:
 - `-s 1990-01-01` sets different start date for indexing
 - `-e 2000-12-31` sets different end data for indexing
-- `-d` specifies that an existing index of the same name should be deleted first (if not specified, defaults to `False`, meaning that extra data can be added while existing data is not overwritten)
+- `-d` specifies that an existing index of the same name should be deleted first (if not specified, defaults to false, meaning that extra data can be added while existing data is not overwritten)
 
 The start and end date flags are passed on the `sources` function of the corpus (see above). If you did not utilise them there, they will not do anything.
