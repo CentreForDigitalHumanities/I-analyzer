@@ -67,4 +67,6 @@ SPECS = {
     'total_words': 55000,
     'has_token_counts': False,
     'fields': ['date', 'content'],
+    'example_query': 'the',
+    'content_field': 'content',
 }

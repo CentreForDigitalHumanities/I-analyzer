@@ -86,6 +86,9 @@ WORDCLOUD_LIMIT = 1000
 CELERY_BROKER_URL = 'redis://'
 CELERY_RESULT_BACKEND = 'redis://'
 
+# url to the frontend for generating email links
+BASE_URL = 'http://localhost:4200'
+
 # This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:
     from ianalyzer.settings_local import *
@@ -94,3 +97,5 @@ except ImportError as e:
         'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
         Warning
     )
+
+DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
