@@ -58,7 +58,7 @@ const MOCK_CORPUS: Corpus = {
             hidden: false,
         }
     ]
-};
+} as Corpus;
 
 
 describe('HistogramCompoment', () => {

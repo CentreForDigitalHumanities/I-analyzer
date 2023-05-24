@@ -52,7 +52,7 @@ describe('document context utils', () => {
         ],
         languages: ['English'],
         category: 'Tests',
-    };
+    } as Corpus;
 
     const document: FoundDocument = {
         id: '1',

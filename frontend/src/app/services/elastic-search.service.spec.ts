@@ -62,7 +62,7 @@ const mockCorpus: Corpus = {
             mappingType: 'date'
         }
     ],
-};
+} as Corpus;
 
 describe('ElasticSearchService', () => {
     let service: ElasticSearchService;

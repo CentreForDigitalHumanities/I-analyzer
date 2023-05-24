@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { FieldInfoComponent } from './field-info.component';
-import { commonTestBed } from 'src/app/common-test-bed';
+import { commonTestBed } from '../../common-test-bed';
 
 describe('FieldInfoComponent', () => {
     let component: FieldInfoComponent;

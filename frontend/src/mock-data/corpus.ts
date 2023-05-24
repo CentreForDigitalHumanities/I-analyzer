@@ -72,9 +72,9 @@ export const mockCorpus: Corpus = {
     fields: [mockField],
     languages: ['English'],
     category: 'Tests'
-};
+} as Corpus;
 
-export const mockCorpus2: Corpus = {
+export const mockCorpus2 = {
     name: 'test2',
     serverName: 'default',
     index: 'test2',
@@ -89,7 +89,7 @@ export const mockCorpus2: Corpus = {
     fields: [mockField2],
     languages: ['English', 'French'],
     category: 'Different tests'
-};
+} as Corpus;
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);
