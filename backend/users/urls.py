@@ -11,6 +11,6 @@ urlpatterns = [
          name='account_email_verification_sent'),
     path('', include('dj_rest_auth.urls')),
     path('registration/', include('dj_rest_auth.registration.urls')),
-    path('saml2/ls/post', SamlLogout.as_view()),
+    path('saml2/ls/post', SamlLogoutView.as_view()),
     path('saml2/', include('djangosaml2.urls')),
 ]
