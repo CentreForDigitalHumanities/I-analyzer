@@ -9,7 +9,7 @@ from addcorpus.extract import Pass, Combined, CSV
 
 def index_by_id(data):
     return {
-        row['id']: row
+        row['title_id']: row
         for row in data
     }
 
@@ -19,7 +19,7 @@ def is_periodical(name):
     return name.startswith(PERIODIAL_PREFIX)
 
 def get_periodical(names):
-    periodicals = filter(is_periodical, names)
+    periodicals = list(filter(is_periodical, names))
     format = lambda name: name[len(PERIODIAL_PREFIX):].strip()
     if periodicals:
         return ', '.join(map(format, periodicals))
@@ -176,7 +176,8 @@ def pad_content(node):
     return pad_cells(pad_linebreaks(node))
 
 def standardize_language_code(code):
-    return standardize_tag(code)
+    if code:
+        return standardize_tag(code)
 
 def single_language_code(code):
     if code and '-' in code:

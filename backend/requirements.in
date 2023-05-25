@@ -25,3 +25,4 @@ pypdf2
 openpyxl
 tqdm
 langcodes
+language_data

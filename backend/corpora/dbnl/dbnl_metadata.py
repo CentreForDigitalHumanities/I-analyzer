@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 from addcorpus.corpus import CSVCorpus, Field
-from addcorpus.extract import CSV, Combined
+from addcorpus.extract import CSV, Combined, Pass
 import corpora.dbnl.utils as utils
 
 class DBNLMetadata(CSVCorpus):
@@ -19,7 +19,7 @@ class DBNLMetadata(CSVCorpus):
 
     # fields that have a singular value
     _singular_fields = [
-        ('id', 'ti_id'),
+        ('title_id', 'ti_id'),
         ('title', 'titel'),
         ('volumes', 'vols'),
         ('year', '_jaar'),
@@ -34,7 +34,7 @@ class DBNLMetadata(CSVCorpus):
         ('id', 'pers_id'),
         ('year_of_birth', 'jaar_geboren'),
         ('place_of_birth', 'geb_plaats'),
-        ('year_of_death', 'jaar_overleden'),
+        ('year_of_death', 'jaar_overlijden'),
         ('place_of_death', 'overl_plaats')
     ]
 
@@ -44,13 +44,17 @@ class DBNLMetadata(CSVCorpus):
     ] + [
         Field(
             name='genre',
-            extractor=CSV('genre', multiple=True,
-                transform=lambda values: list(set(values))
+            extractor=Pass(
+                utils.filter_by(
+                    CSV('genre', multiple=True),
+                    CSV('genre', multiple=True, transform=utils.which_unique)
+                ),
+                transform=utils.join_values,
             )
         ),
         Field(
             name='periodical',
-            exractor=CSV('achternaam', multiple=True,
+            extractor=CSV('achternaam', multiple=True,
                 transform=utils.get_periodical
             )
         )
