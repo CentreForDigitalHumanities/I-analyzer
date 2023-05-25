@@ -47,7 +47,7 @@ class DBNL(XMLCorpus):
                 **csv_metadata
             }
 
-            year = int(metadata['_jaar'])
+            year = int(metadata['year'])
             if utils.between_years(year, start, end):
                 yield path, metadata
 
@@ -63,7 +63,7 @@ class DBNL(XMLCorpus):
                     'has_xml': False,
                     **csv_metadata
                 }
-                year = int(metadata['_jaar'])
+                year = int(metadata['year'])
                 if utils.between_years(year, start, end):
                     yield blank_file, metadata
 
