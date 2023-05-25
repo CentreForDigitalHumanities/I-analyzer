@@ -137,7 +137,6 @@ class DBNL(XMLCorpus):
         visualizations=['resultscount', 'termfrequency'],
         sortable=True,
         visualization_sort='key',
-        primary_sort=True,
     )
 
     edition = Field(
