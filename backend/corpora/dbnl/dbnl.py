@@ -247,7 +247,7 @@ class DBNL(XMLCorpus):
 
     url = Field(
         name='url',
-        display_name='URL',
+        display_name='View on DBNL',
         description='Link to the book\'s page in DBNL',
         extractor=Metadata('url'),
         es_mapping=keyword_mapping(),
