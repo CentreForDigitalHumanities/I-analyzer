@@ -18,7 +18,7 @@ class DBNL(XMLCorpus):
     min_date = datetime(year=1200, month=1, day=1)
     max_date = datetime(year=1890, month=12, day=31)
     es_index = getattr(settings, 'DBNL_ES_INDEX', 'dbnl')
-    image = 'dbnl.png'
+    image = 'dbnl.jpg'
     description_page = 'dbnl.md'
 
     languages = ['nl', 'dum', 'fr', 'la', 'fy', 'lat', 'en', 'nds', 'de', 'af']
