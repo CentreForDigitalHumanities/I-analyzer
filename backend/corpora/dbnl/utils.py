@@ -1,6 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 import os
+from langcodes import standardize_tag, Language
 
 from addcorpus.extract import Pass, Combined, CSV
 
@@ -175,16 +176,7 @@ def pad_content(node):
     return pad_cells(pad_linebreaks(node))
 
 def standardize_language_code(code):
-    # ISO 639-1 -> 639-3
-    replacements = {
-        'fy': 'fry',
-        'la': 'lat',
-    }
-
-    if code in replacements:
-        return replacements[code]
-
-    return code
+    return standardize_tag(code)
 
 def single_language_code(code):
     if code and '-' in code:
@@ -192,26 +184,12 @@ def single_language_code(code):
         return primary
     return code
 
-LANGUAGE_NAMES = {
-    'nl': 'Dutch',
-    'fr': 'French',
-    'lat': 'Latin',
-    'fry': 'Frisian',
-    'en': 'English',
-    'nds': 'Low German',
-    'de': 'German',
-    'af': 'Afrikaans',
-    'rus': 'Russian',
-    None: None,
-}
-
 def language_name(code):
     if not code:
         return None
     codes = code.split('-')
-    standardized = map(standardize_language_code, codes)
     names = set(map(
-        lambda code: LANGUAGE_NAMES.get(code, code),
-        standardized
+        lambda code: Language.make(language=code).display_name(),
+        codes
     ))
-    return '/'.join(names)
+    return ' / '.join(names)

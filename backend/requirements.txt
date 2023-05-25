@@ -108,6 +108,8 @@ joblib==1.2.0
     #   scikit-learn
 kombu==5.2.4
     # via celery
+langcodes==3.3.0
+    # via -r requirements.in
 lxml==4.9.1
     # via -r requirements.in
 miniful==0.0.6
