@@ -615,6 +615,13 @@ class CSVCorpus(Corpus):
         '''
         return ','
 
+    @property
+    def skip_lines(self):
+        '''
+        Number of lines to skip before reading the header
+        '''
+        return 0
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -635,6 +642,11 @@ class CSVCorpus(Corpus):
 
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
+
+            # skip first n lines
+            for _ in range(self.skip_lines):
+                next(f)
+
             reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []

@@ -9,6 +9,7 @@ from addcorpus.extract import Metadata, XML, Pass, Index, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
 from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
+from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
 class DBNL(XMLCorpus):
     title = 'DBNL'
@@ -33,8 +34,8 @@ class DBNL(XMLCorpus):
     }
 
     def sources(self, start = None, end = None):
-        csv_path = os.path.join(self.data_directory, 'titels_pd.csv')
-        all_metadata = utils.extract_metadata(csv_path)
+        metadata_corpus = DBNLMetadata()
+        all_metadata = utils.index_by_id(metadata_corpus.documents())
 
         print('Extracting XML files...')
         for id, path in tqdm(list(self._xml_files())):
@@ -47,7 +48,6 @@ class DBNL(XMLCorpus):
             }
 
             year = int(metadata['_jaar'])
-
             if utils.between_years(year, start, end):
                 yield path, metadata
 
@@ -82,7 +82,7 @@ class DBNL(XMLCorpus):
         results_overview=True,
         search_field_core=True,
         csv_core=True,
-        extractor=Metadata('titel'),
+        extractor=Metadata('title'),
         es_mapping=text_mapping(),
         visualizations=['wordcloud']
     )
@@ -108,7 +108,7 @@ class DBNL(XMLCorpus):
         name='volumes',
         display_name='Volumes',
         description='Number of volumes in which this book was published',
-        extractor=Metadata('vols'),
+        extractor=Metadata('volumes'),
         es_mapping=text_mapping(),
     )
 
@@ -119,7 +119,7 @@ class DBNL(XMLCorpus):
         description='Year of publication in text format. May describe a range.',
         results_overview=True,
         csv_core=True,
-        extractor=Metadata('jaar'),
+        extractor=Metadata('year_full'),
         es_mapping=text_mapping(),
     )
 
@@ -128,7 +128,7 @@ class DBNL(XMLCorpus):
         name='year',
         display_name='Publication year (est.)',
         description='Year of publication as a number. May not be an estimate.',
-        extractor=Metadata('_jaar'),
+        extractor=Metadata('year'),
         es_mapping=int_mapping(),
         search_filter=RangeFilter(
             description='Select books by publication year',
@@ -143,7 +143,7 @@ class DBNL(XMLCorpus):
         name='edition',
         display_name='Edition',
         description='Edition of the book',
-        extractor=Metadata('druk'),
+        extractor=Metadata('edition'),
         es_mapping=text_mapping(),
     )
 
@@ -166,14 +166,7 @@ class DBNL(XMLCorpus):
         results_overview=True,
         search_field_core=True,
         csv_core=True,
-        extractor=utils.join_extracted(
-            Combined(
-                utils.author_extractor('voornaam'),
-                utils.author_extractor('voorvoegsel'),
-                utils.author_extractor('achternaam'),
-                transform=lambda values: [utils.format_name(parts) for parts in zip(*values)]
-            )
-        ),
+        extractor=Metadata('author_name'),
         es_mapping=keyword_mapping(enable_full_text_search=True),
         visualizations=['resultscount', 'termfrequency'],
     )
@@ -182,7 +175,7 @@ class DBNL(XMLCorpus):
         name='author_id',
         display_name='Author ID',
         description='ID(s) of the author(s)',
-        extractor=utils.author_single_value_extractor('pers_id'),
+        extractor=Metadata('author_id'),
         es_mapping=keyword_mapping(),
     )
 
@@ -190,7 +183,7 @@ class DBNL(XMLCorpus):
         name='author_year_of_birth',
         display_name='Author year of birth',
         description='Year in which the author(s) was(/were) born',
-        extractor=utils.author_single_value_extractor('jaar_geboren'),
+        extractor=Metadata('author_year_of_birth'),
         es_mapping=text_mapping(),
     )
 
@@ -198,7 +191,7 @@ class DBNL(XMLCorpus):
         name='author_year_of_death',
         display_name='Author year of death',
         description='Year in which the author(s) died',
-        extractor=utils.author_single_value_extractor('jaar_overlijden'),
+        extractor=Metadata('author_year_of_death'),
         es_mapping=text_mapping(),
     )
 
@@ -209,7 +202,7 @@ class DBNL(XMLCorpus):
         name='author_place_of_birth',
         display_name='Author place of birth',
         description='Place the author(s) was(/were) born',
-        extractor=utils.author_single_value_extractor('geb_plaats'),
+        extractor=Metadata('author_place_of_birth'),
         es_mapping=keyword_mapping(),
     )
 
@@ -217,26 +210,15 @@ class DBNL(XMLCorpus):
         name='author_place_of_death',
         display_name='Author place of death',
         description='Place where the author(s) died',
-        extractor=utils.author_single_value_extractor('overl_plaats'),
+        extractor=Metadata('author_place_of_death'),
         es_mapping=keyword_mapping(),
     )
 
-    # gender is coded as a binary value (∈ ['1', '0'])
-    # converted to a string for clarity
-    # 0 is used for men, unknown/anonymous authors, and institutions
     author_gender = Field(
         name='author_gender',
         display_name='Author gender',
         description='Gender of the author(s)',
-        extractor=utils.join_extracted(
-            Pass( # use look-up dict to transform values to string
-                utils.author_extractor('vrouw'),
-                transform=lambda values: map(
-                    lambda gender: {'0': 'man/unknown', '1': 'woman'}.get(gender, None),
-                    values
-                ),
-            )
-        ),
+        extractor=Metadata('author_gender'),
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Select books based on the gender of the author(s)',
@@ -256,7 +238,7 @@ class DBNL(XMLCorpus):
         name='genre',
         display_name='Genre',
         description='Genre of the book',
-        extractor=utils.join_extracted(Metadata('genre')),
+        extractor=Metadata('genre'),
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Select books in these genres',
@@ -270,7 +252,7 @@ class DBNL(XMLCorpus):
         description='Language in which the book is written',
         # this extractor is similar to language_code below,
         # but designed to accept multiple values in case of uncertainty
-        extractor=utils.join_extracted(
+        extractor=Pass(
             Backup(
                 XML( # get the language on chapter-level if available
                     attribute='lang',
@@ -289,7 +271,8 @@ class DBNL(XMLCorpus):
                     attribute='id'
                 ),
                 transform = lambda codes: map(utils.language_name, codes) if codes else None,
-            )
+            ),
+            transform=utils.join_values,
         ),
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
