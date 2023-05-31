@@ -39,3 +39,7 @@ ianalyzer/settings_local.py
 
 # csv downloads
 download/csv_files/
+
+# word models
+corpora/*/wm/*
+!corpora/*/wm/documentation.md
