@@ -121,7 +121,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         if (cachedResult) {
             this.onDataLoaded(cachedResult);
         } else {
-            this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
+            this.visualizationService.getNgramTasks(this.queryModel, this.corpus, this.visualizedField.name,
                 this.currentParameters).then(response => {
                 this.tasksToCancel = response.task_ids;
                 return this.apiService.pollTasks<NgramResults>(response.task_ids);

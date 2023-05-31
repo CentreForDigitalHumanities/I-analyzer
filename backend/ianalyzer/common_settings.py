@@ -128,3 +128,5 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
 }
+
+LOGO_LINK = 'http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'

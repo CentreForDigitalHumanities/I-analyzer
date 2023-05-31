@@ -52,7 +52,7 @@
                     </p>
                 </div>
                 <div>
-                    <a class="box" href='/api/init_solislogin'>
+                    <a class="box" href='/users/saml2/login/'>
                         <img src="/assets/solis.png" width="40" height="40">
                         <span><strong>Solis ID</strong></span>
                     </a>
@@ -65,6 +65,9 @@
     <div class="container">
         <div class="notification is-danger" *ngIf="isWrong" [ngClass]="{'is-loading':isLoading}">
             <strong>Invalid username or password</strong>. Please try again.
+        </div>
+        <div class="notification is-danger" *ngIf="isNotVerified" [ngClass]="{'is-loading':isLoading}">
+            <strong>Your email address has not been verified.</strong> See email for instructions.
         </div>
         <div class="notification is-danger" *ngIf="hasError" [ngClass]="{'is-loading':isLoading}">
             <strong>Something went wrong while logging you in</strong>. Please try again.
