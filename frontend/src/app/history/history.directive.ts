@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { Corpus, Download, Query } from '../models';
+import { Corpus, Download, QueryDb } from '../models';
 import { CorpusService } from '../services';
 
 @Directive({
@@ -21,8 +21,8 @@ export class HistoryDirective {
         });
     }
 
-    sortByDate<Item extends Download|Query>(downloads: Item[]): Item[] {
-        return downloads.sort((a, b) =>
+    sortByDate<Item extends Download|QueryDb>(items: Item[]): Item[] {
+        return items.sort((a, b) =>
             new Date(b.started).getTime() - new Date(a.started).getTime()
         );
     }

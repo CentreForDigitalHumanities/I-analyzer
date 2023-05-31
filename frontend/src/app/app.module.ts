@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { APP_BASE_HREF, CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -27,7 +27,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
-    ElasticSearchService, ParamService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+    ElasticSearchService, ParamService, HighlightService, NotificationService, SearchService, SessionService,
+    UserService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
@@ -59,7 +60,8 @@ import { HistogramComponent } from './visualization/barchart/histogram.component
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
-import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
+import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent,
+    DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
@@ -84,6 +86,7 @@ import { DownloadHistoryComponent } from './history/download-history/download-hi
 import { HistoryDirective } from './history/history.directive';
 import { DownloadOptionsComponent } from './download/download-options/download-options.component';
 import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
+import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
 
 
@@ -91,12 +94,12 @@ export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard],
     },
     {
         path: 'document/:corpus/:id',
@@ -105,54 +108,58 @@ export const appRoutes: Routes = [
     },
     {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
     },
     {
         path: 'login/:activated',
-        component: LoginComponent
+        component: LoginComponent,
     },
     {
         path: 'registration',
-        component: RegistrationComponent
+        component: RegistrationComponent,
     },
     {
         path: 'reset',
-        component: RequestResetComponent
+        component: RequestResetComponent,
     },
     {
         path: 'reset-password/:token',
-        component: ResetPasswordComponent
+        component: ResetPasswordComponent,
     },
     {
         path: 'privacy',
-        component: PrivacyComponent
+        component: PrivacyComponent,
     },
     {
         path: 'home',
         component: HomeComponent,
-        canActivate: [LoggedOnGuard]
+        canActivate: [LoggedOnGuard],
     },
     {
         path: 'manual/:identifier',
-        component: ManualComponent
+        component: ManualComponent,
     },
     {
         path: 'about',
-        component: AboutComponent
+        component: AboutComponent,
     },
     {
         path: 'search-history',
-        component: SearchHistoryComponent
+        component: SearchHistoryComponent,
     },
     {
         path: 'download-history',
-        component: DownloadHistoryComponent
+        component: DownloadHistoryComponent,
+    },
+    {
+        path: 'confirm-email/:key',
+        component: VerifyEmailComponent,
     },
     {
         path: '',
         redirectTo: 'home',
-        pathMatch: 'full'
-    }
+        pathMatch: 'full',
+    },
 ];
 
 export const declarations: any[] = [
@@ -216,12 +223,17 @@ export const declarations: any[] = [
     TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,
+    VerifyEmailComponent,
     VisualizationComponent,
     VisualizationFooterComponent,
     WordcloudComponent,
     WordModelsComponent,
     WordSimilarityComponent,
 ];
+
+// AoT requires an exported function for factories
+export const resourceHandlerFactory = (http: HttpClient) =>
+    new ResourceHandlerHttpClient(http);
 
 export const imports: any[] = [
     BrowserAnimationsModule,
@@ -238,14 +250,18 @@ export const imports: any[] = [
     FontAwesomeModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
-        cookieName: 'csrf_token',
-        headerName: 'X-XSRF-Token'
+        cookieName: 'csrftoken',
+        headerName: 'X-CSRFToken',
     }),
     MenuModule,
     MultiSelectModule,
     PdfViewerModule,
     ResourceModule.forRoot({
-        handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
+        handler: {
+            provide: ResourceHandler,
+            useFactory: resourceHandlerFactory,
+            deps: [HttpClient],
+        },
     }),
     RadioButtonModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
@@ -263,7 +279,6 @@ export const providers: any[] = [
     DownloadService,
     ElasticSearchService,
     HighlightService,
-    LogService,
     NotificationService,
     ParamService,
     QueryService,
@@ -275,12 +290,7 @@ export const providers: any[] = [
     TitleCasePipe,
     CookieService,
     WordmodelsService,
-    {
-        provide: APP_INITIALIZER,
-        useFactory: initApp,
-        deps: [ApiService],
-        multi: true
-    },
+    { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
 @NgModule({
@@ -289,13 +299,5 @@ export const providers: any[] = [
     providers,
     bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 
-// AoT requires an exported function for factories
-export function resourceHandlerFactory(http: HttpClient) {
-    return new ResourceHandlerHttpClient(http);
-}
-
-export function initApp(api: ApiService): Function {
-    return (): Promise<any> => api.ensureCsrf();
-}

@@ -335,7 +335,7 @@ export abstract class BarchartDirective
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData(rawData: typeof this.rawData) {
+    requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
         const dataPromises = rawData.map(series => {
             if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
                 // retrieve data if it was not already loaded
@@ -357,19 +357,16 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<any> {
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
-            if (result.success === true) {
-                return this.apiService.pollTasks<TermFrequencyResult>(result.task_ids);
-            }
-        }).then(res => {
-            if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results, series);
-            } else {
-                this.error.emit(res['message'] || 'could not load results');
-                return series;
-            }
+        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result =>
+            this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
+        ).then(res =>
+            this.processSeriesTermFrequency(res, series)
+        ).catch(error => {
+            console.error(error);
+            this.error.emit(`could not load results: ${error.message}`);
+            return series;
         });
     }
 

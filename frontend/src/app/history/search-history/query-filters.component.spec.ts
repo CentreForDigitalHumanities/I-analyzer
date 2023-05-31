@@ -14,7 +14,7 @@ describe('QueryFiltersComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(QueryFiltersComponent);
     component = fixture.componentInstance;
-    component.queryModel = <any>{
+    component.queryModel = {
         queryText: 'testing',
         filters: []
     };

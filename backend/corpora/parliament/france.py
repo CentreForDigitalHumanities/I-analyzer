@@ -2,7 +2,7 @@ from glob import glob
 import logging
 from datetime import datetime
 
-from flask import current_app
+from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
@@ -15,12 +15,12 @@ class ParliamentFrance(Parliament, CSVCorpus):
     title = "People & Parliament (France 1881-2022)"
     description = "Speeches from the 3rd, 4th and 5th republic of France"
     min_date = datetime(year=1881, month=1, day=1)
-    data_directory = current_app.config['PP_FR_DATA']
-    es_index = current_app.config['PP_FR_INDEX']
-    image = current_app.config['PP_FR_IMAGE']
+    data_directory = settings.PP_FR_DATA
+    es_index = getattr(settings, 'PP_FR_INDEX', 'parliament-france')
+    image = 'france.jpeg'
     language = 'french'
     description_page = 'france.md'
-    word_model_path = current_app.config['PP_FR_WM']
+    word_model_path = getattr(settings, 'PP_FR_WM', None)
 
     field_entry = 'speech_id'
 

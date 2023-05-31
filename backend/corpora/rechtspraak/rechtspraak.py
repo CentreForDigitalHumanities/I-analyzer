@@ -8,7 +8,7 @@ from zipfile import ZipFile, BadZipFile
 
 from addcorpus import extract, filters
 from addcorpus.corpus import Field, XMLCorpus
-from flask import current_app
+from django.conf import settings
 
 
 logger = logging.getLogger('indexing')
@@ -33,10 +33,9 @@ class Rechtspraak(XMLCorpus):
     description = "Open data of (anonymised) court rulings of the Dutch judicial system"
     min_date = datetime(year=1900, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=6)
-    data_directory = current_app.config['RECHTSPRAAK_DATA']
-    es_index = current_app.config['RECHTSPRAAK_ES_INDEX']
-    es_doctype = current_app.config['RECHTSPRAAK_ES_DOCTYPE']
-    image = current_app.config['RECHTSPRAAK_IMAGE']
+    data_directory = settings.RECHTSPRAAK_DATA
+    es_index = getattr(settings, 'RECHTSPRAAK_ES_INDEX', 'rechtspraak')
+    image = 'rechtszaal.jpeg'
     toplevel_zip_file = 'OpenDataUitspraken.zip'
 
     tag_toplevel = 'open-rechtspraak'

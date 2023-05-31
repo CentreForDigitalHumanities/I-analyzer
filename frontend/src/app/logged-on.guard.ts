@@ -1,21 +1,34 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    CanActivate,
+    RouterStateSnapshot,
+} from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
-import { UserService } from './services/index';
 
 @Injectable()
 export class LoggedOnGuard implements CanActivate {
-    constructor(private router: Router, private userService: UserService) {
-    }
+    constructor(private authService: AuthService) {}
 
     canActivate(
         next: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot): Promise<boolean> {
-        return this.userService.getCurrentUser(true)
-            .then(user => !!user)
-            .catch(() => {
-                this.userService.showLogin(state.url);
-                return false;
-            });
+        state: RouterStateSnapshot
+    ): Observable<boolean> {
+        if (this.authService.getCurrentUser()) {
+            // A user is already present, no need to recheck
+            return of(true);
+        }
+        return this.authService.checkUser().pipe(
+            // In case no user is set, retry backend to obtain one
+            // Redirect to login page if not successful
+            map((userData) => !!userData),
+            catchError(() => {
+                this.authService.showLogin(state.url);
+                return of(false);
+            })
+        );
     }
 }
