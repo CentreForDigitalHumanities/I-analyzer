@@ -10,105 +10,75 @@ from es import es_index
 from users.models import CustomUser
 from addcorpus.models import Corpus
 
-_here = os.path.abspath(os.path.dirname(__file__))
+@pytest.fixture(scope='session')
+def mock_corpus():
+    return 'times'
 
 @pytest.fixture()
-def times_test_settings(settings):
-    settings.CORPORA = {
-        'times': os.path.join(_here, '../corpora/times/times.py')
-    }
-
-    settings.TIMES_DATA = os.path.join(_here, '../addcorpus/tests')
-    settings.TIMES_ES_INDEX = 'times-test'
-
-CORPUS_NAME = 'times'
-
-@pytest.fixture()
-def corpus_definition(times_test_settings):
-    corpus = load_corpus(CORPUS_NAME)
+def corpus_definition(mock_corpus):
+    corpus = load_corpus(mock_corpus)
     yield corpus
 
 
-@pytest.fixture()
-def es_forward_client(times_test_settings):
+@pytest.fixture(scope='module')
+def es_forward_client(es_client, mock_corpus):
     """
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
-    client = elasticsearch(CORPUS_NAME)
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
 
     # add data from mock corpus
-    corpus = load_corpus(CORPUS_NAME)
-    es_index.create(client, corpus, False, True, False)
-    es_index.populate(client, CORPUS_NAME, corpus)
+    corpus = load_corpus(mock_corpus)
+    es_index.create(es_client, corpus, False, True, False)
+    es_index.populate(es_client, mock_corpus, corpus)
 
-    client.index(index=corpus.es_index, document={'content': 'banana'})
+    es_client.index(index=corpus.es_index, document={'content': 'banana'})
 
     # ES is "near real time", so give it a second before we start searching the index
     sleep(1)
-    yield client
+    yield es_client
     # delete index when done
-    client.indices.delete(index='times-test')
+    es_client.indices.delete(index='times-test')
 
 @pytest.fixture()
-def es_index_client(times_test_settings):
+def es_index_client(es_client, mock_corpus):
     """
-    Create an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
+    After tests, removes any indices created for the mock corpus.
     """
-    client = elasticsearch('times')
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
 
-    yield client
+    yield es_client
     # delete indices when done
-    indices = client.indices.get(index='times-test*')
+    indices = es_client.indices.get(index='times-test*')
     for index in indices.keys():
-        client.indices.delete(index=index)
+        es_client.indices.delete(index=index)
 
 @pytest.fixture()
-def es_alias_client(times_test_settings):
+def es_alias_client(es_client, mock_corpus):
     """
     Create multiple indices with version numbers for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
-    client = elasticsearch('times')
-    # check if client is available, else skip test
-    try:
-        client.info()
-    except:
-        pytest.skip('Cannot connect to elasticsearch server')
-
     # add data from mock corpus
-    corpus = load_corpus('times')
-    es_index.create(client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
-    client.indices.create(index='times-test-2')
-    client.indices.create(index='times-test-bla-3')
+    corpus = load_corpus(mock_corpus)
+    es_index.create(es_client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
+    es_client.indices.create(index='times-test-2')
+    es_client.indices.create(index='times-test-bla-3')
 
-    yield client
+    yield es_client
     # delete index when done
-    indices = client.indices.get(index='times-test*')
+    indices = es_client.indices.get(index='times-test*')
     for index in indices.keys():
-        client.indices.delete(index=index)
+        es_client.indices.delete(index=index)
 
 @pytest.fixture()
-def times_user(db):
-    username = 'times-user'
-    password = 'secret'
+def times_user(auth_user, mock_corpus):
     group = Group.objects.create(name='times-access')
-    user = CustomUser.objects.create(username=username, password=password)
     load_all_corpora()
-    corpus = Corpus.objects.get(name='times')
+    corpus = Corpus.objects.get(name=mock_corpus)
     corpus.groups.add(group)
     corpus.save()
-    user.groups.add(group)
-    user.save()
-    return user
+    auth_user.groups.add(group)
+    auth_user.save()
+    yield auth_user
+    group.delete()

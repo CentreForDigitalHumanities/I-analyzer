@@ -3,10 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers import QuerySerializer
 from rest_framework.permissions import IsAuthenticated
-from ianalyzer.exceptions import NotImplemented
-from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.exceptions import APIException
 import logging
 from rest_framework.permissions import IsAuthenticated
+from api.utils import check_json_keys
 from celery import current_app as celery_app
 
 logger = logging.getLogger()
@@ -35,9 +35,7 @@ class TaskStatusView(APIView):
         # this a POST request because a list of requested IDs can make
         # the url too long
 
-        if 'task_ids' not in request.data:
-            raise ValidationError(detail='no task ids specified')
-
+        check_json_keys(request, ['task_ids'])
         task_ids = request.data['task_ids']
 
         results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
@@ -69,9 +67,7 @@ class AbortTasksView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        if 'task_ids' not in request.data:
-            raise ValidationError(detail='no task ids specified')
-
+        check_json_keys(request, ['task_ids'])
         task_ids = request.data['task_ids']
         try:
             celery_app.control.revoke(task_ids, terminate=True)

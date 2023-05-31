@@ -81,7 +81,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         showLoading(
             this.isLoading,
             this.visualizationService.getWordcloudData(
-                this.visualizedField.name, this.queryModel, this.corpus.name, this.batchSize
+                this.visualizedField.name, this.queryModel, this.corpus, this.batchSize
             ).then(this.onDataLoaded.bind(this)).catch(this.emitError.bind(this))
         );
     }

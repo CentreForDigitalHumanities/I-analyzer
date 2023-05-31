@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
     AggregateQueryFeedback, EsSearchClause, BooleanQuery,

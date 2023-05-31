@@ -23,10 +23,10 @@ export class VisualizationService {
     }
 
 
-    public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: string, size: number):
+    public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
         Promise<AggregateResult[]> {
         const esQuery = queryModel.toEsQuery();
-        return this.apiService.wordcloud({es_query: esQuery, corpus, field: fieldName, size});
+        return this.apiService.wordcloud({es_query: esQuery, corpus: corpus.name, field: fieldName, size});
     }
 
     public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<string[]> {
@@ -80,11 +80,11 @@ export class VisualizationService {
         return this.apiService.getDateTermFrequency(params);
     }
 
-    getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<TaskResult> {
+    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramParameters): Promise<TaskResult> {
         const esQuery = queryModel.toEsQuery();
         return this.apiService.ngramTasks({
             es_query: esQuery,
-            corpus_name: corpusName,
+            corpus_name: corpus.name,
             field,
             ngram_size: params.size,
             term_position: params.positions,

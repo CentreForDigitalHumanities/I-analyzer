@@ -44,7 +44,7 @@ The documentation includes a [recipe for installing the prerequisites on Debian 
 
 ## First-time setup
 
-Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml and libxmlsec1-dev is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
+For the SAML integration, the following libraries are required: xmlsec, python3-dev, libssl-dev and libsasl2-dev. This has been tested on Unix systems, but installation may be more difficult on Windows. As the dependencies on `xmlsec` are only called in the `settings_saml` module, however, they should not affect running the application when not explicitly using this settings module.
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
@@ -117,7 +117,7 @@ See the documentation for more information about [indexing on the server](./docu
 1. Start your local elasticsearch server. If you installed from .zip or .tar.gz, this can be done by running `{path your your elasticsearch folder}/bin/elasticsearch`
 2. Activate your python environment. Start the backend server with `yarn start-back`. This creates an instance of the Django server at `127.0.0.1:8000`.
 3. (optional) If you want to use celery, start your local redis server by running `redis-server` in a separate terminal.
-4. (optional) If you want to use celery, activate your python environment. From the backend folder, run `celery -A ianalyzer.celery_app worker`. Celery is used for long downloads and the word cloud and ngrams visualisations.
+4. (optional) If you want to use celery, activate your python environment. Run `yarn celery worker`. Celery is used for long downloads and the word cloud and ngrams visualisations.
 5. (optional) If you want to use email functionality, start your local email server.
 6. Start the frontend by running `yarn start-front`.
 

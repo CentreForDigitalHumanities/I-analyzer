@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as _ from 'lodash';
-import { mockField, mockCorpus3, mockField2 } from '../../mock-data/corpus';
+import { mockField, mockField2, mockCorpus3 } from '../../mock-data/corpus';
 import { makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification } from './es-query';
 
 describe('es-query utils', () => {

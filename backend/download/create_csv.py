@@ -7,7 +7,6 @@ from django.conf import settings
 
 from visualization.term_frequency import parse_datestring
 
-
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
     if not os.path.isdir(settings.CSV_FILES_PATH):
         os.mkdir(settings.CSV_FILES_PATH)
@@ -53,15 +52,13 @@ def search_results_csv(results, fields, query):
 
     filename = create_filename(query)
     field_set.discard('context')
-    csv.register_dialect('resultsDialect', delimiter=';', quotechar='"',
-        quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
     fieldnames = sorted(field_set)
     filepath = write_file(filename, fieldnames, entries, dialect = 'resultsDialect')
     return filepath
 
 
 def term_frequency_csv(queries, results, field_name, unit = None):
-    has_token_counts = results[0].get('token_count', None)
+    has_token_counts = results[0].get('token_count', None) != None
     query_column = ['Query'] if len(queries) > 1 else []
     freq_columns = ['Term frequency', 'Relative term frequency (by # documents)', 'Total documents']
     token_columns = ['Relative term frequency (by # words)', 'Total word count'] if has_token_counts else []
