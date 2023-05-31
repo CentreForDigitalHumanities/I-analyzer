@@ -3,19 +3,21 @@ import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField,
+import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField, SearchFilterData,
+    SearchFilter,
     FoundDocument} from '../models/index';
-import { CorpusService, DialogService, ParamService, UserService } from '../services/index';
+import { CorpusService, DialogService, ParamService, SearchService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { makeContextParams } from '../utils/document-context';
+import { AuthService } from '../services/auth.service';
 
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
-    styleUrls: ['./search.component.scss']
+    styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent extends ParamDirective {
-    @ViewChild('searchSection', {static: false})
+    @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
 
     public isScrolledDown: boolean;
@@ -51,19 +53,22 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
-    constructor(private corpusService: CorpusService,
+    constructor(
+        private authService: AuthService,
+        private corpusService: CorpusService,
         private paramService: ParamService,
-        private userService: UserService,
         private dialogService: DialogService,
         route: ActivatedRoute,
-        router: Router) {
-            super(route, router);
-        }
+        router: Router
+    ) {
+        super(route, router);
+    }
 
     async initialize(): Promise<void> {
         this.tabIndex = 0;
-        this.user = await this.userService.getCurrentUser();
-        this.corpusSubscription = this.corpusService.currentCorpus.filter( corpus => !!corpus).subscribe((corpus) => {
+        this.user = await this.authService.getCurrentUserPromise();
+        this.corpusSubscription = this.corpusService.currentCorpus
+            .filter((corpus) => !!corpus).subscribe((corpus) => {
             this.setCorpus(corpus);
         });
     }
@@ -87,7 +92,8 @@ export class SearchComponent extends ParamDirective {
     @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y === 0;
+        this.isScrolledDown =
+            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     /**

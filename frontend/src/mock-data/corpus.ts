@@ -41,7 +41,7 @@ export const mockField2: CorpusField = {
     searchable: true,
     downloadable: true,
     searchFilter: null
-}
+};
 
 export const mockField3: CorpusField = {
     name: 'ordering',
@@ -55,13 +55,12 @@ export const mockField3: CorpusField = {
     searchable: false,
     downloadable: true,
     searchFilter: null
-}
+};
 
 export const mockCorpus: Corpus = {
     name: 'test1',
     serverName: 'default',
     index: 'test1',
-    doctype: 'article',
     title: 'Test corpus',
     description: 'This corpus is for mocking',
     minDate: new Date(),
@@ -77,7 +76,6 @@ export const mockCorpus2: Corpus = {
     name: 'test2',
     serverName: 'default',
     index: 'test2',
-    doctype: 'article',
     title: 'Test corpus 2',
     description: 'This corpus is for mocking',
     minDate: new Date(),
@@ -87,7 +85,7 @@ export const mockCorpus2: Corpus = {
     allow_image_download: false,
     word_models_present: false,
     fields: [mockField2]
-}
+};
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);

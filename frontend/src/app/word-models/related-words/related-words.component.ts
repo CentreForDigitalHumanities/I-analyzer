@@ -52,10 +52,6 @@ export class RelatedWordsComponent implements OnChanges {
             .catch(this.onError.bind(this));
     }
 
-    getTimeData(time: string): Promise<WordSimilarity[]> {
-        return this.wordModelsService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time, this.neighbours);
-    }
-
     onError(error) {
         this.totalData = undefined;
         this.zoomedInData = undefined;

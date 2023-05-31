@@ -1,7 +1,6 @@
 from datetime import datetime
 from glob import glob
-import logging
-from flask import current_app
+from django.conf import settings
 import os
 import re
 
@@ -38,8 +37,8 @@ class ParliamentDenmarkNew(Parliament, CSVCorpus):
     description = "Speeches from the Folketing"
     min_date = datetime(year=2009, month=1, day=1)
     max_date = datetime(year=2016, month=12, day=31)
-    data_directory = current_app.config['PP_DENMARK_NEW_DATA']
-    es_index = current_app.config['PP_DENMARK_NEW_INDEX']
+    data_directory = settings.PP_DENMARK_NEW_DATA
+    es_index = getattr(settings, 'PP_DENMARK_NEW_INDEX', 'parliament-denmark-new')
     image = 'denmark.jpg'
     description_page = 'denmark-new.md'
     language = 'danish'

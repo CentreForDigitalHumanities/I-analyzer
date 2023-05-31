@@ -1,6 +1,6 @@
 export class visualizationServiceMock {
     public async getRelatedWords() {}
     public async getNgramTasks() {
-        return Promise.resolve({success: true, task_ids: ['123']});
+        return Promise.resolve({task_ids: ['ngram-task-id']});
     }
 }

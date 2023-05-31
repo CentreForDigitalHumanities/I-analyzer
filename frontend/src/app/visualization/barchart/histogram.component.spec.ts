@@ -10,7 +10,6 @@ const MOCK_CORPUS: Corpus = {
     serverName: 'bogus',
     title: 'Mock Corpus',
     description: 'corpus for testing',
-    doctype: 'article',
     index: 'mock-corpus',
     image: 'nothing',
     minDate: new Date('1-1-1800'),

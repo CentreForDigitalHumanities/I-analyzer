@@ -49,7 +49,7 @@ def test_stopwords(clean_nltk_data_directory):
         for word in case['stopwords']:
             assert word in stopwords
 
-def test_no_nltk_download_in_serialization(test_app, clean_nltk_data_directory):
+def test_no_nltk_download_in_serialization(parliament_corpora_settings, clean_nltk_data_directory):
     """
     Test that corpus.serialize() does not retrieve the nltk data
     """

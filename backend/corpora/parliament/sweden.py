@@ -8,7 +8,7 @@ import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 import re
 
-from flask import current_app
+from django.conf import settings
 
 full_date_pattern = r'\d{4}-\d{2}-\d{2}'
 partial_date_pattern = r'\d{4}'
@@ -44,8 +44,8 @@ class ParliamentSweden(Parliament, CSVCorpus):
     title = 'People and Parliament (Sweden 1920-2022)'
     description = 'Speeches from the Riksdag'
     min_date = datetime(year=1920, month=1, day=1)
-    data_directory = current_app.config['PP_SWEDEN_DATA']
-    es_index = current_app.config['PP_SWEDEN_INDEX']
+    data_directory = settings.PP_SWEDEN_DATA
+    es_index = getattr(settings, 'PP_SWEDEN_INDEX', 'parliament-sweden')
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
