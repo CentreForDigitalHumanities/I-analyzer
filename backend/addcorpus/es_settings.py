@@ -1,6 +1,6 @@
 import nltk
 import os
-from addcorpus.constants import LANGUAGES
+from langcodes import Language
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
@@ -37,8 +37,7 @@ def get_language_key(language_code):
     E.g. 'en' -> 'english'
     '''
 
-    name = next((name for code, name in LANGUAGES if code == language_code), language_code)
-    return name.lower()
+    return Language.make(language_code).display_name().lower()
 
 def get_nltk_stopwords(language_code):
     nltk.download('stopwords', NLTK_DATA_PATH)

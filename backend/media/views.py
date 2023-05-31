@@ -1,13 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound, ParseError, APIException
 import logging
 from rest_framework.permissions import IsAuthenticated
 from addcorpus.permissions import corpus_name_from_request, CorpusAccessPermission
 from addcorpus.load_corpus import load_corpus
 from django.http.response import FileResponse
 import os
+from api.utils import check_json_keys
 
 logger = logging.getLogger()
 
@@ -22,7 +23,7 @@ class GetMediaView(APIView):
         corpus_name = corpus_name_from_request(request)
 
         if not 'image_path' in request.query_params:
-            raise ValidationError(detail='No image path provided')
+            raise ParseError(detail='No image path provided')
 
         image_path = request.query_params['image_path']
         corpus = load_corpus(corpus_name)
@@ -33,7 +34,7 @@ class GetMediaView(APIView):
                 out = corpus.get_media(request.query_params)
             except Exception as e:
                 logger.error(e)
-                raise ValidationError()
+                raise APIException()
             if not out:
                 raise NotFound()
 
@@ -57,8 +58,7 @@ class MediaMetadataView(APIView):
     def post(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)
         corpus = load_corpus(corpus_name)
-        if not 'document' in request.data:
-            raise ValidationError(detail='no document specified')
+        check_json_keys(request, ['document'])
         data = corpus.request_media(request.data['document'], corpus_name)
         logger.info(data)
         if not data or 'media' not in data or len(data['media'])==0:

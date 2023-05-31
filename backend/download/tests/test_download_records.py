@@ -7,8 +7,8 @@ match_all = {
     }
 }
 
-def test_download_records(corpus_user, mock_corpus):
-    assert list(corpus_user.downloads.all()) == []
+def test_download_records(admin_user, mock_corpus, mock_corpora_in_db):
+    assert list(admin_user.downloads.all()) == []
 
     parameters = {
         'es_query': match_all,
@@ -18,7 +18,7 @@ def test_download_records(corpus_user, mock_corpus):
         download_type='search_results',
         corpus=Corpus.objects.get(name=mock_corpus),
         parameters=parameters,
-        user=corpus_user
+        user=admin_user
     )
 
     assert download.filename == None
@@ -29,7 +29,7 @@ def test_download_records(corpus_user, mock_corpus):
     assert download.filename == filename
     assert download.is_done
     assert download.status == 'done'
-    assert list(corpus_user.downloads.all()) == [download]
+    assert list(admin_user.downloads.all()) == [download]
 
     # different download, mark as failed
     parameters = {
@@ -40,9 +40,9 @@ def test_download_records(corpus_user, mock_corpus):
         download_type='search_results',
         corpus=Corpus.objects.get(name=mock_corpus),
         parameters=parameters,
-        user=corpus_user
+        user=admin_user
     )
 
     download_2.complete()
     assert download_2.status == 'error'
-    assert list(corpus_user.downloads.all()) == [download, download_2]
+    assert list(admin_user.downloads.all()) == [download, download_2]

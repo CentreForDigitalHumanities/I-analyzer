@@ -16,6 +16,8 @@ class MultilingualMockCorpus(CSVCorpus):
     es_index = 'ianalyzer-mixed-language-mock-corpus'
     image = 'test.jpeg'
     data_directory = 'bogus'
+    languages = ['sv', 'de']
+    category = 'book'
 
     def sources(self, start=min_date, end=max_date):
         for csv_file in os.listdir(os.path.join(here, 'sources_mixed_language')):
@@ -46,5 +48,7 @@ SPECS = {
     'total_docs': 2,
     'total_words': 176,
     'has_token_counts': False,
-    'fields': ['content', 'language']
+    'fields': ['content', 'language'],
+    'example_query': 'sprache',
+    'content_field': 'content',
 }

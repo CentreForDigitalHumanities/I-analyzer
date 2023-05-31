@@ -15,6 +15,6 @@ export class User {
         public name,
         public isAdmin: boolean,
         public downloadLimit: number = 0, // The download limit for this user, will be 0 if there is no limit.
-        public isSolisLogin: boolean
+        public isSamlLogin: boolean
     ) {}
 }

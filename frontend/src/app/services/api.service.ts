@@ -211,11 +211,9 @@ export class ApiService extends Resource {
         return this.http.get<QueryDb[]>('/api/search_history/').toPromise();
     }
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/download/',
-    })
-    public downloads: ResourceMethod<void, Download[]>;
+    public downloads(): Promise<Download[]> {
+        return this.http.get<Download[]>('/api/download/').toPromise();
+    }
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

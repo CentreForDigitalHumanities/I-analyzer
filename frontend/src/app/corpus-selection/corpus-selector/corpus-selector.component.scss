@@ -39,14 +39,13 @@
 
 
 .corpus-action {
-    border: 1px solid $contrast-primary-color;
+    border-color: $highlight-color;
     color: $text-primary-color;
-    cursor: pointer;
-    text-decoration: none;
     background-color: $contrast-primary-color;
 
     &:hover {
-        color: $text-primary-color;
+        border-color: $text-primary-color;
+            background-color: $contrast-primary-accent-color;
     }
 }
 

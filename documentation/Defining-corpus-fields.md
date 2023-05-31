@@ -4,16 +4,20 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes `backend/addcorpus/extract.py`.
+Various classes are defined in `backend/addcorpus/extract.py`.
 
 - The extractors `XML`, `HTML` and `CSV` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
 - The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
 - The `Constant` extractor can be used to define a constant value.
 - The `Choice` and `Combined`, and `Backup` extractors can be used to combine multiple extractors.
 
+A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is falsy.
+
 ## Elasticsearch mapping
 
 Each field should specify its `es_mapping`, a dict that is passed on to elasticsearch to specify how it is indexed. See the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html). For common mappings, use the functions defined in [es_mappings.py](../backend/addcorpus/es_mappings.py)
+
+The property `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
 
 ### Multifields
 
@@ -24,10 +28,11 @@ The one way in which multifields _are_ used is to allow different analyzers on t
 - `*.clean`: uses a language-specific analyzer to filter stopwords.
 - `*.stemmed`: uses a language-specific analyzer to filter stopwords and stem words.
 - `*.length`: specifies the token count of the text, which is useful for aggregations.
+- `*.text`: a field with text mapping. Can be added to a keyword field to support full-text search in the field.
 
 If you add fields with these names to the `es_mapping` of a text field, it enables some features in visualisations. If you add a multifield with these names that does not contain the expected type of data, some visualisations may not work. Do not do this.
 
-The property `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
+All of these multifields can be created through the functions in `es_mappings.py`.
 
 ## Interface parameters
 

@@ -4,6 +4,10 @@ import csv
 from download import convert_csv
 from download.tests.test_csv_results import result_csv_with_highlights, term_frequency_file
 
+@pytest.fixture(params=['utf-8', 'utf-16'])
+def file_encoding(request):
+    return request.param
+
 def assert_content_matches(file_1, encoding_1, file_2, encoding_2):
     '''Assert that the content of a file is unchanged after saving it with different encoding'''
     with open(file_1, 'r', encoding=encoding_1) as f:
@@ -14,25 +18,22 @@ def assert_content_matches(file_1, encoding_1, file_2, encoding_2):
 
     assert contents_1 == contents_2
 
-@pytest.mark.parametrize('target_encoding', ['utf-8', 'utf-16'])
-def test_encoding_conversion_results(csv_directory, mock_corpus, select_multilingual_mock_corpus, all_results_csv, target_encoding):
-    converted = convert_csv.convert_csv(csv_directory, all_results_csv, 'search_results', encoding = target_encoding, )
+def test_encoding_conversion_results(csv_directory, mock_corpus, select_multilingual_mock_corpus, all_results_csv, file_encoding):
+    converted = convert_csv.convert_csv(csv_directory, all_results_csv, 'search_results', encoding = file_encoding)
     converted_path = os.path.join(csv_directory, converted)
-    assert_content_matches(all_results_csv, 'utf-8', converted_path, target_encoding)
+    assert_content_matches(all_results_csv, 'utf-8', converted_path, file_encoding)
 
-def test_conversion_with_highlights(csv_directory, result_csv_with_highlights):
-    target_encoding = 'utf-16'
-    converted = convert_csv.convert_csv(csv_directory, result_csv_with_highlights, 'search_results', encoding = target_encoding)
+def test_conversion_with_highlights(csv_directory, result_csv_with_highlights, file_encoding):
+    converted = convert_csv.convert_csv(csv_directory, result_csv_with_highlights, 'search_results', encoding = file_encoding)
     converted_path = os.path.join(csv_directory, converted)
 
-    assert_content_matches(result_csv_with_highlights, 'utf-8', converted_path, target_encoding)
+    assert_content_matches(result_csv_with_highlights, 'utf-8', converted_path, file_encoding)
 
-@pytest.mark.parametrize('target_encoding', ['utf-8', 'utf-16'])
-def test_encoding_conversion_term_frequency(csv_directory, term_frequency_file, target_encoding):
-    converted = convert_csv.convert_csv(csv_directory, term_frequency_file, 'date_term_frequency', encoding = target_encoding)
+def test_encoding_conversion_term_frequency(csv_directory, term_frequency_file, file_encoding):
+    converted = convert_csv.convert_csv(csv_directory, term_frequency_file, 'date_term_frequency', encoding = file_encoding)
     converted_path = os.path.join(csv_directory, converted)
 
-    assert_content_matches(term_frequency_file, 'utf-8', converted_path, target_encoding)
+    assert_content_matches(term_frequency_file, 'utf-8', converted_path, file_encoding)
 
 wide_format_expected_data = [
     {
