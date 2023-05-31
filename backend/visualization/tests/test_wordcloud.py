@@ -84,7 +84,7 @@ def test_wordcloud(mock_corpus, select_small_mock_corpus, index_mock_corpus):
         assert match
         assert doc_count == match['doc_count']
 
-def test_wordcloud_filtered(mock_corpus, select_small_mock_corpus, test_es_client, index_mock_corpus):
+def test_wordcloud_filtered(mock_corpus, select_small_mock_corpus, es_client, index_mock_corpus):
     """Test the word cloud on a query with date filter"""
 
     filtered_query = make_filtered_query()
@@ -124,7 +124,7 @@ def test_wordcloud_filtered(mock_corpus, select_small_mock_corpus, test_es_clien
         corpus = mock_corpus,
         query_model = filtered_query,
         size = 10,
-        client = test_es_client
+        client = es_client
     )
 
     documents = search.hits(result)

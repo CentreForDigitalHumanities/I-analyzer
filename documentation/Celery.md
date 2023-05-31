@@ -7,7 +7,6 @@ The backend uses [celery](https://docs.celeryq.dev/en/v5.2.7/) for task scheduli
 Celery is used for
 - Search results downloads with more than 10.000 documents
 - The term frequency visualisation
-- The wordcloud visualisation
 - The ngram visualisation
 
 ## Running celery
@@ -25,33 +24,52 @@ CELERY_BROKER_URL='redis://{host}:{port}/{db_number}'
 CELERY_BACKEND='redis://{host}:{port}/{db_number}'
 ```
 
-It is possible to configure your environment with a different celery backend, but not recommended.
+It is possible to configure your environment with a different celery backend or broker, but not recommended. (While different backends should work the same, it is possible for bugs to occur in only some implementations.)
 
 ### Celery worker
 
-When your redis server is running, start a celery worker. Activate your python environment and navigate to the backend directory.
-
-Run
+When your redis server is running, start a celery worker. Activate your python environment and run:
 
 ```bash
-celery -A ianalyzer.celery_app worker
+cd backend
+celery -A ianalyzer worker
+```
+
+or the shorthand:
+
+```bash
+yarn celery worker
 ```
 
 ### Flower
 
-You can use [flower](https://flower.readthedocs.io/) to monitor your tasks and workers. To run flower, open a new terminal, activate your python environment, navigate to the backend and run
+You can use [flower](https://flower.readthedocs.io/) to monitor your tasks and workers. To run flower, open a new terminal, activate your python environment and run
 
 ```bash
-celery -A ianalyzer.celery_app flower
+cd backend
+celery -A ianalyzer flower
+```
+
+or
+
+```bash
+yarn celery flower
 ```
 
 Then open `localhost:5555` in your browser to see the flower interface.
 
 ## Developing with celery
 
-Some tips:
-
-- We currently do not have a setup to write unit tests that use celery. Make sure that your underlying functions are properly tested, and the tasks themselves do not contain complicated logic.
-- The arguments and outputs for celery tasks must be JSON-serialisable. For example, a task function can have a user ID string as an argument, but not a `User` object.
+- The arguments and outputs for celery tasks must be JSON-serialisable. For example, a task function can have a user ID string as an argument, but not a `CustomUser` object.
 - Use `group` to run tasks in parallel and `chain` to run tasks in series.
 - You can use flower (see above) for an overview of your celery tasks. Note that groups and chains are not tasks themselves, and will not show up as tasks on Flower.
+- For easier debugging and testing, keep your tasks simple and outfactor complicated functionality to 'normal' functions.
+
+### Unit tests
+
+See the [celery documentation on testing with pytest](https://docs.celeryq.dev/en/stable/userguide/testing.html#pytest).
+
+The ultra-short version:
+- If your code will start a celery task, you will need the `celery_worker` fixture.
+- If an asynchronous process uses the database, the unit test should use the `transactional_db` fixture.
+- If you want to test the output of a task function, you usually do not need parallel processing. Use `result = task.apply().get()` to run the task synchronously.

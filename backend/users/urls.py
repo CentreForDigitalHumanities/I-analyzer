@@ -1,5 +1,6 @@
-from dj_rest_auth.registration.views import VerifyEmailView
 from django.urls import include, path, re_path
+from .views import redirect_confirm, KeyInfoView, SamlLogoutView
+from dj_rest_auth.registration.views import VerifyEmailView
 
 from .views import KeyInfoView, redirect_confirm, redirect_reset
 
@@ -16,5 +17,6 @@ urlpatterns = [
     # generic routes
     path('', include('dj_rest_auth.urls')),
     path('registration/', include('dj_rest_auth.registration.urls')),
-
+    path('saml2/ls/post', SamlLogoutView.as_view()),
+    path('saml2/', include('djangosaml2.urls')),
 ]

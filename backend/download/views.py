@@ -1,59 +1,64 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
+import logging
+import os
+
+from addcorpus.models import Corpus
+from addcorpus.permissions import (CorpusAccessPermission,
+                                   corpus_name_from_request)
+from django.conf import settings
+from django.http.response import FileResponse
+from download import convert_csv, tasks
+from download.models import Download
+from download.serializers import DownloadSerializer
+from es import download as es_download
+from rest_framework.exceptions import (APIException, NotFound, ParseError,
+                                       PermissionDenied)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from ianalyzer.exceptions import NotImplemented
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from api.utils import check_json_keys
+
+logger = logging.getLogger()
+
+def send_csv_file(directory, filename, download_type, encoding, format=None):
+    '''
+    Perform final formatting and send a CSV file as a FileResponse
+    '''
+    converted_filename = convert_csv.convert_csv(
+        directory, filename, download_type, encoding, format)
+    path = os.path.join(directory, converted_filename)
+    return FileResponse(open(path, 'rb'), filename=filename, as_attachment=True)
 
 class ResultsDownloadView(APIView):
     '''
-    Download search results up to 10.000 documents
+    Download search results up to 1.000 documents
     '''
+
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
+        check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
+        max_size = 1000
+        size = request.data.get('size', max_size)
 
-        # TODO: download view
+        if size > max_size:
+            raise ParseError(detail='Download failed: too many documents requested')
 
-        # error_response = make_response("", 400)
-        # error_response.headers['message'] = "Download failed: "
-        # if not request.json:
-        #     error_response.headers.message += 'missing request body.'
-        #     return error_response
-        # elif request.mimetype != 'application/json':
-        #     error_response.headers.message += 'unsupported mime type.'
-        #     return error_response
-        # elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route', 'encoding']):
-        #     error_response.headers['message'] += 'missing arguments.'
-        #     return error_response
-        # elif request.json['size']>1000:
-        #     error_response.headers['message'] += 'too many documents requested.'
-        #     return error_response
-        # else:
-        #     error_response = make_response("", 500)
-        #     try:
-        #         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        #         csv_path = tasks.make_csv(search_results, request.json)
-        #         directory, filename = os.path.split(csv_path)
-        #         converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.json['encoding'])
-        #         csv_file = os.path.join(directory, converted_filename)
-        #     except Exception as e:
-        #         logger.error(e)
-        #         error_response.headers['message'] += 'Could not generate csv file'
-        #         return error_response
-
-        #     if not os.path.isabs(csv_file):
-        #         error_response.headers['message'] += 'csv filepath is not absolute.'
-        #         return error_response
-
-        #     if not csv_file:
-        #         error_response.headers.message += 'Could not create csv file.'
-        #         return error_response
-
-        #     try:
-        #         response = make_response(send_file(csv_file, mimetype='text/csv'))
-        #         response.headers['filename'] = split(csv_file)[1]
-        #         return response
-        #     except:
-        #         error_response.headers['message'] += 'Could not send file to client'
-        #         return error_response
+        try:
+            corpus_name = corpus_name_from_request(request)
+            corpus = Corpus.objects.get(name=corpus_name)
+            search_results = es_download.normal_search(
+                corpus_name, request.data['es_query'], request.data['size'])
+            csv_path = tasks.make_csv(search_results, request.data)
+            directory, filename = os.path.split(csv_path)
+            # Create download for download history
+            download = Download.objects.create(
+                download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
+            download.complete(filename=filename)
+            return send_csv_file(directory, filename, 'search_results', request.data['encoding'])
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail = 'Download failed: could not generate csv file')
 
 
 class ResultsDownloadTaskView(APIView):
@@ -62,33 +67,22 @@ class ResultsDownloadTaskView(APIView):
     over 10.000 documents
     '''
 
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
+        check_json_keys(request, ['es_query', 'corpus', 'fields', 'route'])
 
-        # TODO: download schedule view
+        if not request.user.email:
+            raise APIException(detail='Download failed: user email not known')
 
-        # error_response = make_response("", 400)
-        # error_response.headers['message'] = "Download failed: "
-        # if not request.json:
-        #     error_response.headers.message += 'missing request body.'
-        #     return error_response
-        # elif request.mimetype != 'application/json':
-        #     error_response.headers.message += 'unsupported mime type.'
-        #     return error_response
-        # elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
-        #     error_response.headers['message'] += 'missing arguments.'
-        #     return error_response
-        # elif not current_user.email:
-        #     error_response.headers['message'] += 'user email not known.'
-        #     return error_response
-
-        # # Celery task
-        # task_chain = tasks.download_search_results(request.json, current_user)
-        # if task_chain:
-        #     result = task_chain.apply_async()
-        #     return jsonify({'success': True, 'task_ids': [result.id, result.parent.id]})
-        # else:
-        #     return jsonify({'success': False, 'message': 'Could not create csv file.'})
+        # Celery task
+        try:
+            task_chain = tasks.download_search_results(request.data, request.user)
+            result = task_chain.apply_async()
+            return Response({'task_ids': [result.id, result.parent.id]})
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='Download failed: could not generate csv file')
 
 
 class FullDataDownloadTaskView(APIView):
@@ -97,43 +91,35 @@ class FullDataDownloadTaskView(APIView):
     for a visualisation.
     '''
 
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
+        check_json_keys(request, ['visualization', 'parameters', 'corpus'])
 
-        # TODO: download schedule view
+        visualization_type = request.data['visualization']
+        known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
+        if visualization_type not in known_visualisations:
+            raise ParseError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
-        # if not request.json:
-        #     abort(400)
-
-        # for key in ['visualization', 'parameters', 'corpus']:
-        #     if not key in request.json:
-        #         abort(400)
-
-        # visualization_type = request.json['visualization']
-        # known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
-
-        # if visualization_type not in known_visualisations:
-        #     abort(400, 'unknown visualization type "{}"'.format(visualization_type))
-
-        # task_chain = tasks.download_full_data(request.json, current_user)
-        # task_chain.apply_async()
-
-        # return jsonify({'success': True, 'task_ids': [task_chain.id]})
+        try:
+            task_chain = tasks.download_full_data(request.data, request.user)
+            result = task_chain.apply_async()
+            return Response({'task_ids': [result.id]})
+        except Exception as e:
+            logger.error(e)
+            raise APIException('Download failed: server error')
 
 
-
-class DownloadHistoryView(APIView):
+class DownloadHistoryViewset(ModelViewSet):
     '''
     Retrieve list of all the user's downloads
     '''
 
-    def get(self, request, *args, **kwargs,):
-        raise NotImplemented
+    serializer_class = DownloadSerializer
+    permission_classes = [IsAuthenticated]
 
-        # TODO: download history
-
-        # result = [d.serialize() for d in current_user.downloads]
-        # return jsonify(result)
+    def get_queryset(self):
+        return self.request.user.downloads.all()
 
 
 class FileDownloadView(APIView):
@@ -141,18 +127,20 @@ class FileDownloadView(APIView):
     Retrieve a CSV file saved in your download history
     '''
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
-        raise NotImplemented
+        id = kwargs.get('id')
+        encoding = request.query_params.get('encoding', 'utf-8')
+        format = request.query_params.get('table_format', None)
 
-        # TODO: file download
+        record = Download.objects.get(id=id)
+        if not record.user == request.user:
+            raise PermissionDenied(detail='User has no access to this download')
 
-        # encoding = request.args.get('encoding', 'utf-8')
-        # format = request.args.get('format', None)
+        directory = settings.CSV_FILES_PATH
 
-        # record = models.Download.query.get(id)
-        # directory, filename = os.path.split(record.filename)
-        # download_type = record.download_type
+        if not os.path.isfile(os.path.join(directory, record.filename)):
+            raise NotFound(detail='File does not exist')
 
-        # filename = convert_csv.convert_csv(directory, filename, download_type, encoding, format)
-
-        # return send_from_directory(directory, filename)
+        return send_csv_file(directory, record.filename, record.download_type, encoding, format)

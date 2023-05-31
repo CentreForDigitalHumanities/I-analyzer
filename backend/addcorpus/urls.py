@@ -3,6 +3,7 @@ from addcorpus.views import *
 
 urlpatterns = [
     path('', CorpusView.as_view()),
-    path('image/<str:corpus>/<str:image_name>', CorpusImageView.as_view()),
-    path('documentation/<str:corpus>/<str:documentation_file>', CorpusDocumentationView.as_view())
+    path('image/<str:corpus>/<str:filename>', CorpusImageView.as_view()),
+    path('documentation/<str:corpus>/<str:filename>', CorpusDocumentationView.as_view()),
+    path('document/<str:corpus>/<str:filename>', CorpusDocumentView.as_view())
 ]
