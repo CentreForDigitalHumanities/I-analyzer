@@ -1,7 +1,5 @@
 {
   "name": "frontend",
-  "version": "3.1.0",
-  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "npm run serve & npm run test",
