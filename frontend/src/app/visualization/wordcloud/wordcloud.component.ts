@@ -70,7 +70,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     loadData(size: number = null) {
         this.isLoading.next(true);
-        this.visualizationService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
+        this.visualizationService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus, size).then(result => {
             this.significantText = result;
             this.onDataLoaded();
         })
@@ -81,7 +81,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         this.isLoading.next(true);
         const queryModel = this.queryModel;
         if (queryModel) {
-            this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(response => {
+            this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus).then(response => {
                 this.tasksToCancel = response;
                 this.apiService.pollTasks<AggregateResult[]>(response).then( outcome => {
                     const result = outcome[0];
