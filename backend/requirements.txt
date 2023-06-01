@@ -55,7 +55,7 @@ defusedxml==0.7.1
     #   python3-openid
 dj-rest-auth[with_social]==2.2.7
     # via -r requirements.in
-django==4.1.5
+django==4.1.9
     # via
     #   -r requirements.in
     #   dj-rest-auth
