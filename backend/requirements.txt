@@ -202,7 +202,7 @@ smart-open==6.3.0
     # via gensim
 soupsieve==2.3.2.post1
     # via beautifulsoup4
-sqlparse==0.4.3
+sqlparse==0.4.4
     # via django
 textdistance==4.5.0
     # via -r requirements.in
