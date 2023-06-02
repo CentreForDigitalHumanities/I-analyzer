@@ -1,7 +1,6 @@
 import pytest
 import os
 from django.contrib.auth.models import Group
-from addcorpus.load_corpus import load_all_corpora
 from addcorpus.models import Corpus
 
 @pytest.fixture()
@@ -19,9 +18,3 @@ here = os.path.abspath(os.path.dirname(__file__))
 @pytest.fixture()
 def mock_corpus(db):
     return 'mock-csv-corpus'
-
-@pytest.fixture()
-def mock_corpus_user(auth_user, group_with_access):
-    auth_user.groups.add(group_with_access)
-    auth_user.save()
-    return auth_user

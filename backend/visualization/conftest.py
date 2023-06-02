@@ -66,21 +66,6 @@ def index_mock_corpus(mock_corpus, es_client):
     yield mock_corpus
     clear_test_corpus(es_client, mock_corpus)
 
-@pytest.fixture()
-def corpus_user(transactional_db, mock_corpus): # use transactional_db instead of db for async task support
-    '''Make a user with access to the mock corpus'''
-
-    username = 'mock-user'
-    password = 'secret'
-    user = CustomUser.objects.create(username=username, password=password, is_superuser=True)
-    load_all_corpora()
-    return user
-
-@pytest.fixture()
-def authenticated_client(client, corpus_user):
-    client.force_login(corpus_user)
-    return client
-
 @pytest.fixture
 def basic_query():
     return {

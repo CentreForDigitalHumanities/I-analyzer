@@ -5,7 +5,7 @@ from os.path import abspath, dirname, join
 
 here = abspath(dirname(__file__))
 
-class MockCorpus(Corpus):
+class WordmodelsMockCorpus(Corpus):
     title = "Mock corpus with SVD_PPMI models"
     description = "Mock corpus for testing word models, saved as gensim Keyed Vectors"
     es_index = 'nothing'
