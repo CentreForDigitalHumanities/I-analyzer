@@ -22,14 +22,20 @@
                 <div class="columns">
                     <div class="column">
                         <p-calendar name="minYear" view="year" dateFormat="yy" [minDate]="minDate" [maxDate]="maxDate"
-                            [ngModel]="selectedMinDate.value || minDate" (ngModelChange)="selectedMinDate.next($event)"></p-calendar>
+                            [ngModel]="selectedMinDate.value || minDate"
+                            (onSelect)="setYear(selectedMinDate, $event)"
+                            (keydown.enter)="setYear(selectedMinDate, $event.target.value)"
+                            (onBlur)="setYear(selectedMinDate, $event.target.value)"></p-calendar>
                     </div>
                     <div class="column is-narrow">
                         -
                     </div>
                     <div class="column">
                         <p-calendar name="maxYear" view="year" dateFormat="yy" [minDate]="minDate" [maxDate]="maxDate"
-                            [ngModel]="selectedMaxDate.value || maxDate" (ngModelChange)="selectedMaxDate.next($event)"></p-calendar>
+                            [ngModel]="selectedMaxDate.value || maxDate"
+                            (onSelect)="setYear(selectedMaxDate, $event)"
+                            (keydown.enter)="setYear(selectedMaxDate, $event.target.value)"
+                            (onBlur)="setYear(selectedMaxDate, $event.target.value)"></p-calendar>
                     </div>
                 </div>
             </div>
