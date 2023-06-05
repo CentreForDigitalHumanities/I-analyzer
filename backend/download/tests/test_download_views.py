@@ -23,13 +23,13 @@ def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus, csv_
     )
     assert status.is_success(response.status_code)
 
-def test_schedule_download_view(transactional_db, admin_client, mock_corpus, select_small_mock_corpus,
-                                index_mock_corpus, celery_worker, csv_directory):
+def test_schedule_download_view(transactional_db, admin_client, small_mock_corpus,
+                                index_small_mock_corpus, celery_worker, csv_directory):
     request_json = {
-        "corpus": mock_corpus,
+        "corpus": small_mock_corpus,
         "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
         "fields": ['date','content'],
-        "route": f"/search/{mock_corpus}",
+        "route": f"/search/{small_mock_corpus}",
         "encoding":"utf-8"
     }
     response = admin_client.post(
@@ -39,7 +39,6 @@ def test_schedule_download_view(transactional_db, admin_client, mock_corpus, sel
     )
     assert status.is_success(response.status_code)
 
-@pytest.fixture()
 def term_frequency_parameters(mock_corpus, mock_corpus_specs):
     min_year = mock_corpus_specs['min_date'].year
     max_year = mock_corpus_specs['max_date'].year
@@ -76,13 +75,14 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
         'unit': 'year',
     }
 
-def test_full_data_download_view(transactional_db, admin_client, mock_corpus, term_frequency_parameters,
-                                 select_small_mock_corpus, index_mock_corpus, celery_worker,
+def test_full_data_download_view(transactional_db, admin_client, small_mock_corpus,
+                                 index_small_mock_corpus, small_mock_corpus_specs, celery_worker,
                                  csv_directory):
+    parameters = term_frequency_parameters(small_mock_corpus, small_mock_corpus_specs)
     request_json = {
         'visualization': 'date_term_frequency',
-        'parameters': [term_frequency_parameters],
-        'corpus': mock_corpus
+        'parameters': [parameters],
+        'corpus': small_mock_corpus
     }
     response = admin_client.post(
         '/api/download/full_data',
@@ -100,9 +100,9 @@ def test_empty_download_history_view(admin_client):
     assert response.data == []
 
 @pytest.fixture()
-def finished_download(admin_user, csv_directory, mock_corpus, select_small_mock_corpus):
-    filepath = os.path.join(csv_directory, mock_corpus + '.csv')
-    corpus = Corpus.objects.get(name=mock_corpus)
+def finished_download(admin_user, csv_directory, small_mock_corpus):
+    filepath = os.path.join(csv_directory, small_mock_corpus + '.csv')
+    corpus = Corpus.objects.get(name=small_mock_corpus)
     download = Download.objects.create(download_type='search_results', corpus=corpus, parameters={}, user=admin_user)
 
     with open(filepath, 'w') as outfile:
@@ -114,7 +114,7 @@ def finished_download(admin_user, csv_directory, mock_corpus, select_small_mock_
             'content': "You will rejoice to hear...",
             'date': '1818-01-01',
             'genre': 'Science fiction',
-            'query': mock_corpus,
+            'query': small_mock_corpus,
             'title': 'Frankenstein, or, the Modern Prometheus'
         })
 
@@ -122,7 +122,7 @@ def finished_download(admin_user, csv_directory, mock_corpus, select_small_mock_
     download.complete(filename)
     return download.id
 
-def test_download_history_view(admin_client, finished_download, mock_corpus):
+def test_download_history_view(admin_client, finished_download, small_mock_corpus):
     response = admin_client.get(
         '/api/download/'
     )
@@ -130,7 +130,7 @@ def test_download_history_view(admin_client, finished_download, mock_corpus):
     assert status.is_success(response.status_code)
     assert len(response.data) == 1
     download = next(d for d in response.data)
-    assert download['corpus'] == mock_corpus
+    assert download['corpus'] == small_mock_corpus
     assert download['status'] == 'done'
 
 def test_csv_download_view(admin_client, finished_download):

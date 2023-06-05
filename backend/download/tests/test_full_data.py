@@ -3,13 +3,13 @@ from visualization.tests.test_term_frequency import make_query
 from download import tasks
 import pytest
 
-def test_timeline_full_data(mock_corpus, select_small_mock_corpus, index_mock_corpus, mock_corpus_specs):
-    min_year = mock_corpus_specs['min_date'].year
-    max_year = mock_corpus_specs['max_date'].year
-    search_fields = [mock_corpus_specs['content_field']]
+def test_timeline_full_data(small_mock_corpus, index_small_mock_corpus, small_mock_corpus_specs):
+    min_year = small_mock_corpus_specs['min_date'].year
+    max_year = small_mock_corpus_specs['max_date'].year
+    search_fields = [small_mock_corpus_specs['content_field']]
     full_data_parameters = [{
         'es_query': make_query(query_text = 'the', search_in_fields=search_fields),
-        'corpus_name': mock_corpus,
+        'corpus_name': small_mock_corpus,
         'field_name': 'date',
         'bins': [
             {
@@ -32,7 +32,7 @@ def test_timeline_full_data(mock_corpus, select_small_mock_corpus, index_mock_co
 
         expected_frequency = 2
         total_expectations = {
-            'Total documents': mock_corpus_specs['total_docs'],
+            'Total documents': small_mock_corpus_specs['total_docs'],
             'Term frequency': expected_frequency, # 2 hits per document
             'Relative term frequency (by # documents)': expected_frequency
         }

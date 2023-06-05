@@ -18,10 +18,10 @@ def assert_content_matches(file_1, encoding_1, file_2, encoding_2):
 
     assert contents_1 == contents_2
 
-def test_encoding_conversion_results(csv_directory, mock_corpus, select_multilingual_mock_corpus, all_results_csv, file_encoding):
-    converted = convert_csv.convert_csv(csv_directory, all_results_csv, 'search_results', encoding = file_encoding)
+def test_encoding_conversion_results(csv_directory, ml_mock_corpus, ml_mock_corpus_results_csv, file_encoding):
+    converted = convert_csv.convert_csv(csv_directory, ml_mock_corpus_results_csv, 'search_results', encoding = file_encoding)
     converted_path = os.path.join(csv_directory, converted)
-    assert_content_matches(all_results_csv, 'utf-8', converted_path, file_encoding)
+    assert_content_matches(ml_mock_corpus_results_csv, 'utf-8', converted_path, file_encoding)
 
 def test_conversion_with_highlights(csv_directory, result_csv_with_highlights, file_encoding):
     converted = convert_csv.convert_csv(csv_directory, result_csv_with_highlights, 'search_results', encoding = file_encoding)

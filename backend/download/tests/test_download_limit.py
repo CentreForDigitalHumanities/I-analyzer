@@ -5,7 +5,7 @@ match_all = {
         "match_all": {}
     }
 }
-def test_no_donwnload_limit(mock_corpus, index_mock_corpus, mock_corpus_specs):
+def test_no_download_limit(mock_corpus, index_mock_corpus, mock_corpus_specs):
     results, total = es_download.scroll(mock_corpus, match_all)
     docs_in_corpus = mock_corpus_specs['total_docs']
     assert total == docs_in_corpus

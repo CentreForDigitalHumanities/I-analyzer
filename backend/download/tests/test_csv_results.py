@@ -58,8 +58,8 @@ def test_create_csv(result_csv_with_highlights):
             assert 'speech' in row
         assert counter == 1
 
-def test_csv_fieldnames(all_results_csv, mock_corpus_specs):
-    with open(all_results_csv) as csv_file:
+def test_csv_fieldnames(mock_corpus_results_csv, mock_corpus_specs):
+    with open(mock_corpus_results_csv) as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
         assert set(reader.fieldnames) == set(mock_corpus_specs['fields'] + ['query'])
 
@@ -77,7 +77,7 @@ def assert_result_csv_expectations(csv_path, expectations, delimiter=','):
             for item in expected_row:
                 assert rows[i][item] == expected_row[item]
 
-def test_csv_contents(mock_corpus, all_results_csv):
+def test_csv_contents(mock_corpus, mock_corpus_results_csv):
     '''Check the contents of the results csv for the basic mock corpus.
 
     Also includes the multilingual corpus, which includes some special characters, making sure
@@ -103,12 +103,12 @@ def test_csv_contents(mock_corpus, all_results_csv):
     else:
         pytest.skip()
 
-    assert_result_csv_expectations(all_results_csv, expected, delimiter=';')
+    assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
 
-def test_csv_encoding(select_multilingual_mock_corpus, all_results_csv):
+def test_csv_encoding(ml_mock_corpus_results_csv):
     '''Assert that the results csv file matches utf-8 encoding'''
 
-    with open(all_results_csv, 'rb') as f:
+    with open(ml_mock_corpus_results_csv, 'rb') as f:
         binary_contents = f.read()
 
     expected_sentence = 'Svenska är ett östnordiskt språk som talas av ungefär tio miljoner personer främst i Sverige där språket har en dominant ställning som huvudspråk'
@@ -189,7 +189,7 @@ mock_timeline_expected_data = [
 ]
 
 @pytest.fixture()
-def term_frequency_file(mock_corpus, select_small_mock_corpus, index_mock_corpus, csv_directory):
+def term_frequency_file(index_small_mock_corpus, csv_directory):
     filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
     return filename
 
