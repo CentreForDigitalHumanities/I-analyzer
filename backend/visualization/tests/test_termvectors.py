@@ -24,7 +24,7 @@ def test_tokens(termvectors_result):
         assert token['term'] == word
         assert token['ttf'] == 1 # title has no duplicate words
 
-def test_find_matches(es_client, termvectors_result):
+def test_find_matches(es_client, termvectors_result, small_mock_corpus):
     title_terms = termvectors.get_terms(termvectors_result, 'title')
     title_tokens = termvectors.get_tokens(title_terms, sort = True)
 
@@ -43,8 +43,9 @@ def test_find_matches(es_client, termvectors_result):
         ('fronkenstien~2 modern', 2),
     ]
 
+    corpus = load_corpus(small_mock_corpus)
     for query_text, expected_matches in cases:
-        matches = list(termvectors.token_matches(title_tokens, query_text, 'ianalyzer-mock-corpus', 'title', es_client))
+        matches = list(termvectors.token_matches(title_tokens, query_text, corpus.es_index, 'title', es_client))
         assert len(matches) == expected_matches
 
 QUERY_ANALYSIS_CASES = [

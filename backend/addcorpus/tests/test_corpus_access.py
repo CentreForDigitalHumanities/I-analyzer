@@ -1,6 +1,6 @@
 from users.models import CustomUser
 
-def test_access_through_group(mock_corpus, group_with_access):
+def test_access_through_group(db, mock_corpus, group_with_access):
     user = CustomUser.objects.create(username='nice-user', password='secret')
     user.groups.add(group_with_access)
     user.save()
@@ -9,11 +9,11 @@ def test_access_through_group(mock_corpus, group_with_access):
 def test_superuser_access(mock_corpus, admin_user):
     assert admin_user.has_access(mock_corpus)
 
-def test_no_corpus_access(mock_corpus):
+def test_no_corpus_access(db, mock_corpus):
     user = CustomUser.objects.create(username='bad-user', password='secret')
     assert not user.has_access(mock_corpus)
 
-def test_api_access(mock_corpus, group_with_access, auth_client, auth_user):
+def test_api_access(db, mock_corpus, group_with_access, auth_client, auth_user):
     # default: no access
     response = auth_client.get('/api/corpus/')
     assert len(response.data) == 0

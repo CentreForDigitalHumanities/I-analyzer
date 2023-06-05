@@ -51,12 +51,13 @@ def large_mock_corpus_specs():
     return LARGE_MOCK_CORPUS_SPECS
 
 @pytest.fixture()
-def mock_corpus_specs(mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs):
+def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus,
+                      small_mock_corpus_specs, large_mock_corpus_specs):
     '''Return various specifications for the mock corpus (number of documents etc.)'''
 
     specs = {
-        'small-mock-corpus': small_mock_corpus_specs,
-        'large-mock-corpus': large_mock_corpus_specs,
+        small_mock_corpus: small_mock_corpus_specs,
+        large_mock_corpus: large_mock_corpus_specs,
     }
     return specs[mock_corpus]
 
@@ -71,7 +72,9 @@ def index_test_corpus(es_client, corpus_name):
 def clear_test_corpus(es_client, corpus_name):
     corpus = load_corpus(corpus_name)
     index = corpus.es_index
-    es_client.indices.delete(index = index)
+    # check existence in case teardown is executed more than once
+    if es_client.indices.exists(index = index):
+        es_client.indices.delete(index = index)
 
 @pytest.fixture(scope='session')
 def index_small_mock_corpus(small_mock_corpus, es_client):

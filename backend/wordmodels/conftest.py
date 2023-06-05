@@ -1,9 +1,5 @@
 import pytest
 import os
-from django.conf import settings
-from users.models import CustomUser
-from addcorpus.load_corpus import load_all_corpora
-from addcorpus.models import Corpus
 
 here = os.path.abspath(os.path.dirname(__file__))
 
