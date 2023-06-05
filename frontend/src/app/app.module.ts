@@ -106,7 +106,7 @@ export const appRoutes: Routes = [
     {
         path: 'document/:corpus/:id',
         component: DocumentPageComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard],
     },
     {
         path: 'login',
@@ -125,7 +125,7 @@ export const appRoutes: Routes = [
         component: RequestResetComponent,
     },
     {
-        path: 'reset-password/:token',
+        path: 'reset-password/:uid/:token',
         component: ResetPasswordComponent,
     },
     {
