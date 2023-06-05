@@ -92,22 +92,6 @@ export class CorpusFilterComponent implements OnInit {
         };
     }
 
-    setYear(subject: BehaviorSubject<Date>, value: string|Date) {
-        let valueAsDate: Date;
-        if (typeof(value) == 'string') {
-            const parsed = Date.parse(value);
-            if (!_.isNaN(parsed)) {
-                valueAsDate = new Date(parsed);
-            }
-        } else {
-            valueAsDate = value;
-        }
-
-        if (valueAsDate) {
-            subject.next(valueAsDate);
-        }
-    }
-
     reset() {
         this.selection.forEach(subject => subject.next(undefined));
     }
