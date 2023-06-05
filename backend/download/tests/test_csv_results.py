@@ -77,13 +77,13 @@ def assert_result_csv_expectations(csv_path, expectations, delimiter=','):
             for item in expected_row:
                 assert rows[i][item] == expected_row[item]
 
-def test_csv_contents(mock_corpus, mock_corpus_results_csv):
+def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock_corpus, mock_corpus_results_csv):
     '''Check the contents of the results csv for the basic mock corpus.
 
     Also includes the multilingual corpus, which includes some special characters, making sure
     that none of the steps in the download make encoding issues.'''
 
-    if mock_corpus == 'small-mock-corpus':
+    if mock_corpus == small_mock_corpus:
         expected = [{
             'date': '1818-01-01',
             'genre': "Science fiction",
@@ -92,7 +92,7 @@ def test_csv_contents(mock_corpus, mock_corpus_results_csv):
         }, {
             'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
         }]
-    elif mock_corpus == 'multilingual-mock-corpus':
+    elif mock_corpus == ml_mock_corpus:
         expected = [{
             'language': 'Swedish',
             'content': 'Svenska är ett östnordiskt språk som talas av ungefär tio miljoner personer främst i Sverige där språket har en dominant ställning som huvudspråk, men även som det ena nationalspråket i Finland och som enda officiella språk på Åland. I övriga Finland talas det som modersmål framförallt i de finlandssvenska kustområdena i Österbotten, Åboland och Nyland. En liten minoritet svenskspråkiga finns även i Estland. Svenska är nära besläktat och i hög grad ömsesidigt begripligt med danska och norska. De andra nordiska språken, isländska och färöiska, är mindre ömsesidigt begripliga med svenska. Liksom de övriga nordiska språken härstammar svenskan från en gren av fornnordiska, vilket var det språk som talades av de germanska folken i Skandinavien.'
@@ -101,7 +101,7 @@ def test_csv_contents(mock_corpus, mock_corpus_results_csv):
             'content': 'Das Deutsche ist eine plurizentrische Sprache, enthält also mehrere Standardvarietäten in verschiedenen Regionen. Ihr Sprachgebiet umfasst Deutschland, Österreich, die Deutschschweiz, Liechtenstein, Luxemburg, Ostbelgien, Südtirol, das Elsass und Lothringen sowie Nordschleswig. Außerdem ist Deutsch eine Minderheitensprache in einigen europäischen und außereuropäischen Ländern, z. B. in Rumänien und Südafrika sowie Nationalsprache im afrikanischen Namibia. Deutsch ist die meistgesprochene Muttersprache in der Europäischen Union (EU).'
         }]
     else:
-        pytest.skip()
+        expected = []
 
     assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
 

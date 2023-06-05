@@ -23,24 +23,6 @@ def mock_corpus(request):
     return request.param
 
 @pytest.fixture()
-def select_small_mock_corpus(mock_corpus):
-    '''Only run test with the small mock corpus - skip otherwise'''
-
-    if mock_corpus != 'small-mock-corpus':
-        pytest.skip()
-
-    return mock_corpus
-
-@pytest.fixture()
-def select_large_mock_corpus(mock_corpus):
-    '''Only run test with the large mock corpus - skip otherwise.'''
-
-    if mock_corpus != 'large-mock-corpus':
-        pytest.skip()
-
-    return mock_corpus
-
-@pytest.fixture()
 def small_mock_corpus_specs():
     '''Return various specifications for the mock corpus (number of documents etc.)'''
     return SMALL_MOCK_CORPUS_SPECS
