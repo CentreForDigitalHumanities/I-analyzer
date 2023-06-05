@@ -6,7 +6,7 @@ def test_access_through_group(mock_corpus, group_with_access):
     user.save()
     assert user.has_access(mock_corpus)
 
-def test_superuser_access(mock_corpus, admin_user, mock_corpora_in_db):
+def test_superuser_access(mock_corpus, admin_user):
     assert admin_user.has_access(mock_corpus)
 
 def test_no_corpus_access(mock_corpus):
@@ -25,7 +25,7 @@ def test_api_access(mock_corpus, group_with_access, auth_client, auth_user):
     assert len(response.data) == 1
     assert response.data[0].get('name') == mock_corpus
 
-def test_superuser_api_access(admin_client, mock_corpus, mock_corpora_in_db):
+def test_superuser_api_access(admin_client, mock_corpus):
     response = admin_client.get('/api/corpus/')
     assert response.status_code == 200
     assert any(corpus['name'] == mock_corpus for corpus in response.data)

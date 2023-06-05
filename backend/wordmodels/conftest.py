@@ -13,6 +13,5 @@ TEST_BINS = [(1810, 1839), (1840, 1869), (1870, 1899)]
 
 
 @pytest.fixture()
-def mock_corpus(mock_corpora_in_db):
-    ''' return the first key of the CORPORA dict '''
+def mock_corpus():
     return 'wordmodels-mock-corpus'
