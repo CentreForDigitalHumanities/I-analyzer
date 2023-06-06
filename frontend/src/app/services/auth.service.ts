@@ -182,4 +182,22 @@ export class AuthService implements OnDestroy {
             returnUrl ? { queryParams: { returnUrl } } : undefined
         );
     }
+
+    public requestResetPassword(email: string) {
+        return this.apiService.requestResetPassword(email);
+    }
+
+    public resetPassword(
+        uid: string,
+        token: string,
+        newPassword1: string,
+        newPassword2: string
+    ) {
+        return this.apiService.resetPassword(
+            uid,
+            token,
+            newPassword1,
+            newPassword2
+        );
+    }
 }
