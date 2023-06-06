@@ -90,6 +90,7 @@ import { VerifyEmailComponent } from './login/verify-email/verify-email.componen
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
 import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-filter.component';
+import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 
@@ -113,7 +114,7 @@ export const appRoutes: Routes = [
     {
         path: 'document/:corpus/:id',
         component: DocumentPageComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard],
     },
     {
         path: 'login',
@@ -132,7 +133,7 @@ export const appRoutes: Routes = [
         component: RequestResetComponent,
     },
     {
-        path: 'reset-password/:token',
+        path: 'reset-password/:uid/:token',
         component: ResetPasswordComponent,
     },
     {
@@ -183,6 +184,7 @@ export const declarations: any[] = [
     CorpusInfoComponent,
     CorpusSelectionComponent,
     CorpusSelectorComponent,
+    DatePickerComponent,
     DateFilterComponent,
     DialogComponent,
     DocumentPageComponent,

@@ -21,15 +21,17 @@
             <div class="control">
                 <div class="columns">
                     <div class="column">
-                        <p-calendar name="minYear" view="year" dateFormat="yy" [minDate]="minDate" [maxDate]="maxDate"
-                            [ngModel]="selectedMinDate.value || minDate" (ngModelChange)="selectedMinDate.next($event)"></p-calendar>
+                        <ia-date-picker unit="year" [(subject)]="selectedMinDate"
+                            [minDate]="minDate" [maxDate]="maxDate"
+                            [default]="minDate"></ia-date-picker>
                     </div>
                     <div class="column is-narrow">
                         -
                     </div>
                     <div class="column">
-                        <p-calendar name="maxYear" view="year" dateFormat="yy" [minDate]="minDate" [maxDate]="maxDate"
-                            [ngModel]="selectedMaxDate.value || maxDate" (ngModelChange)="selectedMaxDate.next($event)"></p-calendar>
+                        <ia-date-picker unit="year" [(subject)]="selectedMaxDate"
+                        [minDate]="minDate" [maxDate]="maxDate"
+                        [default]="maxDate"></ia-date-picker>
                     </div>
                 </div>
             </div>
