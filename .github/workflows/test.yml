@@ -23,6 +23,27 @@ jobs:
         python-version: [3.8]
         node-version: [14.x]
 
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_DB: ianalyzer
+          POSTGRES_USER: ianalyzer
+          POSTGRES_PASSWORD: ianalyzer
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -33,26 +54,23 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install Ubuntu packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install libmysqlclient-dev libxmlsec1-dev
     - name: Install Python dependencies
       run: |
         cd backend
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    # - name: Lint with flake8
-    #   run: |
-    #     pip install flake8
-    #     # stop the build if there are Python syntax errors or undefined names
-    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        yarn install-back
     - name: Test with pytest
+      env:
+        # Provide PostgreSQL environment variables in order to default to TCP connection
+        PGDATABASE: ianalyzer
+        PGHOST: localhost
+        PGPORT: ${{ job.services.postgres.ports['5432'] }}
+        PGUSER: ianalyzer
+        PGPASSWORD: ianalyzer
       run: |
         cd backend
-        cp ianalyzer/default_config.py ianalyzer/config.py
+        yarn django migrate
+        yarn install-back
         pytest
     - name: Test Angular
       run: |

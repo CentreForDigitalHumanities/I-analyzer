@@ -9,9 +9,9 @@ import sys
 import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
-from flask import current_app
+from django.conf import settings
 
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 from .es_alias import alias, get_new_version_number
 
 import logging
@@ -44,11 +44,10 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        if not settings.get('index'):
-            settings['index'] = {
-                'number_of_replicas' : 0,
-                'number_of_shards': 6
-            }
+        settings['index'] = {
+            'number_of_replicas' : 0,
+            'number_of_shards': 6
+        }
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
@@ -92,13 +91,17 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         } for doc in docs
     )
 
-    corpus_server = current_app.config['SERVERS'][
-        current_app.config['CORPUS_SERVER_NAMES'][corpus_name]]
-
-    for success, info in es_helpers.streaming_bulk(client, actions, chunk_size=corpus_server['chunk_size'], max_chunk_bytes=corpus_server['max_chunk_bytes']):
+    corpus_server = settings.SERVERS[
+        settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
+    # Do bulk operation
+    for success, info in es_helpers.streaming_bulk(
+        client,
+        actions,
+        chunk_size=corpus_server['chunk_size'],
+        max_chunk_bytes=corpus_server['max_chunk_bytes'],
+    ):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
-
 
 
 

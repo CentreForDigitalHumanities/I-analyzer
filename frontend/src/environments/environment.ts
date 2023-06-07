@@ -9,7 +9,7 @@ export const environment = {
     aboutPage: 'ianalyzer',
     apiUrl: '/api/',
     adminUrl: '/admin/',
-    wordModelsUrl: '/wordmodels/',
+    samlLogoutUrl: '/users/saml2/logout/',
     logos: [
     ],
     showSolis: true

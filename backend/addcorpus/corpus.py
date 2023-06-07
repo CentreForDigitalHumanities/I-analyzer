@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
-
+import os
 
 class Corpus(object):
     '''
@@ -120,7 +120,8 @@ class Corpus(object):
     @property
     def image(self):
         '''
-        Absolute url to static image.
+        Name of the corpus image. Should be relative path from a directory 'images'
+        in the same directory as the corpus definition file.
         '''
         raise NotImplementedError()
 
@@ -186,11 +187,15 @@ class Corpus(object):
             }
         }
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         '''
         Get a dictionary with
         'media': list of urls from where media associated with a document can be fetched,
         'info': information for file download
+
+        Arguments:
+        - `document`: dict representation of document. Field values are stored in `fieldValues`
+        - `corpus_name`: name of the corpus in settings. Needed to create urls with the proper corpus name.
         '''
         return {'media': None, 'info': None}
 

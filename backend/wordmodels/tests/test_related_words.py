@@ -14,7 +14,7 @@ def assert_similarity_format(item, must_specify_time=True):
         assert 'time' in item and type(item['time']) == str
 
 
-def test_context_time_interval(test_app, mock_corpus):
+def test_context_time_interval(mock_corpus):
     case = {
         'term': 'alice',
         'bin_without_match':'1810-1839',

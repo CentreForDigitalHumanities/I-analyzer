@@ -44,7 +44,7 @@ export class DocumentViewComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
-        this.tabIndex = this.documentTabIndex;
+        this.tabIndex = this.documentTabIndex || 0;
     }
 
     changeTabIndex(index: number) {

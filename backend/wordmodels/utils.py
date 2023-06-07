@@ -1,12 +1,11 @@
 import os
-from os.path import basename, dirname, exists, join, splitext
+from os.path import basename, exists, join, splitext
 import pickle
 from string import punctuation
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
 
 from addcorpus.load_corpus import corpus_dir, load_corpus
-from flask import current_app
 
 from glob import glob
 
@@ -48,8 +47,7 @@ def word_in_models(query_term, corpus, max_distance=2):
 
 def load_wm_documentation(corpus_string):
     corpus = load_corpus(corpus_string)
-    corpus_dir = dirname(current_app.config['CORPORA'][corpus_string])
-    description_file = join(corpus_dir, 'wm', 'documentation.md')
+    description_file = join(corpus_dir(corpus_string), 'wm', 'documentation.md')
     if exists(description_file):
         with open(description_file) as f:
             contents = f.read()

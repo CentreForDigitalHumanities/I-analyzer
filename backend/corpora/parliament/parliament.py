@@ -1,12 +1,11 @@
-from datetime import datetime
 import logging
 import os
 import os.path as op
 
-from flask import current_app
+from django.conf import settings
 
-from addcorpus.corpus import Corpus, Field
-from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+from addcorpus.corpus import Corpus
+from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_settings import es_settings
@@ -28,8 +27,7 @@ class Parliament(Corpus):
     description = "Minutes from European parliaments"
     # store min_year as int, since datetime does not support BCE dates
     visualize = []
-    es_index = current_app.config['PP_ALIAS']
-    # scan_image_type = 'image/png'
+    es_index = getattr(settings, 'PP_ALIAS', 'parliament')
     # fields below are required by code but not actually used
     min_date = MIN_DATE
     max_date = MAX_DATE

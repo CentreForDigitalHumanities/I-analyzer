@@ -1,4 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
+import { findByName } from '../app/utils/utils';
 import { BooleanFilterData, Corpus, CorpusField, SearchFilter } from '../app/models';
 
 const mockFilterData: BooleanFilterData = {
@@ -15,17 +16,18 @@ export const mockFilter: SearchFilter<BooleanFilterData> = {
 };
 
 export const mockField: CorpusField = {
-    name: 'great_field',
-    description: 'A really wonderful field',
-    displayName: 'Greatest field',
-    displayType: 'keyword',
-    mappingType: 'keyword',
+    name: "great_field",
+    description: "A really wonderful field",
+    displayName: "Greatest field",
+    displayType: "keyword",
+    mappingType: "keyword",
     hidden: false,
     sortable: false,
     primarySort: false,
     searchable: false,
     downloadable: false,
-    searchFilter: mockFilter
+    searchFilter: mockFilter,
+    csvCore: true,
 };
 
 export const mockField2: CorpusField = {
@@ -40,7 +42,7 @@ export const mockField2: CorpusField = {
     searchable: true,
     downloadable: true,
     searchFilter: null
-}
+};
 
 export const mockField3: CorpusField = {
     name: 'ordering',
@@ -54,29 +56,27 @@ export const mockField3: CorpusField = {
     searchable: false,
     downloadable: true,
     searchFilter: null
-}
+};
 
 export const mockCorpus: Corpus = {
     name: 'test1',
     serverName: 'default',
     index: 'test1',
-    doctype: 'article',
     title: 'Test corpus',
     description: 'This corpus is for mocking',
     minDate: new Date(),
     maxDate: new Date(),
-    image: 'test.jpg',
-    scan_image_type: 'pdf',
+    image: "test.jpg",
+    scan_image_type: "pdf",
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField]
+    fields: [mockField, mockField2],
 };
 
 export const mockCorpus2: Corpus = {
     name: 'test2',
     serverName: 'default',
     index: 'test2',
-    doctype: 'article',
     title: 'Test corpus 2',
     description: 'This corpus is for mocking',
     minDate: new Date(),
@@ -86,7 +86,7 @@ export const mockCorpus2: Corpus = {
     allow_image_download: false,
     word_models_present: false,
     fields: [mockField2]
-}
+};
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);
@@ -98,7 +98,7 @@ export class CorpusServiceMock {
 
     public set(corpusName='test1'): Promise<boolean> {
         return this.get().then(all => {
-            const corpus = all.find(c => c.name === corpusName);
+            const corpus = findByName(all, corpusName);
             if (!corpus) {
                 return false;
             } else {

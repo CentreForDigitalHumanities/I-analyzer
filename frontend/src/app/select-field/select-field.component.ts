@@ -1,10 +1,10 @@
-import * as _ from "lodash";
-import { Component, Input, OnChanges } from '@angular/core';
+import * as _ from 'lodash';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { CorpusField } from '../models/index';
 import { ParamDirective } from '../param/param-directive';
-import { ParamService } from '../services';
+import { searchFieldsFromParams } from '../utils/params';
 
 @Component({
     selector: 'ia-select-field',
@@ -14,6 +14,7 @@ import { ParamService } from '../services';
 export class SelectFieldComponent extends ParamDirective implements OnChanges {
     @Input() public filterCriterion: string;
     @Input() public corpusFields: CorpusField[];
+    @Output() public updatedCorpusFields = new EventEmitter<CorpusField[]>();
 
     // all fields which are searchable
     private availableFields: CorpusField[];
@@ -28,8 +29,9 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
 
     constructor(
         route: ActivatedRoute,
-        router: Router,
-        private paramService: ParamService) { super(route, router) }
+        router: Router) {
+            super(route, router);
+    }
 
     initialize() {
         this.availableFields = this.getAvailableSearchFields(this.corpusFields);
@@ -45,12 +47,13 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
     }
 
     setStateFromParams(params: ParamMap) {
-        const queryFields = this.paramService.setSearchFieldsFromParams(params);
+        const queryFields = searchFieldsFromParams(params);
         if (!queryFields) {
-            this.selectedFields = [];
+            this.selectedFields = this.filterCoreFields();
         } else {
-            this.selectedFields = this.availableFields.filter( field => queryFields.find(name => field.name === name) );
+            this.selectedFields = this.optionFields.filter( field => queryFields.find(name => field.name === name) );
         }
+        this.updatedCorpusFields.emit(this.selectedFields);
     }
 
     private getAvailableSearchFields(corpusFields: CorpusField[]): CorpusField[] {
@@ -99,16 +102,20 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
             this.optionFields = coreFields.concat(_.sortBy(noCoreOptions,['displayName']));
         }
         this.allVisible = !this.allVisible;
+        this.updatedCorpusFields.emit(this.selectedFields);
     }
 
     public toggleField() {
         if ( !this.selectedFields.length ) {
+            this.updatedCorpusFields.emit([]);
+            if (this.filterCriterion === 'csv') return;
             this.setParams({ fields: null });
         }
         else {
+            this.updatedCorpusFields.emit(this.selectedFields);
             this.uiSelected = this.selectedFields.map(field => field.name);
             const fields = this.uiSelected.join(',');
-
+            if (this.filterCriterion === 'csv') return;
             this.setParams({ fields: fields });
         }
     }

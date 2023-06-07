@@ -3,6 +3,8 @@ import { Corpus, WordSimilarity } from '../../models';
 import { WordmodelsService } from '../../services/index';
 import * as _ from 'lodash';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { showLoading } from '../../utils/utils';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'ia-related-words',
@@ -16,7 +18,7 @@ export class RelatedWordsComponent implements OnChanges {
     @Input() palette: string[];
 
     @Output() error = new EventEmitter();
-    @Output() isLoading = new EventEmitter<boolean>();
+    @Output() isLoading = new BehaviorSubject<boolean>(false);
 
     neighbours = 5;
 
@@ -35,16 +37,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getData(): void {
-        this.showLoading(this.getTotalData());
-    }
-
-
-    /** execute a process with loading spinner */
-    async showLoading(promise): Promise<any> {
-        this.isLoading.next(true);
-        const result = await promise;
-        this.isLoading.next(false);
-        return result;
+        showLoading(this.isLoading, this.getTotalData());
     }
 
     getTotalData(): Promise<void> {
@@ -55,10 +48,6 @@ export class RelatedWordsComponent implements OnChanges {
                 this.zoomedInData = results.similarities_over_time_local_top_n;
             })
             .catch(this.onError.bind(this));
-    }
-
-    getTimeData(time: string): Promise<WordSimilarity[]> {
-        return this.wordModelsService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time, this.neighbours);
     }
 
     onError(error) {

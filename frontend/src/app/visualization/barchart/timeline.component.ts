@@ -8,7 +8,8 @@ import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDa
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
+import { showLoading } from '../../utils/utils';
 
 
 @Component({
@@ -136,6 +137,10 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
                 data,
                 backgroundColor: selectColor(this.palette, seriesIndex),
                 hoverBackgroundColor: selectColor(this.palette, seriesIndex),
+                borderColor: selectColor(this.palette, seriesIndex),
+                borderWidth: 1,
+                pointRadius: 2.5,
+                pointHoverRadius: 5,
             };
         });
     }
@@ -209,7 +214,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
         if ((this.currentTimeCategory !== previousTimeCategory) ||
             (triggeredByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
-            this.showLoading(
+            showLoading(
+                this.isLoading,
                 this.loadZoomedInData(
                     chart,
                     min, max,

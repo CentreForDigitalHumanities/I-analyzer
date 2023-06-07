@@ -88,4 +88,22 @@ def get_word_in_model():
             'success': True,
             'result': results
         })
-    return response
+
+class WordInModelView(APIView):
+    '''
+    Check if a word has a vector in the model for a corpus
+    '''
+
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
+    def get(self, request, *args, **kwargs):
+        corpus = corpus_name_from_request(request)
+        query_term = request.query_params.get('query_term')
+
+        results = utils.word_in_model(query_term, corpus)
+
+        if isinstance(results, str):
+            # the method returned an error string
+            raise APIException(detail=results)
+        else:
+            return Response(results)

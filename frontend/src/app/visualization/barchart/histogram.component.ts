@@ -7,7 +7,7 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramDataPoint,
     TermFrequencyResult} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
@@ -124,6 +124,8 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
                 }),
                 backgroundColor: selectColor(this.palette, seriesIndex),
                 hoverBackgroundColor: selectColor(this.palette, seriesIndex),
+                pointRadius: 2.5,
+                pointHoverRadius: 5,
             }
         ));
     }

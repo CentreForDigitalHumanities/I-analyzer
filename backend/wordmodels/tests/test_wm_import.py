@@ -49,11 +49,11 @@ def test_word_in_models(test_app, mock_corpus):
         result = word_in_models(case['term'], corpus, 1)
         assert result == case['expected']
 
-def test_description_import(test_app, mock_corpus):
+def test_description_import(mock_corpus):
     description = load_wm_documentation(mock_corpus)
     assert description == 'Description for testing.\n'
 
-def test_query_transform(test_app, mock_corpus):
+def test_query_transform(mock_corpus):
     corpus = load_corpus(mock_corpus)
     model = load_word_models(corpus)
 

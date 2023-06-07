@@ -20,17 +20,17 @@
                 <th></th>
                 <th>
                     <p-dropdown [options]="corpusMenuItems" [style]="{'width':'100%'}" placeholder="Any" showClear="true"
-                        (onChange)="dt.filter($event.value, 'corpusName', 'equals')"></p-dropdown>
+                        (onChange)="dt.filter($event.value, 'corpus', 'equals')"></p-dropdown>
                 </th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-query>
             <tr (click)="returnToSavedQuery(query)">
                 <td>{{query.started | date:'medium'}}</td>
-                <td>{{query.query | formatQueryText }}</td>
-                <td ia-query-filters [queryModel]="query.query"></td>
-                <td>{{query.totalResults}}</td>
-                <td>{{corpusTitle(query.corpusName)}}</td>
+                <td>{{query.query_json | formatQueryText }}</td>
+                <td ia-query-filters [queryModel]="query.query_json"></td>
+                <td>{{query.total_results}}</td>
+                <td>{{corpusTitle(query.corpus)}}</td>
             </tr>
         </ng-template>
     </p-table>
