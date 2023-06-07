@@ -97,6 +97,7 @@ class DBNL(XMLCorpus):
 
     id = Field(
         name='id',
+        es_mapping=keyword_mapping(),
         extractor=Combined(
             Metadata('id'),
             Index(transform=lambda i: str(i).zfill(4)),
