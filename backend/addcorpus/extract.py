@@ -139,7 +139,7 @@ class Pass(Extractor):
     def _apply(self, *nargs, **kwargs):
         return self.extractor.apply(*nargs, **kwargs)
 
-class Index(Extractor):
+class Order(Extractor):
     def _apply(self, index=None, *nargs, **kwargs):
         return index
 

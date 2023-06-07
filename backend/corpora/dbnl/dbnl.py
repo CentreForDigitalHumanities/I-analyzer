@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from django.conf import settings
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.extract import Metadata, XML, Pass, Index, Backup, Combined
+from addcorpus.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
 from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
@@ -100,7 +100,7 @@ class DBNL(XMLCorpus):
         es_mapping=keyword_mapping(),
         extractor=Combined(
             Metadata('id'),
-            Index(transform=lambda i: str(i).zfill(4)),
+            Order(transform=lambda i: str(i).zfill(4)),
             transform='_'.join,
         )
     )
@@ -335,7 +335,7 @@ class DBNL(XMLCorpus):
         name='chapter_index',
         display_name='Chapter index',
         description='Order of this chapter within the book',
-        extractor=Index(
+        extractor=Order(
             transform=lambda x : x + 1,
             applicable=lambda metadata: metadata['has_xml']
         ),
@@ -379,7 +379,7 @@ class DBNL(XMLCorpus):
         name='is_primary',
         display_name='Primary',
         description='Whether this is the primary document for this book - each book has only one primary document',
-        extractor=Index(transform = lambda index : index == 0),
+        extractor=Order(transform = lambda index : index == 0),
         search_filter=BooleanFilter(
             true='Primary',
             false='Other',
