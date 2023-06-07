@@ -11,7 +11,7 @@
             </button>
         </p>
         <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
-            <ia-select-field [corpusFields]="corpus.fields" [filterCriterion]=" 'csv' "
+            <ia-select-field [corpusFields]="corpus.fields" filterCriterion="downloadable"
                 (selection)="selectCsvFields($event)">
             </ia-select-field>
         </p>

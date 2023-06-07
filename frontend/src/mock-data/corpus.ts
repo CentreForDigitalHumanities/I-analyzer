@@ -143,11 +143,11 @@ export const mockCorpus: Corpus = {
     description: 'This corpus is for mocking',
     minDate: new Date(),
     maxDate: new Date(),
-    image: 'test.jpg',
-    scan_image_type: 'pdf',
+    image: "test.jpg",
+    scan_image_type: "pdf",
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField]
+    fields: [mockField, mockField2],
 };
 
 export const mockCorpus2: Corpus = {

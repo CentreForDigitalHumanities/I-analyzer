@@ -10,10 +10,11 @@ import { CorpusField, QueryModel } from '../models/index';
 })
 export class SelectFieldComponent implements OnChanges {
     @Input() queryModel: QueryModel;
-    @Input() public filterCriterion: string;
+    @Input() public filterCriterion: 'searchable'|'downloadable';
     @Input() public corpusFields: CorpusField[];
+    @Output() selection = new EventEmitter<CorpusField[]>();
 
-    // all fields which are searchable
+    // all fields which are searchable/downloadable
     private availableFields: CorpusField[];
     // the options displayed at any moment in the dropdown element
     public optionFields: CorpusField[];
@@ -22,15 +23,15 @@ export class SelectFieldComponent implements OnChanges {
     // whether to display all field options, or just the core ones
     public allVisible = false;
 
-    @Output() selection = new EventEmitter<CorpusField[]>();
-
     constructor() {}
 
     initialize() {
         if (this.queryModel) {
             this.setStateFromQueryModel(this.queryModel);
+        } else {
+            this.selectedFields = this.filterCoreFields();
         }
-        this.availableFields = this.getAvailableSearchFields(this.corpusFields);
+        this.availableFields = this.getAvailableFields(this.corpusFields);
         this.optionFields = this.filterCoreFields();
     }
 
@@ -44,13 +45,15 @@ export class SelectFieldComponent implements OnChanges {
         } else {
             this.selectedFields = [];
         }
-
     }
 
-    private getAvailableSearchFields(corpusFields: CorpusField[]): CorpusField[] {
-        const searchableFields = corpusFields.filter(field => field.searchable);
-        const allSearchFields = _.flatMap(searchableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
-        return allSearchFields;
+    private getAvailableFields(corpusFields: CorpusField[]): CorpusField[] {
+        const availableFields = corpusFields.filter(field => field[this.filterCriterion]);
+        if (this.filterCriterion === 'searchable') {
+            return _.flatMap(availableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
+        } else {
+            return availableFields;
+        }
     }
 
     private searchableMultiFields(field: CorpusField): CorpusField[] {
@@ -104,9 +107,9 @@ export class SelectFieldComponent implements OnChanges {
     }
 
     private filterCoreFields() {
-        if (this.filterCriterion === 'csv') {
+        if (this.filterCriterion === 'downloadable') {
             return this.corpusFields.filter(field => field.csvCore);
-        } else if (this.filterCriterion === 'searchField') {
+        } else if (this.filterCriterion === 'searchable') {
             return this.corpusFields.filter(field => field.searchFieldCore);
         } else {
             return this.availableFields;

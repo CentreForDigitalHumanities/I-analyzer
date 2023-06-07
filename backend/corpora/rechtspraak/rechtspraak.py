@@ -262,6 +262,7 @@ class Rechtspraak(XMLCorpus):
             extractor=rdf_description_extractor(
                 'dcterms:title', section='html'),
             results_overview=True,
+            search_field_core=True,
         ),
         Field(
             name='abstract',
@@ -279,6 +280,7 @@ class Rechtspraak(XMLCorpus):
                 extract.Constant('Content not available')
             ),
             csv_core=True,
+            search_field_core=True,
         ),
         Field(
             name='url',
