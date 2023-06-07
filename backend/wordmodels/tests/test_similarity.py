@@ -1,5 +1,7 @@
+from copy import deepcopy
 import numpy as np
 import pytest
+from gensim.models import KeyedVectors
 
 from addcorpus.load_corpus import load_corpus
 import wordmodels.similarity as similarity
@@ -14,7 +16,7 @@ def test_term_similarity(test_app, mock_corpus):
         'uppercase_term': 'She'
     }
     corpus = load_corpus(mock_corpus)
-    binned_models = load_word_models(corpus, True)
+    binned_models = load_word_models(corpus)
     model = binned_models[0]
 
     similarity1 = similarity.term_similarity(model, case['term'], case['similar_term'])
@@ -32,7 +34,7 @@ def test_n_nearest_neighbours_amount(test_app, mock_corpus):
     for n in range(1, 16, 5):
         term = 'elizabeth'
         corpus = load_corpus(mock_corpus)
-        binned_models = load_word_models(corpus, True)
+        binned_models = load_word_models(corpus)
         model = binned_models[0]
 
         result = similarity.find_n_most_similar(model, term, n)
@@ -41,21 +43,25 @@ def test_n_nearest_neighbours_amount(test_app, mock_corpus):
 @pytest.fixture
 def model_with_term_removed(test_app, mock_corpus):
     corpus = load_corpus(mock_corpus)
-    binned_models = load_word_models(corpus, True)
+    binned_models = load_word_models(corpus)
     original_model = binned_models[0]
-    model = copy(original_model)
 
     term = 'darcy'
-    model['vocab'] = list(model['vocab']) # convert from np.array if needed
-    model['vocab'].remove(term)
+    vocab = deepcopy(original_model['vectors'].index_to_key)
+    vocab.remove(term)
 
-    return corpus, model, original_model, term
+    new_vectors = KeyedVectors(original_model['vectors'].vector_size)
+    new_vectors.add_vectors(
+            vocab, [original_model['vectors'][word] for word in vocab])
+    new_model = {'vectors': new_vectors}
+
+    return corpus, new_model, original_model, term, vocab
 
 def test_vocab_is_subset_of_model(model_with_term_removed):
     '''Test cases where the vocab array is a subset of terms with vectors.'''
 
-    corpus, model, original_model, missing_term = model_with_term_removed
-    assert missing_term not in model['vocab']
+    corpus, model, original_model, missing_term, vocab = model_with_term_removed
+    assert missing_term not in vocab
 
     other_term = 'elizabeth'
 
@@ -76,29 +82,4 @@ def test_vocab_is_subset_of_model(model_with_term_removed):
     # ... but not with the adjusted vocab
     neighbours = similarity.find_n_most_similar(model, similar_term, 10)
     assert not any([neighbour['key'] == missing_term for neighbour in neighbours])
-    assert len(neighbours) == 10
-
-
-class TestMatrix:
-    """Mock of keyed vectors for term similarity. Implements
-    a most_similar function."""
-
-    def __init__(self, terms):
-        self.terms = terms
-
-    def most_similar(self, term, topn=10):
-        n = min(topn, len(self.terms) - 1)
-        filtered_terms = list(filter(lambda t: t != term, self.terms))
-        index_to_score = lambda index: 1 / (1 + index)
-        return ((term, index_to_score(i)) for i, term in enumerate(filtered_terms[:n]))
-
-def test_most_similar_recursion():
-    """Test that the recursion in the most_similar_items
-    function works correctly"""
-
-    terms = [str(i) for i in range(0, 100)]
-    vocab = [str(i) for i in range(0, 100, 2)]
-    matrix = TestMatrix(terms)
-
-    neighbours = similarity.most_similar_items(matrix, vocab, '50', 10)
     assert len(neighbours) == 10

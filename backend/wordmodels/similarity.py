@@ -1,7 +1,6 @@
 import numpy as np
 
-from wordmodels.utils import transform_query, index_to_term
-
+from wordmodels.utils import transform_query
 
 def term_similarity(wm, term1, term2):
     vectors = wm['vectors']
@@ -19,32 +18,23 @@ def find_n_most_similar(wm, query_term, n):
     """
     transformed_query = transform_query(query_term)
     vectors = wm['vectors']
-    vocab = vectors.index_to_key
     results = most_similar_items(vectors, transformed_query, n)
     return [{
         'key': result[0],
         'similarity': result[1]
     } for result in results]
 
-def most_similar_items(vectors, term, n, missing_terms = 0):
+def most_similar_items(vectors, term, n):
     '''
     Find the n most similar terms in a keyed vectors matrix, while filtering on the vocabulary.
 
     parameters:
     - `vectors`: the KeyedVectors
-    - `term`: the term for which to find the nearest neighbours. Should already have been
-    passed through the model's analyzer.
+    - `term`: the term for which to find the nearest neighbours, transformed with `transform_query`
     - `n`: number of neighbours to return
-    - `missing_terms`: used for recursion. indicates that of the `n` nearest vectors, `missing_terms` vectors
-    are not actually included in `vocab`, hence we should request `n + missing_terms` vectors
     '''
     vocab = vectors.index_to_key
     if term in vocab:
-        results = vectors.most_similar(term, topn=n + missing_terms)
-        results_complete = len(results) == min(n, len(vocab) - 1)
-        if results_complete:
-            return results
-        else:
-            delta = n - len(results)
-            return most_similar_items(vectors, term, n, missing_terms=delta + missing_terms)
+        results = vectors.most_similar(term, topn=n)
+        return results
     return []

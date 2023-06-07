@@ -1,5 +1,7 @@
-from collections import Counter
-from itertools import chain
+from functools import reduce
+from operator import concat
+import numpy as np
+import pandas as pd
 
 from flask import current_app
 
@@ -49,9 +51,13 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
         find_n_most_similar(time_bin, query_term, number_similar*2)
         for time_bin in wm_list
     ]
-    get_words = lambda timeframe: [t.get('key') for t in timeframe]
-    all_words = list(chain(*map(get_words, data_per_timeframe)))
-    words = [item[0] for item in Counter(all_words).most_common(number_similar)]
+    flattened_data = reduce(concat, data_per_timeframe)
+    all_words = list(set([item.get('key') for item in flattened_data]))
+    frequencies = {word: [] for word in all_words}
+    for item in flattened_data:
+        frequencies[item['key']].append(item['similarity'])
+    means = pd.DataFrame({'word': all_words, 'mean': [np.mean(f) for f in frequencies.values()]})
+    words = means.nlargest(number_similar, 'mean')['word']
 
     get_similarity = lambda word, time_bin: term_similarity(
         time_bin,
@@ -67,4 +73,4 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
         }
         for (time_label, time_bin) in zip(times, wm_list) for word in words]
 
-    return words, word_data, times, data_per_timeframe
+    return word_data, times, data_per_timeframe

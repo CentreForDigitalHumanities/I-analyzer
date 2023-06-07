@@ -21,7 +21,6 @@ export class RelatedWordsComponent implements OnChanges {
     neighbours = 5;
 
     timeIntervals: string[] = [];
-    totalSimilarities: WordSimilarity[]; // similarities over all time periods
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
@@ -51,7 +50,6 @@ export class RelatedWordsComponent implements OnChanges {
     getTotalData(): Promise<void> {
         return this.wordModelsService.getRelatedWords(this.queryText, this.corpus.name, this.neighbours)
             .then(results => {
-                this.totalSimilarities = results.total_similarities;
                 this.totalData = results.similarities_over_time;
                 this.timeIntervals = results.time_points;
                 this.zoomedInData = results.similarities_over_time_local_top_n;
