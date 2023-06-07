@@ -3,11 +3,11 @@ import numpy as np
 import pytest
 
 from addcorpus.load_corpus import load_corpus
-from wordmodels.utils import load_word_models, word_in_models, transform_query
+from wordmodels.utils import load_word_models, word_in_modelss, transform_query
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
 from wordmodels.utils import load_wm_documentation
 
-def test_import(test_app, mock_corpus):
+def test_import(mock_corpus):
     corpus = load_corpus(mock_corpus)
     models = load_word_models(corpus)
     assert len(models) == len(TEST_BINS)
@@ -24,7 +24,7 @@ def test_import(test_app, mock_corpus):
         vocab = weights.index_to_key
         assert len(vocab) == TEST_VOCAB_SIZE
 
-def test_word_in_models(test_app, mock_corpus):
+def test_word_in_models(mock_corpus):
     cases = [
         {
             'term': 'she',
@@ -46,7 +46,7 @@ def test_word_in_models(test_app, mock_corpus):
 
     for case in cases:
         corpus = load_corpus(mock_corpus)
-        result = word_in_models(case['term'], corpus, 1)
+        result = word_in_modelss(case['term'], corpus, 1)
         assert result == case['expected']
 
 def test_description_import(mock_corpus):

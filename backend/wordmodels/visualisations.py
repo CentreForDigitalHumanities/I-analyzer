@@ -3,8 +3,6 @@ from operator import concat
 import numpy as np
 import pandas as pd
 
-from flask import current_app
-
 from addcorpus.load_corpus import load_corpus
 from wordmodels.similarity import find_n_most_similar, term_similarity
 from wordmodels.utils import load_word_models
@@ -48,7 +46,7 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     wm_list = load_word_models(corpus)
     times = get_time_labels(wm_list)
     data_per_timeframe = [
-        find_n_most_similar(time_bin, query_term, number_similar*2)
+        find_n_most_similar(time_bin, query_term, number_similar)
         for time_bin in wm_list
     ]
     flattened_data = reduce(concat, data_per_timeframe)
@@ -56,8 +54,8 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     frequencies = {word: [] for word in all_words}
     for item in flattened_data:
         frequencies[item['key']].append(item['similarity'])
-    means = pd.DataFrame({'word': all_words, 'mean': [np.mean(f) for f in frequencies.values()]})
-    words = means.nlargest(number_similar, 'mean')['word']
+    max_similarities = pd.DataFrame({'word': all_words, 'max': [max(f) for f in frequencies.values()]})
+    words = max_similarities.nlargest(number_similar, 'max')['word']
 
     get_similarity = lambda word, time_bin: term_similarity(
         time_bin,

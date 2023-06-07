@@ -51,7 +51,7 @@ def test_context_time_interval(mock_corpus):
     most_similar_term = sorted_by_similarity[0]['key']
     assert most_similar_term == case.get('similar1')
 
-def test_diachronic_context(test_app, mock_corpus):
+def test_diachronic_context(mock_corpus):
     word_data, times, _ = get_diachronic_contexts('she', mock_corpus)
 
     for item in word_data:
