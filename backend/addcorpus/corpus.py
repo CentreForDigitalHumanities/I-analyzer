@@ -293,6 +293,15 @@ class Corpus(object):
                 )
                 )
 
+    def _reject_extractors(self, *inapplicable_extractors):
+        '''
+        Raise errors if any fields use extractors that are not applicable
+        for the corpus.
+        '''
+        for field in self.fields:
+            if isinstance(field.extractor, inapplicable_extractors):
+                raise RuntimeError(
+                    "Specified extractor method cannot be used with this type of data")
 
 class XMLCorpus(Corpus):
     '''
@@ -329,12 +338,8 @@ class XMLCorpus(Corpus):
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
-        for field in self.fields:
-            if isinstance(field.extractor, (
-                extract.HTML, extract.CSV,
-            )):
-                raise RuntimeError(
-                    "Specified extractor method cannot be used with an XML corpus")
+        self._reject_extractors(extract.HTML, extract.CSV)
+
         # extract information from external xml files first, if applicable
         metadata = {}
         if isinstance(source, str):
@@ -538,13 +543,7 @@ class HTMLCorpus(XMLCorpus):
         '''
         (filename, metadata) = source
 
-        # Make sure that extractors are sensible
-        for field in self.fields:
-            if isinstance(field.extractor, (
-                extract.XML, extract.CSV,
-            )):
-                raise RuntimeError(
-                    "Specified extractor method cannot be used with an HTML corpus")
+        self._reject_extractors(extract.XML, extract.CSV)
 
         # Loading HTML
         logger.info('Reading HTML file {} ...'.format(filename))
@@ -625,12 +624,7 @@ class CSVCorpus(Corpus):
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
-        for field in self.fields:
-            if isinstance(field.extractor, (
-                extract.HTML, extract.XML
-            )):
-                raise RuntimeError(
-                    "Specified extractor method cannot be used with a CSV corpus")
+        self._reject_extractors(extract.XML, extract.HTML)
 
         if isinstance(source, str):
             filename = source
