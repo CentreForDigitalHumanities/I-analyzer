@@ -5,7 +5,10 @@ from addcorpus.extract import CSV, Combined, Pass
 import corpora.dbnl.utils as utils
 
 class DBNLMetadata(CSVCorpus):
-    '''Helper corpus for extracting the DBNL metadata'''
+    '''Helper corpus for extracting the DBNL metadata.
+
+    Used by the DBNL corpus for CSV extraction utilities -
+    not intended as a standalone corpus.'''
 
     data_directory = settings.DBNL_DATA
 

@@ -6,7 +6,7 @@ The Digital Library of Dutch Literature ([DBNL](https://www.dbnl.org/)) is a dig
 
 The DBNL dataset can be used for research into Dutch and Flemish linguistics and literature, from the middle ages to the present. Limburghish, Frisian, Surinam, and South African literature are represented.
 
-The dataset contains digitised texts, which have been manually corrected, with metadata. It include medieval literature as well as classic novels. In addition, the dataset contains magazines from Dutch language and literary studies, such as De Gids and De Revisor.
+The dataset contains digitised texts, which have been manually corrected, with metadata. It includes medieval literature as well as classic novels. In addition, the dataset contains magazines from Dutch language and literary studies, such as De Gids and De Revisor.
 
 ### Availability
 
