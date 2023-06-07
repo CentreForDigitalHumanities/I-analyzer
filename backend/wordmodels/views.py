@@ -26,7 +26,7 @@ class RelatedWordsView(APIView):
         else:
             return Response({
                     'similarities_over_time': results[0],
-                    'similarities_over_time_local_top_n': results[1],
+                    'similarities_over_time_local_top_n': results[2],
                     'time_points': results[1]
             })
 
