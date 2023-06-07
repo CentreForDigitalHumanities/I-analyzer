@@ -6,6 +6,7 @@ import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models
 import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-search',
@@ -119,14 +120,17 @@ export class SearchComponent extends ParamDirective {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name !== corpus.name) {
+            const reset = !_.isUndefined(this.corpus);
             this.corpus = corpus;
-            this.setQueryModel();
+            this.setQueryModel(reset);
         }
     }
 
-    private setQueryModel() {
+    private setQueryModel(reset: boolean) {
         const queryModel = new QueryModel(this.corpus);
-        queryModel.setFromParams(this.route.snapshot.queryParamMap);
+        if (!reset) {
+            queryModel.setFromParams(this.route.snapshot.queryParamMap);
+        }
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {
