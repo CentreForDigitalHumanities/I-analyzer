@@ -148,8 +148,13 @@ export class QueryModel {
 		return newQuery;
 	}
 
-    /** convert the query to a parameter map */
-    toRouteParam(): {[param: string]: any} {
+    /**
+     * convert the query to a parameter map
+     *
+     * All query-related params are explicity listed;
+     * empty parameters have value null.
+     */
+    toRouteParam(): {[param: string]: string|null} {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = this.sort.toRouteParam();
@@ -165,7 +170,13 @@ export class QueryModel {
         };
 	}
 
-    toQueryParams() {
+    /**
+     * convert the query to a a parameter map, only
+     * including properties that should actually be explicated
+     * in the route. Same as query.toRouteParam() but
+     * without null values.
+     */
+    toQueryParams(): {[param: string]: string} {
         return omitNullParameters(this.toRouteParam());
     }
 
