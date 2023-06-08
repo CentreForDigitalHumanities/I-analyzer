@@ -76,7 +76,7 @@ class WordInModelView(APIView):
         corpus = corpus_name_from_request(request)
         query_term = request.query_params.get('query_term')
 
-        results = utils.word_in_modelss(query_term, corpus)
+        results = utils.word_in_models(query_term, corpus)
 
         if isinstance(results, str):
             # the method returned an error string

@@ -28,7 +28,7 @@ def load_word_models(corpus):
 def get_year(kv_filename, position):
     return int(splitext(basename(kv_filename))[0].split('_')[position])
 
-def word_in_modelss(query_term, corpus, max_distance=2):
+def word_in_models(query_term, corpus, max_distance=2):
     models = load_word_models(corpus)
     transformed_query = transform_query(query_term)
     vocab = set()

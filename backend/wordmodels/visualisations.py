@@ -1,6 +1,5 @@
 from functools import reduce
 from operator import concat
-import numpy as np
 import pandas as pd
 
 from addcorpus.load_corpus import load_corpus
