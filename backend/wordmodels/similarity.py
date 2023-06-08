@@ -1,53 +1,40 @@
 import numpy as np
 
-from wordmodels.utils import transform_query, index_to_term
-
+from wordmodels.utils import transform_query
 
 def term_similarity(wm, term1, term2):
-    matrix = wm['matrix']
+    vectors = wm['vectors']
     transformed1 = transform_query(term1)
     transformed2 = transform_query(term2)
-    vocab = wm['vocab']
+    vocab = vectors.index_to_key
     if transformed1 in vocab and transformed2 in vocab:
-        similarity = matrix.similarity(transformed1, transformed2)
+        similarity = vectors.similarity(transformed1, transformed2)
         return float(similarity)
 
 def find_n_most_similar(wm, query_term, n):
-    """given a matrix of svd_ppmi or word2vec values
+    """given vectors of svd_ppmi or word2vec values
     with its vocabulary and analyzer,
     determine which n terms match the given query term best
     """
-    vocab = wm['vocab']
     transformed_query = transform_query(query_term)
-    matrix = wm['matrix']
-    results = most_similar_items(matrix, vocab, transformed_query, n)
+    vectors = wm['vectors']
+    results = most_similar_items(vectors, transformed_query, n)
     return [{
         'key': result[0],
         'similarity': result[1]
     } for result in results]
 
-def most_similar_items(matrix, vocab, term, n, missing_terms = 0):
+def most_similar_items(vectors, term, n):
     '''
     Find the n most similar terms in a keyed vectors matrix, while filtering on the vocabulary.
 
     parameters:
-    - `matrix`: the KeyedVectors matrix
-    - `vocab`: the vocabulary for the model. This may be a subst of the keys in `matrix`, so
-    results will be filtered on vocab.
-    - `term`: the term for which to find the nearest neighbours. Should already have been
-    passed through the model's analyzer.
+    - `vectors`: the KeyedVectors
+    - `term`: the term for which to find the nearest neighbours, transformed with `transform_query`
     - `n`: number of neighbours to return
-    - `missing_terms`: used for recursion. indicates that of the `n` nearest vectors, `missing_terms` vectors
-    are not actually included in `vocab`, hence we should request `n + missing_terms` vectors
     '''
-
+    vocab = vectors.index_to_key
     if term in vocab:
-        results = matrix.most_similar(term, topn=n + missing_terms)
-        filtered_results = [(key, score) for key, score in results if key in vocab]
-        results_complete = len(filtered_results) == min(n, len(vocab) - 1)
-        if results_complete:
-            return filtered_results
-        else:
-            delta = n - len(filtered_results)
-            return most_similar_items(matrix, vocab, term, n, missing_terms=delta + missing_terms)
+        results = vectors.most_similar(term, topn=n)
+        return results
     return []

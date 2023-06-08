@@ -37,7 +37,7 @@ export class WordmodelsService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/word_in_model'
+        path: '/word_in_models'
     })
     public wordInModelRequest: ResourceMethod<
         { query_term: string; corpus_name: string },
