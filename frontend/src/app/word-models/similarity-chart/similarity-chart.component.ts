@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { Chart, ChartData, ChartOptions, Filler } from 'chart.js';
+import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
@@ -31,6 +31,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     tableHeaders: FreqTableHeaders;
     tableData: WordSimilarity[];
+    startTimeIntervals: Number[];
 
     graphStyle = new BehaviorSubject<'line'|'bar'>('line');
 
@@ -106,12 +107,30 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
+    formatLabel(value: number): string {
+        return this.timeIntervals.filter(t => t.startsWith(value.toString()))[0]
+    }
+
+    getStartTime(time: string): number {
+       return parseInt(time.split('-')[0])
+    }
+
+    formatDataPoint(point: any, style: string): {x: number, y: number} | number {
+        if (style == 'line') {
+            return {x: parseInt(point.time.split('-')[0]), y: point.similarity}
+        }
+        else {
+            return point.similarity
+        }
+    }
+
     /** convert array of word similarities to a chartData object */
     makeChartData(data: WordSimilarity[], style: 'line'|'bar'): ChartData {
+        this.startTimeIntervals = this.timeIntervals.map(time => this.getStartTime(time));
         const allSeries = _.groupBy(data, point => point.key);
         const datasets = _.values(allSeries).map((series, datasetIndex) => {
             const label = series[0].key;
-            const similarities = series.map(point => ({x: Number(point.time.split('-')[0]), y: point.similarity}));
+            const similarities = series.map((point) => this.formatDataPoint(point, style));
             const colour = selectColor(this.palette, datasetIndex);
             return {
                 label,
@@ -169,7 +188,10 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 x: {
                     type: 'linear',
                     ticks: {
-                        callback: (value) => Number(value)
+                        stepSize: 1,
+                        autoSkip: true,
+                        callback: (value: number): string | undefined => this.startTimeIntervals.includes(value) ? this.formatLabel(value) : undefined,
+                        minRotation: 30
                     }
                 },
                 y: {
@@ -187,6 +209,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 tooltip: {
                     displayColors: true,
                     callbacks: {
+                        title: (tooltipItem: any): string => {
+                            return this.formatLabel(tooltipItem[0].parsed.x)
+                        },
                         labelColor: (tooltipItem: any): any => {
                             const color = tooltipItem.dataset.borderColor;
                             return {
