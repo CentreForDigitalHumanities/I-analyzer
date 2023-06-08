@@ -98,7 +98,10 @@ def save_flask_user(row):
         )
         user.save()
 
-        group = Group.objects.get(id=row['role_id'])
+        if not null_to_none(row['role_id']):
+            group = Group.objects.get(id=row['role_id'])
+        else:
+            group = Group.objects.get(name='basic')
         user.groups.add(group)
 
         if group.name == 'admin':
