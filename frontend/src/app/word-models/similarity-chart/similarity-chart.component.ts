@@ -111,7 +111,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         const allSeries = _.groupBy(data, point => point.key);
         const datasets = _.values(allSeries).map((series, datasetIndex) => {
             const label = series[0].key;
-            const similarities = series.map(point => point.similarity);
+            const similarities = series.map(point => ({x: Number(point.time.split('-')[0]), y: point.similarity}));
             const colour = selectColor(this.palette, datasetIndex);
             return {
                 label,
@@ -166,7 +166,12 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 },
             },
             scales: {
-                x: {},
+                x: {
+                    type: 'linear',
+                    ticks: {
+                        callback: (value) => Number(value)
+                    }
+                },
                 y: {
                     title: {
                         display: true,
