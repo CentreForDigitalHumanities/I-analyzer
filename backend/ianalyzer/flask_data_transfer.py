@@ -87,45 +87,50 @@ def save_flask_group(row):
 
 def save_flask_user(row):
     'Save a User based on a datarow from the flask SQL data'
-    try:
-        user = CustomUser(
-            id=row['id'],
-            username=row['username'],
-            password='',  # we will set the password below
-            email=row['email'],
-            download_limit=row['download_limit'],
-            saml=null_to_none(row['saml']),
-        )
+    user = CustomUser(
+        id=row['id'],
+        username=row['username'],
+        password='',  # we will set the password below
+        email=row['email'],
+        download_limit=row['download_limit'],
+        saml=null_to_none(row['saml']),
+    )
+    user.save()
+
+    if not null_to_none(row['role_id']):
+        group = Group.objects.get(name='basic')
+    else:
+        group = Group.objects.get(id=row['role_id'])
+
+    user.groups.add(group)
+
+    if group.name == 'admin':
+        user.is_staff = True
+        user.is_superuser = True
         user.save()
 
-        if not null_to_none(row['role_id']):
-            group = Group.objects.get(id=row['role_id'])
-        else:
-            group = Group.objects.get(name='basic')
-        user.groups.add(group)
+    # now set the password hash
+    old_hash = null_to_none(row['password']) # for saml users, password can be null
+    if old_hash:
+        new_hash = adapt_password_encoding(old_hash)
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'UPDATE users_customuser SET password = %s WHERE id = %s',
+                [new_hash, row['id']]
+            )
 
-        if group.name == 'admin':
-            user.is_staff = True
-            user.is_superuser = True
-            user.save()
+    # add an Allauth verified email address
+    allauth_email = EmailAddress.objects.filter(email=user.email).first()
+    if not allauth_email:
+        allauth_email = EmailAddress(email=user.email)
+    else:
+        print(f'duplicate user found for email: {user}')
 
-        # now set the password hash
-        old_hash = null_to_none(row['password']) # for saml users, password can be null
-        if old_hash:
-            new_hash = adapt_password_encoding(old_hash)
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    'UPDATE users_customuser SET password = %s WHERE id = %s',
-                    [new_hash, row['id']]
-                )
-
-        # add an Allauth verified email address
-        EmailAddress.objects.create(
-            user=user, email=user.email, verified=row['active'], primary=True)
-    except IntegrityError as ie:
-        print(f'Problem saving user:\n{ie}')
-        if user:
-            user.delete()
+    # set further details
+    allauth_email.verified = row['active']
+    allauth_email.primary = True
+    allauth_email.user = user
+    allauth_email.save()
 
 
 
