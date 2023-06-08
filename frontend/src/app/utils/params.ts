@@ -63,3 +63,11 @@ export const queryFiltersToParams = (queryModel: QueryModel) => {
         {}
     );
 };
+
+export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) => {
+    const currentParams = queryModel.toRouteParam();
+
+    return _.some(_.keys(currentParams).map(key =>
+        newParams.get(key) !== currentParams[key]
+    ));
+};

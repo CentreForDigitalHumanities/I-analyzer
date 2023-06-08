@@ -1,6 +1,7 @@
 import { convertToParamMap } from '@angular/router';
-import { highlightFromParams, omitNullParameters, searchFieldsFromParams } from './params';
-import { mockCorpus3, mockField2 } from '../../mock-data/corpus';
+import { highlightFromParams, omitNullParameters, paramsHaveChanged, searchFieldsFromParams } from './params';
+import { mockCorpus, mockCorpus3, mockField2 } from '../../mock-data/corpus';
+import { QueryModel } from '../models';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
@@ -22,20 +23,38 @@ describe('highlightFromParams', () => {
 
 describe('omitNullParameters', () => {
     it('should omit null parameters', () => {
-        const p = { a: null, b: 1, c: 'test' };
+        const p = { a: null, b: '1', c: 'test' };
 
         expect(omitNullParameters(p)).toEqual(
-            { b: 1, c: 'test' }
+            { b: '1', c: 'test' }
         );
     });
 });
 
 describe('omitNullParameters', () => {
     it('should omit null parameters', () => {
-        const p = { a: null, b: 1, c: 'test' };
+        const p = { a: null, b: '1', c: 'test' };
 
         expect(omitNullParameters(p)).toEqual(
-            { b: 1, c: 'test' }
+            { b: '1', c: 'test' }
         );
+    });
+});
+
+describe('paramsHaveChanged', () => {
+    it('should detect changes in parameters', () => {
+        const queryModel = new QueryModel(mockCorpus);
+
+        const params1 = convertToParamMap({});
+        const params2 = convertToParamMap({query: 'test'});
+
+        expect(paramsHaveChanged(queryModel, params1)).toBeFalse();
+        expect(paramsHaveChanged(queryModel, params2)).toBeTrue();
+
+        queryModel.setFromParams(params2);
+
+        expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
+        expect(paramsHaveChanged(queryModel, params1)).toBeTrue();
+
     });
 });
