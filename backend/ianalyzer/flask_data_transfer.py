@@ -4,6 +4,7 @@ import base64
 from django.contrib.auth.models import Group
 from users.models import CustomUser
 from django.db import connection
+from django.db.utils import IntegrityError
 from addcorpus.models import Corpus
 from api.models import Query
 from download.models import Download
@@ -86,7 +87,6 @@ def save_flask_group(row):
 
 def save_flask_user(row):
     'Save a User based on a datarow from the flask SQL data'
-
     user = CustomUser(
         id=row['id'],
         username=row['username'],
@@ -97,7 +97,11 @@ def save_flask_user(row):
     )
     user.save()
 
-    group = Group.objects.get(id=row['role_id'])
+    if not null_to_none(row['role_id']):
+        group = Group.objects.get(name='basic')
+    else:
+        group = Group.objects.get(id=row['role_id'])
+
     user.groups.add(group)
 
     if group.name == 'admin':
@@ -116,8 +120,18 @@ def save_flask_user(row):
             )
 
     # add an Allauth verified email address
-    EmailAddress.objects.create(
-        user=user, email=user.email, verified=row['active'], primary=True)
+    allauth_email = EmailAddress.objects.filter(email=user.email).first()
+    if not allauth_email:
+        allauth_email = EmailAddress(email=user.email)
+    else:
+        print(f'duplicate user found for email: {user}')
+
+    # set further details
+    allauth_email.verified = row['active']
+    allauth_email.primary = True
+    allauth_email.user = user
+    allauth_email.save()
+
 
 
 def save_flask_corpus(row):
