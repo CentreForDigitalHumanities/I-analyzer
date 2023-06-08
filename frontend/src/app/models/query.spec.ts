@@ -189,4 +189,20 @@ describe('QueryModel', () => {
         expect(query.filters[0].currentData.min).toEqual(new Date('Jan 2 1850'));
         expect(clone.filters[0].currentData.min).toEqual(new Date('Jan 1 1850'));
     });
+
+    it('should fire a single update event when updating from params', () => {
+        // dirty up the settings a bit
+        query.setQueryText('test');
+        query.addFilter(filter);
+        query.sort.setSortBy(mockFieldDate);
+        query.sort.setSortDirection('desc');
+
+        let updates = 0;
+        query.update.subscribe(() => updates += 1);
+
+        const params = convertToParamMap({});
+        query.setFromParams(params);
+        expect(updates).toBe(1);
+
+    });
 });
