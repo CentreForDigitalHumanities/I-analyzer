@@ -137,10 +137,10 @@ export class QueryModel {
         if (paramsHaveChanged(this, params)) {
             this.queryText = queryFromParams(params);
             this.searchFields = searchFieldsFromParams(params, this.corpus);
-            filtersFromParams(params, this.corpus).forEach(filter => this.addFilter(filter));
+            this.filters = filtersFromParams(params, this.corpus);
             this.sort.setFromParams(params);
             this.highlightSize = highlightFromParams(params);
-            this.update.next();
+            this.subscribeToFilterUpdates();
         }
 	}
 

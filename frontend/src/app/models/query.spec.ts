@@ -203,6 +203,16 @@ describe('QueryModel', () => {
         const params = convertToParamMap({});
         query.setFromParams(params);
         expect(updates).toBe(1);
+
+        const params2 = convertToParamMap({
+            query: 'test',
+            ... filter.toRouteParam(),
+            ... filter2.toRouteParam(),
+        });
+
+        query.setFromParams(params2);
+
+        expect(updates).toBe(2);
     });
 
     it('should not fire updates when params are unchanged', () => {
@@ -221,6 +231,5 @@ describe('QueryModel', () => {
         query.setFromParams(params1);
 
         expect(updates).toBe(1);
-
     });
 });
