@@ -1,3 +1,4 @@
+import { convertToParamMap } from '@angular/router';
 import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
 import { EsDateFilter, EsTermsFilter } from './elasticsearch';
 import { DateFilter, DateFilterData, MultipleChoiceFilter } from './search-filter';
@@ -51,6 +52,20 @@ describe('SearchFilter', () => {
 
         filter.reset();
         expect(isActive()).toBeFalse();
+    });
+
+    it('should set from parameters', () => {
+        filter.setFromParams(convertToParamMap({
+            date: '1850-01-01:1860-01-01'
+        }));
+
+        expect(filter.active.value).toBeTrue();
+
+        filter.setFromParams(convertToParamMap({
+            query: 'test'
+        }));
+
+        expect(filter.active.value).toBeFalse();
     });
 });
 

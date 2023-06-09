@@ -6,6 +6,7 @@ import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions } from './search-filter-options';
+import { ParamMap } from '@angular/router';
 
 abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	corpusField: CorpusField;
@@ -75,8 +76,13 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
     /**
      * set value based on route parameter
      */
-    setFromParam(param: string): void {
-        this.set(this.dataFromString(param));
+    setFromParams(params: ParamMap): void {
+        const value = params.get(this.corpusField.name);
+        if (value) {
+            this.set(this.dataFromString(value));
+        } else {
+            this.reset();
+        }
     }
 
     /**
