@@ -16,17 +16,18 @@ export const mockFilter: SearchFilter<BooleanFilterData> = {
 };
 
 export const mockField: CorpusField = {
-    name: 'great_field',
-    description: 'A really wonderful field',
-    displayName: 'Greatest field',
-    displayType: 'keyword',
-    mappingType: 'keyword',
+    name: "great_field",
+    description: "A really wonderful field",
+    displayName: "Greatest field",
+    displayType: "keyword",
+    mappingType: "keyword",
     hidden: false,
     sortable: false,
     primarySort: false,
     searchable: false,
     downloadable: false,
-    searchFilter: mockFilter
+    searchFilter: mockFilter,
+    csvCore: true,
 };
 
 export const mockField2: CorpusField = {
@@ -65,11 +66,11 @@ export const mockCorpus: Corpus = {
     description: 'This corpus is for mocking',
     minDate: new Date(),
     maxDate: new Date(),
-    image: 'test.jpg',
-    scan_image_type: 'pdf',
+    image: "test.jpg",
+    scan_image_type: "pdf",
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField]
+    fields: [mockField, mockField2],
 };
 
 export const mockCorpus2: Corpus = {

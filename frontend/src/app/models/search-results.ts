@@ -56,7 +56,6 @@ export interface WordSimilarity {
 };
 
 export interface RelatedWordsResults {
-    total_similarities: WordSimilarity[];
     similarities_over_time: WordSimilarity[];
     time_points: string[];
     similarities_over_time_local_top_n: WordSimilarity[][];

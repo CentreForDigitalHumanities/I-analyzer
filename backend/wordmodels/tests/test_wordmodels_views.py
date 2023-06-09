@@ -1,5 +1,6 @@
 import pytest
 
+
 def test_related_words_view(admin_client, mock_corpus):
 
     query_json = {
@@ -14,6 +15,7 @@ def test_related_words_view(admin_client, mock_corpus):
     )
     assert response.status_code == 200
 
+
 def test_word_similarity_view(admin_client, mock_corpus):
     term_1 = 'test'
     term_2 = 'testing'
@@ -22,6 +24,7 @@ def test_word_similarity_view(admin_client, mock_corpus):
         content_type='application/json'
     )
     assert response.status_code == 200
+
 
 def test_wm_documentation_view(admin_client, mock_corpus):
     response = admin_client.get(
@@ -34,16 +37,18 @@ def test_wm_documentation_view(admin_client, mock_corpus):
     assert 'documentation' in data
     assert data['documentation'] == 'Description for testing.\n'
 
-word_in_model_test_cases = [
+
+word_in_models_test_cases = [
     ('alice', True),
     ('Alice', True),
     ('aalice', False),
 ]
 
-@pytest.mark.parametrize('term,in_model', word_in_model_test_cases)
-def test_word_in_model_view(term, in_model, admin_client, mock_corpus):
+
+@pytest.mark.parametrize('term,in_model', word_in_models_test_cases)
+def test_word_in_models_view(term, in_model, admin_client, mock_corpus):
     response = admin_client.get(
-        f'/api/wordmodels/word_in_model?query_term={term}&corpus_name={mock_corpus}',
+        f'/api/wordmodels/word_in_models?query_term={term}&corpus_name={mock_corpus}',
         content_type='application/json'
     )
     assert response.status_code == 200

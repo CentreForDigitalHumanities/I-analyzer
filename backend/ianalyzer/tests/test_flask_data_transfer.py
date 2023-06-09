@@ -18,7 +18,7 @@ flask_test_data_dir = os.path.join(_here, 'flask_test_data')
 def test_legacy_data_import():
     user_data = import_table_data(flask_test_data_dir, 'user')
 
-    assert len(user_data) == 2
+    assert len(user_data) == 4
 
     user = user_data[0]
     expected_user = {
@@ -69,7 +69,7 @@ def test_save_legacy_user(db):
 
     users = CustomUser.objects.all()
 
-    assert len(users) == 2
+    assert len(users) == 4
     admin = users[0]
     assert admin.username == 'admin'
     assert admin.email == 'admin@ianalyzer.nl'
