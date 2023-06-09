@@ -1,7 +1,7 @@
 import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { combineLatest, Subject, Subscription } from 'rxjs';
-import { Corpus, CorpusField, SortConfiguration, } from '../models/index';
+import { Corpus, CorpusField, SortBy, SortConfiguration, SortDirection, } from '../models/index';
 import { EsQuery } from '../services';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
@@ -84,8 +84,7 @@ export class QueryModel {
     constructor(corpus: Corpus) {
 		this.corpus = corpus;
         this.sort = new SortConfiguration(this.corpus);
-        this.sort.configuration$.subscribe(() => this.update.next());
-	}
+    }
 
 	setQueryText(text?: string) {
 		this.queryText = text || undefined;
@@ -96,6 +95,18 @@ export class QueryModel {
 		this.filters.push(filter);
         this.subscribeToFilterUpdates();
 	}
+
+
+    setSortBy(value: SortBy) {
+        this.sort.setSortBy(value);
+        this.update.next();
+    }
+
+    setSortDirection(value: SortDirection) {
+        this.sort.setSortDirection(value);
+        this.update.next();
+    }
+
 
     removeFilter(filter: SearchFilter) {
         this.removeFiltersForField(filter.corpusField);

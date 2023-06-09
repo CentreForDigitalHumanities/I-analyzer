@@ -34,8 +34,8 @@ export class SearchServiceMock {
         filters.forEach(model.addFilter);
 
         if (sortField) {
-            model.sort.setSortBy(sortField);
-            model.sort.setSortDirection(sortAscending ? 'asc' : 'desc');
+            model.setSortBy(sortField);
+            model.setSortDirection(sortAscending ? 'asc' : 'desc');
         }
 
         model.highlightSize = highlight;
