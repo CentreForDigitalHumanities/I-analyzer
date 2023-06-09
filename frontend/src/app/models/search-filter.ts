@@ -11,11 +11,14 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	corpusField: CorpusField;
 	defaultData: FilterData;
 	data: BehaviorSubject<FilterData>;
+    active: BehaviorSubject<boolean>;
 
 	constructor(corpusField: CorpusField) {
 		this.corpusField = corpusField;
 		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
 		this.data = new BehaviorSubject<FilterData>(this.defaultData);
+        this.active = new BehaviorSubject<boolean>(false);
+        this.data.subscribe(this.deactivateWhenDefault.bind(this));
 	}
 
     get currentData() {
@@ -28,15 +31,25 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         );
     }
 
+    set(data: FilterData) {
+        if (!_.isEqual(data, this.currentData)) {
+            this.data.next(data);
+
+            if (!_.isEqual(data, this.defaultData)) {
+                this.activate();
+            }
+        }
+    }
+
 	reset() {
-		this.data.next(this.defaultData);
+        this.set(this.defaultData);
 	}
 
     /**
      * set value based on route parameter
      */
     setFromParam(param: string): void {
-        this.data.next(this.dataFromString(param));
+        this.set(this.dataFromString(param));
     }
 
     /**
@@ -44,7 +57,7 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
      * the same day, page, publication, etc. as a specific document)
      */
     setToValue(value: any) {
-        this.data.next(this.dataFromValue(value));
+        this.set(this.dataFromValue(value));
     }
 
     toRouteParam(): {[param: string]: any} {
@@ -53,7 +66,31 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         };
     }
 
-	abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
+    public activate() {
+        if (!this.active.value) {
+            this.toggle();
+        }
+    }
+
+    public deactivate() {
+        if (this.active.value) {
+            this.toggle();
+        }
+    }
+
+    public toggle() {
+        this.active.next(!this.active.value);
+    }
+
+
+    /** called after filter updates: deactivate the filter if the filter uses default data */
+    private deactivateWhenDefault(isDefault: boolean) {
+        if (isDefault) {
+            this.deactivate();
+        }
+    }
+
+    abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
 
 	abstract dataFromValue(value: any): FilterData;
 
@@ -67,6 +104,7 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	abstract toEsFilter(): EsFilterType;
 
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
+
 }
 
 export interface DateFilterData {
