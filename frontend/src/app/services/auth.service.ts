@@ -12,6 +12,7 @@ import {
     distinctUntilChanged, mergeMap,
     takeUntil, tap
 } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { User, UserResponse } from '../models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
@@ -30,6 +31,8 @@ export class AuthService implements OnDestroy {
         .pipe(distinctUntilChanged());
     // Provide the currentUser as a Promise to adapt to existing functionality
     public currentUserPromise = this.currentUser$.toPromise();
+
+    public notVerifiedMsg = 'E-mail is not verified.';
 
     // authenticated state
     private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
@@ -92,19 +95,17 @@ export class AuthService implements OnDestroy {
      * Transforms backend user response to User object
      *
      * @param result User response data
-     * @param isSolisLogin Flag for SAML login
      * @returns User object
      */
     private transformUserResponse(
-        result: UserResponse,
-        isSolisLogin: boolean = false
+        result: UserResponse
     ): User {
         return new User(
             result.id,
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            isSolisLogin
+            result.saml
         );
     }
 
@@ -121,7 +122,7 @@ export class AuthService implements OnDestroy {
             parsed['username'],
             parsed['is_admin'],
             parsed['download_limit'],
-            parsed['isSolisLogin']
+            parsed['isSamlLogin']
         );
     }
 
@@ -144,10 +145,13 @@ export class AuthService implements OnDestroy {
         );
     }
 
-    public logout(redirectToLogin: boolean = false) {
+    public logout(isSamlLogin: boolean = false, redirectToLogin: boolean = false) {
+        this.purgeAuth();
+        if (isSamlLogin) {
+            window.location.href = environment.samlLogoutUrl;
+        }
         return this.apiService.logout().pipe(
             tap(() => {
-                this.purgeAuth();
                 if (redirectToLogin) {
                     this.showLogin();
                 }
@@ -176,6 +180,24 @@ export class AuthService implements OnDestroy {
         this.router.navigate(
             ['/login'],
             returnUrl ? { queryParams: { returnUrl } } : undefined
+        );
+    }
+
+    public requestResetPassword(email: string) {
+        return this.apiService.requestResetPassword(email);
+    }
+
+    public resetPassword(
+        uid: string,
+        token: string,
+        newPassword1: string,
+        newPassword2: string
+    ) {
+        return this.apiService.resetPassword(
+            uid,
+            token,
+            newPassword1,
+            newPassword2
         );
     }
 }

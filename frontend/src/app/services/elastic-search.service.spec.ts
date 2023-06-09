@@ -2,6 +2,8 @@ import { TestBed, inject } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElasticSearchService } from './elastic-search.service';
 import { Corpus, DateFilterData, QueryModel, SearchFilter } from '../models';
+import * as _ from 'lodash';
+import { mockField, mockField2 } from '../../mock-data/corpus';
 
 
 const dateFilter: SearchFilter<DateFilterData> = {
@@ -79,6 +81,16 @@ describe('ElasticSearchService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('should select search fields', () => {
+        const queryModel: QueryModel = {
+            queryText: 'test',
+            fields: ['great_field', 'speech']
+        };
+
+        const esQuery = service.makeEsQuery(queryModel, [mockField, mockField2]);
+        expect(_.get(esQuery, 'query.simple_query_string.fields')).toEqual(['great_field', 'speech']);
+    });
+
     it('should convert between EsQuery and QueryModel types', () => {
 
         const querymodels: QueryModel[] = [
@@ -92,7 +104,7 @@ describe('ElasticSearchService', () => {
         ];
 
         querymodels.forEach(queryModel => {
-            const esQuery = service.makeEsQuery(queryModel);
+            const esQuery = service.makeEsQuery(queryModel, mockCorpus.fields);
             const restoredQueryModel = service.esQueryToQueryModel(esQuery, mockCorpus);
             expect(restoredQueryModel).toEqual(queryModel);
         });

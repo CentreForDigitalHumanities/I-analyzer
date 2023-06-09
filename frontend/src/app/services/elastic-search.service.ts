@@ -4,8 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
     AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField,
-    EsFilter, EsDateFilter, EsRangeFilter, EsTermsFilter, EsBooleanFilter,
-    EsSearchClause, BooleanQuery, MatchAll } from '../models/index';
+    EsFilter, EsSearchClause, BooleanQuery } from '../models/index';
 
 
 import * as _ from 'lodash';
@@ -22,8 +21,9 @@ export class ElasticSearchService {
         this.client = new Client(this.http);
     }
 
-    public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
-        const clause: EsSearchClause = makeEsSearchClause(queryModel.queryText, fields);
+    public makeEsQuery(queryModel: QueryModel, corpusFields: CorpusField[]): EsQuery | EsQuerySorted {
+        const searchFields = queryModel.fields?.map(fieldName => findByName(corpusFields, fieldName));
+        const clause: EsSearchClause = makeEsSearchClause(queryModel.queryText, searchFields);
 
         let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
@@ -39,7 +39,7 @@ export class ElasticSearchService {
         const sort = makeSortSpecification(queryModel.sortBy, queryModel.sortAscending);
         _.merge(query, sort);
 
-        const highlight = makeHighlightSpecification(fields, queryModel.queryText, queryModel.highlight);
+        const highlight = makeHighlightSpecification(corpusFields, queryModel.queryText, queryModel.highlight);
         _.merge(query, highlight);
 
         return query;
@@ -162,7 +162,7 @@ export class ElasticSearchService {
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
-        const esQuery = this.makeEsQuery(queryModel);
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         const aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
@@ -188,7 +188,7 @@ export class ElasticSearchService {
                 }
             }
         };
-        const esQuery = this.makeEsQuery(queryModel);
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         const aggregationModel = Object.assign({ aggs: agg }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};

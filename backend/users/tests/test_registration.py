@@ -27,7 +27,7 @@ def test_register_verification(client, db, django_user_model):
     verify_mail = box[0]
     assert verify_mail.to[0] == creds['email']
 
-    key = re.search(r'account-confirm-email\/(.+)\/',
+    key = re.search(r'confirm-email\/(.+)\/',
                     verify_mail.body).group(1)
     assert key
 

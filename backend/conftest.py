@@ -1,6 +1,9 @@
 import pytest
+from allauth.account.models import EmailAddress
+from ianalyzer.elasticsearch import elasticsearch
+from addcorpus.load_corpus import load_all_corpora
 
-
+# user credentials and logged-in api clients
 @pytest.fixture
 def user_credentials():
     return {'username': 'basic_user',
@@ -21,6 +24,10 @@ def auth_user(django_user_model, user_credentials):
         username=user_credentials['username'],
         password=user_credentials['password'],
         email=user_credentials['email'])
+    EmailAddress.objects.create(user=user,
+                                email=user.email,
+                                verified=True,
+                                primary=True)
     return user
 
 
@@ -39,6 +46,10 @@ def admin_user(django_user_model, admin_credentials):
         username=admin_credentials['username'],
         password=admin_credentials['password'],
         email=admin_credentials['email'])
+    EmailAddress.objects.create(user=user,
+                                email=user.email,
+                                verified=True,
+                                primary=True)
     return user
 
 
@@ -49,3 +60,27 @@ def admin_client(client, admin_user, admin_credentials):
         password=admin_credentials['password'])
     yield client
     client.logout()
+
+# elasticsearch
+
+@pytest.fixture(scope='session')
+def es_client():
+    """
+    Initialise an elasticsearch client for the default elasticsearch cluster. Skip if no connection can be made.
+    """
+
+    client = elasticsearch('small-mock-corpus') # based on settings_test.py, this corpus will use cluster 'default'
+    # check if client is available, else skip test
+    try:
+        client.info()
+    except:
+        pytest.skip('Cannot connect to elasticsearch server')
+
+    return client
+
+# mock corpora
+
+@pytest.fixture()
+def mock_corpora_in_db(db):
+    '''Make sure the mock corpora are included in the database'''
+    load_all_corpora()

@@ -20,5 +20,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_site_domain)
+        migrations.RunPython(
+            code=update_site_domain,
+            reverse_code=migrations.RunPython.noop,
+        )
     ]

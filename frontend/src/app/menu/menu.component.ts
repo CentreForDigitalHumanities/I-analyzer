@@ -49,7 +49,8 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     public async logout() {
-        await this.authService.logout(true).toPromise();
+        const isSamlLogin = this.currentUser.isSamlLogin;
+        await this.authService.logout(isSamlLogin, true).toPromise();
         this.currentUser = undefined;
     }
 
@@ -63,10 +64,10 @@ export class MenuComponent implements OnDestroy, OnInit {
                 if (user) {
                     this.currentUser = user;
                     this.isAdmin = this.currentUser.isAdmin;
+                    this.setMenuItems();
                 } else {
                     this.isAdmin = false;
                 }
-                this.setMenuItems();
             },
             (_error) => {
                 this.currentUser = undefined;

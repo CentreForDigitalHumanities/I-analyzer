@@ -1,17 +1,23 @@
-from django.shortcuts import render
-
-from allauth.account.models import EmailConfirmationHMAC, EmailConfirmation
+from allauth.account.models import EmailConfirmationHMAC
 from django.http import HttpResponseRedirect
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.status import HTTP_404_NOT_FOUND
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.status import HTTP_404_NOT_FOUND
+from rest_framework.views import APIView
+
+from djangosaml2.views import LogoutView
 
 
 def redirect_confirm(request, key):
     '''Redirects email-confirmation to the frontend'''
     return HttpResponseRedirect('/confirm-email/{}/'.format(key))
+
+
+def redirect_reset(request, uidb64, token):
+    '''Redirects password reset to the frontend'''
+    return HttpResponseRedirect('/reset-password/{}/{}/'.format(uidb64, token))
 
 
 class KeyInfoView(APIView):
@@ -31,3 +37,10 @@ class KeyInfoView(APIView):
                             'email': info.email_address.email})
         except Exception as e:
             raise APIException(e)
+
+
+class SamlLogoutView(LogoutView):
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
