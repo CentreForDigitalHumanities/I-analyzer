@@ -1,7 +1,7 @@
 import { convertToParamMap } from '@angular/router';
 import { highlightFromParams, omitNullParameters, paramsHaveChanged, searchFieldsFromParams } from './params';
-import { mockCorpus, mockCorpus3, mockField2 } from '../../mock-data/corpus';
-import { QueryModel } from '../models';
+import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
+import { MultipleChoiceFilter, QueryModel } from '../models';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
@@ -42,9 +42,14 @@ describe('omitNullParameters', () => {
 });
 
 describe('paramsHaveChanged', () => {
-    it('should detect changes in parameters', () => {
-        const queryModel = new QueryModel(mockCorpus);
+    const corpus = mockCorpus;
+    let queryModel: QueryModel;
 
+    beforeEach(() => {
+        queryModel = new QueryModel(corpus);
+    });
+
+    it('should detect changes in parameters', () => {
         const params1 = convertToParamMap({});
         const params2 = convertToParamMap({query: 'test'});
 
@@ -56,5 +61,13 @@ describe('paramsHaveChanged', () => {
         expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
         expect(paramsHaveChanged(queryModel, params1)).toBeTrue();
 
+    });
+
+    it('should detect new filters', () => {
+        const filter = mockField.makeSearchFilter() as MultipleChoiceFilter;
+        filter.data.next(['test']);
+        const params = convertToParamMap(filter.toRouteParam());
+
+        expect(paramsHaveChanged(queryModel, params)).toBeTrue();
     });
 });
