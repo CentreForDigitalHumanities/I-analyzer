@@ -31,6 +31,20 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         );
     }
 
+
+    get adHoc() {
+        return _.isUndefined(this.corpusField.filterOptions);
+    }
+
+    get description() {
+        if (this.corpusField?.filterOptions.description) {
+            return this.corpusField.filterOptions.description;
+        } else {
+            return `Filter results based on ${this.corpusField.displayName}`;
+        }
+    }
+
+
     set(data: FilterData) {
         if (!_.isEqual(data, this.currentData)) {
             this.data.next(data);
