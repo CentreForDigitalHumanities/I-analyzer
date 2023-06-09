@@ -74,6 +74,7 @@ export class SearchComponent extends ParamDirective {
     setStateFromParams(params: ParamMap) {
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
+        this.queryModel.setFromParams(params);
     }
 
     @HostListener('window:scroll', [])
