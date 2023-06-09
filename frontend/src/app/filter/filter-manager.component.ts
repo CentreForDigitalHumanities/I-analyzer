@@ -13,14 +13,7 @@ import { PotentialFilter, Corpus, SearchFilter, QueryModel } from '../models/ind
     styleUrls: ['./filter-manager.component.scss']
 })
 export class FilterManagerComponent {
-    @Input()
-    get corpus(): Corpus {
-        return this._corpus;
-    }
-    set corpus(corpus: Corpus) {
-        this._corpus = corpus;
-        this.setPotentialFilters();
-    }
+    @Input() corpus: Corpus;
 
     @Input()
     get queryModel(): QueryModel {

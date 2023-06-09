@@ -5,6 +5,7 @@ import { commonTestBed } from '../common-test-bed';
 import { PotentialFilter, QueryModel } from '../models';
 
 import { MultipleChoiceFilterComponent } from './multiple-choice-filter.component';
+import * as _ from 'lodash';
 
 describe('MultipleChoiceFilterComponent', () => {
   let component: MultipleChoiceFilterComponent;
@@ -17,7 +18,9 @@ describe('MultipleChoiceFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MultipleChoiceFilterComponent);
     component = fixture.componentInstance;
-    const query = new QueryModel(mockCorpus);
+    const corpus = _.cloneDeep(mockCorpus);
+    corpus.fields.push(mockFieldMultipleChoice);
+    const query = new QueryModel(corpus);
     component.filter = new PotentialFilter(mockFieldMultipleChoice, query);
     fixture.detectChanges();
   });
