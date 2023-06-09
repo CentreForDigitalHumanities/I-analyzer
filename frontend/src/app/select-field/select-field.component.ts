@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { CorpusField } from '../models/index';
@@ -14,6 +14,7 @@ import { searchFieldsFromParams } from '../utils/params';
 export class SelectFieldComponent extends ParamDirective implements OnChanges {
     @Input() public filterCriterion: string;
     @Input() public corpusFields: CorpusField[];
+    @Output() public updatedCorpusFields = new EventEmitter<CorpusField[]>();
 
     // all fields which are searchable
     private availableFields: CorpusField[];
@@ -48,10 +49,11 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
     setStateFromParams(params: ParamMap) {
         const queryFields = searchFieldsFromParams(params);
         if (!queryFields) {
-            this.selectedFields = [];
+            this.selectedFields = this.filterCoreFields();
         } else {
             this.selectedFields = this.optionFields.filter( field => queryFields.find(name => field.name === name) );
         }
+        this.updatedCorpusFields.emit(this.selectedFields);
     }
 
     private getAvailableSearchFields(corpusFields: CorpusField[]): CorpusField[] {
@@ -100,14 +102,17 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
             this.optionFields = coreFields.concat(_.sortBy(noCoreOptions,['displayName']));
         }
         this.allVisible = !this.allVisible;
+        this.updatedCorpusFields.emit(this.selectedFields);
     }
 
     public toggleField() {
         if ( !this.selectedFields.length ) {
+            this.updatedCorpusFields.emit([]);
             if (this.filterCriterion === 'csv') return;
             this.setParams({ fields: null });
         }
         else {
+            this.updatedCorpusFields.emit(this.selectedFields);
             this.uiSelected = this.selectedFields.map(field => field.name);
             const fields = this.uiSelected.join(',');
             if (this.filterCriterion === 'csv') return;

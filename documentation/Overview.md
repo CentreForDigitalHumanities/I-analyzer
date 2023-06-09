@@ -2,6 +2,28 @@
 
 The application consists of a backend, implemented in [Django](https://www.djangoproject.com/) and a frontend implemented in [Angular](https://angular.io/).
 
+## Directory structure
+
+The I-analyzer backend (`/backend`) is a python/Django app that provides the following functionality:
+
+- A 'users' module that defines user accounts.
+
+- A 'corpora' module containing corpus definitions and metadata of the currently implemented corpora. For each corpus added in I-analyzer, this module defines how to extract document contents from its source files and sets parameters for displaying the corpus in the interface, such as sorting options.
+
+- An 'addcorpus' module which manages the functionality to extract data from corpus source files (given the definition) and save this in an elasticsearch index. Source files can be XML or HTML format (which are parsed with `beautifulsoup4` + `lxml`) or CSV. This module also provides the basic data structure for corpora.
+
+- An 'es' module which handles the communication with elasticsearch. The data is passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
+
+- An 'api' module that that enables users to search through an ElasticSearch index of a text corpus and stream search results into a CSV file. The module also performs more complex analysis of search results for visualisations.
+
+- A 'visualizations' module that does the analysis for several types of text-based visualisations.
+
+- A 'downloads' module that collects results into csv files.
+
+- A 'wordmodels' module that handles functionality related to word embeddings.
+
+`ianalyzer/frontend` is an [Angular 13](https://angular.io/) web interface.
+
 # Backend
 
 The backend has three responsibilities:
