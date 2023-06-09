@@ -75,9 +75,16 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
     }
 
     toRouteParam(): {[param: string]: any} {
+        const value = this.active.value ? this.dataToString(this.currentData) : undefined;
         return {
-            [this.corpusField.name]: this.dataToString(this.currentData) || null
+            [this.corpusField.name]: value || null
         };
+    }
+
+    toEsFilter(): EsFilterType {
+        if (this.active.value) {
+            return this.dataToEsFilter();
+        }
     }
 
     public activate() {
@@ -113,9 +120,9 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	abstract dataToString(data: FilterData): string;
 
 	/**
-	 * export as filter specification in elasticsearch query language
+	 * export data as filter specification in elasticsearch query language
 	 */
-	abstract toEsFilter(): EsFilterType;
+	abstract dataToEsFilter(): EsFilterType;
 
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
 
@@ -155,7 +162,7 @@ export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilte
 		return `${min}:${max}`;
 	}
 
-	toEsFilter(): EsDateFilter {
+	dataToEsFilter(): EsDateFilter {
 		return {
 			range: {
 				[this.corpusField.name]: {
@@ -201,7 +208,7 @@ export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter
         return data.toString();
     }
 
-    toEsFilter(): EsBooleanFilter {
+    dataToEsFilter(): EsBooleanFilter {
         return {
             term: {
                 [this.corpusField.name]: this.currentData
@@ -237,7 +244,7 @@ export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFil
         return data.map(encodeURIComponent).join(',');
     }
 
-    toEsFilter(): EsTermsFilter {
+    dataToEsFilter(): EsTermsFilter {
         return {
             terms: {
                 [this.corpusField.name]: this.currentData
@@ -279,7 +286,7 @@ export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFi
         return `${data.min},${data.max}`;
     }
 
-    toEsFilter(): EsRangeFilter {
+    dataToEsFilter(): EsRangeFilter {
         return {
             range: {
                 [this.corpusField.name]: {
@@ -313,7 +320,7 @@ export class AdHocFilter extends AbstractSearchFilter<any, EsTermFilter> {
         return data.toString();
     }
 
-    toEsFilter(): EsTermFilter {
+    dataToEsFilter(): EsTermFilter {
         return {
             term: {
                 [this.corpusField.name]: this.currentData

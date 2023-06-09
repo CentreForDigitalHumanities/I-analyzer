@@ -1,4 +1,5 @@
 import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
+import { EsDateFilter, EsTermsFilter } from './elasticsearch';
 import { DateFilter, DateFilterData, MultipleChoiceFilter } from './search-filter';
 
 describe('SearchFilter', () => {
@@ -56,6 +57,10 @@ describe('SearchFilter', () => {
 describe('DateFilter', () => {
     const field = mockFieldDate;
     let filter: DateFilter;
+    const exampleData = {
+        min: new Date(Date.parse('Jan 01 1850')),
+        max: new Date(Date.parse('Dec 31 1860'))
+    };
 
     beforeEach(() => {
         filter = new DateFilter(field);
@@ -85,12 +90,13 @@ describe('DateFilter', () => {
     });
 
     it('should convert to an elasticsearch filter', () => {
+        filter.set(exampleData);
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             range: {
                 date: {
-                    gte: '1800-01-01',
-                    lte: '1899-12-31',
+                    gte: '1850-01-01',
+                    lte: '1860-12-31',
                     format: 'yyyy-MM-dd'
                 }
             }
@@ -98,6 +104,7 @@ describe('DateFilter', () => {
     });
 
     it('should parse an elasticsearch filter', () => {
+        filter.set(exampleData);
         const esFilter = filter.toEsFilter();
         expect(filter.dataFromEsFilter(esFilter)).toEqual(filter.currentData);
     });
@@ -106,6 +113,7 @@ describe('DateFilter', () => {
 describe('MultipleChoiceFilter', () => {
     const field = mockFieldMultipleChoice;
     let filter: MultipleChoiceFilter;
+    const exampleData = ['test'];
 
     beforeEach(() => {
         filter = new MultipleChoiceFilter(field);
@@ -122,13 +130,13 @@ describe('MultipleChoiceFilter', () => {
             .toEqual(filter.currentData);
 
         // non-empty value
-        filter.data.next(['a', 'b', 'value with spaces']);
+        filter.set(['a', 'b', 'value with spaces']);
         expect(filter.dataFromString(filter.dataToString(filter.currentData)))
             .toEqual(filter.currentData);
     });
 
     it('should convert values to valid URI components', () => {
-        filter.data.next(['a long value']);
+        filter.set(['a long value']);
         expect(filter.dataToString(filter.currentData)).not.toContain(' ');
     });
 
@@ -139,7 +147,7 @@ describe('MultipleChoiceFilter', () => {
     });
 
     it('should convert to an elasticsearch filter', () => {
-        filter.data.next(['wow!', 'a great selection!']);
+        filter.set(['wow!', 'a great selection!']);
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             terms: {
@@ -149,6 +157,7 @@ describe('MultipleChoiceFilter', () => {
     });
 
     it('should parse an elasticsearch filter', () => {
+        filter.set(exampleData);
         const esFilter = filter.toEsFilter();
         expect(filter.dataFromEsFilter(esFilter)).toEqual(filter.currentData);
     });
