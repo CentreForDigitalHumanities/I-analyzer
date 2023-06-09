@@ -203,6 +203,24 @@ describe('QueryModel', () => {
         const params = convertToParamMap({});
         query.setFromParams(params);
         expect(updates).toBe(1);
+    });
+
+    it('should not fire updates when params are unchanged', () => {
+        let updates = 0;
+        query.update.subscribe(() => updates += 1);
+
+        const emptyParams = convertToParamMap({});
+
+        query.setFromParams(emptyParams);
+
+        expect(updates).toBe(0);
+
+        const params1 = convertToParamMap({
+            query: 'test'
+        });
+        query.setFromParams(params1);
+
+        expect(updates).toBe(1);
 
     });
 });

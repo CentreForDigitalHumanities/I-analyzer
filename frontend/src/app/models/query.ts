@@ -5,7 +5,7 @@ import { Corpus, CorpusField, SortBy, SortConfiguration, SortDirection, } from '
 import { EsQuery } from '../services';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
-    filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
+    filtersFromParams, highlightFromParams, omitNullParameters, paramsHaveChanged, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
 import { SearchFilter } from './search-filter';
@@ -134,12 +134,14 @@ export class QueryModel {
 
     /** set the query values from a parameter map */
     setFromParams(params: ParamMap) {
-		this.queryText = queryFromParams(params);
-        this.searchFields = searchFieldsFromParams(params, this.corpus);
-        filtersFromParams(params, this.corpus).forEach(filter => this.addFilter(filter));
-        this.sort.setFromParams(params);
-		this.highlightSize = highlightFromParams(params);
-		this.update.next();
+        if (paramsHaveChanged(this, params)) {
+            this.queryText = queryFromParams(params);
+            this.searchFields = searchFieldsFromParams(params, this.corpus);
+            filtersFromParams(params, this.corpus).forEach(filter => this.addFilter(filter));
+            this.sort.setFromParams(params);
+            this.highlightSize = highlightFromParams(params);
+            this.update.next();
+        }
 	}
 
     /**
