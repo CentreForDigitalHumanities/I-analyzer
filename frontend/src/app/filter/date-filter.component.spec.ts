@@ -19,7 +19,7 @@ describe('DateFilterComponent', () => {
     component = fixture.componentInstance;
     const queryModel = new QueryModel(mockCorpus3);
     component.filter = new PotentialFilter(mockFieldDate, queryModel);
-    component.filter.filter.data.next({
+    component.filter.filter.set({
         min: new Date('Jan 1 1810'),
         max: new Date('Dec 31 1820')
     });

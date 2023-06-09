@@ -17,7 +17,7 @@ export class QueryFiltersComponent implements OnInit {
 
     ngOnInit() {
         if (this.queryModel.filters?.length>0) {
-            this.formattedFilters = this.queryModel.filters.map(filter => ({
+            this.formattedFilters = this.queryModel.activeFilters.map(filter => ({
                 name: filter.corpusField.name,
                 formattedData: filter.dataToString(filter.currentData)
             }));

@@ -66,7 +66,7 @@ describe('QueryModel', () => {
         query.addFilter(filter);
         query.addFilter(filter2);
 
-        expect(query.filters.length).toBe(2);
+        expect(query.activeFilters.length).toBe(2);
         expect(updates).toBe(2);
 
         filter.setToValue(new Date('Jan 1 1860'));
@@ -75,7 +75,7 @@ describe('QueryModel', () => {
 
         query.removeFilter(filter);
 
-        expect(query.filters.length).toBe(1);
+        expect(query.activeFilters.length).toBe(1);
         expect(updates).toBe(4);
 
         filter.setToValue(new Date('Jan 1 1870'));
@@ -166,7 +166,7 @@ describe('QueryModel', () => {
 
         const newQuery = new QueryModel(corpus, params);
         expect(newQuery.queryText).toEqual('test');
-        expect(newQuery.filters.length).toBe(1);
+        expect(newQuery.activeFilters.length).toBe(1);
     });
 
     it('should formulate a link', () => {

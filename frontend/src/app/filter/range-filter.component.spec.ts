@@ -19,7 +19,7 @@ describe('RangeFilterComponent', () => {
     component = fixture.componentInstance;
     const query = new QueryModel(mockCorpus3);
     component.filter = new PotentialFilter(mockField3, query);
-    component.filter.filter.data.next({min: 1984, max: 1984});
+    component.filter.filter.set({min: 1984, max: 1984});
     fixture.detectChanges();
   });
 

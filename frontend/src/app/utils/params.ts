@@ -40,7 +40,7 @@ export const filtersFromParams = (params: ParamMap, corpus: Corpus): SearchFilte
     return specifiedFields.map(field => {
         const filter = field.makeSearchFilter();
         const data = filter.dataFromString(params.get(field.name));
-        filter.data.next(data);
+        filter.set(data);
         return filter;
     });
 };

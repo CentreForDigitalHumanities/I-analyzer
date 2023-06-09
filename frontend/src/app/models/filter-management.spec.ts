@@ -14,13 +14,13 @@ describe('PotentialFilter', () => {
         const field = mockField;
         const query = new QueryModel(mockCorpus);
         const potentialFilter = new PotentialFilter(field, query);
-        potentialFilter.filter.data.next(true);
+        potentialFilter.filter.set(true);
 
-        expect(query.filters.length).toBe(0);
+        expect(query.activeFilters.length).toBe(0);
         potentialFilter.toggle();
-        expect(query.filters.length).toBe(1);
+        expect(query.activeFilters.length).toBe(1);
         potentialFilter.toggle();
-        expect(query.filters.length).toBe(0);
+        expect(query.activeFilters.length).toBe(0);
     });
 
     it('should deactivate when a date filter resets', () => {
@@ -30,10 +30,10 @@ describe('PotentialFilter', () => {
 
         potentialFilter.filter.setToValue('Jan 1 1850');
         potentialFilter.activate();
-        expect(query.filters.length).toBe(1);
+        expect(query.activeFilters.length).toBe(1);
 
         potentialFilter.filter.reset();
-        expect(query.filters.length).toBe(0);
+        expect(query.activeFilters.length).toBe(0);
     });
 
     it('should deactivate when a multiple choice filter resets', () => {
@@ -43,9 +43,9 @@ describe('PotentialFilter', () => {
 
         potentialFilter.filter.setToValue('test');
         potentialFilter.activate();
-        expect(query.filters.length).toBe(1);
+        expect(query.activeFilters.length).toBe(1);
 
-        potentialFilter.filter.data.next([]);
-        expect(query.filters.length).toBe(0);
+        potentialFilter.filter.set([]);
+        expect(query.activeFilters.length).toBe(0);
     });
 });

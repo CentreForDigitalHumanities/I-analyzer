@@ -57,7 +57,7 @@ export class PotentialFilter {
 
     set(data: any) {
         if (!_.isEqual(data, this.filter.currentData)) {
-            this.filter.data.next(data);
+            this.filter.set(data);
 
             if (!_.isEqual(data, this.filter.defaultData)) {
                 this.activate();
