@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { distinct, map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
@@ -18,7 +18,6 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
 		this.data = new BehaviorSubject<FilterData>(this.defaultData);
         this.active = new BehaviorSubject<boolean>(false);
-        this.data.subscribe(this.deactivateWhenDefault.bind(this));
 	}
 
     get currentData() {
@@ -44,6 +43,18 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         }
     }
 
+    /**
+     * an observable of the effective predicate imposed by the filter.
+     *
+     * emits the latest filter data wile the filter is active, and undefined
+     * when it is set to inactive.
+     */
+    get activeData$(): Observable<FilterData|undefined> {
+        return combineLatest([this.active, this.data]).pipe(
+            map(values => values[0] ? values[1] : undefined),
+            distinct(),
+        );
+    }
 
     set(data: FilterData) {
         if (!_.isEqual(data, this.currentData)) {
@@ -51,6 +62,8 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 
             if (!_.isEqual(data, this.defaultData)) {
                 this.activate();
+            } else {
+                this.deactivate();
             }
         }
     }
@@ -101,14 +114,6 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 
     public toggle() {
         this.active.next(!this.active.value);
-    }
-
-
-    /** called after filter updates: deactivate the filter if the filter uses default data */
-    private deactivateWhenDefault(isDefault: boolean) {
-        if (isDefault) {
-            this.deactivate();
-        }
     }
 
     abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
