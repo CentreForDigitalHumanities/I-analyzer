@@ -16,11 +16,11 @@ describe('PotentialFilter', () => {
         const potentialFilter = new PotentialFilter(field, query);
         potentialFilter.filter.set(true);
 
-        expect(query.activeFilters.length).toBe(0);
-        potentialFilter.toggle();
         expect(query.activeFilters.length).toBe(1);
         potentialFilter.toggle();
         expect(query.activeFilters.length).toBe(0);
+        potentialFilter.toggle();
+        expect(query.activeFilters.length).toBe(1);
     });
 
     it('should deactivate when a date filter resets', () => {

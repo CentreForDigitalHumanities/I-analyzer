@@ -1,23 +1,25 @@
 import * as _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
 import { CorpusField } from './corpus';
 import { QueryModel } from './query';
 import { SearchFilter } from './search-filter';
 import { SearchFilterType } from './search-filter-options';
+import { Observable } from 'rxjs-compat';
 
 export class PotentialFilter {
     filter: SearchFilter;
-    useAsFilter = new BehaviorSubject<boolean>(false);
+    useAsFilter: Observable<boolean>;
     description: string;
     adHoc?: boolean;
 
     constructor(public corpusField: CorpusField, public queryModel: QueryModel) {
         if (queryModel.filterForField(corpusField)) {
             this.filter = queryModel.filterForField(corpusField);
-            this.useAsFilter.next(true);
         } else {
             this.filter = corpusField.makeSearchFilter();
+            this.queryModel.addFilter(this.filter);
         }
+
+        this.useAsFilter = this.filter.active.asObservable();
 
         if (!corpusField.filterOptions) {
             this.description = `View results from this ${corpusField.displayName}`;
@@ -26,8 +28,6 @@ export class PotentialFilter {
             this.description = corpusField.filterOptions.description;
             this.adHoc = false;
         }
-
-        this.filter.isDefault$.subscribe(this.deactivateWhenDefault.bind(this));
     }
 
     get filterType(): SearchFilterType {
@@ -35,44 +35,22 @@ export class PotentialFilter {
     }
 
     toggle() {
-        this.useAsFilter.next(!this.useAsFilter.value);
-        if (this.useAsFilter.value) {
-            this.queryModel.addFilter(this.filter);
-        } else {
-            this.queryModel.removeFilter(this.filter);
-        }
+        this.filter.toggle();
     }
 
     deactivate() {
-        if (this.useAsFilter.value) {
-            this.toggle();
-        }
+        this.filter.deactivate();
     }
 
     activate() {
-        if (!this.useAsFilter.value) {
-            this.toggle();
-        }
+        this.filter.activate();
     }
 
     set(data: any) {
-        if (!_.isEqual(data, this.filter.currentData)) {
-            this.filter.set(data);
-
-            if (!_.isEqual(data, this.filter.defaultData)) {
-                this.activate();
-            }
-        }
+        this.filter.set(data);
     }
 
     reset() {
         this.filter.reset();
-    }
-
-    /** called after filter updates: deactivate the filter if the filter uses default data */
-    private deactivateWhenDefault(isDefault: boolean) {
-        if (isDefault) {
-            this.deactivate();
-        }
     }
 }
