@@ -7,6 +7,7 @@ import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import * as _ from 'lodash';
+import { paramsHaveChanged } from '../utils/params';
 
 @Component({
     selector: 'ia-search',
@@ -74,7 +75,9 @@ export class SearchComponent extends ParamDirective {
     setStateFromParams(params: ParamMap) {
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
-        this.queryModel.setFromParams(params);
+        if (paramsHaveChanged(this.queryModel, params)) {
+            this.setQueryModel(false);
+        }
     }
 
     @HostListener('window:scroll', [])
@@ -128,10 +131,8 @@ export class SearchComponent extends ParamDirective {
     }
 
     private setQueryModel(reset: boolean) {
-        const queryModel = new QueryModel(this.corpus);
-        if (!reset) {
-            queryModel.setFromParams(this.route.snapshot.queryParamMap);
-        }
+        const params = reset ? undefined : this.route.snapshot.queryParamMap;
+        const queryModel = new QueryModel(this.corpus, params);
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {

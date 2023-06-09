@@ -18,9 +18,12 @@ export class SortConfiguration {
     private defaultSortBy: SortBy;
     private defaultSortDirection: SortDirection = 'desc';
 
-    constructor(private corpus: Corpus) {
+    constructor(private corpus: Corpus, params?: ParamMap) {
         this.defaultSortBy = this.corpus.fields.find(field => field.primarySort);
         this.sortBy.next(this.defaultSortBy);
+        if (params) {
+            this.setFromParams(params);
+        }
     }
 
     /**
@@ -48,7 +51,19 @@ export class SortConfiguration {
         this.sortDirection.next(this.defaultSortDirection);
     }
 
-    setFromParams(params: ParamMap) {
+    toRouteParam(): {sort: string|null} {
+        if (this.isDefault) {
+            return {sort: null};
+        }
+        return sortSettingsToParams(this.sortBy.value, this.sortDirection.value);
+    }
+
+    /** convert this configuration to the 'sort' part of an elasticsearch query */
+    toEsQuerySort(): { sort?: any } {
+        return makeSortSpecification(this.sortBy.value, this.sortDirection.value);
+    }
+
+    private setFromParams(params: ParamMap) {
         if (params.has('sort')) {
             const [sortParam, ascParam] = params.get('sort').split(',');
             if ( sortParam === 'relevance' ) {
@@ -61,17 +76,5 @@ export class SortConfiguration {
         } else {
             this.reset();
         }
-    }
-
-    toRouteParam(): {sort: string|null} {
-        if (this.isDefault) {
-            return {sort: null};
-        }
-        return sortSettingsToParams(this.sortBy.value, this.sortDirection.value);
-    }
-
-    /** convert this configuration to the 'sort' part of an elasticsearch query */
-    toEsQuerySort(): { sort?: any } {
-        return makeSortSpecification(this.sortBy.value, this.sortDirection.value);
     }
 }

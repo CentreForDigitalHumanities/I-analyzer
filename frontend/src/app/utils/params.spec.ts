@@ -56,7 +56,7 @@ describe('paramsHaveChanged', () => {
         expect(paramsHaveChanged(queryModel, params1)).toBeFalse();
         expect(paramsHaveChanged(queryModel, params2)).toBeTrue();
 
-        queryModel.setFromParams(params2);
+        queryModel = new QueryModel(corpus, params2);
 
         expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
         expect(paramsHaveChanged(queryModel, params1)).toBeTrue();

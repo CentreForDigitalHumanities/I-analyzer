@@ -81,9 +81,12 @@ export class QueryModel {
 
     private filterSubscription: Subscription;
 
-    constructor(corpus: Corpus) {
+    constructor(corpus: Corpus, params?: ParamMap) {
 		this.corpus = corpus;
         this.sort = new SortConfiguration(this.corpus);
+        if (params) {
+            this.setFromParams(params);
+        }
     }
 
     get activeFilters() {
@@ -135,18 +138,6 @@ export class QueryModel {
         this.highlightSize = size;
         this.update.next();
     }
-
-    /** set the query values from a parameter map */
-    setFromParams(params: ParamMap) {
-        if (paramsHaveChanged(this, params)) {
-            this.queryText = queryFromParams(params);
-            this.searchFields = searchFieldsFromParams(params, this.corpus);
-            this.filters = filtersFromParams(params, this.corpus);
-            this.sort.setFromParams(params);
-            this.highlightSize = highlightFromParams(params);
-            this.subscribeToFilterUpdates();
-        }
-	}
 
     /**
      * make a clone of the current query.
@@ -209,6 +200,15 @@ export class QueryModel {
             ...query, ...sort, ...highlight
         };
 	}
+
+    /** set the query values from a parameter map */
+    private setFromParams(params: ParamMap) {
+        this.queryText = queryFromParams(params);
+        this.searchFields = searchFieldsFromParams(params, this.corpus);
+        this.filters = filtersFromParams(params, this.corpus);
+        this.sort = new SortConfiguration(this.corpus, params);
+        this.highlightSize = highlightFromParams(params);
+    }
 
     private subscribeToFilterUpdates() {
         if (this.filterSubscription) {

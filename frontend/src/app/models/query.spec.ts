@@ -164,9 +164,9 @@ describe('QueryModel', () => {
             date: '1850-01-01:1850-01-01',
         });
 
-        query.setFromParams(params);
-        expect(query.queryText).toEqual('test');
-        expect(query.filters.length).toBe(1);
+        const newQuery = new QueryModel(corpus, params);
+        expect(newQuery.queryText).toEqual('test');
+        expect(newQuery.filters.length).toBe(1);
     });
 
     it('should formulate a link', () => {
@@ -188,48 +188,5 @@ describe('QueryModel', () => {
         filter.setToValue(new Date('Jan 2 1850'));
         expect(query.filters[0].currentData.min).toEqual(new Date('Jan 2 1850'));
         expect(clone.filters[0].currentData.min).toEqual(new Date('Jan 1 1850'));
-    });
-
-    it('should fire a single update event when updating from params', () => {
-        // dirty up the settings a bit
-        query.setQueryText('test');
-        query.addFilter(filter);
-        query.sort.setSortBy(mockFieldDate);
-        query.sort.setSortDirection('desc');
-
-        let updates = 0;
-        query.update.subscribe(() => updates += 1);
-
-        const params = convertToParamMap({});
-        query.setFromParams(params);
-        expect(updates).toBe(1);
-
-        const params2 = convertToParamMap({
-            query: 'test',
-            ... filter.toRouteParam(),
-            ... filter2.toRouteParam(),
-        });
-
-        query.setFromParams(params2);
-
-        expect(updates).toBe(2);
-    });
-
-    it('should not fire updates when params are unchanged', () => {
-        let updates = 0;
-        query.update.subscribe(() => updates += 1);
-
-        const emptyParams = convertToParamMap({});
-
-        query.setFromParams(emptyParams);
-
-        expect(updates).toBe(0);
-
-        const params1 = convertToParamMap({
-            query: 'test'
-        });
-        query.setFromParams(params1);
-
-        expect(updates).toBe(1);
     });
 });
