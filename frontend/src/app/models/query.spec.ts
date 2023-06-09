@@ -80,8 +80,7 @@ describe('QueryModel', () => {
 
         filter.setToValue(new Date('Jan 1 1870'));
 
-        expect(updates).toBe(4);
-
+        expect(updates).toBe(5);
     });
 
     it('should convert to an elasticsearch query', () => {

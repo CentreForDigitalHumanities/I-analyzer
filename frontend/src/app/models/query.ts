@@ -87,6 +87,7 @@ export class QueryModel {
         if (params) {
             this.setFromParams(params);
         }
+        this.subscribeToFilterUpdates();
     }
 
     get activeFilters() {
@@ -99,8 +100,12 @@ export class QueryModel {
 	}
 
 	addFilter(filter: SearchFilter) {
-		this.filters.push(filter);
-        this.subscribeToFilterUpdates();
+        if (this.filterForField(filter.corpusField)) {
+            this.filterForField(filter.corpusField).set(filter.data);
+        } else {
+            this.filters.push(filter);
+            this.subscribeToFilterUpdates();
+        }
 	}
 
 
@@ -116,7 +121,7 @@ export class QueryModel {
 
 
     removeFilter(filter: SearchFilter) {
-        this.removeFiltersForField(filter.corpusField);
+        this.deactivateFiltersForField(filter.corpusField);
     }
 
     /** get an active search filter on this query for the field (undefined if none exists) */
@@ -125,13 +130,12 @@ export class QueryModel {
     }
 
     /** remove all filters that apply to a corpus field */
-    removeFiltersForField(field: CorpusField) {
-        if (this.filterForField(field)) {
-            _.remove(this.filters,
-                filter => filter.corpusField.name === field.name
-            );
-            this.subscribeToFilterUpdates();
-        }
+    deactivateFiltersForField(field: CorpusField) {
+        this.filters.filter(filter =>
+            filter.corpusField.name === field.name
+        ).forEach(filter =>
+            filter.deactivate()
+        );
     }
 
     setHighlight(size?: number) {
@@ -216,7 +220,7 @@ export class QueryModel {
         }
         if (this.filters.length) {
             this.filterSubscription = combineLatest(
-                this.filters.map(f => f.data)
+                this.filters.map(f => f.activeData$)
             ).subscribe(() => this.update.next());
         } else {
             this.filterSubscription = undefined;
