@@ -21,7 +21,7 @@ def convert_query_format_to_query_model(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0001_initial'),
+        ('api', '0002_alter_query_started'),
     ]
 
     operations = [
