@@ -1,9 +1,10 @@
 from django.db import models
+from django.core.validators import MaxLengthValidator
 
 from addcorpus.models import Corpus
 from users.models import CustomUser
 
-# Create your models here.
+DOCS_PER_TAG_LIMIT = 100
 
 class Tag(models.Model):
     name = models.CharField(blank=False, null=False, max_length=512)
@@ -28,4 +29,8 @@ class TagInstance(models.Model):
         to_field='name',
         related_name='tag_instances',
     )
-    document_id = models.CharField(blank=False, null=False, max_length=512)
+    document_ids = models.JSONField(
+        default=list,
+        null=False,
+        validators=[MaxLengthValidator(DOCS_PER_TAG_LIMIT)],
+    )
