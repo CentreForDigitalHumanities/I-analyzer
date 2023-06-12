@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
 import { distinct, map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
@@ -13,6 +13,8 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	defaultData: FilterData;
 	data: BehaviorSubject<FilterData>;
     active: BehaviorSubject<boolean>;
+
+    update = new Subject<void>();
 
 	constructor(corpusField: CorpusField) {
 		this.corpusField = corpusField;
@@ -44,27 +46,19 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         }
     }
 
-    /**
-     * an observable of the effective predicate imposed by the filter.
-     *
-     * emits the latest filter data wile the filter is active, and undefined
-     * when it is set to inactive.
-     */
-    get activeData$(): Observable<FilterData|undefined> {
-        return combineLatest([this.active, this.data]).pipe(
-            map(values => values[0] ? values[1] : undefined),
-            distinct(),
-        );
-    }
-
     set(data: FilterData) {
         if (!_.isEqual(data, this.currentData)) {
             this.data.next(data);
 
-            if (!_.isEqual(data, this.defaultData)) {
-                this.activate();
-            } else {
-                this.deactivate();
+            const active = this.active.value;
+            const toDefault = _.isEqual(data, this.defaultData);
+            const deactivate = active && toDefault;
+            const activate = !active && !toDefault;
+
+            if (deactivate || activate) {
+                this.toggle();
+            } else if (active) {
+                this.update.next();
             }
         }
     }
@@ -120,6 +114,7 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 
     public toggle() {
         this.active.next(!this.active.value);
+        this.update.next();
     }
 
     abstract makeDefaultData(filterOptions: FilterOptions): FilterData;

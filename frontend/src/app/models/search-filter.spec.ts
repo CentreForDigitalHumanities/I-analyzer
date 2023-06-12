@@ -2,6 +2,8 @@ import { convertToParamMap } from '@angular/router';
 import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
 import { EsDateFilter, EsTermsFilter } from './elasticsearch';
 import { DateFilter, DateFilterData, MultipleChoiceFilter } from './search-filter';
+import { of } from 'rxjs';
+import { distinct } from 'rxjs/operators';
 
 describe('SearchFilter', () => {
     // while these tests are ran on the DateFilter,
@@ -66,6 +68,21 @@ describe('SearchFilter', () => {
         }));
 
         expect(filter.active.value).toBeFalse();
+    });
+
+    it('should signal updates', () => {
+        let updates = 0;
+        filter.update.subscribe(() => updates += 1);
+
+        filter.set(exampleData);
+        expect(updates).toBe(1);
+
+        filter.deactivate();
+        expect(updates).toBe(2);
+
+        filter.reset(); // this does not affect anything since the filter is inactive
+        expect(updates).toBe(2);
+
     });
 });
 

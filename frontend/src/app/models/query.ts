@@ -1,11 +1,11 @@
-import { ParamMap } from '@angular/router';
+import { convertToParamMap, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { combineLatest, Subject, Subscription } from 'rxjs';
+import { combineLatest, Subject } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection, } from '../models/index';
 import { EsQuery } from '../services';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
-    filtersFromParams, highlightFromParams, omitNullParameters, paramsHaveChanged, queryFiltersToParams,
+    filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
 import { SearchFilter } from './search-filter';
@@ -69,20 +69,20 @@ export interface SearchParameters {
     size: number;
 }
 
+
 export class QueryModel {
     corpus: Corpus;
 	queryText: string;
 	searchFields: CorpusField[];
-	filters: SearchFilter[] = [];
+	filters: SearchFilter[];
     sort: SortConfiguration;
     highlightSize: number;
 
 	update = new Subject<void>();
 
-    private filterSubscription: Subscription;
-
     constructor(corpus: Corpus, params?: ParamMap) {
 		this.corpus = corpus;
+        this.filters = this.corpus.fields.map(field => field.makeSearchFilter());
         this.sort = new SortConfiguration(this.corpus);
         if (params) {
             this.setFromParams(params);
@@ -100,12 +100,7 @@ export class QueryModel {
 	}
 
 	addFilter(filter: SearchFilter) {
-        if (this.filterForField(filter.corpusField)) {
-            this.filterForField(filter.corpusField).set(filter.data);
-        } else {
-            this.filters.push(filter);
-            this.subscribeToFilterUpdates();
-        }
+        this.filterForField(filter.corpusField).set(filter.currentData);
 	}
 
 
@@ -145,19 +140,9 @@ export class QueryModel {
 
     /**
      * make a clone of the current query.
-     * optionally include querytext or a filter for the new query.
      */
-	clone(queryText: string = undefined, addFilter: SearchFilter = undefined) {
-		const newQuery = _.clone(this); // or cloneDeep?
-        if (queryText !== undefined) {
-			newQuery.setQueryText(queryText);
-		}
-		if (addFilter) {
-			newQuery.addFilter(addFilter);
-		}
-        // deep clone filters so they are disconnected from the current query
-        newQuery.filters = _.cloneDeep(newQuery.filters);
-		return newQuery;
+	clone() {
+        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()));
 	}
 
     /**
@@ -209,23 +194,16 @@ export class QueryModel {
     private setFromParams(params: ParamMap) {
         this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
-        this.filters = filtersFromParams(params, this.corpus);
+        filtersFromParams(params, this.corpus).forEach(filter => {
+            this.filterForField(filter.corpusField).set(filter.data.value);
+        });
         this.sort = new SortConfiguration(this.corpus, params);
         this.highlightSize = highlightFromParams(params);
     }
 
     private subscribeToFilterUpdates() {
-        if (this.filterSubscription) {
-            this.filterSubscription.unsubscribe();
-        }
-        if (this.filters.length) {
-            this.filterSubscription = combineLatest(
-                this.filters.map(f => f.activeData$)
-            ).subscribe(() => this.update.next());
-        } else {
-            this.filterSubscription = undefined;
-            this.update.next();
-        }
+        this.filters.forEach(filter => {
+            filter.update.subscribe(() => this.update.next());
+        });
     }
-
 }
