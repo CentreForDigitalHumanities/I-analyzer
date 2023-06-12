@@ -25,8 +25,8 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]>
     private async getOptions(): Promise<void> {
         const optionCount = (this.filter.corpusField.filterOptions as MultipleChoiceFilterOptions).option_count;
         const aggregator = {name: this.filter.corpusField.name, size: optionCount};
-        const queryModel = this.filter.queryModel.clone();
-        queryModel.removeFilter(this.filter.filter); // exclude the choices for this filter
+        const queryModel = this.queryModel.clone();
+        queryModel.filterForField(this.filter.corpusField).deactivate();
         this.searchService.aggregateSearch(queryModel.corpus, queryModel, [aggregator]).then(
             response => response.aggregations[this.filter.corpusField.name]).then(aggregations =>
                 this.options = _.sortBy(

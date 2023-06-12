@@ -17,9 +17,9 @@ describe('DateFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DateFilterComponent);
     component = fixture.componentInstance;
-    const queryModel = new QueryModel(mockCorpus3);
-    component.filter = new PotentialFilter(mockFieldDate, queryModel);
-    component.filter.filter.set({
+    component.queryModel = new QueryModel(mockCorpus3);
+    component.filter = component.queryModel.filterForField(mockFieldDate);
+    component.filter.set({
         min: new Date('Jan 1 1810'),
         max: new Date('Dec 31 1820')
     });

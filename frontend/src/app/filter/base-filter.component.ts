@@ -2,7 +2,7 @@
 import { Component, Input } from '@angular/core';
 import * as _ from 'lodash';
 
-import { PotentialFilter } from '../models/index';
+import { QueryModel, SearchFilter } from '../models/index';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -12,22 +12,24 @@ import { PotentialFilter } from '../models/index';
     template: ''
 })
 export abstract class BaseFilterComponent<FilterData> {
-    private _filter: PotentialFilter;
+    private _filter: SearchFilter;
 
     constructor() { }
 
     get data(): FilterData {
-        return this.filter?.filter.currentData;
+        return this.filter?.currentData;
     }
 
     @Input()
     get filter() {
         return this._filter;
     }
-    set filter(filter: PotentialFilter) {
+    set filter(filter: SearchFilter) {
         this._filter = filter;
-        this.onFilterSet(filter.filter);
+        this.onFilterSet(filter);
     }
+
+    @Input() queryModel: QueryModel;
 
 
     /**

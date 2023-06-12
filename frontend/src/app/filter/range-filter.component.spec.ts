@@ -17,9 +17,9 @@ describe('RangeFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RangeFilterComponent);
     component = fixture.componentInstance;
-    const query = new QueryModel(mockCorpus3);
-    component.filter = new PotentialFilter(mockField3, query);
-    component.filter.filter.set({min: 1984, max: 1984});
+    component.queryModel = new QueryModel(mockCorpus3);
+    component.filter = component.queryModel.filterForField(mockField3);
+    component.filter.set({min: 1984, max: 1984});
     fixture.detectChanges();
   });
 

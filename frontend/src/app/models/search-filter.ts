@@ -23,6 +23,10 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         this.active = new BehaviorSubject<boolean>(false);
 	}
 
+    get filterType() {
+        return this.corpusField.filterOptions?.name;
+    }
+
     get currentData() {
 		return this.data?.value;
 	}
@@ -35,11 +39,11 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 
 
     get adHoc() {
-        return _.isUndefined(this.corpusField.filterOptions);
+        return !(this.corpusField.filterOptions);
     }
 
     get description() {
-        if (this.corpusField?.filterOptions.description) {
+        if (this.corpusField?.filterOptions?.description) {
             return this.corpusField.filterOptions.description;
         } else {
             return `Filter results based on ${this.corpusField.displayName}`;

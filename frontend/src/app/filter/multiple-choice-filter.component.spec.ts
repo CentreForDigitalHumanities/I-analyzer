@@ -20,8 +20,8 @@ describe('MultipleChoiceFilterComponent', () => {
     component = fixture.componentInstance;
     const corpus = _.cloneDeep(mockCorpus);
     corpus.fields.push(mockFieldMultipleChoice);
-    const query = new QueryModel(corpus);
-    component.filter = new PotentialFilter(mockFieldMultipleChoice, query);
+    component.queryModel = new QueryModel(corpus);
+    component.filter = component.queryModel.filterForField(mockFieldMultipleChoice);
     fixture.detectChanges();
   });
 
