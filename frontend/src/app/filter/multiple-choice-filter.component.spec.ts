@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { mockCorpus, mockFieldMultipleChoice } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
-import { PotentialFilter, QueryModel } from '../models';
+import { QueryModel } from '../models';
 
 import { MultipleChoiceFilterComponent } from './multiple-choice-filter.component';
 import * as _ from 'lodash';

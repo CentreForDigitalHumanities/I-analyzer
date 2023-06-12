@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { mockCorpus3, mockFieldDate } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
-import { PotentialFilter, QueryModel } from '../models';
+import { QueryModel } from '../models';
 
 import { DateFilterComponent } from './date-filter.component';
 
