@@ -17,7 +17,7 @@ describe('FilterManagerComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FilterManagerComponent);
     component = fixture.componentInstance;
-    component.corpus = mockCorpus;
+    const corpus = mockCorpus;
     component.queryModel = new QueryModel(mockCorpus);
     fixture.detectChanges();
   });
@@ -28,13 +28,11 @@ describe('FilterManagerComponent', () => {
   });
 
   it('resets filters when corpus changes', () => {
-    component.corpus = mockCorpus2;
     component.queryModel = new QueryModel(mockCorpus2);
     fixture.detectChanges();
     expect(component.filters.length).toEqual(1);
     expect(component.filters[0].adHoc).toBeTrue();
 
-    component.corpus = mockCorpus;
     component.queryModel = new QueryModel(mockCorpus);
     fixture.detectChanges();
     expect(component.filters.length).toEqual(2);

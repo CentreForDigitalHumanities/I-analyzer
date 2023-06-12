@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Corpus, SearchFilter, QueryModel } from '../models/index';
+import { SearchFilter, QueryModel } from '../models/index';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -13,8 +13,6 @@ import { Corpus, SearchFilter, QueryModel } from '../models/index';
     styleUrls: ['./filter-manager.component.scss']
 })
 export class FilterManagerComponent {
-    @Input() corpus: Corpus;
-
     @Input() queryModel: QueryModel;
 
     constructor() {
