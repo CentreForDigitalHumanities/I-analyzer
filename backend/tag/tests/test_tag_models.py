@@ -16,9 +16,9 @@ def test_tag_lookup(mock_corpus, tagged_documents):
     corpus = Corpus.objects.get(name=mock_corpus)
 
     for doc in docs:
-        assert TagInstance.objects.filter(corpus=corpus, document_ids__contains=doc)
+        assert TagInstance.objects.filter(corpus=corpus, document_ids__contains=[doc])
 
-    assert not TagInstance.objects.filter(corpus=corpus, document_ids__contains='not_tagged')
+    assert not TagInstance.objects.filter(corpus=corpus, document_ids__contains=['not_tagged'])
 
 def test_max_length(db, mock_corpus, auth_user_tag):
     corpus = Corpus.objects.get(name=mock_corpus)
