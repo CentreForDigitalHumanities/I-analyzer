@@ -1,4 +1,15 @@
 from tag.models import Tag
+from visualization.query import add_filter
+
+def include_tag_filter(es_query, tag_id, corpus_name):
+    '''
+    Include a filter for a tag in an elasticsearch query
+
+    Returns the query with the tag filter added
+    '''
+
+    filter = tag_filter(tag_id, corpus_name)
+    return add_filter(es_query, filter)
 
 def tag_filter(tag_id, corpus_name):
     '''
