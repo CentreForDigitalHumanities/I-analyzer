@@ -70,7 +70,7 @@ def test_save_legacy_user(db):
     users = CustomUser.objects.all()
 
     assert len(users) == 4
-    admin = users[0]
+    admin = CustomUser.objects.get(username='admin')
     assert admin.username == 'admin'
     assert admin.email == 'admin@ianalyzer.nl'
     assert admin.is_superuser

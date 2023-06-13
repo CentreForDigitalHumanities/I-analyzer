@@ -1,7 +1,9 @@
 from ianalyzer.settings import *
 
+
 def path_in_testdir(app, *path_from_app_tests):
     return os.path.join(BASE_DIR, app, 'tests', *path_from_app_tests)
+
 
 CORPORA = {
     'small-mock-corpus': path_in_testdir('visualization', 'mock_corpora', 'small_mock_corpus.py'),
@@ -11,6 +13,7 @@ CORPORA = {
     'media-mock-corpus': path_in_testdir('media', 'media_mock_corpus.py'),
     'mock-csv-corpus': path_in_testdir('addcorpus', 'mock_csv_corpus.py'),
     'wordmodels-mock-corpus': path_in_testdir('wordmodels', 'mock-corpus', 'mock_corpus.py'),
+    'tagging-mock-corpus': path_in_testdir('tag', 'tag_mock_corpus.py'),
 }
 
 TIMES_DATA = path_in_testdir('addcorpus', '')
