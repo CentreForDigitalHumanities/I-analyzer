@@ -2,8 +2,10 @@ import pytest
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from tag.models import DOCS_PER_TAG_LIMIT, Tag, TaggedDocument
+from conftest import index_test_corpus, clear_test_corpus
 
-@pytest.fixture()
+
+@pytest.fixture(scope='session')
 def mock_corpus():
     return 'tagging-mock-corpus'
 
@@ -41,6 +43,7 @@ def auth_user_corpus_acces(db, auth_user, mock_corpus_obj):
     auth_user.groups.add(group)
     mock_corpus_obj.groups.add(group)
 
+
 @pytest.fixture()
 def tagged_documents(auth_user_tag, admin_user_tag, auth_user_corpus_acces, mock_corpus_obj):
     docs = ['1', '2', '3', '4']
@@ -77,8 +80,16 @@ def too_many_docs(mock_corpus_obj, near_max_tagged_documents):
         TaggedDocument(corpus=mock_corpus_obj, doc_id=DOCS_PER_TAG_LIMIT)
     ])
 
+
 @pytest.fixture()
 def other_corpus(db):
     name = 'other-corpus'
     Corpus.objects.create(name=name)
     return name
+
+
+@pytest.fixture(scope='session')
+def index_mock_corpus(mock_corpus, es_client):
+    index_test_corpus(es_client, mock_corpus)
+    yield mock_corpus
+    clear_test_corpus(es_client, mock_corpus)
