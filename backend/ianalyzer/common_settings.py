@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'download',
     'wordmodels',
     'media',
+    'tag',
 ]
 
 SITE_ID = 1
