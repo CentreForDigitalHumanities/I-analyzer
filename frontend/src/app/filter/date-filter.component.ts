@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 
 import { DateFilterData, DateFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'ia-date-filter',
@@ -12,19 +14,21 @@ import { BaseFilterComponent } from './base-filter.component';
 export class DateFilterComponent extends BaseFilterComponent<DateFilterData> {
     public minDate: Date;
     public maxDate: Date;
-    public minYear: number;
-    public maxYear: number;
+
+    public selectedMinDate: BehaviorSubject<Date>;
+    public selectedMaxDate: BehaviorSubject<Date>;
 
     onFilterSet(filter: DateFilter): void {
         this.minDate = filter.defaultData.min;
         this.maxDate = filter.defaultData.max;
-        this.minYear = this.minDate.getFullYear();
-        this.maxYear = this.maxDate.getFullYear();
-    }
 
-    updateProperty(property: 'min'|'max', date: Date) {
-        const value = _.merge(_.clone(this.data), {[property]: date});
-        this.update(value);
-    }
+        this.selectedMinDate = new BehaviorSubject(this.minDate);
+        this.selectedMaxDate = new BehaviorSubject(this.maxDate);
 
+        combineLatest([this.selectedMinDate, this.selectedMaxDate]).pipe(
+            tap(value => console.log(value))
+        ).subscribe(([min, max]) =>
+            this.update({min, max})
+        );
+    }
 }

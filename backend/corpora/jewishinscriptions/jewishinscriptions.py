@@ -23,6 +23,8 @@ class JewishInscriptions(XMLCorpus):
     es_index = getattr(settings, 'JEWISH_INSCRIPTIONS_ES_INDEX', 'jewishinscriptions')
     image = 'jewish_inscriptions.jpg'
     visualize = []
+    languages = ['heb', 'lat']
+    category = 'inscription'
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = ''

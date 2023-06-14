@@ -24,7 +24,7 @@ export abstract class BaseFilterComponent<FilterData> implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.filtter) {
+        if (changes.filter) {
             this.onFilterSet(this.filter);
         }
 

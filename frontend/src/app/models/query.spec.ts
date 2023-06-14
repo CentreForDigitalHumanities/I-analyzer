@@ -21,6 +21,8 @@ const corpus: Corpus = {
         mockFieldDate,
         mockFieldMultipleChoice,
     ],
+    languages: ['English'],
+    category: 'Tests',
 };
 
 describe('QueryModel', () => {

@@ -23,3 +23,5 @@ celery
 Redis
 pypdf2
 openpyxl
+langcodes
+language_data

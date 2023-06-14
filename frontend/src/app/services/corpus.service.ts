@@ -90,8 +90,10 @@ export class CorpusService {
             data.scan_image_type,
             data.allow_image_download,
             data.word_models_present,
+            data.languages,
+            data.category,
             data.description_page,
-            this.parseDocumentContext(data.document_context, allFields)
+            this.parseDocumentContext(data.document_context, allFields),
         );
     };
 

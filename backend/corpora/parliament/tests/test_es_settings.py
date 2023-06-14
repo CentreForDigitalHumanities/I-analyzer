@@ -11,35 +11,35 @@ def test_stopwords(clean_nltk_data_directory):
 
     cases = [
         {
-            'language': 'english',
+            'language': 'en',
             'stopwords': ['the', 'i', 'have']
         },
         {
-            'language': 'dutch',
+            'language': 'nl',
             'stopwords': ['ik']
         },
         {
-            'language': 'german',
+            'language': 'de',
             'stopwords': ['ich']
         },
         {
-            'language': 'french',
+            'language': 'fr',
             'stopwords': ['je']
         },
         {
-            'language': 'danish',
+            'language': 'da',
             'stopwords': ['jeg']
         },
         {
-            'language': 'norwegian',
+            'language': 'no',
             'stopwords': ['jeg']
         },
         {
-            'language': 'swedish',
+            'language': 'sv',
             'stopwords': ['jag']
         },
         {
-            'language': 'finnish',
+            'language': 'fi',
             'stopwords': ['minä']
         }
     ]

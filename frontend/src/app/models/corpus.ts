@@ -26,6 +26,8 @@ export class Corpus implements ElasticSearchIndex {
         public scan_image_type: string,
         public allow_image_download: boolean,
         public word_models_present: boolean,
+        public languages: string[],
+        public category: string,
         public descriptionpage?: string,
         public documentContext?: DocumentContext,
     ) { }
