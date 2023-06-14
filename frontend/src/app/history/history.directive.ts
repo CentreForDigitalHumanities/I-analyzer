@@ -2,6 +2,7 @@ import { Directive } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Corpus, Download, QueryDb } from '../models';
 import { CorpusService } from '../services';
+import { findByName } from '../utils/utils';
 
 @Directive({
   selector: '[iaHistory]'
@@ -29,6 +30,6 @@ export class HistoryDirective {
 
 
     corpusTitle(corpusName: string): string {
-        return this.corpora.find(corpus => corpus.name === corpusName).title || corpusName;
+        return findByName(this.corpora, corpusName).title || corpusName;
     }
 }

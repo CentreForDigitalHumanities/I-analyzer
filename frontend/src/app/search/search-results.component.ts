@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
 
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
@@ -5,6 +6,7 @@ import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import * as _ from 'lodash';
 import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
+import { makeContextParams } from '../utils/document-context';
 
 @Component({
     selector: 'ia-search-results',
@@ -36,9 +38,6 @@ export class SearchResultsComponent implements OnChanges {
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
 
-    @Output('viewContext')
-    public contextEvent = new EventEmitter<any>();
-
     public isLoading = false;
     public isScrolledDown: boolean;
 
@@ -49,8 +48,6 @@ export class SearchResultsComponent implements OnChanges {
     private maximumDisplayed: number;
 
     public fromIndex = 0;
-
-    public queryText: string;
 
     public imgSrc: Uint8Array;
 
@@ -77,11 +74,11 @@ export class SearchResultsComponent implements OnChanges {
     constructor(private searchService: SearchService) { }
 
     ngOnChanges() {
-        if (this.queryModel !== null) {
-            this.queryText = this.queryModel.queryText;
+        if (this.queryModel) {
             this.fromIndex = 0;
             this.maximumDisplayed = this.user.downloadLimit ? this.user.downloadLimit : 10000;
             this.search();
+            this.queryModel.update.subscribe(() => this.search());
         }
     }
 
@@ -96,10 +93,7 @@ export class SearchResultsComponent implements OnChanges {
 
     private search() {
         this.isLoading = true;
-        this.searchService.search(
-            this.queryModel,
-            this.corpus
-        ).then(results => {
+        this.searchService.search(this.queryModel).then(results => {
             this.results = results;
             this.results.documents.map((d, i) => d.position = i + 1);
             this.searched(this.queryModel.queryText, this.results.total.value);
@@ -120,7 +114,7 @@ export class SearchResultsComponent implements OnChanges {
         this.isLoading = true;
         this.fromIndex = searchParameters.from;
         this.resultsPerPage = searchParameters.size;
-        this.results = await this.searchService.loadResults(this.corpus, this.queryModel, searchParameters.from, searchParameters.size);
+        this.results = await this.searchService.loadResults(this.queryModel, searchParameters.from, searchParameters.size);
         this.results.documents.map( (d, i) => d.position = i + searchParameters.from + 1 );
         this.isLoading = false;
     }
@@ -141,11 +135,6 @@ export class SearchResultsComponent implements OnChanges {
         this.showDocument = true;
         this.viewDocument = document;
         this.documentTabIndex = 0;
-    }
-
-    public goToContext(document: FoundDocument) {
-        this.showDocument = false;
-        this.contextEvent.emit(document);
     }
 
     get contextDisplayName(): string {
@@ -200,5 +189,9 @@ export class SearchResultsComponent implements OnChanges {
             return _.every(contextFields, field => notBlank(document.fieldValues[field.name]));
         }
         return false;
+    }
+
+    contextParams(document: FoundDocument) {
+        return makeContextParams(document, this.corpus);
     }
 }

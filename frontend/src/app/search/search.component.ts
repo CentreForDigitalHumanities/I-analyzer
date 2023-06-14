@@ -1,15 +1,13 @@
-import {Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField, SearchFilterData,
-    SearchFilter,
-    FoundDocument} from '../models/index';
-import { CorpusService, DialogService, ParamService, SearchService } from '../services/index';
+import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
+import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
-import { makeContextParams } from '../utils/document-context';
 import { AuthService } from '../services/auth.service';
+import * as _ from 'lodash';
+import { paramsHaveChanged } from '../utils/params';
 
 @Component({
     selector: 'ia-search',
@@ -33,10 +31,7 @@ export class SearchComponent extends ParamDirective {
      * Whether the total number of hits exceeds the download limit.
      */
     public hasLimitedResults = false;
-    /**
-     * Hide the filters by default, unless an existing search is opened containing filters.
-     */
-    public showFilters = true;
+
     public user: User;
     protected corpusSubscription: Subscription;
 
@@ -56,7 +51,6 @@ export class SearchComponent extends ParamDirective {
     constructor(
         private authService: AuthService,
         private corpusService: CorpusService,
-        private paramService: ParamService,
         private dialogService: DialogService,
         route: ActivatedRoute,
         router: Router
@@ -76,17 +70,14 @@ export class SearchComponent extends ParamDirective {
     teardown() {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
-        this.setParams( {query: null });
     }
 
     setStateFromParams(params: ParamMap) {
-        this.queryText = params.get('query');
-        const queryModel = this.paramService.queryModelFromParams(params, this.corpus.fields);
-        if (!_.isEqual(this.queryModel, queryModel)) {
-            this.queryModel = queryModel;
-        }
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
+        if (paramsHaveChanged(this.queryModel, params)) {
+            this.setQueryModel(false);
+        }
     }
 
     @HostListener('window:scroll', [])
@@ -124,12 +115,7 @@ export class SearchComponent extends ParamDirective {
     }
 
     public search() {
-        this.setParams({ query: this.queryText });
-    }
-
-    public goToContext(document: FoundDocument) {
-        const params = makeContextParams(document, this.corpus);
-        this.setParams(params);
+        this.queryModel.setQueryText(this.queryText);
     }
 
     /**
@@ -138,10 +124,20 @@ export class SearchComponent extends ParamDirective {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name !== corpus.name) {
+            const reset = !_.isUndefined(this.corpus);
             this.corpus = corpus;
-            this.filterFields = this.corpus.fields.filter(field => field.searchFilter);
-            this.queryModel = {queryText: ''};
+            this.setQueryModel(reset);
         }
     }
 
+    private setQueryModel(reset: boolean) {
+        const params = reset ? undefined : this.route.snapshot.queryParamMap;
+        const queryModel = new QueryModel(this.corpus, params);
+        this.queryModel = queryModel;
+        this.queryText = queryModel.queryText;
+        this.queryModel.update.subscribe(() => {
+            this.queryText = this.queryModel.queryText;
+            this.setParams(this.queryModel.toRouteParam());
+        });
+    }
 }

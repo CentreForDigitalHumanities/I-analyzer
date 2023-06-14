@@ -8,12 +8,6 @@ export class ElasticSearchServiceMock {
     public clearScroll() {
     }
 
-    esQueryToQueryModel(query: EsQuery, corpus: Corpus): QueryModel {
-        return {
-            queryText: ''
-        };
-    }
-
     getDocumentById(): Promise<FoundDocument> {
         return Promise.resolve({
             id: '0',
