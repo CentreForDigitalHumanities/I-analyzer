@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from addcorpus.load_corpus import load_corpus
 from addcorpus.extract import XML
-from corpora.dbnl.utils import append_to_tag, index_by_id
+from corpora.dbnl.utils import append_to_tag, index_by_id, which_unique
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,6 +17,16 @@ def dbnl_corpus(settings):
         'dbnl_metadata': os.path.join(here, '..', 'dbnl_metadata.py'),
     }
     return 'dbnl'
+
+which_unique_testcases = [
+    (['_ale002', '_ale002'], [True, False]),
+    (['proza', 'poëzie', 'proza'], [True, True, False])
+]
+
+@pytest.mark.parametrize(['items', 'uniquenesses'], which_unique_testcases)
+def test_which_unique(items, uniquenesses):
+    result = list(which_unique(items))
+    assert result == uniquenesses
 
 def test_metadata_extraction(dbnl_corpus):
     corpus = load_corpus('dbnl_metadata')

@@ -38,7 +38,7 @@ def which_unique(items):
     iff `items[n]` is the first occurrence of that value.
     '''
 
-    is_first = lambda n: n == 0 or items[n] not in items[:n-1]
+    is_first = lambda n: n == 0 or items[n] not in items[:n]
     return map(is_first, range(len(items)))
 
 def filter_values_by(values, which):
