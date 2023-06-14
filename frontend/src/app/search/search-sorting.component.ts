@@ -52,7 +52,7 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
 
     public toggleSortType() {
         const direction = this.ascending ? 'desc' : 'asc';
-        this.sortConfiguration.setSortDirection(direction);
+        this.queryModel.setSortDirection(direction);
     }
 
     public toggleShowFields() {
@@ -65,7 +65,7 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
         } else {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }
-        this.sortConfiguration.setSortBy(field || undefined);
+        this.queryModel.setSortBy(field || undefined);
     }
 }
 

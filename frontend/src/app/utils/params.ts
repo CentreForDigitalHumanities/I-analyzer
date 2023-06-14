@@ -40,7 +40,7 @@ export const filtersFromParams = (params: ParamMap, corpus: Corpus): SearchFilte
     return specifiedFields.map(field => {
         const filter = field.makeSearchFilter();
         const data = filter.dataFromString(params.get(field.name));
-        filter.data.next(data);
+        filter.set(data);
         return filter;
     });
 };
@@ -61,5 +61,13 @@ export const queryFiltersToParams = (queryModel: QueryModel) => {
         filterParamsPerField,
         _.merge,
         {}
+    );
+};
+
+export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) => {
+    const currentParams = queryModel.toRouteParam();
+
+    return _.some( _.keys(currentParams), key =>
+        newParams.get(key) !== currentParams[key]
     );
 };

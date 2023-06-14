@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { PotentialFilter, Corpus, SearchFilter, QueryModel } from '../models/index';
+import { SearchFilter, QueryModel } from '../models/index';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -13,39 +13,22 @@ import { PotentialFilter, Corpus, SearchFilter, QueryModel } from '../models/ind
     styleUrls: ['./filter-manager.component.scss']
 })
 export class FilterManagerComponent {
-    @Input()
-    get corpus(): Corpus {
-        return this._corpus;
-    }
-    set corpus(corpus: Corpus) {
-        this._corpus = corpus;
-        this.setPotentialFilters();
-    }
-
-    @Input()
-    get queryModel(): QueryModel {
-        return this._queryModel;
-    }
-    set queryModel(model: QueryModel) {
-        this._queryModel = model;
-        this.setPotentialFilters();
-    }
-
-    public potentialFilters: PotentialFilter[] = [];
-
-    private _corpus: Corpus;
-    private _queryModel: QueryModel;
+    @Input() queryModel: QueryModel;
 
     constructor() {
     }
 
     get activeFilters(): SearchFilter[] {
-        return this.queryModel.filters;
+        return this.queryModel?.activeFilters;
+    }
+
+    get filters(): SearchFilter[] {
+        return this.queryModel?.filters;
     }
 
     get anyActiveFilters$(): Observable<boolean> {
-        if (this.potentialFilters) {
-            const statuses = this.potentialFilters.map(filter => filter.useAsFilter);
+        if (this.filters) {
+            const statuses = this.filters.map(filter => filter.active);
             return combineLatest(statuses).pipe(
                 map(values => _.some(values)),
             );
@@ -53,33 +36,27 @@ export class FilterManagerComponent {
     }
 
     get anyNonDefaultFilters$(): Observable<boolean> {
-        if (this.potentialFilters) {
-            const statuses = this.potentialFilters.map(filter => filter.filter.isDefault$);
+        if (this.filters) {
+            const statuses = this.filters.map(filter => filter.isDefault$);
             return combineLatest(statuses).pipe(
                 map(values => !_.every(values)),
             );
         }
     }
 
-    setPotentialFilters() {
-        if (this.corpus && this.queryModel) {
-            this.potentialFilters = this.corpus.fields.map(field => new PotentialFilter(field, this.queryModel));
-        }
-    }
-
     public toggleActiveFilters() {
         if (this.activeFilters.length) {
-            this.potentialFilters.forEach(filter => filter.deactivate());
+            this.filters.forEach(filter => filter.deactivate());
         } else {
             // if we don't have active filters, set all filters to active which don't use default data
-            const filtersWithSettings = this.potentialFilters.filter(pFilter =>
-                !_.isEqual(pFilter.filter.currentData, pFilter.filter.defaultData));
+            const filtersWithSettings = this.filters.filter(filter =>
+                !_.isEqual(filter.currentData, filter.defaultData));
             filtersWithSettings.forEach(filter => filter.toggle());
         }
     }
 
     public resetAllFilters() {
-        this.potentialFilters.forEach(filter => {
+        this.filters.forEach(filter => {
             filter.reset();
         });
     }

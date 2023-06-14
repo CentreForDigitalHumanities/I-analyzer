@@ -28,16 +28,14 @@ describe('QueryModel', () => {
     let filter: SearchFilter;
     let filter2: SearchFilter;
 
+    const someDate = new Date('Jan 1 1850');
+    const someSelection = ['hooray!'];
+
     beforeEach(() => {
         query = new QueryModel(corpus);
-    });
 
-    beforeEach(() => {
-        filter = new DateFilter(mockFieldDate);
-        filter.setToValue(new Date('Jan 1 1850'));
-
-        filter2 = new MultipleChoiceFilter(mockFieldMultipleChoice);
-        filter2.setToValue(['hooray!']);
+        filter = query.filterForField(mockFieldDate);
+        filter2 = query.filterForField(mockFieldMultipleChoice);
     });
 
     it('should create', () => {
@@ -51,37 +49,37 @@ describe('QueryModel', () => {
         query.setQueryText('test');
         expect(updates).toBe(1);
 
-        query.addFilter(filter);
+        filter.setToValue(someDate);
         expect(updates).toBe(2);
 
-        query.removeFilter(filter);
+        filter.deactivate();
         expect(updates).toBe(3);
-
     });
 
     it('should remove filters', () => {
         let updates = 0;
         query.update.subscribe(() => updates += 1);
 
-        query.addFilter(filter);
-        query.addFilter(filter2);
+        filter.setToValue(someDate);
+        filter2.setToValue(someSelection);
 
-        expect(query.filters.length).toBe(2);
+        expect(query.activeFilters.length).toBe(2);
         expect(updates).toBe(2);
 
         filter.setToValue(new Date('Jan 1 1860'));
 
+        expect(query.activeFilters.length).toBe(2);
         expect(updates).toBe(3);
 
-        query.removeFilter(filter);
+        filter.deactivate();
 
-        expect(query.filters.length).toBe(1);
+        expect(query.activeFilters.length).toBe(1);
         expect(updates).toBe(4);
 
         filter.setToValue(new Date('Jan 1 1870'));
 
-        expect(updates).toBe(4);
-
+        expect(query.activeFilters.length).toBe(2);
+        expect(updates).toBe(5);
     });
 
     it('should convert to an elasticsearch query', () => {
@@ -132,7 +130,7 @@ describe('QueryModel', () => {
             highlight: null,
         });
 
-        query.addFilter(filter);
+        filter.setToValue(someDate);
 
         expect(query.toRouteParam()).toEqual({
             query: 'test',
@@ -145,7 +143,7 @@ describe('QueryModel', () => {
         });
 
         query.setQueryText('');
-        query.removeFilter(filter);
+        filter.deactivate();
 
         expect(query.toRouteParam()).toEqual({
             query: null,
@@ -164,21 +162,21 @@ describe('QueryModel', () => {
             date: '1850-01-01:1850-01-01',
         });
 
-        query.setFromParams(params);
-        expect(query.queryText).toEqual('test');
-        expect(query.filters.length).toBe(1);
+        const newQuery = new QueryModel(corpus, params);
+        expect(newQuery.queryText).toEqual('test');
+        expect(newQuery.activeFilters.length).toBe(1);
     });
 
     it('should formulate a link', () => {
         query.setQueryText('test');
-        query.addFilter(filter);
+        filter.setToValue(someDate);
 
         expect(query.toQueryParams()).toEqual({ query: 'test', date: '1850-01-01:1850-01-01' });
     });
 
     it('should clone', () => {
         query.setQueryText('test');
-        query.addFilter(filter);
+        filter.setToValue(someDate);
 
         const clone = query.clone();
 
@@ -186,7 +184,7 @@ describe('QueryModel', () => {
         expect(clone.queryText).toEqual('test');
 
         filter.setToValue(new Date('Jan 2 1850'));
-        expect(query.filters[0].currentData.min).toEqual(new Date('Jan 2 1850'));
-        expect(clone.filters[0].currentData.min).toEqual(new Date('Jan 1 1850'));
+        expect(query.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 2 1850'));
+        expect(clone.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 1 1850'));
     });
 });

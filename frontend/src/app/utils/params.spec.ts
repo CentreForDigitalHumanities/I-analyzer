@@ -1,6 +1,7 @@
 import { convertToParamMap } from '@angular/router';
-import { highlightFromParams, omitNullParameters, searchFieldsFromParams } from './params';
-import { mockCorpus3, mockField2 } from '../../mock-data/corpus';
+import { highlightFromParams, omitNullParameters, paramsHaveChanged, searchFieldsFromParams } from './params';
+import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
+import { MultipleChoiceFilter, QueryModel } from '../models';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
@@ -22,20 +23,51 @@ describe('highlightFromParams', () => {
 
 describe('omitNullParameters', () => {
     it('should omit null parameters', () => {
-        const p = { a: null, b: 1, c: 'test' };
+        const p = { a: null, b: '1', c: 'test' };
 
         expect(omitNullParameters(p)).toEqual(
-            { b: 1, c: 'test' }
+            { b: '1', c: 'test' }
         );
     });
 });
 
 describe('omitNullParameters', () => {
     it('should omit null parameters', () => {
-        const p = { a: null, b: 1, c: 'test' };
+        const p = { a: null, b: '1', c: 'test' };
 
         expect(omitNullParameters(p)).toEqual(
-            { b: 1, c: 'test' }
+            { b: '1', c: 'test' }
         );
+    });
+});
+
+describe('paramsHaveChanged', () => {
+    const corpus = mockCorpus;
+    let queryModel: QueryModel;
+
+    beforeEach(() => {
+        queryModel = new QueryModel(corpus);
+    });
+
+    it('should detect changes in parameters', () => {
+        const params1 = convertToParamMap({});
+        const params2 = convertToParamMap({query: 'test'});
+
+        expect(paramsHaveChanged(queryModel, params1)).toBeFalse();
+        expect(paramsHaveChanged(queryModel, params2)).toBeTrue();
+
+        queryModel = new QueryModel(corpus, params2);
+
+        expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
+        expect(paramsHaveChanged(queryModel, params1)).toBeTrue();
+
+    });
+
+    it('should detect new filters', () => {
+        const filter = mockField.makeSearchFilter() as MultipleChoiceFilter;
+        filter.set(['test']);
+        const params = convertToParamMap(filter.toRouteParam());
+
+        expect(paramsHaveChanged(queryModel, params)).toBeTrue();
     });
 });

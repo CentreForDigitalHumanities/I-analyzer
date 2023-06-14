@@ -1,4 +1,4 @@
 <div class="bool" *ngIf="filter">
-    <p-checkbox [ngModel]="filter.filter.currentData" binary="true" (onChange)="update($event)"></p-checkbox>
+    <p-checkbox [ngModel]="data" binary="true" (onChange)="update($event)"></p-checkbox>
     {{data | json | titlecase }}
 </div>

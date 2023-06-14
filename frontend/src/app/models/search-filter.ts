@@ -1,22 +1,31 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
+import { distinct, map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions } from './search-filter-options';
+import { ParamMap } from '@angular/router';
 
 abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	corpusField: CorpusField;
 	defaultData: FilterData;
 	data: BehaviorSubject<FilterData>;
+    active: BehaviorSubject<boolean>;
+
+    update = new Subject<void>();
 
 	constructor(corpusField: CorpusField) {
 		this.corpusField = corpusField;
 		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
 		this.data = new BehaviorSubject<FilterData>(this.defaultData);
+        this.active = new BehaviorSubject<boolean>(false);
 	}
+
+    get filterType() {
+        return this.corpusField.filterOptions?.name;
+    }
 
     get currentData() {
 		return this.data?.value;
@@ -28,15 +37,50 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         );
     }
 
+
+    get adHoc() {
+        return !(this.corpusField.filterOptions);
+    }
+
+    get description() {
+        if (this.corpusField?.filterOptions?.description) {
+            return this.corpusField.filterOptions.description;
+        } else {
+            return `Filter results based on ${this.corpusField.displayName}`;
+        }
+    }
+
+    set(data: FilterData) {
+        if (!_.isEqual(data, this.currentData)) {
+            this.data.next(data);
+
+            const active = this.active.value;
+            const toDefault = _.isEqual(data, this.defaultData);
+            const deactivate = active && toDefault;
+            const activate = !active && !toDefault;
+
+            if (deactivate || activate) {
+                this.toggle();
+            } else if (active) {
+                this.update.next();
+            }
+        }
+    }
+
 	reset() {
-		this.data.next(this.defaultData);
+        this.set(this.defaultData);
 	}
 
     /**
      * set value based on route parameter
      */
-    setFromParam(param: string): void {
-        this.data.next(this.dataFromString(param));
+    setFromParams(params: ParamMap): void {
+        const value = params.get(this.corpusField.name);
+        if (value) {
+            this.set(this.dataFromString(value));
+        } else {
+            this.reset();
+        }
     }
 
     /**
@@ -44,16 +88,40 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
      * the same day, page, publication, etc. as a specific document)
      */
     setToValue(value: any) {
-        this.data.next(this.dataFromValue(value));
+        this.set(this.dataFromValue(value));
     }
 
     toRouteParam(): {[param: string]: any} {
+        const value = this.active.value ? this.dataToString(this.currentData) : undefined;
         return {
-            [this.corpusField.name]: this.dataToString(this.currentData) || null
+            [this.corpusField.name]: value || null
         };
     }
 
-	abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
+    toEsFilter(): EsFilterType {
+        if (this.active.value) {
+            return this.dataToEsFilter();
+        }
+    }
+
+    public activate() {
+        if (!this.active.value) {
+            this.toggle();
+        }
+    }
+
+    public deactivate() {
+        if (this.active.value) {
+            this.toggle();
+        }
+    }
+
+    public toggle() {
+        this.active.next(!this.active.value);
+        this.update.next();
+    }
+
+    abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
 
 	abstract dataFromValue(value: any): FilterData;
 
@@ -62,11 +130,12 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
 	abstract dataToString(data: FilterData): string;
 
 	/**
-	 * export as filter specification in elasticsearch query language
+	 * export data as filter specification in elasticsearch query language
 	 */
-	abstract toEsFilter(): EsFilterType;
+	abstract dataToEsFilter(): EsFilterType;
 
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
+
 }
 
 export interface DateFilterData {
@@ -103,7 +172,7 @@ export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilte
 		return `${min}:${max}`;
 	}
 
-	toEsFilter(): EsDateFilter {
+	dataToEsFilter(): EsDateFilter {
 		return {
 			range: {
 				[this.corpusField.name]: {
@@ -149,7 +218,7 @@ export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter
         return data.toString();
     }
 
-    toEsFilter(): EsBooleanFilter {
+    dataToEsFilter(): EsBooleanFilter {
         return {
             term: {
                 [this.corpusField.name]: this.currentData
@@ -185,7 +254,7 @@ export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFil
         return data.map(encodeURIComponent).join(',');
     }
 
-    toEsFilter(): EsTermsFilter {
+    dataToEsFilter(): EsTermsFilter {
         return {
             terms: {
                 [this.corpusField.name]: this.currentData
@@ -227,7 +296,7 @@ export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFi
         return `${data.min},${data.max}`;
     }
 
-    toEsFilter(): EsRangeFilter {
+    dataToEsFilter(): EsRangeFilter {
         return {
             range: {
                 [this.corpusField.name]: {
@@ -261,7 +330,7 @@ export class AdHocFilter extends AbstractSearchFilter<any, EsTermFilter> {
         return data.toString();
     }
 
-    toEsFilter(): EsTermFilter {
+    dataToEsFilter(): EsTermFilter {
         return {
             term: {
                 [this.corpusField.name]: this.currentData

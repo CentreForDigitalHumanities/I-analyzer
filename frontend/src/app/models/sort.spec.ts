@@ -21,12 +21,8 @@ describe('SortConfiguration', () => {
 
         const param = sort.toRouteParam();
 
-        // set the values to something else...
-        sort.setSortBy(undefined);
-        sort.setSortDirection('desc');
-
-        // now restore them from the parameter
-        sort.setFromParams(convertToParamMap(param));
+        // now initialise from the parameter
+        sort = new SortConfiguration(mockCorpus3, convertToParamMap(param));
 
         expect(sort.sortBy.value).toEqual(mockField3);
         expect(sort.sortDirection.value).toBe('asc');

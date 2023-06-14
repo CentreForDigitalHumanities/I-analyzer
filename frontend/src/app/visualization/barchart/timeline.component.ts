@@ -272,7 +272,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         const queryModelCopy = query.clone();
         // download zoomed in results
         const filter = this.visualizedField.makeSearchFilter();
-        filter.data.next({ min, max });
+        filter.set({ min, max });
         queryModelCopy.addFilter(filter);
         return queryModelCopy;
     }

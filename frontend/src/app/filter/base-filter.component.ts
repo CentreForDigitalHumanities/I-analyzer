@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/member-ordering */
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 
-import { PotentialFilter } from '../models/index';
+import { QueryModel, SearchFilter } from '../models/index';
+import { Subscription } from 'rxjs';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -11,24 +11,33 @@ import { PotentialFilter } from '../models/index';
 @Component({
     template: ''
 })
-export abstract class BaseFilterComponent<FilterData> {
-    private _filter: PotentialFilter;
+export abstract class BaseFilterComponent<FilterData> implements OnChanges {
+    @Input() filter: SearchFilter;
+    @Input() queryModel: QueryModel;
+
+    private queryModelSubscription: Subscription;
 
     constructor() { }
 
     get data(): FilterData {
-        return this.filter?.filter.currentData;
+        return this.filter?.currentData;
     }
 
-    @Input()
-    get filter() {
-        return this._filter;
-    }
-    set filter(filter: PotentialFilter) {
-        this._filter = filter;
-        this.onFilterSet(filter.filter);
-    }
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.filtter) {
+            this.onFilterSet(this.filter);
+        }
 
+        if (changes.queryModel) {
+            if (this.queryModelSubscription) {
+                this.queryModelSubscription.unsubscribe();
+            }
+            this.queryModelSubscription = this.queryModel.update.subscribe(() =>
+                this.onQueryModelUpdate()
+            );
+            this.onQueryModelUpdate(); // run update immediately
+        }
+    }
 
     /**
      * Trigger a change event.
@@ -39,4 +48,6 @@ export abstract class BaseFilterComponent<FilterData> {
 
     /** possible administration when the filter is set, e.g. setting data limits */
     onFilterSet(filter): void {};
+
+    onQueryModelUpdate() {}
 }
