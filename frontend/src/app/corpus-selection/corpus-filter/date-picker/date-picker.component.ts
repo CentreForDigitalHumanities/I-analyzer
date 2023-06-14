@@ -21,7 +21,7 @@ export class DatePickerComponent {
         return this.unit === 'year' ? 'yy' : 'dd-mm-yy';
     }
 
-    set(value: string|Date) {
+    formatInput(value: string|Date): Date {
         let valueAsDate: Date;
         if (typeof(value) == 'string') {
             const format = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
@@ -33,7 +33,13 @@ export class DatePickerComponent {
             valueAsDate = value;
         }
 
-        this.subject.next(valueAsDate);
+        return valueAsDate;
+    }
+
+    set(value: string|Date) {
+        const valueAsDate = this.formatInput(value);
+        const checkedValue = _.min([_.max([valueAsDate, this.minDate]), this.maxDate]);
+        this.subject.next(checkedValue);
     }
 
 }
