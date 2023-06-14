@@ -19,3 +19,6 @@ class WordmodelsMockCorpus(Corpus):
             name = 'content',
         )
     ]
+    languages = ['en']
+    category = 'book'
+

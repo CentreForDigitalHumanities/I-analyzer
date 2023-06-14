@@ -26,11 +26,10 @@ def test_no_corpus_access(db, client, mock_corpus):
     response = client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
     assert response.status_code == 403
 
-def test_corpus_serialization(client, mock_corpus, mock_corpus_user):
-    client.force_login(mock_corpus_user)
-    response = client.get('/api/corpus/')
-    corpus = response.data[0]
-    assert corpus['title'] == MockCSVCorpus.title
+def test_corpus_serialization(admin_client, mock_corpus):
+    response = admin_client.get('/api/corpus/')
+    corpus = next(c for c in response.data if c['title'] == MockCSVCorpus.title)
+    assert corpus
     assert corpus['languages'] == ['English']
     assert corpus['category'] == 'Books'
     assert len(corpus['fields']) == 2
