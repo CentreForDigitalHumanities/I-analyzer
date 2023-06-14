@@ -190,7 +190,7 @@ export const mockCorpus3: Corpus = {
         sortField: mockField3,
         sortDirection: 'asc'
     }
-};
+} as Corpus;
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);

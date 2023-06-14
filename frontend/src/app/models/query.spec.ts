@@ -23,7 +23,7 @@ const corpus: Corpus = {
     ],
     languages: ['English'],
     category: 'Tests',
-};
+} as Corpus;
 
 describe('QueryModel', () => {
     let query: QueryModel;
