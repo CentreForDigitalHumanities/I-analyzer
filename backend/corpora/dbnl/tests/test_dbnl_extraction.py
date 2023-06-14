@@ -31,7 +31,7 @@ def test_which_unique(items, uniquenesses):
 def test_metadata_extraction(dbnl_corpus):
     corpus = load_corpus('dbnl_metadata')
     data = index_by_id(corpus.documents())
-    assert len(data) == 7
+    assert len(data) == 8
 
     item = data['maer005sing01']
     assert item['title'] == 'Het singende nachtegaeltje'
@@ -166,6 +166,8 @@ expected_docs = [
         'author_id': 'will028',
         'author': 'J.F. Willems',
         'periodical': 'Belgisch Museum',
+    }, { #anonymous author
+        'author': 'anoniem [Die hystorie vanden grooten Coninck Alexander]'
     }
 ]
 
@@ -173,10 +175,12 @@ def test_dbnl_extraction(dbnl_corpus):
     corpus = load_corpus(dbnl_corpus)
     docs = list(corpus.documents())
 
-    assert len(docs) == 3 + 6 # 3 chapters + 6 metadata-only books
+    assert len(docs) == 3 + 7 # 3 chapters + 7 metadata-only books
 
     for actual, expected in zip(docs, expected_docs):
         # assert that actual is a superset of expected
+        for key in expected:
+            assert expected[key] == actual[key]
         assert expected.items() <= actual.items()
 
 

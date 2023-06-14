@@ -147,6 +147,12 @@ def between_years(year, start_date, end_date):
 
 def format_name(parts):
     '''Format a person's name'''
+
+    #exception for anonymous authors
+    if parts[0] == 'anoniem':
+        work = parts[-1]
+        return f'anoniem [{work}]'
+
     return ' '.join(filter(None, parts))
 
 LINE_TAG = re.compile('^(p|l|head|row|item)$')
