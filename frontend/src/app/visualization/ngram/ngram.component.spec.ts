@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { convertToParamMap, Params } from '@angular/router';
+import { convertToParamMap } from '@angular/router';
+import { QueryModel } from '../../models';
+import { mockCorpus } from '../../../mock-data/corpus';
 import { MockCorpusResponse } from '../../../mock-data/corpus-response';
 import { commonTestBed } from '../../common-test-bed';
 import { NgramComponent } from './ngram.component';
@@ -15,10 +17,9 @@ describe('NgramComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NgramComponent);
     component = fixture.componentInstance;
-    component.queryModel = {
-        queryText: 'testing',
-        filters: []
-    };
+    const queryModel = new QueryModel(mockCorpus);
+    queryModel.setQueryText('testing');
+    component.queryModel = queryModel;
     component.corpus = MockCorpusResponse[0] as any;
     component.visualizedField = {name: 'speech'} as any;
     component.asTable = false;

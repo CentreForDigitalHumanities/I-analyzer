@@ -80,7 +80,8 @@ def es_client():
 
 # mock corpora
 
-@pytest.fixture()
-def mock_corpora_in_db(db):
-    '''Make sure the mock corpora are included in the database'''
-    load_all_corpora()
+@pytest.fixture(scope='function')
+def django_db_setup(django_db_setup, django_db_blocker):
+    #add mock corpora to the database at the start of each test
+    with django_db_blocker.unblock():
+        load_all_corpora()

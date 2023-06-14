@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { QueryModel } from '../../models';
+import { mockCorpus } from '../../../mock-data/corpus';
 import { commonTestBed } from '../../common-test-bed';
 
 import { QueryFiltersComponent } from './query-filters.component';
@@ -14,10 +16,8 @@ describe('QueryFiltersComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(QueryFiltersComponent);
     component = fixture.componentInstance;
-    component.queryModel = {
-        queryText: 'testing',
-        filters: []
-    };
+    component.queryModel = new QueryModel(mockCorpus);
+    component.queryModel.setQueryText('testing');
     fixture.detectChanges();
   });
 

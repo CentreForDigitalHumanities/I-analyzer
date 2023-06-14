@@ -1,11 +1,11 @@
 from addcorpus.models import Corpus
 
 def test_corpus_model(db):
-    corpus = Corpus(name = 'test_corpus', description = 'test.md')
+    corpus = Corpus(name = 'test_corpus', description = 'test')
     corpus.save()
 
-    assert len(Corpus.objects.all()) == 1
+    assert Corpus.objects.filter(name = corpus.name)
 
     corpus.delete()
 
-    assert len(Corpus.objects.all()) == 0
+    assert not Corpus.objects.filter(name = corpus)

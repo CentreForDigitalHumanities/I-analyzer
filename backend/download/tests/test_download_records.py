@@ -7,7 +7,7 @@ match_all = {
     }
 }
 
-def test_download_records(admin_user, mock_corpus, mock_corpora_in_db):
+def test_download_records(admin_user, mock_corpus):
     assert list(admin_user.downloads.all()) == []
 
     parameters = {

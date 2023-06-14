@@ -1,39 +1,37 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import * as _ from 'lodash';
-import { Component, Input, OnChanges } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-
-import { CorpusField } from '../models/index';
-import { ParamDirective } from '../param/param-directive';
-import { searchFieldsFromParams } from '../utils/params';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { CorpusField, QueryModel } from '../models/index';
 
 @Component({
     selector: 'ia-select-field',
     templateUrl: './select-field.component.html',
     styleUrls: ['./select-field.component.scss'],
 })
-export class SelectFieldComponent extends ParamDirective implements OnChanges {
-    @Input() public filterCriterion: string;
+export class SelectFieldComponent implements OnChanges {
+    @Input() queryModel: QueryModel;
+    @Input() public filterCriterion: 'searchable'|'downloadable';
     @Input() public corpusFields: CorpusField[];
+    @Output() selection = new EventEmitter<CorpusField[]>();
 
-    // all fields which are searchable
+    // all fields which are searchable/downloadable
     private availableFields: CorpusField[];
     // the options displayed at any moment in the dropdown element
     public optionFields: CorpusField[];
     // user selection
-    public selectedFields: CorpusField[];
-    // string representation of user selection
-    public uiSelected: string[];
+    selectedFields: CorpusField[];
     // whether to display all field options, or just the core ones
-    public allVisible: boolean = false;
+    public allVisible = false;
 
-    constructor(
-        route: ActivatedRoute,
-        router: Router) {
-            super(route, router);
-    }
+    constructor() {}
 
     initialize() {
-        this.availableFields = this.getAvailableSearchFields(this.corpusFields);
+        if (this.queryModel) {
+            this.setStateFromQueryModel(this.queryModel);
+        } else {
+            this.selectedFields = this.filterCoreFields();
+        }
+        this.availableFields = this.getAvailableFields(this.corpusFields);
         this.optionFields = this.filterCoreFields();
     }
 
@@ -41,23 +39,21 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
         this.initialize();
     }
 
-    teardown() {
-        this.setParams({ fields: null });
-    }
-
-    setStateFromParams(params: ParamMap) {
-        const queryFields = searchFieldsFromParams(params);
-        if (!queryFields) {
-            this.selectedFields = [];
+    setStateFromQueryModel(queryModel: QueryModel) {
+        if (queryModel.searchFields) {
+            this.selectedFields = _.clone(queryModel.searchFields);
         } else {
-            this.selectedFields = this.optionFields.filter( field => queryFields.find(name => field.name === name) );
+            this.selectedFields = [];
         }
     }
 
-    private getAvailableSearchFields(corpusFields: CorpusField[]): CorpusField[] {
-        const searchableFields = corpusFields.filter(field => field.searchable);
-        const allSearchFields = _.flatMap(searchableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
-        return allSearchFields;
+    private getAvailableFields(corpusFields: CorpusField[]): CorpusField[] {
+        const availableFields = corpusFields.filter(field => field[this.filterCriterion]);
+        if (this.filterCriterion === 'searchable') {
+            return _.flatMap(availableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
+        } else {
+            return availableFields;
+        }
     }
 
     private searchableMultiFields(field: CorpusField): CorpusField[] {
@@ -92,37 +88,30 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
     public toggleAllFields() {
         if (this.allVisible) {
             this.optionFields = this.filterCoreFields();
-        }
-        else {
+        } else {
             // show all options, with core options first, the rest alphabetically sorted
-            let coreFields = this.filterCoreFields();
-            let noCoreOptions = _.without(this.availableFields, ... coreFields);
+            const coreFields = this.filterCoreFields();
+            const noCoreOptions = _.without(this.availableFields, ... coreFields);
             this.optionFields = coreFields.concat(_.sortBy(noCoreOptions,['displayName']));
         }
         this.allVisible = !this.allVisible;
+        this.onUpdate();
     }
 
-    public toggleField() {
-        if ( !this.selectedFields.length ) {
-            if (this.filterCriterion === 'csv') return;
-            this.setParams({ fields: null });
-        }
-        else {
-            this.uiSelected = this.selectedFields.map(field => field.name);
-            const fields = this.uiSelected.join(',');
-            if (this.filterCriterion === 'csv') return;
-            this.setParams({ fields: fields });
+    public onUpdate() {
+        this.selection.emit(this.selectedFields);
+        if (this.queryModel) {
+            this.queryModel.searchFields = this.selectedFields;
+            this.queryModel.update.next();
         }
     }
 
     private filterCoreFields() {
-        if (this.filterCriterion === 'csv') {
+        if (this.filterCriterion === 'downloadable') {
             return this.corpusFields.filter(field => field.csvCore);
-        }
-        else if (this.filterCriterion === 'searchField') {
+        } else if (this.filterCriterion === 'searchable') {
             return this.corpusFields.filter(field => field.searchFieldCore);
-        }
-        else {
+        } else {
             return this.availableFields;
         }
     }

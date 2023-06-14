@@ -25,10 +25,9 @@ class RelatedWordsView(APIView):
             raise APIException(detail=results)
         else:
             return Response({
-                    'total_similarities': results[0],
-                    'similarities_over_time': results[1],
-                    'similarities_over_time_local_top_n': results[3],
-                    'time_points': results[2]
+                    'similarities_over_time': results[0],
+                    'similarities_over_time_local_top_n': results[2],
+                    'time_points': results[1]
             })
 
 class SimilarityView(APIView):
@@ -77,7 +76,7 @@ class WordInModelView(APIView):
         corpus = corpus_name_from_request(request)
         query_term = request.query_params.get('query_term')
 
-        results = utils.word_in_model(query_term, corpus)
+        results = utils.word_in_models(query_term, corpus)
 
         if isinstance(results, str):
             # the method returned an error string

@@ -18,7 +18,7 @@ flask_test_data_dir = os.path.join(_here, 'flask_test_data')
 def test_legacy_data_import():
     user_data = import_table_data(flask_test_data_dir, 'user')
 
-    assert len(user_data) == 2
+    assert len(user_data) == 4
 
     user = user_data[0]
     expected_user = {
@@ -69,8 +69,8 @@ def test_save_legacy_user(db):
 
     users = CustomUser.objects.all()
 
-    assert len(users) == 2
-    admin = users[0]
+    assert len(users) == 4
+    admin = CustomUser.objects.get(username='admin')
     assert admin.username == 'admin'
     assert admin.email == 'admin@ianalyzer.nl'
     assert admin.is_superuser
@@ -119,7 +119,10 @@ def test_save_queries(db):
     query = Query.objects.get(id='507')
 
     assert query.query_json == {
-        "queryText": "", "filters": [], "sortBy": "date", "sortAscending": False}
+        "sort": [{"date": "desc"}],
+        "query": {"bool": {"must": {"match_all": {}}, "filter": []}}
+    }
+
 
     assert dates_match(query.started,
                        datetime(year=2022, month=12, day=7, hour=14, minute=18, second=6))

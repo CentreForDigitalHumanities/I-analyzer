@@ -2,6 +2,5 @@
     [minDate]="minDate" [maxDate]="maxDate"
     [ngModel]="subject?.value || default"
     (onSelect)="set($event)"
-    (keydown.enter)="set($event.target.value)"
-    (onBlur)="set($event.target.value)">
+    (keydown.enter)="set($event.target.value)">
 </p-calendar>
