@@ -58,8 +58,8 @@ def test_create_csv(result_csv_with_highlights):
             assert 'speech' in row
         assert counter == 1
 
-def test_csv_fieldnames(all_results_csv, mock_corpus_specs):
-    with open(all_results_csv) as csv_file:
+def test_csv_fieldnames(mock_corpus_results_csv, mock_corpus_specs):
+    with open(mock_corpus_results_csv) as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
         assert set(reader.fieldnames) == set(mock_corpus_specs['fields'] + ['query'])
 
@@ -77,13 +77,13 @@ def assert_result_csv_expectations(csv_path, expectations, delimiter=','):
             for item in expected_row:
                 assert rows[i][item] == expected_row[item]
 
-def test_csv_contents(mock_corpus, all_results_csv):
+def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock_corpus, mock_corpus_results_csv):
     '''Check the contents of the results csv for the basic mock corpus.
 
     Also includes the multilingual corpus, which includes some special characters, making sure
     that none of the steps in the download make encoding issues.'''
 
-    if mock_corpus == 'small-mock-corpus':
+    if mock_corpus == small_mock_corpus:
         expected = [{
             'date': '1818-01-01',
             'genre': "Science fiction",
@@ -92,7 +92,7 @@ def test_csv_contents(mock_corpus, all_results_csv):
         }, {
             'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
         }]
-    elif mock_corpus == 'multilingual-mock-corpus':
+    elif mock_corpus == ml_mock_corpus:
         expected = [{
             'language': 'Swedish',
             'content': 'Svenska är ett östnordiskt språk som talas av ungefär tio miljoner personer främst i Sverige där språket har en dominant ställning som huvudspråk, men även som det ena nationalspråket i Finland och som enda officiella språk på Åland. I övriga Finland talas det som modersmål framförallt i de finlandssvenska kustområdena i Österbotten, Åboland och Nyland. En liten minoritet svenskspråkiga finns även i Estland. Svenska är nära besläktat och i hög grad ömsesidigt begripligt med danska och norska. De andra nordiska språken, isländska och färöiska, är mindre ömsesidigt begripliga med svenska. Liksom de övriga nordiska språken härstammar svenskan från en gren av fornnordiska, vilket var det språk som talades av de germanska folken i Skandinavien.'
@@ -101,14 +101,14 @@ def test_csv_contents(mock_corpus, all_results_csv):
             'content': 'Das Deutsche ist eine plurizentrische Sprache, enthält also mehrere Standardvarietäten in verschiedenen Regionen. Ihr Sprachgebiet umfasst Deutschland, Österreich, die Deutschschweiz, Liechtenstein, Luxemburg, Ostbelgien, Südtirol, das Elsass und Lothringen sowie Nordschleswig. Außerdem ist Deutsch eine Minderheitensprache in einigen europäischen und außereuropäischen Ländern, z. B. in Rumänien und Südafrika sowie Nationalsprache im afrikanischen Namibia. Deutsch ist die meistgesprochene Muttersprache in der Europäischen Union (EU).'
         }]
     else:
-        pytest.skip()
+        expected = []
 
-    assert_result_csv_expectations(all_results_csv, expected, delimiter=';')
+    assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
 
-def test_csv_encoding(select_multilingual_mock_corpus, all_results_csv):
+def test_csv_encoding(ml_mock_corpus_results_csv):
     '''Assert that the results csv file matches utf-8 encoding'''
 
-    with open(all_results_csv, 'rb') as f:
+    with open(ml_mock_corpus_results_csv, 'rb') as f:
         binary_contents = f.read()
 
     expected_sentence = 'Svenska är ett östnordiskt språk som talas av ungefär tio miljoner personer främst i Sverige där språket har en dominant ställning som huvudspråk'
@@ -189,7 +189,7 @@ mock_timeline_expected_data = [
 ]
 
 @pytest.fixture()
-def term_frequency_file(mock_corpus, select_small_mock_corpus, index_mock_corpus, csv_directory):
+def term_frequency_file(index_small_mock_corpus, csv_directory):
     filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
     return filename
 

@@ -9,9 +9,8 @@ example_document = {
 
 expected_url = f'/api/get_media?corpus=media-mock-corpus&image_path=images%2Fhamlet.png'
 
-def test_media_views(client, mock_corpus, mock_corpus_user):
-    client.force_login(mock_corpus_user)
-    response = client.post(
+def test_media_views(client, mock_corpus, admin_client):
+    response = admin_client.post(
         '/api/request_media',
         {'corpus': mock_corpus, 'document': example_document},
         content_type='application/json'

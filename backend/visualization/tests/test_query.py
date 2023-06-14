@@ -36,13 +36,13 @@ def test_date_manipulation(basic_query):
     assert query_min_date == min_date
     assert query_max_date == max_date
 
-def test_search(mock_corpus, es_client, select_small_mock_corpus, index_mock_corpus, basic_query):
+def test_search(small_mock_corpus, es_client, index_small_mock_corpus, basic_query):
     """
     Test some search requests based on queries manipulated in the query module
     """
     query_no_text = query.remove_query(basic_query)
     result = search(
-        corpus = mock_corpus,
+        corpus = small_mock_corpus,
         query_model=query_no_text,
         client=es_client,
     )
@@ -54,7 +54,7 @@ def test_search(mock_corpus, es_client, select_small_mock_corpus, index_mock_cor
     query_no_text = query.add_filter(query_no_text, date_filter)
 
     result = search(
-        corpus = mock_corpus,
+        corpus = small_mock_corpus,
         query_model = query_no_text,
         client=es_client
     )
