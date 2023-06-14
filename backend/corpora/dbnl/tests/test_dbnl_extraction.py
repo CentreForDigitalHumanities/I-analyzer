@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from addcorpus.load_corpus import load_corpus
 from addcorpus.extract import XML
-from corpora.dbnl.utils import append_to_tag, index_by_id, which_unique
+from corpora.dbnl.utils import append_to_tag, index_by_id, which_unique, language_name
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,6 +17,17 @@ def dbnl_corpus(settings):
         'dbnl_metadata': os.path.join(here, '..', 'dbnl_metadata.py'),
     }
     return 'dbnl'
+
+language_name_testcases = [
+    ('nl', 'Dutch'),
+    ('la', 'Latin'),
+    ('lat', 'Latin'),
+    ('rus', 'Russian')
+]
+
+@pytest.mark.parametrize(['code', 'name'], language_name_testcases)
+def test_language_names(code, name):
+    assert language_name(code) == name
 
 which_unique_testcases = [
     (['_ale002', '_ale002'], [True, False]),

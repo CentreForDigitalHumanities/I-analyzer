@@ -196,7 +196,7 @@ def language_name(code):
         return None
     codes = code.split('-')
     names = set(map(
-        lambda code: Language.make(language=code).display_name(),
+        lambda code: Language.make(language=standardize_tag(code)).display_name(),
         codes
     ))
     return ' / '.join(names)
