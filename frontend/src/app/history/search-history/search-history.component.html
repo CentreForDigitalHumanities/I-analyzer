@@ -27,8 +27,8 @@
         <ng-template pTemplate="body" let-query>
             <tr (click)="returnToSavedQuery(query)">
                 <td>{{query.started | date:'medium'}}</td>
-                <td>{{query.query_json | formatQueryText }}</td>
-                <td ia-query-filters [queryModel]="query.query_json"></td>
+                <td>{{query.queryModel | formatQueryText }}</td>
+                <td ia-query-filters [queryModel]="query.queryModel"></td>
                 <td>{{query.total_results}}</td>
                 <td>{{corpusTitle(query.corpus)}}</td>
             </tr>

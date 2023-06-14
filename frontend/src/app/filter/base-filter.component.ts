@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import * as _ from 'lodash';
 
-import { SearchFilter, SearchFilterData } from '../models/index';
+import { QueryModel, SearchFilter } from '../models/index';
+import { Subscription } from 'rxjs';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -10,51 +11,43 @@ import { SearchFilter, SearchFilterData } from '../models/index';
 @Component({
     template: ''
 })
-export abstract class BaseFilterComponent<T extends SearchFilterData> {
-    @Input() inputChanged: Subject<void>;
+export abstract class BaseFilterComponent<FilterData> implements OnChanges {
+    @Input() filter: SearchFilter;
+    @Input() queryModel: QueryModel;
 
-    @Input()
-    public filter: SearchFilter<T>;
+    private queryModelSubscription: Subscription;
 
-    @Input()
-    public grayedOut: boolean;
+    constructor() { }
 
-    @Output('update') public updateEmitter = new EventEmitter<SearchFilter<T>>();
-
-    /**
-     * The data of the applied filter transformed to use as input for the value editors.
-     */
-    public data: any; // holds the user data
-
-    public useAsFilter = false;
-
-    constructor() {
+    get data(): FilterData {
+        return this.filter?.currentData;
     }
 
-    provideFilterData() {
-        if (this.filter) {
-            this.data = this.getDisplayData(this.filter);
-            this.useAsFilter = this.filter.useAsFilter;
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.filtter) {
+            this.onFilterSet(this.filter);
+        }
+
+        if (changes.queryModel) {
+            if (this.queryModelSubscription) {
+                this.queryModelSubscription.unsubscribe();
+            }
+            this.queryModelSubscription = this.queryModel.update.subscribe(() =>
+                this.onQueryModelUpdate()
+            );
+            this.onQueryModelUpdate(); // run update immediately
         }
     }
-
-    abstract getDisplayData(filter: SearchFilter<T>);
-
-    /**
-     * Create a new version of the filter data from the user input.
-     */
-    abstract getFilterData(): SearchFilter<T>;
 
     /**
      * Trigger a change event.
      */
-    update() {
-        if (this.data.selected && this.data.selected.length === 0) {
-            this.useAsFilter = false;
-        } else {
-            this.useAsFilter = true; // update called through user input
-        }
-        this.filter.useAsFilter = this.useAsFilter;
-        this.updateEmitter.emit(this.getFilterData());
+    update(data: FilterData) {
+        this.filter.set(data);
     }
+
+    /** possible administration when the filter is set, e.g. setting data limits */
+    onFilterSet(filter): void {};
+
+    onQueryModelUpdate() {}
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
-import { Corpus, Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, DownloadService, ElasticSearchService, EsQuery, NotificationService } from '../../services';
+import { esQueryToQueryModel } from '../../utils/es-query';
+import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
+import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
 import { findByName } from '../../utils/utils';
 
@@ -22,7 +23,6 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         private downloadService: DownloadService,
         private apiService: ApiService,
         corpusService: CorpusService,
-        private elasticSearchService: ElasticSearchService,
         private notificationService: NotificationService
     ) {
         super(corpusService);
@@ -55,7 +55,7 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         const esQueries =  'es_query' in download.parameters ?
             [download.parameters.es_query] : download.parameters.map(p => p.es_query);
         const corpus = findByName(this.corpora, download.corpus);
-        return esQueries.map(esQuery => this.elasticSearchService.esQueryToQueryModel(esQuery, corpus));
+        return esQueries.map(esQuery => esQueryToQueryModel(esQuery, corpus));
     }
 
 

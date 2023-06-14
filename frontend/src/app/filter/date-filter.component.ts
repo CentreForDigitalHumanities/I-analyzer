@@ -1,8 +1,7 @@
-import { Component, DoCheck, OnChanges, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import * as _ from 'lodash';
 
-import * as moment from 'moment';
-
-import { SearchFilter, DateFilterData } from '../models';
+import { DateFilterData, DateFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
 
 @Component({
@@ -10,55 +9,22 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends BaseFilterComponent<DateFilterData> implements DoCheck, OnInit {
+export class DateFilterComponent extends BaseFilterComponent<DateFilterData> {
     public minDate: Date;
     public maxDate: Date;
     public minYear: number;
     public maxYear: number;
 
-    ngOnInit() {
-        this.provideFilterData();
-        this.minDate = new Date(this.filter.defaultData.min);
-        this.maxDate = new Date(this.filter.defaultData.max);
+    onFilterSet(filter: DateFilter): void {
+        this.minDate = filter.defaultData.min;
+        this.maxDate = filter.defaultData.max;
         this.minYear = this.minDate.getFullYear();
         this.maxYear = this.maxDate.getFullYear();
     }
 
-    ngDoCheck() {
-        if (this.filter.reset) {
-            this.filter.reset = false;
-            this.provideFilterData();
-        }
-    }
-
-
-    getDisplayData(filter: SearchFilter<DateFilterData>) {
-        const data = filter.currentData;
-        return {
-            min: new Date(data.min),
-            max: new Date(data.max),
-            minYear: this.minYear,
-            maxYear: this.maxYear
-        };
-    }
-
-    /**
-     * Create a new version of the filter data from the user input.
-     */
-    getFilterData(): SearchFilter<DateFilterData> {
-        this.filter.currentData = {
-            filterType: 'DateFilter',
-            min: this.formatDate(this.data.min),
-            max: this.formatDate(this.data.max)
-        };
-        return this.filter;
-    }
-
-    /**
-     * Return a string of the form 0123-04-25.
-     */
-    formatDate(date: Date): string {
-        return moment(date).format().slice(0, 10);
+    updateProperty(property: 'min'|'max', date: Date) {
+        const value = _.merge(_.clone(this.data), {[property]: date});
+        this.update(value);
     }
 
 }

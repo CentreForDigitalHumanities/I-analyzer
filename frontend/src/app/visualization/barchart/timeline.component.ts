@@ -3,8 +3,9 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult,
-    TimeCategory } from '../../models/index';
+import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
+    TimeCategory,
+    DateFilterData} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
@@ -36,7 +37,9 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
     /** get min/max date for the entire graph and set domain and time category */
     setTimeDomain() {
-        const currentDomain = this.visualizedField.searchFilter.currentData as DateFilterData;
+        const filter = this.queryModel.filters.find(f => f.corpusField.name === this.visualizedField.name)
+            || this.visualizedField.makeSearchFilter();
+        const currentDomain = filter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
         this.xDomain = [min, max];
@@ -265,12 +268,12 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     /**
      * Add a date filter to a query model restricting it to the provided min and max values.
      */
-    addQueryDateFilter(query: QueryModel, min, max): QueryModel {
-        const queryModelCopy = _.cloneDeep(query);
+    addQueryDateFilter(query: QueryModel, min: Date, max: Date): QueryModel {
+        const queryModelCopy = query.clone();
         // download zoomed in results
-        const filter = this.visualizedField.searchFilter;
-        filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
-        queryModelCopy.filters.push(filter);
+        const filter = this.visualizedField.makeSearchFilter();
+        filter.set({ min, max });
+        queryModelCopy.addFilter(filter);
         return queryModelCopy;
     }
 
