@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
+import { Chart, ChartData, ChartOptions, ChartType, Filler, TooltipItem } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
@@ -31,7 +31,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     tableHeaders: FreqTableHeaders;
     tableData: WordSimilarity[];
-    startTimeIntervals: Number[];
+
+    averages: Number[];
 
     graphStyle = new BehaviorSubject<'line'|'bar'>('line');
 
@@ -108,16 +109,19 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     formatLabel(value: number): string {
-        return this.timeIntervals.find(t => t.startsWith(value.toString()))
+        const index = this.averages.indexOf(value)
+        return this.timeIntervals[index];
     }
 
-    getStartTime(time: string): number {
-       return parseInt(time.split('-')[0])
+    getAverageTime(time: string): number {
+        const times = time.split('-').map(t => parseInt(t));
+        const avg = Math.round(_.mean(times));
+        return avg;
     }
 
     formatDataPoint(point: any, style: string): {x: number, y: number} | number {
         if (style == 'line') {
-            return {x: parseInt(point.time.split('-')[0]), y: point.similarity}
+            return {x: this.getAverageTime(point.time), y: point.similarity}
         }
         else {
             return point.similarity
@@ -126,7 +130,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /** convert array of word similarities to a chartData object */
     makeChartData(data: WordSimilarity[], style: 'line'|'bar'): ChartData {
-        this.startTimeIntervals = this.timeIntervals.map(time => this.getStartTime(time));
+        this.averages = this.timeIntervals.map(t => this.getAverageTime(t));
         const allSeries = _.groupBy(data, point => point.key);
         const datasets = _.values(allSeries).map((series, datasetIndex) => {
             const label = series[0].key;
@@ -190,7 +194,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                     ticks: {
                         stepSize: 1,
                         autoSkip: true,
-                        callback: (value: number): string | undefined => this.startTimeIntervals.includes(value) ? this.formatLabel(value) : undefined,
+                        callback: (value: number): string | undefined => this.averages.includes(
+                            value) ? this.formatLabel(value) : undefined,
                         minRotation: 30
                     }
                 },
@@ -209,8 +214,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 tooltip: {
                     displayColors: true,
                     callbacks: {
-                        title: (tooltipItem: any): string => {
-                            return this.formatLabel(tooltipItem[0].parsed.x)
+                        title: (tooltipItems: TooltipItem<ChartType>[]): string => {
+                            return this.formatLabel(tooltipItems[0].parsed.x)
                         },
                         labelColor: (tooltipItem: any): any => {
                             const color = tooltipItem.dataset.borderColor;
