@@ -106,10 +106,6 @@ export class SearchComponent extends ParamDirective {
         this.dialogService.showManualPage('query');
     }
 
-    public showCorpusInfo(corpus: Corpus) {
-        this.dialogService.showDescriptionPage(corpus);
-    }
-
     public switchTabs(index: number) {
         this.tabIndex = index;
     }

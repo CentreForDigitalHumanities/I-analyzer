@@ -10,8 +10,9 @@
                 {{corpus.title}}
             </h2>
             <div class="column is-narrow">
-                <button class="moreInfoLink" *ngIf="corpus.descriptionpage"
-                iaBalloon="More information" iaBalloonPosition="down-left" (click)="showMoreInfo()">
+                <button class="moreInfoLink"
+                iaBalloon="More information" iaBalloonPosition="down-left"
+                [routerLink]="['/info', corpus.name]">
                 <i class=" fa fa-info-circle info-icon"></i>
             </button>
 
@@ -27,9 +28,9 @@
         <div class="columns align-bottom">
             <div class="column">
                 <div class="block">
-                    <p class="heading">Language: <strong>{{languages}}</strong></p>
+                    <p class="heading">Language: <strong>{{corpus.displayLanguages}}</strong></p>
                     <p class="heading">Type: <strong>{{corpus.category}}</strong></p>
-                    <p class="heading">Period: <strong>{{minYear}}-{{maxYear}}</strong></p>
+                    <p class="heading">Period: <strong>{{corpus.minYear}}-{{corpus. maxYear}}</strong></p>
                 </div>
             </div>
             <div class="column is-narrow explore-column">

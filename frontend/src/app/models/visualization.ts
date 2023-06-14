@@ -124,3 +124,7 @@ export const barChartSetNull: Object = {
     normalize: null,
     visualizeTerm: null
 };
+
+export interface FieldCoverage {
+    [field: string]: number;
+};

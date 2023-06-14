@@ -7,27 +7,12 @@
                         <span *ngIf="currentPage === 'search'">Search</span>
                         <span *ngIf="currentPage === 'word-models'">Word models of</span>
                         <span *ngIf="currentPage === 'document'">Document in</span>
+                        <span *ngIf="currentPage === 'info'">About </span>
                         <a class="corpus-name" [routerLink]="['/home']">&ldquo;{{corpus.title}}&rdquo;</a>
                     </h1>
                 </div>
-                <div class="level-item buttons">
-                    <button class="button is-white" *ngIf="corpus.descriptionpage"
-                        iaBalloon="More information about this corpus" iaBalloonPosition="up-left"
-                        (click)="showCorpusInfo(corpus)">
-                        <span class="icon"><fa-icon [icon]="faInfo"></fa-icon></span>
-                        <span  *ngIf="modelDocumentation">corpus</span>
-                    </button>
-                    <button class="button is-white" *ngIf="modelDocumentation"
-                    iaBalloon="More information about the word models for this corpus" iaBalloonPosition="up-left"
-                        (click)="showModelInfo()">
-                        <span class="icon">
-                            <fa-icon [icon]="faInfo"></fa-icon>
-                        </span>
-                        <span>models</span>
-                    </button>
-                </div>
             </div>
-            <div class="level-left" *ngIf="wordModelsPresent || currentPage === 'document'">
+            <div class="level-left">
                 <div class="field has-addons">
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/search', corpus.name]"
@@ -44,6 +29,15 @@
                             iaBalloon="Explore word models of this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
                                 <fa-icon [icon]="wordModelsIcon">word models</fa-icon>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="control">
+                        <a class="button is-medium" [routerLink]="['/info', corpus.name]"
+                            [class.is-primary]="currentPage === 'info'"
+                            iaBalloon="Read more about this corpus" iaBalloonPosition="up-right">
+                            <span class="icon">
+                                <fa-icon [icon]="infoIcon">info</fa-icon>
                             </span>
                         </a>
                     </div>

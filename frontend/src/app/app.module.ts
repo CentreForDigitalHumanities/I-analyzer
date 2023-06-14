@@ -91,6 +91,8 @@ import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
 import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-filter.component';
 import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picker/date-picker.component';
+import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
+import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 
 
 export const appRoutes: Routes = [
@@ -103,6 +105,11 @@ export const appRoutes: Routes = [
         path: 'word-models/:corpus',
         component: WordModelsComponent,
         canActivate: [CorpusGuard, LoggedOnGuard],
+    },
+    {
+        path: 'info/:corpus',
+        component: CorpusInfoComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'document/:corpus/:id',
@@ -174,6 +181,7 @@ export const declarations: any[] = [
     BooleanFilterComponent,
     CorpusFilterComponent,
     CorpusHeaderComponent,
+    CorpusInfoComponent,
     CorpusSelectionComponent,
     CorpusSelectorComponent,
     DatePickerComponent,
@@ -187,6 +195,7 @@ export const declarations: any[] = [
     DropdownComponent,
     ErrorComponent,
     FilterManagerComponent,
+    FieldInfoComponent,
     FooterComponent,
     FreqtableComponent,
     FullDataButtonComponent,
