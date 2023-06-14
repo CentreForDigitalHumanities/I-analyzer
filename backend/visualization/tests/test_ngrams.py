@@ -21,11 +21,11 @@ CENTURY_BINS = [
     (1890, 1894), (1895, 1899)
 ]
 
-def test_total_time_interval_no_filter(basic_query, mock_corpus, select_small_mock_corpus, mock_corpus_specs):
+def test_total_time_interval_no_filter(basic_query, small_mock_corpus, small_mock_corpus_specs):
     # no date filter: should use corpus min_date/max_date
-    min_date, max_date = ngram.get_total_time_interval(basic_query, mock_corpus)
-    assert min_date == mock_corpus_specs['min_date']
-    assert max_date == mock_corpus_specs['max_date']
+    min_date, max_date = ngram.get_total_time_interval(basic_query, small_mock_corpus)
+    assert min_date == small_mock_corpus_specs['min_date']
+    assert max_date == small_mock_corpus_specs['max_date']
 
 def test_total_time_interval_with_filter(mock_corpus, basic_query):
     datefilter = query.make_date_filter(FILTER_MIN_DATE, FILTER_MAX_DATE)
@@ -36,16 +36,16 @@ def test_total_time_interval_with_filter(mock_corpus, basic_query):
     assert min_date == FILTER_MIN_DATE
     assert max_date == FILTER_MAX_DATE
 
-def test_time_bins(mock_corpus, select_small_mock_corpus, basic_query):
+def test_time_bins(small_mock_corpus, basic_query):
     # 100 year interval
-    bins = ngram.get_time_bins(basic_query, mock_corpus)
+    bins = ngram.get_time_bins(basic_query, small_mock_corpus)
     target_bins = CENTURY_BINS
     assert bins == target_bins
 
     # 10 year interval
     datefilter = query.make_date_filter(FILTER_MIN_DATE, FILTER_MAX_DATE)
     query_with_date_filter = query.add_filter(basic_query, datefilter)
-    bins = ngram.get_time_bins(query_with_date_filter, mock_corpus)
+    bins = ngram.get_time_bins(query_with_date_filter, small_mock_corpus)
     target_bins = [
         (1850, 1850), (1851, 1851),
         (1852, 1852), (1853, 1853),
@@ -55,13 +55,13 @@ def test_time_bins(mock_corpus, select_small_mock_corpus, basic_query):
     ]
     assert bins == target_bins
 
-def test_short_interval(mock_corpus, select_small_mock_corpus, basic_query):
+def test_short_interval(small_mock_corpus, basic_query):
     start_date = datetime(year=1850, month=1, day=1)
     end_date = datetime(year=1850, month=12, day=31)
     date_filter = query.make_date_filter(start_date, end_date)
     short_query = query.add_filter(basic_query, date_filter)
 
-    bins = ngram.get_time_bins(short_query, mock_corpus)
+    bins = ngram.get_time_bins(short_query, small_mock_corpus)
 
     assert bins == [(1850, 1850)]
 
@@ -114,7 +114,7 @@ def test_top_10_ngrams():
 
 
 
-def test_absolute_bigrams(mock_corpus, select_small_mock_corpus, index_mock_corpus, basic_query):
+def test_absolute_bigrams(small_mock_corpus, index_small_mock_corpus, basic_query):
     # search for a word that occurs a few times
     frequent_query = query.set_query_text(basic_query, 'to')
 
@@ -160,7 +160,7 @@ def test_absolute_bigrams(mock_corpus, select_small_mock_corpus, index_mock_corp
         }
     ]
 
-    result = ngram.get_ngrams(frequent_query, mock_corpus, 'content', freq_compensation=False)
+    result = ngram.get_ngrams(frequent_query, small_mock_corpus, 'content', freq_compensation=False)
 
     assert result['time_points'] == ['{}-{}'.format(start, end) for start, end in CENTURY_BINS]
 
@@ -174,7 +174,7 @@ def test_absolute_bigrams(mock_corpus, select_small_mock_corpus, index_mock_corp
             else:
                 assert freq == 0
 
-def test_bigrams_with_quote(mock_corpus, select_small_mock_corpus, index_mock_corpus, basic_query):
+def test_bigrams_with_quote(small_mock_corpus, index_small_mock_corpus, basic_query):
     cases = [
         {
             'query': '"to hear"',
@@ -204,7 +204,7 @@ def test_bigrams_with_quote(mock_corpus, select_small_mock_corpus, index_mock_co
         # search for a word that occurs a few times
         case_query = query.set_query_text(basic_query, case['query'])
 
-        result = ngram.get_ngrams(case_query, mock_corpus, 'content', freq_compensation=False)
+        result = ngram.get_ngrams(case_query, small_mock_corpus, 'content', freq_compensation=False)
 
         ngrams = case['ngrams']
 
@@ -253,14 +253,14 @@ TOKENS_EXAMPLE = [
     }
 ]
 
-def test_number_of_ngrams(mock_corpus, select_small_mock_corpus, index_mock_corpus, basic_query):
+def test_number_of_ngrams(small_mock_corpus, index_small_mock_corpus, basic_query):
     # search for a word that occurs a few times
     frequent_query = query.set_query_text(basic_query, 'to')
 
     max_frequency = 6
 
     for size in range(1, max_frequency + 2):
-        result = ngram.get_ngrams(frequent_query, mock_corpus, 'content', number_of_ngrams= size)
+        result = ngram.get_ngrams(frequent_query, small_mock_corpus, 'content', number_of_ngrams= size)
         series = result['words']
 
         assert len(series) == min(max_frequency, size)
