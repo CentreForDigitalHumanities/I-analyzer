@@ -108,7 +108,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     formatLabel(value: number): string {
-        return this.timeIntervals.filter(t => t.startsWith(value.toString()))[0]
+        return this.timeIntervals.find(t => t.startsWith(value.toString()))
     }
 
     getStartTime(time: string): number {
