@@ -24,7 +24,7 @@ class Tag(models.Model):
 
 
 class TaggedDocument(models.Model):
-    doc_id = models.CharField(max_length=64)
+    doc_id = models.CharField(max_length=512)
     corpus = models.ForeignKey(
         to=Corpus,
         to_field='name',

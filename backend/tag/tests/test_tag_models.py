@@ -1,7 +1,7 @@
 import pytest
 from addcorpus.models import Corpus
 from django.core.exceptions import ValidationError
-from tag.models import DOCS_PER_TAG_LIMIT, TaggedDocument
+from tag.models import TaggedDocument
 
 
 def test_tag_models(db, auth_user, auth_user_tag, tagged_documents):
@@ -25,17 +25,13 @@ def test_tag_lookup(mock_corpus, tagged_documents,
     assert TaggedDocument.objects.filter(tags=admin_user_tag)
 
 
-def test_max_length(db, mock_corpus, auth_user_tag):
-    corpus = Corpus.objects.get(name=mock_corpus)
-    instance = TagInstance.objects.create(tag=auth_user_tag, corpus=corpus)
-
-    for i in range(DOCS_PER_TAG_LIMIT):
-        instance.document_ids.append(str(i))
-        instance.save()
-        instance.full_clean()  # should validate without error
-
-    instance.document_ids.append('too_much')
-    instance.save()
-
+def test_max_tags(db, auth_user_tag, too_much_docs):
+    too_much_docs[0].tags.add(auth_user_tag)
     with pytest.raises(ValidationError):
-        instance.full_clean()
+        too_much_docs[1].tags.add(auth_user_tag)
+
+
+def test_max_tags_reverse(db, mock_corpus_obj,
+                          auth_user_tag, too_much_docs):
+    with pytest.raises(ValidationError):
+        auth_user_tag.tagged_docs.add(*too_much_docs)
