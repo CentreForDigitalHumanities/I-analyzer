@@ -254,24 +254,27 @@ class DBNL(XMLCorpus):
         # this extractor is similar to language_code below,
         # but designed to accept multiple values in case of uncertainty
         extractor=Pass(
-            Backup(
-                XML( # get the language on chapter-level if available
-                    attribute='lang',
-                    transform=lambda value: [value] if value else None,
+            Pass(
+                Backup(
+                    XML( # get the language on chapter-level if available
+                        attribute='lang',
+                        transform=lambda value: [value] if value else None,
+                    ),
+                    XML( # look for section-level codes
+                        {'name': 'div', 'attrs': {'type': 'section'}},
+                        attribute='lang',
+                        multiple=True,
+                    ),
+                    XML( # look in the top-level metadata
+                        'language',
+                        toplevel=True,
+                        recursive=True,
+                        multiple=True,
+                        attribute='id'
+                    ),
+                    transform = lambda codes: map(utils.language_name, codes) if codes else None,
                 ),
-                XML( # look for section-level codes
-                    {'name': 'div', 'attrs': {'type': 'section'}},
-                    attribute='lang',
-                    multiple=True,
-                ),
-                XML( # look in the top-level metadata
-                    'language',
-                    toplevel=True,
-                    recursive=True,
-                    multiple=True,
-                    attribute='id'
-                ),
-                transform = lambda codes: map(utils.language_name, codes) if codes else None,
+                transform=utils.sorted_and_unique,
             ),
             transform=utils.join_values,
         ),
