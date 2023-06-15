@@ -18,11 +18,14 @@ PERIODIAL_PREFIX = '[tijdschrift]'
 def is_periodical(name):
     return name.startswith(PERIODIAL_PREFIX)
 
+def sorted_and_unique(items):
+    return list(sorted(set(items)))
+
 def get_periodical(names):
     periodicals = list(filter(is_periodical, names))
     format = lambda name: name[len(PERIODIAL_PREFIX):].strip()
     if periodicals:
-        return ', '.join(map(format, periodicals))
+        return ', '.join(sorted_and_unique(map(format, periodicals)))
 
 def which_are_people(names):
     '''
@@ -199,4 +202,4 @@ def language_name(code):
         lambda code: Language.make(language=standardize_tag(code)).display_name(),
         codes
     ))
-    return ' / '.join(names)
+    return ', '.join(names)
