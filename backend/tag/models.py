@@ -1,11 +1,10 @@
-from django.db import models
-from django.db.models.constraints import UniqueConstraint
-from django.contrib.postgres.fields import ArrayField
-
 from addcorpus.models import Corpus
 from django.conf import settings
+from django.db import models
+from django.db.models.constraints import UniqueConstraint
 
 DOCS_PER_TAG_LIMIT = 500
+
 
 class Tag(models.Model):
     name = models.CharField(blank=False, null=False, max_length=512)
@@ -19,29 +18,20 @@ class Tag(models.Model):
 
     class Meta:
         constraints = [
-            UniqueConstraint(fields=['user', 'name'], name='unique_name_for_user')
+            UniqueConstraint(fields=['user', 'name'],
+                             name='unique_name_for_user')
         ]
 
-class TagInstance(models.Model):
-    tag = models.ForeignKey(
-        to=Tag,
-        related_name='instances',
-        on_delete=models.CASCADE,
-        null=False
-    )
+
+class TaggedDocument(models.Model):
+    doc_id = models.CharField(max_length=64)
     corpus = models.ForeignKey(
         to=Corpus,
-        on_delete=models.CASCADE,
         to_field='name',
-        related_name='tag_instances',
+        related_name='tagged_docs',
+        on_delete=models.CASCADE
     )
-    document_ids = ArrayField(
-        models.CharField(
-            blank=False,
-            null=False,
-            max_length=512,
-        ),
-        default=list,
-        null=False,
-        size=DOCS_PER_TAG_LIMIT,
+    tags = models.ManyToManyField(
+        to=Tag,
+        related_name='tagged_docs'
     )
