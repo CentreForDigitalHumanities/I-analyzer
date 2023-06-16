@@ -19,7 +19,8 @@ def is_periodical(name):
     return name.startswith(PERIODIAL_PREFIX)
 
 def sorted_and_unique(items):
-    return list(sorted(set(items)))
+    if items:
+        return list(sorted(set(items)))
 
 def get_periodical(names):
     periodicals = list(filter(is_periodical, names))
