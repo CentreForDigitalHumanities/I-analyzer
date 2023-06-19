@@ -225,7 +225,9 @@ tomli==2.0.1
 tornado==6.3.2
     # via django-livereload-server
 tqdm==4.64.1
-    # via nltk
+    # via
+    #   -r requirements.in
+    #   nltk
 typing-extensions==4.6.3
     # via pypdf2
 urllib3==1.26.13
