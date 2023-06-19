@@ -9,7 +9,7 @@ Various classes are defined in `backend/addcorpus/extract.py`.
 - The extractors `XML`, `HTML` and `CSV` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
 - The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
 - The `Constant` extractor can be used to define a constant value.
-- The `Index` extractor gives you the index of that document within the file.
+- The `Order` extractor gives you the index of that document within the file.
 - The `Choice` and `Combined`, `Backup`, and `Pass` extractors can be used to combine multiple extractors.
 
 A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is falsy.
