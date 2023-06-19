@@ -35,6 +35,8 @@ class Troonredes(XMLCorpus):
     es_index = getattr(settings, 'TROONREDES_ES_INDEX', 'troonredes')
     image = 'troon.jpg'
     word_model_path = getattr(settings, 'TROONREDES_WM', None)
+    languages = ['nl']
+    category = 'oration'
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'

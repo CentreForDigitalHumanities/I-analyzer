@@ -1,0 +1,46 @@
+<form>
+    <div class="columns">
+        <div class="column field">
+            <label class="label">Language</label>
+            <div class="control">
+                <ia-dropdown name="language" [options]="languages" [canDeselect]="true" placeholder="Any"
+                    [value]="selectedLanguage.value"
+                    (onChange)="selectedLanguage.next($event)"></ia-dropdown>
+            </div>
+        </div>
+        <div class="column field">
+            <label class="label">Type of data</label>
+            <div class="control">
+                <ia-dropdown name="category" [options]="categories" [canDeselect]="true" placeholder="Any"
+                [value]="selectedCategory.value"
+                (onChange)="selectedCategory.next($event)"></ia-dropdown>
+            </div>
+        </div>
+        <div class="column field">
+            <label class="label">Period</label>
+            <div class="control">
+                <div class="columns">
+                    <div class="column">
+                        <ia-date-picker unit="year" [(subject)]="selectedMinDate"
+                            [minDate]="minDate" [maxDate]="maxDate"
+                            [default]="minDate"></ia-date-picker>
+                    </div>
+                    <div class="column is-narrow">
+                        -
+                    </div>
+                    <div class="column">
+                        <ia-date-picker unit="year" [(subject)]="selectedMaxDate"
+                        [minDate]="minDate" [maxDate]="maxDate"
+                        [default]="maxDate"></ia-date-picker>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="canReset | async" class="block" style="text-align: right;">
+        <button class="button" type="reset" (click)="reset()">
+            <span class="icon"><fa-icon [icon]="resetIcon"></fa-icon></span>
+            <span>Reset</span>
+        </button>
+    </div>
+</form>

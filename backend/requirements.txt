@@ -228,7 +228,7 @@ tqdm==4.64.1
     # via
     #   -r requirements.in
     #   nltk
-typing-extensions==4.4.0
+typing-extensions==4.6.3
     # via pypdf2
 urllib3==1.26.13
     # via

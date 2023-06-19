@@ -24,7 +24,7 @@ def test_tokens(termvectors_result):
         assert token['term'] == word
         assert token['ttf'] == 1 # title has no duplicate words
 
-def test_find_matches(es_client, termvectors_result):
+def test_find_matches(es_client, termvectors_result, small_mock_corpus):
     title_terms = termvectors.get_terms(termvectors_result, 'title')
     title_tokens = termvectors.get_tokens(title_terms, sort = True)
 
@@ -43,8 +43,9 @@ def test_find_matches(es_client, termvectors_result):
         ('fronkenstien~2 modern', 2),
     ]
 
+    corpus = load_corpus(small_mock_corpus)
     for query_text, expected_matches in cases:
-        matches = list(termvectors.token_matches(title_tokens, query_text, 'ianalyzer-mock-corpus', 'title', es_client))
+        matches = list(termvectors.token_matches(title_tokens, query_text, corpus.es_index, 'title', es_client))
         assert len(matches) == expected_matches
 
 QUERY_ANALYSIS_CASES = [
@@ -89,8 +90,8 @@ def test_query_components():
         assert sorted(components) == sorted(case['components']) # ignore order
 
 
-def test_query_analysis(es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
-    corpus = load_corpus(mock_corpus)
+def test_query_analysis(es_client, small_mock_corpus, index_small_mock_corpus):
+    corpus = load_corpus(small_mock_corpus)
     es_index = corpus.es_index
 
     for case in QUERY_ANALYSIS_CASES:
@@ -99,8 +100,8 @@ def test_query_analysis(es_client, mock_corpus, index_mock_corpus, select_small_
 
 
 @pytest.fixture
-def termvectors_result(es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
-    corpus = load_corpus(mock_corpus)
+def termvectors_result(es_client, small_mock_corpus, index_small_mock_corpus):
+    corpus = load_corpus(small_mock_corpus)
     es_index = corpus.es_index
 
     frankenstein_query = {
@@ -110,7 +111,7 @@ def termvectors_result(es_client, mock_corpus, index_mock_corpus, select_small_m
             }
         }
     }
-    result = search.search(mock_corpus, frankenstein_query, es_client)
+    result = search.search(small_mock_corpus, frankenstein_query, es_client)
     hit = search.hits(result)[0]
     id = hit['_id']
 

@@ -30,7 +30,7 @@
                                     </div>
                                     <div class="control" iaBalloon="Click here to limit your search to specific fields"
                                         iaBalloonLength="medium">
-                                        <ia-select-field [corpusFields]="corpus.fields" [filterCriterion]=" 'searchField' ">
+                                        <ia-select-field [corpusFields]="corpus.fields" filterCriterion="searchable" [queryModel]="queryModel">
                                         </ia-select-field>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
         <div class="columns">
             <!-- Filters, on left -->
             <div class="column is-3">
-                <ia-filter-manager *ngIf="corpus" [corpus]="corpus"></ia-filter-manager>
+                <ia-filter-manager *ngIf="queryModel" [queryModel]="queryModel"></ia-filter-manager>
             </div>
             <!-- search results, on right -->
             <div class="is-boxed column is-9" *ngIf="queryModel">
@@ -71,9 +71,9 @@
                 </div>
                 <div [ngSwitch]="tabIndex" class="column">
                     <ia-search-results *ngSwitchCase="0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
-                        (searched)="onSearched($event)" (viewContext)="goToContext($event)">
-                        <ia-search-sorting [fields]="corpus?.fields"></ia-search-sorting>
-                        <ia-highlight-selector></ia-highlight-selector>
+                        (searched)="onSearched($event)">
+                        <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
+                        <ia-highlight-selector [queryModel]="queryModel"></ia-highlight-selector>
                     </ia-search-results>
                     <ia-visualization *ngSwitchCase="1" [corpus]="corpus" [queryModel]="queryModel"></ia-visualization>
                 </div>

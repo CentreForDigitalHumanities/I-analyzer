@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import * as _ from 'lodash';
+import { mockCorpus, mockField } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
 
@@ -16,26 +18,14 @@ describe('DocumentViewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DocumentViewComponent);
         component = fixture.componentInstance;
-        component.corpus = <any>{
-            scan_image_type: 'farout_image_type'
-        };
-        component.fields = [{
-            name: 'test',
-            displayName: 'Test',
-            displayType: 'text',
-            description: 'Description',
-            hidden: false,
-            sortable: false,
-            primarySort: false,
-            searchable: false,
-            searchFilter: null,
-            downloadable: true,
-            mappingType: 'text'
-        }];
+        component.corpus = _.merge({
+            scan_image_type: 'farout_image_type',
+            fields: [mockField]
+        }, mockCorpus);
         component.document = {
             id: 'test',
             relevance: 0.5,
-            fieldValues: { test: 'Hello world!' }
+            fieldValues: { great_field: 'Hello world!' }
         };
         fixture.detectChanges();
     });
@@ -46,6 +36,8 @@ describe('DocumentViewComponent', () => {
 
     it('should render fields', async () => {
         await fixture.whenStable();
+
+        expect(component.propertyFields).toEqual([mockField]);
 
         const debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));
         expect(debug.length).toEqual(1); // number of fields

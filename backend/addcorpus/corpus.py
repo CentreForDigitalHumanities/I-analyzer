@@ -10,11 +10,13 @@ import json
 import bs4
 import csv
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+from langcodes import Language
 from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
-import os
+from addcorpus.constants import CATEGORIES
+
 
 class Corpus(object):
     '''
@@ -58,6 +60,25 @@ class Corpus(object):
     def max_date(self):
         '''
         Maximum timestamp for data files.
+        '''
+        raise NotImplementedError()
+
+    @property
+    def languages(self):
+        '''
+        Language(s) used in the corpus
+
+        Should be a list of strings. Each language should
+        correspond to an ISO-639 code.
+        '''
+        return ['']
+
+    @property
+    def category(self):
+        '''
+        Type of documents in the corpus
+
+        See addcorpus.constants.CATEGORIES for options
         '''
         raise NotImplementedError()
 
@@ -249,6 +270,13 @@ class Corpus(object):
                 for field in self.fields:
                     field_list.append(field.serialize())
                 corpus_dict[ca[0]] = field_list
+            elif ca[0] == 'languages':
+                corpus_dict[ca[0]] = [
+                    Language.make(language).display_name()
+                    for language in ca[1]
+                ]
+            elif ca[0] == 'category':
+                corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
             elif type(ca[1]) == datetime:
                 timedict = {'year': ca[1].year,
                             'month': ca[1].month,
@@ -259,6 +287,16 @@ class Corpus(object):
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
+
+    def _format_option(self, value, options):
+        '''
+        For serialisation: format language or category based on list of options
+        '''
+        return next(
+            nice_string
+            for code, nice_string in options
+            if value == code
+        )
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''

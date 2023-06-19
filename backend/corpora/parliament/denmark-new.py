@@ -41,7 +41,7 @@ class ParliamentDenmarkNew(Parliament, CSVCorpus):
     es_index = getattr(settings, 'PP_DENMARK_NEW_INDEX', 'parliament-denmark-new')
     image = 'denmark.jpg'
     description_page = 'denmark-new.md'
-    language = 'danish'
+    languages = ['da']
     delimiter = '\t'
     document_context = constants.document_context()
     document_context['context_fields'] = ['date']
