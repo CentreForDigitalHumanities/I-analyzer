@@ -8,9 +8,13 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - name: Research Software Lab
-    email: digitalhumanties@uu.nl
-    affiliation: 'Centre for Digital Humanities, Utrecht University'
+  - name: 'Research Software Lab, Centre for Digital Humanities, Utrecht University'
+    website: 'https://cdh.uu.nl/centre-for-digital-humanities/research-software-lab/'
+    city: Utrecht
+    country: NL
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.8064133
 repository-code: 'https://github.com/UUDigitalHumanitieslab/I-analyzer'
 url: 'https://ianalyzer.hum.uu.nl'
 abstract: >-
@@ -31,6 +35,6 @@ keywords:
   - elasticsearch
   - natural language processing
 license: MIT
-commit: 96b9585
-version: 4.0.2
+commit: fb80497
+version: 4.0.3
 date-released: '2023-06-21'
