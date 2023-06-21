@@ -58,4 +58,8 @@ export class ApiServiceMock {
     public keyInfo() {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
     }
+
+    public fieldCoverage() {
+        return Promise.resolve({});
+    }
 }

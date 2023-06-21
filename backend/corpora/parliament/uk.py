@@ -40,7 +40,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     es_index = getattr(settings, 'PP_UK_INDEX', 'parliament-uk')
     image = 'uk.jpeg'
     word_model_path = getattr(settings, 'PP_UK_WM', None)
-    language = 'english'
+    languages = ['en']
     description_page = 'uk.md'
     field_entry = 'speech_id'
     document_context = document_context()

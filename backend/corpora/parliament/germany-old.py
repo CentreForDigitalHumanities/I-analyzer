@@ -20,7 +20,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     data_directory = settings.PP_GERMANY_OLD_DATA
     es_index = getattr(settings, 'PP_GERMANY_OLD_INDEX', 'parliament-germany-old')
     image = 'germany-old.jpeg'
-    language = 'german'
+    languages = ['de']
     word_model_path = getattr(settings, 'PP_DE_WM', None)
 
     description_page = 'germany-old.md'

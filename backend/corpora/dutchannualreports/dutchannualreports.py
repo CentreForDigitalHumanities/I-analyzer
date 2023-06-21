@@ -30,6 +30,9 @@ class DutchAnnualReports(XMLCorpus):
     allow_image_download = getattr(settings, 'DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD', True)
     word_model_path = getattr(settings, 'DUTCHANNUALREPORTS_WM', None)
 
+    languages = ['nl']
+    category = 'finance'
+
     mimetype = 'application/pdf'
 
     # Data overrides from .common.XMLCorpus

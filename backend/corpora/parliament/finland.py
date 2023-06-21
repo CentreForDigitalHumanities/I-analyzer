@@ -62,7 +62,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
 
             yield xml_file, metadata
 
-    language = 'finnish'
+    languages = ['fi']
     description_page = 'finland.md'
     image = 'finland.jpg'
 

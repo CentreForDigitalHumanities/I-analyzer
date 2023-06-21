@@ -79,19 +79,7 @@ Regarding the directory:
 - In production, the location of the flask migration is stored in the django settings. Use `directory = settings.FLASK_MIGRATION_DATA`
 - If `directory` does not exist or does not contain relevant files, the script will not import anything.
 
-The script expects to run on an **empty** database, as it will also copy object IDs. This means that if the script fails halfway through, you will need to reset the database before you can re-attempt. You can use the following script in the shell to do so:
-
-```
-from django.contrib.auth.models import Group
-from users.models import CustomUser
-from addcorpus.models import Corpus
-
-Group.objects.all().delete()
-CustomUser.objects.all().delete()
-Corpus.objects.all().delete()
-```
-
-Objects in other tables (such as the search history) will be deleted through cascade.
+The script expects to run on an **empty** database, as it will also copy object IDs. This means that if the script fails halfway through, you will need to reset the database before you can re-attempt. You can do this from the command line with `yarn django flush`.
 
 ### Update object IDs
 
@@ -108,10 +96,12 @@ python manage.py sqlsequencereset download | python manage.py dbshell
 
 In `backend/ianalyzer`, make a file `settings_local.py`. Transfer relevant local settings you had configured in your `config.py` file for Flask.
 
+Note that the new `settings_local` does not need all the information you had provided in`config`. For a development environment, is is probably sufficient to simply specify the `CORPORA`, and the locations of corpus source data and word model files.
+
 ## Transfer downloads
 
 In the flask backend, the default storage location for CSV files was `/backend/api/csv_files/`.
 
 In a development environment, the new default location is `/backend/download/csv_files/`. (This can be configured in settings.) You will have to move the contents of your CSV directory here if you want to keep your download history.
 
-For a production environment, the csv files need to be moved from the old flask server to the new django server. Check the deployment settings for the new location of the downloads. (This should be outside of the repository.)
+For a production environment, the csv files need to be moved from the old flask server to the new django server, if you are also moving servers. Check the deployment settings for the new location of the downloads. (This should be outside of the repository.)

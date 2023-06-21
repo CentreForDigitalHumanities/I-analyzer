@@ -32,6 +32,8 @@ class Times(XMLCorpus):
     image = 'times.jpg'
     scan_image_type = getattr(settings, 'TIMES_SCAN_IMAGE_TYPE', 'image/png')
     description_page = 'times.md'
+    languages = ['en']
+    category = 'newspaper'
 
     tag_toplevel = 'issue'
     tag_entry = 'article'

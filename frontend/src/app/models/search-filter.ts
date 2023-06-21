@@ -1,79 +1,348 @@
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
+import { distinct, map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
+import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
+import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
+    RangeFilterOptions } from './search-filter-options';
+import { ParamMap } from '@angular/router';
 
-export interface SearchFilter<T extends SearchFilterData> {
-    fieldName: string;
-    description: string;
-    useAsFilter: boolean;
-    reset?: boolean;
-    grayedOut?: boolean;
-    adHoc?: boolean;
-    defaultData?: T;
-    currentData: T;
-};
+abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
+	corpusField: CorpusField;
+	defaultData: FilterData;
+	data: BehaviorSubject<FilterData>;
+    active: BehaviorSubject<boolean>;
 
-export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
+    update = new Subject<void>();
 
-export interface BooleanFilterData {
-    filterType: 'BooleanFilter';
-    checked: boolean;
+	constructor(corpusField: CorpusField) {
+		this.corpusField = corpusField;
+		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
+		this.data = new BehaviorSubject<FilterData>(this.defaultData);
+        this.active = new BehaviorSubject<boolean>(false);
+	}
+
+    get filterType() {
+        return this.corpusField.filterOptions?.name;
+    }
+
+    get currentData() {
+		return this.data?.value;
+	}
+
+    get isDefault$(): Observable<boolean> {
+        return this.data.asObservable().pipe(
+            map(data => _.isEqual(data, this.defaultData))
+        );
+    }
+
+
+    get adHoc() {
+        return !(this.corpusField.filterOptions);
+    }
+
+    get description() {
+        if (this.corpusField?.filterOptions?.description) {
+            return this.corpusField.filterOptions.description;
+        } else {
+            return `Filter results based on ${this.corpusField.displayName}`;
+        }
+    }
+
+    set(data: FilterData) {
+        if (!_.isEqual(data, this.currentData)) {
+            this.data.next(data);
+
+            const active = this.active.value;
+            const toDefault = _.isEqual(data, this.defaultData);
+            const deactivate = active && toDefault;
+            const activate = !active && !toDefault;
+
+            if (deactivate || activate) {
+                this.toggle();
+            } else if (active) {
+                this.update.next();
+            }
+        }
+    }
+
+	reset() {
+        this.set(this.defaultData);
+	}
+
+    /**
+     * set value based on route parameter
+     */
+    setFromParams(params: ParamMap): void {
+        const value = params.get(this.corpusField.name);
+        if (value) {
+            this.set(this.dataFromString(value));
+        } else {
+            this.reset();
+        }
+    }
+
+    /**
+     * filter for one specific value (used to find documents from
+     * the same day, page, publication, etc. as a specific document)
+     */
+    setToValue(value: any) {
+        this.set(this.dataFromValue(value));
+    }
+
+    toRouteParam(): {[param: string]: any} {
+        const value = this.active.value ? this.dataToString(this.currentData) : undefined;
+        return {
+            [this.corpusField.name]: value || null
+        };
+    }
+
+    toEsFilter(): EsFilterType {
+        if (this.active.value) {
+            return this.dataToEsFilter();
+        }
+    }
+
+    public activate() {
+        if (!this.active.value) {
+            this.toggle();
+        }
+    }
+
+    public deactivate() {
+        if (this.active.value) {
+            this.toggle();
+        }
+    }
+
+    public toggle() {
+        this.active.next(!this.active.value);
+        this.update.next();
+    }
+
+    abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
+
+	abstract dataFromValue(value: any): FilterData;
+
+	abstract dataFromString(value: string): FilterData;
+
+	abstract dataToString(data: FilterData): string;
+
+	/**
+	 * export data as filter specification in elasticsearch query language
+	 */
+	abstract dataToEsFilter(): EsFilterType;
+
+    abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
+
 }
-export interface MultipleChoiceFilterData {
-    filterType: 'MultipleChoiceFilter';
-    optionCount?: number;
-    selected: string[];
+
+export interface DateFilterData {
+	min: Date;
+	max: Date;
 }
+
+export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilter> {
+	makeDefaultData(filterOptions: DateFilterOptions) {
+		return {
+			min: this.parseDate(filterOptions.lower),
+			max: this.parseDate(filterOptions.upper)
+		};
+	}
+
+	dataFromValue(value: Date) {
+		return {
+			min: value,
+			max: value,
+		};
+	}
+
+	dataFromString(value: string) {
+		const [minString, maxString] = parseMinMax(value.split(','));
+		return {
+			min: this.parseDate(minString),
+			max: this.parseDate(maxString),
+		};
+	}
+
+	dataToString(data: DateFilterData) {
+		const min = this.formatDate(data.min);
+		const max = this.formatDate(data.max);
+		return `${min}:${max}`;
+	}
+
+	dataToEsFilter(): EsDateFilter {
+		return {
+			range: {
+				[this.corpusField.name]: {
+					gte: this.formatDate(this.currentData.min),
+					lte: this.formatDate(this.currentData.max),
+					format: 'yyyy-MM-dd'
+				}
+			}
+		};
+	}
+
+    dataFromEsFilter(esFilter: EsDateFilter): DateFilterData {
+        const data = _.first(_.values(esFilter.range));
+        const min = this.parseDate(data.gte);
+        const max = this.parseDate(data.lte);
+        return { min, max };
+    }
+
+	private formatDate(date: Date): string {
+		return moment(date).format('YYYY-MM-DD');
+	}
+
+    private parseDate(dateString: string): Date {
+        return moment(dateString, 'YYYY-MM-DD').toDate();
+    }
+}
+
+export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter> {
+
+    makeDefaultData(filterOptions: BooleanFilterOptions) {
+        return false;
+    }
+
+    dataFromValue(value: any): boolean {
+        return value as boolean;
+    }
+
+    dataFromString(value: string): boolean {
+        return value === 'true';
+	}
+
+    dataToString(data: boolean): string {
+        return data.toString();
+    }
+
+    dataToEsFilter(): EsBooleanFilter {
+        return {
+            term: {
+                [this.corpusField.name]: this.currentData
+            }
+        };
+    }
+
+    dataFromEsFilter(esFilter: EsBooleanFilter): boolean {
+        const data = _.first(_.values(esFilter.term));
+        return data;
+    }
+}
+
+type MultipleChoiceFilterData = string[];
+
+export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFilterData, EsTermsFilter> {
+    makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
+        return [];
+    }
+
+    dataFromValue(value: any): MultipleChoiceFilterData {
+        return [value.toString()];
+    }
+
+    dataFromString(value: string): MultipleChoiceFilterData {
+        if (value.length) {
+            return value.split(',').map(decodeURIComponent);
+        }
+        return [];
+    }
+
+    dataToString(data: MultipleChoiceFilterData): string {
+        return data.map(encodeURIComponent).join(',');
+    }
+
+    dataToEsFilter(): EsTermsFilter {
+        return {
+            terms: {
+                [this.corpusField.name]: this.currentData
+            }
+        };
+    }
+
+    dataFromEsFilter(esFilter: EsTermsFilter): MultipleChoiceFilterData {
+        return _.first(_.values(esFilter.terms));
+    }
+}
+
 export interface RangeFilterData {
-    filterType: 'RangeFilter';
     min: number;
     max: number;
 }
-export interface DateFilterData {
-    filterType: 'DateFilter';
-    /** minimum of date range, format: yyyy-MM-dd */
-    min: string;
-    /** maximum of date range, format: yyyy-MM-dd */
-    max: string;
+
+export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFilter> {
+    makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
+        return {
+			min: filterOptions.lower,
+			max: filterOptions.upper
+		};
+    }
+
+    dataFromValue(value: number): RangeFilterData {
+        return { min: value, max: value };
+    }
+
+    dataFromString(value: string): RangeFilterData {
+        const [minString, maxString] = parseMinMax(value.split(','));
+        return {
+            min: parseFloat(minString),
+            max: parseFloat(maxString)
+        };
+    }
+
+    dataToString(data: RangeFilterData): string {
+        return `${data.min},${data.max}`;
+    }
+
+    dataToEsFilter(): EsRangeFilter {
+        return {
+            range: {
+                [this.corpusField.name]: {
+                    gte: this.currentData.min,
+                    lte: this.currentData.max,
+                }
+            }
+        };
+    }
+
+    dataFromEsFilter(esFilter: EsRangeFilter): RangeFilterData {
+        const data = _.first(_.values(esFilter.range));
+        const min = data.gte;
+        const max = data.lte;
+        return { min, max };
+    }
 }
 
-export type SearchFilterType = SearchFilterData['filterType'];
+export class AdHocFilter extends AbstractSearchFilter<any, EsTermFilter> {
+    makeDefaultData(filterOptions: FilterOptions) {}
 
-export function searchFilterDataFromSettings(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
-    switch (filterType) {
-        case 'BooleanFilter':
-            return { filterType, checked: value[0] === 'true' };
-        case 'MultipleChoiceFilter':
-            return { filterType, selected: value };
-        case 'RangeFilter': {
-            const [min, max] = parseMinMax(value);
-            return { filterType, min: parseFloat(min), max: parseFloat(max) };
-        }
-        case 'DateFilter': {
-            const [min, max] = parseMinMax(value);
-            return { filterType, min, max };
-        }
-        case undefined: {
-            return searchFilterDataFromField(field, value);
-        }
+    dataFromValue(value: any) {
+        return value;
     }
-};
 
-export const searchFilterDataFromField = (field: CorpusField, value: string[]): SearchFilterData => {
-    switch (field.mappingType) {
-        case 'boolean':
-            return { filterType: 'BooleanFilter', checked: value[0] === 'true' };
-        case 'date': {
-            const [min, max] = parseMinMax(value);
-            return { filterType: 'DateFilter', min, max };
-        }
-        case 'integer': {
-            const [min, max] = parseMinMax(value);
-            return { filterType: 'RangeFilter', min: parseFloat(min), max: parseFloat(max) };
-        }
-        case 'keyword': {
-            return { filterType: 'MultipleChoiceFilter', selected: value.map(encodeURIComponent) };
-        }
+    dataFromString(value: string) {
+        return value;
     }
-};
+
+    dataToString(data: any): string {
+        return data.toString();
+    }
+
+    dataToEsFilter(): EsTermFilter {
+        return {
+            term: {
+                [this.corpusField.name]: this.currentData
+            }
+        };
+    }
+
+    dataFromEsFilter(esFilter: EsTermFilter): string {
+        const data = _.first(_.values(esFilter.term));
+        return data;
+    }
+}
 
 const parseMinMax = (value: string[]): [string, string] => {
     const term = value[0];
@@ -86,13 +355,4 @@ const parseMinMax = (value: string[]): [string, string] => {
     }
 };
 
-export function contextFilterFromField(field: CorpusField, value?: string): SearchFilter<SearchFilterData> {
-    const currentValue = value ? searchFilterDataFromField(field, [value]) : undefined;
-    return {
-        fieldName: field.name,
-        description: `Search only within this ${field.displayName}`,
-        useAsFilter: true,
-        adHoc: true,
-        currentData: currentValue
-    };
-}
+export type SearchFilter = DateFilter | MultipleChoiceFilter | RangeFilter | BooleanFilter | AdHocFilter;

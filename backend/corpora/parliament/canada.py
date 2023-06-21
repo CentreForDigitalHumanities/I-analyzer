@@ -19,7 +19,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     data_directory = settings.PP_CANADA_DATA
     es_index = getattr(settings, 'PP_CANADA_INDEX', 'parliament-canada')
     image = 'canada.jpeg'
-    language = 'english'
+    languages = ['en']
     description_page = 'canada.md'
     field_entry = 'speech_id'
     required_field = 'content'

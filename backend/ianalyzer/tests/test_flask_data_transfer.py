@@ -70,7 +70,7 @@ def test_save_legacy_user(db):
     users = CustomUser.objects.all()
 
     assert len(users) == 4
-    admin = users[0]
+    admin = CustomUser.objects.get(username='admin')
     assert admin.username == 'admin'
     assert admin.email == 'admin@ianalyzer.nl'
     assert admin.is_superuser
@@ -119,7 +119,10 @@ def test_save_queries(db):
     query = Query.objects.get(id='507')
 
     assert query.query_json == {
-        "queryText": "", "filters": [], "sortBy": "date", "sortAscending": False}
+        "sort": [{"date": "desc"}],
+        "query": {"bool": {"must": {"match_all": {}}, "filter": []}}
+    }
+
 
     assert dates_match(query.started,
                        datetime(year=2022, month=12, day=7, hour=14, minute=18, second=6))

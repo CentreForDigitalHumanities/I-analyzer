@@ -12,6 +12,7 @@ import json
 from django.conf import settings
 import warnings
 from allauth.account.models import EmailAddress
+from api.query_model_to_es_query import query_model_to_es_query
 
 
 def adapt_password_encoding(flask_encoded):
@@ -163,9 +164,11 @@ def save_flask_query(row):
         # some queries refer to corpus names that no longer exist
         return
 
+    query_model = load_json_value(row['query'])
+    es_query = query_model_to_es_query(query_model)
     query = Query(
         id=row['id'],
-        query_json=load_json_value(row['query']),
+        query_json=es_query,
         corpus=Corpus.objects.get(name=corpus_name),
         user=CustomUser.objects.get(id=user_id),
         completed=null_to_none(row['completed']),

@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-
-import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField,
-    EsFilter, EsSearchClause, BooleanQuery } from '../models/index';
-
-
+import {
+    FoundDocument, Corpus, QueryModel, SearchResults,
+    AggregateQueryFeedback, EsSearchClause, BooleanQuery,
+    EsFilter
+} from '../models/index';
 import * as _ from 'lodash';
-import { findByName } from '../utils/utils';
-import { makeBooleanQuery, makeEsSearchClause, makeHighlightSpecification, makeSortSpecification, } from '../utils/es-query';
 
 
 @Injectable()
@@ -19,41 +17,6 @@ export class ElasticSearchService {
 
     constructor(private http: HttpClient) {
         this.client = new Client(this.http);
-    }
-
-    public makeEsQuery(queryModel: QueryModel, corpusFields: CorpusField[]): EsQuery | EsQuerySorted {
-        const searchFields = queryModel.fields?.map(fieldName => findByName(corpusFields, fieldName));
-        const clause: EsSearchClause = makeEsSearchClause(queryModel.queryText, searchFields);
-
-        let query: EsQuery | EsQuerySorted;
-        if (queryModel.filters) {
-            query = {
-                query: makeBooleanQuery(clause, this.mapFilters(queryModel.filters))
-            };
-        } else {
-            query = {
-                query: clause
-            };
-        }
-
-        const sort = makeSortSpecification(queryModel.sortBy, queryModel.sortAscending);
-        _.merge(query, sort);
-
-        const highlight = makeHighlightSpecification(corpusFields, queryModel.queryText, queryModel.highlight);
-        _.merge(query, highlight);
-
-        return query;
-    }
-
-    public esQueryToQueryModel(query: EsQuery, corpus: Corpus): QueryModel {
-        const queryText = this.queryTextFromEsSearchClause(query.query);
-        const filters = this.filtersFromEsQuery(query, corpus);
-
-        if (filters.length) {
-            return { queryText, filters };
-        } else {
-            return { queryText };
-        }
     }
 
     getDocumentById(id: string, corpus: Corpus): Promise<FoundDocument> {
@@ -76,47 +39,6 @@ export class ElasticSearchService {
         if (parsed.documents.length) {
             return _.first(parsed.documents);
         }
-    }
-
-    private queryTextFromEsSearchClause(query: EsSearchClause | BooleanQuery | EsFilter): string {
-        const clause = 'bool' in query ? query.bool.must : query;
-
-        if ('simple_query_string' in clause) {
-            return clause.simple_query_string.query;
-        }
-    }
-
-    private filtersFromEsQuery(query: EsQuery, corpus: Corpus): SearchFilter<SearchFilterData>[] {
-        if ('bool' in query.query) {
-            const filters = query.query.bool.filter;
-            return filters.map(filter => this.esFilterToSearchFilter(filter, corpus));
-        }
-        return [];
-    }
-
-    private esFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
-        let fieldName: string;
-        let value: any;
-
-        if ('term' in filter) { // boolean filter
-            fieldName = _.keys(filter.term)[0];
-            value = filter.term[fieldName];
-        } else if ('terms' in filter) { // multiple choice filter
-            fieldName = _.keys(filter.terms)[0];
-            value = filter.terms[fieldName];
-        } else { // range or date filter
-            fieldName = _.keys(filter.range)[0];
-            value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
-        }
-        const field: CorpusField = findByName(corpus.fields, fieldName);
-        const filterData = searchFilterDataFromField(field, value);
-        return {
-            fieldName: field.name,
-            description: field.searchFilter.description,
-            useAsFilter: true,
-            currentData: filterData,
-            defaultData: field.searchFilter.defaultData,
-        };
     }
 
     /**
@@ -162,7 +84,7 @@ export class ElasticSearchService {
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
+        const esQuery = queryModel.toEsQuery();
         const aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
@@ -188,7 +110,7 @@ export class ElasticSearchService {
                 }
             }
         };
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
+        const esQuery = queryModel.toEsQuery();
         const aggregationModel = Object.assign({ aggs: agg }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
@@ -204,13 +126,13 @@ export class ElasticSearchService {
 
 
     public async search(
-        corpusDefinition: Corpus,
         queryModel: QueryModel,
         size?: number,
     ): Promise<SearchResults> {
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
+        const esQuery = queryModel.toEsQuery();
+
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage);
+        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage);
         return this.parseResponse(response);
     }
 
@@ -219,12 +141,11 @@ export class ElasticSearchService {
      * Load results for requested page
      */
     public async loadResults(
-        corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
+        const esQuery = queryModel.toEsQuery();
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage, from);
+        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage, from);
         return this.parseResponse(response);
     }
 
@@ -247,43 +168,13 @@ export class ElasticSearchService {
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: SearchHit, maxScore: number): FoundDocument {
+    private hitToDocument(hit: SearchHit, maxScore: number) {
         return {
             id: hit._id,
             relevance: hit._score / maxScore,
             fieldValues: Object.assign({ id: hit._id }, hit._source),
             highlight: hit.highlight,
         } as FoundDocument;
-    }
-
-    /**
-     * Convert filters from query model into elasticsearch form
-     */
-    private mapFilters(filters: SearchFilter<SearchFilterData>[]): EsFilter[] {
-        return filters.map(filter => {
-            switch (filter.currentData.filterType) {
-                case 'BooleanFilter':
-                    return { term: { [filter.fieldName]: filter.currentData.checked } };
-                case 'MultipleChoiceFilter':
-                    return {
-                        terms: {
-                            [filter.fieldName]: _.map(filter.currentData.selected, f => decodeURIComponent(f))
-                        }
-                    };
-                case 'RangeFilter':
-                    return {
-                        range: {
-                            [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max }
-                        }
-                    };
-                case 'DateFilter':
-                    return {
-                        range: {
-                            [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max, format: 'yyyy-MM-dd' }
-                        }
-                    };
-            }
-        });
     }
 }
 

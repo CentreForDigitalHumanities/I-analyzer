@@ -36,6 +36,7 @@ describe('SimilarityChartComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(SimilarityChartComponent);
         component = fixture.componentInstance;
+        component.timeIntervals = EXAMPLE_DATA.labels;
         fixture.detectChanges();
     });
 
