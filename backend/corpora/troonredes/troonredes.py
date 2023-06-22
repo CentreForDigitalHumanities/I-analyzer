@@ -37,6 +37,7 @@ class Troonredes(XMLCorpus):
     word_model_path = getattr(settings, 'TROONREDES_WM', None)
     languages = ['nl']
     category = 'oration'
+    description_page = 'troonredes.md'
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
