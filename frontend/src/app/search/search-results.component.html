@@ -86,13 +86,15 @@
             <div class="column">
                 <a *ngIf="viewDocument && viewDocument.position > 1"
                     iaBalloon="view previous document" iaBalloonPosition="right"
-                    (click)="prevDocument(viewDocument)" >
+                    (click)="prevDocument(viewDocument)" (keydown.enter)="prevDocument(viewDocument)"
+                    role="button" tabindex="0">
                     <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
                 </a>
             </div>
             <div class="column" style="text-align:center">
                 <a [routerLink]="['/document', corpus.name, viewDocument.id]"
-                    iaBalloon="view this document on its own page">
+                    iaBalloon="view this document on its own page" autofocus
+                    tabindex="0">
                     <span class="icon">
                         <fa-icon [icon]="linkIcon"></fa-icon>
                     </span>
@@ -100,7 +102,8 @@
                 </a>
                 &nbsp;
                 <a *ngIf="hasContext(viewDocument)" [routerLink]="['/search', corpus.name]" [queryParams]="contextParams(viewDocument)"
-                iaBalloon="view all documents from this {{contextDisplayName}}">
+                    iaBalloon="view all documents from this {{contextDisplayName}}"
+                    tabindex="0">
                     <span class="icon">
                         <fa-icon [icon]="contextIcon"></fa-icon>
                     </span>
@@ -110,7 +113,8 @@
             <div class="column" style="text-align:right">
                 <a *ngIf="viewDocument && viewDocument.position < totalResults"
                     iaBalloon="view next document" iaBalloonPosition="left"
-                    (click)="nextDocument(viewDocument)">
+                    (click)="nextDocument(viewDocument)" (keydown.enter)="nextDocument(viewDocument)"
+                    role="button" tabindex="0">
                     <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
                 </a>
             </div>
