@@ -1,16 +1,18 @@
-from visualization.field_stats import *
+from visualization.field_stats import count_field, count_total, report_coverage
 
-def test_count(mock_corpus, test_es_client, select_small_mock_corpus, index_mock_corpus, mock_corpus_specs):
-    total_docs = mock_corpus_specs['total_docs']
 
-    for field in mock_corpus_specs['fields']:
-        count = count_field(test_es_client, mock_corpus, field)
+def test_count(small_mock_corpus, es_client, index_small_mock_corpus, small_mock_corpus_specs):
+    total_docs = small_mock_corpus_specs['total_docs']
+
+    for field in small_mock_corpus_specs['fields']:
+        count = count_field(es_client, small_mock_corpus, field)
         assert count == total_docs
 
-    assert count_total(test_es_client, mock_corpus) == total_docs
+    assert count_total(es_client, small_mock_corpus) == total_docs
 
-def test_report(mock_corpus, test_es_client, select_small_mock_corpus, index_mock_corpus, mock_corpus_specs):
-    report = report_coverage(mock_corpus)
+
+def test_report(small_mock_corpus, es_client,index_small_mock_corpus, small_mock_corpus_specs):
+    report = report_coverage(small_mock_corpus)
 
     assert report == {
         'date': 1.0,
