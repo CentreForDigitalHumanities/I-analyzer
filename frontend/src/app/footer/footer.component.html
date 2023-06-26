@@ -2,17 +2,17 @@
     <div class="container is-readable">
         <div class="columns">
             <div class="column">
-                <h1>
-                    <strong> I-Analyzer developed by </strong>
-                </h1>
-                <a href="https://dig.hum.uu.nl/" target="_blank">
-                    <img src="assets/uu-dhlab.png" alt="Digital Humanities Lab Utrecht" width="400">
+                <p>
+                    <strong> I-Analyzer is developed by </strong>
+                </p>
+                <a href="https://cdh.uu.nl/centre-for-digital-humanities/research-software-lab/" target="_blank">
+                    <img src="assets/UU-CDH_logo_EN_def_UU_CDH_logo_EN_yellowwhite.jpg" alt="Centre for Digital Humanities, Utrecht University" width="400">
                 </a>
             </div>
         <div *ngIf="logos.length" class="column">
-            <h1>
+            <p>
                 <strong> With support from </strong>
-            </h1>
+            </p>
             <div class="columns">
                 <div *ngFor="let logo of logos" class="column">
                     <a [href]="logo.url" target="_blank">
