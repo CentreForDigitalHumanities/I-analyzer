@@ -30,7 +30,7 @@
                                     </div>
                                     <div class="control" iaBalloon="Click here to limit your search to specific fields"
                                         iaBalloonLength="medium">
-                                        <ia-select-field [corpusFields]="corpus.fields" [filterCriterion]=" 'searchField' ">
+                                        <ia-select-field [corpusFields]="corpus.fields" filterCriterion="searchable" [queryModel]="queryModel">
                                         </ia-select-field>
                                     </div>
                                 </div>
@@ -49,20 +49,22 @@
         <div class="columns">
             <!-- Filters, on left -->
             <div class="column is-3">
-                <ia-filter-manager *ngIf="corpus" [corpus]="corpus"></ia-filter-manager>
+                <ia-filter-manager *ngIf="queryModel" [queryModel]="queryModel"></ia-filter-manager>
             </div>
             <!-- search results, on right -->
             <div class="is-boxed column is-9" *ngIf="queryModel">
                 <div class="tabs is-boxed">
                     <ul>
                         <li [ngClass]="{'is-active': tabIndex === 0}">
-                            <a (click)="switchTabs(0)">
+                            <a (click)="switchTabs(0)" (keydown.enter)="switchTabs(0)" role="tab" tabindex="0"
+                                aria-controls="searchResults" [attr.aria-selected]="tabIndex === 0">
                                 <span class="icon is-small"><i class="fa fa-list" aria-hidden="true"></i></span>
                                 <span>Search Results</span>
                             </a>
                         </li>
                         <li [ngClass]="{'is-active': tabIndex === 1}">
-                            <a (click)="switchTabs(1)">
+                            <a (click)="switchTabs(1)" (keydown.enter)="switchTabs(1)" role="tab" tabindex="0"
+                                aria-controls="visualization" [attr.aria-selected]="tabIndex === 1">
                                 <span class="icon is-small"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
                                 <span>Visualizations</span>
                             </a>
@@ -70,12 +72,12 @@
                     </ul>
                 </div>
                 <div [ngSwitch]="tabIndex" class="column">
-                    <ia-search-results *ngSwitchCase="0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
-                        (searched)="onSearched($event)" (viewContext)="goToContext($event)">
-                        <ia-search-sorting [fields]="corpus?.fields"></ia-search-sorting>
-                        <ia-highlight-selector></ia-highlight-selector>
+                    <ia-search-results #searchResults *ngSwitchCase="0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
+                        (searched)="onSearched($event)" role="tabpanel">
+                        <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
+                        <ia-highlight-selector [queryModel]="queryModel"></ia-highlight-selector>
                     </ia-search-results>
-                    <ia-visualization *ngSwitchCase="1" [corpus]="corpus" [queryModel]="queryModel"></ia-visualization>
+                    <ia-visualization #visualization *ngSwitchCase="1" [corpus]="corpus" [queryModel]="queryModel" role="tabpanel"></ia-visualization>
                 </div>
             </div>
         </div>

@@ -125,6 +125,23 @@ class Metadata(Extractor):
     def _apply(self, metadata, *nargs, **kwargs):
         return metadata.get(self.key)
 
+class Pass(Extractor):
+    '''
+    An extractor that just passes the value of another extractor.
+
+    Useful if you want to stack multiple `transform` arguments
+    '''
+
+    def __init__(self, extractor, *nargs, **kwargs):
+        self.extractor = extractor
+        super().__init__(**kwargs)
+
+    def _apply(self, *nargs, **kwargs):
+        return self.extractor.apply(*nargs, **kwargs)
+
+class Order(Extractor):
+    def _apply(self, index=None, *nargs, **kwargs):
+        return index
 
 class XML(Extractor):
     '''
@@ -235,7 +252,10 @@ class XML(Extractor):
         else:
             soup = self._select(soup_top if self.toplevel else soup_entry)
         if self.transform_soup_func:
-            soup = self.transform_soup_func(soup)
+            if type(soup) == bs4.element.ResultSet:
+                soup = [self.transform_soup_func(bowl) for bowl in soup]
+            else:
+                soup = self.transform_soup_func(soup)
         if not soup:
             return None
 

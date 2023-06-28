@@ -1,5 +1,6 @@
 import nltk
 import os
+from langcodes import Language
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
@@ -29,10 +30,20 @@ SETTINGS = {
     }
 }
 
-def get_nltk_stopwords(language):
+def get_language_key(language_code):
+    '''
+    Get the nltk stopwords file / elasticsearch stemmer name for a language code
+
+    E.g. 'en' -> 'english'
+    '''
+
+    return Language.make(language_code).display_name().lower()
+
+def get_nltk_stopwords(language_code):
     nltk.download('stopwords', NLTK_DATA_PATH)
     stopwords_dir = os.path.join(NLTK_DATA_PATH, 'corpora', 'stopwords')
     languages = os.listdir(stopwords_dir)
+    language = get_language_key(language_code)
 
     if language in languages:
         filepath = os.path.join(stopwords_dir, language)
@@ -46,7 +57,7 @@ def get_nltk_stopwords(language):
 def es_settings(language = None, stopword_analyzer = False, stemming_analyzer = False):
     '''
     Make elasticsearch settings json for a corpus index. Options:
-    - `language`: string with the language of the corpus. Must be specified if you want to use stopword or stemming analysers.
+    - `language`: string with the language code. See addcorpus.constants for options, and which languages support stopwords/stemming
     - `stopword_analyzer`: define an analyser that removes stopwords.
     - `stemming_analyzer`: define an analyser that removes stopwords and performs stemming.
     '''
@@ -92,9 +103,10 @@ def make_stopword_analyzer():
     }
 
 def make_stemmer_filter(language):
+    stemmer_language = get_language_key(language)
     return {
         "type": "stemmer",
-        "language": language
+        "language": stemmer_language
     }
 
 def make_stemmed_analyzer():

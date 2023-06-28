@@ -24,8 +24,7 @@ export class DownloadService {
         requestedResults: number, route: string, highlightFragmentSize: number,
         fileOptions: DownloadOptions
         ): Promise<string | void> {
-            const esQuery = this.elasticSearchService.makeEsQuery(
-                queryModel, corpus.fields); // to create elastic search query
+            const esQuery = queryModel.toEsQuery(); // to create elastic search query
             const parameters = _.merge(
                 {
                     corpus: corpus.name,
@@ -58,8 +57,7 @@ export class DownloadService {
      * @param queryModel QueryModel for which download is requested.
      * @param fields The fields to appear as columns in the csv.
      */
-    const esQuery = this.elasticSearchService.makeEsQuery(
-        queryModel, corpus.fields); // to create elastic search query
+    const esQuery = queryModel.toEsQuery(); // to create elastic search query
     return this.apiService.downloadTask({corpus: corpus.name, es_query: esQuery, fields: fields.map( field => field.name ), route })
         .then(result => result)
         .catch( error => {

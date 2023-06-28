@@ -5,8 +5,8 @@ from os.path import abspath, dirname, join
 
 here = abspath(dirname(__file__))
 
-class MockCorpus(Corpus):
-    title = "Mock corpus with SVD_PPMI models"
+class WordmodelsMockCorpus(Corpus):
+    title = "Mock corpus with word models represented as Keyed Vectors"
     description = "Mock corpus for testing word models, saved as gensim Keyed Vectors"
     es_index = 'nothing'
     min_date = datetime.datetime(year=1810, month=1, day=1)
@@ -19,3 +19,6 @@ class MockCorpus(Corpus):
             name = 'content',
         )
     ]
+    languages = ['en']
+    category = 'book'
+

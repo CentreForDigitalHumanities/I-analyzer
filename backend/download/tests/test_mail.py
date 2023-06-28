@@ -7,7 +7,7 @@ from addcorpus.models import Corpus
 from download.mail import send_csv_email
 
 @pytest.fixture()
-def finished_download(admin_user, mock_corpus, csv_directory, mock_corpora_in_db):
+def finished_download(admin_user, mock_corpus, csv_directory):
     corpus = Corpus.objects.get(name=mock_corpus)
     download = Download.objects.create(
         download_type='search_results',

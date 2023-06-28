@@ -19,16 +19,16 @@ def test_import_error(db, settings):
     - in case the file path in config.CORPORA is faulty
     '''
 
-    settings.CORPORA = {'times': '/somewhere/times/times.py'}
+    settings.CORPORA = {'times2': '/somewhere/times/times.py'}
 
     with pytest.raises(FileNotFoundError) as e:
-        load_corpus.load_corpus('times')
+        load_corpus.load_corpus('times2')
 
     # corpus should not be included when
     # loading all corpora
     corpora = load_corpus.load_all_corpora()
-    assert 'times' not in corpora
-    assert not Corpus.objects.filter(name='times')
+    assert 'times2' not in corpora
+    assert not Corpus.objects.filter(name='times2')
 
 mock_corpus_definition = '''
 class Times():

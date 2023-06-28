@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { showLoading } from '../../utils/utils';

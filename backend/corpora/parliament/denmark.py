@@ -41,7 +41,7 @@ class ParliamentDenmark(Parliament, CSVCorpus):
     image = 'denmark.jpg'
     description_page = 'denmark.md'
 
-    language = 'danish'
+    languages = ['da']
 
     required_field = 'text'
 

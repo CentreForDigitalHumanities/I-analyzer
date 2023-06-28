@@ -1,5 +1,8 @@
 # Indexing corpora on the server
 
+For production environments, we use *versioned* index names (e.g. `times-1`, `times-2`), and use an alias (e.g. `times`) to point to the correct version. The advantage of this approach is that an old version of the index can be kept in place as long as is needed, for example while a new version of the index is created.
+
+
 ## Moving data to server
 On the server, move data to a location in the `/its` share.
 
@@ -14,13 +17,19 @@ Start a screen with a descriptive name (e.g., `screen -S index-superb-corpus`). 
 Call the flask command for indexing, e.g., `yarn django index superb-corpus -p`. The production flag indicates that we have a *versioned* index after this: `superb-corpus-1`. You can also choose to add the `--rollover` (`-r`) flag: this is equivalent with automaticaly calling `yarn django alias` after `yarn django index`. As it's advisable to double-check a new index before setting / rolling over the alias, this flag should be used with caution.
 
 ## Additional indexing flags
+
 It is also possible to only add settings and mappings by providing the `--mappings-only` or `-m` flag. This is useful, for instance, before a `REINDEX` via Kibana from one Elasticsearch cluster to another (which is often faster than reindexing from source).
+
+`--update` / `-u` can be used to run an update script for the corpus. This requires an `update_body` or `update_script` to be set in the corpus definition, see [example for update_body in dutchnewspapers](backend/corpora/dutchnewspapers/dutchnewspapers_all.py) and [example for update_script in goodreads](backend/corpora/goodreads/goodreads.py).
+
 
 ## Alias
 Either:
 - create an alias `superb-corpus` on Kibana manually:
 `PUT suberb-corpus-1/_alias/superb-corpus`. After this, the corpus will be reachable under the alias.
 - or: run `yarn django alias superb-corpus-name`. This will set an alias with the name defined by `es_alias` or (fallback) `es_index`. If you additionally provide the `--clean` flag, this will also remove the index with the lower version number. Naturally, this should only be used if the new index version has the expected number of documents, fields, etc., and the old index version is fully dispensable.
+
+Note that removing an alias does not remove the index itself, but removing an index also removes any existing aliases for it.
 
 ## Indexing from multiple corpus definitions
 If you have separate datasets for different parts of a corpus, you may combine them by setting the `ES_INDEX` variable in the corpus definitions to the same `overarching-corpus` index name.

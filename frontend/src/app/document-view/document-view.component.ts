@@ -11,15 +11,12 @@ import { CorpusField, FoundDocument, Corpus } from '../models/index';
 export class DocumentViewComponent implements OnChanges {
 
     public get contentFields() {
-        return this.fields.filter(field => !field.hidden && field.displayType === 'text_content');
+        return this.corpus.fields.filter(field => !field.hidden && field.displayType === 'text_content');
     }
 
     public get propertyFields() {
-        return this.fields.filter(field => !field.hidden && field.displayType !== 'text_content');
+        return this.corpus.fields.filter(field => !field.hidden && field.displayType !== 'text_content');
     }
-
-    @Input()
-    public fields: CorpusField[] = [];
 
     @Input()
     public document: FoundDocument;
