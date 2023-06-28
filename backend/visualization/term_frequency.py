@@ -67,32 +67,34 @@ def extract_data_for_term_frequency(corpus, es_query):
 
     return fieldnames, token_count_aggregators
 
-def get_match_count(es_client, es_query, corpus, size, fieldnames):
+def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=NUM_SAMPLES):
     search_result = search(
         corpus, es_query, size=size, source=[], track_total_hits=True
     )
     found_hits = hits(search_result)
+
     if not len(found_hits):
         return 0
-    elif len(found_hits) <= NUM_SAMPLES:
-        # analyze all data if there are less hits than NUM_SAMPLES
-        sample_points = range(len(found_hits))
-    else:
-        # otherwise, sample at exponential intervals (chosen to cover up to NUM_COLLECTED_DOCUMENTS)
-        sample_points = [int(i**SAMPLING_EXP) for i in range(0, NUM_SAMPLES)]
+
+    # analyze all data if there are less hits than NUM_SAMPLES
+    # otherwise, sample at exponential intervals (chosen to cover up to NUM_COLLECTED_DOCUMENTS)
+    sample_points = (
+        range(len(found_hits)) if len(found_hits) <= num_samples
+        else [int(i**SAMPLING_EXP) for i in range(0, num_samples)]
+    )
 
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
-
     matches = [
         count_matches_in_document(found_hits[sample_index]['_id'], index, fieldnames, query_text, es_client)
         for sample_index in sample_points
     ]
 
-    if len(found_hits) <= NUM_SAMPLES:
+    if len(sample_points) <= num_samples:
         # all data was analyzed, sum it
         return sum(matches)
 
+    # otherwise, make an estimate based on sample points
     # create x-y coordinates - the last result is expected to contain 1 match
     x = np.array([*sample_points, total_hits(search_result)])
     y = np.array([*matches, 1])
