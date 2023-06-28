@@ -1,3 +1,6 @@
+import numpy as np
+from sklearn.metrics import auc
+
 from visualization import term_frequency, tasks
 import csv
 
@@ -56,10 +59,20 @@ def test_match_count(small_mock_corpus, es_client, index_small_mock_corpus):
         match_count = term_frequency.get_match_count(es_client, query, small_mock_corpus, 100, fieldnames)
         assert match_count == freq
 
+def test_auc_estimate():
+    sample_points = [0, 1, 2, 5, 10, 5000]
+    exponential_function = lambda x: int(np.exp(-x) * 1000) + 1
+    # real values: a sharp exponential decay with a long tail
+    y = np.array([exponential_function(s) for s in range(5000)])
+    real = sum(y)
+    x_hat = np.array(sample_points)
+    y_hat = np.array([exponential_function(s) for s in sample_points])
+    estimate = auc(x_hat,y_hat)
+    # is estimate within 10% error margin of real value?
+    assert real + real*.1 >= estimate >= real - real*.1
+
 def test_total_docs_and_tokens(es_client, mock_corpus, index_mock_corpus, mock_corpus_specs):
     """Test total document counter"""
-
-
     query = make_query(query_text='*', search_in_fields=['content'])
 
     fieldnames, aggregators = term_frequency.extract_data_for_term_frequency(mock_corpus, query)
