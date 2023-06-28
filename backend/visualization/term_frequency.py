@@ -69,7 +69,7 @@ def extract_data_for_term_frequency(corpus, es_query):
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
     search_result = search(
-        corpus, es_query, size=NUM_COLLECTED_DOCUMENTS, source=[], track_total_hits=True
+        corpus, es_query, size=size, source=[], track_total_hits=True
     )
     found_hits = hits(search_result)
     if not len(found_hits):
@@ -161,7 +161,7 @@ def get_term_frequency(es_query, corpus, size):
 
     return match_count, total_doc_count, token_count
 
-def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100, include_query_in_result = False):
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size=NUM_COLLECTED_DOCUMENTS, include_query_in_result = False):
     # filter for relevant value
     term_filter = query.make_term_filter(field_name, field_value)
     es_query = query.add_filter(es_query, term_filter)
