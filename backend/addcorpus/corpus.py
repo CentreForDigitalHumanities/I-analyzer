@@ -11,7 +11,7 @@ import bs4
 import csv
 import sys
 from datetime import datetime
-from langcodes import Language
+from langcodes import Language, standardize_tag
 from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
@@ -271,9 +271,10 @@ class Corpus(object):
                     field_list.append(field.serialize())
                 corpus_dict[ca[0]] = field_list
             elif ca[0] == 'languages':
+                format = lambda tag: Language.make(standardize_tag(tag)).display_name() if tag else 'Unknown'
                 corpus_dict[ca[0]] = [
-                    Language.make(language).display_name()
-                    for language in ca[1]
+                    format(tag)
+                    for tag in ca[1]
                 ]
             elif ca[0] == 'category':
                 corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
