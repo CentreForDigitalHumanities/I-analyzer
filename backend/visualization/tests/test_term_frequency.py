@@ -59,6 +59,12 @@ def test_match_count(small_mock_corpus, es_client, index_small_mock_corpus):
         match_count = term_frequency.get_match_count(es_client, query, small_mock_corpus, 100, fieldnames)
         assert match_count == freq
 
+def test_match_count_estimate(es_client_m_hits, es_client_k_hits, small_mock_corpus, basic_query):
+    matches = term_frequency.get_match_count(es_client_m_hits, basic_query, small_mock_corpus, 5000, ['test'])
+    assert isinstance(matches, int)
+    matches = term_frequency.get_match_count(es_client_k_hits, basic_query, small_mock_corpus, 5000, ['test'])
+    assert isinstance(matches, int)
+
 def test_auc_estimate():
     sample_points = [0, 1, 2, 5, 10, 5000]
     exponential_function = lambda x: int(np.exp(-x) * 1000) + 1

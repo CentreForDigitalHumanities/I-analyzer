@@ -69,7 +69,7 @@ def extract_data_for_term_frequency(corpus, es_query):
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=NUM_SAMPLES):
     search_result = search(
-        corpus, es_query, size=size, source=[], track_total_hits=True
+        corpus, es_query, client=es_client, size=size, source=[], track_total_hits=True
     )
     found_hits = hits(search_result)
 
@@ -78,19 +78,21 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=N
 
     # analyze all data if there are less hits than NUM_SAMPLES
     # otherwise, sample at exponential intervals (chosen to cover up to NUM_COLLECTED_DOCUMENTS)
+    sampling_interval = lambda x: int(x**SAMPLING_EXP)
+
     sample_points = (
         range(len(found_hits)) if len(found_hits) <= num_samples
-        else [int(i**SAMPLING_EXP) for i in range(0, num_samples)]
+        else [sampling_interval(i) for i in range(0, num_samples) if sampling_interval(i) < len(found_hits)]
     )
 
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
     matches = [
         count_matches_in_document(found_hits[sample_index]['_id'], index, fieldnames, query_text, es_client)
-        for sample_index in sample_points
+        for sample_index in sample_points if sample_index < len(found_hits)
     ]
 
-    if len(sample_points) <= num_samples:
+    if len(found_hits) <= num_samples:
         # all data was analyzed, sum it
         return sum(matches)
 
@@ -119,7 +121,7 @@ def count_matches_in_document(id, index, fieldnames, query_text, es_client):
 
     for field in fieldnames:
         terms = termvectors.get_terms(result, field)
-        tokens = termvectors.get_tokens(terms, sort = match_phrases)
+        tokens = termvectors.get_tokens(terms, sort=match_phrases)
         matches += sum(1 for match in termvectors.token_matches(tokens, query_text, index, field, es_client))
 
     return matches

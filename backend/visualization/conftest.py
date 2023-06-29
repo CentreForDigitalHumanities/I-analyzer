@@ -1,5 +1,7 @@
 import pytest
 import os
+import random
+import string
 from es import es_index as index
 from addcorpus.load_corpus import load_corpus
 from time import sleep
@@ -7,6 +9,43 @@ from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MO
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+class MockIndex(object):
+    def analyze(self, index, body):
+        return {'tokens': [{'token': 'test'}]}
+
+class MockClient(object):
+    ''' Mock ES Client returning random hits and term vectors '''
+    def __init__(self, num_hits):
+        self.num_hits = num_hits
+        self.indices = MockIndex()
+
+    def search(self, index, **kwargs):
+        return {'hits':
+            {'total': {'value': self.num_hits},
+            'hits': [{'_id': hit_id} for hit_id in range(self.num_hits)]}
+        }
+
+    def termvectors(self, index, id, fields):
+        return {'term_vectors': {field: {
+            "terms": {'test': {
+                    'ttf': random.randrange(1, 20000),
+                    'tokens': [
+                        {
+                        "position": random.randrange(1, 200)
+                        }
+                        for j in range(random.randrange(500))
+                    ]
+                } for i in range(10)}
+            } for field in fields}}
+
+@pytest.fixture()
+def es_client_m_hits():
+    return MockClient(5000)
+
+@pytest.fixture()
+def es_client_k_hits():
+    return MockClient(600)
 
 @pytest.fixture(scope='session')
 def small_mock_corpus():
@@ -96,3 +135,4 @@ def basic_query():
             }
         }
     }
+
