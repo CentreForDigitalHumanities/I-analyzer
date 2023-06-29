@@ -25,6 +25,7 @@ services:
       SQL_PASSWORD: $SQL_PASSWORD
       SQL_HOST: $SQL_HOST
       SQL_PORT: $SQL_PORT
+      ES_HOST: $ES_HOST
     ports:
       - 127.0.0.1:8000:8000
     volumes:
@@ -34,7 +35,7 @@ services:
       - type: bind
         source: ~/corpora
         target: /corpora
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
   frontend:
     build:
       context: ./frontend

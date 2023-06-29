@@ -66,7 +66,7 @@ SQL_PORT=5432
 SQL_USER=ianalyzer
 SQL_DATABASE=ianalyzer
 SQL_PASSWORD=topsecret
-CELERY_BROKER=redis://redis
+ES_HOST=elasticsearch
 ```
 3. Run `docker-compose up` from the directory of this README. This will pull images from the Docker registry and start containers based on these images. This will take a while to set up the first time. To stop, you can run `docker-compose down`, or use the Docker Desktop dashboard.
 4. If you need to reinstall libraries via pip or yarn, use `docker-compose up --build`.

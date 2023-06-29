@@ -63,7 +63,7 @@ CSV_FILES_PATH = os.path.join(_backend_path, 'download/csv_files')
 SERVERS = {
     # Default ElasticSearch server
     'default': {
-        'host': 'localhost',
+        'host': os.getenv('ES_HOST', 'localhost'),
         'port': 9200,
         'username': '',
         'password': '',
@@ -83,8 +83,8 @@ CORPORA = {}
 WORDCLOUD_LIMIT = 1000
 
 # Celery configuration
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER', 'redis://')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER', 'redis://')
+CELERY_BROKER_URL = 'redis://'
+CELERY_RESULT_BACKEND = 'redis://'
 
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'
