@@ -2,7 +2,7 @@ from datetime import datetime
 from glob import glob
 import logging
 import re
-from flask import current_app
+from django.conf import settings
 from corpora.parliament.utils.constants import document_context
 
 from corpora.parliament.parliament import Parliament
@@ -16,16 +16,16 @@ class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
     description = "Speeches from House of Commons"
     min_date = datetime(year=1901, month=1, day=1)
-    data_directory = current_app.config['PP_CANADA_DATA']
-    es_index = current_app.config['PP_CANADA_INDEX']
-    image = current_app.config['PP_CANADA_IMAGE']
-    language = 'english'
+    data_directory = settings.PP_CANADA_DATA
+    es_index = getattr(settings, 'PP_CANADA_INDEX', 'parliament-canada')
+    image = 'canada.jpeg'
+    languages = ['en']
     description_page = 'canada.md'
     field_entry = 'speech_id'
     required_field = 'content'
 
     document_context = document_context(sort_field=None)
-    word_model_path = current_app.config['PP_CA_WM']
+    word_model_path = getattr(settings, 'PP_CA_WM', None)
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

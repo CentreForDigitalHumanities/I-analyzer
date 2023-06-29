@@ -1,13 +1,21 @@
-from flask import current_app
+from django.conf import settings
 from datetime import datetime
 
 from corpora.dutchnewspapers.dutchnewspapers_public import DutchNewspapersPublic
 
 class DutchNewsPapersAll(DutchNewspapersPublic):
+    '''
+    The complete KB newspapers
+
+    Note that the parent class DutchNewspapersPublic cannot be evaluated
+    without being added to the corpora in django settings - hence it is not possible
+    to use this corpus without including the public counterpart in your environment.
+    '''
+
     title = "Dutch Newspapers (Delpher)"
     description = "Collection of all Dutch newspapers by the KB"
-    data_directory = current_app.config['DUTCHNEWSPAPERS_ALL_DATA']
-    es_index = current_app.config['DUTCHNEWSPAPERS_ALL_ES_INDEX']
+    data_directory = settings.DUTCHNEWSPAPERS_ALL_DATA
+    es_index = getattr(settings, 'DUTCHNEWSPAPERS_ALL_ES_INDEX', 'dutchnewspapers-all')
     max_date = datetime(year=1995, month=12, day=31)
 
     def update_body(self, doc=None):
@@ -19,7 +27,7 @@ class DutchNewsPapersAll(DutchNewspapersPublic):
                 "url" : url
             }
         }
-    
+
     def update_query(self, min_date, max_date):
         return {
             "query" : {

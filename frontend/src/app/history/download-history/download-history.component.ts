@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
-import { Corpus, Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, DownloadService, ElasticSearchService, EsQuery, NotificationService } from '../../services';
+import { esQueryToQueryModel } from '../../utils/es-query';
+import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
+import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
+import { findByName } from '../../utils/utils';
 
 @Component({
     selector: 'ia-download-history',
@@ -17,7 +19,12 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     itemToDownload: Download;
 
-    constructor(private downloadService: DownloadService, private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService, private notificationService: NotificationService) {
+    constructor(
+        private downloadService: DownloadService,
+        private apiService: ApiService,
+        corpusService: CorpusService,
+        private notificationService: NotificationService
+    ) {
         super(corpusService);
     }
 
@@ -45,11 +52,10 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
     }
 
     getAllQueryModels(download: Download): QueryModel[] {
-        const parameters: DownloadParameters = JSON.parse(download.parameters);
-        const esQueries =  'es_query' in parameters ?
-            [parameters.es_query] : parameters.map(p => p.es_query);
-        const corpus = this.corpora.find(c => c.name === download.corpus);
-        return esQueries.map(esQuery => this.elasticSearchService.esQueryToQueryModel(esQuery, corpus));
+        const esQueries =  'es_query' in download.parameters ?
+            [download.parameters.es_query] : download.parameters.map(p => p.es_query);
+        const corpus = findByName(this.corpora, download.corpus);
+        return esQueries.map(esQuery => esQueryToQueryModel(esQuery, corpus));
     }
 
 
@@ -59,12 +65,12 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
     }
 
     getFields(download: Download): string {
-        const parameters: DownloadParameters = JSON.parse(download.parameters);
+        const parameters: DownloadParameters = download.parameters;
         const fieldNames =  'fields' in parameters ?
             parameters.fields : [parameters[0].field_name];
-        const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
+        const corpus = findByName(this.corpora, download.corpus);
         const fields = fieldNames.map(fieldName =>
-            corpus.fields.find(field => field.name === fieldName).displayName
+            findByName(corpus.fields, fieldName).displayName
         );
         return _.join(fields, ', ');
     }

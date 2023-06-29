@@ -2,86 +2,86 @@ import { Injectable } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { LogService } from './log.service';
 import { QueryService } from './query.service';
-import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilter, SearchResults,
-    AggregateQueryFeedback, SearchFilterData} from '../models/index';
+import {
+    Corpus, QueryModel, SearchResults,
+    AggregateQueryFeedback, QueryDb
+} from '../models/index';
+import { AuthService } from './auth.service';
 
 
 @Injectable()
 export class SearchService {
     constructor(
         private apiService: ApiService,
+        private authService: AuthService,
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
-        private userService: UserService,
-        private logService: LogService) {
+    ) {
         window['apiService'] = this.apiService;
     }
 
     /**
      * Load results for requested page
      */
-    public async loadResults(corpus: Corpus, queryModel: QueryModel, from: number, size: number): Promise<SearchResults> {
-        this.logService.info(`Requested additional results for: ${JSON.stringify(queryModel)}`);
-        const results = await this.elasticSearchService.loadResults(corpus, queryModel, from, size);
-        results.fields = corpus.fields.filter(field => field.resultsOverview);
+    public async loadResults(
+        queryModel: QueryModel,
+        from: number,
+        size: number
+    ): Promise<SearchResults> {
+        const results = await this.elasticSearchService.loadResults(
+            queryModel,
+            from,
+            size
+        );
+        results.fields = queryModel.corpus.fields.filter((field) => field.resultsOverview);
         return results;
     }
 
-    /**
-     * Construct a dictionary representing an ES query.
-     *
-     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
-     * @param fields Optional list of fields to restrict the queryString to.
-     * @param filters A list of dictionaries representing the ES DSL.
-     */
-    public createQueryModel(
-        queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],
-        sortField: CorpusField = null, sortAscending = false, highlight: number = null
-    ): QueryModel {
-        const model: QueryModel = {
-            queryText,
-            filters,
-            sortBy: sortField ? sortField.name : undefined,
-            sortAscending
-        };
-        if (fields) {
-            model.fields = fields;
-        }
-        if (highlight) {
-            model.highlight = highlight;
-        }
-        return model;
-    }
-
-    public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
-        this.logService.info(
-            `Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`
+    public async search(queryModel: QueryModel
+    ): Promise<SearchResults> {
+        const user = await this.authService.getCurrentUserPromise();
+        const esQuery = queryModel.toEsQuery();
+        const query = new QueryDb(esQuery, queryModel.corpus.name, user.id);
+        query.started = new Date(Date.now());
+        const results = await this.elasticSearchService.search(
+            queryModel
         );
-        const user = await this.userService.getCurrentUser();
-        const query = new Query(queryModel, corpus.name, user.id);
-        const results = await this.elasticSearchService.search(corpus, queryModel);
-        query.totalResults = results.total;
-        await this.queryService.save(query, true);
+        query.total_results = results.total.value;
+        query.completed = new Date(Date.now());
+        this.queryService.save(query);
 
-        return <SearchResults>{
-            fields: corpus.fields.filter(field => field.resultsOverview),
+        return {
+            fields: queryModel.corpus.fields.filter((field) => field.resultsOverview),
             total: results.total,
             documents: results.documents,
-        };
+        } as SearchResults;
     }
 
-    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback> {
-        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
+    public async aggregateSearch<TKey>(
+        corpus: Corpus,
+        queryModel: QueryModel,
+        aggregators: any
+    ): Promise<AggregateQueryFeedback> {
+        return this.elasticSearchService.aggregateSearch<TKey>(
+            corpus,
+            queryModel,
+            aggregators
+        );
     }
 
     public async dateHistogramSearch<TKey>(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string
+        corpus: Corpus,
+        queryModel: QueryModel,
+        fieldName: string,
+        timeInterval: string
     ): Promise<AggregateQueryFeedback> {
-        return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
+        return this.elasticSearchService.dateHistogramSearch<TKey>(
+            corpus,
+            queryModel,
+            fieldName,
+            timeInterval
+        );
     }
-
 
 }

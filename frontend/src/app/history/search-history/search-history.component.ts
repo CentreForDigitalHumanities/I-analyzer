@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as _ from 'lodash';
-import { SelectItem } from 'primeng/api';
-import { User, Query, Corpus } from '../../models/index';
-import { CorpusService, QueryService, ParamService } from '../../services/index';
+import { esQueryToQueryModel } from '../../utils/es-query';
+import { QueryDb } from '../../models/index';
+import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
+import { findByName } from '../../utils/utils';
 
 @Component({
     selector: 'search-history',
@@ -12,14 +13,12 @@ import { HistoryDirective } from '../history.directive';
     styleUrls: ['./search-history.component.scss']
 })
 export class SearchHistoryComponent extends HistoryDirective implements OnInit {
-    private user: User;
-    public queries: Query[];
+    public queries: QueryDb[];
     public displayCorpora = false;
     constructor(
-        private paramService: ParamService,
         corpusService: CorpusService,
         private queryService: QueryService,
-        private router: Router
+        private router: Router,
     ) {
         super(corpusService);
     }
@@ -30,17 +29,21 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
             searchHistory => {
                 const sortedQueries = this.sortByDate(searchHistory);
                 // not using _.sortedUniqBy as sorting and filtering takes place w/ different aspects
-                this.queries = _.uniqBy(sortedQueries, query => query.query);
+                this.queries = _.uniqBy(sortedQueries, query => query.query_json).map(this.addQueryModel.bind(this));
             });
     }
 
-    returnToSavedQuery(query) {
-        const queryModel = JSON.parse(query.query);
-        const route = this.paramService.queryModelToRoute(queryModel);
-        this.router.navigate(['/search', query.corpusName, route]);
+    addQueryModel(query?: QueryDb) {
+        const corpus = findByName(this.corpora, query.corpus);
+        query.queryModel = esQueryToQueryModel(query.query_json, corpus);
+        return query;
+    }
+
+    returnToSavedQuery(query: QueryDb) {
+        this.router.navigate(['/search', query.corpus],
+            {queryParams: query.queryModel.toQueryParams()});
         if (window) {
             window.scrollTo(0, 0);
         }
     }
-
 }

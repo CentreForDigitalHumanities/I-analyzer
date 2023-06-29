@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed, inject } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
@@ -13,7 +14,9 @@ describe('UserService', () => {
                 { provide: ApiService, useValue: new ApiServiceMock() },
                 UserService,
                 SessionService,
-                { provide: Router, useClass: RouterMock }]
+                { provide: Router, useClass: RouterMock },
+            ],
+            imports: [HttpClientTestingModule],
         });
     });
 
@@ -22,6 +25,4 @@ describe('UserService', () => {
     }));
 });
 
-class RouterMock {
-
-}
+class RouterMock {}

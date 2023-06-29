@@ -1,5 +1,0 @@
-# Deployment
-
-Deployment follows the strategy [described here](https://github.com/UUDigitalHumanitieslab/deployment). The `config.py` file will be generated based on the `flask-conf.erb` from the [puppet-configs Github repo](https://github.com/UUDigitalHumanitieslab/puppet-configs/blob/ianalyzer/templates/flask-conf.erb). It relies on definitions of paths etc. from the `common.yaml` file in `/hum/web/vhost.hum.uu.nl/private`. `common.yaml` should be edited to contain all relevant locations of files on the server, and the server of the Elasticsearch index.
-
-When a new development stage needs new variables present in `config.py`, the `flask-conf.erb` must be edited; if extra information on file paths etc. is needed, the `common.yaml` also needs to be edited, along with the import statements in `init.pp` in `puppet-configs/manifests/`.

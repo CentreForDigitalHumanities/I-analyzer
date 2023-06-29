@@ -11,15 +11,12 @@ import { CorpusField, FoundDocument, Corpus } from '../models/index';
 export class DocumentViewComponent implements OnChanges {
 
     public get contentFields() {
-        return this.fields.filter(field => !field.hidden && field.displayType === 'text_content');
+        return this.corpus.fields.filter(field => !field.hidden && field.displayType === 'text_content');
     }
 
     public get propertyFields() {
-        return this.fields.filter(field => !field.hidden && field.displayType !== 'text_content');
+        return this.corpus.fields.filter(field => !field.hidden && field.displayType !== 'text_content');
     }
-
-    @Input()
-    public fields: CorpusField[] = [];
 
     @Input()
     public document: FoundDocument;
@@ -44,7 +41,7 @@ export class DocumentViewComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
-        this.tabIndex = this.documentTabIndex;
+        this.tabIndex = this.documentTabIndex || 0;
     }
 
     changeTabIndex(index: number) {

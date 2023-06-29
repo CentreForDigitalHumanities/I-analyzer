@@ -5,14 +5,14 @@ import os.path as op
 import logging
 from datetime import datetime
 
-from flask import current_app, url_for
+from django.conf import settings
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
+from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from addcorpus.load_corpus import corpus_dir
-
+from media.media_url import media_url
 
 class DutchAnnualReports(XMLCorpus):
     """ Alto XML corpus of Dutch annual reports. """
@@ -22,14 +22,16 @@ class DutchAnnualReports(XMLCorpus):
     description = "Annual reports of Dutch financial and non-financial institutes"
     min_date = datetime(year=1957, month=1, day=1)
     max_date = datetime(year=2008, month=12, day=31)
-    data_directory = current_app.config['DUTCHANNUALREPORTS_DATA']
-    es_index = current_app.config['DUTCHANNUALREPORTS_ES_INDEX']
-    es_doctype = current_app.config['DUTCHANNUALREPORTS_ES_DOCTYPE']
-    image = current_app.config['DUTCHANNUALREPORTS_IMAGE']
-    scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
-    description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
-    allow_image_download = current_app.config['DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD']
-    word_model_path = current_app.config['DUTCHANNUALREPORTS_WM']
+    data_directory = settings.DUTCHANNUALREPORTS_DATA
+    es_index = getattr(settings, 'DUTCHANNUALREPORTS_ES_INDEX', 'dutchannualreports')
+    image = 'dutchannualreports.jpg'
+    scan_image_type = getattr(settings, 'DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE', 'application/pdf')
+    description_page = 'dutchannualreports.md'
+    allow_image_download = getattr(settings, 'DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD', True)
+    word_model_path = getattr(settings, 'DUTCHANNUALREPORTS_WM', None)
+
+    languages = ['nl']
+    category = 'finance'
 
     mimetype = 'application/pdf'
 
@@ -43,8 +45,7 @@ class DutchAnnualReports(XMLCorpus):
 
     dutchannualreports_map = {}
 
-    with open(op.join(corpus_dir('dutchannualreports'),
-     current_app.config['DUTCHANNUALREPORTS_MAP_FILE'])) as f:
+    with open(op.join(corpus_dir('dutchannualreports'), 'dutchannualreports_mapping.csv')) as f:
         reader = csv.DictReader(f)
         for line in reader:
             dutchannualreports_map[line['abbr']] = line['name']
@@ -203,7 +204,7 @@ class DutchAnnualReports(XMLCorpus):
         )
     ]
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         image_path = document['fieldValues']['image_path']
         pdf_info = get_pdf_info(op.join(self.data_directory, image_path))
         pages_returned = 5 #number of pages that is displayed. must be odd number.
@@ -216,12 +217,11 @@ class DutchAnnualReports(XMLCorpus):
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
         }
-        image_url = url_for('api.api_get_media',
-            corpus=self.es_index,
-            image_path=image_path,
+        image_url = media_url(
+            corpus_name,
+            image_path,
             start_page=pages[0]-1,
-            end_page=pages[-1],
-            _external=True
+            end_page=pages[-1]
         )
         return {'media': [image_url], 'info': pdf_info}
 

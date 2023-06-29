@@ -580,7 +580,7 @@ def corpus_test_name(corpus_spec):
     return corpus_spec['name']
 
 @pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
-def test_imports(test_app, corpus_object):
+def test_imports(parliament_corpora_settings, corpus_object):
     corpus = load_corpus(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
 

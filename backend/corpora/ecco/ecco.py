@@ -9,13 +9,13 @@ import logging
 import re
 from io import BytesIO
 
-from flask import current_app, url_for
+from django.conf import settings
 
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
-from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
-
+from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
+from media.media_url import media_url
 
 # Source files ################################################################
 
@@ -26,12 +26,13 @@ class Ecco(XMLCorpus):
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
 
-    data_directory = current_app.config['ECCO_DATA']
-    es_index = current_app.config['ECCO_ES_INDEX']
-    es_doctype = current_app.config['ECCO_ES_DOCTYPE']
-    image = current_app.config['ECCO_IMAGE']
-    scan_image_type = current_app.config['ECCO_SCAN_IMAGE_TYPE']
+    data_directory = settings.ECCO_DATA
+    es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
+    image = 'ecco.jpg'
+    scan_image_type = getattr(settings, 'ECCO_SCAN_IMAGE_TYPE', 'application/pdf')
     es_settings = None
+    languages = ['en', 'cy', 'ga', 'gd'] # according to gale's documentation
+    category = 'book'
 
     tag_toplevel = 'pageContent'
     tag_entry = 'page'
@@ -239,7 +240,7 @@ class Ecco(XMLCorpus):
         ]
 
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         image_path = document['fieldValues']['image_path']
         pages_returned = 5 #number of pages that is displayed. must be odd number.
          #the page corresponding to the document
@@ -252,12 +253,11 @@ class Ecco(XMLCorpus):
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
         }
-        image_url = url_for('api.api_get_media',
-            corpus=self.es_index,
-            image_path=image_path,
+        image_url = media_url(
+            corpus_name,
+            image_path,
             start_page=pages[0]-1,
             end_page=pages[-1],
-            _external=True
         )
         return {'media': [image_url], 'info': pdf_info}
 

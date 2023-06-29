@@ -4,16 +4,21 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes `api/ianalyzer/extract.py`.
+Various classes are defined in `backend/addcorpus/extract.py`.
 
 - The extractors `XML`, `HTML` and `CSV` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
-- The `Metadata` extractor is used to gather information from file paths.
+- The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
 - The `Constant` extractor can be used to define a constant value.
-- The `Choice` and `Combined` extractors can be used to combine multiple extractors.
+- The `Order` extractor gives you the index of that document within the file.
+- The `Choice` and `Combined`, `Backup`, and `Pass` extractors can be used to combine multiple extractors.
+
+A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is falsy.
 
 ## Elasticsearch mapping
 
-Each field should specify its `es_mapping`, a dict that is passed on to elasticsearch to specify how it is indexed. See the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html).
+Each field should specify its `es_mapping`, a dict that is passed on to elasticsearch to specify how it is indexed. See the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html). For common mappings, use the functions defined in [es_mappings.py](../backend/addcorpus/es_mappings.py)
+
+The property `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
 
 ### Multifields
 
@@ -24,10 +29,11 @@ The one way in which multifields _are_ used is to allow different analyzers on t
 - `*.clean`: uses a language-specific analyzer to filter stopwords.
 - `*.stemmed`: uses a language-specific analyzer to filter stopwords and stem words.
 - `*.length`: specifies the token count of the text, which is useful for aggregations.
+- `*.text`: a field with text mapping. Can be added to a keyword field to support full-text search in the field.
 
 If you add fields with these names to the `es_mapping` of a text field, it enables some features in visualisations. If you add a multifield with these names that does not contain the expected type of data, some visualisations may not work. Do not do this.
 
-The property `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
+All of these multifields can be created through the functions in `es_mappings.py`.
 
 ## Interface parameters
 
@@ -41,9 +47,9 @@ The following properties determine how a field appears in the interface.
 
 `search_filter` can be set if the interface should include a search filter widget for the field. I-analyzer includes date filters, multiplechoice filters (used for keyword data), range filters, and boolean filters. See [filters.py](../backend/addcorpus/filters.py).
 
-`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. For date fields and categorical/ordinal fields (usually keyword type), you can use `['resultcount', 'termfrequency']`. For text fields, you can use `['wordcloud', 'ngram']`.
+`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. For date fields and categorical/ordinal fields (usually keyword type), you can use `['resultscount', 'termfrequency']`. For text fields, you can use `['wordcloud', 'ngram']`.
 
-If a field includes the `'resultcount' and/or `'termfrequency'` visualisations and it is not a date field, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
+If a field includes the `'resultscount'` and/or `'termfrequency'` visualisations and it is not a date field, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
 
 `search_field_core` determines if a field is listed by default when selecting specific fields to search in. If it is not set to `True`, the user would have to click on "show all fields" to see it.
 

@@ -1,64 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Corpus } from '../../models';
+import { QueryModel } from '../../models';
 
 import { commonTestBed } from '../../common-test-bed';
 
 import { HistogramComponent } from './histogram.component';
-
-const MOCK_CORPUS: Corpus = {
-    name: 'mock-corpus',
-    serverName: 'bogus',
-    title: 'Mock Corpus',
-    description: 'corpus for testing',
-    doctype: 'article',
-    index: 'mock-corpus',
-    image: 'nothing',
-    minDate: new Date('1-1-1800'),
-    maxDate: new Date('1-1-2000'),
-    scan_image_type: 'nothing',
-    allow_image_download: false,
-    word_models_present: false,
-    fields: [
-        {
-            name: 'content',
-            description: 'main content field',
-            displayName: 'Content',
-            displayType: 'text_content',
-            mappingType: 'text',
-            searchable: true,
-            downloadable: true,
-            searchFilter: undefined,
-            primarySort: false,
-            sortable: false,
-            hidden: false,
-        }, {
-            name: 'keyword-1',
-            description: 'a keyword field',
-            displayName: 'Keyword 1',
-            displayType: 'keyword',
-            mappingType: 'keyword',
-            searchable: true,
-            downloadable: true,
-            searchFilter: undefined,
-            primarySort: false,
-            sortable: false,
-            hidden: false,
-        }, {
-            name: 'text',
-            description: 'a text field',
-            displayName: 'Text',
-            displayType: 'text',
-            mappingType: 'text',
-            searchable: true,
-            downloadable: true,
-            searchFilter: undefined,
-            primarySort: false,
-            sortable: false,
-            hidden: false,
-        }
-    ]
-};
-
+import { mockCorpus3, mockField, mockField2 } from '../../../mock-data/corpus';
 
 describe('HistogramCompoment', () => {
     let component: HistogramComponent;
@@ -80,32 +26,36 @@ describe('HistogramCompoment', () => {
 
 
     it('should filter text fields', () => {
-        component.corpus = MOCK_CORPUS;
+        component.corpus = mockCorpus3;
         component.frequencyMeasure = 'documents';
+
+        const query1 = new QueryModel(mockCorpus3);
+        query1.setQueryText('test');
+
+        const query2 = new QueryModel(mockCorpus3);
+        query2.setQueryText('test');
+        query2.searchFields = [mockField, mockField2];
 
         const cases = [
             {
-                query: {
-                    queryText: 'test'
-                }
+                query: query1,
+                searchFields: undefined,
             }, {
-                query: {
-                    queryText: 'test',
-                    fields: ['content', 'text'],
-                }
+                query: query2,
+                searchFields: [mockField, mockField2]
             }
         ];
 
         cases.forEach(testCase => {
             const newQuery = component.selectSearchFields(testCase.query);
-            expect(newQuery.fields).toEqual(testCase.query.fields);
+            expect(newQuery.searchFields).toEqual(testCase.query.searchFields);
         });
 
         component.frequencyMeasure = 'tokens';
 
         cases.forEach(testCase => {
             const newQuery = component.selectSearchFields(testCase.query);
-            expect(newQuery.fields).toEqual(['content']);
+            expect(newQuery.searchFields).toEqual([mockField2]);
         });
     });
 

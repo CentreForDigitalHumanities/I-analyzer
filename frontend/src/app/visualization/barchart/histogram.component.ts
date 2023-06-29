@@ -1,13 +1,15 @@
 import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
-import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
+import { AggregateResult,
     HistogramSeries,
     QueryModel,
     HistogramDataPoint,
-    TermFrequencyResult} from '../../models/index';
+    TermFrequencyResult,
+    MultipleChoiceFilterOptions,
+    RangeFilterOptions} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../utils/select-color';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
@@ -31,15 +33,15 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
      */
     getAggregator() {
         let size = 0;
-        if (!this.visualizedField.searchFilter) {
+        if (!this.visualizedField.filterOptions) {
             return {name: this.visualizedField.name, size: 100};
         }
 
-        const defaultData = this.visualizedField.searchFilter.defaultData;
-        if (defaultData.filterType === 'MultipleChoiceFilter') {
-            size = (defaultData as MultipleChoiceFilterData).optionCount;
-        } else if (defaultData.filterType === 'RangeFilter') {
-            size = (defaultData as RangeFilterData).max - (defaultData as RangeFilterData).min;
+        const filterOptions = this.visualizedField.filterOptions;
+        if (filterOptions.name === 'MultipleChoiceFilter') {
+            size = (filterOptions as MultipleChoiceFilterOptions).option_count;
+        } else if (filterOptions.name === 'RangeFilter') {
+            size = (filterOptions as RangeFilterOptions).upper - (filterOptions as RangeFilterOptions).lower;
         }
         return {name: this.visualizedField.name, size};
     }

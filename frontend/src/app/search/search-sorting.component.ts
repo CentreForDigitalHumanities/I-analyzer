@@ -1,8 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { CorpusField } from '../models';
-import { ParamDirective } from '../param/param-directive';
-import { ParamService } from '../services';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { CorpusField, QueryModel, SortConfiguration } from '../models';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -11,54 +8,51 @@ const defaultValueType = 'alpha';
     styleUrls: ['./search-sorting.component.scss'],
     host: { class: 'field has-addons' }
 })
-export class SearchSortingComponent extends ParamDirective {
-    @Input()
-    public set fields(fields: CorpusField[]) {
-        this.sortableFields = fields.filter(field => field.sortable);
-    }
+export class SearchSortingComponent implements OnChanges, OnDestroy {
+    @Input() queryModel: QueryModel;
 
-    private sortData: {
-        field: CorpusField
-        ascending: boolean
-    }
     public ascending = true;
-    public primarySort: CorpusField;
     public sortField: CorpusField;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
     public showFields = false;
 
+    constructor() {}
+
+    get sortConfiguration(): SortConfiguration {
+        return this.queryModel.sort;
+    }
+
     public get sortType(): SortType {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
     }
 
-    constructor(
-        route: ActivatedRoute,
-        router: Router,
-        private paramService: ParamService
-    ) {
-        super(route, router);
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.setSortableFields();
+            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
+        }
     }
 
-    initialize() {
-        this.primarySort = this.sortableFields.find(field => field.primarySort);
-        this.sortField = this.primarySort;
+    ngOnDestroy(): void {
+        this.sortConfiguration.reset();
     }
 
-    teardown() {
-        this.setParams({ sort: null });
+    setSortableFields() {
+        this.sortableFields = this.queryModel.corpus.fields.filter(field => field.sortable);
+        this.setStateFromQueryModel();
     }
 
-    setStateFromParams(params: ParamMap) {
-        this.sortData = this.paramService.setSortFromParams(params, this.sortableFields);
-        this.sortField = this.sortData.field;
-        this.ascending = this.sortData.ascending;
+    setStateFromQueryModel() {
+        this.sortField = this.sortConfiguration.sortBy.value;
+        this.ascending = this.sortConfiguration.sortDirection.value === 'asc';
     }
 
     public toggleSortType() {
-        this.ascending = !this.ascending;
-        this.updateSort();
+        const direction = this.ascending ? 'desc' : 'asc';
+        this.queryModel.setSortDirection(direction);
     }
 
     public toggleShowFields() {
@@ -68,17 +62,10 @@ export class SearchSortingComponent extends ParamDirective {
     public changeField(field: CorpusField | undefined) {
         if (field === undefined) {
             this.valueType = defaultValueType;
-            this.ascending = false;
         } else {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }
-        this.sortField = field;
-        this.updateSort();
-    }
-
-    private updateSort() {
-        const setting = this.paramService.makeSortParams(this.sortField, this.ascending? 'asc': 'desc');
-        this.setParams(setting);
+        this.queryModel.setSortBy(field || undefined);
     }
 }
 

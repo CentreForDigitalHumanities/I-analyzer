@@ -10,7 +10,7 @@ from os.path import join, isfile, splitext
 from datetime import datetime, timedelta
 import re
 
-from flask import current_app
+from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
@@ -25,10 +25,9 @@ class Tml(HTMLCorpus):
     description = "A collection of Medieval writings about music"
     min_date = datetime(year=300, month=1, day=1)
     max_date = datetime(year=1699, month=12, day=31)
-    data_directory = current_app.config['TML_DATA']
-    es_index = current_app.config['TML_ES_INDEX']
-    es_doctype = current_app.config['TML_ES_DOCTYPE']
-    image = current_app.config['TML_IMAGE']
+    data_directory = settings.TML_DATA
+    es_index = getattr(settings, 'TML_ES_INDEX', 'tml')
+    image = 'tml.jpg'
 
     tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
     tag_entry = ''

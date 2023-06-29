@@ -1,21 +1,25 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
 import { ApiService, NotificationService, SearchService } from '../../services/index';
-import { Chart, ChartOptions, ChartType } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters } from '../../models';
+import { Chart, ChartOptions } from 'chart.js';
+import {
+    AggregateResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
+} from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
-import { BehaviorSubject } from 'rxjs';
-import { selectColor } from '../select-color';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
+import { findByName, showLoading } from '../../utils/utils';
+import { takeUntil } from 'rxjs/operators';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
 const hintHidingDebounceTime = 1000;  // milliseconds
-
+const barchartID = 'barchart';
 
 @Directive({
     selector: 'ia-barchart',
@@ -25,7 +29,7 @@ const hintHidingDebounceTime = 1000;  // milliseconds
  * histogram and timeline components. It does not function as a stand-alone component. */
 export abstract class BarchartDirective
     <DataPoint extends TimelineDataPoint|HistogramDataPoint>
-    implements OnChanges, OnInit {
+    implements OnChanges, OnInit, OnDestroy {
     public showHint: boolean;
 
     // rawData: a list of series
@@ -75,6 +79,8 @@ export abstract class BarchartDirective
 
     @Output() isLoading = new BehaviorSubject<boolean>(false);
     @Output() error = new EventEmitter();
+
+    destroy$ = new Subject<void>();
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
@@ -142,12 +148,21 @@ export abstract class BarchartDirective
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (changes.queryModel) {
+            this.queryModel.update.pipe(
+                takeUntil(this.destroy$)
+            ).subscribe(this.refreshChart.bind(this));
+        }
         // new doc counts should be requested if query has changed
         if (this.changesRequireRefresh(changes)) {
             this.refreshChart();
         } else if (changes.palette) {
             this.prepareChart();
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
     }
 
     /** check whether input changes should force reloading the data */
@@ -223,18 +238,11 @@ export abstract class BarchartDirective
      * This function should be called after (potential) changes to parameters.
      */
     prepareChart() {
-        this.showLoading(
+        showLoading(
+            this.isLoading,
             this.loadData()
         );
     }
-
-    /** execute a process with loading spinner */
-    async showLoading(promise) {
-        this.isLoading.next(true);
-        await promise;
-        this.isLoading.next(false);
-    }
-
 
     /** load data for the graph (if needed), update the graph and freqtable. */
     loadData(): Promise<void> {
@@ -282,9 +290,8 @@ export abstract class BarchartDirective
         } else {
             const mainContentFields = this.corpus.fields.filter(field =>
                 field.searchable && (field.displayType === 'text_content'));
-            const queryModelCopy = _.cloneDeep(queryModel);
-            queryModelCopy.fields = mainContentFields.map(field => field.name);
-
+            const queryModelCopy = queryModel.clone();
+            queryModelCopy.searchFields = mainContentFields;
             return queryModelCopy;
         }
     }
@@ -341,7 +348,7 @@ export abstract class BarchartDirective
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData(rawData: typeof this.rawData) {
+    requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
         const dataPromises = rawData.map(series => {
             if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
                 // retrieve data if it was not already loaded
@@ -363,19 +370,16 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<any> {
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
-            if (result.success === true) {
-                return this.apiService.pollTasks<TermFrequencyResult>(result.task_ids);
-            }
-        }).then(res => {
-            if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results, series);
-            } else {
-                this.error.emit(res['message'] || 'could not load results');
-                return series;
-            }
+        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result =>
+            this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
+        ).then(res =>
+            this.processSeriesTermFrequency(res, series)
+        ).catch(error => {
+            console.error(error);
+            this.error.emit(`could not load results: ${error.message}`);
+            return series;
         });
     }
 
@@ -475,7 +479,7 @@ export abstract class BarchartDirective
         const datasets = this.getDatasets();
         const options = this.chartOptions(datasets);
 
-        this.chart = new Chart('barchart',
+        this.chart = new Chart(barchartID,
             {
                 type: this.chartType,
                 data: {
@@ -573,7 +577,7 @@ export abstract class BarchartDirective
 
     /** return a copy of a query model with the query text set to the given value */
     setQueryText(query: QueryModel, queryText: string): QueryModel {
-        const queryModelCopy = _.cloneDeep(query);
+        const queryModelCopy = query.clone();
         queryModelCopy.queryText = queryText;
         return queryModelCopy;
     }
@@ -618,12 +622,9 @@ export abstract class BarchartDirective
 
     get searchFields(): string {
         if (this.corpus && this.queryModel) {
-            const searchFields = this.selectSearchFields(this.queryModel).fields;
+            const searchFields = this.selectSearchFields(this.queryModel).searchFields;
 
-            const displayNames = searchFields.map(fieldName => {
-                const field = this.corpus.fields.find(f => f.name === fieldName);
-                return field.displayName;
-            });
+            const displayNames = searchFields.map(field => field.displayName);
 
             return displayNames.join(', ');
         }

@@ -1,9 +1,6 @@
 .DS_Store
 /node_modules
 /.idea
-env/
-.env/
-.env-*/
 elasticsearch-*/
 .python-version
 backend/.python-version
@@ -14,3 +11,37 @@ saml/
 nltk_data/
 dump.rdb
 .env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary files
+/static/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+*.log
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+.pytest_cache/
+
+# pyenv
+.python-version
+
+# Environments
+env/
+.env/
+.env-*/
+.venv
+venv/
+ENV/
+env.bak/
+venv.bak/

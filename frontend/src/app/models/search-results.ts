@@ -56,7 +56,6 @@ export interface WordSimilarity {
 };
 
 export interface RelatedWordsResults {
-    total_similarities: WordSimilarity[];
     similarities_over_time: WordSimilarity[];
     time_points: string[];
     similarities_over_time_local_top_n: WordSimilarity[][];
@@ -82,7 +81,10 @@ export interface QueryFeedback {
     similarTerms?: string[];
 }
 
-export type TaskResult = { success: false; message: string } | { success: true; task_ids: string[] };
+export interface TaskResult { task_ids: string[] };
+
+export type TasksOutcome<ExpectedResult> = { status: 'failed' } | { status: 'working' } |
+    { status: 'done'; done: true; results: ExpectedResult[] };
 
 export interface ResultsDownloadParameters {
     corpus: string;
@@ -91,11 +93,13 @@ export interface ResultsDownloadParameters {
     route: string;
 }
 
+export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
+
 export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
 
 export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency';
 export type DownloadStatus = 'done' | 'working' | 'error';
-export type DownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[] | ResultsDownloadParameters;
+export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters;
 
 export interface PendingDownload {
     download_type: DownloadType;
@@ -107,12 +111,12 @@ export interface Download {
     completed?: Date;
     download_type: DownloadType;
     corpus: string;
-    parameters: string;
+    parameters: DownloadParameters;
     filename?: string;
     status: DownloadStatus;
 }
 
 export interface DownloadOptions {
-    format?: 'long'|'wide';
+    table_format?: 'long'|'wide';
     encoding: 'utf-8'|'utf-16';
 };

@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ParamService } from '../../services';
 
-import { QueryModel } from '../../models/index'
+import { QueryModel } from '../../models/index';
 
 @Component({
     selector: '[ia-query-filters]',
@@ -14,17 +13,14 @@ export class QueryFiltersComponent implements OnInit {
         name: string;
         formattedData: string | string[]; }[];
 
-    constructor(private paramService: ParamService) { }
+    constructor() { }
 
     ngOnInit() {
-        if (typeof this.queryModel=='string') {
-            this.queryModel = JSON.parse(this.queryModel);
-        }
-
         if (this.queryModel.filters?.length>0) {
-            this.formattedFilters = this.queryModel.filters.map(filter => {
-                return {name: filter.fieldName, formattedData: this.paramService.searchFilterDataToParam(filter)}
-            });
+            this.formattedFilters = this.queryModel.activeFilters.map(filter => ({
+                name: filter.corpusField.name,
+                formattedData: filter.dataToString(filter.currentData)
+            }));
         }
     }
 

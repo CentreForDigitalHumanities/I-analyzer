@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
+import { BehaviorSubject } from 'rxjs';
+import { showLoading } from '../../utils/utils';
 import { Corpus, WordSimilarity } from '../../models';
 import { WordmodelsService } from '../../services';
 
@@ -19,7 +20,7 @@ export class WordSimilarityComponent implements OnChanges {
     comparisonTerms: string[] = [];
 
     @Output() error = new EventEmitter();
-    @Output() isLoading = new EventEmitter<boolean>();
+    @Output() isLoading = new BehaviorSubject<boolean>(false);
 
     results: WordSimilarity[][];
     timeIntervals: string[];
@@ -44,19 +45,12 @@ export class WordSimilarityComponent implements OnChanges {
     }
 
     getData(): void {
-        this.showLoading(
+        showLoading(
+            this.isLoading,
             Promise.all(this.comparisonTerms.map(term =>
                 this.wordModelsService.getWordSimilarity(this.queryText, term, this.corpus.name)
             ))
-        ).then(this.onDataLoaded.bind(this));
-    }
-
-    /** execute a process with loading spinner */
-    async showLoading(promise): Promise<any> {
-        this.isLoading.next(true);
-        const result = await promise;
-        this.isLoading.next(false);
-        return result;
+        ).then(this.onDataLoaded.bind(this)).catch(this.onError.bind(this));
     }
 
     getTimePoints(points: WordSimilarity[]) {
@@ -69,6 +63,10 @@ export class WordSimilarityComponent implements OnChanges {
         this.data = _.flatten(this.results);
     }
 
+    onError(error: {message: string}) {
+        this.results = undefined;
+        this.error.emit(error.message);
+    }
 
 
     get tableFileName(): string {

@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-
-import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField } from '../models/index';
-
-
+import {
+    FoundDocument, Corpus, QueryModel, SearchResults,
+    AggregateQueryFeedback, EsSearchClause, BooleanQuery,
+    EsFilter
+} from '../models/index';
 import * as _ from 'lodash';
 
 
@@ -17,113 +19,26 @@ export class ElasticSearchService {
         this.client = new Client(this.http);
     }
 
-    public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
-        let clause: EsSearchClause;
-        if (queryModel.queryText) {
-            clause = {
-                simple_query_string: {
-                    query: queryModel.queryText,
-                    lenient: true,
-                    default_operator: 'or'
-                }
-            };
-            if (queryModel.fields) {
-                clause.simple_query_string.fields = queryModel.fields;
-            }
-        } else {
-            clause = {
-                match_all: {}
-            };
-        }
-
-        let query: EsQuery | EsQuerySorted;
-        if (queryModel.filters) {
-            query = {
+    getDocumentById(id: string, corpus: Corpus): Promise<FoundDocument> {
+        const query = {
+            body: {
                 query: {
-                    bool: {
-                        must: clause,
-                        filter: this.mapFilters(queryModel.filters),
+                    term: {
+                        _id: id,
                     }
                 }
-            };
-        } else {
-            query = {
-                query: clause
-            };
-        }
-
-        if (queryModel.sortBy) {
-            (query as EsQuerySorted).sort = [{
-                [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
-            }];
-        }
-
-        if (fields && queryModel.queryText && queryModel.highlight) {
-            const highlightFields = fields.filter(field => field.searchable);
-            query.highlight = {
-                fragment_size: queryModel.highlight,
-                pre_tags: ['<span class="highlight">'],
-                post_tags: ['</span>'],
-                order: 'score',
-                fields: highlightFields.map( field => ({ [field.name]: { }
-                }))
-            };
-        }
-
-        return query;
-    }
-
-    public esQueryToQueryModel(query: EsQuery, corpus: Corpus): QueryModel {
-        const queryText = this.queryTextFromEsSearchClause(query.query);
-        const filters = this.filtersFromEsQuery(query, corpus);
-
-        if (filters.length) {
-            return { queryText, filters };
-        } else {
-            return { queryText };
-        }
-    }
-
-    private queryTextFromEsSearchClause(query: EsSearchClause | BooleanQuery): string {
-        const clause = 'bool' in query ? query.bool.must : query;
-
-        if ('simple_query_string' in clause) {
-            return clause.simple_query_string.query;
-        }
-    }
-
-    private filtersFromEsQuery(query: EsQuery, corpus: Corpus): SearchFilter<SearchFilterData>[] {
-        if ('bool' in query.query) {
-            const filters = query.query.bool.filter;
-            return filters.map(filter => this.esFilterToSearchFilter(filter, corpus));
-        }
-        return [];
-    }
-
-    private esFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
-        let field: CorpusField;
-        let fieldName: string;
-        let value: any;
-
-        if ('term' in filter) { // boolean filter
-            fieldName = _.keys(filter.term)[0];
-            value = filter.term[fieldName];
-        } else if ('terms' in filter) { // multiple choice filter
-            fieldName = _.keys(filter.terms)[0];
-            value = filter.terms[fieldName];
-        } else { // range or date filter
-            fieldName = _.keys(filter.range)[0];
-            value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
-        }
-        field = corpus.fields.find(f => f.name === fieldName);
-        const filterData = searchFilterDataFromField(field, value);
-        return {
-            fieldName: field.name,
-            description: field.searchFilter.description,
-            useAsFilter: true,
-            currentData: filterData,
-            defaultData: field.searchFilter.defaultData,
+            },
+            size: 1,
+            index: corpus.index,
         };
+        return this.client.search(query).then(this.firstDocumentFromResponse.bind(this));
+    }
+
+    private firstDocumentFromResponse(response: SearchResponse): FoundDocument {
+        const parsed = this.parseResponse(response);
+        if (parsed.documents.length) {
+            return _.first(parsed.documents);
+        }
     }
 
     /**
@@ -169,7 +84,7 @@ export class ElasticSearchService {
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
-        const esQuery = this.makeEsQuery(queryModel);
+        const esQuery = queryModel.toEsQuery();
         const aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
@@ -195,7 +110,7 @@ export class ElasticSearchService {
                 }
             }
         };
-        const esQuery = this.makeEsQuery(queryModel);
+        const esQuery = queryModel.toEsQuery();
         const aggregationModel = Object.assign({ aggs: agg }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
@@ -211,13 +126,13 @@ export class ElasticSearchService {
 
 
     public async search(
-        corpusDefinition: Corpus,
         queryModel: QueryModel,
         size?: number,
     ): Promise<SearchResults> {
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
+        const esQuery = queryModel.toEsQuery();
+
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage);
+        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage);
         return this.parseResponse(response);
     }
 
@@ -226,12 +141,11 @@ export class ElasticSearchService {
      * Load results for requested page
      */
     public async loadResults(
-        corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
+        const esQuery = queryModel.toEsQuery();
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage, from);
+        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage, from);
         return this.parseResponse(response);
     }
 
@@ -255,42 +169,12 @@ export class ElasticSearchService {
      * return the id, relevance and field values of a given document
      */
     private hitToDocument(hit: SearchHit, maxScore: number) {
-        return <FoundDocument>{
+        return {
             id: hit._id,
             relevance: hit._score / maxScore,
             fieldValues: Object.assign({ id: hit._id }, hit._source),
             highlight: hit.highlight,
-        };
-    }
-
-    /**
-     * Convert filters from query model into elasticsearch form
-     */
-    private mapFilters(filters: SearchFilter<SearchFilterData>[]): EsFilter[] {
-        return filters.map(filter => {
-            switch (filter.currentData.filterType) {
-                case 'BooleanFilter':
-                    return { term: { [filter.fieldName]: filter.currentData.checked } };
-                case 'MultipleChoiceFilter':
-                    return {
-                        terms: {
-                            [filter.fieldName]: _.map(filter.currentData.selected, f => decodeURIComponent(f))
-                        }
-                    };
-                case 'RangeFilter':
-                    return {
-                        range: {
-                            [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max }
-                        }
-                    };
-                case 'DateFilter':
-                    return {
-                        range: {
-                            [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max, format: 'yyyy-MM-dd' }
-                        }
-                    };
-            }
-        });
+        } as FoundDocument;
     }
 }
 
@@ -310,65 +194,12 @@ export type EsQuerySorted = EsQuery & {
 export interface EsQuery {
     aborted?: boolean;
     completed?: Date;
-    query: EsSearchClause | BooleanQuery;
+    query: EsSearchClause | BooleanQuery | EsFilter;
     highlight?: {};
     transferred?: number;
 }
 
-interface BooleanQuery {
-    'bool': {
-        must: EsSearchClause;
-        filter: EsFilter[];
-    };
-}
 
-interface MatchAll {
-    match_all: {};
-}
-
-interface SimpleQueryString {
-    simple_query_string: {
-        query: string;
-        fields?: string[];
-        lenient: true;
-        default_operator: 'or';
-    };
-}
-
-type EsSearchClause = MatchAll | SimpleQueryString;
-
-interface EsDateFilter {
-    range: {
-        [field: string]: {
-            gte: string;
-            lte: string;
-            format: 'yyyy-MM-dd';
-        };
-    };
-}
-
-interface EsTermsFilter {
-    terms: {
-        [field: string]: string[];
-    };
-}
-
-interface EsBooleanFilter {
-    term: {
-        [field: string]: boolean;
-    };
-}
-
-interface EsRangeFilter {
-    range: {
-        [field: string]: {
-            gte: number;
-            lte: number;
-        };
-    };
-}
-
-type EsFilter = EsDateFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 interface Aggregator {
     name: string;
@@ -379,7 +210,7 @@ export class Client {
     constructor(private http: HttpClient) {
     }
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `es/${searchParams.index}/_search`;
+        const url = `/api/es/${searchParams.index}/_search`;
         const optionDict = {
             size: searchParams.size.toString()
         };

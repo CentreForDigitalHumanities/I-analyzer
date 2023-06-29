@@ -1,287 +1,243 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
-import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType,
-    IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
-
-import { environment } from '../../environments/environment';
-import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument,
-    TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult,
-    Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
-import { timer } from 'rxjs';
 import {
-    filter,
-    switchMap,
-    take,
-} from 'rxjs/operators';
+    IResourceAction,
+    IResourceMethod,
+    IResourceMethodFull,
+    Resource,
+    ResourceAction,
+    ResourceHandler,
+    ResourceParams,
+    ResourceRequestMethod,
+    ResourceResponseBodyType,
+} from '@ngx-resource/core';
+
+import { HttpClient } from '@angular/common/http';
+import { timer } from 'rxjs';
+import { filter, switchMap, take } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+import { ImageInfo } from '../image-view/image-view.component';
+import {
+    AggregateResult,
+    AggregateTermFrequencyParameters,
+    Corpus,
+    DateTermFrequencyParameters,
+    Download,
+    DownloadOptions,
+    FieldCoverage,
+    FoundDocument,
+    LimitedResultsDownloadParameters,
+    QueryDb,
+    QueryModel,
+    ResultsDownloadParameters,
+    TaskResult,
+    TasksOutcome,
+    UserResponse,
+    UserRole,
+    WordcloudParameters,
+} from '../models/index';
+import { EsQuery } from './elastic-search.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
-
-/**
- * Describes the values as expected and returned by the server.
- */
-interface QueryDb<TDateType> {
-    query: string;
-    corpus_name: string;
-    started?: TDateType;
-    completed?: TDateType;
-    aborted: boolean;
-    transferred: number;
-    total_results: {
-        value: number;
-        relation: string;
-    };
-}
 
 @Injectable()
 @ResourceParams()
 export class ApiService extends Resource {
     private apiUrl: string;
+    private authApiUrl = 'users';
+    private authApiRoute = (route: string): string =>
+        `/${this.authApiUrl}/${route}/`;
 
-    constructor(restHandler: ResourceHandler) {
+    constructor(restHandler: ResourceHandler, private http: HttpClient) {
         super(restHandler);
     }
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/check_session'
+        path: '/check_session',
     })
-    public checkSession: ResourceMethod<{ username: string }, { success: boolean }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/wordcloud'
-    })
-    public wordcloud: ResourceMethod<
-    WordcloudParameters,
-        { success: false; message: string } | { success: true; data: AggregateResult[] }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/wordcloud_tasks'
-    })
-    public wordcloudTasks: ResourceMethod<
-        WordcloudParameters,
-        { success: false; message: string } | { success: true; task_ids: string[] }>;
-
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/task_status'
-    })
-    public getTasksStatus: ResourceMethod<
-    { task_ids: string[]},
-    { success: false; message: string } | { success: true; done: false } |
-    { success: true; done: true; results: any }
+    public checkSession: ResourceMethod<
+        { username: string },
+        { success: boolean }
     >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/abort_tasks/'
+        path: '/visualization/wordcloud',
     })
-    public abortTasks: ResourceMethod<
-    { task_ids: string[] },
-    { success: boolean }>;
+    public wordcloud: ResourceMethod<WordcloudParameters, AggregateResult[]>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/ngram_tasks'
+        path: 'visualization/wordcloud_task',
+    })
+    public wordcloudTasks: ResourceMethod<WordcloudParameters, TaskResult>;
+
+    public getTasksStatus<ExpectedResult>(
+        tasks: TaskResult
+    ): Promise<TasksOutcome<ExpectedResult>> {
+        return this.http
+            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
+            .toPromise();
+    }
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/abort_tasks',
+    })
+    public abortTasks: ResourceMethod<TaskResult, { success: true }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/visualization/ngram',
     })
     public ngramTasks: ResourceMethod<
-        { es_query: EsQuery; corpus_name: string; field: string; ngram_size?: number; term_position?: string; freq_compensation?: boolean;
-            subfield?: string; max_size_per_interval?: number; number_of_ngrams?: number; date_field: string; },
-        { success: false; message: string } | { success: true; task_ids: string[] }>;
-
+        {
+            es_query: EsQuery;
+            corpus_name: string;
+            field: string;
+            ngram_size?: number;
+            term_position?: string;
+            freq_compensation?: boolean;
+            subfield?: string;
+            max_size_per_interval?: number;
+            number_of_ngrams?: number;
+            date_field: string;
+        },
+        TaskResult
+    >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/aggregate_term_frequency'
+        path: '/visualization/aggregate_term_frequency',
     })
     public getAggregateTermFrequency: ResourceMethod<
         AggregateTermFrequencyParameters,
-        TaskResult>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/date_term_frequency'
-    })
-    public getDateTermFrequency: ResourceMethod<
-        DateTermFrequencyParameters,
-        TaskResult>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/request_full_data'
-    })
-    public requestFullData: ResourceMethod<
-        { visualization: 'date_term_frequency'; parameters: DateTermFrequencyParameters[]; corpus: string } |
-        { visualization: 'aggregate_term_frequency'; parameters: AggregateTermFrequencyParameters[]; corpus: string },
-        TaskResult>;
-
-    @ResourceAction({
-        path: '/corpus'
-    })
-    public corpus: ResourceMethod<void, any>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/log'
-    })
-    public log: ResourceMethod<
-        { msg: string; type: 'info' | 'error' },
-        { success: boolean }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/login'
-    })
-    public login: ResourceMethod<
-        { username: string; password: string },
-        { success: boolean; id: number; username: string; corpora: AccessibleCorpus[]; downloadLimit: number | null }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/logout'
-    })
-    public logout: ResourceMethod<void, { success: boolean }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Put,
-        path: '/query'
-    })
-    public query: ResourceMethod<QueryDb<Date> & {
-        id?: number;
-        /**
-         * Mark the query as started, and use the server time for determining this timestamp.
-         */
-        markStarted: boolean;
-        /**
-         * Mark the query as completed, and use the server time for determining this timestamp.
-         */
-        markCompleted: boolean;
-    }, QueryDb<string> & {
-        id: number;
-        userID: number;
-    }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/download',
-        responseBodyType: ResourceResponseBodyType.Blob,
-        asResourceResponse: true
-    })
-    public download: ResourceMethod<
-        LimitedResultsDownloadParameters,
-        { success: false; message: string } | any >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/csv/{id}',
-        responseBodyType: ResourceResponseBodyType.Blob,
-        asResourceResponse: true
-    })
-    public csv: ResourceMethod<
-        { id: number } | ({ id: number } & DownloadOptions),
-        { success: false; message: string } | any >;
-
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/download_task'
-    })
-    public downloadTask: ResourceMethod<
-        ResultsDownloadParameters,
-        { success: false; message: string } | { success: true; task_ids: string[] } | any >;
-
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/register'
-    })
-    public register: ResourceMethod<
-        { username: string; email: string; password: string },
-        { success: boolean; is_valid_username: boolean; is_valid_email: boolean }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/request_reset'
-    })
-    public requestReset: ResourceMethod<
-        { email: string },
-        { success: boolean; message: string }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/reset_password'
-    })
-    public resetPassword: ResourceMethod<
-        { password: string; token: string },
-        { success: boolean; message?: string; username?: string }
+        TaskResult
     >;
 
     @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/visualization/date_term_frequency',
+    })
+    public getDateTermFrequency: ResourceMethod<
+        DateTermFrequencyParameters,
+        TaskResult
+    >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download/full_data',
+    })
+    public requestFullData: ResourceMethod<
+        | {
+              visualization: 'date_term_frequency';
+              parameters: DateTermFrequencyParameters[];
+              corpus: string;
+          }
+        | {
+              visualization: 'aggregate_term_frequency';
+              parameters: AggregateTermFrequencyParameters[];
+              corpus: string;
+          },
+        TaskResult
+    >;
+
+    public saveQuery(options: QueryDb) {
+        return this.http.post('/api/search_history/', options).toPromise();
+    }
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download/search_results',
+        responseBodyType: ResourceResponseBodyType.Blob,
+        asResourceResponse: true,
+    })
+    public download: ResourceMethod<LimitedResultsDownloadParameters, any>;
+
+    @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/solislogin'
+        path: '/download/csv/{id}',
+        responseBodyType: ResourceResponseBodyType.Blob,
+        asResourceResponse: true,
+    })
+    public csv: ResourceMethod<
+        { id: number } | ({ id: number } & DownloadOptions),
+        any
+    >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download/search_results_task',
+    })
+    public downloadTask: ResourceMethod<ResultsDownloadParameters, TaskResult>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/solislogin',
     })
     public solisLogin: IResourceMethod<
-    { },
-    { success: boolean; id: number; username: string; role: UserRole; downloadLimit: number | null; queries: Query[] }>;
+        any,
+        {
+            success: boolean;
+            id: number;
+            username: string;
+            role: UserRole;
+            downloadLimit: number | null;
+            queries: QueryDb[];
+        }
+    >;
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/ensure_csrf'
-    })
-    public ensureCsrf: ResourceMethod<void, { success: boolean }>;
+    public searchHistory() {
+        return this.http.get<QueryDb[]>('/api/search_history/').toPromise();
+    }
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/search_history'
-    })
-    public search_history: ResourceMethod<void, { 'queries': Query[] }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/downloads'
-    })
-    public downloads: ResourceMethod<void, Download[]>;
-
+    public downloads(): Promise<Download[]> {
+        return this.http.get<Download[]>('/api/download/').toPromise();
+    }
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/get_media{!args}',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,
-        asResourceResponse: true
+        asResourceResponse: true,
     })
-    public getMedia: IResourceMethodFull<
-        {args: string},
-        any>;
+    public getMedia: IResourceMethodFull<{ args: string }, any>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/request_media'
+        path: '/request_media',
     })
     public requestMedia: ResourceMethod<
-        { corpus_index: string; document: FoundDocument },
-        { success: false } | { success: true; media: string[]; info?: ImageInfo }
-        >;
+        { corpus: string; document: FoundDocument },
+        { media: string[]; info?: ImageInfo }
+    >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/download_pdf/{corpus_index}/{filepath}',
     })
-    public downloadPdf: IResourceMethod<{ corpus_index: string; filepath: string }, any>;
+    public downloadPdf: IResourceMethod<
+        { corpus_index: string; filepath: string },
+        any
+    >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/corpusdescription/{corpus}/{filename}',
-        responseBodyType: ResourceResponseBodyType.Text
+        path: '/corpus/documentation/{corpus}/{filename}',
+        responseBodyType: ResourceResponseBodyType.Text,
     })
-    public corpusdescription: ResourceMethod<{ filename: string; corpus: string }, any>;
+    public corpusdescription: ResourceMethod<
+        { filename: string; corpus: string },
+        string
+    >;
 
-
-
+    fieldCoverage(corpusName: string): Promise<FieldCoverage> {
+        return this.http.get<FieldCoverage>(
+            `/api/visualization/coverage/${corpusName}`,
+        ).toPromise();
+    }
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
@@ -289,20 +245,103 @@ export class ApiService extends Resource {
             this.apiUrl = environment.apiUrl;
         }
 
-        return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
+        return Promise.all([this.apiUrl, urlPromise]).then(
+            ([apiUrl, url]) => `${apiUrl}${url}`
+        );
     }
 
-    private tasksDone<ExpectedResult>(response: { success: false; message: string } | { success: true; done: false } |
-        { success: true; done: true; results: ExpectedResult[] }) {
-        return response.success === false || response.done === true;
+    private tasksDone<ExpectedResult>(response: TasksOutcome<ExpectedResult>) {
+        return response.status !== 'working';
     }
 
-    public pollTasks<ExpectedResult>(ids: string[]): Promise<{ success: false; message: string } | { success: true; done: false } |
-    { success: true; done: true; results: ExpectedResult[] }> {
-        return timer(0, 5000).pipe(
-            switchMap((_) => this.getTasksStatus({task_ids: ids})),
-            filter(this.tasksDone),
-            take(1)
-        ).toPromise();
+    public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
+        return timer(0, 5000)
+            .pipe(
+                switchMap((_) =>
+                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
+                ),
+                filter(this.tasksDone),
+                take(1)
+                // eslint-disable-next-line @typescript-eslint/no-shadow
+            )
+            .toPromise()
+            .then(
+                (result) =>
+                    new Promise((resolve, reject) =>
+                        result.status === 'done'
+                            ? resolve(result.results)
+                            : reject()
+                    )
+            );
+    }
+
+    public corpus() {
+        return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Authentication API
+    public login(username: string, password: string) {
+        return this.http.post<{ key: string }>(this.authApiRoute('login'), {
+            username,
+            password,
+        });
+    }
+
+    public logout() {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('logout'),
+            {}
+        );
+    }
+
+    public getUser() {
+        return this.http.get<UserResponse>(this.authApiRoute('user'));
+    }
+
+    public register(details: {
+        username: string;
+        email: string;
+        password1: string;
+        password2: string;
+    }) {
+        return this.http.post<any>(this.authApiRoute('registration'), details);
+    }
+
+    public verify(key: string) {
+        return this.http.post<any>(
+            this.authApiRoute('registration/verify-email'),
+            { key }
+        );
+    }
+
+    public keyInfo(key: string) {
+        return this.http.post<{ username: string; email: string }>(
+            this.authApiRoute('registration/key-info'),
+            { key }
+        );
+    }
+
+    public requestResetPassword(email: string) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/reset'),
+            { email }
+        );
+    }
+
+    public resetPassword(
+        uid: string,
+        token: string,
+        newPassword1: string,
+        newPassword2: string
+    ) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/reset/confirm'),
+            {
+                uid,
+                token,
+                new_password1: newPassword1,
+                new_password2: newPassword2,
+            }
+        );
     }
 }

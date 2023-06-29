@@ -1,19 +1,20 @@
 {
   "name": "frontend",
-  "version": "3.1.0",
-  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "yarn serve & yarn test",
     "start-docker": "ng serve --host 0.0.0.0 --port 4200 --proxy-config proxy.conf.docker.json",
     "serve": "ng serve --proxy-config proxy.conf.json",
-    "build": "ng build --configuration production --aot",
+    "build": "ng build --configuration=production --base-href=/static/",
     "build-local": "ng build --aot",
     "build-git": "ng build --configuration git --aot",
     "test": "ng test --source-map=false",
     "test:once": "ng test --source-map=false --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "stop": "lsof -t -i tcp:4200 | xargs kill -9 || echo \"not running\"",
+    "test-once": "ng test --watch=false",
+    "watch": "ng build --configuration=production --watch"
   },
   "private": true,
   "dependencies": {

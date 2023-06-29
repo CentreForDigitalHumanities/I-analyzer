@@ -1,11 +1,10 @@
-import csv
 from glob import glob
 from datetime import datetime
 import re
-from flask import current_app
+from django.conf import settings
 import os
 
-from addcorpus.extract import Combined, Constant, Metadata, CSV
+from addcorpus.extract import Combined, Constant, CSV
 from addcorpus.corpus import CSVCorpus
 from corpora.parliament.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
@@ -25,10 +24,10 @@ class ParliamentNorway(Parliament, CSVCorpus):
     description = "Speeches from the Storting"
     min_date = datetime(year=1814, month=1, day=1)
     max_date = datetime(year=2004, month=12, day=31)
-    data_directory = current_app.config['PP_NORWAY_DATA']
-    es_index = current_app.config['PP_NORWAY_INDEX']
+    data_directory = settings.PP_NORWAY_DATA
+    es_index = getattr(settings, 'PP_NORWAY_INDEX','parliament-norway')
     image = 'norway.JPG'
-    language = 'norwegian'
+    languages = ['no']
     description_page = 'norway.md'
     document_context = document_context(
         context_fields=['book_id'],
@@ -37,7 +36,8 @@ class ParliamentNorway(Parliament, CSVCorpus):
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
-            year = re.search(r'\d{4}', csv_file)
+            _, filename = os.path.split(csv_file)
+            year = re.search(r'\d{4}', filename)
             if year:
                 date = datetime(year=int(year.group(0)), month=1, day=1)
                 if start <= date <= end:

@@ -1,15 +1,11 @@
 from glob import glob
 import logging
-import bs4
-import re
 from datetime import datetime
 
-from flask import current_app
+from django.conf import settings
 
-from addcorpus.extract import Constant, Combined, CSV
+from addcorpus.extract import Constant, CSV
 from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import MultipleChoiceFilter
-from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.constants import document_context
@@ -38,13 +34,13 @@ def format_speaker(speaker):
 class ParliamentUK(Parliament, CSVCorpus):
     title = 'People & Parliament (UK)'
     description = "Speeches from the House of Lords and House of Commons"
-    data_directory = current_app.config['PP_UK_DATA']
+    data_directory = settings.PP_UK_DATA
     min_date = datetime(year=1803, month=1, day=1)
     max_date = datetime(year=2021, month=12, day=31)
-    es_index = current_app.config['PP_UK_INDEX']
-    image = current_app.config['PP_UK_IMAGE']
-    word_model_path = current_app.config['PP_UK_WM']
-    language = 'english'
+    es_index = getattr(settings, 'PP_UK_INDEX', 'parliament-uk')
+    image = 'uk.jpeg'
+    word_model_path = getattr(settings, 'PP_UK_WM', None)
+    languages = ['en']
     description_page = 'uk.md'
     field_entry = 'speech_id'
     document_context = document_context()

@@ -1,19 +1,21 @@
-import {Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField } from '../models/index';
-import { CorpusService, DialogService, ParamService, UserService } from '../services/index';
+import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
+import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
+import { AuthService } from '../services/auth.service';
+import * as _ from 'lodash';
+import { paramsHaveChanged } from '../utils/params';
 
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
-    styleUrls: ['./search.component.scss']
+    styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent extends ParamDirective {
-    @ViewChild('searchSection', {static: false})
+    @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
 
     public isScrolledDown: boolean;
@@ -29,10 +31,7 @@ export class SearchComponent extends ParamDirective {
      * Whether the total number of hits exceeds the download limit.
      */
     public hasLimitedResults = false;
-    /**
-     * Hide the filters by default, unless an existing search is opened containing filters.
-     */
-    public showFilters = true;
+
     public user: User;
     protected corpusSubscription: Subscription;
 
@@ -49,19 +48,21 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
-    constructor(private corpusService: CorpusService,
-        private paramService: ParamService,
-        private userService: UserService,
+    constructor(
+        private authService: AuthService,
+        private corpusService: CorpusService,
         private dialogService: DialogService,
         route: ActivatedRoute,
-        router: Router) {
-            super(route, router);
-        }
+        router: Router
+    ) {
+        super(route, router);
+    }
 
     async initialize(): Promise<void> {
         this.tabIndex = 0;
-        this.user = await this.userService.getCurrentUser();
-        this.corpusSubscription = this.corpusService.currentCorpus.filter( corpus => !!corpus).subscribe((corpus) => {
+        this.user = await this.authService.getCurrentUserPromise();
+        this.corpusSubscription = this.corpusService.currentCorpus
+            .filter((corpus) => !!corpus).subscribe((corpus) => {
             this.setCorpus(corpus);
         });
     }
@@ -69,23 +70,21 @@ export class SearchComponent extends ParamDirective {
     teardown() {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
-        this.setParams( {query: null });
     }
 
     setStateFromParams(params: ParamMap) {
-        this.queryText = params.get('query');
-        const queryModel = this.paramService.queryModelFromParams(params, this.corpus.fields);
-        if (!_.isEqual(this.queryModel, queryModel)) {
-            this.queryModel = queryModel;
-        }
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
+        if (paramsHaveChanged(this.queryModel, params)) {
+            this.setQueryModel(false);
+        }
     }
 
     @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y === 0;
+        this.isScrolledDown =
+            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     /**
@@ -107,16 +106,12 @@ export class SearchComponent extends ParamDirective {
         this.dialogService.showManualPage('query');
     }
 
-    public showCorpusInfo(corpus: Corpus) {
-        this.dialogService.showDescriptionPage(corpus);
-    }
-
     public switchTabs(index: number) {
         this.tabIndex = index;
     }
 
     public search() {
-        this.setParams({ query: this.queryText });
+        this.queryModel.setQueryText(this.queryText);
     }
 
     /**
@@ -125,31 +120,20 @@ export class SearchComponent extends ParamDirective {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name !== corpus.name) {
+            const reset = !_.isUndefined(this.corpus);
             this.corpus = corpus;
-            this.filterFields = this.corpus.fields.filter(field => field.searchFilter);
-            this.queryModel = {queryText: ''};
+            this.setQueryModel(reset);
         }
     }
 
-    public goToContext(contextValues: Object) {
-        const contextSpec = this.corpus.documentContext;
-
-        this.queryText = undefined;
-
-        let contextFields = contextSpec.contextFields
-            .filter(field => ! this.filterFields.find(f => f.name === field.name))
-
-        contextFields.forEach(field => {
-            field.searchFilter = contextFilterFromField(field, contextValues[field.name])
-        })
-
-        const filterParams = this.paramService.makeFilterParams(contextFields);
-        const sortParams = this.paramService.makeSortParams(
-            contextSpec.sortField,
-            contextSpec.sortDirection
-        )
-
-        this.setParams({ ...filterParams, ...sortParams });
-
+    private setQueryModel(reset: boolean) {
+        const params = reset ? undefined : this.route.snapshot.queryParamMap;
+        const queryModel = new QueryModel(this.corpus, params);
+        this.queryModel = queryModel;
+        this.queryText = queryModel.queryText;
+        this.queryModel.update.subscribe(() => {
+            this.queryText = this.queryModel.queryText;
+            this.setParams(this.queryModel.toRouteParam());
+        });
     }
 }

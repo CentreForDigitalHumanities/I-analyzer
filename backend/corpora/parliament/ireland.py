@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import current_app
+from django.conf import settings
 import os
 from glob import glob
 import re
@@ -72,7 +72,7 @@ class ParliamentIrelandOld(CSVCorpus):
     Only used for data extraction, use the `ParliamentIreland` class in the application.
     '''
 
-    data_directory = current_app.config['PP_IRELAND_DATA']
+    data_directory = settings.PP_IRELAND_DATA
     min_date = datetime(year=1919, month=1, day=1)
     max_date = datetime(year=2013, month=12, day=31)
 
@@ -315,7 +315,7 @@ class ParliamentIrelandNew(XMLCorpus):
     Only used for data extraction, use the `ParliamentIreland` class in the application.
     '''
 
-    data_directory = current_app.config['PP_IRELAND_DATA']
+    data_directory = settings.PP_IRELAND_DATA
     min_date = datetime(year=2014, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
 
@@ -445,12 +445,12 @@ class ParliamentIreland(Parliament, Corpus):
     description = 'Speeches from the Dáil Éireann and Seanad Éireann'
     min_date = datetime(year=1919, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
-    data_directory = current_app.config['PP_IRELAND_DATA']
-    es_index = current_app.config['PP_IRELAND_INDEX']
+    data_directory = settings.PP_IRELAND_DATA
+    es_index = getattr(settings, 'PP_IRELAND_INDEX', 'parliament-ireland')
     image = 'ireland.png'
     description_page = 'ireland.md'
-    language = None # corpus uses multiple languages, so we will not be using language-specific analyzers
     es_settings = {'index': {'number_of_replicas': 0}} # do not include analyzers in es_settings
+    languages = ['en', 'ga']
 
     @property
     def subcorpora(self):

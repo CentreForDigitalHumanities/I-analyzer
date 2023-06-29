@@ -10,10 +10,12 @@ import json
 import bs4
 import csv
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+from langcodes import Language, standardize_tag
 from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
+from addcorpus.constants import CATEGORIES
 
 
 class Corpus(object):
@@ -58,6 +60,25 @@ class Corpus(object):
     def max_date(self):
         '''
         Maximum timestamp for data files.
+        '''
+        raise NotImplementedError()
+
+    @property
+    def languages(self):
+        '''
+        Language(s) used in the corpus
+
+        Should be a list of strings. Each language should
+        correspond to an ISO-639 code.
+        '''
+        return ['']
+
+    @property
+    def category(self):
+        '''
+        Type of documents in the corpus
+
+        See addcorpus.constants.CATEGORIES for options
         '''
         raise NotImplementedError()
 
@@ -120,7 +141,8 @@ class Corpus(object):
     @property
     def image(self):
         '''
-        Absolute url to static image.
+        Name of the corpus image. Should be relative path from a directory 'images'
+        in the same directory as the corpus definition file.
         '''
         raise NotImplementedError()
 
@@ -186,11 +208,15 @@ class Corpus(object):
             }
         }
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         '''
         Get a dictionary with
         'media': list of urls from where media associated with a document can be fetched,
         'info': information for file download
+
+        Arguments:
+        - `document`: dict representation of document. Field values are stored in `fieldValues`
+        - `corpus_name`: name of the corpus in settings. Needed to create urls with the proper corpus name.
         '''
         return {'media': None, 'info': None}
 
@@ -244,6 +270,14 @@ class Corpus(object):
                 for field in self.fields:
                     field_list.append(field.serialize())
                 corpus_dict[ca[0]] = field_list
+            elif ca[0] == 'languages':
+                format = lambda tag: Language.make(standardize_tag(tag)).display_name() if tag else 'Unknown'
+                corpus_dict[ca[0]] = [
+                    format(tag)
+                    for tag in ca[1]
+                ]
+            elif ca[0] == 'category':
+                corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
             elif type(ca[1]) == datetime:
                 timedict = {'year': ca[1].year,
                             'month': ca[1].month,
@@ -254,6 +288,16 @@ class Corpus(object):
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
+
+    def _format_option(self, value, options):
+        '''
+        For serialisation: format language or category based on list of options
+        '''
+        return next(
+            nice_string
+            for code, nice_string in options
+            if value == code
+        )
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
@@ -288,6 +332,15 @@ class Corpus(object):
                 )
                 )
 
+    def _reject_extractors(self, *inapplicable_extractors):
+        '''
+        Raise errors if any fields use extractors that are not applicable
+        for the corpus.
+        '''
+        for field in self.fields:
+            if isinstance(field.extractor, inapplicable_extractors):
+                raise RuntimeError(
+                    "Specified extractor method cannot be used with this type of data")
 
 class XMLCorpus(Corpus):
     '''
@@ -297,13 +350,25 @@ class XMLCorpus(Corpus):
     @property
     def tag_toplevel(self):
         '''
-        The top-level tag in the source documents. Either a string or a function that maps metadata to a string.
+        The top-level tag in the source documents.
+
+        Can be:
+        - None
+        - A string with the name of the tag
+        - A dictionary that gives the named arguments to soup.find_all()
+        - A bound method that takes the metadata of the document as input and outputs one of the above.
         '''
 
     @property
     def tag_entry(self):
         '''
-        The tag that corresponds to a single document entry. Either a string or a function that maps metadata to a string.
+        The tag that corresponds to a single document entry.
+
+        Can be:
+        - None
+        - A string with the name of the tag
+        - A dictionary that gives the named arguments to soup.find_all()
+        - A bound method that takes the metadata of the document as input and outputs one of the above.
         '''
 
     def source2dicts(self, source):
@@ -312,18 +377,8 @@ class XMLCorpus(Corpus):
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
-        for field in self.fields:
-            if not isinstance(field.extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.XML,
-                extract.Metadata,
-                extract.Constant,
-                extract.ExternalFile,
-                extract.Backup,
-            )):
-                raise RuntimeError(
-                    "Specified extractor method cannot be used with an XML corpus")
+        self._reject_extractors(extract.HTML, extract.CSV)
+
         # extract information from external xml files first, if applicable
         metadata = {}
         if isinstance(source, str):
@@ -352,17 +407,18 @@ class XMLCorpus(Corpus):
         required_fields = [
             field.name for field in self.fields if field.required]
         # Extract fields from the soup
-        tag = self.get_entry_tag(metadata)
+        tag = self.get_tag_requirements(self.tag_entry, metadata)
         bowl = self.bowl_from_soup(soup, metadata=metadata)
         if bowl:
-            spoonfuls = bowl.find_all(tag) if tag else [bowl]
-            for spoon in spoonfuls:
+            spoonfuls = bowl.find_all(**tag) if tag else [bowl]
+            for i, spoon in enumerate(spoonfuls):
                 regular_field_dict = {field.name: field.extractor.apply(
                     # The extractor is put to work by simply throwing at it
                     # any and all information it might need
                     soup_top=bowl,
                     soup_entry=spoon,
-                    metadata=metadata
+                    metadata=metadata,
+                    index=i,
                 ) for field in regular_fields if field.indexed}
                 external_dict = {}
                 if external_fields:
@@ -382,19 +438,32 @@ class XMLCorpus(Corpus):
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
 
-    def get_entry_tag(self, metadata):
-        if type(self.tag_entry) == str:
-            return self.tag_entry
-        elif self.tag_entry is None:
-            return None
-        else:
-            return self.tag_entry(metadata)
+    def get_tag_requirements(self, specification, metadata):
+        '''
+        Get the requirements for a tag given the specification.
 
-    def get_toplevel_tag(self, metadata):
-        if type(self.tag_toplevel) == str:
-            return self.tag_toplevel
+        The specification can be:
+        - None
+        - A string with the name of the tag
+        - A dict with the named arguments to soup.find() / soup.find_all()
+        - A callable that takes the document metadata as input and outputs one of the above.
+
+        Output is either None or a dict with the arguments for soup.find() / soup.find_all()
+        '''
+
+        if callable(specification):
+            condition = specification(metadata)
         else:
-            return self.tag_toplevel(metadata)
+            condition = specification
+
+        if condition is None:
+            return None
+        elif type(condition) == str:
+            return {'name': condition}
+        elif type(condition) == dict:
+            return condition
+        else:
+            raise TypeError('Tag must be a string or dict')
 
     def external_source2dict(self, soup, external_fields, metadata):
         '''
@@ -448,11 +517,9 @@ class XMLCorpus(Corpus):
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.get_toplevel_tag(metadata)
-        if entry_tag == None:
-            entry_tag = self.get_entry_tag(metadata)
+            toplevel_tag = self.get_tag_requirements(self.tag_toplevel, metadata)
 
-        return soup.find(toplevel_tag) if toplevel_tag else soup
+        return soup.find(**toplevel_tag) if toplevel_tag else soup
 
     def metadata_from_xml(self, filename, tags):
         '''
@@ -515,18 +582,7 @@ class HTMLCorpus(XMLCorpus):
         '''
         (filename, metadata) = source
 
-        # Make sure that extractors are sensible
-        for field in self.fields:
-            if not isinstance(field.extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.HTML,
-                extract.Metadata,
-                extract.Constant,
-                extract.Backup,
-            )):
-                raise RuntimeError(
-                    "Specified extractor method cannot be used with an HTML corpus")
+        self._reject_extractors(extract.XML, extract.CSV)
 
         # Loading HTML
         logger.info('Reading HTML file {} ...'.format(filename))
@@ -545,7 +601,7 @@ class HTMLCorpus(XMLCorpus):
         # if there is a entry level tag, with html this is not always the case
         if bowl and tag:
             # Note that this is non-recursive: will only find direct descendants of the top-level tag
-            for spoon in bowl.find_all(tag):
+            for i, spoon in enumerate(bowl.find_all(tag)):
                 # yield
                 yield {
                     field.name: field.extractor.apply(
@@ -553,7 +609,8 @@ class HTMLCorpus(XMLCorpus):
                         # any and all information it might need
                         soup_top=bowl,
                         soup_entry=spoon,
-                        metadata=metadata
+                        metadata=metadata,
+                        index=i
                     ) for field in self.fields if field.indexed
                 }
         else:
@@ -564,7 +621,7 @@ class HTMLCorpus(XMLCorpus):
                     # any and all information it might need
                     soup_top='',
                     soup_entry=soup,
-                    metadata=metadata
+                    metadata=metadata,
                 ) for field in self.fields if field.indexed
             }
 
@@ -596,20 +653,17 @@ class CSVCorpus(Corpus):
         '''
         return ','
 
+    @property
+    def skip_lines(self):
+        '''
+        Number of lines to skip before reading the header
+        '''
+        return 0
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
-        for field in self.fields:
-            if not isinstance(field.extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.CSV,
-                extract.Constant,
-                extract.Backup,
-                extract.Metadata,
-            )):
-                raise RuntimeError(
-                    "Specified extractor method cannot be used with a CSV corpus")
+        self._reject_extractors(extract.XML, extract.HTML)
 
         if isinstance(source, str):
             filename = source
@@ -621,9 +675,15 @@ class CSVCorpus(Corpus):
 
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
+
+            # skip first n lines
+            for _ in range(self.skip_lines):
+                next(f)
+
             reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
+            index = 0
             for row in reader:
                 is_new_document = True
 
@@ -639,19 +699,20 @@ class CSVCorpus(Corpus):
                         document_id = identifier
 
                 if is_new_document and rows:
-                    yield self.document_from_rows(rows, metadata)
+                    yield self.document_from_rows(rows, metadata, index)
                     rows = [row]
+                    index += 1
                 else:
                     rows.append(row)
 
-            yield self.document_from_rows(rows, metadata)
+            yield self.document_from_rows(rows, metadata, index)
 
-    def document_from_rows(self, rows, metadata):
+    def document_from_rows(self, rows, metadata, row_index):
         doc = {
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows, metadata = metadata
+                rows=rows, metadata = metadata, index=row_index
             )
             for field in self.fields if field.indexed
         }
