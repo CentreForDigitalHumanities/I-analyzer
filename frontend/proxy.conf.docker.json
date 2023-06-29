@@ -1,26 +1,18 @@
 {
     "/api": {
-        "target": "http://backend:5000",
+        "target": "http://backend:8000",
         "secure": false
     },
     "/admin": {
-        "target": "http://backend:5000",
+        "target": "http://backend:8000",
         "secure": false
     },
     "/static": {
-        "target": "http://backend:5000",
+        "target": "http://backend:8000",
         "secure": false
     },
-    "/es": {
-        "target": "http://backend:5000",
-        "secure": false
-    },
-    "/saml": {
-        "target": "http://backend:5000",
-        "secure": false
-    },
-    "/wordmodels": {
-        "target": "http://backend:5000",
+    "/users": {
+        "target": "http://backend:8000",
         "secure": false
     }
 }
