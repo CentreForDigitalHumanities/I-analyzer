@@ -2,6 +2,7 @@ from datetime import datetime
 from addcorpus.corpus import Field, CSVCorpus
 from addcorpus.extract import CSV
 import os
+from addcorpus.es_settings import es_settings
 
 # Fake corpus class for unit tests
 
@@ -18,6 +19,8 @@ class SmallMockCorpus(CSVCorpus):
     data_directory = 'bogus'
     languages = ['en']
     category = 'book'
+
+    es_settings = es_settings('en', stopword_analyzer=True)
 
     def sources(self, start=min_date, end=max_date):
         for csv_file in os.listdir(os.path.join(here, 'source_files')):

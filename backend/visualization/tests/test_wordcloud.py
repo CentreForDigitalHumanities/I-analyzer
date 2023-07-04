@@ -46,7 +46,6 @@ def test_wordcloud(small_mock_corpus, small_mock_corpus_complete_wordcloud):
         {'key': 'nothing', 'doc_count': 1},
         {'key': 'man', 'doc_count': 1},
         {'key': 'hear', 'doc_count': 1},
-        {'key': 'having', 'doc_count': 1},
         {'key': 'good', 'doc_count': 1},
         {'key': 'fortune', 'doc_count': 1},
         {'key': 'forebodings', 'doc_count': 1},
@@ -125,7 +124,6 @@ def test_wordcloud_counts(small_mock_corpus):
     }
 
     assert counts['words'] == 5
-    assert counts['more'] == 3
 
 def test_wordcloud_filters_stopwords(small_mock_corpus, small_mock_corpus_complete_wordcloud):
     stopwords = ['the', 'and', 'of']
