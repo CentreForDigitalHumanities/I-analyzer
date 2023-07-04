@@ -51,11 +51,11 @@ class ResultsDownloadView(APIView):
             handle_tags_in_request(request)
             search_results = es_download.normal_search(
                 corpus_name, request.data['es_query'], request.data['size'])
-            csv_path = tasks.make_csv(search_results, request.data)
-            directory, filename = os.path.split(csv_path)
-            # Create download for download history
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
+            csv_path = tasks.make_csv(search_results, request.data, download.id)
+            directory, filename = os.path.split(csv_path)
+            # Create download for download history
             download.complete(filename=filename)
             return send_csv_file(directory, filename, 'search_results', request.data['encoding'])
         except Exception as e:

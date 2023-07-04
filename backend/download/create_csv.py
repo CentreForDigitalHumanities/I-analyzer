@@ -21,12 +21,10 @@ def write_file(filename, fieldnames, rows, dialect = 'excel'):
 
     return filepath
 
-def create_filename(descriptive_part, essential_suffix = '.csv'):
-    max_length = 255 - (len(essential_suffix) + len(settings.CSV_FILES_PATH))
-    truncated = descriptive_part[:min(max_length, len(descriptive_part))]
-    return truncated + essential_suffix
+def create_filename(download_id):
+    return f'{download_id}.csv'
 
-def search_results_csv(results, fields, query):
+def search_results_csv(results, fields, query, download_id):
     entries = []
     field_set = set(fields)
     field_set.update(['query'])
@@ -50,14 +48,14 @@ def search_results_csv(results, fields, query):
                     entry.update({highlight_field_name: soup.get_text()})
         entries.append(entry)
 
-    filename = create_filename(query)
+    filename = create_filename(download_id)
     field_set.discard('context')
     fieldnames = sorted(field_set)
     filepath = write_file(filename, fieldnames, entries, dialect = 'resultsDialect')
     return filepath
 
 
-def term_frequency_csv(queries, results, field_name, unit = None):
+def term_frequency_csv(queries, results, field_name, download_id, unit = None):
     has_token_counts = results[0].get('token_count', None) != None
     query_column = ['Query'] if len(queries) > 1 else []
     freq_columns = ['Term frequency', 'Relative term frequency (by # documents)', 'Total documents']
@@ -66,16 +64,9 @@ def term_frequency_csv(queries, results, field_name, unit = None):
 
     rows = term_frequency_csv_rows(queries, results, field_name, unit)
 
-    filename = term_frequency_filename(queries, field_name)
+    filename = create_filename(download_id)
     filepath = write_file(filename, fieldnames, rows)
     return filepath
-
-def term_frequency_filename(queries, field_name):
-    querystring = '_'.join(queries)
-    timestamp = datetime.now().isoformat(sep='_', timespec='minutes') # ensure csv filenames are unique with timestamp
-    suffix = '_' + timestamp + '.csv'
-    description = 'term_frequency_{}_{}'.format(field_name, querystring)
-    return create_filename(description, suffix)
 
 def term_frequency_csv_rows(queries, results, field_name, unit):
     for result in results:

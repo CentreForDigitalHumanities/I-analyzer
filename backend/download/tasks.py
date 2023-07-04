@@ -37,9 +37,9 @@ def download_scroll(request_json, download_size=10000):
     return results
 
 @shared_task()
-def make_csv(results, request_json):
+def make_csv(results, request_json, log_id):
     query = create_query(request_json)
-    filepath = create_csv.search_results_csv(results, request_json['fields'], query)
+    filepath = create_csv.search_results_csv(results, request_json['fields'], query, log_id)
     return filepath
 
 
@@ -82,7 +82,7 @@ def download_search_results(request_json, user):
 
     make_chain = lambda: chain(
         download_scroll.s(request_json, download_limit),
-        make_csv.s(request_json),
+        make_csv.s(request_json, download.id),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
@@ -90,12 +90,12 @@ def download_search_results(request_json, user):
     return try_download(make_chain, download)
 
 @shared_task()
-def make_term_frequency_csv(results_per_series, parameters_per_series):
+def make_term_frequency_csv(results_per_series, parameters_per_series, log_id):
     '''
     Export term frequency results to a csv.
     '''
     query_per_series, field_name, unit = extract_term_frequency_download_metadata(parameters_per_series)
-    return create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
+    return create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, log_id, unit = unit)
 
 
 def term_frequency_full_data_tasks(parameters_per_series, visualization_type):
@@ -166,7 +166,7 @@ def download_full_data(request_json, user):
 
     make_chain = lambda : chain(
         task,
-        make_term_frequency_csv.s(parameters),
+        make_term_frequency_csv.s(parameters, download.id),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
