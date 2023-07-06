@@ -141,29 +141,33 @@ export const mockCorpus: Corpus = {
     index: 'test1',
     title: 'Test corpus',
     description: 'This corpus is for mocking',
-    minDate: new Date(),
-    maxDate: new Date(),
-    image: "test.jpg",
-    scan_image_type: "pdf",
+    minDate: new Date('1800-01-01'),
+    maxDate: new Date('1900-01-01'),
+    image: 'test.jpg',
+    scan_image_type: 'pdf',
     allow_image_download: false,
     word_models_present: false,
     fields: [mockField, mockField2],
-};
+    languages: ['English'],
+    category: 'Tests'
+} as Corpus;
 
-export const mockCorpus2: Corpus = {
+export const mockCorpus2 = {
     name: 'test2',
     serverName: 'default',
     index: 'test2',
     title: 'Test corpus 2',
     description: 'This corpus is for mocking',
-    minDate: new Date(),
-    maxDate: new Date(),
+    minDate: new Date('1850-01-01'),
+    maxDate: new Date('2000-01-01'),
     image: 'test.jpg',
     scan_image_type: 'pdf',
     allow_image_download: false,
     word_models_present: false,
-    fields: [mockField2]
-};
+    fields: [mockField2],
+    languages: ['English', 'French'],
+    category: 'Different tests'
+} as Corpus;
 
 export const mockCorpus3: Corpus = {
     name: 'test3',
@@ -178,13 +182,15 @@ export const mockCorpus3: Corpus = {
     allow_image_download: false,
     word_models_present: false,
     fields: [mockField, mockField2, mockField3, mockFieldDate, mockFieldMultipleChoice],
+    languages: ['English'],
+    category: 'Tests',
     documentContext: {
         contextFields: [mockFieldDate],
         displayName: 'day',
         sortField: mockField3,
         sortDirection: 'asc'
     }
-};
+} as Corpus;
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);

@@ -32,11 +32,11 @@ ALLOWED_HOSTS = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ianalyzer',
-        'USER': 'ianalyzer',
-        'PASSWORD': 'ianalyzer',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('SQL_DATABASE', 'ianalyzer'),
+        'USER': os.getenv('SQL_USER', 'ianalyzer'),
+        'PASSWORD': os.getenv('SQL_PASSWORD', 'ianalyzer'),
+        'HOST': os.getenv('SQL_HOST', 'localhost'),
+        'PORT': os.getenv('SQL_PORT', '5432')
     }
 }
 
@@ -63,7 +63,7 @@ CSV_FILES_PATH = os.path.join(_backend_path, 'download/csv_files')
 SERVERS = {
     # Default ElasticSearch server
     'default': {
-        'host': 'localhost',
+        'host': os.getenv('ES_HOST', 'localhost'),
         'port': 9200,
         'username': '',
         'password': '',
@@ -83,8 +83,8 @@ CORPORA = {}
 WORDCLOUD_LIMIT = 1000
 
 # Celery configuration
-CELERY_BROKER_URL = 'redis://'
-CELERY_RESULT_BACKEND = 'redis://'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER', 'redis://')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER', 'redis://')
 
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'

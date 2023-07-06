@@ -48,7 +48,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
             yield csv_file, {}
 
 
-    language = 'swedish'
+    languages = ['sv']
     description_page = 'sweden-old.md'
     image =  'sweden-old.jpg'
 

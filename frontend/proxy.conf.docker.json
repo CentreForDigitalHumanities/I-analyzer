@@ -1,0 +1,18 @@
+{
+    "/api": {
+        "target": "http://backend:8000",
+        "secure": false
+    },
+    "/admin": {
+        "target": "http://backend:8000",
+        "secure": false
+    },
+    "/static": {
+        "target": "http://backend:8000",
+        "secure": false
+    },
+    "/users": {
+        "target": "http://backend:8000",
+        "secure": false
+    }
+}

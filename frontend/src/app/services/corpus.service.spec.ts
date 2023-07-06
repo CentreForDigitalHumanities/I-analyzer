@@ -91,6 +91,8 @@ describe('CorpusService', () => {
                 title: 'Times',
                 description: 'This is a description.',
                 es_index: 'times',
+                languages: ['English'],
+                category: 'Tests',
                 fields: [
                     {
                         description:

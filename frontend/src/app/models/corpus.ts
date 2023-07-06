@@ -26,10 +26,23 @@ export class Corpus implements ElasticSearchIndex {
         public scan_image_type: string,
         public allow_image_download: boolean,
         public word_models_present: boolean,
+        public languages: string[],
+        public category: string,
         public descriptionpage?: string,
         public documentContext?: DocumentContext,
     ) { }
 
+    get minYear(): number {
+        return this.minDate.getFullYear();
+    }
+
+    get maxYear(): number {
+        return this.maxDate.getFullYear();
+    }
+
+    get displayLanguages(): string {
+        return this.languages.join(', '); // may have to truncate long lists?
+    }
 }
 
 export interface ElasticSearchIndex {

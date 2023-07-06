@@ -34,6 +34,8 @@ class LargeMockCorpus(Corpus):
     es_index = 'large-mock-corpus'
     image = 'test.jpeg'
     data_directory = 'bogus'
+    languages = ['en']
+    category = 'book'
 
     def sources(self, start=min_date, end=max_date):
         return range(TOTAL_DOCUMENTS)

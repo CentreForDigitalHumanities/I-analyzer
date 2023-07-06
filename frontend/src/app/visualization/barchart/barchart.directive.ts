@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -10,15 +10,16 @@ import {
     BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
 } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
 import { findByName, showLoading } from '../../utils/utils';
+import { takeUntil } from 'rxjs/operators';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
 const hintHidingDebounceTime = 1000;  // milliseconds
-
+const barchartID = 'barchart';
 
 @Directive({
     selector: 'ia-barchart',
@@ -28,7 +29,7 @@ const hintHidingDebounceTime = 1000;  // milliseconds
  * histogram and timeline components. It does not function as a stand-alone component. */
 export abstract class BarchartDirective
     <DataPoint extends TimelineDataPoint|HistogramDataPoint>
-    implements OnChanges, OnInit {
+    implements OnChanges, OnInit, OnDestroy {
     public showHint: boolean;
 
     // rawData: a list of series
@@ -78,6 +79,8 @@ export abstract class BarchartDirective
 
     @Output() isLoading = new BehaviorSubject<boolean>(false);
     @Output() error = new EventEmitter();
+
+    destroy$ = new Subject<void>();
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
@@ -146,7 +149,9 @@ export abstract class BarchartDirective
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
-            this.queryModel.update.subscribe(this.refreshChart.bind(this));
+            this.queryModel.update.pipe(
+                takeUntil(this.destroy$)
+            ).subscribe(this.refreshChart.bind(this));
         }
         // new doc counts should be requested if query has changed
         if (this.changesRequireRefresh(changes)) {
@@ -154,6 +159,10 @@ export abstract class BarchartDirective
         } else if (changes.palette) {
             this.prepareChart();
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
     }
 
     /** check whether input changes should force reloading the data */
@@ -470,7 +479,7 @@ export abstract class BarchartDirective
         const datasets = this.getDatasets();
         const options = this.chartOptions(datasets);
 
-        this.chart = new Chart('barchart',
+        this.chart = new Chart(barchartID,
             {
                 type: this.chartType,
                 data: {
