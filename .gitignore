@@ -10,6 +10,7 @@ backend/migrations/versions/migration_detainment_chamber
 saml/
 nltk_data/
 dump.rdb
+.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
