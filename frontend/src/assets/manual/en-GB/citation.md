@@ -8,17 +8,19 @@ If you downloaded a document in I-analyzer, or read it online in the I-analyzer 
 
 For example, a citation might look something like the following:
 
-> Doe, J. (1900, Jan 1). A very interesting article. *The Times.* http://ianalyzer.hum.uu.nl/document/fascinating-corpus/12345678
+> Doe, J. (1900). A very interesting article. *Fascinating Periodical*, *10*(2), 10-13. http://ianalyzer.hum.uu.nl/document/fascinating-corpus/12345678
 
 The specifics will depend on the citation style you are using and the type of data in the corpus.
 
 Documents in I-analyzer have a unique link, which looks like the one in the example above. This is the most appropriate way to reference a specific document.
 
+Note that not all data on I-analyzer is public. For instance, some corpora are only available with an institutional login. This means that your readers may not be able to follow the link to I-analyzer.
+
 ### Citing collection of documents
 
 For distant reading research, you may want to cite a large collection of documents, rather than a few specific ones. In this case, it is usually most appropriate to cite the corpus as a whole. This may look something like the following:
 
-> Research Software Lab, Centre for Digital Humanities, Utrecht University (2023). *The Times* [data set]. http://ianalyzer.hum.uu.nl/search/times
+> Research Software Lab, Centre for Digital Humanities, Utrecht University (2023). *Troonredes* [data set]. http://ianalyzer.hum.uu.nl/search/troonredes
 
 Be aware that some corpora may have other contributors. We are working on providing more specific guidelines per corpus. Feel free to contact us if you want to make sure you are referencing a corpus correctly.
 
