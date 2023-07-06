@@ -12,9 +12,9 @@ In its source code, I-analyzer separates the interface from the data structure o
 
 This way, whenever researchers have data that they want to add, we don't need to describe what it means to filter or how the visualisations should work; we just need to define what the data looks like.
 
-As I-analyzer is designed to be flexible, we have worked with different research projects over time to add corpora and develop the application. You can find more information about some of these projects in our [portfolio](https://cdh.uu.nl/portfolio/?_theme=i-analyzer).
+As I-analyzer is designed to be flexible, we have worked with different research projects over time to add corpora and develop the application. You can find more information about some of these projects in our [portfolio](https://cdh.uu.nl/portfolio/).
 
-The source code of I-analyzer is not publicly available at the moment, but we intend to make the application open-source in 2023.
+The [source code of I-analyzer](https://github.com/UUDigitalHumanitieslab/I-analyzer) is shared under an MIT license.
 
 ## Research using I-analyzer
 
@@ -43,4 +43,6 @@ Do you think that some of these may apply to you? We are still interested in hea
 
 ## Contact
 
-For questions, suggestions, or adding new data: contact us via [cdh@uu.nl](mailto:cdh@uu.nl)
+For questions, suggestions, or adding new data: contact us via [cdh@uu.nl](mailto:cdh@uu.nl).
+
+For small suggestions, feedback, or bug reports, you can also make an issue on the [I-analyzer github repository](https://github.com/UUDigitalHumanitieslab/I-analyzer/issues).
