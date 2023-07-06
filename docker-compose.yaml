@@ -33,7 +33,7 @@ services:
         source: ./backend
         target: /backend
       - type: bind
-        source: ~/corpora
+        source: $DATA_DIR
         target: /corpora
     command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
   frontend:

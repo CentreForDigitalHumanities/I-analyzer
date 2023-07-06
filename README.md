@@ -63,11 +63,12 @@ Alternatively, you can run the application via Docker:
 ```
 SQL_HOST=db
 SQL_PORT=5432
-SQL_USER=ianalyzer
-SQL_DATABASE=ianalyzer
-SQL_PASSWORD=topsecret
+SQL_USER=myuser
+SQL_DATABASE=mydb
+SQL_PASSWORD=mysupersecretpassword
 ES_HOST=elasticsearch
 CELERY_BROKER=redis://redis
+DATA_DIR=where/corpus/data/is/located/on/your/machine
 ```
 3. Run `docker-compose up` from the directory of this README. This will pull images from the Docker registry and start containers based on these images. This will take a while to set up the first time. To stop, hit `ctrl-c`, run `docker-compose down` in another terminal, or use the Docker Desktop dashboard.
 4. If you need to reinstall libraries via pip or yarn, use `docker-compose up --build`.
