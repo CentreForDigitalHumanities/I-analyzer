@@ -66,7 +66,7 @@ def near_max_tagged_documents(auth_user_tag, mock_corpus_obj):
 
 
 @pytest.fixture()
-def too_much_docs(mock_corpus_obj, near_max_tagged_documents):
+def too_many_docs(mock_corpus_obj, near_max_tagged_documents):
     return TaggedDocument.objects.bulk_create([
         TaggedDocument(corpus=mock_corpus_obj, doc_id=DOCS_PER_TAG_LIMIT-1),
         TaggedDocument(corpus=mock_corpus_obj, doc_id=DOCS_PER_TAG_LIMIT)
