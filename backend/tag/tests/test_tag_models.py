@@ -35,3 +35,16 @@ def test_max_tags_reverse(db, mock_corpus_obj,
                           auth_user_tag, too_many_docs):
     with pytest.raises(ValidationError):
         auth_user_tag.tagged_docs.add(*too_many_docs)
+
+def test_tag_delete(db, mock_corpus_obj, tagged_documents, auth_user_tag, admin_user_tag):
+    assert len(TaggedDocument.objects.all()) == 4
+
+    # Deleting auth_user_tags should have no effect on TaggedDocuments
+    # since they all have a second tag
+    auth_user_tag.delete()
+    assert len(TaggedDocument.objects.all()) == 4
+
+    # Deleting the last Tag would leave all the docs without Tags
+    # They can safely be deleted
+    admin_user_tag.delete()
+    assert len(TaggedDocument.objects.all()) == 0

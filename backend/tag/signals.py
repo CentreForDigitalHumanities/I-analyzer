@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db.models.signals import m2m_changed
+from django.db.models.signals import m2m_changed, pre_delete
 from django.dispatch import receiver
 
 from .models import DOCS_PER_TAG_LIMIT, Tag
@@ -52,3 +52,15 @@ def tagged_documents_changed(action, reverse, instance, pk_set, **kwargs):
                     'Maximum number of tagged documents reached '
                     f'for tag {tag.name}'
                 )
+
+@receiver(pre_delete, sender=Tag)
+def pre_delete_tag(instance, **kwargs):
+    '''
+    On deleting Tag, checks all its TaggedDocuments.
+    If there is only one Tag remaining, delete the TaggedDocument
+    '''
+    tagged_docs = instance.tagged_docs.all()
+    for doc in tagged_docs:
+        if doc.tags.count() == 1:
+            doc.delete()
+
