@@ -67,9 +67,13 @@ SQL_USER=ianalyzer
 SQL_DATABASE=ianalyzer
 SQL_PASSWORD=topsecret
 ES_HOST=elasticsearch
+CELERY_BROKER=redis://redis
 ```
 3. Run `docker-compose up` from the directory of this README. This will pull images from the Docker registry and start containers based on these images. This will take a while to set up the first time. To stop, hit `ctrl-c`, run `docker-compose down` in another terminal, or use the Docker Desktop dashboard.
 4. If you need to reinstall libraries via pip or yarn, use `docker-compose up --build`.
+
+Note: you can also call the .env file .myenv and specify this during startup:
+`docker-compose --env-file .myenv up`
 
 
 ## Adding corpora

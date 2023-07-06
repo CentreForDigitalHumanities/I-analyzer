@@ -70,6 +70,8 @@ services:
   celery:
     build:
       context: ./backend
+    environment:
+      CELERY_BROKER: $CELERY_BROKER
     volumes:
       - type: bind
         source: ./backend

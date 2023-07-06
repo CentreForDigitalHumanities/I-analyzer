@@ -83,8 +83,8 @@ CORPORA = {}
 WORDCLOUD_LIMIT = 1000
 
 # Celery configuration
-CELERY_BROKER_URL = 'redis://'
-CELERY_RESULT_BACKEND = 'redis://'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER', 'redis://')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER', 'redis://')
 
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'
