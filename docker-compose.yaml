@@ -26,6 +26,7 @@ services:
       SQL_HOST: $SQL_HOST
       SQL_PORT: $SQL_PORT
       ES_HOST: $ES_HOST
+      CELERY_BROKER: $CELERY_BROKER
     ports:
       - 127.0.0.1:8000:8000
     volumes:
@@ -72,6 +73,7 @@ services:
       context: ./backend
     environment:
       CELERY_BROKER: $CELERY_BROKER
+      ES_HOST: $ES_HOST
     volumes:
       - type: bind
         source: ./backend
