@@ -1,13 +1,14 @@
+from datetime import datetime
+
 import numpy as np
 from sklearn.metrics import auc
 
 from addcorpus.load_corpus import load_corpus
-from datetime import datetime
+from es import download
 from es.search import get_index, hits, total_hits, search
 from ianalyzer.elasticsearch import elasticsearch
 from copy import deepcopy
 from visualization import query, termvectors
-from es import download
 
 NUM_COLLECTED_DOCUMENTS = 5000
 NUM_SAMPLES = 50
@@ -68,10 +69,9 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=NUM_SAMPLES):
-    search_result = search(
-        corpus, es_query, client=es_client, size=size, source=[], track_total_hits=True
+    found_hits, total = download.scroll(
+        corpus, es_query, download_size=size, source=[]
     )
-    found_hits = hits(search_result)
 
     if not len(found_hits):
         return 0
