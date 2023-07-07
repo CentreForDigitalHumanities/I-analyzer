@@ -17,10 +17,6 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> {
         this.max = filter.defaultData.max;
     }
 
-    getDisplayData(filterData: RangeFilterData): [number, number] {
-        return [filterData.min, filterData.max];
-    }
-
     getFilterData(value: [number, number]): RangeFilterData {
         return {
             min: value[0],
