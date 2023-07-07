@@ -8,6 +8,8 @@ import * as _ from 'lodash';
 import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
 import { makeContextParams } from '../utils/document-context';
 
+const MAXIMUM_DISPLAYED = 10000;
+
 @Component({
     selector: 'ia-search-results',
     templateUrl: './search-results.component.html',
@@ -45,7 +47,6 @@ export class SearchResultsComponent implements OnChanges {
 
     public resultsPerPage = 20;
     public totalResults: number;
-    private maximumDisplayed: number;
 
     public fromIndex = 0;
 
@@ -76,7 +77,6 @@ export class SearchResultsComponent implements OnChanges {
     ngOnChanges() {
         if (this.queryModel) {
             this.fromIndex = 0;
-            this.maximumDisplayed = this.user.downloadLimit ? this.user.downloadLimit : 10000;
             this.search();
             this.queryModel.update.subscribe(() => this.search());
         }
@@ -97,7 +97,7 @@ export class SearchResultsComponent implements OnChanges {
             this.results = results;
             this.results.documents.map((d, i) => d.position = i + 1);
             this.searched(this.queryModel.queryText, this.results.total.value);
-            this.totalResults = this.results.total.value <= this.maximumDisplayed ? this.results.total.value : this.maximumDisplayed;
+            this.totalResults = this.results.total.value <= MAXIMUM_DISPLAYED ? this.results.total.value : MAXIMUM_DISPLAYED;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
