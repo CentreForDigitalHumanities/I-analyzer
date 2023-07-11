@@ -71,3 +71,9 @@ def too_many_docs(mock_corpus_obj, near_max_tagged_documents):
         TaggedDocument(corpus=mock_corpus_obj, doc_id=DOCS_PER_TAG_LIMIT-1),
         TaggedDocument(corpus=mock_corpus_obj, doc_id=DOCS_PER_TAG_LIMIT)
     ])
+
+@pytest.fixture()
+def other_corpus(db):
+    name = 'other-corpus'
+    Corpus.objects.create(name=name)
+    return name

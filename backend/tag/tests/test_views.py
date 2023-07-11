@@ -55,3 +55,15 @@ def test_admin_delete(admin_client, auth_user_tag):
     resp = admin_client.delete(f'/api/tags/{auth_user_tag.id}/')
     assert resp.status_code == status.HTTP_204_NO_CONTENT
     assert n_tags() == 0
+
+def test_list_corpus_tags(auth_client, auth_user_tag, tagged_documents, mock_corpus, other_corpus):
+    response = auth_client.get(f'/api/tags/?corpus={mock_corpus}')
+    assert status.is_success(response.status_code)
+    assert len(response.data) == 1
+
+    empty_response = auth_client.get(f'/api/tags/?corpus={other_corpus}')
+    assert status.is_success(empty_response.status_code)
+    assert len(empty_response.data) == 0
+
+    not_found = auth_client.get('/api/tags/?corpus=nonexistent')
+    assert not_found.status_code == status.HTTP_404_NOT_FOUND

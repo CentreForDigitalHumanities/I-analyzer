@@ -1,11 +1,26 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from django.http import HttpRequest
+from rest_framework.exceptions import NotFound
 
 from .models import Tag
 from .permissions import IsTagOwner
 from .serializers import TagSerializer
+from addcorpus.models import Corpus
 
+def check_corpus_name(request: HttpRequest):
+    '''
+    Returns the name of the corpus specified in the request query parameters,
+    if there is one.
+
+    Raises 404 if this is not a real corpus.
+    '''
+
+    corpus_name = request.query_params.get('corpus', None)
+    if corpus_name and not Corpus.objects.filter(name=corpus_name):
+        raise NotFound(f'corpus {corpus_name} does not exist')
+    return corpus_name
 
 class TagViewSet(ModelViewSet):
     serializer_class = TagSerializer
@@ -21,7 +36,16 @@ class TagViewSet(ModelViewSet):
         '''Overwrites ModelViewSet.list
         Filters the default queryset by ownership.
         Only applies to list view, the class queryset is unaffected.
+
+        Supports filtering on a corpus by specifying the name as a query parameter.
         '''
-        queryset = self.queryset.filter(user=self.request.user)
+
+        corpus_name = check_corpus_name(self.request)
+        filters = {
+            'user': self.request.user,
+            'tagged_docs__corpus__name': corpus_name
+        }
+
+        queryset = self.queryset.filter(**filters).distinct()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
