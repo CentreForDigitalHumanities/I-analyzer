@@ -1,12 +1,10 @@
 import pytest
-from addcorpus.load_corpus import load_all_corpora
+from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from tag.models import DOCS_PER_TAG_LIMIT, Tag, TaggedDocument
 
-
 @pytest.fixture()
-def mock_corpus(db):
-    load_all_corpora()
+def mock_corpus():
     return 'tagging-mock-corpus'
 
 
@@ -37,7 +35,14 @@ def admin_user_tag(db, admin_user):
 
 
 @pytest.fixture()
-def tagged_documents(auth_user_tag, admin_user_tag, mock_corpus_obj):
+def auth_user_corpus_acces(db, auth_user, mock_corpus_obj):
+    '''Give the auth user access to the mock corpus'''
+    group = Group.objects.create()
+    auth_user.groups.add(group)
+    mock_corpus_obj.groups.add(group)
+
+@pytest.fixture()
+def tagged_documents(auth_user_tag, admin_user_tag, auth_user_corpus_acces, mock_corpus_obj):
     docs = ['1', '2', '3', '4']
     tagged = []
 
