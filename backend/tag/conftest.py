@@ -9,7 +9,7 @@ def mock_corpus():
 
 
 @pytest.fixture()
-def mock_corpus_obj(db, mock_corpus):
+def mock_corpus_obj(db, mock_corpus, mock_corpora_in_db):
     return Corpus.objects.get(name=mock_corpus)
 
 
