@@ -34,6 +34,18 @@ def specify_tags(query, corpus_name):
 class ForwardSearchView(APIView):
     '''
     Forward search request to elasticsearch
+
+    The request should specify a query in the elasticsearch query DSL; c.f.
+
+    https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+
+    The request data should be the query JSON. You can optionally include
+    extra key/value pairs as query parameters in the request. They
+    will be merged with the JSON data.
+
+    On top of any properties included in the query DSL, the request may also specify
+    a `tags`property. This should be an array of values, referring to IDs of tags
+    on which the results should be filtered.
     '''
 
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
