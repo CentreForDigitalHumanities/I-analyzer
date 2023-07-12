@@ -27,7 +27,7 @@ describe('Search Results Component', () => {
                 a: '1',
                 b: '2',
                 c: 'Hide-and-seek!'
-            }, '1', 1,
+            }, mockCorpus, '1', 1,
             {
                 c: ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
             }),
@@ -35,7 +35,7 @@ describe('Search Results Component', () => {
                 a: '3',
                 b: '4',
                 c: 'Wally is here'
-            }, '2', 0.5)],
+            }, mockCorpus, '2', 0.5)],
             total: {
                 value: 2,
                 relation: 'gte'
