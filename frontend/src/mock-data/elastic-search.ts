@@ -1,5 +1,5 @@
-import { Corpus, FoundDocument, QueryModel } from '../app/models';
-import { EsQuery } from '../app/services';
+import { FoundDocument } from '../app/models';
+import { makeDocument } from './constructor-helpers';
 
 export class ElasticSearchServiceMock {
     /**
@@ -9,12 +9,6 @@ export class ElasticSearchServiceMock {
     }
 
     getDocumentById(): Promise<FoundDocument> {
-        return Promise.resolve({
-            id: '0',
-            relevance: null,
-            fieldValues: {
-                content: 'Hello world!'
-            }
-        });
+        return Promise.resolve(makeDocument({content: 'Hello world!'}));
     }
 }

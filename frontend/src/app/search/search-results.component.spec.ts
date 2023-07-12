@@ -3,9 +3,10 @@ import * as _ from 'lodash';
 import { mockCorpus, mockField } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 
-import { CorpusField, QueryModel } from '../models/index';
+import { CorpusField, FoundDocument, QueryModel } from '../models/index';
 
 import { SearchResultsComponent } from './search-results.component';
+import { makeDocument } from '../../mock-data/constructor-helpers';
 
 
 describe('Search Results Component', () => {
@@ -22,7 +23,7 @@ describe('Search Results Component', () => {
         component = fixture.componentInstance;
         component.results = {
             fields,
-            documents: [createDocument({
+            documents: [makeDocument({
                 a: '1',
                 b: '2',
                 c: 'Hide-and-seek!'
@@ -30,7 +31,7 @@ describe('Search Results Component', () => {
             {
                 c: ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
             }),
-            createDocument({
+            makeDocument({
                 a: '3',
                 b: '4',
                 c: 'Wally is here'
@@ -55,13 +56,6 @@ describe('Search Results Component', () => {
         field.name = name;
         return field;
     };
-
-    const createDocument = (
-        fieldValues: { [name: string]: string },
-        id: string,
-        relevance: number,
-        highlight?: {[fieldName: string]: string[]}
-        ) => ({ id, relevance, fieldValues, highlight });
 
     it('should be created', () => {
         expect(component).toBeTruthy();

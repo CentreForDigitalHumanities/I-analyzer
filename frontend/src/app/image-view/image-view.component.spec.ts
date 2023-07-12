@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { ImageViewComponent } from './image-view.component';
+import { makeDocument } from '../../mock-data/constructor-helpers';
 
 describe('ImageViewComponent', () => {
   let component: ImageViewComponent;
@@ -15,7 +16,7 @@ describe('ImageViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ImageViewComponent);
     component = fixture.componentInstance;
-    component.document = {id: '42', relevance: 42, fieldValues: {image_path: 'great/image/path'}};
+    component.document = makeDocument({image_path: 'great/image/path'});
     fixture.detectChanges();
   });
 
