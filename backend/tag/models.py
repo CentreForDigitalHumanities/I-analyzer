@@ -26,6 +26,10 @@ class Tag(models.Model):
     def count(self):
         return len(self.tagged_docs.all())
 
+
+    def __str__(self):
+        return f'Tag #{self.id}: "{self.name}" by {self.user.username}'
+
 class TaggedDocument(models.Model):
     doc_id = models.CharField(max_length=512)
     corpus = models.ForeignKey(
