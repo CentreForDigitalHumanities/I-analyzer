@@ -6,6 +6,7 @@ import logging
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
+from tag.filter import include_tag_filter
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,18 @@ def get_query_parameters(request):
             key: request.query_params.get(key)
             for key in request.query_params
         }
+
+def specify_tags(query, corpus_name):
+    '''
+    Specifies tag contents if needed.
+
+    If the query JSON contains a `tags` key,
+    it is removed and replaced with a filter
+    on the tags' document IDs.
+    '''
+
+    tags = query.pop('tags', None)
+    return include_tag_filter(query, tags, corpus_name)
 
 class ForwardSearchView(APIView):
     '''
@@ -35,6 +48,8 @@ class ForwardSearchView(APIView):
             **request.data,
             **get_query_parameters(request)
         }
+
+        query = specify_tags(query, corpus_name)
 
         try:
             results = client.search(
