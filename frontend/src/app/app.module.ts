@@ -93,6 +93,7 @@ import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-f
 import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
+import { DocumentTagsComponent } from './search/document-tags/document-tags.component';
 
 
 export const appRoutes: Routes = [
@@ -188,6 +189,7 @@ export const declarations: any[] = [
     DateFilterComponent,
     DialogComponent,
     DocumentPageComponent,
+    DocumentTagsComponent,
     DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,

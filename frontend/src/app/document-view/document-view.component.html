@@ -9,6 +9,12 @@
                             <search-relevance [value]="document.relevance"></search-relevance>
                         </td>
                     </tr>
+                    <tr>
+                        <th>Your tags</th>
+                        <td>
+                            <ia-document-tags [tags]="document.tags$ | async"></ia-document-tags>
+                        </td>
+                    </tr>
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValue(field)">
                             <th>{{field.displayName}}</th>
