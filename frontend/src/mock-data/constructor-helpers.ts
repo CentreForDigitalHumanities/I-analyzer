@@ -13,6 +13,6 @@ export const makeDocument = (
     const hit: SearchHit = {
         _id: id, _score: relevance, _source: fieldValues, highlight
     };
-    return new FoundDocument(mockCorpus, hit);
+    return new FoundDocument(corpus, hit);
 };
 
