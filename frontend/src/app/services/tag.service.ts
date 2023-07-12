@@ -12,7 +12,7 @@ export class TagService {
 
     constructor(private http: HttpClient) { }
 
-    getDocumentTags(corpus: Corpus, document: FoundDocument): Observable<Tag[]> {
-        return this.http.get<Tag[]>(`/api/tag/document_tags/${corpus.name}/${document.id}`);
+    getDocumentTags(document: FoundDocument): Observable<Tag[]> {
+        return this.http.get<Tag[]>(`/api/tag/document_tags/${document.corpus.name}/${document.id}`);
     }
 }

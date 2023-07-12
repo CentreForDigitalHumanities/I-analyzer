@@ -2,6 +2,9 @@ import * as _ from 'lodash';
 import { makeContextParams } from '../utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
+import { Tag } from './tag';
+import { Observable } from 'rxjs';
+import { TagService } from '../services/tag.service';
 
 export class FoundDocument {
     id: string;
@@ -20,6 +23,9 @@ export class FoundDocument {
     /** highlighted strings */
     highlight: HighlightResult;
 
+    /** tags created on the document */
+    tags$: Observable<Tag[]>;
+
     constructor(
         private tagService: TagService,
         public corpus: Corpus,
@@ -30,6 +36,7 @@ export class FoundDocument {
         this.relevance = hit._score / maxScore;
         this.fieldValues = Object.assign({ id: hit._id }, hit._source);
         this.highlight = hit.highlight;
+        this.fetchTags();
     }
 
 
@@ -61,6 +68,10 @@ export class FoundDocument {
 
     fieldValue(field: CorpusField) {
         return this.fieldValues[field.name];
+    }
+
+    private fetchTags(): void {
+        this.tags$ = this.tagService.getDocumentTags(this);
     }
 
 }

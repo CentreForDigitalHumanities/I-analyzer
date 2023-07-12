@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs';
-import { Tag } from '../app/models';
+import { FoundDocument, Tag } from '../app/models';
 
 export const mockTags: Tag[] = [
     {
@@ -16,7 +16,7 @@ export const mockTags: Tag[] = [
 ];
 
 export class TagServiceMock {
-    getDocumentTags(): Observable<Tag[]> {
+    getDocumentTags(document: FoundDocument): Observable<Tag[]> {
         return of(mockTags);
     }
 }
