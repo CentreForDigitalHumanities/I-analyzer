@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { DocumentPageComponent } from './document-page.component';
+import { makeDocument } from '../../mock-data/constructor-helpers';
 
 describe('DocumentPageComponent', () => {
     let component: DocumentPageComponent;
@@ -14,6 +15,7 @@ describe('DocumentPageComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DocumentPageComponent);
         component = fixture.componentInstance;
+        component.document = makeDocument({great_field: 'Hello world!'});
         fixture.detectChanges();
     });
 

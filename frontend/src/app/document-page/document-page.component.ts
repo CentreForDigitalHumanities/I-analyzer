@@ -27,12 +27,8 @@ export class DocumentPageComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
     ) { }
 
-    get hasContext(): boolean {
-        return this.corpus && !_.isUndefined(this.corpus.documentContext);
-    }
-
     get contextDisplayName(): string {
-        if (this.hasContext) {
+        if (this.document?.hasContext) {
             return this.corpus.documentContext.displayName;
         }
     }

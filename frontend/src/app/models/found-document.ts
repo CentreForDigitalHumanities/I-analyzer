@@ -1,4 +1,6 @@
-import { Corpus } from './corpus';
+import * as _ from 'lodash';
+import { makeContextParams } from '../utils/document-context';
+import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 
 export class FoundDocument {
@@ -26,5 +28,34 @@ export class FoundDocument {
     }
 
 
+    /**
+     * whether the document has a "context" that it belongs to
+     *
+     * e.g. the publication it was a part of
+     */
+    get hasContext(): boolean {
+        const spec = this.corpus.documentContext;
+
+        if (_.isUndefined(spec)) {
+            return false;
+        }
+
+        const notBlank = value => value !== undefined && value !== null && value !== '';
+        const contextValues = spec.contextFields.map(this.fieldValue.bind(this));
+        return _.every(contextValues, notBlank);
+    }
+
+    /**
+     * query parameters for a search request for the context of the document
+     *
+     * e.g. the publication it was a part of
+     */
+    get contextQueryParams() {
+        return makeContextParams(this, this.corpus);
+    }
+
+    fieldValue(field: CorpusField) {
+        return this.fieldValues[field.name];
+    }
 
 }
