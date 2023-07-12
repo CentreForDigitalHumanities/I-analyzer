@@ -1,3 +1,4 @@
+import { Corpus } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 
 export class FoundDocument {
@@ -17,11 +18,13 @@ export class FoundDocument {
     /** highlighted strings */
     highlight: HighlightResult;
 
-    constructor(hit: SearchHit, maxScore: number = 1) {
+    constructor(public corpus: Corpus, hit: SearchHit, maxScore: number = 1) {
         this.id = hit._id;
         this.relevance = hit._score / maxScore;
         this.fieldValues = Object.assign({ id: hit._id }, hit._source);
         this.highlight = hit.highlight;
     }
+
+
 
 }

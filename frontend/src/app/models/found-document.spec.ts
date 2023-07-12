@@ -1,3 +1,4 @@
+import { mockCorpus } from '../../mock-data/corpus';
 import { FoundDocument } from './found-document';
 
 const maxScore = 2.9113607;
@@ -25,7 +26,7 @@ const mockResponse = {
 
 describe('FoundDocument', () => {
     it('should construct from an elasticsearch response', () => {
-        const document = new FoundDocument(mockResponse, maxScore);
+        const document = new FoundDocument(mockCorpus, mockResponse, maxScore);
 
         expect(document.id).toBe('1994_troonrede');
         expect(document.fieldValues['monarch']).toBe('Beatrix');
