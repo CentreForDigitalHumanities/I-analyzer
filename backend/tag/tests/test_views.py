@@ -1,5 +1,7 @@
 from rest_framework import status
 from tag.models import Tag
+from visualization.query import MATCH_ALL
+from es.search import hits
 
 
 def n_tags():
@@ -75,3 +77,13 @@ def test_get_document_tags(auth_user, auth_client, auth_user_tag, tagged_documen
     doc_id = tagged_documents[1][0]
     response = auth_client.get(f'/api/tag/document_tags/{mock_corpus}/{doc_id}')
     assert status.is_success(response.status_code)
+
+def test_search_view_with_tag(auth_client, mock_corpus, auth_user_tag, tagged_documents, index_mock_corpus):
+    route = f'/api/es/{mock_corpus}/_search'
+    query = MATCH_ALL
+    tag_data = {'tags': [auth_user_tag.id]}
+    data = {**query, **tag_data}
+    response = auth_client.post(route, data, content_type = 'application/json')
+    assert status.is_success(response.status_code)
+
+    assert len(hits(response.data)) == auth_user_tag.count

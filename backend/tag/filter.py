@@ -8,6 +8,9 @@ def include_tag_filter(es_query, tag_ids, corpus_name):
     Returns the query with the tag filter added
     '''
 
+    if not tag_ids:
+        return es_query
+
     filter = tag_filter(tag_ids, corpus_name)
     return add_filter(es_query, filter)
 
