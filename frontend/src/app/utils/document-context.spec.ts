@@ -1,20 +1,16 @@
+import { makeDocument } from '../../mock-data/constructor-helpers';
 import { mockCorpus3 } from '../../mock-data/corpus';
-import { FoundDocument } from '../models';
 import { makeContextParams } from './document-context';
 
 describe('document context utils', () => {
     const corpus = mockCorpus3;
 
-    const document: FoundDocument = {
-        id: '1',
-        relevance: undefined,
-        fieldValues: {
-            great_field: 'true',
-            speech: 'whatever',
-            ordering: '42',
-            date: '1900-01-01'
-        }
-    };
+    const document = makeDocument({
+        great_field: 'true',
+        speech: 'whatever',
+        ordering: '42',
+        date: '1900-01-01'
+    });
 
     it('should create a document context link', () => {
         const params = makeContextParams(document, corpus);

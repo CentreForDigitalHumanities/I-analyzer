@@ -168,13 +168,8 @@ export class ElasticSearchService {
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: SearchHit, maxScore: number) {
-        return {
-            id: hit._id,
-            relevance: hit._score / maxScore,
-            fieldValues: Object.assign({ id: hit._id }, hit._source),
-            highlight: hit.highlight,
-        } as FoundDocument;
+    private hitToDocument(hit: SearchHit, maxScore: number): FoundDocument {
+        return new FoundDocument(hit, maxScore);
     }
 }
 
