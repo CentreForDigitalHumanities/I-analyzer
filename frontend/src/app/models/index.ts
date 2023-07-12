@@ -9,3 +9,4 @@ export * from './user';
 export * from './user-role';
 export * from './visualization';
 export * from './elasticsearch';
+export * from './tag';
