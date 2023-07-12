@@ -60,3 +60,22 @@ def test_search(small_mock_corpus, es_client, index_small_mock_corpus, basic_que
     )
 
     assert len(hits(result)) == 1
+
+def test_manipulation_is_pure(basic_query):
+    narrow_timeframe = datetime(1850, 1, 1), datetime(1860, 12, 31)
+
+    narrow_query = query.add_filter(
+        basic_query,
+        query.make_date_filter(*narrow_timeframe)
+    )
+
+    wide_timeframe = datetime(1800, 1, 1), datetime(1899, 12, 31)
+    wide_query = query.add_filter(
+        basic_query,
+        query.make_date_filter(*wide_timeframe)
+    )
+
+    # operations should be pure functions: original objects should be unchanged
+    assert query.get_date_range(basic_query) == (None, None)
+    assert query.get_date_range(narrow_query) == narrow_timeframe
+    assert query.get_date_range(wide_query) == wide_timeframe

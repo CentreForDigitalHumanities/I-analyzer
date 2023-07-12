@@ -165,7 +165,7 @@ def add_filter(query, filter):
     existing_filters = get_filters(query) or []
     filters = existing_filters + [filter]
 
-    new_query = transform_to_compound_query(query)
+    new_query = transform_to_compound_query(deepcopy(query))
     new_query['query']['bool']['filter'] = filters
     return new_query
 
