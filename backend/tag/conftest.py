@@ -46,10 +46,10 @@ def auth_user_corpus_acces(db, auth_user, mock_corpus_obj):
 
 @pytest.fixture()
 def tagged_documents(auth_user_tag, admin_user_tag, auth_user_corpus_acces, mock_corpus_obj):
-    docs = ['1', '2', '3', '4']
+    ids = ['1', '2', '3', '4']
     tagged = []
 
-    for doc in docs:
+    for doc in ids:
         tagged_doc = TaggedDocument.objects.create(doc_id=doc,
                                                    corpus=mock_corpus_obj)
         tagged_doc.tags.add(*[auth_user_tag, admin_user_tag])
@@ -58,7 +58,7 @@ def tagged_documents(auth_user_tag, admin_user_tag, auth_user_corpus_acces, mock
     # remove user tag from last document
     tagged[-1].tags.remove(auth_user_tag)
 
-    return tagged, docs
+    return tagged, ids
 
 
 @pytest.fixture()
@@ -87,9 +87,38 @@ def other_corpus(db):
     Corpus.objects.create(name=name)
     return name
 
+@pytest.fixture()
+def multiple_tags(db, mock_corpus, auth_user):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    riveting_tag = Tag.objects.create(
+        name='riveting',
+        user=auth_user
+    )
+    brilliant_tag = Tag.objects.create(
+        name='brillant',
+        user=auth_user,
+    )
+
+    for id in ['1', '2']:
+        doc, _ = TaggedDocument.objects.get_or_create(
+            corpus=corpus,
+            doc_id=id
+        )
+        doc.tags.add(riveting_tag)
+
+    for id in ['2', '3']:
+        doc, _ = TaggedDocument.objects.get_or_create(
+            corpus=corpus,
+            doc_id=['2', '3']
+        )
+        doc.tags.add(brilliant_tag)
+
+    return [riveting_tag, brilliant_tag]
+
 
 @pytest.fixture(scope='session')
 def index_mock_corpus(mock_corpus, es_client):
     index_test_corpus(es_client, mock_corpus)
     yield mock_corpus
     clear_test_corpus(es_client, mock_corpus)
+
