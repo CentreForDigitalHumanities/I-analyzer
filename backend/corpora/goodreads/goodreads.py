@@ -31,6 +31,8 @@ class GoodReads(CSVCorpus):
     image = 'DioptraL.png'
     description_page = 'goodreads.md'
     visualize = []
+    languages = ['en', 'es', 'it', 'pt', 'fr',  'nl', 'de', 'ar', 'af', 'sv', ''] # languages with > 1000 docs
+    category = 'review'
 
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
@@ -211,31 +213,6 @@ class GoodReads(CSVCorpus):
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
             es_mapping={'type': 'keyword'}
-        ),
-        Field(
-            name='author',
-            display_name='Author',
-            description='Author of the review.',
-            extractor=CSV(
-                field='author',
-            ),
-            es_mapping={'type': 'keyword'},
-            csv_core=True,
-        ),
-        Field(
-            name='author_gender',
-            display_name='Reviewer gender',
-            description='Gender of the reviewer, guessed based on name.',
-            extractor=CSV(
-                field='author_gender',
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made by authors of these genders. Note that gender was guessed based on username',
-                option_count=6
-            ),
-            csv_core=True,
-            visualizations=['resultscount', 'termfrequency'],
         ),
         Field(
             name='rating_text',

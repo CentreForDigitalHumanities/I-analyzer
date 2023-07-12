@@ -1,4 +1,6 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8064133.svg)](https://doi.org/10.5281/zenodo.8064133)
 [![Actions Status](https://github.com/UUDigitalHumanitiesLab/I-analyzer/workflows/Unit%20tests/badge.svg)](https://github.com/UUDigitalHumanitiesLab/I-analyzer/actions)
+
 
 # I-analyzer
 
@@ -53,6 +55,27 @@ yarn postinstall
 The backend readme provides more details on these steps.
 8. Set up the database and migrations by running `yarn django migrate`.
 9. Make a superuser account with `yarn django createsuperuser`
+
+## Setup with Docker
+Alternatively, you can run the application via Docker:
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it.
+2. Make an .env file next to this README, which defines the configuration for the SQL database and Redis. An example setup could look as follows:
+```
+SQL_HOST=db
+SQL_PORT=5432
+SQL_USER=myuser
+SQL_DATABASE=mydb
+SQL_PASSWORD=mysupersecretpassword
+ES_HOST=elasticsearch
+CELERY_BROKER=redis://redis
+DATA_DIR=where/corpus/data/is/located/on/your/machine
+```
+3. Run `docker-compose up` from the directory of this README. This will pull images from the Docker registry and start containers based on these images. This will take a while to set up the first time. To stop, hit `ctrl-c`, run `docker-compose down` in another terminal, or use the Docker Desktop dashboard.
+4. If you need to reinstall libraries via pip or yarn, use `docker-compose up --build`.
+
+Note: you can also call the .env file .myenv and specify this during startup:
+`docker-compose --env-file .myenv up`
+
 
 ## Adding corpora
 

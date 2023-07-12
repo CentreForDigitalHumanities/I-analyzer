@@ -18,7 +18,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     data_directory = settings.PP_FR_DATA
     es_index = getattr(settings, 'PP_FR_INDEX', 'parliament-france')
     image = 'france.jpeg'
-    language = 'french'
+    languages = ['fr']
     description_page = 'france.md'
     word_model_path = getattr(settings, 'PP_FR_WM', None)
 

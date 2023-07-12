@@ -36,7 +36,10 @@ class Rechtspraak(XMLCorpus):
     data_directory = settings.RECHTSPRAAK_DATA
     es_index = getattr(settings, 'RECHTSPRAAK_ES_INDEX', 'rechtspraak')
     image = 'rechtszaal.jpeg'
+    description_page = 'rechtspraak.md'
     toplevel_zip_file = 'OpenDataUitspraken.zip'
+    languages = ['nl']
+    category = 'ruling'
 
     tag_toplevel = 'open-rechtspraak'
 

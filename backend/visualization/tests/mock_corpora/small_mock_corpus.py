@@ -16,6 +16,8 @@ class SmallMockCorpus(CSVCorpus):
     es_index = 'ianalyzer-mock-corpus'
     image = 'test.jpeg'
     data_directory = 'bogus'
+    languages = ['en']
+    category = 'book'
 
     def sources(self, start=min_date, end=max_date):
         for csv_file in os.listdir(os.path.join(here, 'source_files')):

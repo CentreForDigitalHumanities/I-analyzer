@@ -53,7 +53,7 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
     data_directory = settings.PP_NORWAY_NEW_DATA
     es_index = getattr(settings, 'PP_NORWAY_NEW_INDEX', 'parliament-norway-new')
     image = 'norway.JPG'
-    language = 'norwegian'
+    languages = ['no']
     description_page = 'norway-new.md'
     document_context = document_context()
 

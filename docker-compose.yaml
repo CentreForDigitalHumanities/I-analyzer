@@ -1,0 +1,88 @@
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=${SQL_DATABASE}
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - PGHOST=${SQL_HOST}
+      - PGPORT=${SQL_PORT}
+      - PGUSER=${SQL_USER}
+      - PGDATABASE=${SQL_DATABASE}
+      - PGPASSWORD=${SQL_PASSWORD}    
+    volumes:
+      - ianalyzer-db:/var/lib/postgresql/data/
+  backend:
+    build:
+      context: ./backend
+    depends_on:
+      - db
+      - celery
+      - redis
+    environment:
+      SQL_DATABASE: $SQL_DATABASE
+      SQL_USER: $SQL_USER
+      SQL_PASSWORD: $SQL_PASSWORD
+      SQL_HOST: $SQL_HOST
+      SQL_PORT: $SQL_PORT
+      ES_HOST: $ES_HOST
+      CELERY_BROKER: $CELERY_BROKER
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+      - type: bind
+        source: $DATA_DIR
+        target: /corpora
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 127.0.0.1:4200:4200
+    volumes:
+      - type: bind
+        source: ./frontend/src
+        target: /frontend/src
+    command: sh -c "yarn start-docker"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
+    environment:
+      - node.name=ianalyzer-node
+      - discovery.type=single-node
+      - cluster.name=ianalizer-es-data-cluster
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTIC_PASSWORD=$ELASTIC_ROOT_PASSWORD
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ianalyzer-es:/usr/share/elasticsearch/data
+    ports:
+      - 127.0.0.1:9200:9200
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+  celery:
+    build:
+      context: ./backend
+    environment:
+      CELERY_BROKER: $CELERY_BROKER
+      ES_HOST: $ES_HOST
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+    command: bash -c "celery -A ianalyzer.celery worker --loglevel=info"
+    depends_on:
+      - redis
+
+
+volumes:
+  ianalyzer-db:
+  ianalyzer-es:

@@ -45,7 +45,7 @@ export interface BooleanQuery {
 }
 
 export interface MatchAll {
-    match_all: {};
+    match_all: Record<string, never>;
 }
 
 export interface SimpleQueryString {

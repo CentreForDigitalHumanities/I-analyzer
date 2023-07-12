@@ -32,6 +32,7 @@ def send_csv_email(user_email, username, download_id):
         'link_text': 'Download .csv file',
         'logo_link': settings.LOGO_LINK,
         'url_i_analyzer': settings.BASE_URL,
+        'organization': 'the Research Software Lab at the Centre for Digital Humanities (Utrecht University)'
     }
 
     html_message = render_to_string('download_mail.html', context)

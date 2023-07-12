@@ -23,8 +23,7 @@
     <div class="level-left has-text-centered">
         <div>
             <p class="heading">Sort By</p>
-            <ng-content select="ia-search-sorting"></ng-content>
-
+            <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
         </div>
     </div>
     <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
@@ -81,27 +80,30 @@
 <p-dialog [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
     *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
-    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ia-document-view [document]="viewDocument" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
     <ng-template pTemplate="footer">
         <div class="columns" style="text-align:left">
             <div class="column">
                 <a *ngIf="viewDocument && viewDocument.position > 1"
                     iaBalloon="view previous document" iaBalloonPosition="right"
-                    (click)="prevDocument(viewDocument)" >
+                    (click)="prevDocument(viewDocument)" (keydown.enter)="prevDocument(viewDocument)"
+                    role="button" tabindex="0">
                     <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
                 </a>
             </div>
             <div class="column" style="text-align:center">
                 <a [routerLink]="['/document', corpus.name, viewDocument.id]"
-                    iaBalloon="view this document on its own page">
+                    iaBalloon="view this document on its own page" autofocus
+                    tabindex="0">
                     <span class="icon">
                         <fa-icon [icon]="linkIcon"></fa-icon>
                     </span>
                     <span>Link</span>
                 </a>
                 &nbsp;
-                <a *ngIf="hasContext(viewDocument)" (click)="goToContext(viewDocument)"
-                iaBalloon="view all documents from this {{contextDisplayName}}">
+                <a *ngIf="hasContext(viewDocument)" [routerLink]="['/search', corpus.name]" [queryParams]="contextParams(viewDocument)"
+                    iaBalloon="view all documents from this {{contextDisplayName}}"
+                    tabindex="0">
                     <span class="icon">
                         <fa-icon [icon]="contextIcon"></fa-icon>
                     </span>
@@ -111,7 +113,8 @@
             <div class="column" style="text-align:right">
                 <a *ngIf="viewDocument && viewDocument.position < totalResults"
                     iaBalloon="view next document" iaBalloonPosition="left"
-                    (click)="nextDocument(viewDocument)">
+                    (click)="nextDocument(viewDocument)" (keydown.enter)="nextDocument(viewDocument)"
+                    role="button" tabindex="0">
                     <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
                 </a>
             </div>

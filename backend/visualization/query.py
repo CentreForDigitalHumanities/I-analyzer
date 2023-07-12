@@ -18,30 +18,34 @@ def set_query_text(query, text):
     if get_query_text(query):
         new_query['query']['bool']['must']['simple_query_string']['query'] = text
 
-    elif query['query']['bool']['must']:
-        new_query['query']['bool']['must'] = {
-            "simple_query_string": {
-                "query": text,
-                "lenient": True,
-                "default_operator": "or"
-            }
-        }
+    elif 'bool' in query['query'] and query['query']['bool']['must']:
+        new_query['query']['bool']['must'] = format_query_text(text)
 
     else:
         new_query['query'] ={
             "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": text,
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
+                "must": format_query_text(text),
                 "filter": []
             }
         }
 
     return new_query
+
+def format_query_text(query_text = None):
+    '''Render the portion of the query that specifies the query text. Either simple_query_string,
+    or match_all if the query text is None.'''
+
+    if query_text:
+        return {'simple_query_string':
+            {
+                'query': query_text,
+                'lenient': True,
+                'default_operator':'or'
+            }
+        }
+    else:
+        return {'match_all': {}}
+
 
 def get_search_fields(query):
     """Get the search fields specified in the query."""
@@ -52,12 +56,21 @@ def get_search_fields(query):
 
     return fields
 
+def set_search_fields(query, fields):
+    '''Set the search fields for a query'''
+
+    if get_query_text(query) == None:
+        return query
+    else:
+        query['query']['bool']['must']['simple_query_string']['fields'] = fields
+        return query
+
 def get_filters(query):
-    """Get the list of filters in a query, or `None` if there are none."""
+    """Get the list of filters in a query. Returns an empty list if there are none."""
     try:
         filters = query['query']['bool']['filter']
     except KeyError:
-        filters = None
+        filters = []
 
     return filters
 
@@ -120,6 +133,22 @@ def make_term_filter(field, value):
             field: value
         }
     }
+
+def set_sort(query, sort_by, sort_direction):
+    '''sets the 'sort' specification for a query.
+    Parameters:
+    - `query`: elasticsearch query
+    - `sort_by`: string; the name of the field by which you want to sort
+    - `direction`: either `'asc'` or `'desc'`
+    '''
+    specification = [{sort_by:sort_direction}]
+    query['sort'] = specification
+    return query
+
+def set_highlight(query, fragment_size):
+    specification = { 'fragment_size': fragment_size }
+    query['highlight'] = specification
+    return query
 
 def remove_query(query):
     """
