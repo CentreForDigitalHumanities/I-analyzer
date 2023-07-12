@@ -5,7 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
     AggregateQueryFeedback, EsSearchClause, BooleanQuery,
-    EsFilter
+    EsFilter, SearchHit
 } from '../models/index';
 import * as _ from 'lodash';
 
@@ -243,11 +243,4 @@ export interface SearchResponse {
         hits: Array<SearchHit>;
     };
     aggregations?: any;
-}
-
-export interface SearchHit {
-    _id: string;
-    _score: number;
-    _source: {};
-    highlight: {};
 }
