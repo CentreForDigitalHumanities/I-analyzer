@@ -4,9 +4,11 @@ from ianalyzer.elasticsearch import elasticsearch
 from es.search import get_index
 import logging
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, NotFound, PermissionDenied
 from addcorpus.permissions import CorpusAccessPermission
 from tag.filter import include_tag_filter
+from tag.permissions import IsTagOwner
+from tag.models import Tag
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +21,27 @@ def get_query_parameters(request):
             for key in request.query_params
         }
 
-def specify_tags(query, corpus_name):
+def verify_tag_exists(id):
+    if not Tag.objects.filter(id=id).exists():
+        raise NotFound(f'Tag {id} does not exist')
+
+def verify_tag_permission(id, request):
+    tag = Tag.objects.get(id=id)
+    if not IsTagOwner().has_object_permission(request, None, tag):
+        raise PermissionDenied(f'You do not have permission to access tag {id}')
+
+def verify_tags(request):
+    tags = request.data.get('tags', None)
+
+    if not tags:
+        return
+
+    for id in tags:
+        verify_tag_exists(id)
+        verify_tag_permission(id, request)
+
+
+def specify_tags(query, corpus_name, request):
     '''
     Specifies tag contents if needed.
 
@@ -61,7 +83,8 @@ class ForwardSearchView(APIView):
             **get_query_parameters(request)
         }
 
-        query = specify_tags(query, corpus_name)
+        verify_tags(request)
+        query = specify_tags(query, corpus_name, request.user)
 
         try:
             results = client.search(
