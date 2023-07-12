@@ -4,11 +4,10 @@ from ianalyzer.elasticsearch import elasticsearch
 from es.search import get_index
 import logging
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import APIException, NotFound, PermissionDenied
+from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
 from tag.filter import include_tag_filter
-from tag.permissions import IsTagOwner
-from tag.models import Tag
+from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)
 
@@ -21,33 +20,13 @@ def get_query_parameters(request):
             for key in request.query_params
         }
 
-def verify_tag_exists(id):
-    if not Tag.objects.filter(id=id).exists():
-        raise NotFound(f'Tag {id} does not exist')
-
-def verify_tag_permission(id, request):
-    tag = Tag.objects.get(id=id)
-    if not IsTagOwner().has_object_permission(request, None, tag):
-        raise PermissionDenied(f'You do not have permission to access tag {id}')
-
-def verify_tags(request):
-    tags = request.data.get('tags', None)
-
-    if not tags:
-        return
-
-    for id in tags:
-        verify_tag_exists(id)
-        verify_tag_permission(id, request)
-
 
 def specify_tags(query, corpus_name, request):
     '''
     Specifies tag contents if needed.
 
-    If the query JSON contains a `tags` key,
-    it is removed and replaced with a filter
-    on the tags' document IDs.
+    If the query JSON contains a `tags` key, it is removed and replaced with
+    a filter on the tags' document IDs.
     '''
 
     tags = query.pop('tags', None)
@@ -70,7 +49,7 @@ class ForwardSearchView(APIView):
     on which the results should be filtered.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')
@@ -83,7 +62,6 @@ class ForwardSearchView(APIView):
             **get_query_parameters(request)
         }
 
-        verify_tags(request)
         query = specify_tags(query, corpus_name, request.user)
 
         try:
