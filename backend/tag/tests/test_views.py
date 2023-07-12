@@ -61,6 +61,9 @@ def test_list_corpus_tags(auth_client, auth_user_tag, tagged_documents, mock_cor
     assert status.is_success(response.status_code)
     assert len(response.data) == 1
 
+    tag = response.data[0]
+    assert tag.get('count') == 3
+
     empty_response = auth_client.get(f'/api/tag/tags/?corpus={other_corpus}')
     assert status.is_success(empty_response.status_code)
     assert len(empty_response.data) == 0
