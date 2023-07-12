@@ -8,6 +8,7 @@ import {
     EsFilter, SearchHit
 } from '../models/index';
 import * as _ from 'lodash';
+import { TagService } from './tag.service';
 
 
 @Injectable()
@@ -15,7 +16,7 @@ export class ElasticSearchService {
     private client: Client;
     private resultsPerPage = 20;
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private tagService: TagService) {
         this.client = new Client(this.http);
     }
 
@@ -167,7 +168,7 @@ export class ElasticSearchService {
      * return the id, relevance and field values of a given document
      */
     private hitToDocument(corpus: Corpus, hit: SearchHit, maxScore: number): FoundDocument {
-        return new FoundDocument(corpus, hit, maxScore);
+        return new FoundDocument(this.tagService, corpus, hit, maxScore);
     }
 }
 

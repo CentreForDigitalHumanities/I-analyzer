@@ -2,6 +2,9 @@
 
 import { Corpus, FieldValues, FoundDocument, HighlightResult, SearchHit } from '../app/models';
 import { mockCorpus } from './corpus';
+import { TagServiceMock } from './tag';
+
+const tagService = new TagServiceMock() as any;
 
 export const makeDocument = (
     fieldValues: FieldValues,
@@ -13,6 +16,6 @@ export const makeDocument = (
     const hit: SearchHit = {
         _id: id, _score: relevance, _source: fieldValues, highlight
     };
-    return new FoundDocument(corpus, hit);
+    return new FoundDocument(tagService, corpus, hit);
 };
 

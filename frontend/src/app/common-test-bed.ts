@@ -20,6 +20,8 @@ import { WordmodelsService } from './services/wordmodels.service';
 import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 import { VisualizationService } from './services/visualization.service';
 import { visualizationServiceMock } from '../mock-data/visualization';
+import { TagService } from './services/tag.service';
+import { TagServiceMock } from '../mock-data/tag';
 
 export const commonTestBed = () => {
     const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
@@ -63,6 +65,10 @@ export const commonTestBed = () => {
         {
             provide: VisualizationService,
             useValue: new visualizationServiceMock(),
+        },
+        {
+            provide: TagService,
+            useValue: new TagServiceMock(),
         }
     );
 
