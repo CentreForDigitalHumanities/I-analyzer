@@ -17,6 +17,35 @@ def has_path(object, *keys):
     return keys[-1] in deepest
 
 
+def is_compound_query(query):
+    '''
+    Checks if a query uses compound structure
+    '''
+
+    return has_path(query, 'query', 'bool')
+
+
+def transform_to_compound_query(query):
+    '''
+    Transforms a query into a compound query if it is not
+    already
+    '''
+
+    if is_compound_query(query):
+        return query
+
+    condition = query.get('query')
+    new_condition = {
+        'bool': {
+            'must': condition
+        }
+    }
+
+    return {
+        key: (value if key != 'query' else new_condition)
+        for key, value in query.items()
+    }
+
 def get_query_text(query):
     """Get the text in the query"""
     try:
@@ -133,14 +162,10 @@ def get_date_range(query: Dict):
 def add_filter(query, filter):
     """Add a filter to a query"""
 
-    existing_filters = get_filters(query)
+    existing_filters = get_filters(query) or []
+    filters = existing_filters + [filter]
 
-    if existing_filters:
-        filters = existing_filters + [filter]
-    else:
-        filters = [filter]
-
-    new_query = deepcopy(query)
+    new_query = transform_to_compound_query(query)
     new_query['query']['bool']['filter'] = filters
     return new_query
 
