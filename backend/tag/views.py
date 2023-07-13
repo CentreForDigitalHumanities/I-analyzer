@@ -42,12 +42,16 @@ class TagViewSet(ModelViewSet):
         Supports filtering on a corpus by specifying the name as a query parameter.
         '''
 
-        corpus_name = check_corpus_name(self.request)
 
         filters = {
             'user': self.request.user,
-            'tagged_docs__corpus__name': corpus_name
         }
+
+        corpus_name = check_corpus_name(self.request)
+        if corpus_name:
+            filters.update({
+                'tagged_docs__corpus__name': corpus_name
+            })
 
         queryset = self.queryset.filter(**filters).distinct()
         serializer = self.get_serializer(queryset, many=True)
