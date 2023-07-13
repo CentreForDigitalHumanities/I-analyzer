@@ -1,5 +1,19 @@
-<div class="tags">
-    <span class="tag" *ngFor="let tag of tags">
-        {{tag.name}}
-    </span>
+<div class="field is-grouped is-grouped-multiline">
+    <div class="control tags has-addons" *ngFor="let tag of tags">
+        <span class="tag is-primary" *ngFor="let tag of tags">
+            {{tag.name}}
+        </span>
+        <button class="button tag" aria-label="remove this tag"
+            iaBalloon="remove this tag" iaBalloonPosition="up">
+            <span class="icon"><fa-icon [icon]="faTimes" aria-hidden="true"></fa-icon></span>
+        </button>
+    </div>
+
+    <div class="control">
+        <button class="button tag" aria-label="add a tag"
+            iaBalloon="add a tag" iaBalloonPosition="up">
+            <span class="icon"><fa-icon [icon]="faPlus" aria-hidden="true"></fa-icon></span>
+        </button>
+    </div>
+
 </div>
