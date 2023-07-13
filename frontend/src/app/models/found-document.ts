@@ -5,6 +5,7 @@ import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 import { Tag } from './tag';
 import { Observable } from 'rxjs';
 import { TagService } from '../services/tag.service';
+import { tap } from 'rxjs/operators';
 
 export class FoundDocument {
     id: string;
@@ -70,9 +71,17 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
-    addTag(tag: Tag): void {}
+    addTag(tag: Tag): void {
+        this.tagService.addDocumentTag(this, tag).pipe(
+            tap(this.fetchTags.bind(this))
+        ).subscribe();
+    }
 
-    removeTag(tag: Tag): void {}
+    removeTag(tag: Tag): void {
+        this.tagService.removeDocumentTag(this, tag).pipe(
+            tap(this.fetchTags.bind(this))
+        ).subscribe();
+    }
 
     private fetchTags(): void {
         this.tags$ = this.tagService.getDocumentTags(this);
