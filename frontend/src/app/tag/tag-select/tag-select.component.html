@@ -1,0 +1,21 @@
+<div class="field has-addons">
+    <div class="control">
+        <div class="select tag-select is-small" *ngIf="tags$ | async as tags">
+            <select >
+                <option *ngFor="let tag of tags">
+                    {{tag.name}}
+                </option>
+            </select>
+        </div>
+    </div>
+    <div class="control">
+        <button class="button tag">
+            <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
+        </button>
+    </div>
+    <div class="control">
+        <button class="button tag">
+            <span class="icon"><fa-icon [icon]="faTimes"></fa-icon></span>
+        </button>
+    </div>
+</div>
