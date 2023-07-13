@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Tag } from '../../models';
+import { FoundDocument, Tag } from '../../models';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -8,7 +8,7 @@ import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./document-tags.component.scss']
 })
 export class DocumentTagsComponent implements OnInit {
-    @Input() tags: Tag[];
+    @Input() document: FoundDocument;
 
     faTimes = faTimes;
     faPlus = faPlus;
@@ -16,6 +16,14 @@ export class DocumentTagsComponent implements OnInit {
     constructor() { }
 
     ngOnInit(): void {
+    }
+
+    addTag(tag: Tag) {
+        this.document.addTag(tag);
+    }
+
+    removeTag(tag: Tag) {
+        this.document.removeTag(tag);
     }
 
 }

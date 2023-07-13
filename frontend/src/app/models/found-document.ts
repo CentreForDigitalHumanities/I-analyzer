@@ -70,6 +70,10 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
+    addTag(tag: Tag): void {}
+
+    removeTag(tag: Tag): void {}
+
     private fetchTags(): void {
         this.tags$ = this.tagService.getDocumentTags(this);
     }

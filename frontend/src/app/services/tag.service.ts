@@ -15,4 +15,8 @@ export class TagService {
     getDocumentTags(document: FoundDocument): Observable<Tag[]> {
         return this.http.get<Tag[]>(`/api/tag/document_tags/${document.corpus.name}/${document.id}`);
     }
+
+    removeDocumentTag(document: FoundDocument, tag: Tag) {
+        return this.http.delete('/api/....');
+    }
 }
