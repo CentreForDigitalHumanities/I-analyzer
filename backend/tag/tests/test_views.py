@@ -102,7 +102,6 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
     assert status.is_success(response.status_code)
     assert auth_user_tag.count == 0
 
-
 def search_with_tag(client, corpus_name, tag_id):
     route = f'/api/es/{corpus_name}/_search'
     query = MATCH_ALL
