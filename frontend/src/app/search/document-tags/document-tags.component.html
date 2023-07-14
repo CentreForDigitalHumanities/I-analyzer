@@ -11,13 +11,17 @@
     </div>
 
     <div class="control">
-        <ia-tag-select [exclude]="tags"></ia-tag-select>
+        <ng-container *ngIf="showAddNew; else toggleAddNew">
+            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
+        </ng-container>
 
-        <!-- <button class="button tag" aria-label="add a tag"
-            iaBalloon="add a tag" iaBalloonPosition="up"
-            (click)="tagMenu.toggle($event)">
-            <span class="icon"><fa-icon [icon]="faPlus" aria-hidden="true"></fa-icon></span>
-        </button> -->
+        <ng-template #toggleAddNew>
+            <button class="button tag" aria-label="add a tag"
+                iaBalloon="add a tag" iaBalloonPosition="up"
+                (click)="showAddNew = true">
+                <span class="icon"><fa-icon [icon]="faPlus" aria-hidden="true"></fa-icon></span>
+            </button>
+        </ng-template>
     </div>
 
 </div>

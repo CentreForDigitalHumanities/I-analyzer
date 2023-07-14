@@ -71,8 +71,8 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
-    addTag(tag: Tag): void {
-        this.tagService.addDocumentTag(this, tag).pipe(
+    addTag(tagId: number): void {
+        this.tagService.addDocumentTag(this, tagId).pipe(
             tap(this.fetchTags.bind(this))
         ).subscribe();
     }

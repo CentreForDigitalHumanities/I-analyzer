@@ -13,13 +13,16 @@ export class DocumentTagsComponent implements OnInit {
     faTimes = faTimes;
     faPlus = faPlus;
 
+    showAddNew = false;
+
     constructor() { }
 
     ngOnInit(): void {
     }
 
-    addTag(tag: Tag) {
-        this.document.addTag(tag);
+    addTag(tagId: number) {
+        this.document.addTag(tagId);
+        this.showAddNew = false;
     }
 
     removeTag(tag: Tag) {

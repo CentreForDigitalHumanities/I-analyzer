@@ -31,8 +31,8 @@ export class TagService {
         return this.http.get<Tag[]>(this.documentTagUrl(document));
     }
 
-    addDocumentTag(document: FoundDocument, tag: Tag): Observable<any> {
-        const data: TaggingActions = [{op: 'add', value: tag.id}];
+    addDocumentTag(document: FoundDocument, tagId: number): Observable<any> {
+        const data: TaggingActions = [{op: 'add', value: tagId}];
         return this.http.patch(this.documentTagUrl(document), data);
     }
 
