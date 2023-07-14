@@ -1,5 +1,5 @@
-<div class="field is-grouped is-grouped-multiline">
-    <div class="control tags has-addons" *ngFor="let tag of (document?.tags$ | async)">
+<div class="field is-grouped is-grouped-multiline" *ngIf="document?.tags$ | async as tags">
+    <div class="control tags has-addons" *ngFor="let tag of tags">
         <span class="tag is-primary">
             {{tag.name}}
         </span>
@@ -11,7 +11,7 @@
     </div>
 
     <div class="control">
-        <ia-tag-select></ia-tag-select>
+        <ia-tag-select [exclude]="tags"></ia-tag-select>
 
         <!-- <button class="button tag" aria-label="add a tag"
             iaBalloon="add a tag" iaBalloonPosition="up"
