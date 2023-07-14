@@ -94,6 +94,7 @@ import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picke
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 import { DocumentTagsComponent } from './search/document-tags/document-tags.component';
+import { TagSelectComponent } from './tag/tag-select/tag-select.component';
 
 
 export const appRoutes: Routes = [
@@ -237,6 +238,7 @@ export const declarations: any[] = [
     SearchSortingComponent,
     SelectFieldComponent,
     SimilarityChartComponent,
+    TagSelectComponent,
     TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,

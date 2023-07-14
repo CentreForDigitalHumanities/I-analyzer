@@ -3,9 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TagSelectComponent } from './tag-select.component';
 import { commonTestBed } from '../../common-test-bed';
-import { makeDocument } from '../../../mock-data/constructor-helpers';
 
-describe('DocumentTagsComponent', () => {
+describe('TagSelectComponent', () => {
     let component: TagSelectComponent;
     let fixture: ComponentFixture<TagSelectComponent>;
 
