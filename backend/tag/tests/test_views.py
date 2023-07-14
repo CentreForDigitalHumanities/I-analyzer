@@ -78,6 +78,30 @@ def test_get_document_tags(auth_user, auth_client, auth_user_tag, tagged_documen
     response = auth_client.get(f'/api/tag/document_tags/{mock_corpus}/{doc_id}')
     assert status.is_success(response.status_code)
 
+def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_corpus_acces):
+    assert auth_user_tag.count == 0
+
+    new_doc = 'a-new-document'
+    patch_request = lambda data: auth_client.patch(
+        f'/api/tag/document_tags/{mock_corpus}/{new_doc}',
+        data,
+        content_type='application/json'
+    )
+
+    response = patch_request([
+        { 'op': 'add', 'value': auth_user_tag.id }
+    ])
+
+    assert status.is_success(response.status_code)
+    assert auth_user_tag.count == 1
+
+    response = patch_request([
+        { 'op': 'remove', 'value': auth_user_tag.id }
+    ])
+
+    assert status.is_success(response.status_code)
+    assert auth_user_tag.count == 0
+
 def search_with_tag(client, corpus_name, tag_id):
     route = f'/api/es/{corpus_name}/_search'
     query = MATCH_ALL
