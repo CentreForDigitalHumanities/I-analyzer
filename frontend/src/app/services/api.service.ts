@@ -13,7 +13,7 @@ import {
 } from '@ngx-resource/core';
 
 import { HttpClient } from '@angular/common/http';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ImageInfo } from '../image-view/image-view.component';
@@ -342,6 +342,14 @@ export class ApiService extends Resource {
                 new_password1: newPassword1,
                 new_password2: newPassword2,
             }
+        );
+    }
+
+    /** send PATCH request to update settings for the user */
+    public updateUserSettings(details: Partial<UserResponse>): Observable<UserResponse> {
+        return this.http.patch<UserResponse>(
+            this.authApiRoute('user'),
+            details
         );
     }
 }
