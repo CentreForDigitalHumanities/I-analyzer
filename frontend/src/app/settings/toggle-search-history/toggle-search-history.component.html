@@ -1,1 +1,9 @@
-<p>search-history-setting works!</p>
+<div class="field">
+    <div class="control">
+        <label class="checkbox">
+            <input type="checkbox" [checked]="searchHistoryEnabled$ | async"
+                (change)="emitChange($event.target.checked)">
+            Save my search history
+        </label>
+    </div>
+</div>

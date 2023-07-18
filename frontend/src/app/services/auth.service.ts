@@ -17,6 +17,7 @@ import { environment } from '../../environments/environment';
 import { User, UserResponse } from '../models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root',
@@ -168,7 +169,7 @@ export class AuthService implements OnDestroy {
     }
 
     public updateSettings(update: Partial<User>) {
-        return this.apiService.updateUserSettings(update).pipe(
+        return this.apiService.updateUserSettings(this.encodeUserUpdate(update)).pipe(
             tap((res) => this.setAuth(this.parseUserResponse(res))),
             catchError((error) => {
                 console.error(error);
@@ -194,6 +195,14 @@ export class AuthService implements OnDestroy {
             result.saml,
             result.enable_search_history,
         );
+    }
+
+    private encodeUserUpdate(update: Partial<User>): Partial<UserResponse> {
+        const changeKeys = {
+            enableSearchHistory: 'enable_search_history'
+        };
+        const transformKey = (value, key, obj) => changeKeys[key] || key;
+        return _.mapKeys(update, transformKey);
     }
 
 }
