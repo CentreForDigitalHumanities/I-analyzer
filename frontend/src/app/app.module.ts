@@ -93,6 +93,7 @@ import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-f
 import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
+import { SettingsComponent } from './settings/settings.component';
 
 
 export const appRoutes: Routes = [
@@ -166,6 +167,11 @@ export const appRoutes: Routes = [
         component: VerifyEmailComponent,
     },
     {
+        path: 'settings',
+        component: SettingsComponent,
+        canActivate: [LoggedOnGuard],
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
@@ -234,6 +240,7 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    SettingsComponent,
     SimilarityChartComponent,
     TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
