@@ -5,7 +5,6 @@ from api.serializers import QuerySerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 import logging
-from rest_framework.permissions import IsAuthenticated
 from api.utils import check_json_keys
 from celery import current_app as celery_app
 

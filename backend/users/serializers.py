@@ -9,7 +9,7 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
 
     class Meta(UserDetailsSerializer.Meta):
         fields = ('id', 'username', 'email', 'saml',
-                  'download_limit', 'is_admin')
+                  'download_limit', 'is_admin', 'enable_search_history')
 
 
 class CustomRegistrationSerializer(RegisterSerializer):
