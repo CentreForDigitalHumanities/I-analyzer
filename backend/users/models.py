@@ -18,3 +18,5 @@ class CustomUser(AbstractUser):
         # check if any corpus added to the user's group(s) match the corpus name
         return any(corpus for group in self.groups.all()
                    for corpus in group.corpora.filter(name=corpus_name))
+
+    enable_search_history = models.BooleanField(default=True)
