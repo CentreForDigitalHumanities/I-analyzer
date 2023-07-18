@@ -104,6 +104,13 @@ export class MenuComponent implements OnDestroy, OnInit {
                     this.router.navigate(['download-history']);
                 },
             },
+            {
+                label: 'Settings',
+                icon: 'fa fa-cog',
+                command: (click) => {
+                    this.router.navigate(['settings']);
+                }
+            },
             ...(this.isAdmin
                 ? [
                       {
