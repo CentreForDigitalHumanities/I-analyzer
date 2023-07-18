@@ -94,6 +94,7 @@ import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picke
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 import { SettingsComponent } from './settings/settings.component';
+import { SearchHistorySettingComponent } from './settings/search-history-setting/search-history-setting.component';
 
 
 export const appRoutes: Routes = [
@@ -236,6 +237,7 @@ export const declarations: any[] = [
     ScrollToDirective,
     SearchComponent,
     SearchHistoryComponent,
+    SearchHistorySettingComponent,
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
