@@ -42,7 +42,8 @@ export class UserService implements OnDestroy {
                 parsed['username'],
                 parsed['isAdmin'],
                 parsed['downloadLimit'],
-                parsed['isSamlLogin']
+                parsed['isSamlLogin'],
+                parsed['enable_search_history'],
             );
         } else {
             return false;
@@ -149,7 +150,8 @@ export class UserService implements OnDestroy {
             result.username,
             result.is_admin,
             result.download_limit == null ? 0 : result.download_limit,
-            result.saml != null
+            result.saml != null,
+            result.enable_search_history,
         );
 
         return this.currentUser;
