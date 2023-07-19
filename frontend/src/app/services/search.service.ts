@@ -5,7 +5,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { QueryService } from './query.service';
 import {
     Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, QueryDb
+    AggregateQueryFeedback, QueryDb, User
 } from '../models/index';
 import { AuthService } from './auth.service';
 
@@ -41,15 +41,15 @@ export class SearchService {
     public async search(queryModel: QueryModel
     ): Promise<SearchResults> {
         const user = await this.authService.getCurrentUserPromise();
-        const esQuery = queryModel.toEsQuery();
-        const query = new QueryDb(esQuery, queryModel.corpus.name, user.id);
-        query.started = new Date(Date.now());
-        const results = await this.elasticSearchService.search(
-            queryModel
-        );
-        query.total_results = results.total.value;
-        query.completed = new Date(Date.now());
-        this.queryService.save(query);
+        const request = () => this.elasticSearchService.search(queryModel);
+
+        let results: SearchResults;
+
+        if (user.enableSearchHistory) {
+            results = await this.saveQuery(queryModel, user, request);
+        } else {
+            results = await request();
+        }
 
         return {
             fields: queryModel.corpus.fields.filter((field) => field.resultsOverview),
@@ -83,5 +83,20 @@ export class SearchService {
             timeInterval
         );
     }
+
+    /** execute a search request and save the action to the search history log */
+    private saveQuery(queryModel: QueryModel, user: User, searchRequest: () => Promise<SearchResults>): Promise<SearchResults> {
+        const esQuery = queryModel.toEsQuery();
+        const query = new QueryDb(esQuery, queryModel.corpus.name, user.id);
+        query.started = new Date(Date.now());
+
+        return searchRequest().then(results => {
+            query.total_results = results.total.value;
+            query.completed = new Date(Date.now());
+            this.queryService.save(query);
+            return results;
+        });
+    }
+
 
 }
