@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { SearchHistorySettingComponent } from './search-history-setting.component';
+import { ToggleSearchHistoryComponent } from './toggle-search-history.component';
 import { commonTestBed } from '../../common-test-bed';
 
-describe('SearchHistorySettingComponent', () => {
-    let component: SearchHistorySettingComponent;
-    let fixture: ComponentFixture<SearchHistorySettingComponent>;
+describe('ToggleSearchHistoryComponent', () => {
+    let component: ToggleSearchHistoryComponent;
+    let fixture: ComponentFixture<ToggleSearchHistoryComponent>;
 
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SearchHistorySettingComponent);
+        fixture = TestBed.createComponent(ToggleSearchHistoryComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
