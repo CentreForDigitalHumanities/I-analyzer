@@ -144,8 +144,12 @@ export class ApiService extends Resource {
         TaskResult
     >;
 
-    public saveQuery(options: QueryDb) {
+    public saveQuery(options: QueryDb): Promise<any> {
         return this.http.post('/api/search_history/', options).toPromise();
+    }
+
+    public deleteSearchHistory(): Observable<any> {
+        return this.http.post('/api/search_history/delete_all/', {});
     }
 
     @ResourceAction({
