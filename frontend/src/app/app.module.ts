@@ -95,6 +95,7 @@ import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ToggleSearchHistoryComponent } from './settings/toggle-search-history/toggle-search-history.component';
+import { DeleteSearchHistoryComponent } from './settings/delete-search-history/delete-search-history.component';
 
 
 export const appRoutes: Routes = [
@@ -193,6 +194,7 @@ export const declarations: any[] = [
     CorpusSelectorComponent,
     DatePickerComponent,
     DateFilterComponent,
+    DeleteSearchHistoryComponent,
     DialogComponent,
     DocumentPageComponent,
     DocumentViewComponent,

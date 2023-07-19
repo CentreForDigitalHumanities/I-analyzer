@@ -1,0 +1,25 @@
+<div class="field">
+    <div class="control">
+        <button class="button" (click)="showConfirm = !showConfirm">
+            <span class="icon"><fa-icon [icon]="faTrash"></fa-icon></span>
+            <span>Delete my search history</span>
+        </button>
+    </div>
+</div>
+
+<div class="modal" [class.is-active]="showConfirm">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Delete search history?</p>
+            <button class="delete" aria-label="close" (click)="showConfirm = false"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>This action will delete all of your search history. This cannot be reversed.</p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-danger" (click)="deleteHistory()">Delete search history</button>
+            <button class="button" (click)="showConfirm = false">Cancel</button>
+        </footer>
+    </div>
+</div>

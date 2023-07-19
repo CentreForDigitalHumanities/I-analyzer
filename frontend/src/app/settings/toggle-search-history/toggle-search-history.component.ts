@@ -13,7 +13,7 @@ export class ToggleSearchHistoryComponent {
 
     constructor(private authService: AuthService) {
         this.searchHistoryEnabled$ = this.authService.currentUser$.pipe(
-            map(user => user.enableSearchHistory)
+            map(user => user?.enableSearchHistory)
         );
     }
 
