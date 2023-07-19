@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from api.serializers import QuerySerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
+from rest_framework.decorators import action
 import logging
 from api.utils import check_json_keys
 from celery import current_app as celery_app
@@ -21,6 +22,12 @@ class QueryViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.request.user.queries.all()
+
+    @action(detail=False, methods=['post'])
+    def delete_all(self, request):
+        queries = self.get_queryset()
+        queries.delete()
+        return Response('success')
 
 class TaskStatusView(APIView):
     '''
