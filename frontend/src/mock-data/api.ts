@@ -62,4 +62,8 @@ export class ApiServiceMock {
     public fieldCoverage() {
         return Promise.resolve({});
     }
+
+    saveQuery() {
+        return Promise.resolve();
+    }
 }
