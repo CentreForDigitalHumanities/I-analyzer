@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { DeleteSearchHistoryComponent } from './delete-search-history.component';
+import { SearchHistorySettingsComponent } from './search-history-settings.component';
 import { commonTestBed } from '../../common-test-bed';
 
-describe('DeleteSearchHistoryComponent', () => {
-    let component: DeleteSearchHistoryComponent;
-    let fixture: ComponentFixture<DeleteSearchHistoryComponent>;
+describe('SearchHistorySettingsComponent', () => {
+    let component: SearchHistorySettingsComponent;
+    let fixture: ComponentFixture<SearchHistorySettingsComponent>;
 
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DeleteSearchHistoryComponent);
+        fixture = TestBed.createComponent(SearchHistorySettingsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
