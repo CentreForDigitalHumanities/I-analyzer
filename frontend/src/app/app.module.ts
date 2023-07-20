@@ -7,14 +7,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ChartModule } from 'primeng/chart';
-import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ChipsModule } from 'primeng/chips';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
@@ -37,10 +34,6 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
-import { TimelineComponent } from './visualization/barchart/timeline.component';
-import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
-import { VisualizationComponent } from './visualization/visualization.component';
-import { FreqtableComponent } from './visualization/freqtable.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './history/search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './login/registration/registration.component';
@@ -48,7 +41,6 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
-import { HistogramComponent } from './visualization/barchart/histogram.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
@@ -57,26 +49,19 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 } from './filter/index';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { NgramComponent } from './visualization/ngram/ngram.component';
-import { BarchartOptionsComponent } from './visualization/barchart/barchart-options.component';
-import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
-import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 import { WordmodelsService } from './services/wordmodels.service';
 import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
 import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
-import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
-import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryDirective } from './history/history.directive';
 import { DownloadOptionsComponent } from './download/download-options/download-options.component';
-import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
@@ -84,6 +69,7 @@ import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-f
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 import { SharedModule } from './shared/shared.module';
+import { VisualizationModule } from './visualization/visualization.module';
 
 
 export const appRoutes: Routes = [
@@ -167,7 +153,6 @@ export const declarations: any[] = [
     AppComponent,
     AboutComponent,
     AdHocFilterComponent,
-    BarchartOptionsComponent,
     BooleanFilterComponent,
     CorpusFilterComponent,
     CorpusHeaderComponent,
@@ -184,26 +169,20 @@ export const declarations: any[] = [
     FilterManagerComponent,
     FieldInfoComponent,
     FooterComponent,
-    FreqtableComponent,
-    FullDataButtonComponent,
     HistoryDirective,
     HomeComponent,
-    HistogramComponent,
     HighlightSelectorComponent,
     ImageViewComponent,
     ImageNavigationComponent,
-    JoyplotComponent,
     LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
     MultipleChoiceFilterComponent,
-    NgramComponent,
     NotificationsComponent,
     QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
-    PaletteSelectComponent,
     PrivacyComponent,
     QueryFeedbackComponent,
     RangeFilterComponent,
@@ -220,13 +199,8 @@ export const declarations: any[] = [
     SearchSortingComponent,
     SelectFieldComponent,
     SimilarityChartComponent,
-    TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
-    TimelineComponent,
     VerifyEmailComponent,
-    VisualizationComponent,
-    VisualizationFooterComponent,
-    WordcloudComponent,
     WordModelsComponent,
     WordSimilarityComponent,
 ];
@@ -238,11 +212,8 @@ export const resourceHandlerFactory = (http: HttpClient) =>
 export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
-    ChartModule,
-    ChipsModule,
     ConfirmDialogModule,
     DialogModule,
-    DropdownModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrftoken',
@@ -262,6 +233,7 @@ export const imports: any[] = [
     SharedModule,
     SliderModule,
     TableModule,
+    VisualizationModule,
 ];
 
 export const providers: any[] = [
