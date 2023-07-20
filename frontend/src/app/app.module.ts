@@ -8,7 +8,6 @@ import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { MultiSelectModule } from 'primeng/multiselect';
-import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -44,12 +43,8 @@ import { DownloadComponent } from './download/download.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
-import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent,
-    DateFilterComponent, RangeFilterComponent
-} from './filter/index';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
@@ -70,6 +65,7 @@ import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 import { SharedModule } from './shared/shared.module';
 import { VisualizationModule } from './visualization/visualization.module';
+import { FilterModule } from './filter/filter.module';
 
 
 export const appRoutes: Routes = [
@@ -152,21 +148,17 @@ export const appRoutes: Routes = [
 export const declarations: any[] = [
     AppComponent,
     AboutComponent,
-    AdHocFilterComponent,
-    BooleanFilterComponent,
     CorpusFilterComponent,
     CorpusHeaderComponent,
     CorpusInfoComponent,
     CorpusSelectionComponent,
     CorpusSelectorComponent,
-    DateFilterComponent,
     DialogComponent,
     DocumentPageComponent,
     DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,
     DownloadOptionsComponent,
-    FilterManagerComponent,
     FieldInfoComponent,
     FooterComponent,
     HistoryDirective,
@@ -178,14 +170,12 @@ export const declarations: any[] = [
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
-    MultipleChoiceFilterComponent,
     NotificationsComponent,
     QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
     PrivacyComponent,
     QueryFeedbackComponent,
-    RangeFilterComponent,
     RegistrationComponent,
     RelatedWordsComponent,
     ResetPasswordComponent,
@@ -214,6 +204,7 @@ export const imports: any[] = [
     BrowserModule,
     ConfirmDialogModule,
     DialogModule,
+    FilterModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrftoken',
@@ -231,7 +222,6 @@ export const imports: any[] = [
     }),
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
     SharedModule,
-    SliderModule,
     TableModule,
     VisualizationModule,
 ];
