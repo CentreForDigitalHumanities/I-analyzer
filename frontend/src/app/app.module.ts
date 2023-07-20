@@ -1,14 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { APP_BASE_HREF, CommonModule, TitleCasePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -33,9 +31,8 @@ import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadServ
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
-import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
+import { SearchComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
@@ -43,8 +40,6 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
-import { BalloonDirective } from './balloon.directive';
-import { ScrollToDirective } from './scroll-to.directive';
 import { TimelineComponent } from './visualization/barchart/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
@@ -61,11 +56,10 @@ import { ResetPasswordComponent } from './login/reset-password/reset-password.co
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
 import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent,
-    DateFilterComponent, RangeFilterComponent } from './filter/index';
-import { ErrorComponent } from './error/error.component';
+    DateFilterComponent, RangeFilterComponent
+} from './filter/index';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { BarchartOptionsComponent } from './visualization/barchart/barchart-options.component';
 import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
@@ -90,9 +84,9 @@ import { VerifyEmailComponent } from './login/verify-email/verify-email.componen
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
 import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-filter.component';
-import { DatePickerComponent } from './corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
+import { SharedModule } from './shared/shared.module';
 
 
 export const appRoutes: Routes = [
@@ -176,7 +170,6 @@ export const declarations: any[] = [
     AppComponent,
     AboutComponent,
     AdHocFilterComponent,
-    BalloonDirective,
     BarchartOptionsComponent,
     BooleanFilterComponent,
     CorpusFilterComponent,
@@ -184,7 +177,6 @@ export const declarations: any[] = [
     CorpusInfoComponent,
     CorpusSelectionComponent,
     CorpusSelectorComponent,
-    DatePickerComponent,
     DateFilterComponent,
     DialogComponent,
     DocumentPageComponent,
@@ -192,8 +184,6 @@ export const declarations: any[] = [
     DownloadComponent,
     DownloadHistoryComponent,
     DownloadOptionsComponent,
-    DropdownComponent,
-    ErrorComponent,
     FilterManagerComponent,
     FieldInfoComponent,
     FooterComponent,
@@ -201,7 +191,6 @@ export const declarations: any[] = [
     FullDataButtonComponent,
     HistoryDirective,
     HomeComponent,
-    HighlightPipe,
     HistogramComponent,
     HighlightSelectorComponent,
     ImageViewComponent,
@@ -227,7 +216,6 @@ export const declarations: any[] = [
     RequestResetComponent,
     ScanImageComponent,
     ScanPdfComponent,
-    ScrollToDirective,
     SearchComponent,
     SearchHistoryComponent,
     SearchRelevanceComponent,
@@ -253,16 +241,12 @@ export const resourceHandlerFactory = (http: HttpClient) =>
 export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
-    CalendarModule,
     ChartModule,
     CheckboxModule,
     ChipsModule,
-    CommonModule,
     ConfirmDialogModule,
     DialogModule,
     DropdownModule,
-    FormsModule,
-    FontAwesomeModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrftoken',
@@ -280,7 +264,7 @@ export const imports: any[] = [
     }),
     RadioButtonModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
-    // SharedModule,
+    SharedModule,
     SliderModule,
     TableModule,
     TabViewModule,
