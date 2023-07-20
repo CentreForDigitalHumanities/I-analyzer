@@ -36,19 +36,14 @@ import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './login/registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
-import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
-import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordmodelsService } from './services/wordmodels.service';
-import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
-import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
-import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryDirective } from './history/history.directive';
@@ -63,6 +58,7 @@ import { VisualizationModule } from './visualization/visualization.module';
 import { FilterModule } from './filter/filter.module';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { DocumentModule } from './document/document.module';
+import { WordModelsModule } from './word-models/word-models.module';
 
 
 export const appRoutes: Routes = [
@@ -165,9 +161,7 @@ export const declarations: any[] = [
     QueryTextPipe,
     PaginationComponent,
     PrivacyComponent,
-    QueryFeedbackComponent,
     RegistrationComponent,
-    RelatedWordsComponent,
     ResetPasswordComponent,
     RequestResetComponent,
     SearchComponent,
@@ -175,11 +169,7 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
-    SimilarityChartComponent,
-    TimeIntervalSliderComponent,
     VerifyEmailComponent,
-    WordModelsComponent,
-    WordSimilarityComponent,
 ];
 
 // AoT requires an exported function for factories
@@ -211,6 +201,7 @@ export const imports: any[] = [
     SharedModule,
     TableModule,
     VisualizationModule,
+    WordModelsModule,
 ];
 
 export const providers: any[] = [
