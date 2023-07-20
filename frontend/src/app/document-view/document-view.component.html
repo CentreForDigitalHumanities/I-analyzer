@@ -12,7 +12,7 @@
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValues[field.name]">
                             <th>{{field.displayName}}</th>
-                            <td *ngIf="!isUrlField(field)" data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                            <td *ngIf="!isUrlField(field)" data-test-field-value [innerHtml]="highlightedInnerHtml(field)"></td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValues[field.name]}} target="_blank">{{document.fieldValues[field.name]}}</a>
                             </td>
@@ -41,7 +41,7 @@
             </div>
             <div *ngIf="tabIndex==0">
                 <ng-container *ngFor="let field of contentFields">
-                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="highlightedInnerHtml(field)"></div>
                 </ng-container>
             </div>
             <div *ngIf="tabIndex==1">

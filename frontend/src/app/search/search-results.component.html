@@ -84,7 +84,7 @@
 <p-dialog [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
     *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
-    <ia-document-view [document]="viewDocument" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ia-document-view [document]="viewDocument" [queryModel]="queryModel" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
     <ng-template pTemplate="footer">
         <div class="columns" style="text-align:left">
             <div class="column">
