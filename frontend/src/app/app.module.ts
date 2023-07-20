@@ -9,13 +9,10 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
-import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
-import { CheckboxModule } from 'primeng/checkbox';
-import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ChipsModule } from 'primeng/chips';
 import { TableModule } from 'primeng/table';
@@ -242,7 +239,6 @@ export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
     ChartModule,
-    CheckboxModule,
     ChipsModule,
     ConfirmDialogModule,
     DialogModule,
@@ -262,12 +258,10 @@ export const imports: any[] = [
             deps: [HttpClient],
         },
     }),
-    RadioButtonModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
     SharedModule,
     SliderModule,
     TableModule,
-    TabViewModule,
 ];
 
 export const providers: any[] = [
