@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/
 import { QueryModel } from '../models';
 
 
-const HIGHLIGHT = 200;
+const HIGHLIGHT = 100;
 
 @Component({
   selector: 'ia-highlight-selector',
@@ -32,9 +32,25 @@ export class HighlightSelectorComponent implements OnChanges, OnDestroy {
     }
 
 
-    updateHighlightSize(event) {
-        const highlightSize = event.target.value;
+    // updateHighlightSize(event) {
+    //     const highlightSize = event.target.value;
+    //     this.queryModel.setHighlight(highlightSize);
+    // }
+
+    updateHighlightSize(instruction?: string) {
+        let highlightSize = this.highlight;
+        if (instruction == 'on' && highlightSize == 0) {
+            highlightSize = 100;
+        } else if (instruction == 'more' && highlightSize < 800) {
+            highlightSize += 100;
+        } else if (instruction == 'less' && highlightSize > 120) {
+            highlightSize -= 100;
+        } else if (instruction == 'off') {
+            highlightSize = 0;
+        }
         this.queryModel.setHighlight(highlightSize);
+
+        // this.setParams({ highlight: highlightSize !== 0 ? highlightSize : null });
     }
 
 }
