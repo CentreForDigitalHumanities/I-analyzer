@@ -1,12 +1,12 @@
 import { Subscription } from 'rxjs';
+import * as _ from 'lodash';
 import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
+import { Corpus, CorpusField, QueryModel, ResultOverview, User } from '../models/index';
 import { CorpusService, DialogService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
-import * as _ from 'lodash';
 import { paramsHaveChanged } from '../utils/params';
 
 @Component({
@@ -21,6 +21,12 @@ export class SearchComponent extends ParamDirective {
     public isScrolledDown: boolean;
 
     public corpus: Corpus;
+
+    /**
+     * This is a constant used to ensure that, when we are displayed in an iframe,
+     * the filters are displayed even if there are no results.
+     */
+    private minIframeHeight = 1300;
 
     /**
      * The filters have been modified.
@@ -65,6 +71,11 @@ export class SearchComponent extends ParamDirective {
             .filter((corpus) => !!corpus).subscribe((corpus) => {
             this.setCorpus(corpus);
         });
+
+        if (window.parent) {
+            // iframe support
+            window.parent.postMessage(["setHeight", this.minIframeHeight], "*");
+        }
     }
 
     teardown() {
@@ -86,6 +97,7 @@ export class SearchComponent extends ParamDirective {
         this.isScrolledDown =
             this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
+
 
     /**
      * Event triggered from search-results.component
