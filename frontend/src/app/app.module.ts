@@ -24,7 +24,7 @@ import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
-import { SearchComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
+import { SearchComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
@@ -42,7 +42,6 @@ import { DownloadComponent } from './download/download.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
-import { DocumentViewComponent } from './document-view/document-view.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
@@ -62,8 +61,8 @@ import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { SharedModule } from './shared/shared.module';
 import { VisualizationModule } from './visualization/visualization.module';
 import { FilterModule } from './filter/filter.module';
-import { ImageViewModule } from './image-view/image-view.module';
 import { CorpusModule } from './corpus-header/corpus.module';
+import { DocumentModule } from './document/document.module';
 
 
 export const appRoutes: Routes = [
@@ -150,8 +149,6 @@ export const declarations: any[] = [
     CorpusSelectionComponent,
     CorpusSelectorComponent,
     DialogComponent,
-    DocumentPageComponent,
-    DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,
     DownloadOptionsComponent,
@@ -175,7 +172,6 @@ export const declarations: any[] = [
     RequestResetComponent,
     SearchComponent,
     SearchHistoryComponent,
-    SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
@@ -195,13 +191,13 @@ export const imports: any[] = [
     BrowserModule,
     CorpusModule,
     DialogModule,
+    DocumentModule,
     FilterModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrftoken',
         headerName: 'X-CSRFToken',
     }),
-    ImageViewModule,
     MenuModule,
     MultiSelectModule,
     ResourceModule.forRoot({
