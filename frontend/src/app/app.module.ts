@@ -46,7 +46,6 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
-import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { WordmodelsService } from './services/wordmodels.service';
 import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
 import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
@@ -60,11 +59,11 @@ import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
 import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-filter.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
-import { FieldInfoComponent } from './corpus-info/field-info/field-info.component';
 import { SharedModule } from './shared/shared.module';
 import { VisualizationModule } from './visualization/visualization.module';
 import { FilterModule } from './filter/filter.module';
 import { ImageViewModule } from './image-view/image-view.module';
+import { CorpusModule } from './corpus-header/corpus.module';
 
 
 export const appRoutes: Routes = [
@@ -148,8 +147,6 @@ export const declarations: any[] = [
     AppComponent,
     AboutComponent,
     CorpusFilterComponent,
-    CorpusHeaderComponent,
-    CorpusInfoComponent,
     CorpusSelectionComponent,
     CorpusSelectorComponent,
     DialogComponent,
@@ -158,7 +155,6 @@ export const declarations: any[] = [
     DownloadComponent,
     DownloadHistoryComponent,
     DownloadOptionsComponent,
-    FieldInfoComponent,
     FooterComponent,
     HistoryDirective,
     HomeComponent,
@@ -197,6 +193,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
 export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
+    CorpusModule,
     DialogModule,
     FilterModule,
     HttpClientModule,
