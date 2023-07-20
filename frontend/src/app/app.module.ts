@@ -10,11 +10,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
 import {
@@ -45,7 +43,6 @@ import { ResetPasswordComponent } from './login/reset-password/reset-password.co
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
-import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
@@ -67,6 +64,7 @@ import { FieldInfoComponent } from './corpus-info/field-info/field-info.componen
 import { SharedModule } from './shared/shared.module';
 import { VisualizationModule } from './visualization/visualization.module';
 import { FilterModule } from './filter/filter.module';
+import { ImageViewModule } from './image-view/image-view.module';
 
 
 export const appRoutes: Routes = [
@@ -165,8 +163,6 @@ export const declarations: any[] = [
     HistoryDirective,
     HomeComponent,
     HighlightSelectorComponent,
-    ImageViewComponent,
-    ImageNavigationComponent,
     LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
@@ -181,8 +177,6 @@ export const declarations: any[] = [
     RelatedWordsComponent,
     ResetPasswordComponent,
     RequestResetComponent,
-    ScanImageComponent,
-    ScanPdfComponent,
     SearchComponent,
     SearchHistoryComponent,
     SearchRelevanceComponent,
@@ -203,7 +197,6 @@ export const resourceHandlerFactory = (http: HttpClient) =>
 export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
-    ConfirmDialogModule,
     DialogModule,
     FilterModule,
     HttpClientModule,
@@ -211,9 +204,9 @@ export const imports: any[] = [
         cookieName: 'csrftoken',
         headerName: 'X-CSRFToken',
     }),
+    ImageViewModule,
     MenuModule,
     MultiSelectModule,
-    PdfViewerModule,
     ResourceModule.forRoot({
         handler: {
             provide: ResourceHandler,
