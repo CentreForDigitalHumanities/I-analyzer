@@ -293,7 +293,7 @@ def speech():
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True),
+        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True, positions_offsets=True),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',

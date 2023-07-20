@@ -1,15 +1,21 @@
-def main_content_mapping(token_counts = True, stopword_analysis = False, stemming_analysis = False):
+def main_content_mapping(token_counts = True, stopword_analysis = False, stemming_analysis = False, positions_offsets = False):
     '''
     Mapping for the main content field. Options:
 
     - `token_counts`: enables aggregations for the total number of words. Used for relative term frequencies.
     - `stopword_analysis`: enables analysis using stopword removal. Requires setting a `clean` analyser in the `es_settings` of the corpus.
     - `stemming_analysis`: enables analysis using stemming. Requires a `stemmed` analyser in the `es_settings` for the corpus.
+    - 'positions_offsets': enables the new highlighter, which only works for fields that are indexed with the term vector set to 'with_positions_offsets'.
     '''
 
     mapping = {
         'type': 'text'
     }
+
+    if positions_offsets:
+        mapping.update({
+        'term_vector': 'with_positions_offsets' # include char positions on _source (in addition to the multifields) for highlighting
+    })
 
     if any([token_counts, stopword_analysis, stemming_analysis]):
         multifields = {}
