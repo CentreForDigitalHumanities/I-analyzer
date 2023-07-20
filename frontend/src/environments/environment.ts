@@ -12,5 +12,6 @@ export const environment = {
     samlLogoutUrl: '/users/saml2/logout/',
     logos: [
     ],
-    showSolis: true
+    showSolis: true,
+    runInIFrame: false
 };
