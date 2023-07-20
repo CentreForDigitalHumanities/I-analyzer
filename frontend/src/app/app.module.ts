@@ -7,7 +7,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { MultiSelectModule } from 'primeng/multiselect';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
@@ -32,12 +31,10 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
-import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './history/search-history/index';
-import { SelectFieldComponent } from './select-field/select-field.component';
+import { SearchHistoryComponent, } from './history/search-history/index';
 import { RegistrationComponent } from './login/registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { DialogComponent } from './dialog/dialog.component';
-import { DownloadComponent } from './download/download.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
@@ -46,8 +43,6 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { WordmodelsService } from './services/wordmodels.service';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
-import { HistoryDirective } from './history/history.directive';
-import { DownloadOptionsComponent } from './download/download-options/download-options.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
@@ -59,6 +54,8 @@ import { FilterModule } from './filter/filter.module';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { DocumentModule } from './document/document.module';
 import { WordModelsModule } from './word-models/word-models.module';
+import { HistoryModule } from './history/history.module';
+import { DownloadModule } from './download/download.module';
 
 
 export const appRoutes: Routes = [
@@ -145,11 +142,7 @@ export const declarations: any[] = [
     CorpusSelectionComponent,
     CorpusSelectorComponent,
     DialogComponent,
-    DownloadComponent,
-    DownloadHistoryComponent,
-    DownloadOptionsComponent,
     FooterComponent,
-    HistoryDirective,
     HomeComponent,
     HighlightSelectorComponent,
     LoginComponent,
@@ -157,18 +150,14 @@ export const declarations: any[] = [
     ManualNavigationComponent,
     MenuComponent,
     NotificationsComponent,
-    QueryFiltersComponent,
-    QueryTextPipe,
     PaginationComponent,
     PrivacyComponent,
     RegistrationComponent,
     ResetPasswordComponent,
     RequestResetComponent,
     SearchComponent,
-    SearchHistoryComponent,
     SearchResultsComponent,
     SearchSortingComponent,
-    SelectFieldComponent,
     VerifyEmailComponent,
 ];
 
@@ -180,16 +169,17 @@ export const imports: any[] = [
     BrowserAnimationsModule,
     BrowserModule,
     CorpusModule,
+    DownloadModule,
     DialogModule,
     DocumentModule,
     FilterModule,
+    HistoryModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrftoken',
         headerName: 'X-CSRFToken',
     }),
     MenuModule,
-    MultiSelectModule,
     ResourceModule.forRoot({
         handler: {
             provide: ResourceHandler,
