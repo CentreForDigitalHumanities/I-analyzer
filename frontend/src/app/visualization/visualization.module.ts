@@ -8,7 +8,7 @@ import { FullDataButtonComponent } from './full-data-button/full-data-button.com
 import { NgramComponent } from './ngram/ngram.component';
 import { JoyplotComponent } from './ngram/joyplot/joyplot.component';
 import { VisualizationFooterComponent } from './visualization-footer/visualization-footer.component';
-import { ApiService, DialogService, NotificationService, SearchService, VisualizationService } from '../services';
+import { ApiService, DialogService, SearchService, VisualizationService } from '../services';
 import { WordcloudComponent } from './wordcloud/wordcloud.component';
 import { FreqtableComponent } from './freqtable.component';
 import { VisualizationComponent } from './visualization.component';
@@ -25,7 +25,6 @@ import { ChartModule } from 'primeng/chart';
     providers: [
         ApiService,
         DialogService,
-        NotificationService,
         SearchService,
         VisualizationService,
     ],

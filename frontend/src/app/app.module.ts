@@ -17,8 +17,9 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
-    ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService,
+import {
+    ApiService, ApiRetryService, DownloadService,
+    ElasticSearchService, HighlightService, SearchService,
     UserService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
@@ -229,15 +230,11 @@ export const imports: any[] = [
 export const providers: any[] = [
     ApiService,
     ApiRetryService,
-    CorpusService,
-    DialogService,
     DownloadService,
     ElasticSearchService,
     HighlightService,
-    NotificationService,
     QueryService,
     SearchService,
-    SessionService,
     UserService,
     CorpusGuard,
     LoggedOnGuard,
