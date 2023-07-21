@@ -30,6 +30,7 @@ export class Corpus implements ElasticSearchIndex {
         public category: string,
         public descriptionpage?: string,
         public documentContext?: DocumentContext,
+        public new_highlight?: boolean,
     ) { }
 
     get minYear(): number {

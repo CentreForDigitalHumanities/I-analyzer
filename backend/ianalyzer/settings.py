@@ -89,6 +89,10 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER', 'redis://')
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'
 
+# list of corpora that have been re-indexed using the top-level term vector
+# for main content fields, needed for the new highlighter
+NEW_HIGHLIGHT_CORPORA = []
+
 # This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:
     from ianalyzer.settings_local import *
