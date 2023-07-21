@@ -16,7 +16,7 @@ import {
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
-import { SearchComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
+import { SearchComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
@@ -30,8 +30,6 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
-import { PaginationComponent } from './search/pagination/pagination.component';
-import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordmodelsService } from './services/wordmodels.service';
 import { FooterComponent } from './footer/footer.component';
@@ -49,6 +47,7 @@ import { HistoryModule } from './history/history.module';
 import { DownloadModule } from './download/download.module';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { LoginModule } from './login/login.module';
+import { SearchModule } from './search/search.module';
 
 
 export const appRoutes: Routes = [
@@ -134,15 +133,10 @@ export const declarations: any[] = [
     DialogComponent,
     FooterComponent,
     HomeComponent,
-    HighlightSelectorComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
     NotificationsComponent,
-    PaginationComponent,
-    SearchComponent,
-    SearchResultsComponent,
-    SearchSortingComponent,
 ];
 
 
@@ -156,6 +150,7 @@ export const imports: any[] = [
     HistoryModule,
     LoginModule,
     MenuModule,
+    SearchModule,
     SharedModule,
     TableModule,
     VisualizationModule,
