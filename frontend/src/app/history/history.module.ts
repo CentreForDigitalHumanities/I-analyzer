@@ -5,11 +5,16 @@ import { QueryFiltersComponent, QueryTextPipe, SearchHistoryComponent } from './
 import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
 import { DownloadModule } from '../download/download.module';
+import { DownloadService, QueryService } from '../services';
 
 
 
 
 @NgModule({
+    providers: [
+        DownloadService,
+        QueryService,
+    ],
     declarations: [
         DownloadHistoryComponent,
         QueryFiltersComponent,

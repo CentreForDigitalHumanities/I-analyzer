@@ -10,10 +10,15 @@ import { SearchSortingComponent } from './search-sorting.component';
 import { FilterModule } from '../filter/filter.module';
 import { DownloadModule } from '../download/download.module';
 import { DialogModule } from 'primeng/dialog';
+import { QueryService, SearchService } from '../services';
 
 
 
 @NgModule({
+    providers: [
+        QueryService,
+        SearchService,
+    ],
     declarations: [
         HighlightSelectorComponent,
         PaginationComponent,

@@ -152,17 +152,13 @@ export const imports: any[] = [
 export const providers: any[] = [
     ApiService,
     ApiRetryService,
-    DownloadService,
     ElasticSearchService,
     HighlightService,
-    QueryService,
-    SearchService,
     UserService,
     CorpusGuard,
     LoggedOnGuard,
     TitleCasePipe,
     CookieService,
-    WordmodelsService,
     { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
