@@ -11,6 +11,7 @@ import { FilterModule } from '../filter/filter.module';
 import { DownloadModule } from '../download/download.module';
 import { DialogModule } from 'primeng/dialog';
 import { QueryService, SearchService } from '../services';
+import { VisualizationModule } from '../visualization/visualization.module';
 
 
 
@@ -33,6 +34,7 @@ import { QueryService, SearchService } from '../services';
         DownloadModule,
         FilterModule,
         SharedModule,
+        VisualizationModule,
     ],
     exports: [
         SearchComponent,
