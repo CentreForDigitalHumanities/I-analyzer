@@ -161,37 +161,20 @@ export const declarations: any[] = [
     VerifyEmailComponent,
 ];
 
-// AoT requires an exported function for factories
-export const resourceHandlerFactory = (http: HttpClient) =>
-    new ResourceHandlerHttpClient(http);
 
 export const imports: any[] = [
-    BrowserAnimationsModule,
-    BrowserModule,
     CorpusModule,
     DownloadModule,
     DialogModule,
     DocumentModule,
     FilterModule,
     HistoryModule,
-    HttpClientModule,
-    HttpClientXsrfModule.withOptions({
-        cookieName: 'csrftoken',
-        headerName: 'X-CSRFToken',
-    }),
     MenuModule,
-    ResourceModule.forRoot({
-        handler: {
-            provide: ResourceHandler,
-            useFactory: resourceHandlerFactory,
-            deps: [HttpClient],
-        },
-    }),
-    RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
     SharedModule,
     TableModule,
     VisualizationModule,
     WordModelsModule,
+    RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
 ];
 
 export const providers: any[] = [

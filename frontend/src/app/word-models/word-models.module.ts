@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from 'primeng/api';
 import { WordModelsComponent } from './word-models.component';
 import { VisualizationModule } from '../visualization/visualization.module';
 import { QueryFeedbackComponent } from './query-feedback/query-feedback.component';
@@ -7,8 +6,9 @@ import { RelatedWordsComponent } from './related-words/related-words.component';
 import { WordSimilarityComponent } from './word-similarity/word-similarity.component';
 import { SimilarityChartComponent } from './similarity-chart/similarity-chart.component';
 import { WordmodelsService } from '../services';
-import { RouterModule } from '@angular/router';
 import { TimeIntervalSliderComponent } from './similarity-chart/time-interval-slider/time-interval-slider.component';
+import { SharedModule } from '../shared/shared.module';
+import { CorpusModule } from '../corpus-header/corpus.module';
 
 
 @NgModule({
@@ -26,8 +26,8 @@ import { TimeIntervalSliderComponent } from './similarity-chart/time-interval-sl
         WordModelsComponent,
     ],
     imports: [
+        CorpusModule,
         SharedModule,
-        RouterModule,
         VisualizationModule,
     ]
 })

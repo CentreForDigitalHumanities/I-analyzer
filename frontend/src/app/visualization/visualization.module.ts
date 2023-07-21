@@ -12,7 +12,6 @@ import { ApiService, DialogService, SearchService, VisualizationService } from '
 import { WordcloudComponent } from './wordcloud/wordcloud.component';
 import { FreqtableComponent } from './freqtable.component';
 import { VisualizationComponent } from './visualization.component';
-import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { PaletteSelectComponent } from './visualization-footer/palette-select/palette-select.component';
 import { TableModule } from 'primeng/table';
@@ -45,7 +44,6 @@ import { ChartModule } from 'primeng/chart';
     imports: [
         ChartModule,
         SharedModule,
-        RouterModule,
         HttpClientModule,
         TableModule,
         ChipsModule,
