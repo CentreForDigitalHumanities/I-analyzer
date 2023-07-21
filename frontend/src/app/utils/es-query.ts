@@ -86,11 +86,13 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
             pre_tags: ['<span class="highlight">'],
             post_tags: ['</span>'],
             order: 'score',
-            fields: highlightFields.map(field => ({
-                [field.name]: { }
-            }))
+            fields: highlightFields.map( function(field) {
+                return field.displayType == "text_content" && field.positionsOffsets ? // add matched_fields for stemmed highlighting                    ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
+                ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
+                ({ [field.name]: { }
+            })})
         }
-    };
+    }
 };
 
 // conversion from elasticsearch query language -> query model
