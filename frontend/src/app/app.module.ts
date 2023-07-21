@@ -38,13 +38,10 @@ import { VerifyEmailComponent } from './login/verify-email/verify-email.componen
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { SharedModule } from './shared/shared.module';
-import { VisualizationModule } from './visualization/visualization.module';
-import { FilterModule } from './filter/filter.module';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { DocumentModule } from './document/document.module';
 import { WordModelsModule } from './word-models/word-models.module';
 import { HistoryModule } from './history/history.module';
-import { DownloadModule } from './download/download.module';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { LoginModule } from './login/login.module';
 import { SearchModule } from './search/search.module';
@@ -143,17 +140,13 @@ export const declarations: any[] = [
 export const imports: any[] = [
     CorpusModule,
     CorpusSelectionModule,
-    DownloadModule,
     DialogModule,
     DocumentModule,
-    FilterModule,
     HistoryModule,
     LoginModule,
     MenuModule,
     SearchModule,
     SharedModule,
-    TableModule,
-    VisualizationModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
 ];
