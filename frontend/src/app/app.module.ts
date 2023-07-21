@@ -18,7 +18,6 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { SearchComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
-import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { CorpusGuard } from './corpus.guard';
@@ -45,6 +44,7 @@ import { HistoryModule } from './history/history.module';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { LoginModule } from './login/login.module';
 import { SearchModule } from './search/search.module';
+import { ManualModule } from './manual/manual.module';
 
 
 export const appRoutes: Routes = [
@@ -126,12 +126,9 @@ export const appRoutes: Routes = [
 
 export const declarations: any[] = [
     AppComponent,
-    AboutComponent,
     DialogComponent,
     FooterComponent,
     HomeComponent,
-    ManualComponent,
-    ManualNavigationComponent,
     MenuComponent,
     NotificationsComponent,
 ];
@@ -144,6 +141,7 @@ export const imports: any[] = [
     DocumentModule,
     HistoryModule,
     LoginModule,
+    ManualModule,
     MenuModule,
     SearchModule,
     SharedModule,
