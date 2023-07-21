@@ -9,9 +9,8 @@ import { TableModule } from 'primeng/table';
 import { CookieService } from 'ngx-cookie-service';
 
 import {
-    ApiService, ApiRetryService, DownloadService,
-    ElasticSearchService, HighlightService, SearchService,
-    UserService, QueryService } from './services/index';
+    ApiService, ApiRetryService,
+    ElasticSearchService, HighlightService, } from './services/index';
 
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
@@ -154,7 +153,6 @@ export const providers: any[] = [
     ApiRetryService,
     ElasticSearchService,
     HighlightService,
-    UserService,
     CorpusGuard,
     LoggedOnGuard,
     TitleCasePipe,

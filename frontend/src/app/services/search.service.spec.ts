@@ -9,7 +9,6 @@ import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { QueryService } from './query.service';
 import { SearchService } from './search.service';
 import { SessionService } from './session.service';
-import { UserService } from './user.service';
 import { WordmodelsService } from './wordmodels.service';
 import { WordmodelsServiceMock } from '../../mock-data/wordmodels';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -30,7 +29,6 @@ describe('SearchService', () => {
                     useValue: new ElasticSearchServiceMock(),
                 },
                 QueryService,
-                UserService,
                 SessionService,
                 {
                     provide: WordmodelsService,
