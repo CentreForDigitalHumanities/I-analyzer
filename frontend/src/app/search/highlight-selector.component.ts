@@ -40,11 +40,11 @@ export class HighlightSelectorComponent implements OnChanges, OnDestroy {
     updateHighlightSize(instruction?: string) {
         let highlightSize = this.highlight;
         if (instruction == 'on' && highlightSize == 0) {
-            highlightSize = 100;
+            highlightSize = 200;
         } else if (instruction == 'more' && highlightSize < 800) {
-            highlightSize += 100;
-        } else if (instruction == 'less' && highlightSize > 120) {
-            highlightSize -= 100;
+            highlightSize += 200;
+        } else if (instruction == 'less' && highlightSize > 200) {
+            highlightSize -= 200;
         } else if (instruction == 'off') {
             highlightSize = 0;
         }
