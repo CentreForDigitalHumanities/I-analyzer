@@ -1,6 +1,6 @@
 <div class="contextbox">
     <div>
-        <h2 class="subtitle highlights-subtitle">Highlights:</h2>
+        <h2 class="subtitle highlights-subtitle">Toggle highlights:</h2>
     </div>
     <div class="column is-narrow">
         <div class="field has-addons">
@@ -16,15 +16,11 @@
                     </div>
                 </div>
             </div>
-            <!-- Buttons for switching between table and graphical representation -->
-            <div class="control" iaBalloon="Toggle preview and highlights" iaBalloonLength="medium" iaBalloonPosition="right">
-                <button class="button" [class.is-primary]="highlight!=0" [disabled]="queryModel.queryText==null||queryModel.queryText==''" (click)="updateHighlightSize('on')">
-                    ON
+            <div class="control">
+                <button class="button highlight-toggle" [class.is-active]="highlight!=0" [disabled]="queryModel.queryText==null||queryModel.queryText==''" (click)="updateHighlightSize(highlight!=0 ? 'off' : 'on')">
+                  {{ highlight!=0 ? 'ON' : 'OFF' }}
                 </button>
-                <button class="button" [class.is-primary]="highlight==0" (click)="updateHighlightSize('off')">
-                    OFF
-                </button>
-            </div>
+              </div>
         </div>
     </div>
 </div>

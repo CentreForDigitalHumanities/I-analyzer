@@ -2,8 +2,6 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/
 import { QueryModel } from '../models';
 
 
-const HIGHLIGHT = 100;
-
 @Component({
   selector: 'ia-highlight-selector',
   templateUrl: './highlight-selector.component.html',
@@ -11,16 +9,12 @@ const HIGHLIGHT = 100;
 })
 export class HighlightSelectorComponent implements OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
-    public highlight: number = HIGHLIGHT;
+    public highlight: number = 0;
 
     constructor() {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel) {
-            this.setStateFromQueryModel();
-            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
-        }
     }
 
     ngOnDestroy(): void {
@@ -31,26 +25,17 @@ export class HighlightSelectorComponent implements OnChanges, OnDestroy {
         this.highlight = this.queryModel.highlightSize;
     }
 
-
-    // updateHighlightSize(event) {
-    //     const highlightSize = event.target.value;
-    //     this.queryModel.setHighlight(highlightSize);
-    // }
-
     updateHighlightSize(instruction?: string) {
-        let highlightSize = this.highlight;
-        if (instruction == 'on' && highlightSize == 0) {
-            highlightSize = 200;
-        } else if (instruction == 'more' && highlightSize < 800) {
-            highlightSize += 200;
-        } else if (instruction == 'less' && highlightSize > 200) {
-            highlightSize -= 200;
+        if (instruction == 'on' && this.highlight == 0) {
+            this.highlight = 200;
+        } else if (instruction == 'more' && this.highlight < 800) {
+            this.highlight += 200;
+        } else if (instruction == 'less' && this.highlight > 200) {
+            this.highlight -= 200;
         } else if (instruction == 'off') {
-            highlightSize = 0;
+            this.highlight = 0;
         }
-        this.queryModel.setHighlight(highlightSize);
-
-        // this.setParams({ highlight: highlightSize !== 0 ? highlightSize : null });
+        this.queryModel.setHighlight(this.highlight);
     }
 
 }

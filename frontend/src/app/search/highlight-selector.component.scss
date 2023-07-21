@@ -11,3 +11,13 @@
 .highlights-subtitle {
     text-align: right;
 }
+
+.field.has-addons {
+    justify-content: flex-end;
+
+}
+
+.field.has-addons .control:last-child .button {
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+}
