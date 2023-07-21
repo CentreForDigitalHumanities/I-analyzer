@@ -48,6 +48,7 @@ import { WordModelsModule } from './word-models/word-models.module';
 import { HistoryModule } from './history/history.module';
 import { DownloadModule } from './download/download.module';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
+import { LoginModule } from './login/login.module';
 
 
 export const appRoutes: Routes = [
@@ -134,20 +135,14 @@ export const declarations: any[] = [
     FooterComponent,
     HomeComponent,
     HighlightSelectorComponent,
-    LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
     NotificationsComponent,
     PaginationComponent,
-    PrivacyComponent,
-    RegistrationComponent,
-    ResetPasswordComponent,
-    RequestResetComponent,
     SearchComponent,
     SearchResultsComponent,
     SearchSortingComponent,
-    VerifyEmailComponent,
 ];
 
 
@@ -159,6 +154,7 @@ export const imports: any[] = [
     DocumentModule,
     FilterModule,
     HistoryModule,
+    LoginModule,
     MenuModule,
     SharedModule,
     TableModule,
