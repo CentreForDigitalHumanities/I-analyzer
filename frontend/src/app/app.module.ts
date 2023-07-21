@@ -21,7 +21,6 @@ import {
 
 import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
-import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
 import { SearchComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
@@ -45,8 +44,6 @@ import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
-import { CorpusSelectorComponent } from './corpus-selection/corpus-selector/corpus-selector.component';
-import { CorpusFilterComponent } from './corpus-selection/corpus-filter/corpus-filter.component';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { SharedModule } from './shared/shared.module';
 import { VisualizationModule } from './visualization/visualization.module';
@@ -56,6 +53,7 @@ import { DocumentModule } from './document/document.module';
 import { WordModelsModule } from './word-models/word-models.module';
 import { HistoryModule } from './history/history.module';
 import { DownloadModule } from './download/download.module';
+import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 
 
 export const appRoutes: Routes = [
@@ -138,9 +136,6 @@ export const appRoutes: Routes = [
 export const declarations: any[] = [
     AppComponent,
     AboutComponent,
-    CorpusFilterComponent,
-    CorpusSelectionComponent,
-    CorpusSelectorComponent,
     DialogComponent,
     FooterComponent,
     HomeComponent,
@@ -164,6 +159,7 @@ export const declarations: any[] = [
 
 export const imports: any[] = [
     CorpusModule,
+    CorpusSelectionModule,
     DownloadModule,
     DialogModule,
     DocumentModule,
