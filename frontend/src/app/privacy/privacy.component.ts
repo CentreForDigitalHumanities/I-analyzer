@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
-import { DialogService, UserService } from '../services/index';
+import { DialogService } from '../services/index';
 
 @Component({
     selector: 'ia-privacy',
