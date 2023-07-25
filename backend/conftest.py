@@ -46,10 +46,6 @@ def admin_user(django_user_model, admin_credentials):
         username=admin_credentials['username'],
         password=admin_credentials['password'],
         email=admin_credentials['email'])
-    EmailAddress.objects.create(user=user,
-                                email=user.email,
-                                verified=True,
-                                primary=True)
     return user
 
 
