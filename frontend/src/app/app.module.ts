@@ -44,6 +44,7 @@ import { LoginModule } from './login/login.module';
 import { SearchModule } from './search/search.module';
 import { ManualModule } from './manual/manual.module';
 import { SettingsComponent } from './settings/settings.component';
+import { SettingsModule } from './settings/settings.module';
 
 
 export const appRoutes: Routes = [
@@ -148,6 +149,7 @@ export const imports: any[] = [
     ManualModule,
     MenuModule,
     SearchModule,
+    SettingsModule,
     SharedModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
