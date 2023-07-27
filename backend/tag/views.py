@@ -30,7 +30,7 @@ class TagViewSet(ModelViewSet):
     queryset = Tag.objects.all()
 
     def perform_create(self, serializer):
-        '''Overwrites ModelViewSet.perfor0m_create
+        '''Overwrites ModelViewSet.perform_create
         Auto-assigns the authenticated user on creation'''
         return serializer.save(user=self.request.user)
 
