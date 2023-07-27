@@ -16,7 +16,7 @@ def check_corpus_name(request: HttpRequest):
     Returns the name of the corpus specified in the request query parameters,
     if there is one.
 
-    Raises 404 if this is not a real corpus.
+    Raises 404 if this corpus does not exist.
     '''
 
     corpus_name = request.query_params.get('corpus', None)
