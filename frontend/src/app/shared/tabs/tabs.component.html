@@ -1,1 +1,12 @@
-<p>tabs works!</p>
+<div class="tabs is-boxed">
+    <ul role="tablist" aria-label="select content to display">
+        <li *ngFor="let tab of tabs" [class.is-active]="activeTab === tab.id">
+            <a id="tab-{{tab.id}}" role="tab" tabindex="0"
+                [attr.aria-selected]="activeTab === tab.id" [attr.aria-controls]="tab.id"
+                (click)="selectTab(tab)" (keydown.enter)=selectTab(tab)>
+                <span class="icon" *ngIf="tab.icon"><fa-icon [icon]="tab.icon" aria-hidden="true"></fa-icon></span>
+                <span>{{tab.label}}</span>
+            </a>
+        </li>
+    </ul>
+</div>

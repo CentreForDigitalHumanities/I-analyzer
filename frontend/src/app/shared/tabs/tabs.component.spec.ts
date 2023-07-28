@@ -14,6 +14,13 @@ describe('TabsComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(TabsComponent);
         component = fixture.componentInstance;
+        component.tabs = [{
+            label: 'First tab',
+            id: 1
+        }, {
+            label: 'Second tab',
+            id: 2
+        }];
         fixture.detectChanges();
     });
 

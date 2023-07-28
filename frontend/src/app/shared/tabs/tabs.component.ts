@@ -14,6 +14,10 @@ export class TabsComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
-        this.activeTab = this.tabs[0]?.id;
+        this.activeTab = this.tabs ? this.tabs[0].id : undefined;
+    }
+
+    selectTab(tab: Tab) {
+        this.activeTab = tab.id;
     }
 }
