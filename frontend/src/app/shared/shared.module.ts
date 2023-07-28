@@ -16,6 +16,7 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { ResourceHandler } from '@ngx-resource/core';
 import { RouterModule } from '@angular/router';
 import { TabsComponent } from './tabs/tabs.component';
+import { TabPanelComponent } from './tabs/tab-panel/tab-panel.component';
 
 // AoT requires an exported function for factories
 export const resourceHandlerFactory = (http: HttpClient) =>
@@ -32,6 +33,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         HighlightPipe,
         ScrollToDirective,
         TabsComponent,
+        TabPanelComponent,
     ],
     exports: [
         // shared components
