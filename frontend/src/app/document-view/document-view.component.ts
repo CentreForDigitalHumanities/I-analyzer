@@ -2,12 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
-
-interface Tab {
-    label: string;
-    type: 'text' | 'scan';
-    value: string;
-};
+import { Tab } from '../models/ui';
 
 @Component({
     selector: 'ia-document-view',
@@ -29,7 +24,7 @@ export class DocumentViewComponent implements OnChanges {
     public documentTabIndex: number;
 
     tabs: Tab[];
-    activeTab: string;
+    activeTab: string | number;
 
     tabIcons = {
         text: faBook,
@@ -58,11 +53,11 @@ export class DocumentViewComponent implements OnChanges {
 
     ngOnChanges() {
         this.tabs = this.getTabs();
-        this.activeTab = this.tabs[0].value;
+        this.activeTab = this.tabs[0].id;
     }
 
     selectTab(tab: Tab) {
-        this.activeTab = tab.value;
+        this.activeTab = tab.id;
     }
 
     isUrlField(field: CorpusField) {
@@ -72,15 +67,15 @@ export class DocumentViewComponent implements OnChanges {
     getTabs(): Tab[] {
         const fieldTabs: Tab[] = this.contentFields.map(field => ({
             label: field.displayName,
-            type: 'text',
-            value: field.name,
+            icon: this.tabIcons.text,
+            id: field.name,
         }));
 
         if (this.showScanTab) {
             const scanTab: Tab = {
                 label: 'Scan',
-                type: 'scan',
-                value: 'scan'
+                icon: this.tabIcons.scan,
+                id: 'scan'
             };
 
             return fieldTabs.concat(scanTab);

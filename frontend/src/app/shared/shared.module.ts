@@ -15,6 +15,7 @@ import { HttpClient, HttpClientModule, HttpClientXsrfModule } from '@angular/com
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { ResourceHandler } from '@ngx-resource/core';
 import { RouterModule } from '@angular/router';
+import { TabsComponent } from './tabs/tabs.component';
 
 // AoT requires an exported function for factories
 export const resourceHandlerFactory = (http: HttpClient) =>
@@ -30,6 +31,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         BalloonDirective,
         HighlightPipe,
         ScrollToDirective,
+        TabsComponent,
     ],
     exports: [
         // shared components
@@ -37,6 +39,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,
+        TabsComponent,
 
         // shared modules
         BrowserAnimationsModule,
