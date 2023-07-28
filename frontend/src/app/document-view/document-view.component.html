@@ -27,24 +27,20 @@
         <div class="box">
             <div class="tabs is-boxed">
                 <ul>
-                    <li [ngClass]="{'is-active': tabIndex==0}">
-                        <a (click)="changeTabIndex(0)">
-                            <span class="icon is-small"><i class="fa fa-book" aria-hidden="true"></i></span>
-                        </a>
-                    </li>
-                    <li [ngClass]="{'is-active': tabIndex==1}">
-                        <a (click)="changeTabIndex(1)">
-                            <span class="icon is-small"><i class="fa fa-image" aria-hidden="true"></i></span>
+                    <li *ngFor="let tab of tabs" [class.is-active]="activeTab === tab.value">
+                        <a (click)="selectTab(tab)">
+                            <span class="icon"><fa-icon [icon]="tabIcons[tab.type]" aria-hidden="true"></fa-icon></span>
+                            <span>{{tab.label}}</span>
                         </a>
                     </li>
                 </ul>
             </div>
-            <div *ngIf="tabIndex==0">
-                <ng-container *ngFor="let field of contentFields">
+            <ng-container *ngFor="let field of contentFields">
+                <ng-container *ngIf="activeTab === field.name">
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
-            </div>
-            <div *ngIf="tabIndex==1">
+            </ng-container>
+            <div *ngIf="activeTab === 'scan'">
                 <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
             </div>
         </div>
