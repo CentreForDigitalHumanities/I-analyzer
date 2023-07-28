@@ -26,9 +26,11 @@
     <div class="column is-7">
         <div class="box">
             <div class="tabs is-boxed">
-                <ul>
+                <ul role="tablist" aria-label="select content to display">
                     <li *ngFor="let tab of tabs" [class.is-active]="activeTab === tab.value">
-                        <a (click)="selectTab(tab)">
+                        <a id="tab-{{tab.value}}" role="tab" tabindex="0"
+                            [attr.aria-selected]="activeTab === tab.value" [attr.aria-controls]="tab.value"
+                            (click)="selectTab(tab)" (keydown.enter)=selectTab(tab)>
                             <span class="icon"><fa-icon [icon]="tabIcons[tab.type]" aria-hidden="true"></fa-icon></span>
                             <span>{{tab.label}}</span>
                         </a>
@@ -36,13 +38,19 @@
                 </ul>
             </div>
             <ng-container *ngFor="let field of contentFields">
-                <ng-container *ngIf="activeTab === field.name">
-                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
-                </ng-container>
+                <div id="field.name" role="tabpanel"
+                    [hidden]="activeTab !== field.name"
+                    [attr.aria-labelledby]="'tab-' + field.name">
+                    <div class="content" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+                </div>
             </ng-container>
-            <div *ngIf="activeTab === 'scan'">
-                <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
-            </div>
+            <ng-container *ngIf="showScanTab">
+                <div id="scan" role="tabpanel"
+                    [hidden]="activeTab !== 'scan'"
+                    aria-labelledby="tab-scan">
+                    <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
+                </div>
+            </ng-container>
         </div>
     </div>
 </div>
