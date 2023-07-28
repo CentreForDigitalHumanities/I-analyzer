@@ -146,14 +146,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
+    @property
     def scan_image_type(self):
         '''
         Filetype of scanned documents (images)
         '''
-        if self.scan_image_type is None:
-            return None
-        else:
-            return self.scan_image_type
+        return None
 
     @property
     def word_model_path(self):
