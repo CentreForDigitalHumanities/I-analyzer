@@ -1,9 +1,12 @@
 <div class="tabs is-boxed">
     <ul role="tablist" aria-label="select content to display">
         <li *ngFor="let tab of tabs" [class.is-active]="activeTab === tab.id">
-            <a id="tab-{{tab.id}}" role="tab" tabindex="0"
-                [attr.aria-selected]="activeTab === tab.id" [attr.aria-controls]="tab.id"
-                (click)="selectTab(tab)" (keydown.enter)=selectTab(tab)>
+            <a #tabLink id="{{tabLinkId(tab.id)}}" role="tab"
+                [attr.tabindex]="activeTab === tab.id ? 0 : -1"
+                [attr.aria-selected]="activeTab === tab.id"
+                [attr.aria-controls]="tab.id"
+                (click)="selectTab(tab)"
+                (keydown.ArrowLeft)="cycleTab($event)" (keydown.ArrowRight)="cycleTab($event)">
                 <span class="icon" *ngIf="tab.icon"><fa-icon [icon]="tab.icon" aria-hidden="true"></fa-icon></span>
                 <span>{{tab.label}}</span>
             </a>
