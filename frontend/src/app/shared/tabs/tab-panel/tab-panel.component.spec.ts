@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TabPanelComponent } from './tab-panel.component';
-import { commonTestBed } from 'src/app/common-test-bed';
+import { commonTestBed } from '../../../common-test-bed';
 
 describe('TabPanelComponent', () => {
     let component: TabPanelComponent;

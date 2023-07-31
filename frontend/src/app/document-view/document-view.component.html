@@ -25,36 +25,14 @@
 
     <div class="column is-7">
         <div class="box">
-            <ia-tabs [tabs]="tabs"></ia-tabs>
-
-            <hr>
-
-            <div class="tabs is-boxed">
-                <ul role="tablist" aria-label="select content to display">
-                    <li *ngFor="let tab of tabs" [class.is-active]="activeTab === tab.id">
-                        <a id="tab-{{tab.id}}" role="tab" tabindex="0"
-                            [attr.aria-selected]="activeTab === tab.id" [attr.aria-controls]="tab.id"
-                            (click)="selectTab(tab)" (keydown.enter)=selectTab(tab)>
-                            <span class="icon"><fa-icon [icon]="tab.icon" aria-hidden="true"></fa-icon></span>
-                            <span>{{tab.label}}</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <ng-container *ngFor="let field of contentFields">
-                <div id="field.name" role="tabpanel"
-                    [hidden]="activeTab !== field.name"
-                    [attr.aria-labelledby]="'tab-' + field.name">
+            <ia-tabs>
+                <ia-tab-panel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="tabIcons.text">
                     <div class="content" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
-                </div>
-            </ng-container>
-            <ng-container *ngIf="showScanTab">
-                <div id="scan" role="tabpanel"
-                    [hidden]="activeTab !== 'scan'"
-                    aria-labelledby="tab-scan">
+                </ia-tab-panel>
+                <ia-tab-panel id="scan" *ngIf="showScanTab">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
-                </div>
-            </ng-container>
+                </ia-tab-panel>
+            </ia-tabs>
         </div>
     </div>
 </div>

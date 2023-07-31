@@ -42,6 +42,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         ErrorComponent,
         ScrollToDirective,
         TabsComponent,
+        TabPanelComponent,
 
         // shared modules
         BrowserAnimationsModule,
