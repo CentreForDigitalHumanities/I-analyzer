@@ -1,4 +1,7 @@
-import { AfterContentInit, Component, ContentChildren, ElementRef, Input, QueryList, ViewChildren } from '@angular/core';
+import {
+    AfterContentInit, Component, ContentChildren, ElementRef, EventEmitter, Input, Output,
+    QueryList, ViewChildren
+} from '@angular/core';
 import { Tab } from '../../models/ui';
 import * as _ from 'lodash';
 import { TabPanelDirective } from './tab-panel.directive';
@@ -13,6 +16,8 @@ export class TabsComponent implements AfterContentInit {
     @ContentChildren(TabPanelDirective) tabPanels: QueryList<TabPanelDirective>;
 
     @Input() activeTab: string | number;
+    @Output() tabChange = new EventEmitter<string | number>();
+
     tabs: Tab[];
 
     constructor() { }
@@ -29,6 +34,7 @@ export class TabsComponent implements AfterContentInit {
 
     selectTab(tab: Tab) {
         this.activeTab = tab.id;
+        this.tabChange.emit(tab.id);
     }
 
     cycleTab(event: KeyboardEvent) {
