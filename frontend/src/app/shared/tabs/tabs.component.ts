@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, ContentChildren, ElementRef, Input, QueryList, ViewChildren } from '@angular/core';
 import { Tab } from '../../models/ui';
-import { TabPanelComponent } from './tab-panel/tab-panel.component';
 import * as _ from 'lodash';
+import { TabPanelDirective } from './tab-panel.directive';
 
 @Component({
     selector: 'ia-tabs',
@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 })
 export class TabsComponent implements AfterContentInit {
     @ViewChildren('tabLink') tabLinks: QueryList<ElementRef>;
-    @ContentChildren(TabPanelComponent) tabPanels: QueryList<TabPanelComponent>;
+    @ContentChildren(TabPanelDirective) tabPanels: QueryList<TabPanelDirective>;
 
     @Input() activeTab: string | number;
     tabs: Tab[];
@@ -25,15 +25,10 @@ export class TabsComponent implements AfterContentInit {
         }));
 
         this.activeTab = this.activeTab || this.tabPanels.first?.id;
-
-        this.tabPanels.find(tab => tab.id === this.activeTab)?.init(true);
     }
 
     selectTab(tab: Tab) {
         this.activeTab = tab.id;
-        this.tabPanels?.forEach(tabPanel =>
-            tabPanel.active = tabPanel.id === tab.id
-        );
     }
 
     cycleTab(event: KeyboardEvent) {

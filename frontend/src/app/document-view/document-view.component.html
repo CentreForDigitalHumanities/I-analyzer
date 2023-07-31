@@ -26,12 +26,12 @@
     <div class="column is-7">
         <div class="box">
             <ia-tabs>
-                <ia-tab-panel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="tabIcons.text">
+                <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="tabIcons.text">
                     <div class="content" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
-                </ia-tab-panel>
-                <ia-tab-panel id="scan" *ngIf="showScanTab">
+                </ng-template>
+                <ng-template iaTabPanel id="scan" *ngIf="showScanTab">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
-                </ia-tab-panel>
+                </ng-template>
             </ia-tabs>
         </div>
     </div>

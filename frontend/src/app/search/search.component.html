@@ -54,16 +54,16 @@
             <!-- search results, on right -->
             <div class="column is-9" *ngIf="queryModel">
                 <ia-tabs [activeTab]="showVisualization ? 'visualizations' : 'search-results'">
-                    <ia-tab-panel id="search-results" title="Search results" [icon]="tabIcons.searchResults">
+                    <ng-template iaTabPanel id="search-results" title="Search results" [icon]="tabIcons.searchResults">
                         <ia-search-results #searchResults [corpus]="corpus" [queryModel]="queryModel" [user]="user"
                             (searched)="onSearched($event)" role="tabpanel">
                             <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
                             <ia-highlight-selector [queryModel]="queryModel"></ia-highlight-selector>
                         </ia-search-results>
-                    </ia-tab-panel>
-                    <ia-tab-panel id="visualizations" title="Visualizations" [icon]="tabIcons.visualizations">
+                    </ng-template>
+                    <ng-template iaTabPanel id="visualizations" title="Visualizations" [icon]="tabIcons.visualizations">
                         <ia-visualization #visualization [corpus]="corpus" [queryModel]="queryModel" role="tabpanel"></ia-visualization>
-                    </ia-tab-panel>
+                    </ng-template>
                 </ia-tabs>
             </div>
         </div>
