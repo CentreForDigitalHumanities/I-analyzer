@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class SessionService {
     private static sessionExpiredSubject = new Subject();
     public expired = SessionService.sessionExpiredSubject.asObservable();

@@ -1,8 +1,12 @@
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 /**
  * Service for sending notifications to the user
  */
+@Injectable({
+    providedIn: 'root'
+})
 export class NotificationService {
     private subject = new Subject<Notification>();
 
