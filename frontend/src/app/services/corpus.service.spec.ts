@@ -4,8 +4,6 @@ import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
 import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
-import { UserService } from './user.service';
-import { UserServiceMock } from '../../mock-data/user';
 import { SessionService } from './session.service';
 
 import { RouterTestingModule } from '@angular/router/testing';
@@ -14,7 +12,6 @@ import * as _ from 'lodash';
 describe('CorpusService', () => {
     let service: CorpusService;
     const apiServiceMock = new ApiServiceMock();
-    const userServiceMock = new UserServiceMock();
 
 
     beforeEach(() => {
@@ -23,7 +20,6 @@ describe('CorpusService', () => {
                 ApiRetryService,
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
-                { provide: UserService, useValue: userServiceMock },
                 SessionService,
             ],
             imports: [RouterTestingModule],
