@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ContentChildren, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, ElementRef, Input, QueryList, ViewChildren } from '@angular/core';
 import { Tab } from '../../models/ui';
 import { TabPanelComponent } from './tab-panel/tab-panel.component';
 import * as _ from 'lodash';
@@ -12,7 +12,7 @@ export class TabsComponent implements AfterContentInit {
     @ViewChildren('tabLink') tabLinks: QueryList<ElementRef>;
     @ContentChildren(TabPanelComponent) tabPanels: QueryList<TabPanelComponent>;
 
-    activeTab: string | number;
+    @Input() activeTab: string | number;
     tabs: Tab[];
 
     constructor() { }
@@ -24,8 +24,9 @@ export class TabsComponent implements AfterContentInit {
             icon: tabPanel.icon,
         }));
 
-        this.activeTab = this.tabPanels.first?.id;
-        this.tabPanels.first?.init(true);
+        this.activeTab = this.activeTab || this.tabPanels.first?.id;
+
+        this.tabPanels.find(tab => tab.id === this.activeTab)?.init(true);
     }
 
     selectTab(tab: Tab) {
