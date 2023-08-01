@@ -24,7 +24,7 @@ class Tag(models.Model):
 
     @property
     def count(self):
-        return len(self.tagged_docs.all())
+        return self.tagged_docs.count()
 
 class TaggedDocument(models.Model):
     doc_id = models.CharField(max_length=512)
