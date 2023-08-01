@@ -2,9 +2,16 @@ import {
     AfterContentInit, Component, ContentChildren, ElementRef, EventEmitter, Input, Output,
     QueryList, ViewChildren
 } from '@angular/core';
-import { Tab } from '../../models/ui';
 import * as _ from 'lodash';
 import { TabPanelDirective } from './tab-panel.directive';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
+interface Tab {
+    label: string; // display name
+    id: string | number;
+    icon?: IconDefinition;
+};
+
 
 @Component({
     selector: 'ia-tabs',
@@ -48,7 +55,8 @@ export class TabsComponent implements AfterContentInit {
         };
 
         const shift = keyBindings[event.key];
-        const newIndex = this.modulo(tabIndex + shift, this.tabs.length);
+        const modulo = (n: number, d: number): number => ((n % d) + d) % d;
+        const newIndex = modulo(tabIndex + shift, this.tabs.length);
         const newTab = this.tabs[newIndex];
         this.setTabLinkFocus(newTab.id);
         this.selectTab(newTab);
@@ -67,9 +75,5 @@ export class TabsComponent implements AfterContentInit {
 
     tabLinkId(tabId: string | number): string {
         return `tab-${tabId}`;
-    }
-
-    private modulo(n: number, d: number): number {
-        return ((n % d) + d) % d;
     }
 }
