@@ -1,20 +1,14 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
-
-interface Tab {
-    label: string;
-    type: 'text' | 'scan';
-    value: string;
-};
 
 @Component({
     selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
-export class DocumentViewComponent implements OnChanges {
+export class DocumentViewComponent {
 
     @Input()
     public document: FoundDocument;
@@ -28,8 +22,6 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public documentTabIndex: number;
 
-    tabs: Tab[];
-    activeTab: string;
 
     tabIcons = {
         text: faBook,
@@ -56,37 +48,7 @@ export class DocumentViewComponent implements OnChanges {
         return !!this.corpus.scan_image_type;
     }
 
-    ngOnChanges() {
-        this.tabs = this.getTabs();
-        this.activeTab = this.tabs[0].value;
-    }
-
-    selectTab(tab: Tab) {
-        this.activeTab = tab.value;
-    }
-
     isUrlField(field: CorpusField) {
         return field.name === 'url' || field.name.startsWith('url_');
     }
-
-    getTabs(): Tab[] {
-        const fieldTabs: Tab[] = this.contentFields.map(field => ({
-            label: field.displayName,
-            type: 'text',
-            value: field.name,
-        }));
-
-        if (this.showScanTab) {
-            const scanTab: Tab = {
-                label: 'Scan',
-                type: 'scan',
-                value: 'scan'
-            };
-
-            return fieldTabs.concat(scanTab);
-        } else {
-            return fieldTabs;
-        }
-    }
-
 }
