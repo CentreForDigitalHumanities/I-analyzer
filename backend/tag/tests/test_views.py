@@ -1,5 +1,5 @@
 from rest_framework import status
-from tag.models import Tag
+from tag.models import Tag, TaggedDocument
 
 
 def n_tags():
@@ -86,16 +86,46 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
         content_type='application/json'
     )
 
-    response = patch_request([
-        { 'op': 'add', 'value': auth_user_tag.id }
-    ])
+    response = patch_request(
+        { 'tags': [auth_user_tag.id] }
+    )
 
     assert status.is_success(response.status_code)
     assert auth_user_tag.count == 1
 
-    response = patch_request([
-        { 'op': 'remove', 'value': auth_user_tag.id }
-    ])
+    response = patch_request({
+        'tags': []
+    })
 
     assert status.is_success(response.status_code)
     assert auth_user_tag.count == 0
+
+def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, mock_corpus, mock_corpus_obj, auth_user_corpus_acces):
+    '''
+    Verify that patching tags does not affect the tags of other users
+    '''
+
+    document = 'some-document'
+    route = f'/api/tag/document_tags/{mock_corpus}/{document}'
+    kwargs = {'content_type': 'application/json'}
+
+    doc = TaggedDocument.objects.create(corpus=mock_corpus_obj, doc_id=document)
+    doc.tags.add(admin_user_tag)
+
+    auth_client.patch(
+        route,
+        {'tags': [auth_user_tag.id]},
+        **kwargs
+    )
+
+    assert auth_user_tag.count == 1
+    assert admin_user_tag.count == 1
+
+    auth_client.patch(
+        route,
+        {'tags': []},
+        **kwargs
+    )
+
+    assert auth_user_tag.count == 0
+    assert admin_user_tag.count == 1

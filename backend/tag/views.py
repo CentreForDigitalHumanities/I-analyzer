@@ -77,28 +77,44 @@ class DocumentTagsView(APIView):
 
     def patch(self, request, *args, **kwargs):
         '''
-        Add or remove tags for a document
-
-        The payload should specify a list of operations, like so:
-
-        ```
-        [
-            {"op": "add", "value": 47},
-            {"op": "remove": "value": 123},
-            {"op": "add", "value": 12},
-        ]
-        ```
+        Edit a document's tags.
         '''
 
-        doc = self._get_document(**kwargs) or self._create_document(**kwargs)
+        corpus = Corpus.objects.get(name=kwargs.get('corpus'))
+        doc_id = kwargs.get('doc_id')
+        doc, _ = TaggedDocument.objects.get_or_create(
+            corpus=corpus,
+            doc_id=doc_id
+        )
 
-        for op in request.data:
-            tag_id = op.get('value')
-            tag = self._get_tag(request, tag_id)
-            action = self._get_patch_action(op, doc)
-            action(tag)
+        # check that the request is not patching readonly properties
+        readonly = {'corpus', 'doc_id'}
+        if set.intersection(readonly, request.data.keys()):
+            raise PermissionDenied('Patching the corpus or ID of documents is not allowed')
 
-        return Response('done')
+        user = request.user
+
+        # verify tags
+        tag_ids = request.data.get('tags')
+        for tag_id in tag_ids:
+            self._verify_tag(request, tag_id)
+
+        # update tags for the user
+        current_tags = doc.tags.filter(user = request.user)
+        new_tags = Tag.objects.filter(id__in=tag_ids, user=request.user)
+
+        remove = current_tags.difference(new_tags)
+        add = new_tags.difference(current_tags)
+
+        for tag in remove:
+            doc.tags.remove(tag)
+
+        for tag in add:
+            doc.tags.add(tag)
+
+        result = doc.tags.filter(user=request.user)
+        serializer = TagSerializer(result, many=True)
+        return Response(serializer.data)
 
     def _get_document(self, **kwargs):
         match = TaggedDocument.objects.filter(
@@ -109,13 +125,7 @@ class DocumentTagsView(APIView):
         if match.exists():
             return match.first()
 
-    def _create_document(self, **kwargs):
-        corpus_name = kwargs.get('corpus') # note: corpus name is verified in permissions
-        doc_id = kwargs.get('doc_id')
-        corpus = Corpus.objects.get(name=corpus_name)
-        return TaggedDocument.objects.create(corpus=corpus, doc_id=doc_id)
-
-    def _get_tag(self, request, tag_id):
+    def _verify_tag(self, request, tag_id):
         if not Tag.objects.filter(id=tag_id).exists():
             raise NotFound(f'Tag {tag_id} does not exist')
 
@@ -123,17 +133,3 @@ class DocumentTagsView(APIView):
 
         if not tag.user == request.user:
             raise PermissionDenied(f'You do not have permission to modify tag {tag_id}')
-
-        return tag
-
-    def _get_patch_action(self, op, doc: TaggedDocument):
-        actions = {
-            'add': doc.tags.add,
-            'remove': doc.tags.remove
-        }
-
-        action = actions.get(op.get('op', None), None)
-        if not action:
-            raise ParseError('could not parse action')
-
-        return action
