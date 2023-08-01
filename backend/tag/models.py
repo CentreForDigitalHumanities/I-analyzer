@@ -24,7 +24,7 @@ class Tag(models.Model):
 
     @property
     def count(self):
-        return len(self.tagged_docs.all())
+        return self.tagged_docs.count()
 
 
     def __str__(self):
