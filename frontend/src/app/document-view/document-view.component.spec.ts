@@ -44,4 +44,12 @@ describe('DocumentViewComponent', () => {
         const element = debug[0].nativeElement;
         expect(element.textContent).toBe('Hello world!');
     });
+
+    it('should list tabs', () => {
+        component.ngOnChanges();
+
+        expect(component.tabs.length).toBe(2);
+        expect(component.tabs[0].value).toBe('speech');
+        expect(component.tabs[1].value).toBe('scan');
+    });
 });
