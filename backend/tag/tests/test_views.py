@@ -1,5 +1,7 @@
 from rest_framework import status
 from tag.models import Tag, TaggedDocument
+from visualization.query import MATCH_ALL
+from es.search import hits
 
 
 def n_tags():
@@ -132,3 +134,25 @@ def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, mo
 
     assert auth_user_tag.count == 0
     assert admin_user_tag.count == 1
+
+def search_with_tag(client, corpus_name, tag_id):
+    route = f'/api/es/{corpus_name}/_search'
+    query = MATCH_ALL
+    tag_data = {'tags': [tag_id]}
+    data = {**query, **tag_data}
+    return client.post(route, data, content_type = 'application/json')
+
+def test_search_view_with_tag(auth_client, mock_corpus, auth_user_tag, tagged_documents, index_mock_corpus):
+    response = search_with_tag(auth_client, mock_corpus, auth_user_tag.id)
+    assert status.is_success(response.status_code)
+    assert len(hits(response.data)) == auth_user_tag.count
+
+def test_search_view_unauthorized_tag(auth_client, mock_corpus, admin_user_tag, auth_user_corpus_acces):
+    response = search_with_tag(auth_client, mock_corpus, admin_user_tag.id)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+def test_search_view_nonexistent_tag(auth_client, mock_corpus, auth_user_corpus_acces):
+    not_a_real_tag = 12345678
+    response = search_with_tag(auth_client, mock_corpus, not_a_real_tag)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
