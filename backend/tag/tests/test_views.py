@@ -76,6 +76,9 @@ def test_get_document_tags(auth_user, auth_client, auth_user_tag, tagged_documen
     response = auth_client.get(f'/api/tag/document_tags/{mock_corpus}/{doc_id}')
     assert status.is_success(response.status_code)
 
+    response = auth_client.get(f'/api/tag/document_tags/{mock_corpus}/not-tagged')
+    assert status.is_success(response.status_code)
+
 def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_corpus_acces):
     assert auth_user_tag.count == 0
 
@@ -91,7 +94,7 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
     )
 
     assert status.is_success(response.status_code)
-    assert auth_user_tag.count == 1
+    assert len(response.data['tags']) == auth_user_tag.count == 1
 
     response = patch_request({
         'tags': []

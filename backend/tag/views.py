@@ -68,12 +68,14 @@ class DocumentTagsView(APIView):
         doc = self._get_document(**kwargs)
 
         if doc:
-            tags = doc.tags.filter(user=request.user)
+            data = self._serialize(request, doc)
         else:
-            tags = []
+            data = {
+                **kwargs,
+                'tags': [],
+            }
 
-        serializer = TagSerializer(tags, many=True)
-        return Response(serializer.data)
+        return Response(data)
 
     def patch(self, request, *args, **kwargs):
         '''
@@ -92,8 +94,6 @@ class DocumentTagsView(APIView):
         if set.intersection(readonly, request.data.keys()):
             raise PermissionDenied('Patching the corpus or ID of documents is not allowed')
 
-        user = request.user
-
         # verify tags
         tag_ids = request.data.get('tags')
         for tag_id in tag_ids:
@@ -103,18 +103,13 @@ class DocumentTagsView(APIView):
         current_tags = doc.tags.filter(user = request.user)
         new_tags = Tag.objects.filter(id__in=tag_ids, user=request.user)
 
-        remove = current_tags.difference(new_tags)
-        add = new_tags.difference(current_tags)
-
-        for tag in remove:
+        for tag in current_tags.difference(new_tags):
             doc.tags.remove(tag)
 
-        for tag in add:
+        for tag in new_tags.difference(current_tags):
             doc.tags.add(tag)
 
-        result = doc.tags.filter(user=request.user)
-        serializer = TagSerializer(result, many=True)
-        return Response(serializer.data)
+        return Response(self._serialize(request, doc))
 
     def _get_document(self, **kwargs):
         match = TaggedDocument.objects.filter(
@@ -133,3 +128,12 @@ class DocumentTagsView(APIView):
 
         if not tag.user == request.user:
             raise PermissionDenied(f'You do not have permission to modify tag {tag_id}')
+
+    def _serialize(self, request, doc: TaggedDocument):
+        tags = doc.tags.filter(user=request.user)
+        serializer = TagSerializer(tags, many=True)
+        return {
+            'corpus': doc.corpus.name,
+            'id': doc.doc_id,
+            'tags': serializer.data
+        }
