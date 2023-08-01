@@ -71,16 +71,9 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
-    addTag(tagId: number): void {
-        this.tagService.addDocumentTag(this, tagId).pipe(
-            tap(this.fetchTags.bind(this))
-        ).subscribe();
-    }
-
-    removeTag(tag: Tag): void {
-        this.tagService.removeDocumentTag(this, tag).pipe(
-            tap(this.fetchTags.bind(this))
-        ).subscribe();
+    setTags(tagIds: number[]): Observable<Tag[]> {
+        this.tags$ = this.tagService.setDocumentTags(this, tagIds);
+        return this.tags$;
     }
 
     private fetchTags(): void {

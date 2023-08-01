@@ -29,13 +29,9 @@ export class TagServiceMock {
         }).pipe(tap(this.fetch.bind(this)));
     }
 
-    addDocumentTag(document, tag): Observable<any> {
-        return of(true);
-    }
-
-    removeDocumentTag(document, tag): Observable<any> {
-        return of(true);
-    }
+    setDocumentTags(document: FoundDocument, tags: Tag[]): Observable<Tag[]> {
+        return of(tags);
+    };
 
     private fetch() {
         this.tags$ = of(mockTags);

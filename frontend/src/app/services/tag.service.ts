@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Corpus, FoundDocument } from '../models';
+import { FoundDocument } from '../models';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tag } from '../models';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
-type TaggingActions = {
-    op: 'add'|'remove';
-    value: number;
-}[];
+
+interface DocumentTagsResponse {
+    corpus: string;
+    doc_id: string;
+    tags: Tag[];
+};
+
 
 @Injectable({
     providedIn: 'root'
@@ -28,17 +31,16 @@ export class TagService {
     }
 
     getDocumentTags(document: FoundDocument): Observable<Tag[]> {
-        return this.http.get<Tag[]>(this.documentTagUrl(document));
+        return this.http.get<DocumentTagsResponse>(this.documentTagUrl(document)).pipe(
+            map(response => response.tags)
+        );
     }
 
-    addDocumentTag(document: FoundDocument, tagId: number): Observable<any> {
-        const data: TaggingActions = [{op: 'add', value: tagId}];
-        return this.http.patch(this.documentTagUrl(document), data);
-    }
-
-    removeDocumentTag(document: FoundDocument, tag: Tag): Observable<any> {
-        const data: TaggingActions = [{op: 'remove', value: tag.id}];
-        return this.http.patch(this.documentTagUrl(document), data);
+    setDocumentTags(document: FoundDocument, tagIds: number[]): Observable<Tag[]> {
+        return this.http.patch<DocumentTagsResponse>(
+            this.documentTagUrl(document),
+            { tags: tagIds }
+        ).pipe(map(response => response.tags));
     }
 
     private fetch() {

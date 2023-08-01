@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FoundDocument, Tag } from '../../models';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { first, map, mergeMap } from 'rxjs/operators';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'ia-document-tags',
@@ -21,12 +23,22 @@ export class DocumentTagsComponent implements OnInit {
     }
 
     addTag(tagId: number) {
-        this.document.addTag(tagId);
-        this.showAddNew = false;
+        const op = (ids: number[]) => ids.concat([tagId]);
+        this.setTags(op);
     }
 
     removeTag(tag: Tag) {
-        this.document.removeTag(tag);
+        const op = (ids: number[]) => ids.filter(id => id !== tag.id);
+        this.setTags(op);
+    }
+
+    private setTags(operation: (ids: number[]) => number[]) {
+        this.document.tags$.pipe(
+            first(),
+            map(tags => tags.map(tag => tag.id)),
+            map(operation),
+            mergeMap(ids => this.document.setTags(ids))
+        ).subscribe();
     }
 
 }
