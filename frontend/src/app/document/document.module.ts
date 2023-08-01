@@ -5,6 +5,7 @@ import { DocumentPageComponent } from '../document-page/document-page.component'
 import { ImageViewModule } from '../image-view/image-view.module';
 import { SearchRelevanceComponent } from '../search';
 import { CorpusModule } from '../corpus-header/corpus.module';
+import { TagModule } from '../tag/tag.module';
 
 
 
@@ -18,6 +19,7 @@ import { CorpusModule } from '../corpus-header/corpus.module';
         CorpusModule,
         SharedModule,
         ImageViewModule,
+        TagModule,
     ], exports: [
         DocumentViewComponent,
         DocumentPageComponent,
