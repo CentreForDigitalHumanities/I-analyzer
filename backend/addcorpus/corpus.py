@@ -38,7 +38,7 @@ class Corpus(object):
     @property
     def description(self):
         '''
-        Minimum timestamp for data files.
+        Short description of the corpus
         '''
         raise NotImplementedError()
 
@@ -63,15 +63,14 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def languages(self):
-        '''
-        Language(s) used in the corpus
 
-        Should be a list of strings. Each language should
-        correspond to an ISO-639 code.
-        '''
-        return ['']
+    '''
+    Language(s) used in the corpus
+
+    Should be a list of strings. Each language should
+    correspond to an ISO-639 code.
+    '''
+    languages = ['']
 
     @property
     def category(self):
@@ -89,23 +88,19 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def es_alias(self):
-        '''
-        Elasticsearch alias. Defaults to None.
-        '''
-        return None
+    '''
+    Elasticsearch alias. Defaults to None.
+    '''
+    es_alias = None
 
-    @property
-    def es_settings(self):
-        '''
-        Dictionary containing ElasticSearch settings for the corpus' index.
-        Can be overridden in case we want, e.g., "AND" instead of "OR" for
-        combining query terms. By default contains the setting to ensure `number_of_replicas`
-        is zero on index creation (this is better while creating an index). Should you choose
-        to overwrite this, consider copying this setting.
-        '''
-        return {'index': {'number_of_replicas': 0}}
+    '''
+    Dictionary containing ElasticSearch settings for the corpus' index.
+    Can be overridden, usually to set analysers for fields. By default contains the
+    setting to ensure `number_of_replicas` is zero on index creation (this is better
+    while creating an index). Should you choose to overwrite this, consider  using
+    the `addcorpus.es_settings` module.
+    '''
+    es_settings = {'index': {'number_of_replicas': 0}}
 
     @property
     def fields(self):
@@ -116,27 +111,25 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def document_context(self):
-        '''
-        A dictionary that specifies how documents can be grouped into a "context". For example,
-        parliamentary speeches may be grouped into debates. The dictionary has two keys:
-        - `'context_fields'`: a list of the `name`s of the fields that can be used to
-        group documents. The context of a document is the set of documents that match
-        its value for all the listed fields.
-        - `'sort_field'`: the `name` of the field by which documents can be sorted
-        within their respective group. The field should be marked as `sortable`. If `None`,
-        no sorting will be applied.
-        - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
-        - `'context_display_name'`: The display name for the context used in the interface. If
-        `None`, use the displayName of the first context field.
-        '''
 
-        return {
-            'context_fields': None,
-            'sort_field': None,
-            'context_display_name': None
-        }
+    '''
+    A dictionary that specifies how documents can be grouped into a "context". For example,
+    parliamentary speeches may be grouped into debates. The dictionary has two keys:
+    - `'context_fields'`: a list of the `name`s of the fields that can be used to
+    group documents. The context of a document is the set of documents that match
+    its value for all the listed fields.
+    - `'sort_field'`: the `name` of the field by which documents can be sorted
+    within their respective group. The field should be marked as `sortable`. If `None`,
+    no sorting will be applied.
+    - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
+    - `'context_display_name'`: The display name for the context used in the interface. If
+    `None`, use the displayName of the first context field.
+    '''
+    document_context = {
+        'context_fields': None,
+        'sort_field': None,
+        'context_display_name': None
+    }
 
     @property
     def image(self):
@@ -146,20 +139,15 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    def scan_image_type(self):
-        '''
-        Filetype of scanned documents (images)
-        '''
-        if self.scan_image_type is None:
-            return None
-        else:
-            return self.scan_image_type
+    '''
+    MIME type of scanned documents (images)
+    '''
+    scan_image_type = None
 
-    @property
-    def word_model_path(self):
-        ''' (optional) path where word models are stored
-        '''
-        return None
+    '''
+    path where word models are stored
+    '''
+    word_model_path = None
 
     @property
     def word_models_present(self):
@@ -168,20 +156,15 @@ class Corpus(object):
         '''
         return self.word_model_path != None and isdir(self.word_model_path)
 
-    def allow_image_download(self):
-        '''
-        Allow the downloading of source images
-        '''
-        if self.allow_image_download is None:
-            return False
-        else:
-            return self.allow_image_download
+    '''
+    Allow the downloading of source images
+    '''
+    allow_image_download = False
 
-    def description_page(self):
-        '''
-        URL to markdown document with a comprehensive description
-        '''
-        return None
+    '''
+    filename of markdown document with a comprehensive description
+    '''
+    description_page = None
 
     def update_body(self, **kwargs):
         ''' given one document in the index, give an instruction
@@ -347,29 +330,28 @@ class XMLCorpus(Corpus):
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
 
-    @property
-    def tag_toplevel(self):
-        '''
-        The top-level tag in the source documents.
 
-        Can be:
-        - None
-        - A string with the name of the tag
-        - A dictionary that gives the named arguments to soup.find_all()
-        - A bound method that takes the metadata of the document as input and outputs one of the above.
-        '''
+    '''
+    The top-level tag in the source documents.
 
-    @property
-    def tag_entry(self):
-        '''
-        The tag that corresponds to a single document entry.
+    Can be:
+    - None
+    - A string with the name of the tag
+    - A dictionary that gives the named arguments to soup.find_all()
+    - A bound method that takes the metadata of the document as input and outputs one of the above.
+    '''
+    tag_toplevel = None
 
-        Can be:
-        - None
-        - A string with the name of the tag
-        - A dictionary that gives the named arguments to soup.find_all()
-        - A bound method that takes the metadata of the document as input and outputs one of the above.
-        '''
+    '''
+    The tag that corresponds to a single document entry.
+
+    Can be:
+    - None
+    - A string with the name of the tag
+    - A dictionary that gives the named arguments to soup.find_all()
+    - A bound method that takes the metadata of the document as input and outputs one of the above.
+    '''
+    tag_entry = None
 
     def source2dicts(self, source):
         '''
@@ -631,34 +613,28 @@ class CSVCorpus(Corpus):
     An CSVCorpus is any corpus that extracts its data from CSV sources.
     '''
 
-    @property
-    def field_entry(self):
-        '''
-        If applicable, the field that identifies entries. Subsequent rows with the same
-        value for this field are treated as a single document. If left blank, each row
-        is treated as a document.
-        '''
+    '''
+    If applicable, the field that identifies entries. Subsequent rows with the same
+    value for this field are treated as a single document. If left blank, each row
+    is treated as a document.
+    '''
+    field_entry = None
 
-    @property
-    def required_field(self):
-        '''
-        Specifies a required field, for example the main content. Rows with
-        an empty value for `required_field` will be skipped.
-        '''
+    '''
+    Specifies a required field, for example the main content. Rows with
+    an empty value for `required_field` will be skipped.
+    '''
+    required_field = None
 
-    @property
-    def delimiter(self):
-        '''
-        Set the delimiter for the CSV reader.
-        '''
-        return ','
+    '''
+    The delimiter for the CSV reader.
+    '''
+    delimiter = ','
 
-    @property
-    def skip_lines(self):
-        '''
-        Number of lines to skip before reading the header
-        '''
-        return 0
+    '''
+    Number of lines to skip before reading the header
+    '''
+    skip_lines = 0
 
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
