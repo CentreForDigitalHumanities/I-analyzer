@@ -1,36 +1,50 @@
-from addcorpus.models import Corpus
-from tag.models import TagInstance, DOCS_PER_TAG_LIMIT
 import pytest
+from addcorpus.models import Corpus
 from django.core.exceptions import ValidationError
+from tag.models import TaggedDocument
+
 
 def test_tag_models(db, auth_user, auth_user_tag, tagged_documents):
     assert len(auth_user.tags.all()) == 1
+    assert len(auth_user_tag.tagged_docs.all()) == 3
 
-    instance, docs = tagged_documents
 
-    assert len(auth_user_tag.instances.all()) == 1
-    assert len(instance.document_ids) == len(docs)
-
-def test_tag_lookup(mock_corpus, tagged_documents):
-    instance, docs = tagged_documents
+def test_tag_lookup(mock_corpus, tagged_documents,
+                    auth_user_tag, admin_user_tag):
+    instances, docs = tagged_documents
     corpus = Corpus.objects.get(name=mock_corpus)
 
-    for doc in docs:
-        assert TagInstance.objects.filter(corpus=corpus, document_ids__contains=[doc])
+    for doc, instance in zip(docs, instances):
+        tagged_docs = TaggedDocument.objects.get(doc_id=doc)
+        assert tagged_docs == instance
 
-    assert not TagInstance.objects.filter(corpus=corpus, document_ids__contains=['not_tagged'])
+    assert TaggedDocument.objects.filter(corpus=corpus).count() == 4
+    assert TaggedDocument.objects.filter(
+        corpus=corpus).exclude(tags=auth_user_tag).count() == 1
+    assert TaggedDocument.objects.filter(tags=auth_user_tag).count() == 3
+    assert TaggedDocument.objects.filter(tags=admin_user_tag)
 
-def test_max_length(db, mock_corpus, auth_user_tag):
-    corpus = Corpus.objects.get(name=mock_corpus)
-    instance = TagInstance.objects.create(tag=auth_user_tag, corpus=corpus)
 
-    for i in range(DOCS_PER_TAG_LIMIT):
-        instance.document_ids.append(str(i))
-        instance.save()
-        instance.full_clean() # should validate without error
-
-    instance.document_ids.append('too_much')
-    instance.save()
-
+def test_max_tags(db, auth_user_tag, too_many_docs):
+    too_many_docs[0].tags.add(auth_user_tag)
     with pytest.raises(ValidationError):
-        instance.full_clean()
+        too_many_docs[1].tags.add(auth_user_tag)
+
+
+def test_max_tags_reverse(db, mock_corpus_obj,
+                          auth_user_tag, too_many_docs):
+    with pytest.raises(ValidationError):
+        auth_user_tag.tagged_docs.add(*too_many_docs)
+
+def test_tag_delete(db, mock_corpus_obj, tagged_documents, auth_user_tag, admin_user_tag):
+    assert len(TaggedDocument.objects.all()) == 4
+
+    # Deleting auth_user_tags should have no effect on TaggedDocuments
+    # since they all have a second tag
+    auth_user_tag.delete()
+    assert len(TaggedDocument.objects.all()) == 4
+
+    # Deleting the last Tag would leave all the docs without Tags
+    # They can safely be deleted
+    admin_user_tag.delete()
+    assert len(TaggedDocument.objects.all()) == 0

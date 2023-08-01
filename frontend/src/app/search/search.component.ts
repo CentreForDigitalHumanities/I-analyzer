@@ -8,6 +8,7 @@ import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import * as _ from 'lodash';
 import { paramsHaveChanged } from '../utils/params';
+import { faBarChart, faChartBar, faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search',
@@ -33,6 +34,14 @@ export class SearchComponent extends ParamDirective {
     public hasLimitedResults = false;
 
     public user: User;
+
+    tabIcons = {
+        searchResults: faList,
+        visualizations: faChartColumn,
+    };
+
+    activeTab: string;
+
     protected corpusSubscription: Subscription;
 
     public queryModel: QueryModel;
@@ -42,11 +51,11 @@ export class SearchComponent extends ParamDirective {
     public queryText: string;
 
     public resultsCount = 0;
-    public tabIndex: number;
 
     public filterFields: CorpusField[] = [];
 
     public showVisualization: boolean;
+
 
     constructor(
         private authService: AuthService,
@@ -59,7 +68,6 @@ export class SearchComponent extends ParamDirective {
     }
 
     async initialize(): Promise<void> {
-        this.tabIndex = 0;
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusSubscription = this.corpusService.currentCorpus
             .filter((corpus) => !!corpus).subscribe((corpus) => {
@@ -73,7 +81,6 @@ export class SearchComponent extends ParamDirective {
     }
 
     setStateFromParams(params: ParamMap) {
-        this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
         if (paramsHaveChanged(this.queryModel, params)) {
             this.setQueryModel(false);
@@ -97,18 +104,12 @@ export class SearchComponent extends ParamDirective {
         this.hasSearched = true;
         this.resultsCount = input.resultsCount;
         this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
-        if (this.showVisualization) {
-            this.tabIndex = 1;
-        }
     }
 
     public showQueryDocumentation() {
         this.dialogService.showManualPage('query');
     }
 
-    public switchTabs(index: number) {
-        this.tabIndex = index;
-    }
 
     public search() {
         this.queryModel.setQueryText(this.queryText);
