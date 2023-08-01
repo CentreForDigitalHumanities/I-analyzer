@@ -1,8 +1,7 @@
 import { Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import {BehaviorSubject, combineLatest as combineLatest } from 'rxjs';
+import { Router } from '@angular/router';
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
-import { CorpusService, SearchService } from '../services';
+import { CorpusService } from '../services';
 import { AuthService } from '../services/auth.service';
 import { WordmodelsService } from '../services/wordmodels.service';
 
@@ -26,10 +25,6 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     activeQuery: string;
 
-    tabIndex = new BehaviorSubject<'relatedwords' | 'wordsimilarity'>(
-        'relatedwords'
-    );
-
     tabs = {
         relatedwords: {
             title: 'Related words',
@@ -40,8 +35,10 @@ export class WordModelsComponent implements DoCheck, OnInit {
             title: 'Compare similarity',
             manual: 'comparesimilarity',
             chartID: 'chart',
-        },
+        }
     };
+
+    currentTab = 'relatedwords';
 
     childComponentLoading: boolean;
     isLoading: boolean;
@@ -55,10 +52,6 @@ export class WordModelsComponent implements DoCheck, OnInit {
         private wordModelsService: WordmodelsService,
         private router: Router
     ) {
-        this.tabIndex.subscribe((tab) => {
-            // reset error message when switching tabs
-            this.errorMessage = undefined;
-        });
     }
 
     ngDoCheck() {
@@ -123,13 +116,9 @@ export class WordModelsComponent implements DoCheck, OnInit {
         this.errorMessage = event.message;
     }
 
-    get currentTab(): any {
-        return this.tabs[this.tabIndex.value];
-    }
-
     get imageFileName(): string {
-        if (this.tabIndex && this.corpus) {
-            return `${this.currentTab.name}_${this.corpus.name}.png`;
+        if (this.corpus) {
+            return `${this.tabs[this.currentTab].name}_${this.corpus.name}.png`;
         }
     }
 
@@ -142,5 +131,11 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     get tabNames() {
         return Object.keys(this.tabs);
+    }
+
+    onTabChange(tab: string): void {
+        // reset error message on tab switch
+        this.errorMessage = undefined;
+        this.currentTab = tab;
     }
 }

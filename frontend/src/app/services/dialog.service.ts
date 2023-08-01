@@ -6,7 +6,9 @@ import { ApiService } from './api.service';
 
 import { Corpus } from '../models/index';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class DialogService {
     private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
     private manifest: Promise<ManualPageMetaData[]> | undefined;
