@@ -16,7 +16,7 @@ def check_corpus_name(request: HttpRequest):
     Returns the name of the corpus specified in the request query parameters,
     if there is one.
 
-    Raises 404 if this is not a real corpus.
+    Raises 404 if this corpus does not exist.
     '''
 
     corpus_name = request.query_params.get('corpus', None)
@@ -30,7 +30,7 @@ class TagViewSet(ModelViewSet):
     queryset = Tag.objects.all()
 
     def perform_create(self, serializer):
-        '''Overwrites ModelViewSet.perfor0m_create
+        '''Overwrites ModelViewSet.perform_create
         Auto-assigns the authenticated user on creation'''
         return serializer.save(user=self.request.user)
 
@@ -68,37 +68,48 @@ class DocumentTagsView(APIView):
         doc = self._get_document(**kwargs)
 
         if doc:
-            tags = doc.tags.filter(user=request.user)
+            data = self._serialize(request, doc)
         else:
-            tags = []
+            data = {
+                **kwargs,
+                'tags': [],
+            }
 
-        serializer = TagSerializer(tags, many=True)
-        return Response(serializer.data)
+        return Response(data)
 
     def patch(self, request, *args, **kwargs):
         '''
-        Add or remove tags for a document
-
-        The payload should specify a list of operations, like so:
-
-        ```
-        [
-            {"op": "add", "value": 47},
-            {"op": "remove": "value": 123},
-            {"op": "add", "value": 12},
-        ]
-        ```
+        Edit a document's tags.
         '''
 
-        doc = self._get_document(**kwargs) or self._create_document(**kwargs)
+        corpus = Corpus.objects.get(name=kwargs.get('corpus'))
+        doc_id = kwargs.get('doc_id')
+        doc, _ = TaggedDocument.objects.get_or_create(
+            corpus=corpus,
+            doc_id=doc_id
+        )
 
-        for op in request.data:
-            tag_id = op.get('value')
-            tag = self._get_tag(request, tag_id)
-            action = self._get_patch_action(op, doc)
-            action(tag)
+        # check that the request is not patching readonly properties
+        readonly = {'corpus', 'doc_id'}
+        if set.intersection(readonly, request.data.keys()):
+            raise PermissionDenied('Patching the corpus or ID of documents is not allowed')
 
-        return Response('done')
+        # verify tags
+        tag_ids = request.data.get('tags')
+        for tag_id in tag_ids:
+            self._verify_tag(request, tag_id)
+
+        # update tags for the user
+        current_tags = doc.tags.filter(user = request.user)
+        new_tags = Tag.objects.filter(id__in=tag_ids, user=request.user)
+
+        for tag in current_tags.difference(new_tags):
+            doc.tags.remove(tag)
+
+        for tag in new_tags.difference(current_tags):
+            doc.tags.add(tag)
+
+        return Response(self._serialize(request, doc))
 
     def _get_document(self, **kwargs):
         match = TaggedDocument.objects.filter(
@@ -109,13 +120,7 @@ class DocumentTagsView(APIView):
         if match.exists():
             return match.first()
 
-    def _create_document(self, **kwargs):
-        corpus_name = kwargs.get('corpus') # note: corpus name is verified in permissions
-        doc_id = kwargs.get('doc_id')
-        corpus = Corpus.objects.get(name=corpus_name)
-        return TaggedDocument.objects.create(corpus=corpus, doc_id=doc_id)
-
-    def _get_tag(self, request, tag_id):
+    def _verify_tag(self, request, tag_id):
         if not Tag.objects.filter(id=tag_id).exists():
             raise NotFound(f'Tag {tag_id} does not exist')
 
@@ -124,16 +129,11 @@ class DocumentTagsView(APIView):
         if not tag.user == request.user:
             raise PermissionDenied(f'You do not have permission to modify tag {tag_id}')
 
-        return tag
-
-    def _get_patch_action(self, op, doc: TaggedDocument):
-        actions = {
-            'add': doc.tags.add,
-            'remove': doc.tags.remove
+    def _serialize(self, request, doc: TaggedDocument):
+        tags = doc.tags.filter(user=request.user)
+        serializer = TagSerializer(tags, many=True)
+        return {
+            'corpus': doc.corpus.name,
+            'id': doc.doc_id,
+            'tags': serializer.data
         }
-
-        action = actions.get(op.get('op', None), None)
-        if not action:
-            raise ParseError('could not parse action')
-
-        return action
