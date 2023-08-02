@@ -16,7 +16,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpusDefinition, Field, until, after, string_contains
 from addcorpus.load_corpus import corpus_dir
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
@@ -29,7 +29,7 @@ MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
 SPEECH_TYPES = ['openingsrede', 'troonrede', 'inhuldigingsrede']
 
 
-class Troonredes(XMLCorpus):
+class Troonredes(XMLCorpusDefinition):
     title = "Troonredes"
     description = "Speeches by Dutch monarchs"
     min_date = datetime(year=1814, month=1, day=1)

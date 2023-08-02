@@ -10,7 +10,7 @@ import os
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years
+from addcorpus.corpus import XMLCorpusDefinition, Field, consolidate_start_end_years
 from addcorpus import filters
 from addcorpus.extract import Metadata, XML
 from addcorpus.load_corpus import corpus_dir
@@ -20,7 +20,7 @@ from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
 
-class DutchNewspapersPublic(XMLCorpus):
+class DutchNewspapersPublic(XMLCorpusDefinition):
     '''
     The public portion of KB newspapers
 

@@ -14,14 +14,14 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import HTMLCorpusDefinition, XMLCorpusDefinition, Field, until, after, string_contains
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 # Source files ################################################################
 
 
-class Tml(HTMLCorpus):
+class Tml(HTMLCorpusDefinition):
     title = "Thesaurus Musicarum Latinarum"
     description = "A collection of Medieval writings about music"
     min_date = datetime(year=300, month=1, day=1)

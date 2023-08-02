@@ -16,7 +16,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
+from addcorpus.corpus import XMLCorpusDefinition, Field, until, after, string_contains, consolidate_start_end_years
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 from media.media_url import media_url
@@ -24,7 +24,7 @@ from media.media_url import media_url
 # Source files ################################################################
 
 
-class Times(XMLCorpus):
+class Times(XMLCorpusDefinition):
     title = "Times"
     description = "Newspaper archive, 1785-2010"
     min_date = datetime(year=1785, month=1, day=1)

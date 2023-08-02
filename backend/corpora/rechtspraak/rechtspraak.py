@@ -9,7 +9,7 @@ from zipfile import ZipFile, BadZipFile
 from django.conf import settings
 
 from addcorpus import extract, filters
-from addcorpus.corpus import Field, XMLCorpus
+from addcorpus.corpus import Field, XMLCorpusDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
@@ -30,7 +30,7 @@ def rdf_description_extractor(tag, section='xml', **kwargs):
     )
 
 
-class Rechtspraak(XMLCorpus):
+class Rechtspraak(XMLCorpusDefinition):
     title = "Judicial system Netherlands"
     description = "Open data of (anonymised) court rulings of the Dutch judicial system"
     min_date = datetime(year=1900, month=1, day=1)

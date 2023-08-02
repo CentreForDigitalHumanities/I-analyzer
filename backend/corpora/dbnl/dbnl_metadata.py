@@ -1,10 +1,10 @@
 import os
 from django.conf import settings
-from addcorpus.corpus import CSVCorpus, Field
+from addcorpus.corpus import CSVCorpusDefinition, Field
 from addcorpus.extract import CSV, Combined, Pass
 import corpora.dbnl.utils as utils
 
-class DBNLMetadata(CSVCorpus):
+class DBNLMetadata(CSVCorpusDefinition):
     '''Helper corpus for extracting the DBNL metadata.
 
     Used by the DBNL corpus for CSV extraction utilities -

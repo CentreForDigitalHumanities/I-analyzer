@@ -8,11 +8,11 @@ from django.conf import settings
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, Field
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 
-class JewishInscriptions(XMLCorpus):
+class JewishInscriptions(XMLCorpusDefinition):
     """ Alto XML corpus of Jewish funerary inscriptions. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)

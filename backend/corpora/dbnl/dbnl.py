@@ -4,14 +4,14 @@ import re
 from tqdm import tqdm
 
 from django.conf import settings
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, Field
 from addcorpus.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
 from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
 from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
-class DBNL(XMLCorpus):
+class DBNL(XMLCorpusDefinition):
     title = 'DBNL'
     description = 'Digital Library for Dutch Literature'
     data_directory = settings.DBNL_DATA

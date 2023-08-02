@@ -13,7 +13,7 @@ from django.conf import settings
 
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, Field
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from corpora.utils.constants import document_context
@@ -23,7 +23,7 @@ from media.media_url import media_url
 # Source files ################################################################
 
 
-class Ecco(XMLCorpus):
+class Ecco(XMLCorpusDefinition):
     title = "Eighteenth Century Collections Online"
     description = "Digital collection of books published in Great Britain during the 18th century."
     min_date = datetime(year=1700, month=1, day=1)

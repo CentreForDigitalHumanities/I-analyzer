@@ -1,11 +1,11 @@
-from addcorpus.corpus import CSVCorpus, Field
+from addcorpus.corpus import CSVCorpusDefinition, Field
 from addcorpus.extract import CSV
 import os
 import datetime
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-class MockCSVCorpus(CSVCorpus):
+class MockCSVCorpus(CSVCorpusDefinition):
     """Example CSV corpus class for testing"""
 
     title = "Example"

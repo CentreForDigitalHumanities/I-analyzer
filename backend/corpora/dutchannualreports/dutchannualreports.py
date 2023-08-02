@@ -9,7 +9,7 @@ from django.conf import settings
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, Field
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from addcorpus.load_corpus import corpus_dir
 
@@ -17,7 +17,7 @@ from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 from media.media_url import media_url
 
-class DutchAnnualReports(XMLCorpus):
+class DutchAnnualReports(XMLCorpusDefinition):
     """ Alto XML corpus of Dutch annual reports. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)

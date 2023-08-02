@@ -1,14 +1,14 @@
 import os
 import datetime
 
-from addcorpus.corpus import CSVCorpus, Field
+from addcorpus.corpus import CSVCorpusDefinition, Field
 from addcorpus.extract import CSV
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 
-class TaggingMockCorpus(CSVCorpus):
+class TaggingMockCorpus(CSVCorpusDefinition):
     title = 'Tagging Mock Corpus'
     description = 'Mock corpus for tagging'
     es_index = 'tagging-mock-corpus'

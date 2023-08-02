@@ -1,5 +1,5 @@
 from datetime import datetime
-from addcorpus.corpus import Corpus, Field
+from addcorpus.corpus import CorpusDefinition, Field
 import random
 
 TOTAL_DOCUMENTS = 11000
@@ -20,7 +20,7 @@ def generate_text():
     random.shuffle(tokens)
     return ' '.join(tokens)
 
-class LargeMockCorpus(Corpus):
+class LargeMockCorpus(CorpusDefinition):
     '''
     For testing the download limit: a mock corpus that contains over
     10.000 documents.

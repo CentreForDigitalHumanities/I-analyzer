@@ -14,7 +14,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, Field
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
@@ -23,7 +23,7 @@ from media.media_url import media_url
 # Source files ################################################################
 
 
-class Periodicals(XMLCorpus):
+class Periodicals(XMLCorpusDefinition):
     title = "Periodicals"
     description = "A collection of 19th century periodicals"
     min_date = datetime(1800,1,1)

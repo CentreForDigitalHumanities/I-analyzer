@@ -10,14 +10,14 @@ import openpyxl
 
 from addcorpus.extract import CSV, Metadata
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import CSVCorpus, Field
+from addcorpus.corpus import CSVCorpusDefinition, Field
 
 from addcorpus.es_mappings import main_content_mapping
 from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
-class GoodReads(CSVCorpus):
+class GoodReads(CSVCorpusDefinition):
     """ Home-scraped CSV corpus of GoodReads reviews. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)

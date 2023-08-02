@@ -19,7 +19,7 @@ from django.conf import settings
 from es.es_update import update_document
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
+from addcorpus.corpus import XMLCorpusDefinition, Field, until, after, string_contains, consolidate_start_end_years
 from media.image_processing import sizeof_fmt
 from media.media_url import media_url
 
@@ -31,7 +31,7 @@ PROCESSED = "corpora/guardianobserver/processed.txt"
 # Source files ################################################################
 
 
-class GuardianObserver(XMLCorpus):
+class GuardianObserver(XMLCorpusDefinition):
     title = "Guardian-Observer"
     description = "Newspaper archive, 1791-2003"
     min_date = datetime(year=1791, month=1, day=1)

@@ -14,7 +14,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, Field
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
@@ -23,7 +23,7 @@ from addcorpus.es_settings import es_settings
 # Source files ################################################################
 
 
-class Spectators(XMLCorpus):
+class Spectators(XMLCorpusDefinition):
     title = "Spectators"
     description = "A collection of Spectator newspapers"
     min_date = datetime()

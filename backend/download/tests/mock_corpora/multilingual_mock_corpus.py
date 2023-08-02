@@ -1,5 +1,5 @@
 from datetime import datetime
-from addcorpus.corpus import Field, CSVCorpus
+from addcorpus.corpus import Field, CSVCorpusDefinition
 from addcorpus.extract import CSV
 import os
 
@@ -7,7 +7,7 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-class MultilingualMockCorpus(CSVCorpus):
+class MultilingualMockCorpus(CSVCorpusDefinition):
     title = 'Multilingual Mock Corpus'
     description = 'A mixed-language corpus. Especially useful for testing character encoding'
     visualize = []
