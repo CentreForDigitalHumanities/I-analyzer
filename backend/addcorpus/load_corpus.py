@@ -1,4 +1,5 @@
 from addcorpus.models import Corpus, Field
+from addcorpus.corpus import CorpusDefinition, FieldDefinition
 from django.contrib.auth.models import Group
 from django.conf import settings
 import re
@@ -45,7 +46,7 @@ def load_corpus(corpus_name):
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 
-def _save_corpus_in_database(corpus_name, corpus_definition):
+def _save_corpus_in_database(corpus_name, corpus_definition: CorpusDefinition):
     '''
     Save a corpus in the SQL database if it is not saved already.
 
@@ -56,6 +57,34 @@ def _save_corpus_in_database(corpus_name, corpus_definition):
     corpus_db, _ = Corpus.objects.get_or_create(name=corpus_name)
     corpus_db.description = corpus_definition.description
     corpus_db.save()
+
+def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
+    attributes_to_copy = [
+        'name', 'display_name', 'description',
+        'search_filter', 'results_overview',
+        'csv_core', 'search_field_core',
+        'visualizations', 'visualization_sort',
+        'es_mapping', 'indexed', 'hidden',
+        'required', 'sortable', 'primary_sort',
+        'searchable', 'downloadable'
+    ]
+
+    get = lambda attr: field_definition.__getattribute__(attr)
+    has_attribute = lambda attr: attr in dir(field_definition) and get(attr) != None
+
+    copy_attributes = {
+        attr: get(attr)
+        for attr in attributes_to_copy
+        if has_attribute(attr)
+    }
+
+    field = Field(
+        corpus=corpus,
+        **copy_attributes,
+    )
+
+    field.save()
+    return field
 
 def _try_loading_corpus(corpus_name):
     try:
