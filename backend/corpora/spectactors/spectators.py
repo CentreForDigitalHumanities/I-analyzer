@@ -30,7 +30,7 @@ class Spectators(XMLCorpus):
     max_date = datetime()
     data_directory = settings.SPECTATORS_DATA
     es_index = getattr(settings, 'SPECTATORS_ES_INDEX', 'spectators')
-    language = 'english'
+    languages = ['en']
 
     tag_toplevel = 'article'
     tag_entry = 'content'
@@ -42,7 +42,7 @@ class Spectators(XMLCorpus):
 
     @property
     def es_settings(self):
-        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     def sources(self, start=min_date, end=max_date):
         for directory, _, filenames in os.walk(self.data_directory):
