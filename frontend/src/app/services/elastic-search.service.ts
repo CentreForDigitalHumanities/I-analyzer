@@ -5,7 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
     AggregateQueryFeedback, EsSearchClause, BooleanQuery,
-    EsFilter
+    EsFilter, SearchHit
 } from '../models/index';
 import * as _ from 'lodash';
 
@@ -31,11 +31,11 @@ export class ElasticSearchService {
             size: 1,
             index: corpus.index,
         };
-        return this.client.search(query).then(this.firstDocumentFromResponse.bind(this));
+        return this.client.search(query).then(this.firstDocumentFromResponse.bind(this, corpus));
     }
 
-    private firstDocumentFromResponse(response: SearchResponse): FoundDocument {
-        const parsed = this.parseResponse(response);
+    private firstDocumentFromResponse(corpus: Corpus, response: SearchResponse): FoundDocument {
+        const parsed = this.parseResponse(corpus, response);
         if (parsed.documents.length) {
             return _.first(parsed.documents);
         }
@@ -133,7 +133,7 @@ export class ElasticSearchService {
 
         // Perform the search
         const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage);
-        return this.parseResponse(response);
+        return this.parseResponse(queryModel.corpus, response);
     }
 
 
@@ -146,21 +146,19 @@ export class ElasticSearchService {
         const esQuery = queryModel.toEsQuery();
         // Perform the search
         const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage, from);
-        return this.parseResponse(response);
+        return this.parseResponse(queryModel.corpus, response);
     }
 
     /**
      * Extract relevant information from dictionary returned by ES
      *
+     * @param corpus
      * @param response
-     * @param queryModel
-     * @param alreadyRetrieved
-     * @param completed
      */
-    private parseResponse(response: SearchResponse): SearchResults {
+    private parseResponse(corpus: Corpus, response: SearchResponse): SearchResults {
         const hits = response.hits.hits;
         return {
-            documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
+            documents: hits.map(hit => this.hitToDocument(corpus, hit, response.hits.max_score)),
             total: response.hits.total
         };
     }
@@ -168,13 +166,8 @@ export class ElasticSearchService {
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: SearchHit, maxScore: number) {
-        return {
-            id: hit._id,
-            relevance: hit._score / maxScore,
-            fieldValues: Object.assign({ id: hit._id }, hit._source),
-            highlight: hit.highlight,
-        } as FoundDocument;
+    private hitToDocument(corpus: Corpus, hit: SearchHit, maxScore: number): FoundDocument {
+        return new FoundDocument(corpus, hit, maxScore);
     }
 }
 
@@ -243,11 +236,4 @@ export interface SearchResponse {
         hits: Array<SearchHit>;
     };
     aggregations?: any;
-}
-
-export interface SearchHit {
-    _id: string;
-    _score: number;
-    _source: {};
-    highlight: {};
 }
