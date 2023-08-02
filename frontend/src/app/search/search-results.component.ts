@@ -16,12 +16,12 @@ const MAXIMUM_DISPLAYED = 10000;
     styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnChanges {
-    /**
-     * The search queryModel to use
-     */
     @ViewChild('resultsNavigation', {static: true})
     public resultsNavigation: ElementRef;
 
+    /**
+     * The search queryModel to use
+     */
     @Input()
     public queryModel: QueryModel;
 
