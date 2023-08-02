@@ -1,4 +1,4 @@
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, Field
 from django.contrib.auth.models import Group
 from django.conf import settings
 import re

@@ -14,7 +14,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, Field
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
@@ -82,7 +82,7 @@ class Periodicals(XMLCorpusDefinition):
             yield filename, metadict
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Formatted Date',
             description='Publication date, formatted from the full date',
@@ -99,7 +99,7 @@ class Periodicals(XMLCorpusDefinition):
             csv_core=True,
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='date_pub',
             display_name='Publication Date',
             description='Publication date as full string, as found in source file',
@@ -107,7 +107,7 @@ class Periodicals(XMLCorpusDefinition):
             results_overview=True,
             extractor=extract.Metadata('date_full')
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
@@ -116,7 +116,7 @@ class Periodicals(XMLCorpusDefinition):
                                   toplevel=False,
                                   attribute='id'),
         ),
-        Field(
+        FieldDefinition(
             name='issue',
             display_name='Issue number',
             description='Source issue number.',
@@ -125,7 +125,7 @@ class Periodicals(XMLCorpusDefinition):
             extractor=extract.Metadata('issue_id'),
             csv_core=False,
         ),
-        Field(
+        FieldDefinition(
             name='periodical',
             display_name='Periodical name',
             histogram=True,
@@ -140,7 +140,7 @@ class Periodicals(XMLCorpusDefinition):
             csv_core=True,
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
@@ -151,7 +151,7 @@ class Periodicals(XMLCorpusDefinition):
             search_field_core=True,
             visualizations=["wordcloud"]
         ),
-        Field(
+        FieldDefinition(
             name='ocr',
             display_name='OCR confidence',
             description='OCR confidence level.',
@@ -174,7 +174,7 @@ class Periodicals(XMLCorpusDefinition):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Article title',
             description='Title of the article.',
@@ -190,7 +190,7 @@ class Periodicals(XMLCorpusDefinition):
             ),
             visualizations=['wordcloud']
         ),
-        Field(
+        FieldDefinition(
             name='start_column',
             es_mapping={'type': 'keyword'},
             display_name='Starting column',
@@ -206,7 +206,7 @@ class Periodicals(XMLCorpusDefinition):
                 }
             )
         ),
-        Field(
+        FieldDefinition(
             name='page_count',
             display_name='Page count',
             description='How many pages the article covers.',
@@ -222,7 +222,7 @@ class Periodicals(XMLCorpusDefinition):
                 }
             )
         ),
-        Field(
+        FieldDefinition(
             name='word_count',
             display_name='Word count',
             description='Number of words in the article.',
@@ -238,7 +238,7 @@ class Periodicals(XMLCorpusDefinition):
                 }
             )
         ),
-        Field(
+        FieldDefinition(
             name='category',
             csv_core=True,
             display_name='Category',
@@ -260,7 +260,7 @@ class Periodicals(XMLCorpusDefinition):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='page_no',
             display_name='Page number',
             description='At which page the article starts.',
@@ -278,7 +278,7 @@ class Periodicals(XMLCorpusDefinition):
                 transform=lambda x: re.sub('[\[\]]', '', x)
             )
         ),
-        Field(
+        FieldDefinition(
             name='image_path',
             display_name='Image path',
             es_mapping={'type': 'keyword'},

@@ -1,5 +1,5 @@
 import datetime
-from addcorpus.corpus import CorpusDefinition, Field
+from addcorpus.corpus import CorpusDefinition, FieldDefinition
 
 from os.path import abspath, dirname, join
 
@@ -15,7 +15,7 @@ class WordmodelsMockCorpus(CorpusDefinition):
     data_directory = 'nothing'
     word_model_path = join(here, 'mock-word-models')
     fields = [
-        Field(
+        FieldDefinition(
             name = 'content',
         )
     ]

@@ -10,7 +10,7 @@ import os
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpusDefinition, Field, consolidate_start_end_years
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
 from addcorpus import filters
 from addcorpus.extract import Metadata, XML
 from addcorpus.load_corpus import corpus_dir
@@ -130,7 +130,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
 
     @property
     def fields(self):
-        return [Field(
+        return [FieldDefinition(
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
@@ -149,7 +149,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                                   }
             )
         ),
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             description='Publication date.',
@@ -166,7 +166,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             ),
             extractor=Metadata('date')
         ),
-        Field(
+        FieldDefinition(
             name='ocr',
             display_name='OCR confidence',
             description='OCR confidence level.',
@@ -188,7 +188,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='newspaper_title',
             display_name='Newspaper title',
             description='Title of the newspaper',
@@ -202,14 +202,14 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             ),
             extractor=Metadata('title')
         ),
-        Field(
+        FieldDefinition(
             name='version_of',
             display_name='Version of',
             description='The newspaper is a version of this newspaper.',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('isVersionOf')
         ),
-        Field(
+        FieldDefinition(
             name='issue_number',
             display_name='Issue number',
             description='Issue number of the newspaper',
@@ -217,7 +217,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             es_mapping={'type': 'integer'},
             extractor=Metadata('issuenumber')
         ),
-        Field(
+        FieldDefinition(
             name='category',
             display_name='Category',
             description='Whether the item is an article, advertisment, etc.',
@@ -241,7 +241,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 option_count=2,
             ),
         ),
-        Field(
+        FieldDefinition(
             name='circulation',
             display_name='Circulation',
             description='The area in which the newspaper was distributed.',
@@ -253,7 +253,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 option_count=7
             ),
         ),
-        Field(
+        FieldDefinition(
             name='publisher',
             display_name='Publisher',
             description='Publisher',
@@ -261,14 +261,14 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             search_field_core=True,
             extractor=Metadata('publisher')
         ),
-        Field(
+        FieldDefinition(
             name='language',
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('language')
         ),
-        Field(
+        FieldDefinition(
             name='article_title',
             display_name='Article title',
             description='Article title',
@@ -276,27 +276,27 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             search_field_core=True,
             extractor=XML(tag='title', flatten=True, toplevel=True)
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
             extractor=Metadata('id')
         ),
-        Field(
+        FieldDefinition(
             name='source',
             display_name='Source',
             description='Library or archive which keeps the hard copy of this newspaper.',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('source')
         ),
-        Field(
+        FieldDefinition(
             name='pub_place',
             display_name='Publication Place',
             description='Where the newspaper was published',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('pub_place')
         ),
-        Field(
+        FieldDefinition(
             name='temporal',
             display_name='Edition',
             description='Newspaper edition for the given date',
@@ -310,7 +310,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             ),
             extractor=Metadata('temporal')
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
