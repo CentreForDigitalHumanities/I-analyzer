@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { BehaviorSubject } from 'rxjs';
 import { Corpus } from '../models/corpus';
 import { CorpusService } from '../services/index';
+import { showLoading } from '../utils/utils';
 
 @Component({
     selector: 'home',
@@ -11,23 +13,18 @@ import { CorpusService } from '../services/index';
 export class HomeComponent implements OnInit {
     public items: Corpus[];
 
-    isLoading = false;
+    isLoading = new BehaviorSubject<boolean>(false);
 
     constructor(private corpusService: CorpusService, private title: Title) {
         this.title.setTitle('Home');
     }
 
     ngOnInit() {
-        this.showLoading(
+        showLoading(
+            this.isLoading,
             this.corpusService.get(true)
             .then((items) => this.items = items)
         );
     }
 
-    showLoading(promise: Promise<any>) {
-        this.isLoading = true;
-        return promise.then(result => {
-this.isLoading = false; return result;
-});
-    }
 }

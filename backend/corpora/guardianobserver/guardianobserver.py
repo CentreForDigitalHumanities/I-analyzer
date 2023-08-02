@@ -14,13 +14,14 @@ from datetime import date, datetime
 from zipfile import ZipFile
 from io import BytesIO
 
-from flask import current_app, url_for
+from django.conf import settings
 
 from es.es_update import update_document
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
-from addcorpus.image_processing import sizeof_fmt
+from media.image_processing import sizeof_fmt
+from media.media_url import media_url
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
@@ -35,16 +36,17 @@ class GuardianObserver(XMLCorpus):
     description = "Newspaper archive, 1791-2003"
     min_date = datetime(year=1791, month=1, day=1)
     max_date = datetime(year=2003, month=12, day=31)
-    data_directory = current_app.config['GO_DATA']
-    es_index = current_app.config['GO_ES_INDEX']
-    language = 'english'
-    image = current_app.config['GO_IMAGE']
-    scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
-
+    data_directory = settings.GO_DATA
+    es_index = getattr(settings, 'GO_ES_INDEX', 'guardianobserver')
+    image = 'guardianobserver.jpg'
+    scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
+    languages = ['en']
+    category = 'newspaper'
+    
     @property
     def es_settings(self):
         return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
-
+    
     tag_toplevel = 'Record'
 
     def sources(self, start=datetime.min, end=datetime.max):
@@ -185,7 +187,7 @@ class GuardianObserver(XMLCorpus):
         'context_display_name': 'publication'
     }
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         field_vals = document['fieldValues']
         target_filename = "{}_{}_{}.pdf".format(
             field_vals['pub_id'],
@@ -229,12 +231,10 @@ class GuardianObserver(XMLCorpus):
                     break
         if not image_path:
             return []
-        image_urls = [url_for(
-            'api.api_get_media',
-            corpus=self.es_index,
-            image_path=image_path,
+        image_urls = [media_url(
+            corpus_name,
+            image_path,
             filename=filename,
-            _external=True
         )]
         pdf_info = {
             "pageNumbers": [1], #change from 0-indexed to real page

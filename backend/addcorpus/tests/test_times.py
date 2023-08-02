@@ -7,7 +7,17 @@ import pytest
 from addcorpus import load_corpus
 
 
-def test_times_source(test_app):
+@pytest.fixture()
+def times_test_settings(settings):
+    settings.CORPORA = {
+        'times': join(settings.BASE_DIR, 'corpora/times/times.py')
+    }
+    settings.TIMES_DATA = join(settings.BASE_DIR, 'addcorpus/tests')
+    settings.TIMES_ES_INDEX = 'times-test'
+
+
+
+def test_times_source(times_test_settings):
     '''
     Verify that times source files are read correctly.
     '''

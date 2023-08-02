@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 
 import logging
 logger = logging.getLogger('indexing')

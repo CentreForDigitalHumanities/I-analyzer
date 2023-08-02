@@ -6,10 +6,10 @@ from os import makedirs, remove
 from typing import Optional
 from zipfile import ZipFile, BadZipFile
 
+from django.conf import settings
+
 from addcorpus import extract, filters
 from addcorpus.corpus import Field, XMLCorpus
-from flask import current_app
-
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
@@ -35,11 +35,13 @@ class Rechtspraak(XMLCorpus):
     description = "Open data of (anonymised) court rulings of the Dutch judicial system"
     min_date = datetime(year=1900, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=6)
-    data_directory = current_app.config['RECHTSPRAAK_DATA']
-    es_index = current_app.config['RECHTSPRAAK_ES_INDEX']
-    language = 'dutch'
-    image = current_app.config['RECHTSPRAAK_IMAGE']
+    data_directory = settings.RECHTSPRAAK_DATA
+    es_index = getattr(settings, 'RECHTSPRAAK_ES_INDEX', 'rechtspraak')
+    image = 'rechtszaal.jpeg'
+    description_page = 'rechtspraak.md'
     toplevel_zip_file = 'OpenDataUitspraken.zip'
+    languages = ['nl']
+    category = 'ruling'
 
     @property
     def es_settings(self):
@@ -273,6 +275,7 @@ class Rechtspraak(XMLCorpus):
             extractor=rdf_description_extractor(
                 'dcterms:title', section='html'),
             results_overview=True,
+            search_field_core=True,
         ),
         Field(
             name='abstract',
@@ -291,6 +294,7 @@ class Rechtspraak(XMLCorpus):
                 extract.Constant('Content not available')
             ),
             csv_core=True,
+            search_field_core=True,
         ),
         Field(
             name='url',

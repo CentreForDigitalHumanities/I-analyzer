@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
-import { Normalizer, barChartSetNull } from '../../models';
+import { Normalizer, barChartSetNull, ChartType, ChartParameters } from '../../models';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -15,10 +15,17 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
 
+    @Input() freqTable: boolean;
+
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
 
+    @Input() histogram: boolean;
+
     currentNormalizer: Normalizer;
-    @Output() normalizer = new EventEmitter<Normalizer>();
+
+    currentChartType: ChartType = 'bar';
+
+    @Output() chartParameters = new EventEmitter<ChartParameters>();
 
     public queries: string[] = [];
 
@@ -49,14 +56,18 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         }
     }
 
-    onNormalizerChange(): void {
-        this.normalizer.emit(this.currentNormalizer);
+    onChartParametersChange(): void {
+        const chartParameters: ChartParameters = {
+            normalizer: this.currentNormalizer,
+            chartType: this.currentChartType
+        }
+        this.chartParameters.emit(chartParameters);
         const route = {};
         if (this.currentNormalizer !== 'raw' || 'terms') {
             route['normalize'] = this.currentNormalizer;
         } else {
- route['normalize'] = null;
-}
+            route['normalize'] = null;
+            }
 
         this.setParams(route);
     }

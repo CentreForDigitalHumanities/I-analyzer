@@ -5,7 +5,7 @@ import glob
 import logging
 from datetime import datetime
 
-from flask import current_app
+from django.conf import settings
 import openpyxl
 
 from addcorpus.extract import CSV, Metadata
@@ -28,11 +28,13 @@ class GoodReads(CSVCorpus):
 
     min_date=datetime(2007, 1, 1)
     max_date=datetime(2022, 12, 31)
-    data_directory = current_app.config['GOODREADS_DATA']
-    es_index = current_app.config['GOODREADS_ES_INDEX']
-    image = current_app.config['GOODREADS_IMAGE']
-    description_page = current_app.config['GOODREADS_DESCRIPTION_PAGE']
+    data_directory = settings.GOODREADS_DATA
+    es_index = getattr(settings, 'GOODREADS_ES_INDEX', 'goodreads')
+    image = 'DioptraL.png'
+    description_page = 'goodreads.md'
     visualize = []
+    languages = ['en', 'es', 'it', 'pt', 'fr',  'nl', 'de', 'ar', 'af', 'sv', ''] # languages with > 1000 docs
+    category = 'review'
 
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
@@ -213,31 +215,6 @@ class GoodReads(CSVCorpus):
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-        ),
-        Field(
-            name='author',
-            display_name='Author',
-            description='Author of the review.',
-            extractor=CSV(
-                field='author',
-            ),
-            es_mapping={'type': 'keyword'},
-            csv_core=True,
-        ),
-        Field(
-            name='author_gender',
-            display_name='Reviewer gender',
-            description='Gender of the reviewer, guessed based on name.',
-            extractor=CSV(
-                field='author_gender',
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made by authors of these genders. Note that gender was guessed based on username',
-                option_count=6
-            ),
-            csv_core=True,
-            visualizations=['resultscount', 'termfrequency'],
         ),
         Field(
             name='rating_text',

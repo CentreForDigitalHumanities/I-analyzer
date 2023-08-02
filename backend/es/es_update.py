@@ -1,18 +1,16 @@
 import elasticsearch.helpers as es_helpers
-
-from flask import current_app
-
-from ianalyzer.factories.elasticsearch import elasticsearch
+from django.conf import settings
+from ianalyzer.elasticsearch import elasticsearch
 
 import logging
 logger = logging.getLogger('indexing')
 
 def update_index(corpus, corpus_definition, query_model):
-    ''' update information for fields in the index 
-    requires the definition of the functions 
-    - update_query 
+    ''' update information for fields in the index
+    requires the definition of the functions
+    - update_query
     (restricts which documents are updated)
-    - update_body 
+    - update_body
     (defines which fields should be updated with which value)
     in the corpus definition class
     '''
@@ -23,14 +21,14 @@ def update_index(corpus, corpus_definition, query_model):
         size=scroll_size,
         scroll=scroll_timeout,
         body=query_model,
-        timeout=current_app.config['ES_SEARCH_TIMEOUT']
+        timeout=settings.ES_SEARCH_TIMEOUT
     )
     hits = len(results['hits']['hits'])
     total_hits = results['hits']['total']
     for doc in results['hits']['hits']:
         update_body = corpus_definition.update_body(doc)
         update_document(corpus, doc, update_body, client)
-    while hits<total_hits:       
+    while hits<total_hits:
         scroll_id = results['_scroll_id']
         for doc in results['hits']['hits']:
             update_body = corpus_definition.update_body(doc)
@@ -50,7 +48,7 @@ def update_by_query(corpus, corpus_definition, query_generator):
             size=scroll_size,
             scroll=scroll_timeout,
             body=query_model,
-            timeout=current_app.config['ES_SEARCH_TIMEOUT']
+            timeout=settings.ES_SEARCH_TIMEOUT
         )
         if response['updated']==0:
             logger.info('No documents updated for query {}'.format(query_model))
@@ -68,7 +66,7 @@ def update_document(corpus, doc, update_body, client=None):
 
 def get_client(corpus):
     return elasticsearch(corpus)
-    
+
 
 def get_es_settings(corpus, corpus_definition):
     """ Get the settings for the scroll request.
@@ -76,7 +74,7 @@ def get_es_settings(corpus, corpus_definition):
     - scroll_timeout
     - scroll_size
     """
-    server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
-    scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
-    scroll_size = current_app.config['SERVERS'][server]['scroll_page_size']
+    server = settings.CORPUS_SERVER_NAMES.get(corpus, 'default')
+    scroll_timeout = settings.SERVERS[server]['scroll_timeout']
+    scroll_size = settings.SERVERS[server]['scroll_page_size']
     return scroll_timeout, scroll_size

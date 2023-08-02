@@ -6,16 +6,15 @@ locations.
 import logging
 logger = logging.getLogger(__name__)
 import os
-from os.path import join, isfile, splitext
-from datetime import datetime, timedelta
+from os.path import join, splitext
+from datetime import datetime
 import re
-from pprint import pprint
 
-from flask import current_app
+from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
@@ -29,13 +28,9 @@ class Spectators(XMLCorpus):
     description = "A collection of Spectator newspapers"
     min_date = datetime()
     max_date = datetime()
-    data_directory = current_app.config['SPECTATORS_DATA']
-    es_index = current_app.config['SPECTATORS_ES_INDEX']
+    data_directory = settings.SPECTATORS_DATA
+    es_index = getattr(settings, 'SPECTATORS_ES_INDEX', 'spectators')
     language = 'english'
-
-    @property
-    def es_settings(self):
-        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'article'
     tag_entry = 'content'
@@ -44,6 +39,10 @@ class Spectators(XMLCorpus):
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     def sources(self, start=min_date, end=max_date):
         for directory, _, filenames in os.walk(self.data_directory):

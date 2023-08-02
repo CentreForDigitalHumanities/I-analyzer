@@ -1,0 +1,2 @@
+1	basic	corpora for public access
+2	admin	Administration role.

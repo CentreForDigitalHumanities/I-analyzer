@@ -5,22 +5,20 @@ locations.
 
 import logging
 logger = logging.getLogger(__name__)
-import os
 from os.path import join, isfile, splitext
-from datetime import datetime, timedelta
+from datetime import datetime
 import re
-from pprint import pprint
 import openpyxl
-import base64
 
-from flask import current_app, url_for
+from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
+from media.media_url import media_url
 
 # Source files ################################################################
 
@@ -30,12 +28,13 @@ class Periodicals(XMLCorpus):
     description = "A collection of 19th century periodicals"
     min_date = datetime(1800,1,1)
     max_date = datetime(1900,1,1)
-    data_directory = current_app.config['PERIODICALS_DATA']
-    es_index = current_app.config['PERIODICALS_ES_INDEX']
-    language = 'english'
-    image = current_app.config['PERIODICALS_IMAGE']
-    scan_image_type = current_app.config['PERIODICALS_SCAN_IMAGE_TYPE']
-    description_page = current_app.config['PERIODICALS_DESCRIPTION_PAGE']
+    data_directory = settings.PERIODICALS_DATA
+    es_index = getattr(settings, 'PERIODICALS_ES_INDEX', 'periodicals')
+    image = 'Fleet_Street.jpg'
+    scan_image_type = getattr(settings, 'PERIODICALS_SCAN_IMAGE_TYPE', 'image/jpeg')
+    description_page = '19thCenturyUKPeriodicals.md'
+    languages = ['en']
+    category = 'periodical'
 
     @property
     def es_settings(self):
@@ -297,7 +296,7 @@ class Periodicals(XMLCorpus):
         'context_display_name': 'issue'
     }
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         field_vals = document['fieldValues']
         image_directory = field_vals['image_path']
         starting_page = field_vals['id'][:-4]
@@ -308,10 +307,9 @@ class Periodicals(XMLCorpus):
             page_no = str(start_index + page).zfill(4)
             image_name = '{}-{}.JPG'.format(starting_page[:-5], page_no)
             if isfile(join(self.data_directory, image_directory, image_name)):
-                image_list.append(url_for('api.api_get_media',
-                    corpus=self.es_index,
-                    image_path=join(image_directory, image_name),
-                    _external=True
+                image_list.append(media_url(
+                    corpus_name,
+                    join(image_directory, image_name)
                 ))
             else:
                 continue

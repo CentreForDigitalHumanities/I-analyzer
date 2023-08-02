@@ -3,12 +3,12 @@ import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
-import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { findByName } from '../utils/utils';
 
 
 
@@ -108,6 +108,13 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     async initialize() {
         this.setupDropdowns();
         this.showTableButtons = true;
+        if (!this.allVisualizationFields.length) {
+            this.noVisualizations = true;
+        } else {
+            this.noVisualizations = false;
+            this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
+            this.updateParams();
+        }
     }
 
     teardown() {
@@ -127,16 +134,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {
             this.setVisualizationType(params.get('visualize'));
-            const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
+            const visualizedField = findByName(this.corpus.fields, params.get('visualizedField'));
             this.setVisualizedField(visualizedField);
-        } else {
-            if (!this.allVisualizationFields.length) {
-                this.noVisualizations = true;
-            } else {
-                this.noVisualizations = false;
-                this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
-                this.updateParams();
-            }
         }
         this.visualizationTypeDropdownValue = this.visDropdown.find(
             item => item.value === this.visualizationType) || this.visDropdown[0];
@@ -199,27 +198,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         }
     }
 
-    onRequestImage() {
-        const filenamestring = `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
-        const node = document.getElementById(this.chartElementId(this.visualizationType));
-
-        htmlToImage.toPng(node)
-          .then((dataUrl) => {
-            const img = new Image();
-            img.src = dataUrl;
-            const anchor = document.createElement('a');
-            anchor.href = dataUrl;
-            anchor.download = filenamestring;
-            anchor.click();
-          })
-          .catch(function(error) {
-            this.notificationService.showMessage('oops, something went wrong!', error);
-          });
-
-    }
-
-    chartElementId(visualizationType): string {
-        if (visualizationType === 'resultscount' || visualizationType === 'termfrequency') {
+    get chartElementId(): string {
+        if (this.visualizationType === 'resultscount' || this.visualizationType === 'termfrequency') {
             return 'barchart';
         }
         if (this.visualizationType === 'ngram') {

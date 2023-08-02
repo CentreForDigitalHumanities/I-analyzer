@@ -1,25 +1,14 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
-
+import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
-export class DocumentViewComponent implements OnChanges {
-
-    public get contentFields() {
-        return this.fields.filter(field => !field.hidden && field.displayType === 'text_content');
-    }
-
-    public get propertyFields() {
-        return this.fields.filter(field => !field.hidden && field.displayType !== 'text_content');
-    }
-
-    @Input()
-    public fields: CorpusField[] = [];
+export class DocumentViewComponent {
 
     @Input()
     public document: FoundDocument;
@@ -33,22 +22,30 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public documentTabIndex: number;
 
+
+    tabIcons = {
+        text: faBook,
+        scan: faImage,
+    };
+
     public imgNotFound: boolean;
     public imgPath: string;
     public media: string[];
     public allowDownload: boolean;
     public mediaType: string;
 
-    public tabIndex: number;
-
     constructor() { }
 
-    ngOnChanges() {
-        this.tabIndex = this.documentTabIndex;
+    get contentFields() {
+        return this.corpus.fields.filter(field => !field.hidden && field.displayType === 'text_content');
     }
 
-    changeTabIndex(index: number) {
-        this.tabIndex = index;
+    get propertyFields() {
+        return this.corpus.fields.filter(field => !field.hidden && field.displayType !== 'text_content');
+    }
+
+    get showScanTab() {
+        return !!this.corpus.scan_image_type;
     }
 
     isUrlField(field: CorpusField) {

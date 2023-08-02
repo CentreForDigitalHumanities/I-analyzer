@@ -1,8 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { faDiagramProject, faInfoCircle, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faDiagramProject, faInfo, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Corpus } from '../models';
-import { DialogService } from '../services';
 
 @Component({
     selector: 'ia-corpus-header',
@@ -11,17 +9,15 @@ import { DialogService } from '../services';
 })
 export class CorpusHeaderComponent implements OnChanges, OnInit {
     @Input() corpus: Corpus;
-    @Input() currentPage: 'search'|'word-models';
-    @Input() modelDocumentation: string;
+    @Input() currentPage: 'search'|'word-models'|'document'|'info';
 
     searchIcon = faMagnifyingGlass;
     wordModelsIcon = faDiagramProject;
+    infoIcon = faInfo;
 
     wordModelsPresent: boolean;
 
-    faInfo = faInfoCircle;
-
-    constructor(private dialogService: DialogService) {
+    constructor() {
     }
 
     ngOnInit() {
@@ -33,17 +29,4 @@ export class CorpusHeaderComponent implements OnChanges, OnInit {
             this.wordModelsPresent = this.corpus.word_models_present;
         }
     }
-
-    public showCorpusInfo(corpus: Corpus) {
-        this.dialogService.showDescriptionPage(corpus);
-    }
-
-    public showModelInfo() {
-        this.dialogService.showDocumentation(
-            this.corpus.name + '_wm',
-            `Word models of ${this.corpus.title}`,
-            this.modelDocumentation,
-        );
-    }
-
 }

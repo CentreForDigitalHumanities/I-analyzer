@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE TEI.2 PUBLIC "-//DBNL//DTD TEI.2 XML//NL" "https://www.dbnl.org/xml/dtd/teixlite.dtd">
+<TEI.2>
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title type="main">Het singende nachtegaeltje</title>
+                <author>Cornelis Maertsz.</author>
+            </titleStmt>
+            <editionStmt>
+                <edition>
+                    Dit bestand biedt, behoudens een aantal hierna te noemen ingrepen, een diplomatische weergave van <hi rend="i">Het singende nachtegaeltje</hi> van                      Cornelis Maertsz. in de eerste druk uit 1671.</edition>
+                <respStmt>
+                    <resp>
+                        <corr>p. 9: 4 → 5: ‘5 Wel aen, ghy schoone, en ghy nette ieught.’</corr>
+                        <corr>p. 28: david → David: ‘Heeft David in sijn tooren.’</corr>
+                        <corr>p. 41: Veriogen → Verioegen: ‘Verioegen, en sloegen'</corr>
+                        <corr>p. 42: 4. → 3.: ‘3. Weest wellekom Vorsten van Iacobs geslacht.’</corr>
+                        <corr>p. 43: thiemael → thienmael: ‘g' Hebt thiemael, den Philisteen meer ontbloot.’</corr>
+                        <corr>p. 48: leveu → leven: En geeft niemant in't leven.’</corr>
+                        <corr>p. 62: vulcht → vlucht: ‘Soo dacht hy met een snelle vlucht.’</corr>
+                        <corr>p. 63: Hemles → Hemels: ‘Soo comt des Hemels Heer.’</corr>
+                        <corr>p. 67: Danneer → Wanneer: ‘Wanneer als hy op rijst in de kimmen.’</corr>
+                        <corr>p. 69: Buyttn → Buyten: ‘Buyten 't spoor, en buyten 't padt.’</corr>
+                        <corr>p. 69: 3 → 2.: ‘2. 't Geselschap dat u hier toe-lacht.’</corr>
+                        <corr>p. 72: in het origineel is een gedeelte van de tekst slecht leesbaar. De redactie heeft de tekst tussen vierkante haken aangevuld: ‘De                           [y]delhe[y]t der Rijckdommen.’</corr>
+                        <corr>p. 72: in het origineel is een gedeelte van de tekst slecht leesbaar. De redactie heeft de tekst tussen vierkante haken aangevuld:                               'Stem: Doe ic lest wandeld[e] over de Helder.’</corr>
+                        <corr>p. 75: sonde → soude: ‘Dus heerlijck soude werden opgetoyt.’</corr>
+                        <corr>p. 86: bruyseu → bruysen: ‘Haer gollefjes doet bruysen.’</corr>
+                        <corr>p. 86: 5. → 4.: ‘4. Die van laveeren dwers, en langhs.’</corr>
+                        <corr>p. 94: aenschowen → aenschouwen: ‘3. Daer sulje aenschouwen.’</corr>
+                        <corr>p. 96: FN → EN: ‘EN roemt niet van u Landt, noch Stadt.’</corr>
+                        <corr>p. 97: 8. → 3.: ‘3. Den Noor-man hackt gestaegh in 't Wout.’</corr>
+                        <corr>p. 108: koop mans goedt → koop-mans goedt: ‘4. Dan sal al des koop-mans goedt.’</corr>
+                        <corr>p. 110: 3. → 7.: ‘7. Maer soud' ick nu singen uyt.’</corr>
+                        <corr>p. 118: lnsten → lusten: ‘5. Wie soud' lusten nu te schieten.’</corr>
+                        <corr>p. 121: in het origineel is een gedeelte van de tekst onleesbaar. In deze digitale editie is ‘[...]’ geplaatst: Wanneer hy flau[...]r en                          naer.’</corr>
+                        <corr>p. 123: verbldt → verblijdt: ‘'t Zy men is verblijdt.’</corr>
+                        <corr>p. 127: vlas → vals: ‘Geen vals geruchte smeet.’, 'En haet vals sweeren.’</corr>
+                        <corr>p. 127: nytsuyght → uytsuyght: ‘Sijn naesten niet uytsuyght.’</corr>
+                        <corr>p. 127: nytstorten → uytstorten: ‘4. Die sijn gemoedt voor Gode kan uytstorten.’</corr>
+                        <corr>p. 138: fruy → fury: ‘10. Den satan valt in fury aen.’</corr>
+                        <corr>p. 139: flaverny → slaverny: ‘Van des satans slaverny.’</corr>
+                        <corr>p. 141: voleck → vloeck: ‘Sonde, Satan, Wet en vloeck.’</corr>
+                        <corr>p. 144: Steeren → Sterren: ‘Bij de Sterren.’</corr>
+                        <corr>p. 148: wreeet → wreet: ‘Als hy verstont dit wreet bedrijf.’</corr>
+                        <corr>p. 148: Eu → En: ‘5. Eu stapte mee een rassche voet.’</corr>
+                        <corr>p. 151: wrecken → wercken: ‘Het aerdtsche lichaem, en sijn wercken.’</corr>
+                        <corr>p. 159: 4. → 5.: ‘5. Wel wieje dan zijt, en laet u hert.’</corr>
+                        <corr>p. 161: 4. → 3.: ‘3. Komt Ierusalems Vier-schaer.’</corr>
+                        <corr>p. 164: Ie → In: ‘In't eerst veel goedts in t' lest veel straf.’</corr>
+                        <corr>p. 165: deu → den: ‘2. In den Eersten quammer voort.’</corr>
+                        <corr>p. 165: duysterhendt → duysterheydt: ‘Inde duysterheydt.’</corr>
+                        <corr>p. 171: Vermeedert → Vermeerdert: ‘Vermeerdert alle daegh.’</corr>
+                        <corr>p. 187: Het foutieve paginanummer 107 is verbeterd in 187.</corr>
+                        <corr>p. 192: Nn → Nu: ‘Nu noodige vruchten al rijp, en gans.’</corr>
+                        <corr>p. 194: Massouw → Nassouw: ‘Stem: Treurt edel huys Nassouw.’</corr>
+                        <corr>p. 196: gemeeen → gemeen: ‘Dat is dan in 't gemeen.’</corr>
+                        <corr>p. 196: in het origineel is een gedeelte van de tekst slecht leesbaar. De redactie heeft de tekst tussen vierkante haken aangevuld:                              'D[u]s aengeprickelt, soude.’</corr>
+                        <corr>p. 222: minmermeer → nimmermeer: ‘En nimmermeer.’</corr>
+                        <corr>p. 223: bijjven → blijven: ‘Hoe kan met Godt ons Vni blijven.’</corr>
+                        <corr>p. 224: vreuhtbare → vreuchtbare: ‘Veldt-Sangh, Op 't vreuchtbare ghewas in Iulius 1654.’</corr>
+                        <corr>p. 230: ougeluck → ongeluck: ‘My een ongeluck aentreft.’</corr>
+                        <corr>p. 233: schnnent → schijnent: ‘Als dan alleen, wanneer door 't schijnent' licht.’</corr>
+                        <corr>p. 234: d'outucht → d'ontucht: ‘Wanneer d'ontucht haer swang're wangen lost.’</corr>
+                        <corr>p. 239: 1645 → 1654: ‘Wellekomst, Aen Iuffr. Geertruyde Maria Bailly. Gekomen tot Wervershoof den 5. September 1654.’</corr>
+                        <corr>p. 240: Vrouwet → Vrouwe,: ‘WElkom, welkom waerde Vrouwe.’</corr>
+                        <corr>p. 244: nn → nu: ‘Doe nu ons Vaderlandt.’</corr>
+                        <corr>p. 246: lnst → lust: ‘Ghy die aen lust, en weeldt.’</corr>
+                                            </resp>
+                </respStmt>
+            </editionStmt>
+            <extent><!-- aantal pagina's --></extent>
+            <scandetails>
+                <scan type="1">
+                    <extent-detail><!-- pagina range van een sectie --></extent-detail>
+                    <empty-page><!-- specificeer de lege pagina's hier --></empty-page>
+                    <!-- <insert after="na deze pagina begint de insert"> aantal insert pagina's </insert> -->
+                    <insert after=""></insert>
+                </scan>
+                <scan type="fol2">
+                    <empty-page>A1v</empty-page>
+                    <!-- <insert after="na deze pagina begint de insert"> aantal insert pagina's </insert> -->
+                    <insert after=""></insert>
+                   </scan>
+            </scandetails>
+            <publicationStmt>
+                <idno type="titelcode">maer005sing01_01</idno>
+                <idno type="format">DBNL-TEI 1</idno>
+                <availability>
+                    <p>2012 dbnl</p>
+                </availability>
+            </publicationStmt>
+            <notesStmt>
+                <note>DSOLmetadata:yes</note>
+            </notesStmt>
+            <sourceDesc>
+                <bibl>
+                    <idno type="isbn"></idno>
+                    <idno type="usedcopy">exemplaar universiteitsbibliotheek Leiden, signatuur: 1197 H 21</idno>
+                </bibl>
+                <p>Cornelis Maertsz., <hi rend="i">Het singende nachtegaeltje.</hi> Michiel de Groot, Amsterdam 1671.</p>
+                <p>&nbsp;</p>
+            </sourceDesc>
+        </fileDesc>
+        <encodingDesc>
+            <projectDesc>
+                <p>Wijze van coderen: standaard</p>
+                <p></p>
+            </projectDesc>
+        </encodingDesc>
+        <profileDesc>
+            <langUsage>
+                <language id="nl">Nederlands</language>
+            </langUsage>
+        </profileDesc>
+        <ebook>
+            <bibl>
+                <title type="main">Het singende nachtegaeltje</title>
+                <author>Cornelis Maertsz.</author>
+                <idno></idno>
+                <imprint>
+                    <date></date>
+                    <publisher></publisher>
+                    <pubPlace></pubPlace>
+                </imprint>
+            </bibl>
+            <idno type="isbn"></idno>
+            <order>
+                <price curr="euro"></price>
+                <link></link>
+            </order>
+            <blurb><p></p></blurb>
+            <titlepage><p></p></titlepage>
+            <colofon><p></p></colofon>
+        </ebook>
+        <pod>
+            <bibl>
+                <title type="main">Het singende nachtegaeltje</title>
+                <author>Cornelis Maertsz.</author>
+                <idno></idno>
+                <imprint>
+                    <date></date>
+                    <publisher></publisher>
+                    <pubPlace></pubPlace>
+                </imprint>
+            </bibl>
+            <idno type="isbn"></idno>
+            <order>
+                <price curr="euro"></price>
+                <link></link>
+            </order>
+            <blurb><p></p></blurb>
+            <titlepage><p></p></titlepage>
+            <colofon><p></p></colofon>
+        </pod>
+        <revisionDesc>
+            <change>
+                <date>2012-09-17</date>
+                <respStmt>
+                    <name type="person">SW</name>
+                </respStmt>
+                <item>colofon toegevoegd</item>
+            </change>
+        </revisionDesc>
+    </teiHeader>
+<text><body><cf><div type="chapter">
+
+<pb n="1"/>
+<p>&nbsp;</p>
+<p><hi rend="i">Het singende Nachtegaeltje</hi></p>
+<p>Quelende soetelijck, tot stichtelijck vermaeck voor de Christelijck Ieught.</p>
+<p><hi rend="i">Door.</hi></p>
+<p><hi rend="i">Cornelis Maertsz. tot Wervers hoof.</hi></p>
+    <p><hi rend="i">'t Amsterdam</hi> Voor <hi rend="i">Michiel de Groot</hi>, Boek-Verkooper op den Nieuwen Dijck, <hi rend="i">1671</hi>.</p></div></cf>
+<div type="chapter">
+
+    <interpGrp>
+        <interp type="primair" value="meer121"/>
+    </interpGrp>
+<pb n="3"/>
+<head rend="h3">Op De vermakelijke en stightelijke Liedekens van Cornelis Maarts</head>
+<lg type="poem"><l>SOo wort de schrand're Rey der vloeiende <hi rend="i">Poëten</hi></l>
+<l>Door u, o waerde Vriend! vervult,</l>
+<l>Soo wort uw' Naam met Eer vergult,</l>
+<l>En door de Lof-bazuin roem rughtigh uitgekreten,</l>
+<pb n="4"/>
+<l>De <hi rend="i">Dight-kunst</hi> scheen wel eer in <hi rend="i">Amstel</hi> silte Plassen</l>
+<l rend="; 1tab">Alleen te sitten op haer throon,</l>
+<l rend="; 1tab">Maar ghy stelt in uw' Dight ten toon</l>
+<l>Dat in ons <hi rend="i">Wervershoof</hi> nogh eed'ler vrughten wassen.</l>
+<l>Want't baat niet dat men kan een yd'le Pen beswang'ren</l>
+<l rend="; 1tab">Met wonderlijck Gedight,</l>
+<l rend="; 1tab">Indienmen niet en stight,</l>
+<l>Maer met een Heydensch rot vervult de Mond der Sang'ren.</l>
+<l>Ghy soeckt de Af-breuk van het Rijck des Helschen lagers.</l>
+<pb n="5"/>
+<l rend="; 1tab">Dies ghy een Heiligh Ooghwit raakt,</l>
+<l rend="; 1tab">En onse Ieught sticht en vermaakt</l>
+<l>Soo volght ghy 't saligh Spoor des Ioodschen <hi rend="i">Harpe-Slagers</hi>.</l>
+<l>Treet voort dien Eerbaan in, en laat geen Aardsch gewemel</l>
+<l rend="; 1tab">V hind'ren in soo eed'len Saak,</l>
+<l rend="; 1tab">Soo streckt uw 'Lands-lien tot een Baak</l>
+<l>En voert ons dart'le Ieughd al singende ten Hemel.</l>
+</lg><l rend="; 2tab">H. Vander Meer.</l>
+</div>
+<div type="chapter">
+<pb n="243"/>
+<head rend="h3"><hi rend="i">Register der Liedekens.</hi></head>
+<div type="section">
+<head rend="h4"><hi rend="i">A</hi>.</head>
+<table>
+    <row><cell><hi rend="i">A</hi>Ch gesalfde van den Heer.</cell><cell>Pag. 30</cell></row>
+    <row><cell>Als Saul, en david den vyant in't velt.</cell><cell>41</cell></row>
+    <row><cell>Als ick de Son verhoogen sie.</cell><cell>184</cell></row>
+    <row><cell>Als hem de Son begeeft.</cell><cell>189</cell></row>
+    <row><cell>Als ick den Herfst aenschou.</cell><cell>194</cell></row>
+    <row><cell>Als in koelt, de nacht komt overkleeden</cell><cell>208</cell></row>
+    <row><cell>Als van der meer op Eng'le-vleug'len vloog.</cell><cell>232</cell></row>
+</table>
+</div>
+</div>
+</body>
+</text>
+</TEI.2>

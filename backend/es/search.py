@@ -1,5 +1,5 @@
 from typing import Dict
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 
 def get_index(corpus):

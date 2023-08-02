@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="control" *ngIf="queries.length > initialValue.length" >
+        <div *ngIf="showReset" class="control">
             <button class="button" (click)="signalClearQueries()">
                 <span class="icon">
                     <i class="fa fa-times"></i>

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SelectFieldComponent } from './select-field.component';
 import { commonTestBed } from '../common-test-bed';
+import { mockField, mockField2 } from '../../mock-data/corpus';
 
 describe('SelectFieldComponent', () => {
   let component: SelectFieldComponent;
@@ -13,6 +14,7 @@ describe('SelectFieldComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectFieldComponent);
     component = fixture.componentInstance;
+    component.corpusFields = [mockField, mockField2];
     fixture.detectChanges();
   });
 

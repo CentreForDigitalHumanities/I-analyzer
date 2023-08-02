@@ -57,8 +57,4 @@ export class DialogComponent implements OnDestroy, OnInit {
     ngOnDestroy(): void {
         this.dialogEventSubscription.unsubscribe();
     }
-
-    navigate(): void {
-        this.router.navigate(this.footerRouterLink);
-    }
 }

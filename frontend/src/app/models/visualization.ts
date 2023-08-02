@@ -93,6 +93,13 @@ export type FreqTableHeaders = FreqTableHeader[];
 
 export type Normalizer = 'raw'|'percent'|'documents'|'terms';
 
+export type ChartType = 'bar' | 'line' | 'scatter';
+
+export interface ChartParameters {
+    normalizer: Normalizer;
+    chartType: ChartType;
+}
+
 export interface NgramParameters {
     size: number;
     positions: string;
@@ -116,4 +123,8 @@ export const ngramSetNull: NgramParameters = {
 export const barChartSetNull: Object = {
     normalize: null,
     visualizeTerm: null
+};
+
+export interface FieldCoverage {
+    [field: string]: number;
 };

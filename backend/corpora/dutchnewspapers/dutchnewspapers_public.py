@@ -3,19 +3,16 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import logging
-from pprint import pprint
-import random
 import re
-import sys
-from datetime import datetime, timedelta
-from os.path import join, isfile, split, splitext
+from datetime import datetime
+from os.path import join, split, splitext
 import os
 
-from flask import current_app
+from django.conf import settings
 
-from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
+from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years
 from addcorpus import filters
-from addcorpus.extract import Combined, Metadata, XML
+from addcorpus.extract import Metadata, XML
 from addcorpus.load_corpus import corpus_dir
 
 from corpora.utils.constants import document_context
@@ -24,14 +21,22 @@ from addcorpus.es_settings import es_settings
 
 
 class DutchNewspapersPublic(XMLCorpus):
+    '''
+    The public portion of KB newspapers
+
+    Note for django settings: unlike other corpora, this one cannot have any
+    variation in the key: it MUST be `'dutchnewspapers-public'`
+    '''
+
     title = "Public Dutch Newspapers"
     description = "Publicly available collection of Dutch newspapers by the KB"
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
-    data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
-    es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
-    language = 'dutch'
-    image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
+    data_directory = settings.DUTCHNEWSPAPERS_DATA
+    es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
+    image = 'dutchnewspapers.jpg'
+    languages = ['nl']
+    category = 'newspaper'
 
     @property
     def es_settings(self):
@@ -100,8 +105,7 @@ class DutchNewspapersPublic(XMLCorpus):
                         })
                         yield full_path, meta_dict
 
-    titlefile = join(corpus_dir('dutchnewspapers-public'),
-     current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
+    titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
     paper_count = len(papers)

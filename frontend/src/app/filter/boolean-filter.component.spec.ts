@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { mockCorpus3, mockField } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
+import { QueryModel } from '../models';
 
 import { BooleanFilterComponent } from './boolean-filter.component';
 
@@ -15,19 +17,8 @@ describe('BooleanFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BooleanFilterComponent);
     component = fixture.componentInstance;
-    component.filter = {
-        fieldName: 'A yes/no question',
-        description: 'What is the average speed of a swallow?',
-        useAsFilter: false,
-        defaultData: {
-            filterType: 'BooleanFilter',
-            checked: false
-        },
-        currentData: {
-            filterType: 'BooleanFilter',
-            checked: true
-        }
-    };
+    component.queryModel = new QueryModel(mockCorpus3);
+    component.filter = component.queryModel.filterForField(mockField);
     fixture.detectChanges();
   });
 

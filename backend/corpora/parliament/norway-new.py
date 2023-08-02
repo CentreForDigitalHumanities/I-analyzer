@@ -1,9 +1,6 @@
-import csv
 from glob import glob
 from datetime import datetime
-import re
-from flask import current_app
-import os
+from django.conf import settings
 
 from addcorpus.extract import Combined, Constant, CSV
 from addcorpus.corpus import CSVCorpus
@@ -53,10 +50,10 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
     description = "Speeches from the Storting"
     min_date = datetime(year=1998, month=1, day=1)
     max_date = datetime(year=2016, month=12, day=31)
-    data_directory = current_app.config['PP_NORWAY_NEW_DATA']
-    es_index = current_app.config['PP_NORWAY_NEW_INDEX']
+    data_directory = settings.PP_NORWAY_NEW_DATA
+    es_index = getattr(settings, 'PP_NORWAY_NEW_INDEX', 'parliament-norway-new')
     image = 'norway.JPG'
-    language = 'norwegian'
+    languages = ['no']
     description_page = 'norway-new.md'
     document_context = document_context()
 

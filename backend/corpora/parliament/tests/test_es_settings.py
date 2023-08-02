@@ -11,35 +11,35 @@ def test_stopwords(clean_nltk_data_directory):
 
     cases = [
         {
-            'language': 'english',
+            'language': 'en',
             'stopwords': ['the', 'i', 'have']
         },
         {
-            'language': 'dutch',
+            'language': 'nl',
             'stopwords': ['ik']
         },
         {
-            'language': 'german',
+            'language': 'de',
             'stopwords': ['ich']
         },
         {
-            'language': 'french',
+            'language': 'fr',
             'stopwords': ['je']
         },
         {
-            'language': 'danish',
+            'language': 'da',
             'stopwords': ['jeg']
         },
         {
-            'language': 'norwegian',
+            'language': 'no',
             'stopwords': ['jeg']
         },
         {
-            'language': 'swedish',
+            'language': 'sv',
             'stopwords': ['jag']
         },
         {
-            'language': 'finnish',
+            'language': 'fi',
             'stopwords': ['minä']
         }
     ]
@@ -49,7 +49,7 @@ def test_stopwords(clean_nltk_data_directory):
         for word in case['stopwords']:
             assert word in stopwords
 
-def test_no_nltk_download_in_serialization(test_app, clean_nltk_data_directory):
+def test_no_nltk_download_in_serialization(parliament_corpora_settings, clean_nltk_data_directory):
     """
     Test that corpus.serialize() does not retrieve the nltk data
     """

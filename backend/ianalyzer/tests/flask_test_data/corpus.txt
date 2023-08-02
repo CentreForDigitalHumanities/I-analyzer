@@ -1,0 +1,13 @@
+1	parliament-netherlands	parliament-netherlands corpus
+2	parliament-uk	parliament-uk corpus
+3	parliament-canada	parliament-canada corpus
+4	parliament-france	parliament-france corpus
+5	parliament-sweden	parliament-sweden corpus
+6	parliament-sweden-old	parliament-sweden-old corpus
+7	parliament-denmark	parliament-denmark corpus
+8	parliament-denmark-new	parliament-denmark-new corpus
+9	parliament-norway	parliament-norway corpus
+10	parliament-norway-new	parliament-norway-new corpus
+11	parliament-finland	parliament-finland corpus
+12	troonredes	troonredes corpus
+13	parliament-ireland	Speeches from the Dáil Éireann and Seanad Éireann

@@ -4,6 +4,7 @@ export const environment = {
     aboutPage: 'people-parliament.md',
     apiUrl: '/api',
     adminUrl: '/admin',
-    wordModelsUrl: '/wordmodels/',
-    logos: []
+    samlLogoutUrl: '/users/saml2/logout/',
+    logos: [],
+    showSolis: true
 };

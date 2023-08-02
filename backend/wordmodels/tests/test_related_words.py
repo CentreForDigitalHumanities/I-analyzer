@@ -4,7 +4,7 @@ import numpy as np
 from wordmodels.visualisations import get_diachronic_contexts
 from wordmodels.conftest import TEST_BINS
 
-def assert_similarity_format(item, must_specify_time = True):
+def assert_similarity_format(item, must_specify_time=True):
     assert 'key' in item and type(item['key']) == str
 
     assert 'similarity' in item
@@ -14,7 +14,7 @@ def assert_similarity_format(item, must_specify_time = True):
         assert 'time' in item and type(item['time']) == str
 
 
-def test_context_time_interval(test_app, mock_corpus):
+def test_context_time_interval(mock_corpus):
     case = {
         'term': 'alice',
         'bin_without_match':'1810-1839',
@@ -24,7 +24,7 @@ def test_context_time_interval(test_app, mock_corpus):
     }
     term = case.get('term')
 
-    _, _, times, results = get_diachronic_contexts(term, mock_corpus, 5)
+    _, times, results = get_diachronic_contexts(term, mock_corpus, 5)
 
     bin_without_match = case.get('bin_without_match')
     if bin_without_match:
@@ -40,7 +40,7 @@ def test_context_time_interval(test_app, mock_corpus):
     # check format
 
     for item in context:
-        assert_similarity_format(item, must_specify_time = False)
+        assert_similarity_format(item, must_specify_time=False)
 
 
     # check common-sense nearest neighbours
@@ -51,12 +51,8 @@ def test_context_time_interval(test_app, mock_corpus):
     most_similar_term = sorted_by_similarity[0]['key']
     assert most_similar_term == case.get('similar1')
 
-def test_diachronic_context(test_app, mock_corpus):
-    word_list, word_data, times, _ = get_diachronic_contexts('she', mock_corpus)
-    # test format
-
-    for item in word_list:
-        assert_similarity_format(item, must_specify_time=False)
+def test_diachronic_context(mock_corpus):
+    word_data, times, _ = get_diachronic_contexts('she', mock_corpus)
 
     for item in word_data:
         assert_similarity_format(item)

@@ -5,22 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask",
+            "name": "Python: Django",
             "type": "python",
             "request": "launch",
-            "module": "flask",
-            "cwd": "${workspaceFolder}/backend",
-            "env": {
-                "FLASK_APP": "app.py",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
-            },
+            "program": "${workspaceFolder}/backend/manage.py",
             "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
+                "runserver"
             ],
-            "jinja": true
-        }
+            "django": true,
+            "justMyCode": true
+        },
     ]
 }

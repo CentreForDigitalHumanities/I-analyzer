@@ -36,7 +36,8 @@
             </form>
         </section>
         <footer class="modal-card-foot">
-            <button class="button is-primary" (click)="confirmDownload()">
+            <button class="button is-primary" (click)="confirmDownload()"
+                [class.is-loading]="hasConfirmed">
                 Download
             </button>
             <button class="button" (click)="cancelDownload()">

@@ -11,7 +11,7 @@ import re
 from bs4 import BeautifulSoup
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor, clean_value
 
-from flask import current_app
+from django.conf import settings
 
 def format_role(values):
     id, roles = values
@@ -42,8 +42,8 @@ class ParliamentFinland(Parliament, XMLCorpus):
     title = 'People and Parliament (Finland)'
     description = 'Speeches from the eduskunta'
     min_date = datetime(year=1907, month=1, day=1)
-    data_directory = current_app.config['PP_FINLAND_DATA']
-    es_index = current_app.config['PP_FINLAND_INDEX']
+    data_directory = settings.PP_FINLAND_DATA
+    es_index = getattr(settings, 'PP_FINLAND_INDEX', 'parliament-finland')
 
     def sources(self, start, end):
         for xml_file in glob('{}/**/*.xml'.format(self.data_directory), recursive=True):
@@ -62,7 +62,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
 
             yield xml_file, metadata
 
-    language = 'finnish'
+    languages = ['fi']
     description_page = 'finland.md'
     image = 'finland.jpg'
 
