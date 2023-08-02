@@ -16,7 +16,7 @@ from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
 from addcorpus.constants import CATEGORIES
-
+from addcorpus.utils import serialize_datetime
 
 class CorpusDefinition(object):
     '''
@@ -262,12 +262,7 @@ class CorpusDefinition(object):
             elif ca[0] == 'category':
                 corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
             elif type(ca[1]) == datetime:
-                timedict = {'year': ca[1].year,
-                            'month': ca[1].month,
-                            'day': ca[1].day,
-                            'hour': ca[1].hour,
-                            'minute': ca[1].minute}
-                corpus_dict[ca[0]] = timedict
+                corpus_dict[ca[0]] = serialize_datetime(ca[1])
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
@@ -794,13 +789,7 @@ class FieldDefinition(object):
         field_dict = {}
         for key, value in self.__dict__.items():
             if key == 'search_filter' and value != None:
-                filter_name = str(type(value)).split(
-                    sep='.')[-1][:-2]
-                search_dict = {'name': filter_name}
-                for search_key, search_value in value.__dict__.items():
-                    if search_key == 'search_filter' or search_key != 'field':
-                        search_dict[search_key] = search_value
-                field_dict['search_filter'] = search_dict
+                field_dict['search_filter'] = value.serialize()
             elif key != 'extractor':
                 field_dict[key] = value
 
