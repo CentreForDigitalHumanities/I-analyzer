@@ -2,10 +2,8 @@ import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/co
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
+import { Corpus, QueryModel, CorpusField, ngramSetNull } from '../models/index';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { DialogService } from '../services';
-import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { findByName } from '../utils/utils';
@@ -64,7 +62,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     faQuestion = faCircleQuestion;
 
     constructor(
-        private dialogService: DialogService,
         route: ActivatedRoute,
         router: Router
     ) {
@@ -124,9 +121,10 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
             Object.assign(
                 {
                     visualize: null,
-                    visualizedField: null
+                    visualizedField: null,
+                    normalize: null,
+                    compareTerm: null
                 },
-                barChartSetNull,
                 ngramSetNull
         ));
     }

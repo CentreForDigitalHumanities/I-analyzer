@@ -1,12 +1,15 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+
+import { ParamDirective } from '../../../param/param-directive';
 
 @Component({
     selector: 'ia-term-comparison-editor',
     templateUrl: './term-comparison-editor.component.html',
     styleUrls: ['./term-comparison-editor.component.scss']
 })
-export class TermComparisonEditorComponent implements OnChanges {
+export class TermComparisonEditorComponent extends ParamDirective implements OnChanges {
     @Input() initialValue = []; // starting value
     @Input() termLimit = 10;
 
@@ -18,7 +21,26 @@ export class TermComparisonEditorComponent implements OnChanges {
 
     faCheck = faCheck;
 
-    constructor() { }
+    constructor(
+        route: ActivatedRoute,
+        router: Router
+    ) { super(route, router)}
+
+    initialize() {
+        
+    }
+
+    teardown() {
+        this.setParams({ compareTerm: null });
+    }
+
+    setStateFromParams(params: Params) {
+        if (params.has('compareTerm')) {
+            this.queries = params.getAll('compareTerm');
+            this.queriesChanged.emit(this.queries);
+            this.showReset = true;
+        }
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         this.queries = this.initialValue;
@@ -28,6 +50,7 @@ export class TermComparisonEditorComponent implements OnChanges {
     }
 
     confirmQueries() {
+        this.setParams({ compareTerm: this.queries });
         this.queriesChanged.emit(this.queries);
         this.showReset = true;
     }

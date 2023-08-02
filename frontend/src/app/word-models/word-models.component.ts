@@ -1,17 +1,18 @@
-import { Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import {BehaviorSubject, combineLatest as combineLatest } from 'rxjs';
+import { Component, DoCheck, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
-import { CorpusService, SearchService } from '../services';
+import { CorpusService } from '../services';
 import { AuthService } from '../services/auth.service';
 import { WordmodelsService } from '../services/wordmodels.service';
+import { ParamDirective } from '../param/param-directive';
 
 @Component({
     selector: 'ia-word-models',
     templateUrl: './word-models.component.html',
     styleUrls: ['./word-models.component.scss'],
 })
-export class WordModelsComponent implements DoCheck, OnInit {
+export class WordModelsComponent extends ParamDirective implements DoCheck {
     @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -19,16 +20,13 @@ export class WordModelsComponent implements DoCheck, OnInit {
     user: User;
     corpus: Corpus;
 
-
     queryText: string;
     asTable = false;
     palette: string[];
 
     activeQuery: string;
 
-    tabIndex = new BehaviorSubject<'relatedwords' | 'wordsimilarity'>(
-        'relatedwords'
-    );
+    currentTab: 'relatedwords' | 'wordsimilarity'
 
     tabs = {
         relatedwords: {
@@ -50,15 +48,13 @@ export class WordModelsComponent implements DoCheck, OnInit {
     queryFeedback: QueryFeedback;
 
     constructor(
+        route: ActivatedRoute,
+        router: Router,
         private corpusService: CorpusService,
         private authService: AuthService,
         private wordModelsService: WordmodelsService,
-        private router: Router
     ) {
-        this.tabIndex.subscribe((tab) => {
-            // reset error message when switching tabs
-            this.errorMessage = undefined;
-        });
+        super(route, router);
     }
 
     ngDoCheck() {
@@ -67,16 +63,34 @@ export class WordModelsComponent implements DoCheck, OnInit {
         }
     }
 
-    async ngOnInit(): Promise<void> {
+    async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
+    }
+
+    teardown(): void {
+        this.setParams({
+            query: null,
+            show: null
+        });
+    }
+
+    setStateFromParams(params: Params) {
+        if (params.has('query')) {
+            this.queryText = params.get('query');
+            this.activeQuery = this.queryText;
+            this.queryFeedback = { status: 'success' };
+        }
+        if (params.has('show')) {
+            this.currentTab = params.get('show');
+        } else (this.currentTab = 'relatedwords')
     }
 
     setCorpus(corpus: Corpus): void {
         if (corpus && (!this.corpus || this.corpus.name !== corpus.name)) {
             this.corpus = corpus;
             if (!this.corpus.word_models_present) {
-                this.router.navigate(['search', this.corpus.name]);
+                // this.router.navigate(['search', this.corpus.name]);
             }
         }
     }
@@ -85,6 +99,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
     submitQuery(): void {
         this.errorMessage = undefined;
         this.activeQuery = this.queryText;
+        this.setParams({ query: this.activeQuery });
         this.validateQuery();
         if (this.queryFeedback === undefined) {
             this.wordModelsService
@@ -123,13 +138,15 @@ export class WordModelsComponent implements DoCheck, OnInit {
         this.errorMessage = event.message;
     }
 
-    get currentTab(): any {
-        return this.tabs[this.tabIndex.value];
+    setCurrentTab(tab: 'relatedwords' | 'wordsimilarity'): void {
+        this.currentTab = tab;
+        this.errorMessage = undefined;
+        this.setParams({ show: tab });
     }
 
     get imageFileName(): string {
-        if (this.tabIndex && this.corpus) {
-            return `${this.currentTab.name}_${this.corpus.name}.png`;
+        if (this.currentTab && this.corpus) {
+            return `${this.currentTab}_${this.corpus.name}.png`;
         }
     }
 

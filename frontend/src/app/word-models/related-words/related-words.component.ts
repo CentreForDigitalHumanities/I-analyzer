@@ -1,17 +1,21 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services/index';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+
 import { showLoading } from '../../utils/utils';
-import { BehaviorSubject } from 'rxjs';
+import { Corpus, WordSimilarity } from '../../models';
+import { WordmodelsService } from '../../services/index';
+import { ParamDirective } from '../../param/param-directive';
+
 
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
     styleUrls: ['./related-words.component.scss']
 })
-export class RelatedWordsComponent implements OnChanges {
+export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
@@ -28,7 +32,13 @@ export class RelatedWordsComponent implements OnChanges {
 
     faCheck = faCheck;
 
-    constructor(private wordModelsService: WordmodelsService) { }
+    constructor(
+        route: ActivatedRoute,
+        router: Router,
+        private wordModelsService: WordmodelsService
+    ) {
+        super(route, router);
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus || changes.queryText) {
@@ -36,7 +46,22 @@ export class RelatedWordsComponent implements OnChanges {
         }
     }
 
+    initialize() {
+        
+    }
+
+    teardown() {
+        this.setParams({ neighbours: null });
+    }
+
+    setStateFromParams(params: Params) {
+        if (params.has('neighbours')) {
+            this.neighbours = params.get('neighbours');
+        }
+    }
+
     getData(): void {
+        this.setParams({ neighbours: this.neighbours });
         showLoading(this.isLoading, this.getTotalData());
     }
 
