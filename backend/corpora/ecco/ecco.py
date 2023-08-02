@@ -31,8 +31,8 @@ class Ecco(XMLCorpus):
 
     @property
     def es_settings(self):
-        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
-    
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+
     data_directory = settings.ECCO_DATA
     es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
