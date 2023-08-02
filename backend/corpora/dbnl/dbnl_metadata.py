@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-from addcorpus.corpus import CSVCorpusDefinition, Field
+from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.extract import CSV, Combined, Pass
 import corpora.dbnl.utils as utils
 
@@ -42,10 +42,10 @@ class DBNLMetadata(CSVCorpusDefinition):
     ]
 
     fields = [
-        Field(name=name, extractor=CSV(column))
+        FieldDefinition(name=name, extractor=CSV(column))
         for name, column in _singular_fields
     ] + [
-        Field(
+        FieldDefinition(
             name='genre',
             extractor=Pass(
                 utils.filter_by(
@@ -55,14 +55,14 @@ class DBNLMetadata(CSVCorpusDefinition):
                 transform=utils.join_values,
             )
         ),
-        Field(
+        FieldDefinition(
             name='periodical',
             extractor=CSV('achternaam', multiple=True,
                 transform=utils.get_periodical
             )
         )
     ] + [
-        Field(
+        FieldDefinition(
             'author_' + name,
             extractor=utils.by_author(
                 CSV(column, multiple=True),
@@ -70,7 +70,7 @@ class DBNLMetadata(CSVCorpusDefinition):
         )
         for name, column in _simple_author_fields
     ] + [
-        Field(
+        FieldDefinition(
             'author_name',
             extractor=utils.by_author(
                 Combined(
@@ -81,7 +81,7 @@ class DBNLMetadata(CSVCorpusDefinition):
                 ),
             )
         ),
-        Field(
+        FieldDefinition(
             'author_gender',
             extractor=utils.by_author(
                 CSV('vrouw', multiple=True,

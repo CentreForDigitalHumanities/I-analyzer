@@ -704,7 +704,7 @@ class CSVCorpusDefinition(CorpusDefinition):
 
 # Fields ######################################################################
 
-class Field(object):
+class FieldDefinition(object):
     '''
     Fields may hold the following data:
     - a short hand name (name)

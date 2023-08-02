@@ -1,7 +1,7 @@
 import os
 import datetime
 
-from addcorpus.corpus import CSVCorpusDefinition, Field
+from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.extract import CSV
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
@@ -26,12 +26,12 @@ class TaggingMockCorpus(CSVCorpusDefinition):
     category = 'book'
 
     fields = [
-        Field(
+        FieldDefinition(
             name='id',
             extractor=CSV('id'),
             es_mapping=keyword_mapping()
         ),
-        Field(
+        FieldDefinition(
             name='content',
             extractor=CSV('content'),
             es_mapping=main_content_mapping(),

@@ -1,5 +1,5 @@
 from datetime import datetime
-from addcorpus.corpus import CorpusDefinition, Field
+from addcorpus.corpus import CorpusDefinition, FieldDefinition
 import random
 
 TOTAL_DOCUMENTS = 11000
@@ -46,14 +46,14 @@ class LargeMockCorpus(CorpusDefinition):
             'content': generate_text()
         }]
 
-    date = Field(
+    date = FieldDefinition(
         name = 'date',
         es_mapping = {
             'type': 'date',
         }
     )
 
-    content = Field(
+    content = FieldDefinition(
         name = 'content',
         es_mapping = {
             'type': 'text'

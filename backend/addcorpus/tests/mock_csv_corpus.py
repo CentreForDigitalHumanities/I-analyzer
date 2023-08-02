@@ -1,4 +1,4 @@
-from addcorpus.corpus import CSVCorpusDefinition, Field
+from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.extract import CSV
 import os
 import datetime
@@ -28,11 +28,11 @@ class MockCSVCorpus(CSVCorpusDefinition):
                 }
 
     fields = [
-        Field(
+        FieldDefinition(
             name = 'character',
             extractor = CSV(field = 'character')
         ),
-        Field(
+        FieldDefinition(
             name = 'lines',
             extractor = CSV(
                 field = 'line',

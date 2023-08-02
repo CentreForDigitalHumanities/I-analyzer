@@ -4,7 +4,7 @@ import re
 from tqdm import tqdm
 
 from django.conf import settings
-from addcorpus.corpus import XMLCorpusDefinition, Field
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
@@ -75,7 +75,7 @@ class DBNL(XMLCorpusDefinition):
                path = os.path.join(xml_dir, filename)
                yield id, path
 
-    title_field = Field(
+    title_field = FieldDefinition(
         name='title',
         display_name='Title',
         description='Title of the book',
@@ -87,7 +87,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['wordcloud']
     )
 
-    title_id = Field(
+    title_id = FieldDefinition(
         name='title_id',
         display_name='Title ID',
         description='ID of the book',
@@ -95,7 +95,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=keyword_mapping()
     )
 
-    id = Field(
+    id = FieldDefinition(
         name='id',
         es_mapping=keyword_mapping(),
         extractor=Combined(
@@ -105,7 +105,7 @@ class DBNL(XMLCorpusDefinition):
         )
     )
 
-    volumes = Field(
+    volumes = FieldDefinition(
         name='volumes',
         display_name='Volumes',
         description='Number of volumes in which this book was published',
@@ -114,7 +114,7 @@ class DBNL(XMLCorpusDefinition):
     )
 
     # text version of the year, can include things like 'ca. 1500', '14e eeuw'
-    year_full = Field(
+    year_full = FieldDefinition(
         name='year_full',
         display_name='Publication year',
         description='Year of publication in text format. May describe a range.',
@@ -125,7 +125,7 @@ class DBNL(XMLCorpusDefinition):
     )
 
     # version of the year that is always a number
-    year_int = Field(
+    year_int = FieldDefinition(
         name='year',
         display_name='Publication year (est.)',
         description='Year of publication as a number. May not be an estimate.',
@@ -140,7 +140,7 @@ class DBNL(XMLCorpusDefinition):
         visualization_sort='key',
     )
 
-    edition = Field(
+    edition = FieldDefinition(
         name='edition',
         display_name='Edition',
         description='Edition of the book',
@@ -148,7 +148,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=text_mapping(),
     )
 
-    periodical = Field(
+    periodical = FieldDefinition(
         name='periodical',
         display_name='Periodical',
         description='Periodical in which the text appeared',
@@ -160,7 +160,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['resultscount', 'termfrequency'],
     )
 
-    author = Field(
+    author = FieldDefinition(
         name='author',
         display_name='Author',
         description='Name(s) of the author(s)',
@@ -172,7 +172,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['resultscount', 'termfrequency'],
     )
 
-    author_id = Field(
+    author_id = FieldDefinition(
         name='author_id',
         display_name='Author ID',
         description='ID(s) of the author(s)',
@@ -180,7 +180,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
     )
 
-    author_year_of_birth = Field(
+    author_year_of_birth = FieldDefinition(
         name='author_year_of_birth',
         display_name='Author year of birth',
         description='Year in which the author(s) was(/were) born',
@@ -188,7 +188,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=text_mapping(),
     )
 
-    author_year_of_death = Field(
+    author_year_of_death = FieldDefinition(
         name='author_year_of_death',
         display_name='Author year of death',
         description='Year in which the author(s) died',
@@ -199,7 +199,7 @@ class DBNL(XMLCorpusDefinition):
     # the above fields are also given as proper dates in geb_datum / overl_datum
     # but implementing them as date fields requires support for multiple values
 
-    author_place_of_birth = Field(
+    author_place_of_birth = FieldDefinition(
         name='author_place_of_birth',
         display_name='Author place of birth',
         description='Place the author(s) was(/were) born',
@@ -207,7 +207,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
     )
 
-    author_place_of_death = Field(
+    author_place_of_death = FieldDefinition(
         name='author_place_of_death',
         display_name='Author place of death',
         description='Place where the author(s) died',
@@ -215,7 +215,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
     )
 
-    author_gender = Field(
+    author_gender = FieldDefinition(
         name='author_gender',
         display_name='Author gender',
         description='Gender of the author(s)',
@@ -227,7 +227,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['resultscount', 'termfrequency'],
     )
 
-    url = Field(
+    url = FieldDefinition(
         name='url',
         display_name='View on DBNL',
         description='Link to the book\'s page in DBNL',
@@ -235,7 +235,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
     )
 
-    genre = Field(
+    genre = FieldDefinition(
         name='genre',
         display_name='Genre',
         description='Genre of the book',
@@ -247,7 +247,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['resultscount', 'termfrequency'],
     )
 
-    language = Field(
+    language = FieldDefinition(
         name='language',
         display_name='Language',
         description='Language in which the book is written',
@@ -286,7 +286,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['resultscount', 'termfrequency'],
     )
 
-    language_code = Field(
+    language_code = FieldDefinition(
         name='language_code',
         display_name='Language code',
         description='ISO code of the text\'s language',
@@ -313,7 +313,7 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
     )
 
-    chapter_title = Field(
+    chapter_title = FieldDefinition(
         name='chapter_title',
         display_name='Chapter',
         extractor=Backup(
@@ -334,7 +334,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['wordcloud'],
     )
 
-    chapter_index = Field(
+    chapter_index = FieldDefinition(
         name='chapter_index',
         display_name='Chapter index',
         description='Order of this chapter within the book',
@@ -346,7 +346,7 @@ class DBNL(XMLCorpusDefinition):
         sortable=True,
     )
 
-    content = Field(
+    content = FieldDefinition(
         name='content',
         display_name='Content',
         description='Text in this chapter',
@@ -365,7 +365,7 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['wordcloud', 'ngram'],
     )
 
-    has_content = Field(
+    has_content = FieldDefinition(
         name='has_content',
         display_name='Content available',
         description='Whether the contents of this book are available on I-analyzer',
@@ -378,7 +378,7 @@ class DBNL(XMLCorpusDefinition):
         ),
     )
 
-    is_primary = Field(
+    is_primary = FieldDefinition(
         name='is_primary',
         display_name='Primary',
         description='Whether this is the primary document for this book - each book has only one primary document',

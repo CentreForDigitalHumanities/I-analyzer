@@ -13,7 +13,7 @@ from django.conf import settings
 
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, Field
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from corpora.utils.constants import document_context
@@ -104,7 +104,7 @@ class Ecco(XMLCorpusDefinition):
     @property
     def fields(self):
         return [
-            Field(
+            FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
@@ -112,7 +112,7 @@ class Ecco(XMLCorpusDefinition):
             XML(attribute='id'),
             transform=lambda x: '_'.join(x))
         ),
-            Field(
+            FieldDefinition(
                 name='year',
                 display_name='Year',
                 description='Publication year.',
@@ -130,7 +130,7 @@ class Ecco(XMLCorpusDefinition):
                 ),
                 extractor=Metadata('pubDateStart', transform=lambda x: x[:4])
             ),
-            Field(
+            FieldDefinition(
                 name='title',
                 display_name='Title',
                 description='The title of the book',
@@ -145,7 +145,7 @@ class Ecco(XMLCorpusDefinition):
                 ),
                 visualizations=['wordcloud']
             ),
-            Field(
+            FieldDefinition(
                 name='content',
                 display_name='Content',
                 display_type='text_content',
@@ -157,7 +157,7 @@ class Ecco(XMLCorpusDefinition):
                               flatten=True),
                 visualizations=['wordcloud']
             ),
-            Field(
+            FieldDefinition(
                 name='ocr',
                 display_name='OCR quality',
                 description='Optical character recognition quality',
@@ -172,7 +172,7 @@ class Ecco(XMLCorpusDefinition):
                     )
                 ),
             ),
-            Field(
+            FieldDefinition(
                 name='author',
                 display_name='Author',
                 description='The author of the book',
@@ -186,28 +186,28 @@ class Ecco(XMLCorpusDefinition):
                     option_count=1000
                 )
             ),
-            Field(
+            FieldDefinition(
                 name='page',
                 display_name='Page number',
                 es_mapping={'type': 'integer'},
                 description='Number of the page on which match was found',
                 extractor=XML(attribute='id', transform=lambda x: int(int(x)/10))
             ),
-            Field(
+            FieldDefinition(
                 name='pub_place',
                 display_name='Publication place',
                 description='Where the book was published',
                 es_mapping=keyword_mapping(True),
                 extractor=Metadata('publicationPlaceComposed')
             ),
-            Field(
+            FieldDefinition(
                 name='collation',
                 display_name='Collation',
                 description='Information about the volume',
                 es_mapping=keyword_mapping(),
                 extractor=Metadata('collation')
             ),
-            Field(
+            FieldDefinition(
                 name='category',
                 display_name='Category',
                 description='Which category this book belongs to',
@@ -219,34 +219,34 @@ class Ecco(XMLCorpusDefinition):
                 ),
                 visualizations=['resultscount', 'termfrequency']
             ),
-            Field(
+            FieldDefinition(
                 name='imprint',
                 display_name='Printer',
                 description='Information of the printer and publisher of the book',
                 es_mapping=keyword_mapping(True),
                 extractor=Metadata('imprintFull')
             ),
-            Field(
+            FieldDefinition(
                 name='library',
                 display_name='Source library',
                 description='The source library of the book',
                 es_mapping=keyword_mapping(True),
                 extractor=Metadata('sourceLibrary')
             ),
-            Field(
+            FieldDefinition(
                 name='holdings',
                 display_name='Holding libraries',
                 description='Libraries holding a copy of the book',
                 extractor=Metadata('holdings')
             ),
-            Field(
+            FieldDefinition(
                 name='volume',
                 display_name='Volume',
                 description='The book volume',
                 es_mapping=keyword_mapping(),
                 extractor=Metadata('Volume')
             ),
-            Field(
+            FieldDefinition(
                 name='image_path',
                 hidden=True,
                 extractor=Combined(Metadata('image_dir'), Metadata('id'), transform=lambda x: '/'.join(x))

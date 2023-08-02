@@ -1,5 +1,5 @@
 from datetime import datetime
-from addcorpus.corpus import Field, CSVCorpusDefinition
+from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
 from addcorpus.extract import CSV
 import os
 
@@ -24,7 +24,7 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
             yield os.path.join(here, 'sources_mixed_language', csv_file), {}
 
 
-    content = Field(
+    content = FieldDefinition(
         name = 'content',
         es_mapping= {
             'type': 'text',
@@ -32,7 +32,7 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
         extractor = CSV('content')
     )
 
-    language = Field(
+    language = FieldDefinition(
         name = 'language',
         es_mapping= {
             'type': 'keyword'
