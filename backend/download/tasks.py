@@ -33,7 +33,7 @@ def complete_failed_download(request, exc, traceback, log_id):
 
 @shared_task()
 def download_scroll(request_json, download_size=10000):
-    results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size=download_size)
     return results
 
 @shared_task()

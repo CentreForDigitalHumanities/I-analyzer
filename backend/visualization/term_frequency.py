@@ -70,7 +70,7 @@ def extract_data_for_term_frequency(corpus, es_query):
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=NUM_SAMPLES):
     found_hits, total = download.scroll(
-        corpus, es_query, download_size=size, source=[]
+        corpus, es_query, download_size=size, client=es_client, source=[]
     )
 
     if not len(found_hits):
@@ -98,7 +98,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=N
 
     # otherwise, make an estimate based on sample points
     # create x-y coordinates - the last result is expected to contain 1 match
-    x = np.array([*sample_points, total_hits(search_result)])
+    x = np.array([*sample_points, total])
     y = np.array([*matches, 1])
 
     # get the Area Under Curve, using the trapezoid rule

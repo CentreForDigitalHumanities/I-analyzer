@@ -23,8 +23,12 @@ class MockClient(object):
     def search(self, index, **kwargs):
         return {'hits':
             {'total': {'value': self.num_hits},
-            'hits': [{'_id': hit_id} for hit_id in range(self.num_hits)]}
+            'hits': [{'_id': hit_id} for hit_id in range(self.num_hits)]},
+            '_scroll_id': '42'
         }
+    
+    def clear_scroll(self, scroll_id):
+        return {'status': 'ok'}
 
     def termvectors(self, index, id, fields):
         return {'term_vectors': {field: {
