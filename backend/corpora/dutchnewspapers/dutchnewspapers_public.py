@@ -3,22 +3,21 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import logging
-from pprint import pprint
-import random
 import re
-import sys
-from datetime import datetime, timedelta
-from os.path import join, isfile, split, splitext
+from datetime import datetime
+from os.path import join, split, splitext
 import os
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
+from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years
 from addcorpus import filters
-from addcorpus.extract import Combined, Metadata, XML
+from addcorpus.extract import Metadata, XML
 from addcorpus.load_corpus import corpus_dir
 
-# Source files ################################################################
+from corpora.utils.constants import document_context
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 
 class DutchNewspapersPublic(XMLCorpus):
@@ -38,6 +37,10 @@ class DutchNewspapersPublic(XMLCorpus):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'newspaper'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'text'
     tag_entry = 'p'
@@ -117,12 +120,21 @@ class DutchNewspapersPublic(XMLCorpus):
         'onbekend': 'unknown',
     }
 
+    document_context = document_context(
+        ['newspaper_title', 'issue_number'],
+        None,
+        None,
+        'issue'
+    )
+
+
     @property
     def fields(self):
         return [Field(
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
+            es_mapping=keyword_mapping(),
             extractor=XML(tag='identifier',
                                   toplevel=True,
                                   recursive=True,
@@ -245,6 +257,7 @@ class DutchNewspapersPublic(XMLCorpus):
             name='publisher',
             display_name='Publisher',
             description='Publisher',
+            es_mapping=keyword_mapping(),
             search_field_core=True,
             extractor=Metadata('publisher')
         ),
@@ -302,6 +315,7 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,

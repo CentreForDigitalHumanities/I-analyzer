@@ -17,6 +17,8 @@ from django.conf import settings
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 from media.media_url import media_url
 
 # Source files ################################################################
@@ -34,6 +36,10 @@ class Times(XMLCorpus):
     description_page = 'times.md'
     languages = ['en']
     category = 'newspaper'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'issue'
     tag_entry = 'article'
@@ -103,42 +109,20 @@ class Times(XMLCorpus):
                                            '%Y-%m-%d')
                                        )
         ),
-        # Field(indexed=False,
-        #       name='issue-id',
-        #       display_name='Issue ID',
-        #       description='Issue identifier.',
-        #       extractor=extract.XML(tag='id', toplevel=True)
-        #       ),
-        # Field(indexed=False,
-        #       name='journal',
-        #       display_name='Journal',
-        #       description='Journal name.',
-        #       extractor=extract.XML(
-        #           tag='jn', toplevel=True,
-        #           applicable=until(1985)
-        #       )
-        #       ),
         Field(
             name='source',
             display_name='Source',
             description='Library where the microfilm is sourced',
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(
                 tag=['metadatainfo', 'sourceLibrary'], toplevel=True,
                 applicable=after(1985)
             )
         ),
-        # Field(indexed=False,
-        #       name='newspaperID',
-        #       display_name='Newspaper ID',
-        #       description='Publication code',
-        #       extractor=extract.XML(
-        #           tag=['metadatainfo', 'newspaperID'], toplevel=True,
-        #           applicable=after(1985)
-        #       )
-        #       ),
         Field(
             name='edition',
             display_name='Edition',
+            es_mapping=keyword_mapping(),
             extractor=extract.Choice(
                 extract.XML(
                     tag='ed', toplevel=True,
@@ -168,6 +152,7 @@ class Times(XMLCorpus):
             name='volume',
             display_name='Volume',
             description='Volume number.',
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(
                 tag='volNum', toplevel=True,
                 applicable=after(1985)
@@ -177,6 +162,7 @@ class Times(XMLCorpus):
         Field(
             name='date-pub',
             display_name='Publication Date',
+            es_mapping=keyword_mapping(),
             csv_core=True,
             results_overview=True,
             description='Publication date as full string, as found in source file',
@@ -201,6 +187,7 @@ class Times(XMLCorpus):
         Field(
             name='date-end',
             display_name='Ending date',
+            es_mapping=keyword_mapping(),
             description=(
                 'Ending date of publication. '
                 'For issues that span more than 1 day.'
@@ -210,15 +197,6 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        # Field(indexed=False,
-        #       name='weekday',
-        #       display_name='Weekday',
-        #       description='Day of the week.',
-        #       extractor=extract.XML(
-        #           tag='dw', toplevel=True,
-        #           applicable=after(1985)
-        #       )
-        # ),
         Field(
             name='page-count',
             display_name='Image count',
@@ -229,21 +207,6 @@ class Times(XMLCorpus):
             ),
             sortable=True
         ),
-        # Field(indexed=False,
-        #       name='copyright',
-        #       display_name='Copyright',
-        #       description='Copyright holder and year.',
-        #       extractor=extract.Choice(
-        #           extract.XML(
-        #               tag='cp', toplevel=True,
-        #               applicable=until(1985)
-        #           ),
-        #           extract.XML(
-        #               tag='copyright', toplevel=True,
-        #               applicable=after(1985)
-        #           )
-        #       )
-        #       ),
         Field(
             name='page-type',
             display_name='Page type',
@@ -302,6 +265,7 @@ class Times(XMLCorpus):
             name='id',
             display_name='ID',
             description='Article identifier.',
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(tag='id')
         ),
         Field(
@@ -321,12 +285,14 @@ class Times(XMLCorpus):
                 'Starting column: a string to label the column'
                 'where article starts.'
             ),
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(tag='sc')
         ),
         Field(
             name='page',
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
+            es_mapping=keyword_mapping(),
             extractor=extract.Choice(
                 extract.XML(tag='pa', applicable=until(1985)),
                 extract.XML(tag=['..', 'pa'], applicable=after(1985))
@@ -374,6 +340,7 @@ class Times(XMLCorpus):
             name='author',
             display_name='Author',
             description='Article author.',
+            es_mapping=keyword_mapping(True),
             extractor=extract.Choice(
                 extract.XML(
                     tag='au', multiple=True,
@@ -391,6 +358,7 @@ class Times(XMLCorpus):
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
+            es_mapping=keyword_mapping(True),
             extractor=extract.XML(
                 tag='altSource', multiple=True
             )
@@ -456,6 +424,7 @@ class Times(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
+            es_mapping=main_content_mapping(True, True, True),
             visualizations=['wordcloud'],
             description='Raw OCR\'ed text (content).',
             results_overview=True,
@@ -466,6 +435,13 @@ class Times(XMLCorpus):
             )
         ),
     ]
+
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': 'page',
+        'sort_direction': 'asc',
+        'context_display_name': 'issue'
+    }
 
     def request_media(self, document, corpus_name):
         field_values = document['fieldValues']

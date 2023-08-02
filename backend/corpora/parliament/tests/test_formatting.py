@@ -1,4 +1,4 @@
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 
 def test_pages():
     cases = [

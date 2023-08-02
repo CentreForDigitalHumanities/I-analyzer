@@ -2,13 +2,13 @@ from datetime import datetime
 from glob import glob
 import logging
 import re
+
 from django.conf import settings
-from corpora.parliament.utils.constants import document_context
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, Combined, CSV
+from corpora.utils.constants import document_context
+from addcorpus.extract import Constant,CSV
 from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
 
