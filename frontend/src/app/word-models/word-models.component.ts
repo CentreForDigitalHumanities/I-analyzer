@@ -38,7 +38,7 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
             title: 'Compare similarity',
             manual: 'comparesimilarity',
             chartID: 'chart',
-        },
+        }
     };
 
     childComponentLoading: boolean;
@@ -83,7 +83,9 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         }
         if (params.has('show')) {
             this.currentTab = params.get('show');
-        } else (this.currentTab = 'relatedwords')
+        } else {
+            this.currentTab = 'relatedwords';
+        }
     }
 
     setCorpus(corpus: Corpus): void {
@@ -159,5 +161,11 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
 
     get tabNames() {
         return Object.keys(this.tabs);
+    }
+
+    onTabChange(tab: 'relatedwords' | 'wordsimilarity'): void {
+        // reset error message on tab switch
+        this.errorMessage = undefined;
+        this.currentTab = tab;
     }
 }

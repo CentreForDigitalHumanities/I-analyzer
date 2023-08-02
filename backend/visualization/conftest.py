@@ -1,8 +1,7 @@
 import pytest
 import os
-from es import es_index as index
-from addcorpus.load_corpus import load_corpus
-from time import sleep
+
+from conftest import index_test_corpus, clear_test_corpus
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 
@@ -42,21 +41,6 @@ def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus,
         large_mock_corpus: large_mock_corpus_specs,
     }
     return specs[mock_corpus]
-
-def index_test_corpus(es_client, corpus_name):
-    corpus = load_corpus(corpus_name)
-    index.create(es_client, corpus, False, True, False)
-    index.populate(es_client, corpus_name, corpus)
-
-    # ES is "near real time", so give it a second before we start searching the index
-    sleep(2)
-
-def clear_test_corpus(es_client, corpus_name):
-    corpus = load_corpus(corpus_name)
-    index = corpus.es_index
-    # check existence in case teardown is executed more than once
-    if es_client.indices.exists(index = index):
-        es_client.indices.delete(index = index)
 
 @pytest.fixture(scope='session')
 def index_small_mock_corpus(small_mock_corpus, es_client):

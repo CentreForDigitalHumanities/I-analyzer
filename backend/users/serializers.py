@@ -5,7 +5,7 @@ from django.db import transaction
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
-    is_admin = serializers.BooleanField(source='is_superuser')
+    is_admin = serializers.BooleanField(source='is_staff')
 
     class Meta(UserDetailsSerializer.Meta):
         fields = ('id', 'username', 'email', 'saml',
