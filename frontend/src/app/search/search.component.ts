@@ -3,7 +3,7 @@ import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
 import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
-import { CorpusService, DialogService, } from '../services/index';
+import { CorpusService, DialogService, ParamService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import * as _ from 'lodash';
@@ -61,10 +61,11 @@ export class SearchComponent extends ParamDirective {
         private authService: AuthService,
         private corpusService: CorpusService,
         private dialogService: DialogService,
+        paramService: ParamService,
         route: ActivatedRoute,
         router: Router
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     async initialize(): Promise<void> {

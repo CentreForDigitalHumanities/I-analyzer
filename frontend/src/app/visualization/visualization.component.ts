@@ -7,6 +7,7 @@ import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { findByName } from '../utils/utils';
+import { ParamService } from '../services';
 
 
 
@@ -63,9 +64,10 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     constructor(
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        paramService: ParamService
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     ngDoCheck() {

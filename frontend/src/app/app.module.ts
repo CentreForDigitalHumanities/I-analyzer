@@ -5,7 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
-import { TableModule } from 'primeng/table';
 import { CookieService } from 'ngx-cookie-service';
 
 import {
@@ -29,7 +28,6 @@ import { DialogComponent } from './dialog/dialog.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { WordModelsComponent } from './word-models/word-models.component';
-import { WordmodelsService } from './services/wordmodels.service';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';

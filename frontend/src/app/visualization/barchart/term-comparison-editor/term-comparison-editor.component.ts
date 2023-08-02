@@ -3,6 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 import { ParamDirective } from '../../../param/param-directive';
+import { ParamService } from '../../../services';
 
 @Component({
     selector: 'ia-term-comparison-editor',
@@ -23,8 +24,9 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
 
     constructor(
         route: ActivatedRoute,
-        router: Router
-    ) { super(route, router)}
+        router: Router,
+        paramService: ParamService
+    ) { super(route, router, paramService)}
 
     initialize() {
         

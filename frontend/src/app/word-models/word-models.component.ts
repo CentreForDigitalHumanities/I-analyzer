@@ -2,9 +2,7 @@ import { Component, DoCheck, ElementRef, HostListener, ViewChild } from '@angula
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
-import { CorpusService } from '../services';
-import { AuthService } from '../services/auth.service';
-import { WordmodelsService } from '../services/wordmodels.service';
+import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 
 @Component({
@@ -50,11 +48,12 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
     constructor(
         route: ActivatedRoute,
         router: Router,
+        paramService: ParamService,
         private corpusService: CorpusService,
         private authService: AuthService,
         private wordModelsService: WordmodelsService,
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     ngDoCheck() {

@@ -6,7 +6,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 import { showLoading } from '../../utils/utils';
 import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services/index';
+import { ParamService, WordmodelsService } from '../../services/index';
 import { ParamDirective } from '../../param/param-directive';
 
 
@@ -35,9 +35,10 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     constructor(
         route: ActivatedRoute,
         router: Router,
+        paramService: ParamService,
         private wordModelsService: WordmodelsService
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     ngOnChanges(changes: SimpleChanges) {

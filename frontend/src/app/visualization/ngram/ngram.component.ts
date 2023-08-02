@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
-import { ApiService, VisualizationService } from '../../services';
+import { ApiService, ParamService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -58,9 +58,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         private apiService: ApiService,
         private visualizationService: VisualizationService,
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        paramService: ParamService
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     initialize(): void {

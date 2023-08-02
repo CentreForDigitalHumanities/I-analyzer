@@ -4,6 +4,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
 import { Normalizer, ChartType, ChartParameters } from '../../models';
+import { ParamService } from '../../services';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -37,9 +38,10 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     constructor(
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        paramService: ParamService
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
