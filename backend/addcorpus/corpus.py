@@ -238,7 +238,7 @@ class Corpus(object):
         # - hidden attributes
         # - attributes listed in `exclude`
         # - bound methods
-        exclude = ['data_directory', 'es_settings']
+        exclude = ['data_directory', 'es_settings', 'word_model_path']
         corpus_attribute_names = [
             a for a in dir(self)
             if a in dir(Corpus) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
