@@ -8,7 +8,7 @@ from addcorpus.extract import Constant, CSV
 from addcorpus.corpus import CSVCorpus
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.constants import document_context
 
 def format_debate_title(title):
     if title.endswith('.'):

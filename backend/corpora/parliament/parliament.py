@@ -29,8 +29,8 @@ class Parliament(Corpus):
     visualize = []
     es_index = getattr(settings, 'PP_ALIAS', 'parliament')
     # fields below are required by code but not actually used
-    min_date = MIN_DATE
-    max_date = MAX_DATE
+    min_date = field_defaults.MIN_DATE
+    max_date = field_defaults.MAX_DATE
     image = 'parliament.jpeg'
     data_directory = 'bogus'
 

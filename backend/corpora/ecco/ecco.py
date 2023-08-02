@@ -13,7 +13,10 @@ from django.conf import settings
 
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
+from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.es_settings import es_settings
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from corpora.utils.constants import document_context
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from media.media_url import media_url
 
@@ -26,6 +29,10 @@ class Ecco(XMLCorpus):
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
 
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
+    
     data_directory = settings.ECCO_DATA
     es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
@@ -142,6 +149,7 @@ class Ecco(XMLCorpus):
                 name='content',
                 display_name='Content',
                 display_type='text_content',
+                es_mapping=main_content_mapping(True, True, True),
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
@@ -181,6 +189,7 @@ class Ecco(XMLCorpus):
             Field(
                 name='page',
                 display_name='Page number',
+                es_mapping={'type': 'integer'},
                 description='Number of the page on which match was found',
                 extractor=XML(attribute='id', transform=lambda x: int(int(x)/10))
             ),
@@ -188,20 +197,22 @@ class Ecco(XMLCorpus):
                 name='pub_place',
                 display_name='Publication place',
                 description='Where the book was published',
+                es_mapping=keyword_mapping(True),
                 extractor=Metadata('publicationPlaceComposed')
             ),
             Field(
                 name='collation',
                 display_name='Collation',
                 description='Information about the volume',
+                es_mapping=keyword_mapping(),
                 extractor=Metadata('collation')
             ),
             Field(
                 name='category',
                 display_name='Category',
                 description='Which category this book belongs to',
+                es_mapping=keyword_mapping(),
                 extractor=Metadata('category'),
-                es_mapping={'type': 'keyword'},
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages in these categories.',
                     option_count=7
@@ -212,12 +223,14 @@ class Ecco(XMLCorpus):
                 name='imprint',
                 display_name='Printer',
                 description='Information of the printer and publisher of the book',
+                es_mapping=keyword_mapping(True),
                 extractor=Metadata('imprintFull')
             ),
             Field(
                 name='library',
                 display_name='Source library',
                 description='The source library of the book',
+                es_mapping=keyword_mapping(True),
                 extractor=Metadata('sourceLibrary')
             ),
             Field(
@@ -230,6 +243,7 @@ class Ecco(XMLCorpus):
                 name='volume',
                 display_name='Volume',
                 description='The book volume',
+                es_mapping=keyword_mapping(),
                 extractor=Metadata('Volume')
             ),
             Field(
@@ -239,13 +253,20 @@ class Ecco(XMLCorpus):
             )
         ]
 
+    document_context = document_context(
+        ['title', 'volume',],
+        'page',
+        'asc',
+        'volume'
+    )
 
     def request_media(self, document, corpus_name):
         image_path = document['fieldValues']['image_path']
         pages_returned = 5 #number of pages that is displayed. must be odd number.
          #the page corresponding to the document
         home_page = int(document['fieldValues']['page'])
-        pdf_info = get_pdf_info(join(self.data_directory, image_path))
+        file_name = image_path.split('/')[-1] + '.pdf'
+        pdf_info = get_pdf_info(join(self.data_directory, image_path, file_name))
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         pdf_info = {
             "pageNumbers": [p for p in pages], #change from 0-indexed to real page

@@ -6,10 +6,12 @@ from os import makedirs, remove
 from typing import Optional
 from zipfile import ZipFile, BadZipFile
 
-from addcorpus import extract, filters
-from addcorpus.corpus import Field, XMLCorpus
 from django.conf import settings
 
+from addcorpus import extract, filters
+from addcorpus.corpus import Field, XMLCorpus
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
@@ -40,6 +42,10 @@ class Rechtspraak(XMLCorpus):
     toplevel_zip_file = 'OpenDataUitspraken.zip'
     languages = ['nl']
     category = 'ruling'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'open-rechtspraak'
 
@@ -135,6 +141,7 @@ class Rechtspraak(XMLCorpus):
             name='id',
             display_name='ID',
             description='',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('dcterms:identifier'),
             csv_core=True,
         ),
@@ -160,6 +167,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='year',
             display_name='Year',
+            es_mapping={'type': 'integer'},
             extractor=extract.Metadata('year'),
             search_filter=filters.RangeFilter(min_date.year, max_date.year)
         ),
@@ -215,6 +223,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='zaaknr',
             display_name='Case Number',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('psi:zaaknummer')
         ),
         Field(
@@ -245,6 +254,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='spatial',
             display_name='Location',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('dcterms:spatial')
         ),
         Field(
@@ -277,6 +287,7 @@ class Rechtspraak(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
+            es_mapping=main_content_mapping(True, True, True),
             extractor=extract.Backup(
                 extract.XML('uitspraak', flatten=True),
                 extract.XML('conclusie', flatten=True),
@@ -288,6 +299,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='url',
             display_name='URL',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')
         )

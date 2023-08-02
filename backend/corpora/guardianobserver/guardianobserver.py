@@ -23,6 +23,9 @@ from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, co
 from media.image_processing import sizeof_fmt
 from media.media_url import media_url
 
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
+
 PROCESSED = "corpora/guardianobserver/processed.txt"
 
 # Source files ################################################################
@@ -39,7 +42,11 @@ class GuardianObserver(XMLCorpus):
     scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
     languages = ['en']
     category = 'newspaper'
-
+    
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
+    
     tag_toplevel = 'Record'
 
     def sources(self, start=datetime.min, end=datetime.max):
@@ -84,6 +91,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='date-pub',
+            es_mapping=keyword_mapping(),
             display_name='Publication Date',
             csv_core=True,
             results_overview=True,
@@ -94,18 +102,21 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='id',
+            es_mapping=keyword_mapping(),
             display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='RecordID', toplevel=True)
         ),
         Field(
             name='pub_id',
+            es_mapping=keyword_mapping(),
             display_name='Publication ID',
             description='Publication identifier',
             extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
         Field(
             name='page',
+            es_mapping=keyword_mapping(),
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
             extractor=extract.XML(tag='StartPage', toplevel=True)
@@ -120,23 +131,25 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='source-paper',
+            es_mapping=keyword_mapping(True),
             display_name='Source paper',
             description='Credited as source.',
             extractor=extract.XML(tag='Title', toplevel=True, recursive=True),
-            # need to reindex with es_mapping={'type': 'keyword'} first, otherwise cannot filter
-            # search_filter=filters.MultipleChoiceFilter(
-            #     description='Accept only articles from these source papers.',
-            #     option_count=5
-            # ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles from these source papers.',
+                option_count=5
+            ),
         ),
         Field(
             name='place',
+            mapping=keyword_mapping(True),
             display_name='Place',
             description='Place in which the article was published',
             extractor=extract.XML(tag='Qualifier', toplevel=True, recursive=True)
         ),
         Field(
             name='author',
+            mapping=keyword_mapping(True),
             display_name='Author',
             description='Article author',
             extractor=extract.XML(tag='PersonName', toplevel=True, recursive=True)
@@ -156,6 +169,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='content',
+            es_mapping=main_content_mapping(True, True, True),
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
@@ -165,6 +179,13 @@ class GuardianObserver(XMLCorpus):
             extractor=extract.XML(tag='FullText', toplevel=True, flatten=True)
         )
     ]
+
+    document_context = {
+        'context_fields': ['pub_id'],
+        'sort_field': 'page',
+        'sort_direction': 'asc',
+        'context_display_name': 'publication'
+    }
 
     def request_media(self, document, corpus_name):
         field_vals = document['fieldValues']
