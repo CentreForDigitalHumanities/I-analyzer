@@ -46,59 +46,6 @@ def load_corpus(corpus_name):
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 
-def _save_corpus_in_database(corpus_name, corpus_definition: CorpusDefinition):
-    '''
-    Save a corpus in the SQL database if it is not saved already.
-
-    Parameters:
-    - `corpus_name`: key of the corpus in settings.CORPORA
-    - `corpus_definition`: a corpus object, output of `load_corpus`
-    '''
-    corpus_db, _ = Corpus.objects.get_or_create(name=corpus_name)
-    corpus_db.description = corpus_definition.description
-    _save_corpus_fields_in_database(corpus_definition, corpus_db)
-    corpus_db.save()
-
-def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, corpus_db: Corpus):
-    # clear all fields and re-parse
-    corpus_db.fields.all().delete()
-
-    fields = corpus_db.fields.all()
-
-    for field in corpus_definition.fields:
-        _save_field_in_database(field, corpus_db)
-
-def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
-    attributes_to_copy = [
-        'name', 'display_name', 'description',
-        'results_overview',
-        'csv_core', 'search_field_core',
-        'visualizations', 'visualization_sort',
-        'es_mapping', 'indexed', 'hidden',
-        'required', 'sortable', 'primary_sort',
-        'searchable', 'downloadable'
-    ]
-
-    get = lambda attr: field_definition.__getattribute__(attr)
-    has_attribute = lambda attr: attr in dir(field_definition) and get(attr) != None
-
-    copy_attributes = {
-        attr: get(attr)
-        for attr in attributes_to_copy
-        if has_attribute(attr)
-    }
-
-    filter_definition = None #field_definition.search_filter.serialize() if field_definition.search_filter else None
-
-    field = Field(
-        corpus=corpus,
-        search_filter=filter_definition,
-        **copy_attributes,
-    )
-
-    field.save()
-    return field
-
 def _try_loading_corpus(corpus_name):
     try:
         return load_corpus(corpus_name)
@@ -122,8 +69,5 @@ def load_all_corpora():
         for name, definition in corpus_definitions_unfiltered.items()
         if definition
     }
-
-    for corpus_name, corpus_definition in corpus_definitions.items():
-        _save_corpus_in_database(corpus_name, corpus_definition)
 
     return corpus_definitions

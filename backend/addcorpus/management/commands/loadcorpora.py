@@ -1,5 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-from addcorpus.load_corpus import load_all_corpora
+from django.core.management.base import BaseCommand
+from addcorpus.save_corpus import load_and_save_all_corpora
 
 class Command(BaseCommand):
     help = '''
@@ -8,5 +8,5 @@ class Command(BaseCommand):
     '''
 
     def handle(self, *args, **kwargs):
-        load_all_corpora()
+        load_and_save_all_corpora()
         self.stdout.write('Finished loading corpora')

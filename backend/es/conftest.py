@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 import warnings
 import os
 
-from addcorpus.load_corpus import load_corpus, load_all_corpora
+from addcorpus.load_corpus import load_corpus
 from ianalyzer.elasticsearch import elasticsearch
 from es import es_index
 from users.models import CustomUser
@@ -74,7 +74,6 @@ def es_alias_client(es_client, mock_corpus):
 @pytest.fixture()
 def times_user(auth_user, mock_corpus):
     group = Group.objects.create(name='times-access')
-    load_all_corpora()
     corpus = Corpus.objects.get(name=mock_corpus)
     corpus.groups.add(group)
     corpus.save()
