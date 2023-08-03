@@ -9,7 +9,7 @@ import {
     TaskResult,
     TimeCategory,
 } from '../models';
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 import { ElasticSearchService } from './elastic-search.service';
 
 @Injectable({

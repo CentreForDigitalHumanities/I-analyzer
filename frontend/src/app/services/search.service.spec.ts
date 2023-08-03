@@ -1,7 +1,7 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { ApiRetryService } from './api-retry.service';
 import { ElasticSearchService } from './elastic-search.service';

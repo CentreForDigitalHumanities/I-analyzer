@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { ApiRetryService } from './api-retry.service';
 import { QueryService } from './query.service';

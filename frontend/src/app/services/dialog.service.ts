@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { marked } from 'marked';
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 
 import { Corpus } from '../models/index';
 

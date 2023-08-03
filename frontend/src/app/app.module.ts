@@ -44,6 +44,7 @@ import { CorpusSelectionModule } from './corpus-selection/corpus-selection.modul
 import { LoginModule } from './login/login.module';
 import { SearchModule } from './search/search.module';
 import { ManualModule } from './manual/manual.module';
+import { CoreModule } from './core/core.module';
 
 
 export const appRoutes: Routes = [
@@ -134,6 +135,9 @@ export const declarations: any[] = [
 
 
 export const imports: any[] = [
+    CoreModule,
+    SharedModule,
+    // Feature Modules
     CorpusModule,
     CorpusSelectionModule,
     DialogModule,
@@ -143,7 +147,6 @@ export const imports: any[] = [
     ManualModule,
     MenuModule,
     SearchModule,
-    SharedModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
 ];

@@ -15,8 +15,8 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { timer } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { ImageInfo } from '../image-view/image-view.component';
+import { environment } from '../../../environments/environment';
+import { ImageInfo } from '../../image-view/image-view.component';
 import {
     AggregateResult,
     AggregateTermFrequencyParameters,
@@ -35,8 +35,8 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../models/index';
-import { EsQuery } from './elastic-search.service';
+} from '../../models/index';
+import { EsQuery } from '../../services/elastic-search.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -234,9 +234,9 @@ export class ApiService extends Resource {
     >;
 
     fieldCoverage(corpusName: string): Promise<FieldCoverage> {
-        return this.http.get<FieldCoverage>(
-            `/api/visualization/coverage/${corpusName}`,
-        ).toPromise();
+        return this.http
+            .get<FieldCoverage>(`/api/visualization/coverage/${corpusName}`)
+            .toPromise();
     }
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {

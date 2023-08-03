@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { QueryService } from './query.service';
 import {

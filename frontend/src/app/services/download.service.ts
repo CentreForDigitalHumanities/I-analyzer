@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { Corpus, CorpusField, DownloadOptions, QueryModel } from '../models/index';
 import * as _ from 'lodash';

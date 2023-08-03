@@ -14,7 +14,7 @@ import {
 } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { User, UserResponse } from '../models';
-import { ApiService } from './api.service';
+import { ApiService } from '../core/services/api.service';
 import { SessionService } from './session.service';
 
 @Injectable({
