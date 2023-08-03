@@ -1,21 +1,9 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
-import {
-    IResourceAction,
-    IResourceMethod,
-    IResourceMethodFull,
-    Resource,
-    ResourceAction,
-    ResourceHandler,
-    ResourceParams,
-    ResourceRequestMethod,
-    ResourceResponseBodyType,
-} from '@ngx-resource/core';
 
 import { HttpClient } from '@angular/common/http';
 import { timer } from 'rxjs';
 import { filter, switchMap, take } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 import { ImageInfo } from '../../image-view/image-view.component';
 import {
     AggregateResult,
@@ -27,167 +15,47 @@ import {
     FieldCoverage,
     FoundDocument,
     LimitedResultsDownloadParameters,
+    NgramParameters,
     QueryDb,
-    QueryModel,
     ResultsDownloadParameters,
     TaskResult,
+    TaskSuccess,
     TasksOutcome,
     UserResponse,
     UserRole,
     WordcloudParameters,
 } from '../../models/index';
-import { EsQuery } from '../../services/elastic-search.service';
 
-// workaround for https://github.com/angular/angular-cli/issues/2034
-type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
+interface SolisLoginResponse {
+    success: boolean;
+    id: number;
+    username: string;
+    role: UserRole;
+    downloadLimit: number | null;
+    queries: QueryDb[];
+}
 
 @Injectable()
-@ResourceParams()
-export class ApiService extends Resource {
+export class ApiService {
     private apiUrl: string;
+
     private authApiUrl = 'users';
+    private visApiURL = 'visualization';
+    private downloadApiURL = 'download';
+    private corpusApiUrl = 'corpus';
+
     private authApiRoute = (route: string): string =>
         `/${this.authApiUrl}/${route}/`;
 
-    constructor(restHandler: ResourceHandler, private http: HttpClient) {
-        super(restHandler);
-    }
+    private apiRoute = (subApi: string, route: string): string =>
+        `/${this.apiUrl}/${subApi}/${route}`;
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/check_session',
-    })
-    public checkSession: ResourceMethod<
-        { username: string },
-        { success: boolean }
-    >;
+    constructor(private http: HttpClient) {}
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/visualization/wordcloud',
-    })
-    public wordcloud: ResourceMethod<WordcloudParameters, AggregateResult[]>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: 'visualization/wordcloud_task',
-    })
-    public wordcloudTasks: ResourceMethod<WordcloudParameters, TaskResult>;
-
-    public getTasksStatus<ExpectedResult>(
-        tasks: TaskResult
-    ): Promise<TasksOutcome<ExpectedResult>> {
-        return this.http
-            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
-            .toPromise();
-    }
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/abort_tasks',
-    })
-    public abortTasks: ResourceMethod<TaskResult, { success: true }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/visualization/ngram',
-    })
-    public ngramTasks: ResourceMethod<
-        {
-            es_query: EsQuery;
-            corpus_name: string;
-            field: string;
-            ngram_size?: number;
-            term_position?: string;
-            freq_compensation?: boolean;
-            subfield?: string;
-            max_size_per_interval?: number;
-            number_of_ngrams?: number;
-            date_field: string;
-        },
-        TaskResult
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/visualization/aggregate_term_frequency',
-    })
-    public getAggregateTermFrequency: ResourceMethod<
-        AggregateTermFrequencyParameters,
-        TaskResult
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/visualization/date_term_frequency',
-    })
-    public getDateTermFrequency: ResourceMethod<
-        DateTermFrequencyParameters,
-        TaskResult
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/download/full_data',
-    })
-    public requestFullData: ResourceMethod<
-        | {
-              visualization: 'date_term_frequency';
-              parameters: DateTermFrequencyParameters[];
-              corpus: string;
-          }
-        | {
-              visualization: 'aggregate_term_frequency';
-              parameters: AggregateTermFrequencyParameters[];
-              corpus: string;
-          },
-        TaskResult
-    >;
-
+    // General / misc
     public saveQuery(options: QueryDb) {
         return this.http.post('/api/search_history/', options).toPromise();
     }
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/download/search_results',
-        responseBodyType: ResourceResponseBodyType.Blob,
-        asResourceResponse: true,
-    })
-    public download: ResourceMethod<LimitedResultsDownloadParameters, any>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/download/csv/{id}',
-        responseBodyType: ResourceResponseBodyType.Blob,
-        asResourceResponse: true,
-    })
-    public csv: ResourceMethod<
-        { id: number } | ({ id: number } & DownloadOptions),
-        any
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/download/search_results_task',
-    })
-    public downloadTask: ResourceMethod<ResultsDownloadParameters, TaskResult>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/solislogin',
-    })
-    public solisLogin: IResourceMethod<
-        any,
-        {
-            success: boolean;
-            id: number;
-            username: string;
-            role: UserRole;
-            downloadLimit: number | null;
-            queries: QueryDb[];
-        }
-    >;
 
     public searchHistory() {
         return this.http.get<QueryDb[]>('/api/search_history/').toPromise();
@@ -197,57 +65,47 @@ export class ApiService extends Resource {
         return this.http.get<Download[]>('/api/download/').toPromise();
     }
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/get_media{!args}',
-        responseBodyType: ResourceResponseBodyType.ArrayBuffer,
-        asResourceResponse: true,
-    })
-    public getMedia: IResourceMethodFull<{ args: string }, any>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/request_media',
-    })
-    public requestMedia: ResourceMethod<
-        { corpus: string; document: FoundDocument },
-        { media: string[]; info?: ImageInfo }
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/download_pdf/{corpus_index}/{filepath}',
-    })
-    public downloadPdf: IResourceMethod<
-        { corpus_index: string; filepath: string },
-        any
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/corpus/documentation/{corpus}/{filename}',
-        responseBodyType: ResourceResponseBodyType.Text,
-    })
-    public corpusdescription: ResourceMethod<
-        { filename: string; corpus: string },
-        string
-    >;
-
-    fieldCoverage(corpusName: string): Promise<FieldCoverage> {
+    // Media
+    public getMedia(data: { args: string }): Promise<any> {
+        const url = `/api/download/${data.args}`;
         return this.http
-            .get<FieldCoverage>(`/api/visualization/coverage/${corpusName}`)
+            .get(url, { observe: 'response', responseType: 'arraybuffer' })
             .toPromise();
     }
 
-    $getUrl(actionOptions: IResourceAction): string | Promise<string> {
-        const urlPromise = super.$getUrl(actionOptions);
-        if (!this.apiUrl) {
-            this.apiUrl = environment.apiUrl;
-        }
+    public requestMedia(data: {
+        corpus: string;
+        document: FoundDocument;
+    }): Promise<{ media: string[]; info?: ImageInfo }> {
+        return this.http
+            .post<{ media: string[]; info?: ImageInfo }>(
+                '/api/request_media',
+                data
+            )
+            .toPromise();
+    }
 
-        return Promise.all([this.apiUrl, urlPromise]).then(
-            ([apiUrl, url]) => `${apiUrl}${url}`
-        );
+    public downloadPdf(data: {
+        corpus_index: string;
+        filepath: string;
+    }): Promise<any> {
+        const url = `/api/download_pdf/${data.corpus_index}/${data.filepath}`;
+        return this.http.get(url).toPromise();
+    }
+
+    // Tasks
+    public getTasksStatus<ExpectedResult>(
+        tasks: TaskResult
+    ): Promise<TasksOutcome<ExpectedResult>> {
+        return this.http
+            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
+            .toPromise();
+    }
+
+    public abortTasks(data: TaskResult): Promise<TaskSuccess> {
+        return this.http
+            .post<TaskSuccess>('/api/task_status', data)
+            .toPromise();
     }
 
     private tasksDone<ExpectedResult>(response: TasksOutcome<ExpectedResult>) {
@@ -275,9 +133,115 @@ export class ApiService extends Resource {
             );
     }
 
+    // Visualization
+    public wordCloud(data: WordcloudParameters): Promise<AggregateResult[]> {
+        const url = this.apiRoute(this.visApiURL, 'wordcloud');
+        return this.http.post<AggregateResult[]>(url, data).toPromise();
+    }
+
+    public wordcloudTasks(data: WordcloudParameters): Promise<TaskResult> {
+        const url = this.apiRoute(this.visApiURL, 'wordcloud_task');
+        return this.http.post<TaskResult>(url, data).toPromise();
+    }
+
+    public ngramTasks(data: NgramParameters): Promise<TaskResult> {
+        const url = this.apiRoute(this.visApiURL, 'ngram');
+        return this.http.post<TaskResult>(url, data).toPromise();
+    }
+
+    public getAggregateTermFrequency(
+        data: AggregateTermFrequencyParameters
+    ): Promise<TaskResult> {
+        const url = this.apiRoute(this.visApiURL, 'aggregate_term_frequency');
+        return this.http.post<TaskResult>(url, data).toPromise();
+    }
+
+    public getDateTermFrequency(
+        data: DateTermFrequencyParameters
+    ): Promise<TaskResult> {
+        const url = this.apiRoute(this.visApiURL, 'date_term_frequency');
+        return this.http.post<TaskResult>(url, data).toPromise();
+    }
+
+    fieldCoverage(corpusName: string): Promise<FieldCoverage> {
+        const url = this.apiRoute(this.visApiURL, `coverage/${corpusName}`);
+        return this.http.get<FieldCoverage>(url).toPromise();
+    }
+
+    // Download
+    public requestFullData(
+        data:
+            | {
+                  visualization: 'date_term_frequency';
+                  parameters: DateTermFrequencyParameters[];
+                  corpus: string;
+              }
+            | {
+                  visualization: 'aggregate_term_frequency';
+                  parameters: AggregateTermFrequencyParameters[];
+                  corpus: string;
+              }
+    ): Promise<TaskResult> {
+        const url = this.apiRoute(this.downloadApiURL, 'full_data');
+        return this.http.post<TaskResult>(url, data).toPromise();
+    }
+
+    public download(data: LimitedResultsDownloadParameters): Promise<any> {
+        const url = this.apiRoute(this.downloadApiURL, 'search_results');
+        return this.http
+            .post<TaskResult>(url, data, {
+                observe: 'response',
+                responseType: 'blob' as 'json',
+            })
+            .toPromise();
+    }
+
+    public csv(
+        data: { id: number } | ({ id: number } & DownloadOptions)
+    ): Promise<any> {
+        const url = this.apiRoute(this.downloadApiURL, `csv/${data.id}`);
+        return this.http
+            .get(url, {
+                observe: 'response',
+                responseType: 'blob' as 'json',
+            })
+            .toPromise();
+    }
+
+    public downloadTask(data: ResultsDownloadParameters): Promise<TaskResult> {
+        const url = this.apiRoute(this.downloadApiURL, 'search_results_task');
+        return this.http.post<TaskResult>(url, data).toPromise();
+    }
+
+    // Corpus
+    public corpusdescription(data: {
+        filename: string;
+        corpus: string;
+    }): Promise<string> {
+        const url = this.apiRoute(
+            this.corpusApiUrl,
+            `documentation/${data.corpus}/${data.filename}`
+        );
+
+        return this.http
+            .get<string>(url, { responseType: 'text' as 'json' })
+            .toPromise();
+    }
+
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
     }
+
+    // $getUrl(actionOptions: IResourceAction): string | Promise<string> {
+    //     const urlPromise = super.$getUrl(actionOptions);
+    //     if (!this.apiUrl) {
+    //         this.apiUrl = environment.apiUrl;
+    //     }
+
+    //     return Promise.all([this.apiUrl, urlPromise]).then(
+    //         ([apiUrl, url]) => `${apiUrl}${url}`
+    //     );
+    // }
 
     // Authentication API
     public login(username: string, password: string) {
@@ -343,5 +307,9 @@ export class ApiService extends Resource {
                 new_password2: newPassword2,
             }
         );
+    }
+
+    public solisLogin(data: any): Promise<SolisLoginResponse> {
+        return this.http.get<SolisLoginResponse>('/api/solislogin').toPromise();
     }
 }
