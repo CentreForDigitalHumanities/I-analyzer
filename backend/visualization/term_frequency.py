@@ -12,7 +12,6 @@ from visualization import query, termvectors
 
 NUM_COLLECTED_DOCUMENTS = 5000
 NUM_SAMPLES = 50
-SAMPLING_EXP = 2.18
 
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
@@ -77,12 +76,12 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=N
         return 0
 
     # analyze all data if there are less hits than NUM_SAMPLES
-    # otherwise, sample at exponential intervals (chosen to cover up to NUM_COLLECTED_DOCUMENTS)
-    sampling_interval = lambda x: int(x**SAMPLING_EXP)
+    # otherwise, sample at regular intervals (chosen to cover up to NUM_COLLECTED_DOCUMENTS)
+    sampling_interval = int(total / NUM_SAMPLES)
 
     sample_points = (
         range(len(found_hits)) if len(found_hits) <= num_samples
-        else [sampling_interval(i) for i in range(0, num_samples) if sampling_interval(i) < len(found_hits)]
+        else range(0, total, sampling_interval)
     )
 
     index = get_index(corpus)
