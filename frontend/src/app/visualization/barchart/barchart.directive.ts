@@ -49,7 +49,7 @@ export abstract class BarchartDirective
 
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
-    documentLimit = 100; // maximum number of documents to search through for term frequency
+    documentLimit = 5000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
