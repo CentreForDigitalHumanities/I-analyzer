@@ -1,6 +1,7 @@
 from addcorpus.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, Field
 from addcorpus.load_corpus import load_all_corpora
+import sys
 
 def _save_corpus_in_database(corpus_name, corpus_definition: CorpusDefinition):
     '''
@@ -44,7 +45,7 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
         if has_attribute(attr)
     }
 
-    filter_definition = None #field_definition.search_filter.serialize() if field_definition.search_filter else None
+    filter_definition = field_definition.search_filter.serialize() if field_definition.search_filter else None
 
     field = Field(
         corpus=corpus,
@@ -55,12 +56,18 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
     field.save()
     return field
 
-def load_and_save_all_corpora():
+def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.stderr):
     '''
     load all python corpus definitions and save them to the database
     '''
 
-    corpus_definitions = load_all_corpora()
+    corpus_definitions = load_all_corpora(stderr=stderr)
 
     for corpus_name, corpus_definition in corpus_definitions.items():
-        _save_corpus_in_database(corpus_name, corpus_definition)
+        try:
+            _save_corpus_in_database(corpus_name, corpus_definition)
+            if verbose:
+                print(f'Saved corpus: {corpus_name}',  file=stdout)
+        except Exception as e:
+            print(f'Failed saving corpus: {corpus_name}', file=stderr)
+            print(f'Error: {e}', file=stderr)

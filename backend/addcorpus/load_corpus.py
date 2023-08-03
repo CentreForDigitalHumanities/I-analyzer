@@ -6,6 +6,7 @@ import re
 from os.path import abspath, dirname
 from importlib import util
 import logging
+import sys
 logger = logging.getLogger(__name__)
 
 
@@ -46,20 +47,19 @@ def load_corpus(corpus_name):
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 
-def _try_loading_corpus(corpus_name):
+def _try_loading_corpus(corpus_name, stderr=sys.stderr):
     try:
         return load_corpus(corpus_name)
     except Exception as e:
         message = 'Could not load corpus {}: {}'.format(corpus_name, e)
-        logger.error(message)
+        print(message, file=stderr)
 
-
-def load_all_corpora():
+def load_all_corpora(stderr=sys.stderr):
     '''
     Return a dict with corpus names and corpus definition objects.
     '''
     corpus_definitions_unfiltered = {
-        corpus_name: _try_loading_corpus(corpus_name)
+        corpus_name: _try_loading_corpus(corpus_name, stderr)
         for corpus_name in settings.CORPORA.keys()
     }
 

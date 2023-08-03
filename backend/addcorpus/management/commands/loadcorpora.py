@@ -15,6 +15,14 @@ class Command(BaseCommand):
     '''
 
     def handle(self, *args, **kwargs):
-        load_and_save_all_corpora()
+        verbosity = kwargs['verbosity']
+        self.stdout.ending = '' # make format compatible with sys.stdout
+        self.stderr.ending = ''
 
-        self.stdout.write('Finished loading corpora')
+        load_and_save_all_corpora(
+            verbose=verbosity > 1,
+            stdout=self.stdout,
+            stderr=self.stderr
+        )
+
+        self.stdout.write('Finished loading corpora', ending='\n')
