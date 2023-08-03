@@ -13,7 +13,7 @@ import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
-import { findByName, showLoading } from '../../utils/utils';
+import { showLoading } from '../../utils/utils';
 import { takeUntil } from 'rxjs/operators';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
@@ -49,7 +49,7 @@ export abstract class BarchartDirective
 
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
-    documentLimit = 5000; // maximum number of documents to search through for term frequency
+    documentLimit = 100; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -400,7 +400,7 @@ export abstract class BarchartDirective
      * when determining term frequency.
      */
      documentLimitForCategory(cat: DataPoint, series: BarchartSeries<DataPoint>): number {
-        return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+        return _.min([this.documentLimit, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
 
