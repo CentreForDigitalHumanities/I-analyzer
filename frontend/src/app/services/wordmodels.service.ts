@@ -26,8 +26,11 @@ export class WordmodelsService {
         term_2: string;
         corpus_name: string;
     }): Promise<WordSimilarity[]> {
+        const { term_1, term_2, corpus_name } = data;
         return this.http
-            .get<WordSimilarity[]>(this.wmApiRoute('similarity_over_time'))
+            .get<WordSimilarity[]>(this.wmApiRoute('similarity_over_time'), {
+                params: data,
+            })
             .toPromise();
     }
 
@@ -36,7 +39,9 @@ export class WordmodelsService {
         corpus_name: string;
     }): Promise<WordInModelResult> {
         return this.http
-            .get<WordInModelResult>(this.wmApiRoute('word_in_models'))
+            .get<WordInModelResult>(this.wmApiRoute('word_in_models'), {
+                params: data,
+            })
             .toPromise();
     }
 
@@ -44,7 +49,9 @@ export class WordmodelsService {
         corpus_name: string;
     }): Promise<{ documentation: string }> {
         return this.http
-            .get<{ documentation: string }>(this.wmApiRoute('documentation'))
+            .get<{ documentation: string }>(this.wmApiRoute('documentation'), {
+                params: data,
+            })
             .toPromise();
     }
 
@@ -82,5 +89,5 @@ export class WordmodelsService {
         });
     }
 
-    private wmApiRoute = (route: string): string => `/api/worldmodels/${route}`;
+    private wmApiRoute = (route: string): string => `/api/wordmodels/${route}`;
 }
