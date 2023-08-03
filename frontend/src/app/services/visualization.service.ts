@@ -26,7 +26,12 @@ export class VisualizationService {
     public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
         Promise<AggregateResult[]> {
         const esQuery = queryModel.toEsQuery();
-        return this.apiService.wordcloud({es_query: esQuery, corpus: corpus.name, field: fieldName, size});
+        return this.apiService.wordCloud({
+            es_query: esQuery,
+            corpus: corpus.name,
+            field: fieldName,
+            size,
+        });
     }
 
     public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<string[]> {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { timer } from 'rxjs';
-import { filter, switchMap, take } from 'rxjs/operators';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { ImageInfo } from '../../image-view/image-view.component';
 import {
     AggregateResult,
@@ -15,7 +15,7 @@ import {
     FieldCoverage,
     FoundDocument,
     LimitedResultsDownloadParameters,
-    NgramParameters,
+    NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
     TaskResult,
@@ -25,6 +25,7 @@ import {
     UserRole,
     WordcloudParameters,
 } from '../../models/index';
+import { environment } from '../../../environments/environment';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -37,7 +38,7 @@ interface SolisLoginResponse {
 
 @Injectable()
 export class ApiService {
-    private apiUrl: string;
+    private apiUrl = environment.apiUrl;
 
     private authApiUrl = 'users';
     private visApiURL = 'visualization';
@@ -48,7 +49,7 @@ export class ApiService {
         `/${this.authApiUrl}/${route}/`;
 
     private apiRoute = (subApi: string, route: string): string =>
-        `/${this.apiUrl}/${subApi}/${route}`;
+        `${this.apiUrl}/${subApi}/${route}`;
 
     constructor(private http: HttpClient) {}
 
@@ -144,7 +145,7 @@ export class ApiService {
         return this.http.post<TaskResult>(url, data).toPromise();
     }
 
-    public ngramTasks(data: NgramParameters): Promise<TaskResult> {
+    public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
         const url = this.apiRoute(this.visApiURL, 'ngram');
         return this.http.post<TaskResult>(url, data).toPromise();
     }
@@ -231,17 +232,6 @@ export class ApiService {
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
     }
-
-    // $getUrl(actionOptions: IResourceAction): string | Promise<string> {
-    //     const urlPromise = super.$getUrl(actionOptions);
-    //     if (!this.apiUrl) {
-    //         this.apiUrl = environment.apiUrl;
-    //     }
-
-    //     return Promise.all([this.apiUrl, urlPromise]).then(
-    //         ([apiUrl, url]) => `${apiUrl}${url}`
-    //     );
-    // }
 
     // Authentication API
     public login(username: string, password: string) {

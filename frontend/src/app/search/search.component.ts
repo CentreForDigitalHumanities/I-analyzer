@@ -1,14 +1,21 @@
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
-import { CorpusService, DialogService, } from '../services/index';
+import { faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
+import * as _ from 'lodash';
+import { filter } from 'rxjs/operators';
+import {
+    Corpus,
+    CorpusField,
+    QueryModel,
+    ResultOverview,
+    User,
+} from '../models/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
-import * as _ from 'lodash';
+import { CorpusService, DialogService } from '../services/index';
 import { paramsHaveChanged } from '../utils/params';
-import { faBarChart, faChartBar, faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search',
@@ -56,7 +63,6 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
-
     constructor(
         private authService: AuthService,
         private corpusService: CorpusService,
@@ -70,9 +76,10 @@ export class SearchComponent extends ParamDirective {
     async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusSubscription = this.corpusService.currentCorpus
-            .filter((corpus) => !!corpus).subscribe((corpus) => {
-            this.setCorpus(corpus);
-        });
+            .pipe(filter((corpus) => !!corpus))
+            .subscribe((corpus) => {
+                this.setCorpus(corpus);
+            });
     }
 
     teardown() {
@@ -103,13 +110,14 @@ export class SearchComponent extends ParamDirective {
         this.isSearching = false;
         this.hasSearched = true;
         this.resultsCount = input.resultsCount;
-        this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
+        this.hasLimitedResults =
+            this.user.downloadLimit &&
+            input.resultsCount > this.user.downloadLimit;
     }
 
     public showQueryDocumentation() {
         this.dialogService.showManualPage('query');
     }
-
 
     public search() {
         this.queryModel.setQueryText(this.queryText);

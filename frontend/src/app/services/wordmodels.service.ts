@@ -27,7 +27,7 @@ export class WordmodelsService {
         corpus_name: string;
     }): Promise<WordSimilarity[]> {
         return this.http
-            .get<WordSimilarity>(this.wmApiRoute('similarity_over_time'))
+            .get<WordSimilarity[]>(this.wmApiRoute('similarity_over_time'))
             .toPromise();
     }
 
