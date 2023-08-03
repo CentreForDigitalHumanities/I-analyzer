@@ -11,18 +11,20 @@ export class ParamService {
   private currentParams =  new BehaviorSubject<Params>({});
   private buffer: Subscription;
 
-  constructor(private route: ActivatedRoute, private router: Router) {
+  constructor(private router: Router) {
     this.buffer = this.currentParams.pipe(bufferTime(100)).subscribe( params => {
       if (params.length) {
-          this.router.navigate(
-          ['.'],
+        const newParams = Object.assign({}, ...params.map(f => f));
+        console.log(newParams);
+        this.router.navigate(
+          [this.router.url],
           {
-          queryParams: Object.assign({}, ...params.map(f => f)),
-          queryParamsHandling: 'merge'
-          },
-      );
+            queryParams: newParams,
+            queryParamsHandling: 'merge',
+          }
+        );
       }
-  });
+    });
   }
 
   setParams(params: Params) {
