@@ -2,14 +2,88 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import Group
 
+from addcorpus.constants import CATEGORIES
+from addcorpus.validators import validate_language_code
+
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
 
 class Corpus(models.Model):
-    name = models.CharField(max_length=MAX_LENGTH_NAME, unique=True)
-    description = models.CharField(max_length=MAX_LENGTH_DESCRIPTION, null=True)
-    groups = models.ManyToManyField(Group, related_name='corpora', blank=True)
+    name = models.SlugField(
+        max_length=MAX_LENGTH_NAME,
+        unique=True,
+        help_text='internal name of the corpus',
+    )
+    description = models.CharField(
+        max_length=MAX_LENGTH_DESCRIPTION,
+        blank=True,
+        help_text='short description of the corpus',
+    )
+    groups = models.ManyToManyField(
+        Group,
+        related_name='corpora',
+        blank=True,
+        help_text='groups that have access to this corpus',
+    )
+
+    allow_image_download = models.BooleanField(
+        default=False,
+        help_text='whether users can download document scans',
+    )
+    category = models.CharField(
+        max_length=64,
+        choices=CATEGORIES,
+        help_text='category/medium of documents in this dataset',
+    )
+    description_page = models.CharField(
+        max_length=128,
+        blank=True,
+        help_text='filename of the markdown documentation file for this corpus',
+    )
+    document_context = models.JSONField(
+        null=True,
+        help_text='specification of how documents are grouped into collections',
+    )
+    es_alias = models.SlugField(
+        max_length=MAX_LENGTH_NAME,
+        blank=True,
+        help_text='alias assigned to the corpus index in elasticsearch',
+    )
+    es_index = models.SlugField(
+        max_length=MAX_LENGTH_NAME,
+        help_text='name of the corpus index in elasticsearch'
+    )
+    image = models.CharField(
+        max_length=126,
+        help_text='filename of the corpus image',
+    )
+    languages = ArrayField(
+        models.CharField(
+            max_length=8,
+            validators=[validate_language_code],
+        ),
+        help_text='languages used in the content of the corpus (from most to least frequent)',
+    )
+    min_date = models.DateField(
+        help_text='earliest date for the data in the corpus',
+    )
+    max_date = models.DateField(
+        help_text='latest date for the data in the corpus',
+    )
+    scan_image_type = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text='MIME type of scan images',
+    )
+    title = models.CharField(
+        max_length=MAX_LENGTH_TITLE,
+        help_text='title of the corpus in the interface',
+    )
+    word_models_present = models.BooleanField(
+        default=False,
+        help_text='whether this corpus has word models',
+    )
 
     class Meta:
         verbose_name_plural = 'corpora'
