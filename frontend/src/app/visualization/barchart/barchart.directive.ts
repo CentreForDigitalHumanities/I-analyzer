@@ -221,7 +221,7 @@ export abstract class BarchartDirective
         return {
             queryText,
             data: [],
-            averageDocCount: 0,
+            total_doc_count: 0,
             searchRatio: 1.0,
         };
     }
@@ -311,12 +311,12 @@ export abstract class BarchartDirective
     docCountResultIntoSeries(result, series: BarchartSeries<DataPoint>, setSearchRatio = true): BarchartSeries<DataPoint> {
         let data = result.aggregations[this.visualizedField.name]
             .map(this.aggregateResultToDataPoint);
-        const averageDocCount = this.averageDocCount(data);
-        const searchRatio = setSearchRatio ? this.documentLimit / averageDocCount : series.searchRatio;
-        data = this.includeRelativeDocCount(data, averageDocCount);
+        const total_doc_count = this.totalDocCount(data);
+        const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
+        data = this.includeRelativeDocCount(data, total_doc_count);
         return {
             data,
-            averageDocCount,
+            total_doc_count,
             searchRatio,
             queryText: series.queryText,
         };
@@ -393,11 +393,6 @@ export abstract class BarchartDirective
     /** total document count for a data array */
     totalDocCount(data: AggregateResult[]) {
         return _.sumBy(data, item => item.doc_count);
-    }
-
-    /** total document count for a data array */
-    averageDocCount(data: AggregateResult[]) {
-        return _.meanBy(data, item => item.doc_count);
     }
 
     /**
