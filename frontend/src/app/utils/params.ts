@@ -65,7 +65,7 @@ export const queryFiltersToParams = (queryModel: QueryModel) => {
 };
 
 export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) => {
-    const currentParams = queryModel.toRouteParam();
+    const currentParams = queryModel.toRouteParam(true);  // stringValues=true for change detection
 
     return _.some( _.keys(currentParams), key =>
         newParams.get(key) !== currentParams[key]
