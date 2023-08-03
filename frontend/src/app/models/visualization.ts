@@ -43,7 +43,7 @@ export type BarchartResult = DateResult|AggregateResult;
  */
  export interface BarchartSeries<Result> {
     data: Result[];
-    total_doc_count: number; // total documents matching the query across the series
+    averageDocCount: number; // average number of documents matching query across series
     searchRatio: number; // ratio of total_doc_count that can be searched through without exceeding documentLimit
     queryText?: string; // replaces the text in this.queryModel when searching
 }
