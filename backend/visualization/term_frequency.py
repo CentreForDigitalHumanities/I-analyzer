@@ -68,36 +68,39 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames, num_samples=NUM_SAMPLES):
-    found_hits, total = download.scroll(
+    found_hits, total_hits = download.scroll(
         corpus, es_query, download_size=size, client=es_client, source=[]
     )
 
     if not len(found_hits):
         return 0
 
+    # find whether to sample to number of total hits, or up until NUM_COLLECTED_DOCUMENTS
+    sampling_max = min(total_hits, len(found_hits))
+
     # analyze all data if there are less hits than NUM_SAMPLES
-    # otherwise, sample at regular intervals (chosen to cover up to NUM_COLLECTED_DOCUMENTS)
-    sampling_interval = int(total / NUM_SAMPLES)
+    # otherwise, sample at regular intervals
+    sampling_interval = int(sampling_max / NUM_SAMPLES)
 
     sample_points = (
-        range(len(found_hits)) if len(found_hits) <= num_samples
-        else range(0, total, sampling_interval)
+        range(sampling_max) if sampling_max <= num_samples
+        else range(0, sampling_max, sampling_interval)
     )
 
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
     matches = [
         count_matches_in_document(found_hits[sample_index]['_id'], index, fieldnames, query_text, es_client)
-        for sample_index in sample_points if sample_index < len(found_hits)
+        for sample_index in sample_points if sample_index < sampling_max
     ]
 
-    if len(found_hits) <= num_samples:
+    if sampling_max <= num_samples:
         # all data was analyzed, sum it
         return sum(matches)
 
     # otherwise, make an estimate based on sample points
     # create x-y coordinates - the last result is expected to contain 1 match
-    x = np.array([*sample_points, total])
+    x = np.array([*sample_points, total_hits])
     y = np.array([*matches, 1])
 
     # get the Area Under Curve, using the trapezoid rule
