@@ -6,10 +6,12 @@ from copy import deepcopy
 from visualization import query, termvectors
 from es import download
 
+DEFAULT_SIZE = 100
+
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
 
-def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100, include_query_in_result = False):
+def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str=None, size=DEFAULT_SIZE, include_query_in_result=False):
 
     start_date = parse_datestring(start_date_str)
     end_date = parse_datestring(end_date_str) if end_date_str else None
@@ -61,9 +63,10 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
-    found_hits, total_results = download.scroll(corpus = corpus,
+    found_hits, total_results = download.scroll(corpus=corpus,
         query_model=es_query,
-        download_size=size
+        download_size=size,
+        source=[]
     )
 
     index = get_index(corpus)
@@ -138,7 +141,7 @@ def get_term_frequency(es_query, corpus, size):
 
     return match_count, total_doc_count, token_count
 
-def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100, include_query_in_result = False):
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size=DEFAULT_SIZE, include_query_in_result=False):
     # filter for relevant value
     term_filter = query.make_term_filter(field_name, field_value)
     es_query = query.add_filter(es_query, term_filter)

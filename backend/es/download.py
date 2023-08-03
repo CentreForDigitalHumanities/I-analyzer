@@ -3,7 +3,7 @@ from django.conf import settings
 from ianalyzer.elasticsearch import elasticsearch
 from es.search import get_index, search, hits, total_hits
 
-def scroll(corpus, query_model, download_size=None):
+def scroll(corpus, query_model, download_size=None, **kwargs):
     index = get_index(corpus)
     client = elasticsearch(index)
     server = settings.CORPUS_SERVER_NAMES.get(corpus, 'default')
@@ -14,11 +14,12 @@ def scroll(corpus, query_model, download_size=None):
     output = []
     search_results = client.search(
         index=index,
-        size = size,
-        scroll = scroll_timeout,
-        timeout = '60s',
+        size=size,
+        scroll=scroll_timeout,
+        timeout='60s',
         track_total_hits=True,
         **query_model,
+        **kwargs
     )
     output.extend(hits(search_results))
     total = total_hits(search_results)
