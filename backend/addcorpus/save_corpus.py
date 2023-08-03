@@ -11,16 +11,55 @@ def _save_corpus_in_database(corpus_name, corpus_definition: CorpusDefinition):
     - `corpus_name`: key of the corpus in settings.CORPORA
     - `corpus_definition`: a corpus object, output of `load_corpus`
     '''
-    corpus_db, _ = Corpus.objects.get_or_create(name=corpus_name)
-    corpus_db.description = corpus_definition.description
-    _save_corpus_fields_in_database(corpus_definition, corpus_db)
+
+    if Corpus.objects.filter(name=corpus_name).exists():
+        corpus_db = Corpus.objects.get(name=corpus_name)
+    else:
+        corpus_db = Corpus(name=corpus_name)
+
+    _copy_corpus_attributes(corpus_definition, corpus_db)
     corpus_db.save()
+
+    _save_corpus_fields_in_database(corpus_definition, corpus_db)
+
+    corpus_db.full_clean()
+
+def get_defined_attributes(object, attributes):
+    get = lambda attr: object.__getattribute__(attr)
+    has_attribute = lambda attr: attr in dir(object) and get(attr) != None
+
+    return {
+        attr: get(attr)
+        for attr in attributes
+        if has_attribute(attr)
+    }
+
+def _copy_corpus_attributes(corpus_definition: CorpusDefinition, corpus_db: Corpus):
+    attributes_to_copy = [
+        'description',
+        'allow_image_download',
+        'category',
+        'description_page',
+        'document_context',
+        'es_alias',
+        'es_index',
+        'image',
+        'languages',
+        'min_date',
+        'max_date',
+        'scan_image_type',
+        'title',
+        'word_models_present',
+    ]
+
+    defined = get_defined_attributes(corpus_definition, attributes_to_copy)
+
+    for attr, value in defined.items():
+        corpus_db.__setattr__(attr, value)
 
 def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, corpus_db: Corpus):
     # clear all fields and re-parse
     corpus_db.fields.all().delete()
-
-    fields = corpus_db.fields.all()
 
     for field in corpus_definition.fields:
         _save_field_in_database(field, corpus_db)
@@ -36,14 +75,7 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
         'searchable', 'downloadable'
     ]
 
-    get = lambda attr: field_definition.__getattribute__(attr)
-    has_attribute = lambda attr: attr in dir(field_definition) and get(attr) != None
-
-    copy_attributes = {
-        attr: get(attr)
-        for attr in attributes_to_copy
-        if has_attribute(attr)
-    }
+    copy_attributes = get_defined_attributes(field_definition, attributes_to_copy)
 
     filter_definition = field_definition.search_filter.serialize() if field_definition.search_filter else None
 
@@ -54,6 +86,7 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
     )
 
     field.save()
+    field.full_clean()
     return field
 
 def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.stderr):

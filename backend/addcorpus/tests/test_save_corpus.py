@@ -11,3 +11,4 @@ def test_save_field_definition(db, mock_corpus):
     for field_def in corpus_def.fields:
         field = _save_field_in_database(field_def, corpus)
         assert field
+
