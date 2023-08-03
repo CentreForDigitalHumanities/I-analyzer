@@ -66,8 +66,8 @@ def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, corpus_
 
 def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
     attributes_to_copy = [
-        'name', 'display_name', 'description',
-        'results_overview',
+        'name', 'display_name', 'display_type',
+        'description', 'results_overview',
         'csv_core', 'search_field_core',
         'visualizations', 'visualization_sort',
         'es_mapping', 'indexed', 'hidden',
@@ -77,7 +77,7 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
 
     copy_attributes = get_defined_attributes(field_definition, attributes_to_copy)
 
-    filter_definition = field_definition.search_filter.serialize() if field_definition.search_filter else None
+    filter_definition = field_definition.search_filter.serialize() if field_definition.search_filter else {}
 
     field = Field(
         corpus=corpus,

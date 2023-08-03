@@ -729,13 +729,13 @@ class FieldDefinition(object):
                  name=None,
                  display_name=None,
                  display_type=None,
-                 description=None,
+                 description='',
                  indexed=True,
                  hidden=False,
                  results_overview=False,
                  csv_core=False,
                  search_field_core=False,
-                 visualizations=None,
+                 visualizations=[],
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
@@ -748,9 +748,11 @@ class FieldDefinition(object):
                  **kwargs
                  ):
 
+        mapping_type = es_mapping['type']
+
         self.name = name
-        self.display_name = display_name
-        self.display_type = display_type
+        self.display_name = display_name or name
+        self.display_type = display_type or mapping_type
         self.description = description
         self.search_filter = search_filter
         self.results_overview = results_overview
@@ -766,7 +768,7 @@ class FieldDefinition(object):
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
-            es_mapping['type'] in ['integer', 'float', 'date']
+            mapping_type in ['integer', 'float', 'date']
 
         self.primary_sort = primary_sort
 
@@ -774,8 +776,8 @@ class FieldDefinition(object):
         # Keyword fields without a filter are also searchable.
         self.searchable = searchable if searchable != None else \
             not hidden and indexed and \
-            ((self.es_mapping['type'] == 'text') or
-             (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
+            ((mapping_type == 'text') or
+             (mapping_type == 'keyword' and self.search_filter == None))
         # Add back reference to field in filter
         self.downloadable = downloadable
 
@@ -789,7 +791,7 @@ class FieldDefinition(object):
         field_dict = {}
         for key, value in self.__dict__.items():
             if key == 'search_filter' and value != None:
-                field_dict['search_filter'] = value.serialize()
+                    field_dict['search_filter'] = value.serialize()
             elif key != 'extractor':
                 field_dict[key] = value
 

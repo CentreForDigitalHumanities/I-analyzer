@@ -98,7 +98,8 @@ FIELD_DISPLAY_TYPES = [
     ('keyword', 'keyword'),
     ('date', 'date'),
     ('integer', 'integer'),
-    ('float', 'float')
+    ('float', 'float'),
+    ('boolean', 'boolean'),
 ]
 
 FIELD_VISUALIZATIONS = [
@@ -135,11 +136,11 @@ class Field(models.Model):
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
-        null=True,
+        blank=True,
         help_text='explanatory text to be shown in the interface',
     )
     search_filter = models.JSONField(
-        null=True,
+        blank=True,
         help_text='specification of the search filter for this field (if any)',
     )
     results_overview = models.BooleanField(
@@ -159,13 +160,13 @@ class Field(models.Model):
             max_length=16,
             choices=FIELD_VISUALIZATIONS,
         ),
-        null=True,
+        blank=True,
         help_text='visualisations for this field',
     )
     visualization_sort = models.CharField(
         max_length=8,
         choices=VISUALIZATION_SORT_OPTIONS,
-        null=True,
+        blank=True,
         help_text='if the field has results/term frequency charts: how is the x-axis sorted?',
     )
     es_mapping = models.JSONField(
