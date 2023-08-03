@@ -431,7 +431,7 @@ export abstract class BarchartDirective
 
     /** adapt query model to fit series: use correct search fields and query text */
     queryModelForSeries(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
-        return this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+        return this.selectSearchFields(this.removeSort(this.setQueryText(queryModel, series.queryText)));
     }
 
     /** Request doc counts for a series */
@@ -579,6 +579,13 @@ export abstract class BarchartDirective
     setQueryText(query: QueryModel, queryText: string): QueryModel {
         const queryModelCopy = query.clone();
         queryModelCopy.queryText = queryText;
+        return queryModelCopy;
+    }
+
+    /** return a copy of a query model with removed sort parameter (=> relevance sorting) */
+    removeSort(query: QueryModel): QueryModel {
+        const queryModelCopy = query.clone();
+        queryModelCopy.sort.setSortBy(undefined);
         return queryModelCopy;
     }
 
