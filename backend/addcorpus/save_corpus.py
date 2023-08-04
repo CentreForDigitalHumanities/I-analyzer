@@ -131,3 +131,7 @@ def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.std
 
     for corpus_name, corpus_definition in corpus_definitions.items():
         _try_saving_corpus(corpus_name, corpus_definition)
+
+    not_included = Corpus.objects.exclude(name__in=corpus_definitions.keys())
+    for corpus in not_included:
+        _set_corpus_inactive(corpus.name)

@@ -46,6 +46,20 @@ def test_saving_broken_corpus(db, mock_corpus):
     # ... but the corpus is now inactive
     assert corpus.active == False
 
+def test_remove_corpus_from_settings(db, settings, mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    assert corpus.active == True
+
+    path = settings.CORPORA.pop(mock_corpus)
+    load_and_save_all_corpora()
+    corpus.refresh_from_db()
+    assert corpus.active == False
+
+    settings.CORPORA[mock_corpus] = path
+    load_and_save_all_corpora()
+    corpus.refresh_from_db()
+    assert corpus.active == True
+
 def test_save_field_definition(db, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
     corpus_def = MockCSVCorpus()
