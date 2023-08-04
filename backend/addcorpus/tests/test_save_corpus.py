@@ -71,3 +71,26 @@ def test_save_field_definition(db, mock_corpus):
         assert field
         assert field.name == field_def.name
 
+def test_save_corpus_purity(db, mock_corpus):
+    '''
+    Test that saved corpus definitions only depend
+    on the definition at that time, not on the currently
+    saved state
+    '''
+
+    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus_def = MockCSVCorpus()
+
+    corpus_def.document_context = {
+        'context_display_name': 'character',
+        'context_fields': ['character'],
+        'sort_field': None
+    }
+    _try_saving_corpus(mock_corpus, corpus_def)
+    corpus.refresh_from_db()
+    assert corpus.document_context['context_display_name'] == 'character'
+
+    corpus_def.document_context = None
+    _try_saving_corpus(mock_corpus, corpus_def)
+    corpus.refresh_from_db()
+    assert not corpus.document_context
