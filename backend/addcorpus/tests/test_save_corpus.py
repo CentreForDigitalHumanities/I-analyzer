@@ -31,6 +31,12 @@ def test_no_errors_when_saving_corpora(db, capsys):
     for line in captured.out.split('\n'):
         assert line == '' or line.startswith('Saved corpus:')
 
+def test_active_status(db, mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus_def = MockCSVCorpus()
+
+    assert corpus.active
+
 def test_save_field_definition(db, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
     corpus_def = MockCSVCorpus()

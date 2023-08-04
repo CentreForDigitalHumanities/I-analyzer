@@ -84,6 +84,10 @@ class Corpus(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
+    active = models.BooleanField(
+        default=True,
+        help_text='removing a corpus from settings will set it to inactive'
+    )
 
     class Meta:
         verbose_name_plural = 'corpora'
