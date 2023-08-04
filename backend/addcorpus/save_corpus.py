@@ -19,6 +19,7 @@ def _save_corpus_in_database(corpus_name, corpus_definition: CorpusDefinition):
         corpus_db = Corpus(name=corpus_name)
 
     _copy_corpus_attributes(corpus_definition, corpus_db)
+    corpus_db.active = True
     corpus_db.save()
 
     _save_corpus_fields_in_database(corpus_definition, corpus_db)
@@ -90,6 +91,37 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
     field.full_clean()
     return field
 
+def _set_corpus_inactive(corpus_name):
+    '''
+    Set a corpus to inactive status, if it exists in the database
+    '''
+
+    exists = Corpus.objects.filter(name=corpus_name).exists()
+
+    if exists:
+        corpus = Corpus.objects.get(name=corpus_name)
+        corpus.active = False
+        corpus.save()
+
+def _try_saving_corpus(corpus_name, corpus_definition, verbose = False, stdout=sys.stdout, stderr=sys.stderr):
+    '''
+    Try saving a corpus definition to the database.
+
+    This will create a new Corpus object or update an existing one.
+    Changes are rolled back on failure.
+    '''
+
+    try:
+        with transaction.atomic():
+            _save_corpus_in_database(corpus_name, corpus_definition)
+        if verbose:
+            print(f'Saved corpus: {corpus_name}',  file=stdout)
+    except Exception as e:
+        _set_corpus_inactive(corpus_name)
+        print(f'Failed saving corpus: {corpus_name}', file=stderr)
+        print(f'Error: {e}', file=stderr)
+
+
 def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.stderr):
     '''
     load all python corpus definitions and save them to the database
@@ -98,11 +130,4 @@ def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.std
     corpus_definitions = load_all_corpora(stderr=stderr)
 
     for corpus_name, corpus_definition in corpus_definitions.items():
-        try:
-            with transaction.atomic():
-                _save_corpus_in_database(corpus_name, corpus_definition)
-            if verbose:
-                print(f'Saved corpus: {corpus_name}',  file=stdout)
-        except Exception as e:
-            print(f'Failed saving corpus: {corpus_name}', file=stderr)
-            print(f'Error: {e}', file=stderr)
+        _try_saving_corpus(corpus_name, corpus_definition)
