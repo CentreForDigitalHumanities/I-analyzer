@@ -44,10 +44,11 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        settings['index'] = {
+        index_settings = settings.get('index', {})
+        index_settings.update({
             'number_of_replicas' : 0,
-            'number_of_shards': 6
-        }
+            'number_of_shards': 5
+        })
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
@@ -117,6 +118,12 @@ def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, 
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
+    logger.info(
+        vars(client).get('_max_retries'))
+
+    logger.info(
+        vars(client).get('_retry_on_timeout')
+    )
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
 

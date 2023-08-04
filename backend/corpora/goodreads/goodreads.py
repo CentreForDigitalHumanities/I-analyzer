@@ -9,9 +9,11 @@ from django.conf import settings
 import openpyxl
 
 from addcorpus.extract import CSV, Metadata
-# SliderRangeFilter, BoxRangeFilter
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import CSVCorpus, Field
+
+from addcorpus.es_mappings import main_content_mapping
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
@@ -180,7 +182,7 @@ class GoodReads(CSVCorpus):
             extractor=CSV(
                 field='text',
             ),
-            es_mapping={'type': 'text'},
+            es_mapping=main_content_mapping(),
             display_type='text_content',
             csv_core=True,
             results_overview=True,
@@ -212,32 +214,7 @@ class GoodReads(CSVCorpus):
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
-            es_mapping={'type': 'keyword'}
-        ),
-        Field(
-            name='author',
-            display_name='Author',
-            description='Author of the review.',
-            extractor=CSV(
-                field='author',
-            ),
-            es_mapping={'type': 'keyword'},
-            csv_core=True,
-        ),
-        Field(
-            name='author_gender',
-            display_name='Reviewer gender',
-            description='Gender of the reviewer, guessed based on name.',
-            extractor=CSV(
-                field='author_gender',
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made by authors of these genders. Note that gender was guessed based on username',
-                option_count=6
-            ),
-            csv_core=True,
-            visualizations=['resultscount', 'termfrequency'],
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
         ),
         Field(
             name='rating_text',

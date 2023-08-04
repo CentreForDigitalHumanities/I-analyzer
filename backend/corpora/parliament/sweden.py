@@ -4,7 +4,7 @@ from glob import glob
 from addcorpus.corpus import CSVCorpus
 from addcorpus.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 import re
 

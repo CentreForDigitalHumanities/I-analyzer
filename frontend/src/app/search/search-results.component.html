@@ -40,7 +40,7 @@
                 <div class="column is-flex" tabindex="0" (click)="onViewDocument(document)" (keydown.enter)="onViewDocument(document)" role="button">
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
-                            <tr *ngIf="document.fieldValues[field.name]">
+                            <tr *ngIf="document.fieldValue(field)">
                                 <td>
                                     <b>{{field.displayName}}: </b>
                                 </td>
@@ -52,7 +52,7 @@
                                     </td>
                                 </ng-container>
                                 <ng-template #unhighlightedRow>
-                                    <td style="word-break:break-word" [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
+                                    <td style="word-break:break-word" [innerHtml]="document.fieldValue(field) | highlight:query:true"></td>
                                 </ng-template>
                             </tr>
                         </ng-container>
@@ -101,7 +101,7 @@
                     <span>Link</span>
                 </a>
                 &nbsp;
-                <a *ngIf="hasContext(viewDocument)" [routerLink]="['/search', corpus.name]" [queryParams]="contextParams(viewDocument)"
+                <a *ngIf="viewDocument.hasContext" [routerLink]="['/search', corpus.name]" [queryParams]="viewDocument.contextQueryParams"
                     iaBalloon="view all documents from this {{contextDisplayName}}"
                     tabindex="0">
                     <span class="icon">

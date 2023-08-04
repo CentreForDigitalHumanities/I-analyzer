@@ -19,6 +19,9 @@ from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 from addcorpus.load_corpus import corpus_dir
 
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
+
 # Source files ################################################################
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
             'Wilhelmina', 'Juliana', 'Beatrix', 'Willem-Alexander']
@@ -38,6 +41,10 @@ class Troonredes(XMLCorpus):
     languages = ['nl']
     category = 'oration'
     description_page = 'troonredes.md'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
@@ -79,6 +86,7 @@ class Troonredes(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=keyword_mapping(),
             extractor=extract.Metadata('id')
         ),
         Field(
@@ -128,6 +136,7 @@ class Troonredes(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],

@@ -8,18 +8,20 @@ import * as _ from 'lodash';
 import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
 import { makeContextParams } from '../utils/document-context';
 
+const MAXIMUM_DISPLAYED = 10000;
+
 @Component({
     selector: 'ia-search-results',
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnChanges {
-    /**
-     * The search queryModel to use
-     */
     @ViewChild('resultsNavigation', {static: true})
     public resultsNavigation: ElementRef;
 
+    /**
+     * The search queryModel to use
+     */
     @Input()
     public queryModel: QueryModel;
 
@@ -45,7 +47,6 @@ export class SearchResultsComponent implements OnChanges {
 
     public resultsPerPage = 20;
     public totalResults: number;
-    private maximumDisplayed: number;
 
     public fromIndex = 0;
 
@@ -76,7 +77,6 @@ export class SearchResultsComponent implements OnChanges {
     ngOnChanges() {
         if (this.queryModel) {
             this.fromIndex = 0;
-            this.maximumDisplayed = this.user.downloadLimit ? this.user.downloadLimit : 10000;
             this.search();
             this.queryModel.update.subscribe(() => this.search());
         }
@@ -97,7 +97,7 @@ export class SearchResultsComponent implements OnChanges {
             this.results = results;
             this.results.documents.map((d, i) => d.position = i + 1);
             this.searched(this.queryModel.queryText, this.results.total.value);
-            this.totalResults = this.results.total.value <= this.maximumDisplayed ? this.results.total.value : this.maximumDisplayed;
+            this.totalResults = this.results.total.value <= MAXIMUM_DISPLAYED ? this.results.total.value : MAXIMUM_DISPLAYED;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
@@ -182,16 +182,4 @@ export class SearchResultsComponent implements OnChanges {
         this.onViewDocument(document);
     }
 
-    hasContext(document: FoundDocument) {
-        if (this.corpus.documentContext) {
-            const contextFields = this.corpus.documentContext.contextFields;
-            const notBlank = value => value !== undefined && value !== null && value !== '';
-            return _.every(contextFields, field => notBlank(document.fieldValues[field.name]));
-        }
-        return false;
-    }
-
-    contextParams(document: FoundDocument) {
-        return makeContextParams(document, this.corpus);
-    }
 }

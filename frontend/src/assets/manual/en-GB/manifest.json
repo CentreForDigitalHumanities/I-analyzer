@@ -33,5 +33,9 @@
     {
         "id": "download",
         "title": "Downloading data"
+    },
+    {
+        "id": "citation",
+        "title": "Citing I-analyzer"
     }
 ]

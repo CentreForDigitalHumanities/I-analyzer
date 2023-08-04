@@ -5,19 +5,19 @@ locations.
 
 import logging
 logger = logging.getLogger(__name__)
-import os
 from os.path import join, isfile, splitext
-from datetime import datetime, timedelta
+from datetime import datetime
 import re
-from pprint import pprint
 import openpyxl
-import base64
 
 from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
+
 from media.media_url import media_url
 
 # Source files ################################################################
@@ -35,6 +35,10 @@ class Periodicals(XMLCorpus):
     description_page = '19thCenturyUKPeriodicals.md'
     languages = ['en']
     category = 'periodical'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -99,6 +103,7 @@ class Periodicals(XMLCorpus):
             name='date_pub',
             display_name='Publication Date',
             description='Publication date as full string, as found in source file',
+            es_mapping=keyword_mapping(),
             results_overview=True,
             extractor=extract.Metadata('date_full')
         ),
@@ -106,6 +111,7 @@ class Periodicals(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(tag=None,
                                   toplevel=False,
                                   attribute='id'),
@@ -114,6 +120,7 @@ class Periodicals(XMLCorpus):
             name='issue',
             display_name='Issue number',
             description='Source issue number.',
+            es_mapping=keyword_mapping(),
             results_overview=False,
             extractor=extract.Metadata('issue_id'),
             csv_core=False,
@@ -138,6 +145,7 @@ class Periodicals(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
@@ -184,6 +192,7 @@ class Periodicals(XMLCorpus):
         ),
         Field(
             name='start_column',
+            es_mapping={'type': 'keyword'},
             display_name='Starting column',
             description='Which column the article starts in.',
             extractor=extract.XML(tag='sc',
@@ -255,6 +264,7 @@ class Periodicals(XMLCorpus):
             name='page_no',
             display_name='Page number',
             description='At which page the article starts.',
+            es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='pa',
                 parent_level=1,
                 external_file={
@@ -278,6 +288,13 @@ class Periodicals(XMLCorpus):
             downloadable=False
         ),
     ]
+
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': 'page_no',
+        'sort_direction': 'asc',
+        'context_display_name': 'issue'
+    }
 
     def request_media(self, document, corpus_name):
         field_vals = document['fieldValues']

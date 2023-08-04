@@ -6,6 +6,7 @@ import { mockCorpus, mockField } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 
 import { DocumentViewComponent } from './document-view.component';
+import { makeDocument } from '../../mock-data/constructor-helpers';
 
 describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;
@@ -22,11 +23,7 @@ describe('DocumentViewComponent', () => {
             scan_image_type: 'farout_image_type',
             fields: [mockField]
         }, mockCorpus);
-        component.document = {
-            id: 'test',
-            relevance: 0.5,
-            fieldValues: { great_field: 'Hello world!' }
-        };
+        component.document = makeDocument({ great_field: 'Hello world!' });
         fixture.detectChanges();
     });
 
