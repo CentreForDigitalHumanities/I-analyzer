@@ -1,3 +1,4 @@
+from django.db import transaction
 from addcorpus.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, Field
 from addcorpus.load_corpus import load_all_corpora
@@ -98,7 +99,8 @@ def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.std
 
     for corpus_name, corpus_definition in corpus_definitions.items():
         try:
-            _save_corpus_in_database(corpus_name, corpus_definition)
+            with transaction.atomic():
+                _save_corpus_in_database(corpus_name, corpus_definition)
             if verbose:
                 print(f'Saved corpus: {corpus_name}',  file=stdout)
         except Exception as e:
