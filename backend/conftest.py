@@ -79,11 +79,10 @@ def es_client():
 
 # mock corpora
 
-@pytest.fixture(scope='function')
-def django_db_setup(django_db_setup, django_db_blocker):
+@pytest.fixture(autouse=True)
+def add_mock_corpora_to_db(db):
     #add mock corpora to the database at the start of each test
-    with django_db_blocker.unblock():
-        load_and_save_all_corpora()
+    load_and_save_all_corpora()
 
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus(corpus_name)
