@@ -2,7 +2,7 @@ import sys
 from django.conf import settings
 from datetime import datetime, date
 from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.save_corpus import _save_field_in_database, load_and_save_all_corpora, _try_saving_corpus
 
 
@@ -16,8 +16,12 @@ def test_saved_corpora(db):
 
     for corpus_name in configured:
         assert Corpus.objects.filter(name=corpus_name).exists()
+        corpus = Corpus.objects.get(name=corpus_name)
+        assert corpus.configuration
+        assert corpus.active
 
     assert len(Corpus.objects.all()) == len(configured)
+    assert len(CorpusConfiguration.objects.all()) == len(configured)
 
 def test_no_errors_when_saving_corpora(db, capsys):
     # try running the save function
@@ -41,10 +45,9 @@ def test_saving_broken_corpus(db, mock_corpus):
     _try_saving_corpus(mock_corpus, corpus_def)
 
     corpus.refresh_from_db()
-    # expect changes to be rolled back...
-    assert date.__eq__(corpus.min_date, MockCSVCorpus.min_date) # specify which __eq__ func to avoid date vs. datetime comparison mishaps
-    # ... but the corpus is now inactive
+    # expect the corpus to be inactive now
     assert corpus.active == False
+    assert not CorpusConfiguration.objects.filter(corpus=corpus).exists()
 
 def test_remove_corpus_from_settings(db, settings, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
@@ -61,19 +64,19 @@ def test_remove_corpus_from_settings(db, settings, mock_corpus):
     assert corpus.active == True
 
 def test_save_field_definition(db, mock_corpus):
-    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus_conf = Corpus.objects.get(name=mock_corpus).configuration
     corpus_def = MockCSVCorpus()
 
-    corpus.fields.all().delete()
+    corpus_conf.fields.all().delete()
 
     for field_def in corpus_def.fields:
-        field = _save_field_in_database(field_def, corpus)
+        field = _save_field_in_database(field_def, corpus_conf)
         assert field
         assert field.name == field_def.name
 
 def test_save_corpus_purity(db, mock_corpus):
     '''
-    Test that saved corpus definitions only depend
+    Test that saved corpus configurations only depend
     on the definition at that time, not on the currently
     saved state
     '''
@@ -81,16 +84,12 @@ def test_save_corpus_purity(db, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
     corpus_def = MockCSVCorpus()
 
-    corpus_def.document_context = {
-        'context_display_name': 'character',
-        'context_fields': ['character'],
-        'sort_field': None
-    }
+    corpus_def.description_page = 'test.md'
     _try_saving_corpus(mock_corpus, corpus_def)
     corpus.refresh_from_db()
-    assert corpus.document_context['context_display_name'] == 'character'
+    assert corpus.configuration.description_page == 'test.md'
 
-    corpus_def.document_context = None
+    corpus_def.description_page = None
     _try_saving_corpus(mock_corpus, corpus_def)
     corpus.refresh_from_db()
-    assert not corpus.document_context
+    assert not corpus.configuration.description_page

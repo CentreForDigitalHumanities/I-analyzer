@@ -1,30 +1,27 @@
 from django.db import transaction
 from addcorpus.corpus import CorpusDefinition, FieldDefinition
-from addcorpus.models import Corpus, Field
+from addcorpus.models import Corpus, CorpusConfiguration, Field
 from addcorpus.load_corpus import load_all_corpora
 import sys
 
-def _save_corpus_in_database(corpus_name, corpus_definition: CorpusDefinition):
+def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
     '''
-    Save a corpus in the SQL database if it is not saved already.
+    Save a corpus configuration in the SQL database.
 
     Parameters:
-    - `corpus_name`: key of the corpus in settings.CORPORA
+    - `corpus`: a Corpus database object, which should not have an existing configuration
     - `corpus_definition`: a corpus object, output of `load_corpus`
     '''
 
-    if Corpus.objects.filter(name=corpus_name).exists():
-        corpus_db = Corpus.objects.get(name=corpus_name)
-    else:
-        corpus_db = Corpus(name=corpus_name)
+    configuration = CorpusConfiguration(corpus=corpus)
+    _copy_corpus_attributes(corpus_definition, configuration)
+    configuration.save()
+    configuration.full_clean()
 
-    _copy_corpus_attributes(corpus_definition, corpus_db)
-    corpus_db.active = True
-    corpus_db.save()
+    _save_corpus_fields_in_database(corpus_definition, configuration)
 
-    _save_corpus_fields_in_database(corpus_definition, corpus_db)
-
-    corpus_db.full_clean()
+    corpus.active = True
+    corpus.save()
 
 def get_defined_attributes(object, attributes):
     get = lambda attr: object.__getattribute__(attr)
@@ -36,7 +33,7 @@ def get_defined_attributes(object, attributes):
         if has_attribute(attr)
     }
 
-def _copy_corpus_attributes(corpus_definition: CorpusDefinition, corpus_db: Corpus):
+def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     attributes_to_copy = [
         'description',
         'allow_image_download',
@@ -57,16 +54,13 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, corpus_db: Corp
     defined = get_defined_attributes(corpus_definition, attributes_to_copy)
 
     for attr, value in defined.items():
-        corpus_db.__setattr__(attr, value)
+        configuration.__setattr__(attr, value)
 
-def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, corpus_db: Corpus):
-    # clear all fields and re-parse
-    corpus_db.fields.all().delete()
-
+def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     for field in corpus_definition.fields:
-        _save_field_in_database(field, corpus_db)
+        _save_field_in_database(field, configuration)
 
-def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
+def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
     attributes_to_copy = [
         'name', 'display_name', 'display_type',
         'description', 'results_overview',
@@ -82,7 +76,7 @@ def _save_field_in_database(field_definition: FieldDefinition, corpus: Corpus):
     filter_definition = field_definition.search_filter.serialize() if field_definition.search_filter else {}
 
     field = Field(
-        corpus=corpus,
+        corpus_configuration=configuration,
         search_filter=filter_definition,
         **copy_attributes,
     )
@@ -107,13 +101,17 @@ def _try_saving_corpus(corpus_name, corpus_definition, verbose = False, stdout=s
     '''
     Try saving a corpus definition to the database.
 
-    This will create a new Corpus object or update an existing one.
+    This will create a new CorpusConfiguration object or replace an existing one.
     Changes are rolled back on failure.
     '''
 
+    corpus, _ = Corpus.objects.get_or_create(name=corpus_name)
+
+    CorpusConfiguration.objects.filter(corpus=corpus).delete()
+
     try:
         with transaction.atomic():
-            _save_corpus_in_database(corpus_name, corpus_definition)
+            _save_corpus_configuration(corpus, corpus_definition)
         if verbose:
             print(f'Saved corpus: {corpus_name}',  file=stdout)
     except Exception as e:

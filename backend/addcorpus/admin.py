@@ -66,7 +66,7 @@ class FieldAdmin(admin.ModelAdmin):
             {
                 'fields': [
                     'name',
-                    'corpus',
+                    'corpus_configuration',
                     'display_name',
                     'description',
                     'hidden',
@@ -106,6 +106,6 @@ class FieldAdmin(admin.ModelAdmin):
         )
     ]
 
-admin.site.register(Corpus, CorpusAdmin)
-admin.site.register(CorpusConfiguration, CorpusAdmin)
-admin.site.register(Field, FieldAdmin)
+# admin.site.register(Corpus, CorpusAdmin)
+# admin.site.register(CorpusConfiguration, CorpusAdmin)
+# admin.site.register(Field, FieldAdmin)
