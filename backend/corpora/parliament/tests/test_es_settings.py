@@ -1,5 +1,5 @@
 import addcorpus.es_settings as es_settings
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 import pytest
 import os
 import shutil

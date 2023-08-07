@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 import wordmodels.similarity as similarity
 from wordmodels.visualisations import load_word_models
 from copy import copy
@@ -15,7 +15,7 @@ def test_term_similarity(mock_corpus):
         'less_similar': 'he',
         'uppercase_term': 'She'
     }
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     binned_models = load_word_models(corpus)
     model = binned_models[0]
 
@@ -33,7 +33,7 @@ def test_n_nearest_neighbours_amount(mock_corpus):
 
     for n in range(1, 16, 5):
         term = 'elizabeth'
-        corpus = load_corpus(mock_corpus)
+        corpus = load_corpus_definition(mock_corpus)
         binned_models = load_word_models(corpus)
         model = binned_models[0]
 
@@ -42,7 +42,7 @@ def test_n_nearest_neighbours_amount(mock_corpus):
 
 @pytest.fixture
 def model_with_term_removed(mock_corpus):
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     binned_models = load_word_models(corpus)
     original_model = binned_models[0]
 

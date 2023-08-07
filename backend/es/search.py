@@ -1,9 +1,9 @@
 from typing import Dict
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 
 def get_index(corpus):
-    corpus_class = load_corpus(corpus)
+    corpus_class = load_corpus_definition(corpus)
     return corpus_class.es_index
 
 def search(corpus, query_model: Dict = {}, client = None, **kwargs):

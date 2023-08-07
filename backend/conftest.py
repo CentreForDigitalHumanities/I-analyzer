@@ -2,7 +2,7 @@ import pytest
 from allauth.account.models import EmailAddress
 from time import sleep
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 
@@ -85,7 +85,7 @@ def add_mock_corpora_to_db(db):
     load_and_save_all_corpora()
 
 def index_test_corpus(es_client, corpus_name):
-    corpus = load_corpus(corpus_name)
+    corpus = load_corpus_definition(corpus_name)
     index.create(es_client, corpus, False, True, False)
     index.populate(es_client, corpus_name, corpus)
 
@@ -93,7 +93,7 @@ def index_test_corpus(es_client, corpus_name):
     sleep(2)
 
 def clear_test_corpus(es_client, corpus_name):
-    corpus = load_corpus(corpus_name)
+    corpus = load_corpus_definition(corpus_name)
     index = corpus.es_index
     # check existence in case teardown is executed more than once
     if es_client.indices.exists(index = index):

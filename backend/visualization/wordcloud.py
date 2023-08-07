@@ -1,6 +1,6 @@
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.es_settings import get_nltk_stopwords
 from es import download as download
 
@@ -12,7 +12,7 @@ def make_wordcloud_data(documents, field, corpus):
             texts.append(content)
 
     try:
-        nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
+        nltk_stopwords = get_nltk_stopwords(load_corpus_definition(corpus).language)
     except:
         nltk_stopwords = []  # if language is not available, no stopwords are filtered
     cv = CountVectorizer(max_features=100, max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', stop_words=nltk_stopwords)

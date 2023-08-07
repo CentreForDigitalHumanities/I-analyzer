@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from time import sleep
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from es.es_index import perform_indexing
 from ianalyzer import elasticsearch
 

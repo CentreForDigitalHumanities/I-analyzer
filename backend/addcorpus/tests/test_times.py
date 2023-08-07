@@ -22,7 +22,7 @@ def test_times_source(times_test_settings):
     Verify that times source files are read correctly.
     '''
     # initialize the corpora module within the testing context
-    times_corpus = load_corpus.load_corpus('times')
+    times_corpus = load_corpus.load_corpus_definition('times')
 
     print(dirname(__file__), times_corpus.data_directory)
 

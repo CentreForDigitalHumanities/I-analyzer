@@ -1,5 +1,5 @@
 import visualization.termvectors as termvectors
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from es import search
 import pytest
 
@@ -43,7 +43,7 @@ def test_find_matches(es_client, termvectors_result, small_mock_corpus):
         ('fronkenstien~2 modern', 2),
     ]
 
-    corpus = load_corpus(small_mock_corpus)
+    corpus = load_corpus_definition(small_mock_corpus)
     for query_text, expected_matches in cases:
         matches = list(termvectors.token_matches(title_tokens, query_text, corpus.es_index, 'title', es_client))
         assert len(matches) == expected_matches
@@ -91,7 +91,7 @@ def test_query_components():
 
 
 def test_query_analysis(es_client, small_mock_corpus, index_small_mock_corpus):
-    corpus = load_corpus(small_mock_corpus)
+    corpus = load_corpus_definition(small_mock_corpus)
     es_index = corpus.es_index
 
     for case in QUERY_ANALYSIS_CASES:
@@ -101,7 +101,7 @@ def test_query_analysis(es_client, small_mock_corpus, index_small_mock_corpus):
 
 @pytest.fixture
 def termvectors_result(es_client, small_mock_corpus, index_small_mock_corpus):
-    corpus = load_corpus(small_mock_corpus)
+    corpus = load_corpus_definition(small_mock_corpus)
     es_index = corpus.es_index
 
     frankenstein_query = {

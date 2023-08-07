@@ -21,7 +21,7 @@ def corpus_dir(corpus_name):
     """
     return dirname(corpus_path(corpus_name))
 
-def load_corpus(corpus_name):
+def load_corpus_definition(corpus_name):
     filepath = corpus_path(corpus_name)
 
     try:
@@ -47,19 +47,19 @@ def load_corpus(corpus_name):
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 
-def _try_loading_corpus(corpus_name, stderr=sys.stderr):
+def _try_loading_corpus_definition(corpus_name, stderr=sys.stderr):
     try:
-        return load_corpus(corpus_name)
+        return load_corpus_definition(corpus_name)
     except Exception as e:
         message = 'Could not load corpus {}: {}'.format(corpus_name, e)
         print(message, file=stderr)
 
-def load_all_corpora(stderr=sys.stderr):
+def load_all_corpus_definitions(stderr=sys.stderr):
     '''
     Return a dict with corpus names and corpus definition objects.
     '''
     corpus_definitions_unfiltered = {
-        corpus_name: _try_loading_corpus(corpus_name, stderr)
+        corpus_name: _try_loading_corpus_definition(corpus_name, stderr)
         for corpus_name in settings.CORPORA.keys()
     }
 

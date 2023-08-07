@@ -1,7 +1,7 @@
 from django.db import transaction
 from addcorpus.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field
-from addcorpus.load_corpus import load_all_corpora
+from addcorpus.load_corpus import load_all_corpus_definitions
 import sys
 
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
@@ -125,7 +125,7 @@ def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.std
     load all python corpus definitions and save them to the database
     '''
 
-    corpus_definitions = load_all_corpora(stderr=stderr)
+    corpus_definitions = load_all_corpus_definitions(stderr=stderr)
 
     for corpus_name, corpus_definition in corpus_definitions.items():
         _try_saving_corpus(corpus_name, corpus_definition)

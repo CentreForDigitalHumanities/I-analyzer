@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 import warnings
 import os
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from ianalyzer.elasticsearch import elasticsearch
 from es import es_index
 from users.models import CustomUser
@@ -16,7 +16,7 @@ def mock_corpus():
 
 @pytest.fixture()
 def corpus_definition(mock_corpus):
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     yield corpus
 
 
@@ -28,7 +28,7 @@ def es_forward_client(es_client, mock_corpus):
     """
 
     # add data from mock corpus
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     es_index.create(es_client, corpus, False, True, False)
     es_index.populate(es_client, mock_corpus, corpus)
 
@@ -60,7 +60,7 @@ def es_alias_client(es_client, mock_corpus):
     Returns an elastic search client for the mock corpus.
     """
     # add data from mock corpus
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     es_index.create(es_client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
     es_client.indices.create(index='times-test-2')
     es_client.indices.create(index='times-test-bla-3')
