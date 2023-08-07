@@ -1,12 +1,9 @@
 from copy import deepcopy
-import numpy as np
 import pytest
 from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import load_corpus_definition
 import wordmodels.similarity as similarity
 from wordmodels.visualisations import load_word_models
-from copy import copy
 
 def test_term_similarity(mock_corpus):
     case = {
@@ -15,8 +12,7 @@ def test_term_similarity(mock_corpus):
         'less_similar': 'he',
         'uppercase_term': 'She'
     }
-    corpus = load_corpus_definition(mock_corpus)
-    binned_models = load_word_models(corpus)
+    binned_models = load_word_models(mock_corpus)
     model = binned_models[0]
 
     similarity1 = similarity.term_similarity(model, case['term'], case['similar_term'])
@@ -33,8 +29,7 @@ def test_n_nearest_neighbours_amount(mock_corpus):
 
     for n in range(1, 16, 5):
         term = 'elizabeth'
-        corpus = load_corpus_definition(mock_corpus)
-        binned_models = load_word_models(corpus)
+        binned_models = load_word_models(mock_corpus)
         model = binned_models[0]
 
         result = similarity.find_n_most_similar(model, term, n)
@@ -42,8 +37,7 @@ def test_n_nearest_neighbours_amount(mock_corpus):
 
 @pytest.fixture
 def model_with_term_removed(mock_corpus):
-    corpus = load_corpus_definition(mock_corpus)
-    binned_models = load_word_models(corpus)
+    binned_models = load_word_models(mock_corpus)
     original_model = binned_models[0]
 
     term = 'darcy'
@@ -55,12 +49,12 @@ def model_with_term_removed(mock_corpus):
             vocab, [original_model['vectors'][word] for word in vocab])
     new_model = {'vectors': new_vectors}
 
-    return corpus, new_model, original_model, term, vocab
+    return new_model, original_model, term, vocab
 
 def test_vocab_is_subset_of_model(model_with_term_removed):
     '''Test cases where the vocab array is a subset of terms with vectors.'''
 
-    corpus, model, original_model, missing_term, vocab = model_with_term_removed
+    model, original_model, missing_term, vocab = model_with_term_removed
     assert missing_term not in vocab
 
     other_term = 'elizabeth'

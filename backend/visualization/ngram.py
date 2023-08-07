@@ -1,5 +1,5 @@
 from collections import Counter
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, search
 from ianalyzer.elasticsearch import elasticsearch
@@ -55,9 +55,9 @@ def get_total_time_interval(es_query, corpus):
     if query_min and query_max:
         return query_min, query_max
 
-    corpus_class = load_corpus_definition(corpus)
-    corpus_min = corpus_class.min_date
-    corpus_max = corpus_class.max_date
+    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus)
+    corpus_min = corpus_conf.min_date
+    corpus_max = corpus_conf.max_date
 
     min_date = query_min if query_min and query_min > corpus_min else corpus_min
     max_date = query_max if query_max and query_max < corpus_max else corpus_max

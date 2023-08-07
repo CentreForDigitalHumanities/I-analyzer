@@ -1,4 +1,5 @@
 from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
 from ianalyzer.elasticsearch import elasticsearch
@@ -34,12 +35,14 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     return data
 
 def extract_data_for_term_frequency(corpus, es_query):
-    corpus_class = load_corpus_definition(corpus)
+    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus)
+
+    all_fields = corpus_conf.fields.all()
     search_fields = query.get_search_fields(es_query)
     if search_fields:
-        fields = list(filter(lambda field: field.name in search_fields, corpus_class.fields))
+        fields = list(filter(lambda field: field.name in search_fields, all_fields))
     else:
-        fields =list(filter(lambda field: field.es_mapping['type'] == 'text', corpus_class.fields))
+        fields =list(filter(lambda field: field.es_mapping['type'] == 'text', all_fields))
 
     fieldnames = [field.name for field in fields]
 

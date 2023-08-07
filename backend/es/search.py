@@ -1,10 +1,10 @@
 from typing import Dict
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.models import CorpusConfiguration
 
-def get_index(corpus):
-    corpus_class = load_corpus_definition(corpus)
-    return corpus_class.es_index
+def get_index(corpus_name):
+    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus_name)
+    return corpus_conf.es_index
 
 def search(corpus, query_model: Dict = {}, client = None, **kwargs):
     """

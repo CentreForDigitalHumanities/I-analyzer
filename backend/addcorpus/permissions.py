@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from addcorpus.load_corpus import load_corpus_definition
 from rest_framework.exceptions import NotFound
 from users.models import CustomUser
 from typing import List
@@ -48,11 +47,12 @@ class CorpusAccessPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
-        corpus = corpus_name_from_request(request)
+        corpus_name = corpus_name_from_request(request)
 
         # check if the corpus exists
         try:
-            load_corpus_definition(corpus)
+            corpus = Corpus.objects.get(name=corpus_name)
+            assert corpus.active
         except:
             raise NotFound('Corpus does not exist')
 
