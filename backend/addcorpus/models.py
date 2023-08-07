@@ -88,6 +88,7 @@ class CorpusConfiguration(models.Model):
         models.CharField(
             max_length=8,
             validators=[validate_language_code],
+            blank=True,
         ),
         help_text='languages used in the content of the corpus (from most to least frequent)',
     )
