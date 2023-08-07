@@ -4,17 +4,12 @@ passed through to ElasticSearch.
 '''
 
 from datetime import datetime
-from addcorpus.utils import serialize_datetime
 
 class Filter(object):
     '''
     A filter is the interface between the form that is presented to users and
     the ElasticSearch filter that is sent to the client.
     '''
-    # TODO Far as I can tell, this is a specific implementation of a problem
-    # with which WTForms deals in general. Therefore, this should be embedded
-    # in WTForms.
-
 
     def __init__(self, description=None):
         self.field = None # Must be filled after initialising
@@ -26,7 +21,7 @@ class Filter(object):
         for key, value in self.__dict__.items():
             if key == 'search_filter' or key != 'field':
                 if type(value) == datetime:
-                    search_dict[key] = serialize_datetime(value)
+                    search_dict[key] = value.isoformat()
                 else:
                     search_dict[key] = value
         return search_dict

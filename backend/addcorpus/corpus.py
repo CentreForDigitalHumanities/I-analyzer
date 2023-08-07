@@ -3,20 +3,14 @@ Module contains the base classes from which corpora can derive;
 '''
 
 from . import extract
-from zipfile import ZipExtFile
 import itertools
-import inspect
-import json
 import bs4
 import csv
 import sys
 from datetime import datetime
-from langcodes import Language, standardize_tag
 from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
-from addcorpus.constants import CATEGORIES
-from addcorpus.utils import serialize_datetime
 
 class CorpusDefinition(object):
     '''

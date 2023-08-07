@@ -3,7 +3,20 @@ from addcorpus.models import Corpus, CorpusConfiguration, Field
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
 
+class NonEmptyJSONField(serializers.JSONField):
+    '''
+    JSON field serialiser that converts empty dicts `{}`
+    to `None`/null values
+    '''
+
+    def to_representation(self, value):
+        data = super().to_representation(value)
+        # do not return empty dicts
+        if data:
+            return data
+
 class FieldSerializer(serializers.ModelSerializer):
+    search_filter = NonEmptyJSONField()
     class Meta:
         model = Field
         fields = [
