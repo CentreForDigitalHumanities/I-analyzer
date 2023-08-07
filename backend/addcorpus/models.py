@@ -183,6 +183,7 @@ class Field(models.Model):
             choices=FIELD_VISUALIZATIONS,
         ),
         blank=True,
+        default=list,
         help_text='visualisations for this field',
     )
     visualization_sort = models.CharField(
