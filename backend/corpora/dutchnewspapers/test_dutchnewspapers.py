@@ -3,7 +3,7 @@ from corpora.utils_test import corpus_from_api
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-def test_dutchnewspapers_public(settings, admin_client):
+def test_dutchnewspapers_public(settings, db, admin_client):
     settings.CORPORA = {
         'dutchnewspapers-public': os.path.join(here, 'dutchnewspapers_public.py')
     }
