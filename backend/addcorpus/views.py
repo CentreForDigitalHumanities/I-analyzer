@@ -1,12 +1,13 @@
 from rest_framework.views import APIView
 from addcorpus.serializers import CorpusSerializer
 from rest_framework.response import Response
-from addcorpus.load_corpus import load_all_corpora, corpus_dir
+from addcorpus.load_corpus import corpus_dir
 import os
 from django.http.response import FileResponse
 from rest_framework.permissions import IsAuthenticated
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
+from addcorpus.models import Corpus
 
 class CorpusView(APIView):
     '''
@@ -16,9 +17,9 @@ class CorpusView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        corpora = load_all_corpora()
+        corpora = Corpus.objects.filter(active=True)
         filtered_corpora = filter_user_corpora(corpora, request.user)
-        serializer = CorpusSerializer(filtered_corpora.items(), many=True)
+        serializer = CorpusSerializer(filtered_corpora, many=True)
         return Response(serializer.data)
 
 

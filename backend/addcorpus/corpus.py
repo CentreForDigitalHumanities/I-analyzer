@@ -216,67 +216,6 @@ class CorpusDefinition(object):
             }
         }
 
-    def json(self):
-        '''
-        Corpora should be able to produce JSON, so that the fields they define
-        can be used by other codebases, while retaining the Python class as the
-        single source of truth.
-        '''
-        corpus_dict = self.serialize()
-        json_dict = json.dumps(corpus_dict)
-        return json_dict
-
-    def serialize(self):
-        """
-        Convert corpus object to a JSON-friendly dict format.
-        """
-        corpus_dict = {}
-
-        # gather attribute names
-        # exclude:
-        # - methods not implemented in Corpus class
-        # - hidden attributes
-        # - attributes listed in `exclude`
-        # - bound methods
-        exclude = ['data_directory', 'es_settings', 'word_model_path']
-        corpus_attribute_names = [
-            a for a in dir(self)
-            if a in dir(CorpusDefinition) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
-        ]
-
-        # collect values
-        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
-
-        for ca in corpus_attributes:
-            if ca[0] == 'fields':
-                field_list = []
-                for field in self.fields:
-                    field_list.append(field.serialize())
-                corpus_dict[ca[0]] = field_list
-            elif ca[0] == 'languages':
-                format = lambda tag: Language.make(standardize_tag(tag)).display_name() if tag else 'Unknown'
-                corpus_dict[ca[0]] = [
-                    format(tag)
-                    for tag in ca[1]
-                ]
-            elif ca[0] == 'category':
-                corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
-            elif type(ca[1]) == datetime:
-                corpus_dict[ca[0]] = serialize_datetime(ca[1])
-            else:
-                corpus_dict[ca[0]] = ca[1]
-        return corpus_dict
-
-    def _format_option(self, value, options):
-        '''
-        For serialisation: format language or category based on list of options
-        '''
-        return next(
-            nice_string
-            for code, nice_string in options
-            if value == code
-        )
-
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
@@ -783,19 +722,6 @@ class FieldDefinition(object):
 
         if self.search_filter:
             self.search_filter.field = self
-
-    def serialize(self):
-        """
-        Convert Field object to a JSON-friendly dict format.
-        """
-        field_dict = {}
-        for key, value in self.__dict__.items():
-            if key == 'search_filter' and value != None:
-                    field_dict['search_filter'] = value.serialize()
-            elif key != 'extractor':
-                field_dict[key] = value
-
-        return field_dict
 
 
 # Helper functions ############################################################
