@@ -1,18 +1,22 @@
 from django.contrib import admin
-from .models import Corpus, Field
+from .models import Corpus, CorpusConfiguration, Field
 
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name']
+    readonly_fields = ['name', 'active']
+
+    fields = ['name', 'active', 'groups']
+
+class CorpusConfigurationAdmin(admin.ModelAdmin):
+    readonly_fields = ['corpus']
 
     fieldsets = [
         (
             None,
             {
                 'fields': [
-                    'name',
+                    'corpus',
                     'title',
                     'description',
-                    'groups',
                     'description_page',
                     'image',
                 ]
@@ -52,8 +56,9 @@ class CorpusAdmin(admin.ModelAdmin):
         )
     ]
 
+
 class FieldAdmin(admin.ModelAdmin):
-    readonly_fields = ['corpus']
+    readonly_fields = ['corpus_configuration']
 
     fieldsets = [
         (
@@ -102,4 +107,5 @@ class FieldAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(Corpus, CorpusAdmin)
+admin.site.register(CorpusConfiguration, CorpusAdmin)
 admin.site.register(Field, FieldAdmin)

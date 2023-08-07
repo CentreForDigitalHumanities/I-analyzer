@@ -15,18 +15,39 @@ class Corpus(models.Model):
         unique=True,
         help_text='internal name of the corpus',
     )
-    description = models.CharField(
-        max_length=MAX_LENGTH_DESCRIPTION,
-        blank=True,
-        help_text='short description of the corpus',
-    )
     groups = models.ManyToManyField(
         Group,
         related_name='corpora',
         blank=True,
         help_text='groups that have access to this corpus',
     )
+    active = models.BooleanField(
+        default=True,
+        help_text='removing a corpus from settings will set it to inactive'
+    )
 
+
+    class Meta:
+        verbose_name_plural = 'corpora'
+
+    def __str__(self):
+        return self.name
+
+class CorpusConfiguration(models.Model):
+    '''
+    The configuration of the corpus as set by the definition file.
+
+    Corpora require a CorpusConfiguration to function, but while the
+    Corpus object should be preserved as a reference point for relationships,
+    the CorpusConfiguration can safely be removed and re-initialised when
+    parsing corpus definitions.
+    '''
+
+    corpus = models.OneToOneField(
+        to=Corpus,
+        on_delete=models.CASCADE,
+        related_name='configuration',
+    )
     allow_image_download = models.BooleanField(
         default=False,
         help_text='whether users can download document scans',
@@ -40,6 +61,11 @@ class Corpus(models.Model):
         max_length=128,
         blank=True,
         help_text='filename of the markdown documentation file for this corpus',
+    )
+    description = models.CharField(
+        max_length=MAX_LENGTH_DESCRIPTION,
+        blank=True,
+        help_text='short description of the corpus',
     )
     document_context = models.JSONField(
         null=True,
@@ -84,17 +110,9 @@ class Corpus(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
-    active = models.BooleanField(
-        default=True,
-        help_text='removing a corpus from settings will set it to inactive'
-    )
-
-    class Meta:
-        verbose_name_plural = 'corpora'
 
     def __str__(self):
-        return self.name
-
+        return f'Configuration of <{self.corpus.name}>'
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
@@ -123,11 +141,11 @@ class Field(models.Model):
         max_length=MAX_LENGTH_NAME,
         help_text='internal name for the field',
     )
-    corpus = models.ForeignKey(
-        to=Corpus,
+    corpus_configuration = models.ForeignKey(
+        to=CorpusConfiguration,
         on_delete=models.CASCADE,
         related_name='fields',
-        help_text='corpus that this field belongs to',
+        help_text='corpus configuration that this field belongs to',
     )
     display_name = models.CharField(
         max_length=MAX_LENGTH_TITLE,
@@ -207,9 +225,9 @@ class Field(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['corpus', 'name'],
+            models.UniqueConstraint(fields=['corpus_configuration', 'name'],
                                 name='unique_name_for_corpus')
         ]
 
     def __str__(self) -> str:
-        return f'{self.name} ({self.corpus.name})'
+        return f'{self.name} ({self.corpus_configuration.corpus.name})'
