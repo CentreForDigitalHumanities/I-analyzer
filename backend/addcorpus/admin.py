@@ -1,13 +1,33 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import Corpus, CorpusConfiguration, Field
+
+def show_warning_message(request):
+    '''
+    Message to display when loading a form for a resource based on a python class
+    '''
+
+    messages.add_message(
+        request,
+        messages.WARNING,
+        'Corpus configurations are based on python classes; any changes here will be reset on server startup'
+    )
 
 class CorpusAdmin(admin.ModelAdmin):
     readonly_fields = ['name', 'active']
-
     fields = ['name', 'active', 'groups']
+
+class InlineFieldAdmin(admin.StackedInline):
+    model = Field
+    fields = ['display_name', 'description']
+    show_change_link = True
+    extra = 0
 
 class CorpusConfigurationAdmin(admin.ModelAdmin):
     readonly_fields = ['corpus']
+
+    inlines = [
+        InlineFieldAdmin
+    ]
 
     fieldsets = [
         (
@@ -55,6 +75,10 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
             }
         )
     ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        show_warning_message(request)
+        return super().get_form(request, obj, **kwargs)
 
 
 class FieldAdmin(admin.ModelAdmin):
@@ -106,6 +130,11 @@ class FieldAdmin(admin.ModelAdmin):
         )
     ]
 
-# admin.site.register(Corpus, CorpusAdmin)
-# admin.site.register(CorpusConfiguration, CorpusAdmin)
-# admin.site.register(Field, FieldAdmin)
+    def get_form(self, request, obj=None, **kwargs):
+        show_warning_message(request)
+        return super().get_form(request, obj, **kwargs)
+
+
+admin.site.register(Corpus, CorpusAdmin)
+admin.site.register(CorpusConfiguration, CorpusConfigurationAdmin)
+admin.site.register(Field, FieldAdmin)
