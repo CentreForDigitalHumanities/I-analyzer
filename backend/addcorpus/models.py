@@ -21,11 +21,14 @@ class Corpus(models.Model):
         blank=True,
         help_text='groups that have access to this corpus',
     )
-    active = models.BooleanField(
-        default=True,
-        help_text='removing a corpus from settings will set it to inactive'
-    )
 
+    @property
+    def active(self):
+        try:
+            self.configuration
+            return True
+        except:
+            return False
 
     class Meta:
         verbose_name_plural = 'corpora'

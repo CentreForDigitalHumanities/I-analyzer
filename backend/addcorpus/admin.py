@@ -13,8 +13,8 @@ def show_warning_message(request):
     )
 
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', 'active']
-    fields = ['name', 'active', 'groups']
+    readonly_fields = ['name', 'configuration']
+    fields = ['name', 'groups', 'configuration']
 
 class InlineFieldAdmin(admin.StackedInline):
     model = Field

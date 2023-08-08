@@ -20,9 +20,6 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
 
     _save_corpus_fields_in_database(corpus_definition, configuration)
 
-    corpus.active = True
-    corpus.save()
-
 def get_defined_attributes(object, attributes):
     get = lambda attr: object.__getattribute__(attr)
     has_attribute = lambda attr: attr in dir(object) and get(attr) != None
@@ -94,8 +91,8 @@ def _set_corpus_inactive(corpus_name):
 
     if exists:
         corpus = Corpus.objects.get(name=corpus_name)
-        corpus.active = False
-        corpus.save()
+        if corpus.active:
+            corpus.configuration.delete()
 
 def _try_saving_corpus(corpus_name, corpus_definition, verbose = False, stdout=sys.stdout, stderr=sys.stderr):
     '''
@@ -115,7 +112,6 @@ def _try_saving_corpus(corpus_name, corpus_definition, verbose = False, stdout=s
         if verbose:
             print(f'Saved corpus: {corpus_name}',  file=stdout)
     except Exception as e:
-        _set_corpus_inactive(corpus_name)
         print(f'Failed saving corpus: {corpus_name}', file=stderr)
         print(f'Error: {e}', file=stderr)
 
