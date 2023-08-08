@@ -1,7 +1,7 @@
 <ia-notifications></ia-notifications>
-<ia-menu></ia-menu>
+<ia-menu *ngIf="!iframe"></ia-menu>
 <main>
     <router-outlet></router-outlet>
     <ia-dialog></ia-dialog>
 </main>
-<ia-footer></ia-footer>
+<ia-footer *ngIf="!iframe"></ia-footer>

@@ -1,10 +1,8 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
-import * as _ from 'lodash';
-import { filter } from 'rxjs/operators';
 import {
     Corpus,
     CorpusField,
@@ -29,6 +27,12 @@ export class SearchComponent extends ParamDirective {
     public isScrolledDown: boolean;
 
     public corpus: Corpus;
+
+    /**
+     * This is a constant used to ensure that, when we are displayed in an iframe,
+     * the filters are displayed even if there are no results.
+     */
+    private minIframeHeight = 1300;
 
     /**
      * The filters have been modified.
@@ -76,10 +80,15 @@ export class SearchComponent extends ParamDirective {
     async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusSubscription = this.corpusService.currentCorpus
-            .pipe(filter((corpus) => !!corpus))
+            .filter((corpus) => !!corpus)
             .subscribe((corpus) => {
                 this.setCorpus(corpus);
             });
+
+        if (window.parent) {
+            // iframe support
+            window.parent.postMessage(['setHeight', this.minIframeHeight], '*');
+        }
     }
 
     teardown() {
