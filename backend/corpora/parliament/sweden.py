@@ -1,7 +1,7 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 from addcorpus.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
 import corpora.utils.formatting as formatting
@@ -40,7 +40,7 @@ def format_chamber(chamber):
 
     return chamber
 
-class ParliamentSweden(Parliament, CSVCorpus):
+class ParliamentSweden(Parliament, CSVCorpusDefinition):
     title = 'People and Parliament (Sweden 1920-2022)'
     description = 'Speeches from the Riksdag'
     min_date = datetime(year=1920, month=1, day=1)

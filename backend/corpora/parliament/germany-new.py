@@ -6,12 +6,12 @@ from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 import corpora.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
-class ParliamentGermanyNew(Parliament, CSVCorpus):
+class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     title = 'People & Parliament (Germany 1949-2021)'
     description = "Speeches from the Bundestag"
     min_date = datetime(year=1949, month=1, day=1)

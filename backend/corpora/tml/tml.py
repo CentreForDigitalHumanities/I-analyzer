@@ -14,14 +14,14 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import HTMLCorpusDefinition, XMLCorpusDefinition, FieldDefinition, until, after, string_contains
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 # Source files ################################################################
 
 
-class Tml(HTMLCorpus):
+class Tml(HTMLCorpusDefinition):
     title = "Thesaurus Musicarum Latinarum"
     description = "A collection of Medieval writings about music"
     min_date = datetime(year=300, month=1, day=1)
@@ -55,7 +55,7 @@ class Tml(HTMLCorpus):
 
     fields = [
 
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Article identifier.',
@@ -64,7 +64,7 @@ class Tml(HTMLCorpus):
                                        transform=lambda x: x.lower()
                                        )
         ),
-        Field(
+        FieldDefinition(
             name='author',
             display_name='author',
             es_mapping=keyword_mapping(),
@@ -78,7 +78,7 @@ class Tml(HTMLCorpus):
             })
         ),
 
-        Field(
+        FieldDefinition(
             name='title',
             display_name='title',
             results_overview=True,
@@ -93,7 +93,7 @@ class Tml(HTMLCorpus):
                 transform=lambda x: x.lstrip('[').rstrip(']'))
         ),
 
-        Field(
+        FieldDefinition(
             name='source',
             display_name='source',
             es_mapping=keyword_mapping(),
@@ -111,7 +111,7 @@ class Tml(HTMLCorpus):
                                    )
         ),
 
-        Field(
+        FieldDefinition(
             name='Prepared_by',
             display_name='prepared by',
             description='Electronic version prepared by.',
@@ -126,7 +126,7 @@ class Tml(HTMLCorpus):
                                    )
         ),
 
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
@@ -141,7 +141,7 @@ class Tml(HTMLCorpus):
                                    })
         ),
 
-        Field(
+        FieldDefinition(
             name='copy statement',
             display_name='copy statement',
             description='Copy statement.',

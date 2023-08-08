@@ -19,7 +19,7 @@ from django.conf import settings
 from es.es_update import update_document
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
 from media.image_processing import sizeof_fmt
 from media.media_url import media_url
 
@@ -31,7 +31,7 @@ PROCESSED = "corpora/guardianobserver/processed.txt"
 # Source files ################################################################
 
 
-class GuardianObserver(XMLCorpus):
+class GuardianObserver(XMLCorpusDefinition):
     title = "Guardian-Observer"
     description = "Newspaper archive, 1791-2003"
     min_date = datetime(year=1791, month=1, day=1)
@@ -70,7 +70,7 @@ class GuardianObserver(XMLCorpus):
                 f.write('{}\n'.format(str(zfile)))
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Publication Date',
             description='Publication date, parsed to yyyy-MM-dd format',
@@ -89,7 +89,7 @@ class GuardianObserver(XMLCorpus):
                 transform=lambda x: '{y}-{m}-{d}'.format(y=x[:4],m=x[4:6],d=x[6:])
                 )
         ),
-        Field(
+        FieldDefinition(
             name='date-pub',
             es_mapping=keyword_mapping(),
             display_name='Publication Date',
@@ -100,28 +100,28 @@ class GuardianObserver(XMLCorpus):
                 tag='AlphaPubDate', toplevel=True
             )
         ),
-        Field(
+        FieldDefinition(
             name='id',
             es_mapping=keyword_mapping(),
             display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='RecordID', toplevel=True)
         ),
-        Field(
+        FieldDefinition(
             name='pub_id',
             es_mapping=keyword_mapping(),
             display_name='Publication ID',
             description='Publication identifier',
             extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
-        Field(
+        FieldDefinition(
             name='page',
             es_mapping=keyword_mapping(),
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
             extractor=extract.XML(tag='StartPage', toplevel=True)
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Title',
             search_field_core=True,
@@ -129,7 +129,7 @@ class GuardianObserver(XMLCorpus):
             description='Article title.',
             extractor=extract.XML(tag='RecordTitle', toplevel=True)
         ),
-        Field(
+        FieldDefinition(
             name='source-paper',
             es_mapping=keyword_mapping(True),
             display_name='Source paper',
@@ -140,21 +140,21 @@ class GuardianObserver(XMLCorpus):
                 option_count=5
             ),
         ),
-        Field(
+        FieldDefinition(
             name='place',
             mapping=keyword_mapping(True),
             display_name='Place',
             description='Place in which the article was published',
             extractor=extract.XML(tag='Qualifier', toplevel=True, recursive=True)
         ),
-        Field(
+        FieldDefinition(
             name='author',
             mapping=keyword_mapping(True),
             display_name='Author',
             description='Article author',
             extractor=extract.XML(tag='PersonName', toplevel=True, recursive=True)
         ),
-        Field(
+        FieldDefinition(
             name='category',
             visualizations=['resultscount', 'termfrequency'],
             display_name='Category',
@@ -167,7 +167,7 @@ class GuardianObserver(XMLCorpus):
             extractor=extract.XML(tag='ObjectType', toplevel=True),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='content',
             es_mapping=main_content_mapping(True, True, True),
             display_name='Content',

@@ -16,7 +16,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains
 from addcorpus.load_corpus import corpus_dir
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
@@ -29,7 +29,7 @@ MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
 SPEECH_TYPES = ['openingsrede', 'troonrede', 'inhuldigingsrede']
 
 
-class Troonredes(XMLCorpus):
+class Troonredes(XMLCorpusDefinition):
     title = "Troonredes"
     description = "Speeches by Dutch monarchs"
     min_date = datetime(year=1814, month=1, day=1)
@@ -65,7 +65,7 @@ class Troonredes(XMLCorpus):
                     yield full_path, {'id': name}
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             description='Date of the speech',
@@ -82,14 +82,14 @@ class Troonredes(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
             es_mapping=keyword_mapping(),
             extractor=extract.Metadata('id')
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Title',
             description='title.',
@@ -97,7 +97,7 @@ class Troonredes(XMLCorpus):
             results_overview=True,
             search_field_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='monarch',
             display_name='Monarch',
             description='Monarch that gave the speech.',
@@ -114,7 +114,7 @@ class Troonredes(XMLCorpus):
                 option_count=len(MONARCHS)
             ),
         ),
-        Field(
+        FieldDefinition(
             name='speech_type',
             display_name='Speech type',
             description='Type of speech.',
@@ -131,7 +131,7 @@ class Troonredes(XMLCorpus):
                 option_count=len(SPEECH_TYPES)
             ),
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',

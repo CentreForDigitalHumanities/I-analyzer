@@ -18,7 +18,7 @@ logger = logging.getLogger('indexing')
 from addcorpus.constants import CATEGORIES
 
 
-class Corpus(object):
+class CorpusDefinition(object):
     '''
     Subclasses of this class define corpora and their documents by specifying:
 
@@ -241,7 +241,7 @@ class Corpus(object):
         exclude = ['data_directory', 'es_settings', 'word_model_path']
         corpus_attribute_names = [
             a for a in dir(self)
-            if a in dir(Corpus) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
+            if a in dir(CorpusDefinition) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
         ]
 
         # collect values
@@ -325,7 +325,7 @@ class Corpus(object):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
 
-class XMLCorpus(Corpus):
+class XMLCorpusDefinition(CorpusDefinition):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
@@ -557,7 +557,7 @@ class XMLCorpus(Corpus):
         return out_dict
 
 
-class HTMLCorpus(XMLCorpus):
+class HTMLCorpusDefinition(XMLCorpusDefinition):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
@@ -613,7 +613,7 @@ class HTMLCorpus(XMLCorpus):
             }
 
 
-class CSVCorpus(Corpus):
+class CSVCorpusDefinition(CorpusDefinition):
     '''
     An CSVCorpus is any corpus that extracts its data from CSV sources.
     '''
@@ -704,7 +704,7 @@ class CSVCorpus(Corpus):
 
 # Fields ######################################################################
 
-class Field(object):
+class FieldDefinition(object):
     '''
     Fields may hold the following data:
     - a short hand name (name)
