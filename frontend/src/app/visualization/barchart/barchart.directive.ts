@@ -49,7 +49,7 @@ export abstract class BarchartDirective
 
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
-    documentLimit = 5000; // maximum number of documents to search through for term frequency
+    documentLimit = 1000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -614,7 +614,7 @@ export abstract class BarchartDirective
      */
     get percentageDocumentsSearched() {
         if (this.rawData) {
-            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)), 1);
         }
     }
 
