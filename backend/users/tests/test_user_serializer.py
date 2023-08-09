@@ -12,7 +12,9 @@ def test_user_serializer(auth_client,
         'download_limit': 10000,
         'is_admin': False,
         'saml': False,
-        'enable_search_history': True
+        'profile': {
+            'enable_search_history': True,
+        },
     }
 
 
@@ -26,7 +28,9 @@ def test_admin_serializer(admin_client, admin_credentials):
         'download_limit': 10000,
         'is_admin': True,
         'saml': False,
-        'enable_search_history': True,
+        'profile': {
+            'enable_search_history': True,
+        },
     }
 
 def test_user_updates(auth_client):
