@@ -5,7 +5,7 @@ from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
 
@@ -31,7 +31,7 @@ def format_chamber(chamber):
 
     return chambers.get(chamber, chamber)
 
-class ParliamentDenmark(Parliament, CSVCorpus):
+class ParliamentDenmark(Parliament, CSVCorpusDefinition):
     title = 'People & Parliament (Denmark, 1848-2008)'
     description = "Speeches from the Folketing and Landsting"
     min_date = datetime(year=1848, month=1, day=1)
