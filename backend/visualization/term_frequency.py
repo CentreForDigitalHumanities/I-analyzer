@@ -67,6 +67,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
     found_hits, total_results = download.scroll(corpus=corpus,
         query_model=es_query,
         download_size=size,
+        client=es_client,
         source=[]
     )
 

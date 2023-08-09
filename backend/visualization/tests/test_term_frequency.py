@@ -1,6 +1,4 @@
-from visualization import term_frequency, tasks
-import csv
-
+from visualization import term_frequency
 
 def test_extract_data_for_term_frequency(small_mock_corpus):
     es_query = make_query('test', ['content', 'title'])
@@ -56,10 +54,19 @@ def test_match_count(small_mock_corpus, es_client, index_small_mock_corpus):
         match_count = term_frequency.get_match_count(es_client, query, small_mock_corpus, 100, fieldnames)
         assert match_count == freq
 
+def test_match_count_estimate(es_client_m_hits, es_client_k_hits, small_mock_corpus, basic_query):
+    matches = term_frequency.get_match_count(es_client_m_hits, basic_query, small_mock_corpus, 1000, ['test'])
+    # es_client_m_hits gives 5000 total hits and 10'000 terms for the 1000 document sample
+    # it estimates (10 - 1) * 4000 / 2 = 18000 terms for the uncounted documents
+    assert matches == 28000
+
+def test_match_count_full(es_client_k_hits, small_mock_corpus, basic_query):
+    matches = term_frequency.get_match_count(es_client_k_hits, basic_query, small_mock_corpus, 1000, ['test'])
+    # es_client_k_hits gives 500 total hits and 5000 terms (fully counted)
+    assert matches == 5000
+
 def test_total_docs_and_tokens(es_client, mock_corpus, index_mock_corpus, mock_corpus_specs):
     """Test total document counter"""
-
-
     query = make_query(query_text='*', search_in_fields=['content'])
 
     fieldnames, aggregators = term_frequency.extract_data_for_term_frequency(mock_corpus, query)
