@@ -31,3 +31,6 @@ class UserProfile(models.Model):
         help_text='Whether to save the search history of this user',
         default=True,
     )
+
+    def __str__(self):
+        return f'Profile of {self.user.username}'
