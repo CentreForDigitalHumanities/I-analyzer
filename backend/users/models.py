@@ -19,4 +19,15 @@ class CustomUser(AbstractUser):
         return any(corpus for group in self.groups.all()
                    for corpus in group.corpora.filter(name=corpus_name))
 
-    enable_search_history = models.BooleanField(default=True)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        to=CustomUser,
+        on_delete=models.CASCADE,
+        related_name='profile',
+    )
+
+    enable_search_history = models.BooleanField(
+        help_text='Whether to save the search history of this user',
+        default=True,
+    )
