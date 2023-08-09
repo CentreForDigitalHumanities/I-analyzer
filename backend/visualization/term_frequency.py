@@ -7,7 +7,7 @@ from visualization import query, termvectors
 from es import download
 
 DEFAULT_SIZE = 100
-ESTIMATE_WINDOW = 50
+ESTIMATE_WINDOW = 5
 
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
