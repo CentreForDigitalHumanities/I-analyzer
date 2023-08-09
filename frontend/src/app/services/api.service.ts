@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { timer } from 'rxjs';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
-import { ImageInfo } from '../../image-view/image-view.component';
+import { ImageInfo } from '../image-view/image-view.component';
 import {
     AggregateResult,
     AggregateTermFrequencyParameters,
@@ -24,8 +24,8 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../../models/index';
-import { environment } from '../../../environments/environment';
+} from '../models/index';
+import { environment } from '../../environments/environment';
 
 interface SolisLoginResponse {
     success: boolean;

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { ApiServiceMock } from '../../mock-data/api';
-import { ApiService } from '../core/services/api.service';
+import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 
 import { VisualizationService } from './visualization.service';

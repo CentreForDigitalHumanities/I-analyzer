@@ -1,4 +1,4 @@
-export * from '../core/services/api.service';
+export * from './api.service';
 export * from './api-retry.service';
 export * from './auth.service';
 export * from './corpus.service';

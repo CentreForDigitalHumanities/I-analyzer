@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ApiService } from '../core/services/api.service';
+import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { SessionService } from './session.service';
 

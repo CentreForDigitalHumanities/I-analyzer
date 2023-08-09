@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ApiService } from '../core/services/api.service';
+import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { DownloadService } from './download.service';
 import { ElasticSearchService } from './elastic-search.service';

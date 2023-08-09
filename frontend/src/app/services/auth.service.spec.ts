@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ApiServiceMock } from '../../mock-data/api';
-import { ApiService } from '../core/services/api.service';
+import { ApiService } from './api.service';
 
 import { AuthService } from './auth.service';
 import { SessionService } from './session.service';
