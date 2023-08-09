@@ -14,6 +14,8 @@ import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import { CorpusService, DialogService } from '../services/index';
 import { paramsHaveChanged } from '../utils/params';
+import { filter } from 'rxjs/operators';
+import { faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search',
@@ -80,7 +82,7 @@ export class SearchComponent extends ParamDirective {
     async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusSubscription = this.corpusService.currentCorpus
-            .filter((corpus) => !!corpus)
+            .pipe(filter((corpus) => !!corpus))
             .subscribe((corpus) => {
                 this.setCorpus(corpus);
             });
