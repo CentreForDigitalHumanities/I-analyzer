@@ -66,4 +66,8 @@ export class ApiServiceMock {
     saveQuery() {
         return Promise.resolve();
     }
+
+    requestMeQdia() {
+        return Promise.resolve({});
+    }
 }

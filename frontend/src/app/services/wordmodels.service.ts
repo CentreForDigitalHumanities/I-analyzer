@@ -1,64 +1,65 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
-import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams,
-    ResourceRequestMethod } from '@ngx-resource/core';
 
-import { environment } from '../../environments/environment';
-import { RelatedWordsResults, WordInModelResult, WordSimilarity } from '../models';
-
-// workaround for https://github.com/angular/angular-cli/issues/2034
-type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
+import { HttpClient } from '@angular/common/http';
+import {
+    RelatedWordsResults,
+    WordInModelResult,
+    WordSimilarity,
+} from '../models';
 
 @Injectable()
-@ResourceParams()
-export class WordmodelsService extends Resource {
-    private wordModelsUrl: string;
+export class WordmodelsService {
+    constructor(private http: HttpClient) {}
 
-    constructor(restHandler: ResourceHandler) {
-        super(restHandler);
+    public relatedWordsRequest(data: {
+        query_term: string;
+        corpus_name: string;
+        neighbours: number;
+    }): Promise<RelatedWordsResults> {
+        return this.http
+            .post<RelatedWordsResults>(this.wmApiRoute('related_words'), data)
+            .toPromise();
     }
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/related_words'
-    })
-    public relatedWordsRequest: ResourceMethod<
-        { query_term: string; corpus_name: string; neighbours: number },
-        RelatedWordsResults>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/similarity_over_time'
-    })
-    public wordSimilarityRequest: ResourceMethod<
-        { term_1: string; term_2: string; corpus_name: string},
-        WordSimilarity[]
-    >;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/word_in_models'
-    })
-    public wordInModelRequest: ResourceMethod<
-        { query_term: string; corpus_name: string },
-        WordInModelResult>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/documentation'
-    })
-    public wordModelsDocumentationRequest: ResourceMethod<
-        { corpus_name: string },
-        { documentation: string }
-    >;
-
-    $getUrl(actionOptions: IResourceAction): string | Promise<string> {
-        const urlPromise = super.$getUrl(actionOptions);
-        this.wordModelsUrl = environment.apiUrl + 'wordmodels/';
-        return Promise.all([this.wordModelsUrl, urlPromise]).then(([wordModelsUrl, url]) => `${wordModelsUrl}${url}`);
+    public wordSimilarityRequest(data: {
+        term_1: string;
+        term_2: string;
+        corpus_name: string;
+    }): Promise<WordSimilarity[]> {
+        const { term_1, term_2, corpus_name } = data;
+        return this.http
+            .get<WordSimilarity[]>(this.wmApiRoute('similarity_over_time'), {
+                params: data,
+            })
+            .toPromise();
     }
 
-    public async getRelatedWords(queryTerm: string, corpusName: string, neighbours: number): Promise<RelatedWordsResults> {
+    public wordInModelRequest(data: {
+        query_term: string;
+        corpus_name: string;
+    }): Promise<WordInModelResult> {
+        return this.http
+            .get<WordInModelResult>(this.wmApiRoute('word_in_models'), {
+                params: data,
+            })
+            .toPromise();
+    }
+
+    public wordModelsDocumentationRequest(data: {
+        corpus_name: string;
+    }): Promise<{ documentation: string }> {
+        return this.http
+            .get<{ documentation: string }>(this.wmApiRoute('documentation'), {
+                params: data,
+            })
+            .toPromise();
+    }
+
+    public async getRelatedWords(
+        queryTerm: string,
+        corpusName: string,
+        neighbours: number
+    ): Promise<RelatedWordsResults> {
         return this.relatedWordsRequest({
             query_term: queryTerm,
             corpus_name: corpusName,
@@ -66,16 +67,27 @@ export class WordmodelsService extends Resource {
         });
     }
 
-    public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
-        return this.wordSimilarityRequest({term_1: term1, term_2: term2, corpus_name: corpusName});
+    public async getWordSimilarity(
+        term1: string,
+        term2: string,
+        corpusName: string
+    ): Promise<WordSimilarity[]> {
+        return this.wordSimilarityRequest({
+            term_1: term1,
+            term_2: term2,
+            corpus_name: corpusName,
+        });
     }
 
-    wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
+    public wordInModel(
+        term: string,
+        corpusName: string
+    ): Promise<WordInModelResult> {
         return this.wordInModelRequest({
             query_term: term,
             corpus_name: corpusName,
         });
     }
 
-
+    private wmApiRoute = (route: string): string => `/api/wordmodels/${route}`;
 }

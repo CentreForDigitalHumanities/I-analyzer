@@ -1,51 +1,52 @@
-import { NgModule } from '@angular/core';
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
+import { NgModule } from '@angular/core';
 
 import { RouterModule, Routes } from '@angular/router';
 
-import { MenuModule } from 'primeng/menu';
-import { DialogModule } from 'primeng/dialog';
 import { CookieService } from 'ngx-cookie-service';
+import { DialogModule } from 'primeng/dialog';
+import { MenuModule } from 'primeng/menu';
 
 import {
-    ApiService, ApiRetryService,
-    ElasticSearchService, HighlightService, } from './services/index';
+    ApiRetryService,
+    ApiService,
+    ElasticSearchService,
+    HighlightService,
+} from './services/index';
 
-import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
-import { HomeComponent } from './home/home.component';
-import { SearchComponent } from './search/index';
-import { ManualComponent } from './manual/manual.component';
-import { MenuComponent } from './menu/menu.component';
-import { NotificationsComponent } from './notifications/notifications.component';
+import { AppComponent } from './app.component';
+import { CorpusModule } from './corpus-header/corpus.module';
+import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
+import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { CorpusGuard } from './corpus.guard';
-import { LoggedOnGuard } from './logged-on.guard';
-import { LoginComponent } from './login/login.component';
-import { SearchHistoryComponent, } from './history/search-history/index';
-import { RegistrationComponent } from './login/registration/registration.component';
-import { PrivacyComponent } from './privacy/privacy.component';
 import { DialogComponent } from './dialog/dialog.component';
-import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
-import { RequestResetComponent } from './login/reset-password/request-reset.component';
-import { WordModelsComponent } from './word-models/word-models.component';
-import { WordmodelsService } from './services/wordmodels.service';
+import { DocumentPageComponent } from './document-page/document-page.component';
+import { DocumentModule } from './document/document.module';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
-import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
-import { DocumentPageComponent } from './document-page/document-page.component';
-import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
-import { SharedModule } from './shared/shared.module';
-import { CorpusModule } from './corpus-header/corpus.module';
-import { DocumentModule } from './document/document.module';
-import { WordModelsModule } from './word-models/word-models.module';
 import { HistoryModule } from './history/history.module';
-import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
+import { SearchHistoryComponent } from './history/search-history/index';
+import { HomeComponent } from './home/home.component';
+import { LoggedOnGuard } from './logged-on.guard';
+import { LoginComponent } from './login/login.component';
 import { LoginModule } from './login/login.module';
-import { SearchModule } from './search/search.module';
+import { RegistrationComponent } from './login/registration/registration.component';
+import { RequestResetComponent } from './login/reset-password/request-reset.component';
+import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
+import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
+import { ManualComponent } from './manual/manual.component';
 import { ManualModule } from './manual/manual.module';
 import { SettingsComponent } from './settings/settings.component';
 import { SettingsModule } from './settings/settings.module';
-
+import { MenuComponent } from './menu/menu.component';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { PrivacyComponent } from './privacy/privacy.component';
+import { SearchComponent } from './search/index';
+import { SearchModule } from './search/search.module';
+import { SharedModule } from './shared/shared.module';
+import { WordModelsComponent } from './word-models/word-models.component';
+import { WordModelsModule } from './word-models/word-models.module';
 
 export const appRoutes: Routes = [
     {
@@ -61,7 +62,7 @@ export const appRoutes: Routes = [
     {
         path: 'info/:corpus',
         component: CorpusInfoComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard],
     },
     {
         path: 'document/:corpus/:id',
@@ -138,8 +139,9 @@ export const declarations: any[] = [
     NotificationsComponent,
 ];
 
-
 export const imports: any[] = [
+    SharedModule,
+    // Feature Modules
     CorpusModule,
     CorpusSelectionModule,
     DialogModule,
@@ -150,7 +152,6 @@ export const imports: any[] = [
     MenuModule,
     SearchModule,
     SettingsModule,
-    SharedModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
 ];
@@ -174,4 +175,3 @@ export const providers: any[] = [
     bootstrap: [AppComponent],
 })
 export class AppModule {}
-

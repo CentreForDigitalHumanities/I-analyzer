@@ -1,12 +1,5 @@
 import { FoundDocument, SearchResults } from '../app/models';
-
-const mockDocumentResult = {
-    id: '0',
-    relevance: null,
-    fieldValues: {
-        content: 'Hello world!'
-    }
-};
+import { makeDocument } from './constructor-helpers';
 
 export class ElasticSearchServiceMock {
     /**
@@ -16,7 +9,7 @@ export class ElasticSearchServiceMock {
     }
 
     getDocumentById(): Promise<FoundDocument> {
-        return Promise.resolve(mockDocumentResult);
+        return Promise.resolve(makeDocument({content: 'Hello world!'}));
     }
 
     search(): Promise<SearchResults> {
@@ -25,7 +18,8 @@ export class ElasticSearchServiceMock {
                 relation: 'eq',
                 value: 1
             },
-            documents: [mockDocumentResult]
+            documents: [makeDocument({content: 'Hello world!'})]
         });
     }
+
 }

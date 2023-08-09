@@ -7,7 +7,7 @@ const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryMod
 
     spec.contextFields.forEach(field => {
         const filter = field.makeSearchFilter();
-        filter.setToValue(document.fieldValues[field.name]);
+        filter.setToValue(document.fieldValue(field));
         queryModel.addFilter(filter);
     });
 

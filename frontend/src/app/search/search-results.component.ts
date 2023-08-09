@@ -16,12 +16,12 @@ const MAXIMUM_DISPLAYED = 10000;
     styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnChanges {
-    /**
-     * The search queryModel to use
-     */
     @ViewChild('resultsNavigation', {static: true})
     public resultsNavigation: ElementRef;
 
+    /**
+     * The search queryModel to use
+     */
     @Input()
     public queryModel: QueryModel;
 
@@ -182,16 +182,4 @@ export class SearchResultsComponent implements OnChanges {
         this.onViewDocument(document);
     }
 
-    hasContext(document: FoundDocument) {
-        if (this.corpus.documentContext) {
-            const contextFields = this.corpus.documentContext.contextFields;
-            const notBlank = value => value !== undefined && value !== null && value !== '';
-            return _.every(contextFields, field => notBlank(document.fieldValues[field.name]));
-        }
-        return false;
-    }
-
-    contextParams(document: FoundDocument) {
-        return makeContextParams(document, this.corpus);
-    }
 }

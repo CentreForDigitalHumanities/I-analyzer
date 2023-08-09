@@ -11,16 +11,14 @@ import { HighlightPipe } from '../search';
 import { ScrollToDirective } from '../scroll-to.directive';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClient, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
-import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
-import { ResourceHandler } from '@ngx-resource/core';
+import {
+    HttpClient,
+    HttpClientModule,
+    HttpClientXsrfModule,
+} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-
-// AoT requires an exported function for factories
-export const resourceHandlerFactory = (http: HttpClient) =>
-    new ResourceHandlerHttpClient(http);
-
-
+import { TabsComponent } from './tabs/tabs.component';
+import { TabPanelDirective } from './tabs/tab-panel.directive';
 
 @NgModule({
     declarations: [
@@ -30,6 +28,8 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         BalloonDirective,
         HighlightPipe,
         ScrollToDirective,
+        TabsComponent,
+        TabPanelDirective,
     ],
     exports: [
         // shared components
@@ -37,6 +37,8 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,
+        TabsComponent,
+        TabPanelDirective,
 
         // shared modules
         BrowserAnimationsModule,
@@ -48,7 +50,6 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         HighlightPipe,
         HttpClientModule,
         HttpClientXsrfModule,
-        ResourceModule,
         RouterModule,
     ],
     imports: [
@@ -63,14 +64,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
         }),
-        ResourceModule.forRoot({
-            handler: {
-                provide: ResourceHandler,
-                useFactory: resourceHandlerFactory,
-                deps: [HttpClient],
-            },
-        }),
         RouterModule,
-    ]
+    ],
 })
-export class SharedModule { }
+export class SharedModule {}

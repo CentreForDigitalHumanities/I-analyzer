@@ -4,13 +4,13 @@ import os.path as op
 
 from django.conf import settings
 
-from addcorpus.corpus import Corpus
+from addcorpus.corpus import CorpusDefinition
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_settings import es_settings
 
-class Parliament(Corpus):
+class Parliament(CorpusDefinition):
     '''
     Base class for speeches in the People & Parliament project.
 
@@ -29,8 +29,8 @@ class Parliament(Corpus):
     visualize = []
     es_index = getattr(settings, 'PP_ALIAS', 'parliament')
     # fields below are required by code but not actually used
-    min_date = MIN_DATE
-    max_date = MAX_DATE
+    min_date = field_defaults.MIN_DATE
+    max_date = field_defaults.MAX_DATE
     image = 'parliament.jpeg'
     data_directory = 'bogus'
 

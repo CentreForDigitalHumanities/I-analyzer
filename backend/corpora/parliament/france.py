@@ -6,12 +6,12 @@ from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
-from corpora.parliament.utils.formatting import underscore_to_space
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.formatting import underscore_to_space
+from corpora.utils.constants import document_context
 
-class ParliamentFrance(Parliament, CSVCorpus):
+class ParliamentFrance(Parliament, CSVCorpusDefinition):
     title = "People & Parliament (France 1881-2022)"
     description = "Speeches from the 3rd, 4th and 5th republic of France"
     min_date = datetime(year=1881, month=1, day=1)
