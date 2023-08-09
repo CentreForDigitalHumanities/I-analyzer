@@ -7,6 +7,7 @@ from visualization import query, termvectors
 from es import download
 
 DEFAULT_SIZE = 100
+ESTIMATE_WINDOW = 50
 
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
@@ -72,14 +73,21 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
 
-    matches = sum(
+    matches = [
         count_matches_in_document(hit['_id'], index, fieldnames, query_text, es_client)
         for hit in found_hits
-    )
+    ]
 
+    n_matches = sum(matches)
     skipped_docs = total_results - len(found_hits)
-    match_count = matches + skipped_docs
-
+    if not skipped_docs:
+        return n_matches
+    
+    mean_last_matches = sum(matches[-ESTIMATE_WINDOW:]) / ESTIMATE_WINDOW
+    # we estimate that skipped contain matches linearly decrease 
+    # from average in ESTIMATE_WINDOW to 1
+    estimate_skipped = int((mean_last_matches - 1) * skipped_docs / 2)
+    match_count = n_matches + max(estimate_skipped, skipped_docs)
     return match_count
 
 def count_matches_in_document(id, index, fieldnames, query_text, es_client):
