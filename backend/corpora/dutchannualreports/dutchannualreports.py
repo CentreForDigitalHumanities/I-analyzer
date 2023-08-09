@@ -9,7 +9,7 @@ from django.conf import settings
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from addcorpus.load_corpus import corpus_dir
 
@@ -17,7 +17,7 @@ from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 from media.media_url import media_url
 
-class DutchAnnualReports(XMLCorpus):
+class DutchAnnualReports(XMLCorpusDefinition):
     """ Alto XML corpus of Dutch annual reports. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
@@ -105,7 +105,7 @@ class DutchAnnualReports(XMLCorpus):
                 }
 
     fields = [
-        Field(
+        FieldDefinition(
             name='year',
             display_name='Year',
             description='Year of the financial report.',
@@ -122,7 +122,7 @@ class DutchAnnualReports(XMLCorpus):
             csv_core=True,
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='company',
             display_name='Company',
             description='Company to which the report belongs.',
@@ -139,7 +139,7 @@ class DutchAnnualReports(XMLCorpus):
             ),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='company_type',
             display_name='Company Type',
             description='Financial or non-financial company?',
@@ -152,7 +152,7 @@ class DutchAnnualReports(XMLCorpus):
             ),
             extractor=Metadata(key='company_type')
         ),
-        Field(
+        FieldDefinition(
             name='page',
             display_name='Page Number',
             description='The number of the page in the scan',
@@ -161,7 +161,7 @@ class DutchAnnualReports(XMLCorpus):
             csv_core=True,
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             es_mapping=keyword_mapping(),
@@ -174,7 +174,7 @@ class DutchAnnualReports(XMLCorpus):
             ),
             hidden=True,
         ),
-        Field(
+        FieldDefinition(
             name='content',
             es_mapping=main_content_mapping(True, True, True),
             display_name='Content',
@@ -191,7 +191,7 @@ class DutchAnnualReports(XMLCorpus):
             ),
             search_field_core=True
         ),
-        Field(
+        FieldDefinition(
             name='file_path',
             es_mapping=keyword_mapping(),
             display_name='File path',
@@ -200,7 +200,7 @@ class DutchAnnualReports(XMLCorpus):
             extractor=Metadata(key='file_path'),
             hidden=True,
         ),
-        Field(
+        FieldDefinition(
             name='image_path',
             mapping=keyword_mapping(),
             display_name="Image path",

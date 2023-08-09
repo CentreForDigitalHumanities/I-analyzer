@@ -14,7 +14,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
@@ -23,7 +23,7 @@ from addcorpus.es_settings import es_settings
 # Source files ################################################################
 
 
-class Spectators(XMLCorpus):
+class Spectators(XMLCorpusDefinition):
     title = "Spectators"
     description = "A collection of Spectator newspapers"
     min_date = datetime()
@@ -68,7 +68,7 @@ class Spectators(XMLCorpus):
     overview_fields = ['magazine', 'issue', 'date', 'title', 'editor']
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             description='Publication date.',
@@ -85,7 +85,7 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='date', toplevel=True),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
@@ -97,7 +97,7 @@ class Spectators(XMLCorpus):
                 transform=lambda x: '_'.join(x),
             ),
         ),
-        Field(
+        FieldDefinition(
             name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
@@ -106,7 +106,7 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='issue', toplevel=True),
             csv_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='magazine',
             display_name='Magazine name',
             histogram=True,
@@ -120,14 +120,14 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='magazine', toplevel=True),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='editors',
             display_name='Editors',
             es_mapping=keyword_mapping(),
             description='Magazine editor(s).',
             extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Title',
             results_overview=True,
@@ -135,7 +135,7 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='title', toplevel=True),
             search_field_core=True
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',

@@ -4,13 +4,13 @@ import os.path as op
 
 from django.conf import settings
 
-from addcorpus.corpus import Corpus
+from addcorpus.corpus import CorpusDefinition
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_settings import es_settings
 
-class Parliament(Corpus):
+class Parliament(CorpusDefinition):
     '''
     Base class for speeches in the People & Parliament project.
 
