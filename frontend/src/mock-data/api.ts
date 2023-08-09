@@ -66,4 +66,8 @@ export class ApiServiceMock {
     requestMedia() {
         return Promise.resolve({});
     }
+
+    userTags() {
+        return of([]);
+    }
 }
