@@ -29,7 +29,8 @@ export class TagServiceMock {
         }).pipe(tap(this.fetch.bind(this)));
     }
 
-    setDocumentTags(document: FoundDocument, tags: Tag[]): Observable<Tag[]> {
+    setDocumentTags(document: FoundDocument, tagIds: number[]): Observable<Tag[]> {
+        const tags = mockTags.filter(tag => tagIds.includes(tag.id));
         return of(tags);
     };
 

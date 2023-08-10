@@ -3,7 +3,7 @@ import { makeContextParams } from '../utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 import { Tag } from './tag';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TagService } from '../services/tag.service';
 import { tap } from 'rxjs/operators';
 
@@ -25,7 +25,7 @@ export class FoundDocument {
     highlight: HighlightResult;
 
     /** tags created on the document */
-    tags$: Observable<Tag[]>;
+    tags$ = new BehaviorSubject<Tag[]>(undefined);
 
     constructor(
         private tagService: TagService,
@@ -71,13 +71,25 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
-    setTags(tagIds: number[]): Observable<Tag[]> {
-        this.tags$ = this.tagService.setDocumentTags(this, tagIds);
-        return this.tags$;
+    addTag(tagId: number): void {
+        const newTagIds = this.tags$.value.map(tag => tag.id).concat([tagId]);
+        this.setTags(newTagIds);
+    }
+
+    removeTag(tagId: number): void {
+        const newTagIds = _.remove(
+            this.tags$.value.map(tag => tag.id),
+            id => id === tagId
+        );
+        this.setTags(newTagIds);
+    }
+
+    setTags(tagIds: number[]): void {
+        this.tagService.setDocumentTags(this, tagIds).subscribe(this.tags$);
     }
 
     private fetchTags(): void {
-        this.tags$ = this.tagService.getDocumentTags(this);
+        this.tagService.getDocumentTags(this).subscribe(this.tags$);
     }
 
 }

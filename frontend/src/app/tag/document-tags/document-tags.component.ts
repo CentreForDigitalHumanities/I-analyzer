@@ -23,22 +23,10 @@ export class DocumentTagsComponent implements OnInit {
     }
 
     addTag(tagId: number) {
-        const op = (ids: number[]) => ids.concat([tagId]);
-        this.setTags(op);
+        this.document.addTag(tagId);
     }
 
     removeTag(tag: Tag) {
-        const op = (ids: number[]) => ids.filter(id => id !== tag.id);
-        this.setTags(op);
+        this.document.removeTag(tag.id);
     }
-
-    private setTags(operation: (ids: number[]) => number[]) {
-        this.document.tags$.pipe(
-            first(),
-            map(tags => tags.map(tag => tag.id)),
-            map(operation),
-            mergeMap(ids => this.document.setTags(ids))
-        ).subscribe();
-    }
-
 }
