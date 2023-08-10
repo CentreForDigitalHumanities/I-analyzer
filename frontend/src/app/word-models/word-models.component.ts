@@ -78,6 +78,14 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         if (params.has('query')) {
             this.queryText = params.get('query');
             this.activeQuery = this.queryText;
+            this.validateQuery();
+            if (this.queryFeedback === undefined) {
+                this.wordModelsService
+                    .wordInModel(this.queryText, this.corpus.name)
+                    .then(this.handleWordInModel.bind(this))
+                    .catch(() => (this.queryFeedback = { status: 'error' }));
+            }
+            this.activeQuery = this.queryText;
             this.queryFeedback = { status: 'success' };
         }
         if (params.has('show')) {
@@ -90,24 +98,12 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
     setCorpus(corpus: Corpus): void {
         if (corpus && (!this.corpus || this.corpus.name !== corpus.name)) {
             this.corpus = corpus;
-            if (!this.corpus.word_models_present) {
-                // this.router.navigate(['search', this.corpus.name]);
-            }
         }
     }
 
-
     submitQuery(): void {
         this.errorMessage = undefined;
-        this.activeQuery = this.queryText;
-        this.setParams({ query: this.activeQuery });
-        this.validateQuery();
-        if (this.queryFeedback === undefined) {
-            this.wordModelsService
-                .wordInModel(this.queryText, this.corpus.name)
-                .then(this.handleWordInModel.bind(this))
-                .catch(() => (this.queryFeedback = { status: 'error' }));
-        }
+        this.setParams({ query: this.queryText });
     }
 
     validateQuery() {
@@ -139,12 +135,6 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         this.errorMessage = event.message;
     }
 
-    setCurrentTab(tab: 'relatedwords' | 'wordsimilarity'): void {
-        this.currentTab = tab;
-        this.errorMessage = undefined;
-        this.setParams({ show: tab });
-    }
-
     get imageFileName(): string {
         if (this.currentTab && this.corpus) {
             return `${this.currentTab}_${this.corpus.name}.png`;
@@ -165,6 +155,6 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
     onTabChange(tab: 'relatedwords' | 'wordsimilarity'): void {
         // reset error message on tab switch
         this.errorMessage = undefined;
-        this.currentTab = tab;
+        this.setParams({ show: tab });
     }
 }

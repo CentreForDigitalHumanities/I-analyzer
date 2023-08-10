@@ -1,21 +1,34 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
-import { bufferTime, shareReplay } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+
 import { ParamService } from '../services';
 
 @Directive()
 export abstract class ParamDirective implements OnDestroy, OnInit {
 
     public queryParamMap: Subscription;
-
-    private nextParams = new Subject<Params>();
+    private paramSubscription: Subscription;
 
     constructor(
         public route: ActivatedRoute,
         private router: Router,
         private paramService: ParamService
-    ) {}
+    ) {
+        this.paramSubscription = this.paramService.bufferedParams.subscribe( params => {
+            if (params.length) {
+                const newParams = Object.assign({}, ...params.map(f => f));
+                this.router.navigate(
+                    ['.'],
+                    {
+                      queryParams: newParams,
+                      queryParamsHandling: 'merge',
+                      relativeTo: this.route
+                    }
+                );
+            }
+        });
+    }
 
     async ngOnInit(): Promise<void> {
         await this.initialize();
@@ -26,7 +39,12 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
 
     ngOnDestroy(): void {
         this.queryParamMap.unsubscribe();
+        this.paramSubscription.unsubscribe();
         this.teardown();
+    }
+
+    public setParams(params: Params) {
+        this.paramService.setParams(params);
     }
 
     abstract initialize();
@@ -34,8 +52,4 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
     abstract teardown();
 
     abstract setStateFromParams(params: Params);
-
-    public setParams(params: Params) {
-        this.paramService.setParams(params);
-    }
 }
