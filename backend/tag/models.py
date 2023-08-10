@@ -42,3 +42,11 @@ class TaggedDocument(models.Model):
         to=Tag,
         related_name='tagged_docs'
     )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['corpus', 'doc_id'],
+                name='unique_document_ID_for_corpus'
+            )
+        ]
