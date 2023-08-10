@@ -83,14 +83,33 @@ export interface QueryFeedback {
 
 export interface TaskResult { task_ids: string[] };
 
-export type TasksOutcome<ExpectedResult> = { status: 'failed' } | { status: 'working' } |
-    { status: 'done'; done: true; results: ExpectedResult[] };
+export interface TaskSuccess {
+    success: true;
+}
+
+export type TasksOutcome<ExpectedResult> =
+    | { status: 'failed' }
+    | { status: 'working' }
+    | { status: 'done'; done: true; results: ExpectedResult[] };
 
 export interface ResultsDownloadParameters {
     corpus: string;
     es_query: EsQuery | EsQuerySorted;
     fields: string[];
     route: string;
+}
+
+export interface NgramsParameters {
+    es_query: EsQuery;
+    corpus_name: string;
+    field: string;
+    ngram_size?: number;
+    term_position?: string;
+    freq_compensation?: boolean;
+    subfield?: string;
+    max_size_per_interval?: number;
+    number_of_ngrams?: number;
+    date_field: string;
 }
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];

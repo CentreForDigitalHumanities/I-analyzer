@@ -5,7 +5,7 @@ from django.conf import settings
 import os
 
 from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -15,7 +15,7 @@ def remove_file_extension(filename):
     name, ext = os.path.splitext(filename)
     return name
 
-class ParliamentNorway(Parliament, CSVCorpus):
+class ParliamentNorway(Parliament, CSVCorpusDefinition):
     '''
     Class for indexing Norwegian parliamentary data
     '''

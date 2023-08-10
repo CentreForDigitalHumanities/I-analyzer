@@ -100,6 +100,19 @@ export interface ChartParameters {
     chartType: ChartType;
 }
 
+export interface NGramRequestParameters {
+    es_query: EsQuery;
+    corpus_name: string;
+    field: string;
+    ngram_size?: number;
+    term_position?: string;
+    freq_compensation?: boolean;
+    subfield?: string;
+    max_size_per_interval?: number;
+    number_of_ngrams?: number;
+    date_field: string;
+}
+
 export interface NgramParameters {
     size: number;
     positions: string;
