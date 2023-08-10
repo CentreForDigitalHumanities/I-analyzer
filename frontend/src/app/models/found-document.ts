@@ -77,19 +77,23 @@ export class FoundDocument {
     }
 
     removeTag(tagId: number): void {
-        const newTagIds = _.remove(
+        const newTagIds = _.without(
             this.tags$.value.map(tag => tag.id),
-            id => id === tagId
+            tagId,
         );
         this.setTags(newTagIds);
     }
 
     setTags(tagIds: number[]): void {
-        this.tagService.setDocumentTags(this, tagIds).subscribe(this.tags$);
+        this.tagService.setDocumentTags(this, tagIds).subscribe(
+            value => this.tags$.next(value)
+        );
     }
 
     private fetchTags(): void {
-        this.tagService.getDocumentTags(this).subscribe(this.tags$);
+        this.tagService.getDocumentTags(this).subscribe(
+            value => this.tags$.next(value)
+        );
     }
 
 }

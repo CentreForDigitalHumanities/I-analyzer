@@ -1,5 +1,5 @@
-<div class="field is-grouped is-grouped-multiline" *ngIf="(document?.tags$ | async) !== undefined">
-    <div class="control tags has-addons" *ngFor="let tag of document.tags$ | async">
+<div class="field is-grouped is-grouped-multiline" *ngIf="(document?.tags$ | async) as tags">
+    <div class="control tags has-addons" *ngFor="let tag of tags">
         <span class="tag is-primary">
             {{tag.name}}
         </span>
@@ -12,7 +12,7 @@
 
     <div class="control">
         <ng-container *ngIf="showAddNew; else toggleAddNew">
-            <ia-tag-select [exclude]="document.tags$ | async" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
+            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
         </ng-container>
 
         <ng-template #toggleAddNew>

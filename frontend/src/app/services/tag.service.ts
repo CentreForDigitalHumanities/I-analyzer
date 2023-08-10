@@ -19,7 +19,7 @@ export class TagService {
 
     makeTag(name: string, description?: string): Observable<Tag> {
         return this.apiService.createTag(name, description).pipe(
-            tap(this.fetch.bind(this))
+            tap(() => this.fetch())
         );
     }
 
