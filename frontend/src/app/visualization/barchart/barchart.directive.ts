@@ -585,7 +585,7 @@ export abstract class BarchartDirective
     /** return a copy of a query model with removed sort parameter (=> relevance sorting) */
     removeSort(query: QueryModel): QueryModel {
         const queryModelCopy = query.clone();
-        queryModelCopy.sort.setSortBy(undefined);
+        queryModelCopy.sort.reset();
         return queryModelCopy;
     }
 
