@@ -4,7 +4,7 @@ The steps of adding a new corpus are usually the following:
 
 - Create a new python class in the I-analyzer repository, which will describe the corpus
 - Include the corpus in your local django settings and include (local) source data
-- Load the corpus into yoru local database
+- Load the corpus into your local database
 - Create and populate a local elasticsearch index for the corpus
 - Workshop the corpus definition, add unit tests
 - Make a pull request
@@ -118,7 +118,7 @@ The start and end date flags are passed on the `sources` function of the corpus 
 
 ## Validation
 
-The `CorpusDefinition` class has no built-in validation. However, once you start using the corpus, many of the properties defined in the python class will be loaded into the `CorpusConfiguration` database model. This step does include some validation, so it may raise errors. You ran run the import script with `yarn django loadcorpora`. It is also run when you start a development server with `yarn start-back`.
+The `CorpusDefinition` class has no built-in validation. However, once you start using the corpus, many of the properties defined in the python class will be loaded into the `CorpusConfiguration` database model. This step does include some validation, so it may raise errors. You can run the import script with `yarn django loadcorpora`. It is also run when you start a development server with `yarn start-back`.
 
 ## Unit testing
 
