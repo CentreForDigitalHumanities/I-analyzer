@@ -94,7 +94,7 @@ def _set_corpus_inactive(corpus_name):
         if corpus.active:
             corpus.configuration.delete()
 
-def _try_saving_corpus(corpus_name, corpus_definition, verbose = False, stdout=sys.stdout, stderr=sys.stderr):
+def _save_or_skip_corpus(corpus_name, corpus_definition, verbose = False, stdout=sys.stdout, stderr=sys.stderr):
     '''
     Try saving a corpus definition to the database.
 
@@ -124,7 +124,7 @@ def load_and_save_all_corpora(verbose = False, stdout=sys.stdout, stderr=sys.std
     corpus_definitions = load_all_corpus_definitions(stderr=stderr)
 
     for corpus_name, corpus_definition in corpus_definitions.items():
-        _try_saving_corpus(corpus_name, corpus_definition)
+        _save_or_skip_corpus(corpus_name, corpus_definition)
 
     not_included = Corpus.objects.exclude(name__in=corpus_definitions.keys())
     for corpus in not_included:

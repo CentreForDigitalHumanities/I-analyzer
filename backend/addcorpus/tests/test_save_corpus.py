@@ -3,7 +3,7 @@ from django.conf import settings
 from datetime import datetime, date
 from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
 from addcorpus.models import Corpus, CorpusConfiguration
-from addcorpus.save_corpus import _save_field_in_database, load_and_save_all_corpora, _try_saving_corpus
+from addcorpus.save_corpus import _save_field_in_database, load_and_save_all_corpora, _save_or_skip_corpus
 
 
 def test_saved_corpora(db):
@@ -42,7 +42,7 @@ def test_saving_broken_corpus(db, mock_corpus):
 
     corpus_def.min_date = 'Not a valid date'
 
-    _try_saving_corpus(mock_corpus, corpus_def)
+    _save_or_skip_corpus(mock_corpus, corpus_def)
 
     corpus.refresh_from_db()
     # expect the corpus to be inactive now
@@ -85,11 +85,11 @@ def test_save_corpus_purity(db, mock_corpus):
     corpus_def = MockCSVCorpus()
 
     corpus_def.description_page = 'test.md'
-    _try_saving_corpus(mock_corpus, corpus_def)
+    _save_or_skip_corpus(mock_corpus, corpus_def)
     corpus.refresh_from_db()
     assert corpus.configuration.description_page == 'test.md'
 
     corpus_def.description_page = None
-    _try_saving_corpus(mock_corpus, corpus_def)
+    _save_or_skip_corpus(mock_corpus, corpus_def)
     corpus.refresh_from_db()
     assert not corpus.configuration.description_page
