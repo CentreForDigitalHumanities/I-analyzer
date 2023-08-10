@@ -57,8 +57,8 @@ def test_match_count(small_mock_corpus, es_client, index_small_mock_corpus):
 def test_match_count_estimate(es_client_m_hits, es_client_k_hits, small_mock_corpus, basic_query):
     matches = term_frequency.get_match_count(es_client_m_hits, basic_query, small_mock_corpus, 1000, ['test'])
     # es_client_m_hits gives 5000 total hits and 10'000 terms for the 1000 document sample
-    # it estimates (10 - 1) * 4000 / 2 = 18000 terms for the uncounted documents
-    assert matches == 28000
+    # it estimates (10 - 1) * 4000 / 2 + 4000 = 22000 terms for the uncounted documents
+    assert matches == 32000
 
 def test_match_count_full(es_client_k_hits, small_mock_corpus, basic_query):
     matches = term_frequency.get_match_count(es_client_k_hits, basic_query, small_mock_corpus, 1000, ['test'])
