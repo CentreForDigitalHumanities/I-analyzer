@@ -87,8 +87,8 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
     mean_last_matches = sum(matches[-ESTIMATE_WINDOW:]) / ESTIMATE_WINDOW
     # we estimate that skipped contain matches linearly decrease 
     # from average in ESTIMATE_WINDOW to 1
-    estimate_skipped = int((mean_last_matches - 1) * skipped_docs / 2)
-    match_count = n_matches + max(estimate_skipped, skipped_docs)
+    estimate_skipped = int((mean_last_matches - 1) * skipped_docs / 2) + skipped_docs
+    match_count = n_matches + estimate_skipped
     return match_count
 
 def count_matches_in_document(id, index, fieldnames, query_text, es_client):
