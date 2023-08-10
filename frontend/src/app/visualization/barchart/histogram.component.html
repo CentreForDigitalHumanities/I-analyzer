@@ -28,8 +28,7 @@
         <div class="block">
             The results for your search include too many documents to count all matches.
             Only a sample of the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
-            the rest are assumed to contain linearly decreasing matches between the end of the sample
-            to one match.
+            the match for other documents is extrapolated.
         </div>
 
         <ia-full-data-button (requestFullData)="requestFullData()"></ia-full-data-button>
