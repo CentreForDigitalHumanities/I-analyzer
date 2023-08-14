@@ -6,19 +6,19 @@
         <div class="field has-addons">
             <div class="extended-selector">
                 <div *ngIf="this.queryModel.highlightSize!=0"  class="field has-addons">
-                    <div class="control" iaBalloon="Increase/decrease preview size" iaBalloonLength="medium" iaBalloonPosition="right">
-                        <button class="button is-light" (click)="updateHighlightSize('more')">
+                    <div class="control">
+                        <button class="button is-light" (click)="updateHighlightSize('more')"  iaBalloon="increase preview-size">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
-                        <button class="button is-light" (click)="updateHighlightSize('less')">
+                        <button class="button is-light" (click)="updateHighlightSize('less')"  iaBalloon="decrease preview-size">
                             <i class="fa fa-minus" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="control">
-                <button class="button highlight-toggle" [class.is-active]="queryModel.highlightSize!=0" [disabled]="queryModel.queryText==null||queryModel.queryText==''" (click)="updateHighlightSize(queryModel.highlightSize!=0 ? 'off' : 'on')">
-                  {{ this.queryModel.highlightSize !=0 ? 'ON' : 'OFF' }}
+                <button class="button highlight-toggle" [class.is-active]="queryModel.highlightSize" [disabled]="!queryModel.queryText" (click)="updateHighlightSize(queryModel.highlightSize ? 'off' : 'on')">
+                  {{ queryModel.highlightSize ? 'ON' : 'OFF' }}
                 </button>
               </div>
         </div>
