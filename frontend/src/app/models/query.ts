@@ -77,6 +77,7 @@ export class QueryModel {
 	filters: SearchFilter[];
     sort: SortConfiguration;
     highlightSize: number;
+    highlightSwitchedOff: boolean;
 
 	update = new Subject<void>();
 
@@ -133,8 +134,11 @@ export class QueryModel {
         );
     }
 
-    setHighlight(size?: number) {
+    setHighlight(size?: number, switchedOff?: boolean) {
         this.highlightSize = size;
+        if (switchedOff) {
+            this.highlightSwitchedOff = true;
+        }
         this.update.next();
     }
 

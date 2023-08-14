@@ -38,16 +38,15 @@ export class HighlightSelectorComponent implements OnChanges, OnDestroy {
     }
 
     updateHighlightSize(instruction?: string) {
-        if (instruction == 'on' && this.highlight == 0) {
-            this.highlight = 200;
-        } else if (instruction == 'more' && this.highlight < 800) {
-            this.highlight += 200;
-        } else if (instruction == 'less' && this.highlight > 200) {
-            this.highlight -= 200;
+        if (instruction == 'on' && this.queryModel.highlightSize == 0) {
+            this.queryModel.setHighlight(200);
+        } else if (instruction == 'more' && this.queryModel.highlightSize < 800) {
+            this.queryModel.setHighlight(this.queryModel.highlightSize + 200);
+        } else if (instruction == 'less' && this.queryModel.highlightSize > 200) {
+            this.queryModel.setHighlight(this.queryModel.highlightSize - 200);
         } else if (instruction == 'off') {
-            this.highlight = 0;
+            this.queryModel.setHighlight(0, true);
         }
-        this.queryModel.setHighlight(this.highlight);
     }
 
 }
