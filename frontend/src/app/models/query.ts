@@ -155,16 +155,12 @@ export class QueryModel {
      * All query-related params are explicity listed;
      * empty parameters have value null.
      *
-     * stringValues can be switched on to make all Param values strings,
-     * useful for change detection, since new Params are by default strings
-     * but the highlightParams are converted to numbers, triggering paramsHaveChanged
-     *
      */
-    toRouteParam(stringValues=false): {[param: string]: string|null} {
+    toRouteParam(): {[param: string]: string|null} {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = this.sort.toRouteParam();
-        const highlightParams = stringValues ? { highlight: String(this.highlightSize) || null } : { highlight: this.highlightSize || null };
+        const highlightParams = { highlight: this.highlightSize || null };
         const filterParams = queryFiltersToParams(this);
 
         return {
