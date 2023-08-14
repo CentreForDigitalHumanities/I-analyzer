@@ -100,7 +100,9 @@ export class SearchComponent extends ParamDirective {
         if (this.showVisualization) {
             this.tabIndex = 1;
         }
-        if (!this.queryModel.highlightSize ) {
+        if (!this.queryModel.queryText || this.queryModel.queryText == '') {
+            this.queryModel.highlightSize = 0;
+        } else if (!this.queryModel.highlightSize || this.queryModel.highlightSize == 0) {
             this.queryModel.highlightSize = 200;
         }
     }

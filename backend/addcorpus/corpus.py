@@ -172,12 +172,12 @@ class Corpus(object):
     @property
     def new_highlight(self):
         '''
-        if the corpus has been re-indexed using the top-level term vector 'positions_offsets'
+        if the corpus has been re-indexed using the top-level term vector 'with_positions_offsets'
         for the main content field, needed for the updated highlighter
         TODO: remove this property and its references when all corpora are reindexed using the
         current definitions (with the top-level term vector for speech)
         '''
-        return True if self.es_index in NEW_HIGHLIGHT_CORPORA else False
+        return self.es_index in NEW_HIGHLIGHT_CORPORA
 
     def allow_image_download(self):
         '''
