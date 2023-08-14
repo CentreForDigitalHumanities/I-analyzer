@@ -1,16 +1,18 @@
 <div class="contextbox">
     <div>
-        <h2 class="subtitle highlights-subtitle">Toggle highlights:</h2>
+        <h2 class="heading has-text-right">Toggle highlights:</h2>
     </div>
     <div class="column is-narrow">
         <div class="field has-addons">
             <div class="extended-selector">
                 <div *ngIf="this.queryModel.highlightSize!=0"  class="field has-addons">
                     <div class="control">
-                        <button class="button is-light" (click)="updateHighlightSize('more')"  iaBalloon="increase preview-size">
+                        <button class="button is-light" (click)="updateHighlightSize('more')" [disabled]="queryModel.highlightSize==800"
+                        iaBalloon="increase preview size" aria-label="increase preview size">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
-                        <button class="button is-light" (click)="updateHighlightSize('less')"  iaBalloon="decrease preview-size">
+                        <button class="button is-light" (click)="updateHighlightSize('less')" [disabled]="queryModel.highlightSize==200"
+                        iaBalloon="decrease preview size" aria-label="decrease preview size">
                             <i class="fa fa-minus" aria-hidden="true"></i>
                         </button>
                     </div>
