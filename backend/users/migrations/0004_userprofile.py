@@ -4,6 +4,13 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 
+def add_user_profile(apps, schema_editor):
+    CustomUser = apps.get_model('users', 'CustomUser')
+    UserProfile = apps.get_model('users', 'UserProfile')
+    db_alias = schema_editor.connection.alias
+
+    for user in CustomUser.objects.all():
+        UserProfile.objects.get_or_create(user=user)
 
 class Migration(migrations.Migration):
 
@@ -20,4 +27,8 @@ class Migration(migrations.Migration):
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],
         ),
+        migrations.RunPython(
+            add_user_profile,
+            reverse_code=migrations.RunPython.noop,
+        )
     ]
