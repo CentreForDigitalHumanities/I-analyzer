@@ -50,7 +50,7 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
 
     get isDefault$(): Observable<boolean> {
         return this.data.asObservable().pipe(
-            map(data => _.isEqual(data, this.defaultData))
+            map(data => this.isDefault(data))
         );
     }
 
@@ -59,12 +59,14 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
             this.data.next(data);
 
             const active = this.active.value;
-            const toDefault = _.isEqual(data, this.defaultData);
+            const toDefault = this.isDefault(data);
             const deactivate = active && toDefault;
-            const activate = !active && !toDefault;
+            const activate = !active;
 
-            if (deactivate || activate) {
-                this.toggle();
+            if (activate) {
+                this.activate();
+            } else if (deactivate) {
+                this.deactivate();
             } else if (active) {
                 this.update.next();
             }
@@ -77,19 +79,27 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
 
     activate() {
         if (!this.active.value) {
-            this.toggle();
+            // ignore attempts to activate with default data
+            if (!this.isDefault(this.data.value)) {
+                this.active.next(true);
+                this.update.next();
+            }
         }
     }
 
     deactivate() {
         if (this.active.value) {
-            this.toggle();
+            this.active.next(false);
+            this.update.next();
         }
     }
 
     toggle() {
-        this.active.next(!this.active.value);
-        this.update.next();
+        if (this.active.value) {
+            this.deactivate();
+        } else {
+            this.activate();
+        }
     }
 
     /**
@@ -112,6 +122,10 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
         return {
             [this.routeParamName]: value || null
         };
+    }
+
+    private isDefault(data: FilterData): boolean {
+        return _.isEqual(data, this.defaultData);
     }
 
     abstract makeDefaultData(parameters: InitialParameters): FilterData;

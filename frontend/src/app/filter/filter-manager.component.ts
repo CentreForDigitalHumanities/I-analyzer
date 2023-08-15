@@ -48,10 +48,7 @@ export class FilterManagerComponent {
         if (this.activeFilters.length) {
             this.filters.forEach(filter => filter.deactivate());
         } else {
-            // if we don't have active filters, set all filters to active which don't use default data
-            const filtersWithSettings = this.filters.filter(filter =>
-                !_.isEqual(filter.currentData, filter.defaultData));
-            filtersWithSettings.forEach(filter => filter.toggle());
+            this.filters.forEach(filter => filter.activate());
         }
     }
 
