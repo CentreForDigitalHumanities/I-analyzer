@@ -1,42 +1,25 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
-import { distinct, map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
-import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
-    RangeFilterOptions } from './search-filter-options';
-import { ParamMap } from '@angular/router';
+import {
+    BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
+    RangeFilterOptions
+} from './search-filter-options';
+import { BaseFilter } from './base-filter';
 
-abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
-	corpusField: CorpusField;
-	defaultData: FilterData;
-	data: BehaviorSubject<FilterData>;
-    active: BehaviorSubject<boolean>;
 
-    update = new Subject<void>();
+abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FilterOptions, FilterData> {
+    corpusField: CorpusField;
 
 	constructor(corpusField: CorpusField) {
-		this.corpusField = corpusField;
-		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
-		this.data = new BehaviorSubject<FilterData>(this.defaultData);
-        this.active = new BehaviorSubject<boolean>(false);
+        super(corpusField.filterOptions);
+        this.corpusField = corpusField;
 	}
 
     get filterType() {
         return this.corpusField.filterOptions?.name;
     }
-
-    get currentData() {
-		return this.data?.value;
-	}
-
-    get isDefault$(): Observable<boolean> {
-        return this.data.asObservable().pipe(
-            map(data => _.isEqual(data, this.defaultData))
-        );
-    }
-
 
     get adHoc() {
         return !(this.corpusField.filterOptions);
@@ -50,37 +33,8 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         }
     }
 
-    set(data: FilterData) {
-        if (!_.isEqual(data, this.currentData)) {
-            this.data.next(data);
-
-            const active = this.active.value;
-            const toDefault = _.isEqual(data, this.defaultData);
-            const deactivate = active && toDefault;
-            const activate = !active && !toDefault;
-
-            if (deactivate || activate) {
-                this.toggle();
-            } else if (active) {
-                this.update.next();
-            }
-        }
-    }
-
-	reset() {
-        this.set(this.defaultData);
-	}
-
-    /**
-     * set value based on route parameter
-     */
-    setFromParams(params: ParamMap): void {
-        const value = params.get(this.corpusField.name);
-        if (value) {
-            this.set(this.dataFromString(value));
-        } else {
-            this.reset();
-        }
+    get routeParamName() {
+        return this.corpusField.name;
     }
 
     /**
@@ -91,34 +45,10 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         this.set(this.dataFromValue(value));
     }
 
-    toRouteParam(): {[param: string]: any} {
-        const value = this.active.value ? this.dataToString(this.currentData) : undefined;
-        return {
-            [this.corpusField.name]: value || null
-        };
-    }
-
     toEsFilter(): EsFilterType {
         if (this.active.value) {
             return this.dataToEsFilter();
         }
-    }
-
-    public activate() {
-        if (!this.active.value) {
-            this.toggle();
-        }
-    }
-
-    public deactivate() {
-        if (this.active.value) {
-            this.toggle();
-        }
-    }
-
-    public toggle() {
-        this.active.next(!this.active.value);
-        this.update.next();
     }
 
     abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
