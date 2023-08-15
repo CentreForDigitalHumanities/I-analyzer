@@ -18,6 +18,7 @@ import { User, UserResponse } from '../models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import * as _ from 'lodash';
+import { encodeUserData, parseUserData } from '../utils/user';
 
 @Injectable({
     providedIn: 'root',
@@ -79,7 +80,7 @@ export class AuthService implements OnDestroy {
             .getUser()
             .pipe(takeUntil(this.destroy$))
             .subscribe(
-                (result) => this.setAuth(this.parseUserResponse(result)),
+                (result) => this.setAuth(parseUserData(result)),
                 () => this.purgeAuth()
             );
     }
@@ -104,7 +105,7 @@ export class AuthService implements OnDestroy {
         const loginRequest$ = this.apiService.login(username, password);
         return loginRequest$.pipe(
             mergeMap(() => this.checkUser()),
-            tap((res) => this.setAuth(this.parseUserResponse(res))),
+            tap((res) => this.setAuth(parseUserData(res))),
             catchError((error) => {
                 console.error(error);
                 return throwError(error);
@@ -169,40 +170,13 @@ export class AuthService implements OnDestroy {
     }
 
     public updateSettings(update: Partial<User>) {
-        return this.apiService.updateUserSettings(this.encodeUserUpdate(update)).pipe(
-            tap((res) => this.setAuth(this.parseUserResponse(res))),
+        return this.apiService.updateUserSettings(encodeUserData(update)).pipe(
+            tap((res) => this.setAuth(parseUserData(res))),
             catchError((error) => {
                 console.error(error);
                 return throwError(error);
             })
         );
-    }
-
-    /**
-     * Transforms backend user response to User object
-     *
-     * @param result User response data
-     * @returns User object
-     */
-    private parseUserResponse(
-        result: UserResponse
-    ): User {
-        return new User(
-            result.id,
-            result.username,
-            result.is_admin,
-            result.download_limit == null ? 0 : result.download_limit,
-            result.saml,
-            result.enable_search_history,
-        );
-    }
-
-    private encodeUserUpdate(update: Partial<User>): Partial<UserResponse> {
-        const changeKeys = {
-            enableSearchHistory: 'enable_search_history'
-        };
-        const transformKey = (value, key, obj) => changeKeys[key] || key;
-        return _.mapKeys(update, transformKey);
     }
 
 }

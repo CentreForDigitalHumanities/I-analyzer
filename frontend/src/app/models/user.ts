@@ -1,5 +1,9 @@
 import * as _ from 'lodash';
 
+interface UserProfileResponse {
+    enable_search_history: boolean;
+}
+
 export interface UserResponse {
     id: number;
     username: string;
@@ -7,7 +11,7 @@ export interface UserResponse {
     download_limit: number;
     is_admin: boolean;
     saml: boolean;
-    enable_search_history: boolean;
+    profile: UserProfileResponse;
 }
 
 export class User {

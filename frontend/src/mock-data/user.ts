@@ -10,5 +10,7 @@ export const mockUserResponse: UserResponse = {
     email: 'mighty@mouse.com',
     download_limit: 10000,
     saml: false,
-    enable_search_history: true,
+    profile: {
+        enable_search_history: true,
+    },
 };
