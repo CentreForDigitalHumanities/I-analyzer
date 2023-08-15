@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { SearchFilter, QueryModel } from '../models/index';
+import { FilterAPI, QueryModel } from '../models/index';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -18,11 +18,11 @@ export class FilterManagerComponent {
     constructor() {
     }
 
-    get activeFilters(): SearchFilter[] {
+    get activeFilters(): FilterAPI[] {
         return this.queryModel?.activeFilters;
     }
 
-    get filters(): SearchFilter[] {
+    get filters(): FilterAPI[] {
         return this.queryModel?.filters;
     }
 
