@@ -7,5 +7,5 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './ad-hoc-filter.component.html',
   styleUrls: ['./ad-hoc-filter.component.scss']
 })
-export class AdHocFilterComponent extends BaseFilterComponent<any> {
+export class AdHocFilterComponent extends BaseFilterComponent<AdHocFilter> {
 }

@@ -8,5 +8,5 @@ import { BooleanFilter } from '../models';
   templateUrl: './boolean-filter.component.html',
   styleUrls: ['./boolean-filter.component.scss']
 })
-export class BooleanFilterComponent extends BaseFilterComponent<boolean> {
+export class BooleanFilterComponent extends BaseFilterComponent<BooleanFilter> {
 }

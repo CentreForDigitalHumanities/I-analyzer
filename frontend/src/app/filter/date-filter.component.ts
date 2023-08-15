@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import * as _ from 'lodash';
 
-import { DateFilterData, DateFilter } from '../models';
+import { DateFilter } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 
 @Component({
   selector: 'ia-date-filter',
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends BaseFilterComponent<DateFilterData> {
+export class DateFilterComponent extends BaseFilterComponent<DateFilter> {
     public minDate: Date;
     public maxDate: Date;
 
