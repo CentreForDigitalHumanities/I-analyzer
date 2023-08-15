@@ -36,11 +36,11 @@ def test_admin_serializer(admin_client, admin_credentials):
 def test_user_updates(auth_client):
     route = '/users/user/'
     details = lambda: auth_client.get(route)
-    search_history_enabled = lambda: details().data.get('enable_search_history')
+    search_history_enabled = lambda: details().data.get('profile').get('enable_search_history')
 
     assert search_history_enabled()
 
-    response = auth_client.patch(route, {'enable_search_history': False}, content_type='application/json')
+    response = auth_client.patch(route, {'profile': {'enable_search_history': False}}, content_type='application/json')
     assert response.status_code == 200
 
     assert not search_history_enabled()

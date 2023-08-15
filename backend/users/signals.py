@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import CustomUser
+from .models import CustomUser, UserProfile
 
 
 @receiver(post_save, sender=CustomUser)
@@ -28,3 +28,10 @@ def ensure_admin_email(sender, instance, created, **kwargs):
             print(f'Automatically verified email {instance.email} for {instance}')
         except Exception as e:
             print('Failed to automatically verify admin email', e, sep='\n')
+
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(
+            user=instance
+        )
