@@ -12,7 +12,7 @@ import { FilterAPI } from '../models/base-filter';
 @Component({
     template: ''
 })
-export abstract class BaseFilterComponent<SearchFilter extends FilterAPI<any>> implements OnChanges {
+export abstract class BaseFilterComponent<SearchFilter extends FilterAPI> implements OnChanges {
     @Input() filter: SearchFilter;
     @Input() queryModel: QueryModel;
 

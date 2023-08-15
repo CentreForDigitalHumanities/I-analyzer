@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 /**
  * Describes shared attributes and properties for filters.
  */
-export interface FilterAPI<FilterData> {
+export interface FilterAPI<FilterData = any> {
     update: Subject<void>;
     active: BehaviorSubject<boolean>;
     data: BehaviorSubject<FilterData>;
