@@ -10,17 +10,15 @@ import { BaseFilter } from './base-filter';
 
 
 abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FilterOptions, FilterData> {
-    corpusField: CorpusField;
-
-	constructor(corpusField: CorpusField) {
+    constructor(public corpusField: CorpusField) {
         super(corpusField.filterOptions);
-        this.corpusField = corpusField;
 	}
 
     get filterType() {
         return this.corpusField.filterOptions?.name;
     }
 
+    /** a filter is "ad hoc" if the field does not have a predefined filter */
     get adHoc() {
         return !(this.corpusField.filterOptions);
     }
@@ -45,6 +43,11 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> e
         this.set(this.dataFromValue(value));
     }
 
+    /**
+     * convert the filter state to a query clause in elasticsearch query DSL
+     *
+     * returns undefined if the filter is inactive
+     */
     toEsFilter(): EsFilterType {
         if (this.active.value) {
             return this.dataToEsFilter();
@@ -53,17 +56,17 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> e
 
     abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
 
+    /** convert a single field value to filter data that selects that value */
 	abstract dataFromValue(value: any): FilterData;
 
 	abstract dataFromString(value: string): FilterData;
 
 	abstract dataToString(data: FilterData): string;
 
-	/**
-	 * export data as filter specification in elasticsearch query language
-	 */
+    /** export data as query clause in elasticsearch query language */
 	abstract dataToEsFilter(): EsFilterType;
 
+    /** convert a query clause in elasticsearch query langauge to filter data */
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
 
 }
