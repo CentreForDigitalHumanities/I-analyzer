@@ -1,7 +1,7 @@
 import { convertToParamMap } from '@angular/router';
 import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
 import { EsDateFilter, EsTermsFilter } from './elasticsearch';
-import { DateFilter, DateFilterData, MultipleChoiceFilter } from './search-filter';
+import { DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
 import { of } from 'rxjs';
 import { distinct } from 'rxjs/operators';
 

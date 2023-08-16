@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './search-filter';
-import { FilterOptions } from './search-filter-options';
+import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './field-filter';
+import { FilterOptions } from './field-filter-options';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {

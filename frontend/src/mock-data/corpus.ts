@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { BehaviorSubject } from 'rxjs';
 import { findByName } from '../app/utils/utils';
-import { BooleanFilterOptions } from '../app/models/search-filter-options';
+import { BooleanFilterOptions } from '../app/models/field-filter-options';
 import { Corpus, CorpusField } from '../app/models';
 
 const mockFilterOptions: BooleanFilterOptions = {

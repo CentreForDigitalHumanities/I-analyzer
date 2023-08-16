@@ -6,7 +6,7 @@ import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
     SimpleQueryString, SortBy, SortDirection } from '../models';
 import { EsQuery } from '../services';
 import { findByName } from './utils';
-import { SearchFilter } from '../models/search-filter';
+import { SearchFilter } from '../models/field-filter';
 
 // conversion from query model -> elasticsearch query language
 

@@ -8,7 +8,7 @@ import {
     filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
-import { SearchFilter } from './search-filter';
+import { SearchFilter } from './field-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {

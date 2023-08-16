@@ -5,14 +5,14 @@ import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, 
 import {
     BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions
-} from './search-filter-options';
+} from './field-filter-options';
 import { BaseFilter } from './base-filter';
 
 
 abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FilterOptions, FilterData> {
     constructor(public corpusField: CorpusField) {
         super(corpusField.filterOptions);
-	}
+    }
 
     get filterType() {
         return this.corpusField.filterOptions?.name;
@@ -57,14 +57,14 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
     abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
 
     /** convert a single field value to filter data that selects that value */
-	abstract dataFromValue(value: any): FilterData;
+    abstract dataFromValue(value: any): FilterData;
 
-	abstract dataFromString(value: string): FilterData;
+    abstract dataFromString(value: string): FilterData;
 
-	abstract dataToString(data: FilterData): string;
+    abstract dataToString(data: FilterData): string;
 
     /** export data as query clause in elasticsearch query language */
-	abstract dataToEsFilter(): EsFilterType;
+    abstract dataToEsFilter(): EsFilterType;
 
     /** convert a query clause in elasticsearch query langauge to filter data */
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
@@ -72,50 +72,50 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
 }
 
 export interface DateFilterData {
-	min: Date;
-	max: Date;
+    min: Date;
+    max: Date;
 }
 
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
-	makeDefaultData(filterOptions: DateFilterOptions) {
-		return {
-			min: this.parseDate(filterOptions.lower),
-			max: this.parseDate(filterOptions.upper)
-		};
-	}
+    makeDefaultData(filterOptions: DateFilterOptions) {
+        return {
+            min: this.parseDate(filterOptions.lower),
+            max: this.parseDate(filterOptions.upper)
+        };
+    }
 
-	dataFromValue(value: Date) {
-		return {
-			min: value,
-			max: value,
-		};
-	}
+    dataFromValue(value: Date) {
+        return {
+            min: value,
+            max: value,
+        };
+    }
 
-	dataFromString(value: string) {
-		const [minString, maxString] = parseMinMax(value.split(','));
-		return {
-			min: this.parseDate(minString),
-			max: this.parseDate(maxString),
-		};
-	}
+    dataFromString(value: string) {
+        const [minString, maxString] = parseMinMax(value.split(','));
+        return {
+            min: this.parseDate(minString),
+            max: this.parseDate(maxString),
+        };
+    }
 
-	dataToString(data: DateFilterData) {
-		const min = this.formatDate(data.min);
-		const max = this.formatDate(data.max);
-		return `${min}:${max}`;
-	}
+    dataToString(data: DateFilterData) {
+        const min = this.formatDate(data.min);
+        const max = this.formatDate(data.max);
+        return `${min}:${max}`;
+    }
 
-	dataToEsFilter(): EsDateFilter {
-		return {
-			range: {
-				[this.corpusField.name]: {
-					gte: this.formatDate(this.currentData.min),
-					lte: this.formatDate(this.currentData.max),
-					format: 'yyyy-MM-dd'
-				}
-			}
-		};
-	}
+    dataToEsFilter(): EsDateFilter {
+        return {
+            range: {
+                [this.corpusField.name]: {
+                    gte: this.formatDate(this.currentData.min),
+                    lte: this.formatDate(this.currentData.max),
+                    format: 'yyyy-MM-dd'
+                }
+            }
+        };
+    }
 
     dataFromEsFilter(esFilter: EsDateFilter): DateFilterData {
         const data = _.first(_.values(esFilter.range));
@@ -124,9 +124,9 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
         return { min, max };
     }
 
-	private formatDate(date: Date): string {
-		return moment(date).format('YYYY-MM-DD');
-	}
+    private formatDate(date: Date): string {
+        return moment(date).format('YYYY-MM-DD');
+    }
 
     private parseDate(dateString: string): Date {
         return moment(dateString, 'YYYY-MM-DD').toDate();
@@ -145,7 +145,7 @@ export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter>
 
     dataFromString(value: string): boolean {
         return value === 'true';
-	}
+    }
 
     dataToString(data: boolean): string {
         return data.toString();
@@ -208,9 +208,9 @@ export interface RangeFilterData {
 export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
-			min: filterOptions.lower,
-			max: filterOptions.upper
-		};
+            min: filterOptions.lower,
+            max: filterOptions.upper
+        };
     }
 
     dataFromValue(value: number): RangeFilterData {
@@ -249,7 +249,7 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
 }
 
 export class AdHocFilter extends AbstractFieldFilter<any, EsTermFilter> {
-    makeDefaultData(filterOptions: FilterOptions) {}
+    makeDefaultData(filterOptions: FilterOptions) { }
 
     dataFromValue(value: any) {
         return value;
