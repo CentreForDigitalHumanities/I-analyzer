@@ -54,14 +54,8 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
         }
     }
 
-    abstract makeDefaultData(filterOptions: FieldFilterOptions): FilterData;
-
     /** convert a single field value to filter data that selects that value */
     abstract dataFromValue(value: any): FilterData;
-
-    abstract dataFromString(value: string): FilterData;
-
-    abstract dataToString(data: FilterData): string;
 
     /** export data as query clause in elasticsearch query language */
     abstract dataToEsFilter(): EsFilterType;
