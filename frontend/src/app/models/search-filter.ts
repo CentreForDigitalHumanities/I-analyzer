@@ -9,7 +9,7 @@ import {
 import { BaseFilter } from './base-filter';
 
 
-abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FilterOptions, FilterData> {
+abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FilterOptions, FilterData> {
     constructor(public corpusField: CorpusField) {
         super(corpusField.filterOptions);
 	}
@@ -76,7 +76,7 @@ export interface DateFilterData {
 	max: Date;
 }
 
-export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilter> {
+export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
 	makeDefaultData(filterOptions: DateFilterOptions) {
 		return {
 			min: this.parseDate(filterOptions.lower),
@@ -133,7 +133,7 @@ export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilte
     }
 }
 
-export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter> {
+export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
         return false;
@@ -167,7 +167,7 @@ export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter
 
 type MultipleChoiceFilterData = string[];
 
-export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFilterData, EsTermsFilter> {
+export class MultipleChoiceFilter extends AbstractFieldFilter<MultipleChoiceFilterData, EsTermsFilter> {
     makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
     }
@@ -205,7 +205,7 @@ export interface RangeFilterData {
     max: number;
 }
 
-export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFilter> {
+export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
 			min: filterOptions.lower,
@@ -248,7 +248,7 @@ export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFi
     }
 }
 
-export class AdHocFilter extends AbstractSearchFilter<any, EsTermFilter> {
+export class AdHocFilter extends AbstractFieldFilter<any, EsTermFilter> {
     makeDefaultData(filterOptions: FilterOptions) {}
 
     dataFromValue(value: any) {
