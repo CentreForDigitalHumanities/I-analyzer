@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './field-filter';
-import { FilterOptions } from './field-filter-options';
+import { FieldFilterOptions } from './field-filter-options';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
@@ -65,7 +65,7 @@ export interface ApiCorpusField {
     display_name: string;
     display_type: FieldDisplayType;
     description: string;
-    search_filter: FilterOptions | null;
+    search_filter: FieldFilterOptions | null;
     results_overview: boolean;
     csv_core: boolean;
     search_field_core: boolean;
@@ -101,7 +101,7 @@ export class CorpusField {
     searchable: boolean;
     downloadable: boolean;
     name: string;
-    filterOptions: FilterOptions;
+    filterOptions: FieldFilterOptions;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
 
     constructor(data: ApiCorpusField) {

@@ -3,13 +3,13 @@ import * as moment from 'moment';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import {
-    BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
+    BooleanFilterOptions, DateFilterOptions, FieldFilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions
 } from './field-filter-options';
 import { BaseFilter } from './base-filter';
 
 
-abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FilterOptions, FilterData> {
+abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FieldFilterOptions, FilterData> {
     constructor(public corpusField: CorpusField) {
         super(corpusField.filterOptions);
     }
@@ -54,7 +54,7 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
         }
     }
 
-    abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
+    abstract makeDefaultData(filterOptions: FieldFilterOptions): FilterData;
 
     /** convert a single field value to filter data that selects that value */
     abstract dataFromValue(value: any): FilterData;
@@ -249,7 +249,7 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
 }
 
 export class AdHocFilter extends AbstractFieldFilter<any, EsTermFilter> {
-    makeDefaultData(filterOptions: FilterOptions) { }
+    makeDefaultData(filterOptions: FieldFilterOptions) { }
 
     dataFromValue(value: any) {
         return value;
