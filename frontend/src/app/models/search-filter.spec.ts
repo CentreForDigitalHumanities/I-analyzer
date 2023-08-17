@@ -107,7 +107,7 @@ describe('DateFilter', () => {
         });
     });
 
-    it('should convert to string', () => {
+    it('should convert from and to string', () => {
         expect(filter.dataFromString(filter.dataToString(filter.currentData)))
             .toEqual(filter.currentData);
     });

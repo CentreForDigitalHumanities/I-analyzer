@@ -13,7 +13,7 @@ import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
-import { findByName, showLoading } from '../../utils/utils';
+import { showLoading } from '../../utils/utils';
 import { takeUntil } from 'rxjs/operators';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
@@ -49,7 +49,7 @@ export abstract class BarchartDirective
 
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
-    documentLimit = 5000; // maximum number of documents to search through for term frequency
+    documentLimit = 1000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -400,7 +400,7 @@ export abstract class BarchartDirective
      * when determining term frequency.
      */
      documentLimitForCategory(cat: DataPoint, series: BarchartSeries<DataPoint>): number {
-        return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+        return _.min([this.documentLimit, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
 
@@ -431,7 +431,7 @@ export abstract class BarchartDirective
 
     /** adapt query model to fit series: use correct search fields and query text */
     queryModelForSeries(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
-        return this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+        return this.selectSearchFields(this.removeSort(this.setQueryText(queryModel, series.queryText)));
     }
 
     /** Request doc counts for a series */
@@ -582,6 +582,13 @@ export abstract class BarchartDirective
         return queryModelCopy;
     }
 
+    /** return a copy of a query model with removed sort parameter (=> relevance sorting) */
+    removeSort(query: QueryModel): QueryModel {
+        const queryModelCopy = query.clone();
+        queryModelCopy.sort.reset();
+        return queryModelCopy;
+    }
+
 
     /** assemble the array of table data */
     setTableData() {
@@ -607,7 +614,7 @@ export abstract class BarchartDirective
      */
     get percentageDocumentsSearched() {
         if (this.rawData) {
-            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)), 1);
         }
     }
 
