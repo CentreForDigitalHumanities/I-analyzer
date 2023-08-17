@@ -5,9 +5,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
     AggregateQueryFeedback, EsSearchClause, BooleanQuery,
-    EsFilter, SearchHit
+    EsFilter, SearchHit, EsQuery, Aggregator
 } from '../models/index';
 import * as _ from 'lodash';
+import { QueryParameters } from '../models/search-requests';
 
 
 @Injectable()
@@ -21,7 +22,7 @@ export class ElasticSearchService {
 
     getDocumentById(id: string, corpus: Corpus): Promise<FoundDocument> {
         const query = {
-            body: {
+            esQuery: {
                 query: {
                     term: {
                         _id: id,
@@ -60,19 +61,19 @@ export class ElasticSearchService {
         return this.client.search({
             index: index.name,
             size: 0,
-            body: aggregationModel
+            esQuery: aggregationModel
         });
     }
 
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private async execute<T>(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
-        return this.client.search<T>({
+    private async execute(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
+        return this.client.search({
             index: index.name,
             from,
             size,
-            body: esQuery
+            esQuery
         });
     }
 
@@ -171,38 +172,10 @@ export class ElasticSearchService {
     }
 }
 
-interface Connection {
-    client: Client;
-    config: {
-        overviewQuerySize: number;
-        scrollPagesize: number;
-        scrollTimeout: string;
-    };
-}
-
-export type EsQuerySorted = EsQuery & {
-    sort: { [fieldName: string]: 'desc' | 'asc' }[];
-};
-
-export interface EsQuery {
-    aborted?: boolean;
-    completed?: Date;
-    query: EsSearchClause | BooleanQuery | EsFilter;
-    highlight?: {};
-    transferred?: number;
-}
-
-
-
-interface Aggregator {
-    name: string;
-    size: number;
-}
-
 export class Client {
-    constructor(private http: HttpClient) {
-    }
-    search<T>(searchParams: SearchParams): Promise<SearchResponse> {
+    constructor(private http: HttpClient) { }
+
+    search(searchParams: SearchParams): Promise<SearchResponse> {
         const url = `/api/es/${searchParams.index}/_search`;
         const optionDict = {
             size: searchParams.size.toString()
@@ -213,7 +186,10 @@ export class Client {
         const options = {
             params: new HttpParams({ fromObject: optionDict })
         };
-        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise();
+        const body: QueryParameters = {
+            es_query: searchParams.esQuery
+        };
+        return this.http.post<SearchResponse>(url, body, options).toPromise();
     }
 }
 
@@ -221,7 +197,7 @@ export interface SearchParams {
     index: string;
     size: number;
     from?: number;
-    body: EsQuery;
+    esQuery: EsQuery;
 }
 
 export interface SearchResponse {

@@ -1,4 +1,4 @@
-import { EsQuery, EsQuerySorted } from '../services';
+import { EsQuery, EsQuerySorted } from './elasticsearch';
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';

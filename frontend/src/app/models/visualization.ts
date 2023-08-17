@@ -1,5 +1,5 @@
 import { AggregateResult, DateResult } from '.';
-import { EsQuery, EsQuerySorted } from '../services';
+import { EsQuery, EsQuerySorted } from './elasticsearch';
 
 export interface TermFrequencyResult {
     key: string;
