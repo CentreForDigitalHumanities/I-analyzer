@@ -5,10 +5,10 @@ from datetime import datetime
 from django.conf import settings
 
 from addcorpus.extract import Constant, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.constants import document_context
 
 def format_debate_title(title):
     if title.endswith('.'):
@@ -31,7 +31,7 @@ def format_speaker(speaker):
 
         return speaker.title()
 
-class ParliamentUK(Parliament, CSVCorpus):
+class ParliamentUK(Parliament, CSVCorpusDefinition):
     title = 'People & Parliament (UK)'
     description = "Speeches from the House of Lords and House of Commons"
     data_directory = settings.PP_UK_DATA

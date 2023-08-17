@@ -6,10 +6,10 @@ from os.path import join
 from django.conf import settings
 
 import bs4
-from addcorpus.corpus import XMLCorpus
+from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, Combined, Choice
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
-from corpora.parliament.utils.formatting import format_page_numbers
+from corpora.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults  as field_defaults
 import re
@@ -116,7 +116,7 @@ def get_sequence_recent(id):
         return int(match.group(1))
 
 
-class ParliamentNetherlands(Parliament, XMLCorpus):
+class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     '''
     Class for indexing Dutch parliamentary data
     '''

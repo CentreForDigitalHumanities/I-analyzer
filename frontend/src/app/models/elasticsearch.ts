@@ -58,3 +58,13 @@ export interface SimpleQueryString {
 }
 
 export type EsSearchClause = MatchAll | SimpleQueryString;
+
+export interface FieldValues { [fieldName: string]: any };
+export interface HighlightResult { [fieldName: string]: string[] }
+
+export interface SearchHit {
+    _id: string;
+    _score: number;
+    _source: FieldValues;
+    highlight?: HighlightResult;
+}
