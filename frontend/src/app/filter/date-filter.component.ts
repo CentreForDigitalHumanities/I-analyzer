@@ -22,11 +22,12 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> {
         this.minDate = filter.defaultData.min;
         this.maxDate = filter.defaultData.max;
 
-        this.selectedMinDate = new BehaviorSubject(this.minDate);
-        this.selectedMaxDate = new BehaviorSubject(this.maxDate);
+        this.selectedMinDate = new BehaviorSubject(filter.currentData.min);
+        this.selectedMaxDate = new BehaviorSubject(filter.currentData.max);
 
         combineLatest([this.selectedMinDate, this.selectedMaxDate]).subscribe(([min, max]) =>
             this.update({min, max})
         );
     }
+
 }
