@@ -34,7 +34,7 @@ def transform_to_compound_query(query):
     if is_compound_query(query):
         return query
 
-    condition = query.get('query')
+    condition = query.get('query', MATCH_ALL)
     new_condition = {
         'bool': {
             'must': condition
@@ -42,8 +42,8 @@ def transform_to_compound_query(query):
     }
 
     return {
-        key: (value if key != 'query' else new_condition)
-        for key, value in query.items()
+        **query,
+        'query': new_condition,
     }
 
 def get_query_text(query):

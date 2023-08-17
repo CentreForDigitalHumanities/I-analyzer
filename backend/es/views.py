@@ -20,33 +20,19 @@ def get_query_parameters(request):
             for key in request.query_params
         }
 
-
-def specify_tags(query, corpus_name, request):
-    '''
-    Specifies tag contents if needed.
-
-    If the query JSON contains a `tags` key, it is removed and replaced with
-    a filter on the tags' document IDs.
-    '''
-
-    tags = query.pop('tags', None)
-    return include_tag_filter(query, tags, corpus_name)
-
 class ForwardSearchView(APIView):
     '''
     Forward search request to elasticsearch
 
-    The request should specify a query in the elasticsearch query DSL; c.f.
-
+    The request may specify:
+    - `es_query`: a query in the elasticsearch query DSL; c.f.
     https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+    - `tags`: an array of tag IDs that the results should be filtered on. Multiple tags
+    are combined with OR logic: a document must match any of them.
 
-    The request data should be the query JSON. You can optionally include
-    extra key/value pairs as query parameters in the request. They
-    will be merged with the JSON data.
-
-    On top of any properties included in the query DSL, the request may also specify
-    a `tags`property. This should be an array of values, referring to IDs of tags
-    on which the results should be filtered.
+    You can optionally include extra key/value pairs as query parameters
+    in the request. They will be merged with the elasticsearch query. E.g.,
+    adding `size=100` as a query parameter will merge `{"size":100}` into the query.
     '''
 
     permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
@@ -58,11 +44,12 @@ class ForwardSearchView(APIView):
 
         # combine request json with query parameters (size, scroll)
         query = {
-            **request.data,
+            **request.data.get('es_query', {}),
             **get_query_parameters(request)
         }
 
-        query = specify_tags(query, corpus_name, request.user)
+        if 'tags' in request.data:
+            query = include_tag_filter(query,  request.data['tags'], corpus_name)
 
         try:
             results = client.search(
