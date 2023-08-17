@@ -6,7 +6,7 @@ import logging
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
-from tag.filter import include_tag_filter
+from tag.filter import handle_tags_in_request
 from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)
@@ -42,14 +42,13 @@ class ForwardSearchView(APIView):
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
 
+        handle_tags_in_request(request)
+
         # combine request json with query parameters (size, scroll)
         query = {
             **request.data.get('es_query', {}),
             **get_query_parameters(request)
         }
-
-        if 'tags' in request.data:
-            query = include_tag_filter(query,  request.data['tags'], corpus_name)
 
         try:
             results = client.search(
