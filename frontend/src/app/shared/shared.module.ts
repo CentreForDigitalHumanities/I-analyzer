@@ -11,18 +11,14 @@ import { HighlightPipe } from '../search';
 import { ScrollToDirective } from '../scroll-to.directive';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClient, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
-import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
-import { ResourceHandler } from '@ngx-resource/core';
+import {
+    HttpClient,
+    HttpClientModule,
+    HttpClientXsrfModule,
+} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { TabsComponent } from './tabs/tabs.component';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
-
-// AoT requires an exported function for factories
-export const resourceHandlerFactory = (http: HttpClient) =>
-    new ResourceHandlerHttpClient(http);
-
-
 
 @NgModule({
     declarations: [
@@ -54,7 +50,6 @@ export const resourceHandlerFactory = (http: HttpClient) =>
         HighlightPipe,
         HttpClientModule,
         HttpClientXsrfModule,
-        ResourceModule,
         RouterModule,
     ],
     imports: [
@@ -69,14 +64,7 @@ export const resourceHandlerFactory = (http: HttpClient) =>
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
         }),
-        ResourceModule.forRoot({
-            handler: {
-                provide: ResourceHandler,
-                useFactory: resourceHandlerFactory,
-                deps: [HttpClient],
-            },
-        }),
         RouterModule,
-    ]
+    ],
 })
-export class SharedModule { }
+export class SharedModule {}

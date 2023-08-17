@@ -16,6 +16,7 @@ export abstract class BaseFilterComponent<FilterData> implements OnChanges {
     @Input() queryModel: QueryModel;
 
     private queryModelSubscription: Subscription;
+    private filterSubscription: Subscription;
 
     constructor() { }
 
@@ -25,6 +26,13 @@ export abstract class BaseFilterComponent<FilterData> implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.filter) {
+            if (this.filterSubscription) {
+                this.filterSubscription.unsubscribe();
+            }
+            this.filterSubscription = this.filter.update.subscribe(() =>
+                // this does not cause an update loop, searchFilter will ignore same-data updates
+                this.onFilterSet(this.filter)
+            );
             this.onFilterSet(this.filter);
         }
 

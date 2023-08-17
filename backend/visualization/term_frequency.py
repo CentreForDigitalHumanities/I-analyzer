@@ -1,4 +1,4 @@
-from addcorpus.load_corpus import load_corpus_definition
+import math
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
@@ -7,10 +7,13 @@ from copy import deepcopy
 from visualization import query, termvectors
 from es import download
 
+DEFAULT_SIZE = 100
+ESTIMATE_WINDOW = 5
+
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
 
-def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100, include_query_in_result = False):
+def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str=None, size=DEFAULT_SIZE, include_query_in_result=False):
 
     start_date = parse_datestring(start_date_str)
     end_date = parse_datestring(end_date_str) if end_date_str else None
@@ -64,22 +67,31 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
-    found_hits, total_results = download.scroll(corpus = corpus,
+    found_hits, total_results = download.scroll(corpus=corpus,
         query_model=es_query,
-        download_size=size
+        download_size=size,
+        client=es_client,
+        source=[]
     )
 
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
 
-    matches = sum(
+    matches = [
         count_matches_in_document(hit['_id'], index, fieldnames, query_text, es_client)
         for hit in found_hits
-    )
+    ]
 
+    n_matches = sum(matches)
     skipped_docs = total_results - len(found_hits)
-    match_count = matches + skipped_docs
+    if not skipped_docs:
+        return n_matches
 
+    mean_last_matches = sum(matches[-ESTIMATE_WINDOW:]) / ESTIMATE_WINDOW
+    # we estimate that skipped contain matches linearly decrease
+    # from average in ESTIMATE_WINDOW to 1
+    estimate_skipped = int(math.ceil(mean_last_matches - 1) * skipped_docs / 2) + skipped_docs
+    match_count = n_matches + estimate_skipped
     return match_count
 
 def count_matches_in_document(id, index, fieldnames, query_text, es_client):
@@ -141,7 +153,7 @@ def get_term_frequency(es_query, corpus, size):
 
     return match_count, total_doc_count, token_count
 
-def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100, include_query_in_result = False):
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size=DEFAULT_SIZE, include_query_in_result=False):
     # filter for relevant value
     term_filter = query.make_term_filter(field_name, field_value)
     es_query = query.add_filter(es_query, term_filter)
