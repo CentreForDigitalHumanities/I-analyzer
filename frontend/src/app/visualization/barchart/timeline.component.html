@@ -31,8 +31,8 @@
     <div class="message-body">
         <div class="block">
         The results for your search include too many documents to count all matches.
-        Only the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
-        the rest are assumed to have only one match for your query.
+        Only a sample of the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
+        the matches in other documents are extrapolated based on the sample.
         </div>
 
         <ia-full-data-button (requestFullData)="requestFullData()"></ia-full-data-button>
