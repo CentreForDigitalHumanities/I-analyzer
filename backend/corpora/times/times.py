@@ -16,7 +16,7 @@ from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 from media.media_url import media_url
@@ -24,7 +24,7 @@ from media.media_url import media_url
 # Source files ################################################################
 
 
-class Times(XMLCorpus):
+class Times(XMLCorpusDefinition):
     title = "Times"
     description = "Newspaper archive, 1785-2010"
     min_date = datetime(year=1785, month=1, day=1)
@@ -90,7 +90,7 @@ class Times(XMLCorpus):
             date += delta
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Publication Date',
             description='Publication date, parsed to yyyy-MM-dd format',
@@ -109,7 +109,7 @@ class Times(XMLCorpus):
                                            '%Y-%m-%d')
                                        )
         ),
-        Field(
+        FieldDefinition(
             name='source',
             display_name='Source',
             description='Library where the microfilm is sourced',
@@ -119,7 +119,7 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(
+        FieldDefinition(
             name='edition',
             display_name='Edition',
             es_mapping=keyword_mapping(),
@@ -135,7 +135,7 @@ class Times(XMLCorpus):
             ),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
@@ -148,7 +148,7 @@ class Times(XMLCorpus):
             sortable=True,
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='volume',
             display_name='Volume',
             description='Volume number.',
@@ -159,7 +159,7 @@ class Times(XMLCorpus):
             ),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='date-pub',
             display_name='Publication Date',
             es_mapping=keyword_mapping(),
@@ -170,7 +170,7 @@ class Times(XMLCorpus):
                 tag='da', toplevel=True
             )
         ),
-        Field(
+        FieldDefinition(
             name='ocr',
             display_name='OCR confidence',
             description='OCR confidence level.',
@@ -184,7 +184,7 @@ class Times(XMLCorpus):
             extractor=extract.XML(tag='ocr', transform=float),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='date-end',
             display_name='Ending date',
             es_mapping=keyword_mapping(),
@@ -197,7 +197,7 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(
+        FieldDefinition(
             name='page-count',
             display_name='Image count',
             description='Page count: number of images present in the issue.',
@@ -207,7 +207,7 @@ class Times(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='page-type',
             display_name='Page type',
             description='Supplement in which article occurs.',
@@ -224,7 +224,7 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(
+        FieldDefinition(
             name='supplement-title',
             display_name='Supplement title',
             description='Supplement title.',
@@ -233,7 +233,7 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             ),
         ),
-        Field(
+        FieldDefinition(
             name='supplement-subtitle',
             display_name='Supplement subtitle',
             description='Supplement subtitle.',
@@ -242,7 +242,7 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(
+        FieldDefinition(
             name='cover',
             display_name='On front page',
             description='Whether the article is on the front page.',
@@ -261,14 +261,14 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Article identifier.',
             es_mapping=keyword_mapping(),
             extractor=extract.XML(tag='id')
         ),
-        Field(
+        FieldDefinition(
             name='ocr-relevant',
             display_name='OCR relevant',
             description='Whether OCR confidence level is relevant.',
@@ -278,7 +278,7 @@ class Times(XMLCorpus):
                 transform=string_contains("yes"),
             )
         ),
-        Field(
+        FieldDefinition(
             name='column',
             display_name='Column',
             description=(
@@ -288,7 +288,7 @@ class Times(XMLCorpus):
             es_mapping=keyword_mapping(),
             extractor=extract.XML(tag='sc')
         ),
-        Field(
+        FieldDefinition(
             name='page',
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
@@ -298,7 +298,7 @@ class Times(XMLCorpus):
                 extract.XML(tag=['..', 'pa'], applicable=after(1985))
             )
         ),
-        Field(
+        FieldDefinition(
             name='pages',
             display_name='Page count',
             es_mapping={'type': 'integer'},
@@ -311,7 +311,7 @@ class Times(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Title',
             results_overview=True,
@@ -320,14 +320,14 @@ class Times(XMLCorpus):
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),
-        Field(
+        FieldDefinition(
             name='subtitle',
             display_name='Subtitle',
             description='Article subtitle.',
             extractor=extract.XML(tag='ta', multiple=True),
             search_field_core=True
         ),
-        Field(
+        FieldDefinition(
             name='subheader',
             display_name='Subheader',
             description='Article subheader (product dependent field).',
@@ -336,7 +336,7 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(
+        FieldDefinition(
             name='author',
             display_name='Author',
             description='Article author.',
@@ -354,7 +354,7 @@ class Times(XMLCorpus):
             search_field_core=True,
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
@@ -363,7 +363,7 @@ class Times(XMLCorpus):
                 tag='altSource', multiple=True
             )
         ),
-        Field(
+        FieldDefinition(
             name='category',
             visualizations=['resultscount', 'termfrequency'],
             display_name='Category',
@@ -376,7 +376,7 @@ class Times(XMLCorpus):
             extractor=extract.XML(tag='ct', multiple=True),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='illustration',
             display_name='Illustration',
             description=(
@@ -402,7 +402,7 @@ class Times(XMLCorpus):
             ),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='content-preamble',
             display_name='Content preamble',
             description='Raw OCR\'ed text (preamble).',
@@ -411,7 +411,7 @@ class Times(XMLCorpus):
                 flatten=True
             )
         ),
-        Field(
+        FieldDefinition(
             name='content-heading',
             display_name='Content heading',
             description='Raw OCR\'ed text (header).',
@@ -420,7 +420,7 @@ class Times(XMLCorpus):
                 flatten=True
             )
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',

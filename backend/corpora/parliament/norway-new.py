@@ -3,7 +3,7 @@ from datetime import datetime
 from django.conf import settings
 
 from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
@@ -41,7 +41,7 @@ def format_language(language):
 
 EMPTY_VALUES = ['', 'NA']
 
-class ParliamentNorwayNew(Parliament, CSVCorpus):
+class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
     '''
     Class for indexing Norwegian parliamentary data
     '''

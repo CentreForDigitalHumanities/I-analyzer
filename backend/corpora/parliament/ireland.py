@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import json
 import csv
 
-from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
+from addcorpus.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
 from addcorpus.extract import Constant, CSV, XML, Metadata, Combined, Backup
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -65,7 +65,7 @@ def find_ministerial_role(data):
     if len(positions):
         return ', '.join(position['role'] for position in positions)
 
-class ParliamentIrelandOld(CSVCorpus):
+class ParliamentIrelandOld(CSVCorpusDefinition):
     '''
     Class for extracting 1919-2013 Irish debates.
 
@@ -308,7 +308,7 @@ def role_extractor(role_type):
     )
 
 
-class ParliamentIrelandNew(XMLCorpus):
+class ParliamentIrelandNew(XMLCorpusDefinition):
     '''
     Class for extracting 2014-2020 Irish debates.
 
@@ -436,7 +436,7 @@ class ParliamentIrelandNew(XMLCorpus):
     ]
 
 
-class ParliamentIreland(Parliament, Corpus):
+class ParliamentIreland(Parliament, CorpusDefinition):
     '''
     Class for 1919-2020 Irish debates.
     '''

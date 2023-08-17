@@ -1,11 +1,11 @@
 import datetime
-from addcorpus.corpus import Corpus, Field
+from addcorpus.corpus import CorpusDefinition, FieldDefinition
 
 from os.path import abspath, dirname, join
 
 here = abspath(dirname(__file__))
 
-class WordmodelsMockCorpus(Corpus):
+class WordmodelsMockCorpus(CorpusDefinition):
     title = "Mock corpus with word models represented as Keyed Vectors"
     description = "Mock corpus for testing word models, saved as gensim Keyed Vectors"
     es_index = 'nothing'
@@ -15,7 +15,7 @@ class WordmodelsMockCorpus(Corpus):
     data_directory = 'nothing'
     word_model_path = join(here, 'mock-word-models')
     fields = [
-        Field(
+        FieldDefinition(
             name = 'content',
         )
     ]
