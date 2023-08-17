@@ -4,7 +4,6 @@ from selenium import webdriver
 WEBDRIVER_INI_NAME = 'webdriver'
 BASE_ADDRESS_OPTION_NAME = 'base_address'
 
-
 def pytest_addoption(parser):
     """ py.test hook where we register configuration options and defaults. """
     parser.addini(
@@ -20,13 +19,11 @@ def pytest_addoption(parser):
         dest=BASE_ADDRESS_OPTION_NAME,
     )
 
-
 def pytest_generate_tests(metafunc):
     """ py.test hook where we inject configurable fixtures. """
     if 'webdriver_name' in metafunc.fixturenames:
         names = metafunc.config.getini(WEBDRIVER_INI_NAME)
         metafunc.parametrize('webdriver_name', names, scope='session')
-
 
 @pytest.fixture(scope='session')
 def webdriver_instance(webdriver_name):
@@ -53,13 +50,11 @@ def webdriver_instance(webdriver_name):
     finally:
         driver.quit()
 
-
 @pytest.fixture
 def browser(webdriver_instance):
     """ Provides a WebDriver instance and performs some cleanups afterwards. """
     yield webdriver_instance
     webdriver_instance.delete_all_cookies()
-
 
 @pytest.fixture(scope='session')
 def base_address(pytestconfig):
@@ -67,12 +62,11 @@ def base_address(pytestconfig):
 
 @pytest.fixture
 def search_address(base_address):
-    return base_address + 'search/awesome-corpus'
-
+    return base_address + 'search/parliament-canada'
 
 @pytest.fixture
 def wordmodels_address(base_address):
-    return base_address + 'word-models/awesome-corpus'
+    return base_address + 'word-models/parliament-canada'
 
 @pytest.fixture
 def admin_address(base_address):
