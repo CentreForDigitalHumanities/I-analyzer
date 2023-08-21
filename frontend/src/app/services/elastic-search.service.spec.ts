@@ -4,7 +4,7 @@ import { ElasticSearchService, SearchResponse } from './elastic-search.service';
 import { Aggregator, QueryModel } from '../models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
 import { TagService } from './tag.service';
-import { TagServiceMock } from 'src/mock-data/tag';
+import { TagServiceMock } from '../../mock-data/tag';
 
 const mockResponse: SearchResponse = {
     took: 4,
