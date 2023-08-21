@@ -4,79 +4,34 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, EsSearchClause, BooleanQuery,
-    EsFilter, SearchHit
+    AggregateQueryFeedback, SearchHit, EsQuery, Aggregator
 } from '../models/index';
 import * as _ from 'lodash';
+import { QueryParameters } from '../models/search-requests';
 
 
 @Injectable()
 export class ElasticSearchService {
-    private client: Client;
+
     private resultsPerPage = 20;
 
     constructor(private http: HttpClient) {
-        this.client = new Client(this.http);
     }
 
     getDocumentById(id: string, corpus: Corpus): Promise<FoundDocument> {
-        const query = {
-            body: {
-                query: {
-                    term: {
-                        _id: id,
-                    }
+        const esQuery = {
+            query: {
+                term: {
+                    _id: id,
                 }
-            },
-            size: 1,
-            index: corpus.index,
-        };
-        return this.client.search(query).then(this.firstDocumentFromResponse.bind(this, corpus));
-    }
-
-    private firstDocumentFromResponse(corpus: Corpus, response: SearchResponse): FoundDocument {
-        const parsed = this.parseResponse(corpus, response);
-        if (parsed.documents.length) {
-            return _.first(parsed.documents);
-        }
-    }
-
-    /**
-     * Construct the aggregator, based on kind of field
-     * Date fields are aggregated in year intervals
-     */
-    makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
-        const aggregation = {
-            terms: {
-                field: aggregator,
-                size,
-                min_doc_count
             }
         };
-        return aggregation;
+        return this.execute(corpus, esQuery, 1,)
+            .then(this.parseResponse.bind(this, corpus))
+            .then(this.firstDocumentFromResults.bind(this));
     }
 
-    private executeAggregate(index: Corpus, aggregationModel) {
-        return this.client.search({
-            index: index.name,
-            size: 0,
-            body: aggregationModel
-        });
-    }
-
-    /**
-     * Execute an ElasticSearch query and return a dictionary containing the results.
-     */
-    private async execute<T>(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
-        return this.client.search<T>({
-            index: index.name,
-            from,
-            size,
-            body: esQuery
-        });
-    }
-
-    public async aggregateSearch<TKey>(
+    public async aggregateSearch(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
         aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
@@ -97,7 +52,7 @@ export class ElasticSearchService {
         };
     }
 
-    public async dateHistogramSearch<TKey>(
+    public async dateHistogramSearch(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
         fieldName: string,
@@ -150,6 +105,45 @@ export class ElasticSearchService {
     }
 
     /**
+     * Execute an ElasticSearch query and return a dictionary containing the results.
+     */
+    private async execute(corpus: Corpus, esQuery: EsQuery, size: number, from?: number) {
+        const url = `/api/es/${corpus.name}/_search`;
+        const optionDict = {
+            size: size.toString()
+        };
+        if (from) {
+            optionDict['from'] = from.toString();
+        }
+        const options = {
+            params: new HttpParams({ fromObject: optionDict })
+        };
+        const body: QueryParameters = {
+            es_query: esQuery
+        };
+        return this.http.post<SearchResponse>(url, body, options).toPromise();
+    }
+
+    /**
+     * Construct the aggregator, based on kind of field
+     * Date fields are aggregated in year intervals
+     */
+    private makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
+        const aggregation = {
+            terms: {
+                field: aggregator,
+                size,
+                min_doc_count
+            }
+        };
+        return aggregation;
+    }
+
+    private executeAggregate(corpus: Corpus, aggregationModel) {
+        return this.execute(corpus, aggregationModel, 0);
+    }
+
+    /**
      * Extract relevant information from dictionary returned by ES
      *
      * @param corpus
@@ -163,65 +157,19 @@ export class ElasticSearchService {
         };
     }
 
+    private firstDocumentFromResults(results: SearchResults): FoundDocument {
+        if (results.documents.length) {
+            return _.first(results.documents);
+        }
+    }
+
     /**
      * return the id, relevance and field values of a given document
      */
     private hitToDocument(corpus: Corpus, hit: SearchHit, maxScore: number): FoundDocument {
         return new FoundDocument(corpus, hit, maxScore);
     }
-}
 
-interface Connection {
-    client: Client;
-    config: {
-        overviewQuerySize: number;
-        scrollPagesize: number;
-        scrollTimeout: string;
-    };
-}
-
-export type EsQuerySorted = EsQuery & {
-    sort: { [fieldName: string]: 'desc' | 'asc' }[];
-};
-
-export interface EsQuery {
-    aborted?: boolean;
-    completed?: Date;
-    query: EsSearchClause | BooleanQuery | EsFilter;
-    highlight?: {};
-    transferred?: number;
-}
-
-
-
-interface Aggregator {
-    name: string;
-    size: number;
-}
-
-export class Client {
-    constructor(private http: HttpClient) {
-    }
-    search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `/api/es/${searchParams.index}/_search`;
-        const optionDict = {
-            size: searchParams.size.toString()
-        };
-        if (searchParams.from) {
-            optionDict['from'] = searchParams.from.toString();
-        }
-        const options = {
-            params: new HttpParams({ fromObject: optionDict })
-        };
-        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise();
-    }
-}
-
-export interface SearchParams {
-    index: string;
-    size: number;
-    from?: number;
-    body: EsQuery;
 }
 
 export interface SearchResponse {
