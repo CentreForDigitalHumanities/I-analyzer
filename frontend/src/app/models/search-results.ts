@@ -1,7 +1,7 @@
-import { EsQuery, EsQuerySorted } from '../services';
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
+import { QueryParameters } from './search-requests';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -92,25 +92,11 @@ export type TasksOutcome<ExpectedResult> =
     | { status: 'working' }
     | { status: 'done'; done: true; results: ExpectedResult[] };
 
-export interface ResultsDownloadParameters {
+export type ResultsDownloadParameters = {
     corpus: string;
-    es_query: EsQuery | EsQuerySorted;
     fields: string[];
     route: string;
-}
-
-export interface NgramsParameters {
-    es_query: EsQuery;
-    corpus_name: string;
-    field: string;
-    ngram_size?: number;
-    term_position?: string;
-    freq_compensation?: boolean;
-    subfield?: string;
-    max_size_per_interval?: number;
-    number_of_ngrams?: number;
-    date_field: string;
-}
+} & QueryParameters;
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
 

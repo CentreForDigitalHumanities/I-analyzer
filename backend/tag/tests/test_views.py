@@ -170,9 +170,10 @@ def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, mo
 
 def search_with_tag(client, corpus_name, tag_id):
     route = f'/api/es/{corpus_name}/_search'
-    query = MATCH_ALL
-    tag_data = {'tags': [tag_id]}
-    data = {**query, **tag_data}
+    data = {
+        'es_query': MATCH_ALL,
+        'tags': [tag_id],
+    }
     return client.post(route, data, content_type = 'application/json')
 
 def test_search_view_with_tag(auth_client, mock_corpus, auth_user_tag, tagged_documents, index_mock_corpus):
