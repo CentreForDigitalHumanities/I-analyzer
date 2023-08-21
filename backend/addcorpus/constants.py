@@ -1,3 +1,5 @@
+from enum import Enum
+
 CATEGORIES = [
     ('newspaper', 'Newspapers'),
     ('parliament', 'Parliamentary debates'),
@@ -12,3 +14,22 @@ CATEGORIES = [
 '''
 Types of data
 '''
+
+class MappingType(Enum):
+    'Elasticsearch mapping types that are implemented in I-analyzer'
+
+    TEXT = 'text'
+    KEYWORD = 'keyword'
+    DATE = 'date'
+    INTEGER  = 'integer'
+    FLOAT = 'float'
+    BOOLEAN = 'boolean'
+
+
+class VisualizationType(Enum):
+    '''Types of visualisations available'''
+
+    RESULTS_COUNT = 'resultscount'
+    TERM_FREQUENCY = 'termfrequency'
+    NGRAM = 'ngram'
+    WORDCLOUD = 'wordcloud'

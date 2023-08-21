@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import Group
 
-from addcorpus.constants import CATEGORIES
+from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validators import validate_language_code
 
 MAX_LENGTH_NAME = 126
@@ -120,25 +120,28 @@ class CorpusConfiguration(models.Model):
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
-    ('text', 'text'),
-    ('keyword', 'keyword'),
-    ('date', 'date'),
-    ('integer', 'integer'),
-    ('float', 'float'),
-    ('boolean', 'boolean'),
+    (MappingType.TEXT.value, 'text'),
+    (MappingType.KEYWORD.value, 'keyword'),
+    (MappingType.DATE.value, 'date'),
+    (MappingType.INTEGER.value, 'integer'),
+    (MappingType.FLOAT.value, 'float'),
+    (MappingType.BOOLEAN.value, 'boolean'),
 ]
 
 FIELD_VISUALIZATIONS = [
-    ('resultscount', 'Number of results'),
-    ('termfrequency', 'Frequency of the search term'),
-    ('ngram', 'Neighbouring words'),
-    ('wordcloud', 'Most frequent words'),
+    (VisualizationType.RESULTS_COUNT.value, 'Number of results'),
+    (VisualizationType.TERM_FREQUENCY.value, 'Frequency of the search term'),
+    (VisualizationType.NGRAM.value, 'Neighbouring words'),
+    (VisualizationType.WORDCLOUD.value, 'Most frequent words'),
 ]
+'''Options for `visualizations` field'''
 
 VISUALIZATION_SORT_OPTIONS = [
     ('key', 'By the value of the field'),
     ('value', 'By frequency')
 ]
+'''Options for `visualization_sort` field'''
+
 
 class Field(models.Model):
     name = models.SlugField(
