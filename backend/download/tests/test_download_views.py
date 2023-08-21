@@ -6,6 +6,9 @@ from download.models import Download
 from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
 import io
+from visualization.query import MATCH_ALL
+from es.search import hits
+from tag.models import Tag, TaggedDocument
 
 def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus, csv_directory):
     request_json = {
@@ -133,6 +136,11 @@ def test_download_history_view(admin_client, finished_download, small_mock_corpu
     assert download['corpus'] == small_mock_corpus
     assert download['status'] == 'done'
 
+def read_file_response(response, encoding):
+    content_bytes = io.BytesIO(response.getvalue()).read()
+    content_string = bytes.decode(content_bytes, encoding)
+    return io.StringIO(content_string)
+
 def test_csv_download_view(admin_client, finished_download):
     encoding = 'utf-8'
     format = 'long'
@@ -142,9 +150,59 @@ def test_csv_download_view(admin_client, finished_download):
     assert status.is_success(response.status_code)
 
     # read file content of response
-    content_bytes = io.BytesIO(response.getvalue()).read()
-    content_string = bytes.decode(content_bytes, encoding)
-    reader = csv.DictReader(io.StringIO(content_string), delimiter=';')
+    stream = read_file_response(response, encoding)
+    reader = csv.DictReader(stream, delimiter=';')
     assert reader.fieldnames == ['content', 'date', 'genre', 'query', 'title']
+    rows = [row for row in reader]
+    assert len(rows) == 1
+
+@pytest.fixture()
+def some_document_id(admin_client, small_mock_corpus, index_small_mock_corpus):
+    search_response = admin_client.post(
+        f'/api/es/{small_mock_corpus}/_search',
+        {'es_query': MATCH_ALL},
+         content_type='application/json'
+    )
+
+    hit = hits(search_response.data)[0]
+    doc_id = hit['_id']
+    return doc_id
+
+@pytest.fixture()
+def tag_on_some_document(admin_client, admin_user, small_mock_corpus, some_document_id):
+    corpus = Corpus.objects.get(name=small_mock_corpus)
+    tag = Tag.objects.create(
+        name='fascinating',
+        user=admin_user
+    )
+    tagged_doc = TaggedDocument.objects.create(
+        corpus=corpus,
+        doc_id=some_document_id
+    )
+    tagged_doc.tags.set([tag])
+    tagged_doc.save()
+
+    return tag
+
+def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock_corpus, tag_on_some_document):
+    encoding = 'utf-8'
+    download_request_json = {
+        'corpus': small_mock_corpus,
+        'es_query': MATCH_ALL,
+        'tags': [tag_on_some_document.id],
+        'fields': ['date','content'],
+        'size': 3,
+        'route': f"/search/{small_mock_corpus}",
+        'encoding': encoding
+    }
+    response = admin_client.post(
+        '/api/download/search_results',
+        download_request_json,
+        content_type='application/json'
+    )
+
+    assert status.is_success(response.status_code)
+    stream = read_file_response(response, encoding)
+    reader = csv.DictReader(stream, delimiter=';')
     rows = [row for row in reader]
     assert len(rows) == 1
