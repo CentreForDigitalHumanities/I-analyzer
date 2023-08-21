@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
     QueryModel,
     SimpleQueryString, SortBy, SortDirection } from '../models';
-import { EsQuery } from '../services';
+import { EsQuery } from '../models';
 import { findByName } from './utils';
 import { SearchFilter } from '../models/search-filter';
 
