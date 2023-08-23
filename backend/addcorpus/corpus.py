@@ -10,6 +10,7 @@ import json
 import bs4
 import csv
 import sys
+import gzip
 from datetime import datetime
 from langcodes import Language, standardize_tag
 from os.path import isdir
@@ -498,8 +499,13 @@ class XMLCorpusDefinition(CorpusDefinition):
         '''
         # Loading XML
         logger.info('Reading XML file {} ...'.format(filename))
-        with open(filename, 'rb') as f:
-            data = f.read()
+        if filename.endswith('.gz'):
+            ## if the xml file is zipped, as for the KB newspaper corpus, use gzip
+            with gzip.open(filename, 'rb') as f:
+                data = f.read()
+        else:
+            with open(filename, 'rb') as f:
+                data = f.read()
         logger.info('Loaded {} into memory...'.format(filename))
         return self.soup_from_data(data)
 
