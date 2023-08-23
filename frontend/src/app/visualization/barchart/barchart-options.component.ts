@@ -3,7 +3,8 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
-import { Normalizer, barChartSetNull, ChartType, ChartParameters } from '../../models';
+import { Normalizer, ChartType, ChartParameters } from '../../models';
+import { ParamService } from '../../services';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -35,11 +36,14 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     faCheck = faCheck;
 
+    nullableParameters = ['normalize'];
+
     constructor(
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        paramService: ParamService
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -60,7 +64,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         const chartParameters: ChartParameters = {
             normalizer: this.currentNormalizer,
             chartType: this.currentChartType
-        }
+        };
         this.chartParameters.emit(chartParameters);
         const route = {};
         if (this.currentNormalizer !== 'raw' || 'terms') {
@@ -74,9 +78,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     initialize() {}
 
-    teardown() {
-        this.setParams(barChartSetNull);
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
         if (params.has('normalize')) {
@@ -88,11 +90,6 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
                 this.currentNormalizer = 'terms';
             }
         }
-        if (params.has('visualizeTerm')) {
-            this.queries = params.getAll('visualizeTerm');
-            this.showEdit = true;
-            this.queriesChanged.emit(this.queries);
-        }
     }
 
     updateQueries(queries: string[]) {
@@ -100,7 +97,6 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         if (this.queries.length === 1 && this.queries[0] === this.queryText) {
             this.showEdit = false;
         }
-        this.setParams({visualizeTerm: this.queries});
         this.queriesChanged.emit(this.queries);
     }
 
