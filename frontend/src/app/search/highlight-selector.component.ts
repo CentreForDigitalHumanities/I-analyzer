@@ -1,8 +1,7 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { QueryModel } from '../models';
+import { Subscription } from 'rxjs';
 
-
-const HIGHLIGHT = 200;
 
 @Component({
   selector: 'ia-highlight-selector',
@@ -11,30 +10,43 @@ const HIGHLIGHT = 200;
 })
 export class HighlightSelectorComponent implements OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
-    public highlight: number = HIGHLIGHT;
+    private highlightSubscription: Subscription;
+    public highlight: number = 0;
 
     constructor() {
     }
 
+    ngOnInit() {
+        this.highlightSubscription = this.queryModel.update.subscribe(() => {
+            this.setStateFromQueryModel()
+        });
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel) {
+        if (this.queryModel) {
             this.setStateFromQueryModel();
-            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
         }
     }
 
     ngOnDestroy(): void {
-        this.queryModel.setHighlight(undefined);
+        this.queryModel.setHighlight(0);
+        this.highlightSubscription.unsubscribe();
     }
 
     setStateFromQueryModel() {
         this.highlight = this.queryModel.highlightSize;
     }
 
-
-    updateHighlightSize(event) {
-        const highlightSize = event.target.value;
-        this.queryModel.setHighlight(highlightSize);
+    updateHighlightSize(instruction?: string) {
+        if (instruction == 'on' && this.queryModel.highlightSize == 0) {
+            this.queryModel.setHighlight(200);
+        } else if (instruction == 'more' && this.queryModel.highlightSize < 800) {
+            this.queryModel.setHighlight(this.queryModel.highlightSize + 200);
+        } else if (instruction == 'less' && this.queryModel.highlightSize > 200) {
+            this.queryModel.setHighlight(this.queryModel.highlightSize - 200);
+        } else if (instruction == 'off') {
+            this.queryModel.setHighlight(0, true);
+        }
     }
 
 }
