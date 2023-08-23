@@ -63,6 +63,8 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
+    nullableParameters = [];
+
     constructor(
         private authService: AuthService,
         private corpusService: CorpusService,
