@@ -48,12 +48,9 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
         }
     }
 
-    initialize() {
-    }
+    initialize() {}
 
-    teardown() {
-        this.setParams({ neighbours: null });
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
         this.neighbours = _.get(params, 'neighbours', 5);
