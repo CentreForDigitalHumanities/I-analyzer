@@ -1,5 +1,6 @@
 import { Component, DoCheck, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import * as _ from 'lodash';
 
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
@@ -24,7 +25,8 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
 
     activeQuery: string;
 
-    currentTab: 'relatedwords' | 'wordsimilarity'
+    currentTab: 'relatedwords' | 'wordsimilarity';
+    nullableParameters = ['query', 'show'];
 
     tabs = {
         relatedwords: {
@@ -67,16 +69,11 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
     }
 
-    teardown(): void {
-        this.setParams({
-            query: null,
-            show: null
-        });
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
-        if (params.has('query')) {
-            this.queryText = params.get('query');
+        this.queryText = _.get(params, 'query', undefined);
+        if (this.queryText) {
             this.activeQuery = this.queryText;
             this.validateQuery();
             if (this.queryFeedback === undefined) {

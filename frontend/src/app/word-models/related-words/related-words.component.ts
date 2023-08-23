@@ -31,6 +31,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
     faCheck = faCheck;
+    nullableParameters: ['neighbours'];
 
     constructor(
         route: ActivatedRoute,
@@ -47,18 +48,12 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
         }
     }
 
-    initialize() {
-        
-    }
+    initialize() {}
 
-    teardown() {
-        this.setParams({ neighbours: null });
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
-        if (params.has('neighbours')) {
-            this.neighbours = params.get('neighbours');
-        }
+        this.neighbours = _.get(params, 'neighbours', 5);
     }
 
     getData(): void {

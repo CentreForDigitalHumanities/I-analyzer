@@ -11,7 +11,6 @@
     "test": "ng test --source-map=false",
     "test:once": "ng test --source-map=false --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "stop": "lsof -t -i tcp:4200 | xargs kill -9 || echo \"not running\"",
     "test-once": "ng test --watch=false",
     "watch": "ng build --configuration=production --watch"
@@ -25,7 +24,7 @@
     "@angular/compiler": "^13.2.2",
     "@angular/core": "^13.2.2",
     "@angular/forms": "^13.2.2",
-    "@angular/localize": "13.2.2",
+    "@angular/localize": "^13.2.2",
     "@angular/platform-browser": "^13.2.2",
     "@angular/platform-browser-dynamic": "^13.2.2",
     "@angular/platform-server": "^13.2.2",
@@ -42,8 +41,8 @@
     "chartjs-adapter-moment": "^1.0.0",
     "chartjs-plugin-zoom": "^1.2.0",
     "core-js": "^2.6.11",
-    "d3": "^7.0.0",
-    "d3-cloud": "^1.2.4",
+    "d3": "^7.8.5",
+    "d3-cloud": "^1.2.7",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "html-to-image": "^1.9.0",
@@ -65,7 +64,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~13.2.3",
+    "@angular-devkit/build-angular": "~13.3.11",
     "@angular-eslint/builder": "13.5.0",
     "@angular-eslint/eslint-plugin": "13.5.0",
     "@angular-eslint/eslint-plugin-template": "13.5.0",
@@ -74,7 +73,7 @@
     "@angular/compiler-cli": "^13.2.2",
     "@angular/language-service": "^13.2.2",
     "@types/chart.js": "^2.9.35",
-    "@types/d3": "^4.13.2",
+    "@types/d3": "^7.4.0",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^6.14.10",
@@ -84,16 +83,15 @@
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-prefer-arrow": "latest",
-    "jasmine-core": "~3.7.0",
-    "jasmine-spec-reporter": "~5.0.0",
-    "karma": "~6.3.16",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-cli": "~1.0.1",
-    "karma-coverage-istanbul-reporter": "~3.0.2",
-    "karma-jasmine": "~4.0.0",
+    "jasmine-core": "^3.7.0",
+    "jasmine-spec-reporter": "^5.0.0",
+    "karma": "^6.3.16",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-cli": "^1.0.1",
+    "karma-coverage-istanbul-reporter": "^3.0.2",
+    "karma-jasmine": "^4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "pre-commit": "^1.2.2",
-    "protractor": "~7.0.0",
     "ts-node": "~3.2.0"
   },
   "peerDependencies": {
@@ -102,5 +100,11 @@
   },
   "overrides": {
     "colors@>1.4.0": "1.4.0"
+  },
+  "resolutions": {
+    "loader-utils": "^2.0.4",
+    "terser": "^5.14.2",
+    "d3-color": "^3.1.0",
+    "semver": "^7.5.2"
   }
 }

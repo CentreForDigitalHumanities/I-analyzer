@@ -6,7 +6,7 @@ import logging
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
-from tag.filter import include_tag_filter
+from tag.filter import handle_tags_in_request
 from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)
@@ -20,33 +20,21 @@ def get_query_parameters(request):
             for key in request.query_params
         }
 
-
-def specify_tags(query, corpus_name, request):
-    '''
-    Specifies tag contents if needed.
-
-    If the query JSON contains a `tags` key, it is removed and replaced with
-    a filter on the tags' document IDs.
-    '''
-
-    tags = query.pop('tags', None)
-    return include_tag_filter(query, tags, corpus_name)
-
 class ForwardSearchView(APIView):
     '''
-    Forward search request to elasticsearch
+    Forward search request to elasticsearch search API
 
-    The request should specify a query in the elasticsearch query DSL; c.f.
+    The request may specify:
+    - `es_query`: a query for the elasticsearch search API
+    https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html
+    - `tags`: an array of tag IDs that the results should be filtered on. Multiple tags
+    are combined with OR logic: a document must match any of them.
 
-    https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
-
-    The request data should be the query JSON. You can optionally include
-    extra key/value pairs as query parameters in the request. They
-    will be merged with the JSON data.
-
-    On top of any properties included in the query DSL, the request may also specify
-    a `tags`property. This should be an array of values, referring to IDs of tags
-    on which the results should be filtered.
+    You can optionally include extra query parameters in the request, which should be valid
+    parameters for the elasticsearch API. They will be merged with the query body. E.g.,
+    adding `size=100&from=200` as a query parameter will merge `{"size":100, "from": 200}`
+    into the query. If you specify a parameter in both the body and as a query parameter,
+    the query parameter will be used.
     '''
 
     permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
@@ -56,13 +44,13 @@ class ForwardSearchView(APIView):
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
 
+        handle_tags_in_request(request)
+
         # combine request json with query parameters (size, scroll)
         query = {
-            **request.data,
+            **request.data.get('es_query', {}),
             **get_query_parameters(request)
         }
-
-        query = specify_tags(query, corpus_name, request.user)
 
         try:
             results = client.search(

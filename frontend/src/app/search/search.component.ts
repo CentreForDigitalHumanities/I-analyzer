@@ -63,6 +63,8 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
+    nullableParameters = [];
+
     constructor(
         private authService: AuthService,
         private corpusService: CorpusService,
@@ -148,7 +150,19 @@ export class SearchComponent extends ParamDirective {
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {
             this.queryText = this.queryModel.queryText;
+            this.checkHighlight();
             this.setParams(this.queryModel.toRouteParam());
         });
+    }
+    /**
+     * This method checks whether the highlighter needs to be turned on or off
+     * If the user has disabled the highlighter, it will not turn on by default
+     */
+    public checkHighlight() {
+        if (!this.queryModel.queryText) {
+            this.queryModel.highlightSize = null;
+        } else if (!this.queryModel.highlightSize && !this.queryModel.highlightSwitchedOff) {
+            this.queryModel.highlightSize = 200;
+        }
     }
 }
