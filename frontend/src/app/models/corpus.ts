@@ -51,7 +51,6 @@ export interface ElasticSearchIndex {
     serverName: string;
 }
 
-
 export interface DocumentContext {
     contextFields: CorpusField[];
     sortField?: CorpusField;

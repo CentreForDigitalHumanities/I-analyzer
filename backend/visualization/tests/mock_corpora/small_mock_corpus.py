@@ -1,5 +1,5 @@
 from datetime import datetime
-from addcorpus.corpus import Field, CSVCorpus
+from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
 from addcorpus.extract import CSV
 import os
 
@@ -7,7 +7,7 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-class SmallMockCorpus(CSVCorpus):
+class SmallMockCorpus(CSVCorpusDefinition):
     title = 'Mock Corpus'
     description = 'Corpus for testing'
     visualize = []
@@ -23,7 +23,7 @@ class SmallMockCorpus(CSVCorpus):
         for csv_file in os.listdir(os.path.join(here, 'source_files')):
             yield os.path.join(here, 'source_files', csv_file), {}
 
-    date = Field(
+    date = FieldDefinition(
         name = 'date',
         es_mapping = {
             'type': 'date',
@@ -31,7 +31,7 @@ class SmallMockCorpus(CSVCorpus):
         extractor = CSV('date')
     )
 
-    title_field = Field(
+    title_field = FieldDefinition(
         name = 'title',
         es_mapping = {
             'type': 'text',
@@ -39,7 +39,7 @@ class SmallMockCorpus(CSVCorpus):
         extractor = CSV('title')
     )
 
-    content = Field(
+    content = FieldDefinition(
         name = 'content',
         es_mapping= {
             'type': 'text',
@@ -59,7 +59,7 @@ class SmallMockCorpus(CSVCorpus):
         extractor = CSV('content')
     )
 
-    genre = Field(
+    genre = FieldDefinition(
         name = 'genre',
         es_mapping= {
             'type': 'keyword'

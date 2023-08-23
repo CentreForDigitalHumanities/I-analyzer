@@ -1,11 +1,11 @@
 import datetime
 import os
 
-from addcorpus.corpus import Corpus
+from addcorpus.corpus import CorpusDefinition
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-class ExampleCorpus(Corpus):
+class ExampleCorpus(CorpusDefinition):
     """Example corpus class for testing"""
 
     title = "Example"

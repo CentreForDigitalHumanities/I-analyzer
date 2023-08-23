@@ -12,7 +12,9 @@ import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CorpusService {
     private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(
         undefined

@@ -5,7 +5,7 @@
             <div class="level">
                 <div class="level-left"></div>
                 <div class="level-right">
-                    <div class="level-item" *ngIf="hasContext">
+                    <div class="level-item" *ngIf="document?.hasContext">
                         <a [routerLink]="contextLink" [queryParams]="contextQueryParams" iaBalloon="view all documents from this {{contextDisplayName}}">
                             <span class="icon"><fa-icon [icon]="contextIcon"></fa-icon></span>
                             <span>View {{contextDisplayName}}</span>

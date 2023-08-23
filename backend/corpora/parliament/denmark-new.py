@@ -6,10 +6,10 @@ import re
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV, Metadata, Combined
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
-import corpora.parliament.utils.formatting as formatting
-import corpora.parliament.utils.constants as constants
+import corpora.utils.formatting as formatting
+import corpora.utils.constants as constants
 
 def format_party(abbreviation):
     return abbreviation
@@ -32,7 +32,7 @@ def get_timestamp_from_id(id):
     return match.group(1) if match else None
 
 
-class ParliamentDenmarkNew(Parliament, CSVCorpus):
+class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
     title = 'People & Parliament (Denmark, 2009-2017)'
     description = "Speeches from the Folketing"
     min_date = datetime(year=2009, month=1, day=1)

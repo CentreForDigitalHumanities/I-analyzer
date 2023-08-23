@@ -7,42 +7,42 @@ FORWARD_CASES = {
     'search_unauthenticated': (
         False,
         '/api/es/times/_search?size=20&scroll=3m',
-        {'query': {'bool': {
+        { 'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
                 'lenient': True,
                 'default_operator': 'or',
             }},
             'filter': [],
-        }}},
+        }}}},
         None,
         401,
     ),
     'search_bogus': (
         True,
         '/api/es/times/_search?size=20&scroll=3m',
-        {'query': {'bool': {
+        { 'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'pineapple',
                 'lenient': True,
                 'default_operator': 'or',
             }},
             'filter': [],
-        }}},
+        }}}},
         0,
         200,
     ),
     'search_nonexistent': (
         True,
         '/api/es/daily-mail/_search?size=20&scroll=3m',
-        {'query': {'bool': {
+        { 'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
                 'lenient': True,
                 'default_operator': 'or',
             }},
             'filter': [],
-        }}},
+        }}}},
         None,
         404,
     ),
@@ -56,14 +56,14 @@ FORWARD_CASES = {
     'search_success': (
         True,
         '/api/es/times/_search?size=20&scroll=3m',
-        {'query': {'bool': {
+        {'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
                 'lenient': True,
                 'default_operator': 'or',
             }},
             'filter': [],
-        }}},
+        }}}},
         1,
         200,
     ),

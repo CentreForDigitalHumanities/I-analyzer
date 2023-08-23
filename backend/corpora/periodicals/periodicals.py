@@ -5,25 +5,25 @@ locations.
 
 import logging
 logger = logging.getLogger(__name__)
-import os
 from os.path import join, isfile, splitext
-from datetime import datetime, timedelta
+from datetime import datetime
 import re
-from pprint import pprint
 import openpyxl
-import base64
 
 from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
+
 from media.media_url import media_url
 
 # Source files ################################################################
 
 
-class Periodicals(XMLCorpus):
+class Periodicals(XMLCorpusDefinition):
     title = "Periodicals"
     description = "A collection of 19th century periodicals"
     min_date = datetime(1800,1,1)
@@ -35,6 +35,10 @@ class Periodicals(XMLCorpus):
     description_page = '19thCenturyUKPeriodicals.md'
     languages = ['en']
     category = 'periodical'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -78,7 +82,7 @@ class Periodicals(XMLCorpus):
             yield filename, metadict
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Formatted Date',
             description='Publication date, formatted from the full date',
@@ -95,30 +99,33 @@ class Periodicals(XMLCorpus):
             csv_core=True,
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='date_pub',
             display_name='Publication Date',
             description='Publication date as full string, as found in source file',
+            es_mapping=keyword_mapping(),
             results_overview=True,
             extractor=extract.Metadata('date_full')
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(tag=None,
                                   toplevel=False,
                                   attribute='id'),
         ),
-        Field(
+        FieldDefinition(
             name='issue',
             display_name='Issue number',
             description='Source issue number.',
+            es_mapping=keyword_mapping(),
             results_overview=False,
             extractor=extract.Metadata('issue_id'),
             csv_core=False,
         ),
-        Field(
+        FieldDefinition(
             name='periodical',
             display_name='Periodical name',
             histogram=True,
@@ -133,17 +140,18 @@ class Periodicals(XMLCorpus):
             csv_core=True,
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
             visualizations=["wordcloud"]
         ),
-        Field(
+        FieldDefinition(
             name='ocr',
             display_name='OCR confidence',
             description='OCR confidence level.',
@@ -166,7 +174,7 @@ class Periodicals(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Article title',
             description='Title of the article.',
@@ -182,8 +190,9 @@ class Periodicals(XMLCorpus):
             ),
             visualizations=['wordcloud']
         ),
-        Field(
+        FieldDefinition(
             name='start_column',
+            es_mapping={'type': 'keyword'},
             display_name='Starting column',
             description='Which column the article starts in.',
             extractor=extract.XML(tag='sc',
@@ -197,7 +206,7 @@ class Periodicals(XMLCorpus):
                 }
             )
         ),
-        Field(
+        FieldDefinition(
             name='page_count',
             display_name='Page count',
             description='How many pages the article covers.',
@@ -213,7 +222,7 @@ class Periodicals(XMLCorpus):
                 }
             )
         ),
-        Field(
+        FieldDefinition(
             name='word_count',
             display_name='Word count',
             description='Number of words in the article.',
@@ -229,7 +238,7 @@ class Periodicals(XMLCorpus):
                 }
             )
         ),
-        Field(
+        FieldDefinition(
             name='category',
             csv_core=True,
             display_name='Category',
@@ -251,10 +260,11 @@ class Periodicals(XMLCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='page_no',
             display_name='Page number',
             description='At which page the article starts.',
+            es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='pa',
                 parent_level=1,
                 external_file={
@@ -268,7 +278,7 @@ class Periodicals(XMLCorpus):
                 transform=lambda x: re.sub('[\[\]]', '', x)
             )
         ),
-        Field(
+        FieldDefinition(
             name='image_path',
             display_name='Image path',
             es_mapping={'type': 'keyword'},
@@ -278,6 +288,13 @@ class Periodicals(XMLCorpus):
             downloadable=False
         ),
     ]
+
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': 'page_no',
+        'sort_direction': 'asc',
+        'context_display_name': 'issue'
+    }
 
     def request_media(self, document, corpus_name):
         field_vals = document['fieldValues']

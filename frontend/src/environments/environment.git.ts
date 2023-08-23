@@ -6,5 +6,6 @@ export const environment = {
     adminUrl: '/admin',
     samlLogoutUrl: '/users/saml2/logout/',
     logos: [],
-    showSolis: true
+    showSolis: true,
+    runInIFrame: false
 };

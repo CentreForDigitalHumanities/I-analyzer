@@ -6,28 +6,31 @@ locations.
 import logging
 logger = logging.getLogger(__name__)
 import os
-from os.path import join, isfile, splitext
-from datetime import datetime, timedelta
+from os.path import join, splitext
+from datetime import datetime
 import re
-from pprint import pprint
 
 from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 
 # Source files ################################################################
 
 
-class Spectators(XMLCorpus):
+class Spectators(XMLCorpusDefinition):
     title = "Spectators"
     description = "A collection of Spectator newspapers"
     min_date = datetime()
     max_date = datetime()
     data_directory = settings.SPECTATORS_DATA
     es_index = getattr(settings, 'SPECTATORS_ES_INDEX', 'spectators')
+    languages = ['en']
 
     tag_toplevel = 'article'
     tag_entry = 'content'
@@ -36,6 +39,10 @@ class Spectators(XMLCorpus):
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     def sources(self, start=min_date, end=max_date):
         for directory, _, filenames in os.walk(self.data_directory):
@@ -61,7 +68,7 @@ class Spectators(XMLCorpus):
     overview_fields = ['magazine', 'issue', 'date', 'title', 'editor']
 
     fields = [
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             description='Publication date.',
@@ -78,10 +85,11 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='date', toplevel=True),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=keyword_mapping(),
             extractor=extract.Combined(
                 extract.XML(tag='magazine', toplevel=True),
                 extract.Metadata('year'),
@@ -89,7 +97,7 @@ class Spectators(XMLCorpus):
                 transform=lambda x: '_'.join(x),
             ),
         ),
-        Field(
+        FieldDefinition(
             name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
@@ -98,7 +106,7 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='issue', toplevel=True),
             csv_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='magazine',
             display_name='Magazine name',
             histogram=True,
@@ -112,13 +120,14 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='magazine', toplevel=True),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='editors',
             display_name='Editors',
+            es_mapping=keyword_mapping(),
             description='Magazine editor(s).',
             extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Title',
             results_overview=True,
@@ -126,13 +135,21 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='title', toplevel=True),
             search_field_core=True
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             extractor=extract.XML(tag='text', multiple=True, flatten=True),
             search_field_core=True
         ),
     ]
+
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': None,
+        'sort_direction':  None,
+        'context_display_name': 'issue'
+    }
