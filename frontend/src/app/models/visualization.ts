@@ -121,21 +121,6 @@ export interface NgramParameters {
     dateField: string;
 }
 
-export const ngramSetNull: NgramParameters = {
-    size: null,
-    positions: null,
-    freqCompensation: null,
-    analysis: null,
-    maxDocuments: null,
-    numberOfNgrams: null,
-    dateField: null
-};
-
-export const barChartSetNull: Object = {
-    normalize: null,
-    visualizeTerm: null
-};
-
 export interface FieldCoverage {
     [field: string]: number;
 };

@@ -77,6 +77,7 @@ export class QueryModel {
 	filters: SearchFilter[];
     sort: SortConfiguration;
     highlightSize: number;
+    highlightSwitchedOff: boolean;
 
 	update = new Subject<void>();
 
@@ -133,8 +134,11 @@ export class QueryModel {
         );
     }
 
-    setHighlight(size?: number) {
+    setHighlight(size?: number, switchedOff?: boolean) {
         this.highlightSize = size;
+        if (switchedOff) {
+            this.highlightSwitchedOff = true;
+        }
         this.update.next();
     }
 
@@ -150,12 +154,13 @@ export class QueryModel {
      *
      * All query-related params are explicity listed;
      * empty parameters have value null.
+     *
      */
     toRouteParam(): {[param: string]: string|null} {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = this.sort.toRouteParam();
-        const highlightParams = { highlight: this.highlightSize  || null };
+        const highlightParams = { highlight: this.highlightSize || null };
         const filterParams = queryFiltersToParams(this);
 
         return {
