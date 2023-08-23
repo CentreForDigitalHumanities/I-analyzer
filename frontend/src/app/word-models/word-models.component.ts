@@ -1,16 +1,17 @@
-import { Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, DoCheck, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import * as _ from 'lodash';
+
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
-import { CorpusService } from '../services';
-import { AuthService } from '../services/auth.service';
-import { WordmodelsService } from '../services/wordmodels.service';
+import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
+import { ParamDirective } from '../param/param-directive';
 
 @Component({
     selector: 'ia-word-models',
     templateUrl: './word-models.component.html',
     styleUrls: ['./word-models.component.scss'],
 })
-export class WordModelsComponent implements DoCheck, OnInit {
+export class WordModelsComponent extends ParamDirective implements DoCheck {
     @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -18,12 +19,14 @@ export class WordModelsComponent implements DoCheck, OnInit {
     user: User;
     corpus: Corpus;
 
-
     queryText: string;
     asTable = false;
     palette: string[];
 
     activeQuery: string;
+
+    currentTab: 'relatedwords' | 'wordsimilarity';
+    nullableParameters = ['query', 'show'];
 
     tabs = {
         relatedwords: {
@@ -38,8 +41,6 @@ export class WordModelsComponent implements DoCheck, OnInit {
         }
     };
 
-    currentTab = 'relatedwords';
-
     childComponentLoading: boolean;
     isLoading: boolean;
     errorMessage: string;
@@ -47,11 +48,14 @@ export class WordModelsComponent implements DoCheck, OnInit {
     queryFeedback: QueryFeedback;
 
     constructor(
+        route: ActivatedRoute,
+        router: Router,
+        paramService: ParamService,
         private corpusService: CorpusService,
         private authService: AuthService,
         private wordModelsService: WordmodelsService,
-        private router: Router
     ) {
+        super(route, router, paramService);
     }
 
     ngDoCheck() {
@@ -60,31 +64,43 @@ export class WordModelsComponent implements DoCheck, OnInit {
         }
     }
 
-    async ngOnInit(): Promise<void> {
+    async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
+    }
+
+    teardown() {}
+
+    setStateFromParams(params: Params) {
+        this.queryText = _.get(params, 'query', undefined);
+        if (this.queryText) {
+            this.activeQuery = this.queryText;
+            this.validateQuery();
+            if (this.queryFeedback === undefined) {
+                this.wordModelsService
+                    .wordInModel(this.queryText, this.corpus.name)
+                    .then(this.handleWordInModel.bind(this))
+                    .catch(() => (this.queryFeedback = { status: 'error' }));
+            }
+            this.activeQuery = this.queryText;
+            this.queryFeedback = { status: 'success' };
+        }
+        if (params.has('show')) {
+            this.currentTab = params.get('show');
+        } else {
+            this.currentTab = 'relatedwords';
+        }
     }
 
     setCorpus(corpus: Corpus): void {
         if (corpus && (!this.corpus || this.corpus.name !== corpus.name)) {
             this.corpus = corpus;
-            if (!this.corpus.word_models_present) {
-                this.router.navigate(['search', this.corpus.name]);
-            }
         }
     }
 
-
     submitQuery(): void {
         this.errorMessage = undefined;
-        this.activeQuery = this.queryText;
-        this.validateQuery();
-        if (this.queryFeedback === undefined) {
-            this.wordModelsService
-                .wordInModel(this.queryText, this.corpus.name)
-                .then(this.handleWordInModel.bind(this))
-                .catch(() => (this.queryFeedback = { status: 'error' }));
-        }
+        this.setParams({ query: this.queryText });
     }
 
     validateQuery() {
@@ -117,8 +133,8 @@ export class WordModelsComponent implements DoCheck, OnInit {
     }
 
     get imageFileName(): string {
-        if (this.corpus) {
-            return `${this.tabs[this.currentTab].name}_${this.corpus.name}.png`;
+        if (this.currentTab && this.corpus) {
+            return `${this.currentTab}_${this.corpus.name}.png`;
         }
     }
 
@@ -133,9 +149,9 @@ export class WordModelsComponent implements DoCheck, OnInit {
         return Object.keys(this.tabs);
     }
 
-    onTabChange(tab: string): void {
+    onTabChange(tab: 'relatedwords' | 'wordsimilarity'): void {
         // reset error message on tab switch
         this.errorMessage = undefined;
-        this.currentTab = tab;
+        this.setParams({ show: tab });
     }
 }
