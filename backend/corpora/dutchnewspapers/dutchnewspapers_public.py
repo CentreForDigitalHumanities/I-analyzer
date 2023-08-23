@@ -48,7 +48,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     # New data members
     definition_pattern = re.compile(r'didl')
     page_pattern = re.compile(r'.*_(\d+)_alto')
-    article_pattern = re.compile(r'.*_(\d+)_articletext')
+    article_pattern = re.compile(r'.*_(\d+)_text')
 
     filename_pattern = re.compile(r'[a-zA-z]+_(\d+)_(\d+)')
 
@@ -72,9 +72,10 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             definition_file = next((join(directory, filename) for filename in filenames if
                                 self.definition_pattern.search(filename)), None)
             if not definition_file:
+                print('no definition file found in {}'.format(directory))
                 continue
             meta_dict = self.metadata_from_xml(definition_file, tags=[
-                    "title",
+                    "dc: title",
                     "date",
                     "publisher",
                     {"tag": "spatial", "save_as":"distribution"},
@@ -85,6 +86,9 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                     "temporal",
                     {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
             ])
+            print('HERE BE THE METADATA')
+            for key, value in meta_dict.items():
+                print('{}: {}'.format(key, value))
             logger.debug(meta_dict)
             for filename in filenames:
                 if filename != '.DS_Store':
@@ -94,7 +98,9 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
                     #def_match = self.definition_pattern.match(name)
+
                     article_match = self.article_pattern.match(name)
+
                     if article_match:
                         parts = name.split("_")
                         record_id = parts[1] + \
@@ -103,6 +109,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                             'external_file': definition_file,
                             'id': record_id
                         })
+                        print('for the path {} the record id is {}'.format(full_path, record_id))
                         yield full_path, meta_dict
 
     titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
