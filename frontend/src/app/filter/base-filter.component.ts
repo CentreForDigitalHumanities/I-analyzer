@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 import { QueryModel } from '../models/index';
 import { Subscription } from 'rxjs';
-import { FilterAPI } from '../models/base-filter';
+import { FilterInterface } from '../models/base-filter';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -12,7 +12,7 @@ import { FilterAPI } from '../models/base-filter';
 @Component({
     template: ''
 })
-export abstract class BaseFilterComponent<SearchFilter extends FilterAPI> implements OnChanges {
+export abstract class BaseFilterComponent<SearchFilter extends FilterInterface> implements OnChanges {
     @Input() filter: SearchFilter;
     @Input() queryModel: QueryModel;
 
