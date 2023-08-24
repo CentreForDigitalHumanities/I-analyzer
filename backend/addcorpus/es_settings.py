@@ -115,3 +115,12 @@ def make_stemmed_analyzer():
         "char_filter": ["number_filter"],
         "filter": ["lowercase", "stopwords", "stemmer"]
     }
+
+def get_stopwords_from_settings(es_settings):
+    try:
+        token_filter = es_settings["analysis"]['filter']['stopwords']
+        stopwords = token_filter['stopwords']
+    except:
+        stopwords = None
+
+    return stopwords
