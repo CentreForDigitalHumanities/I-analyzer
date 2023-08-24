@@ -10,7 +10,10 @@ import sys
 from datetime import datetime
 from os.path import isdir
 import logging
+from ianalyzer.settings import NEW_HIGHLIGHT_CORPORA
+
 logger = logging.getLogger('indexing')
+
 
 class CorpusDefinition(object):
     '''
@@ -149,6 +152,16 @@ class CorpusDefinition(object):
         if word models are present for this corpus
         '''
         return self.word_model_path != None and isdir(self.word_model_path)
+
+    @property
+    def new_highlight(self):
+        '''
+        if the corpus has been re-indexed using the top-level term vector 'with_positions_offsets'
+        for the main content field, needed for the updated highlighter
+        TODO: remove this property and its references when all corpora are reindexed using the
+        current definitions (with the top-level term vector for speech)
+        '''
+        return self.es_index in NEW_HIGHLIGHT_CORPORA
 
     '''
     Allow the downloading of source images
