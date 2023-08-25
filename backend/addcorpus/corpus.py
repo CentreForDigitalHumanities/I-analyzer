@@ -422,7 +422,7 @@ class XMLCorpusDefinition(CorpusDefinition):
 
                 # yield the union of external fields and document fields
                 full_dict = dict(itertools.chain(
-                    external_dict.items(), regular_field_dict.items()))
+                    regular_field_dict.items(), external_dict.items()))
 
                 # check if required fields are filled
                 if all((full_dict[field_name]
@@ -523,7 +523,10 @@ class XMLCorpusDefinition(CorpusDefinition):
         if toplevel_tag == None:
             toplevel_tag = self.get_tag_requirements(self.tag_toplevel, metadata)
 
-        return soup.find(**toplevel_tag) if toplevel_tag else soup
+        if type(toplevel_tag) != str:
+            return soup.find(**toplevel_tag) if toplevel_tag else soup
+        else:
+            return soup.find(toplevel_tag) if toplevel_tag else soup
 
     def metadata_from_xml(self, filename, tags):
         '''
