@@ -8,123 +8,104 @@
       "sourceRoot": "src",
       "projectType": "application",
       "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-              "baseHref": "/",
-              "outputPath": "dist",
-              "index": "src/index.html",
-              "main": "src/main.ts",
-              "tsConfig": "src/tsconfig.app.json",
-              "polyfills": "src/polyfills.ts",
-              "assets": ["src/assets"],
-              "styles": [
-                  "node_modules/primeicons/primeicons.css",
-                  "node_modules/primeng/resources/primeng.min.css",
-                  "src/styles.scss",
-                  "node_modules/font-awesome/css/font-awesome.min.css",
-                  "src/imageviewer.scss"
-              ],
-              "scripts": [],
-              "aot": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "buildOptimizer": false,
-              "sourceMap": true,
-              "optimization": false,
-              "namedChunks": true
+          "build": {
+              "builder": "@angular-devkit/build-angular:browser",
+              "options": {
+                  "baseHref": "/",
+                  "outputPath": "dist",
+                  "index": "src/index.html",
+                  "main": "src/main.ts",
+                  "tsConfig": "src/tsconfig.app.json",
+                  "polyfills": "src/polyfills.ts",
+                  "assets": ["src/assets"],
+                  "styles": [
+                      "node_modules/primeicons/primeicons.css",
+                      "node_modules/primeng/resources/primeng.min.css",
+                      "src/styles.scss",
+                      "node_modules/font-awesome/css/font-awesome.min.css",
+                      "src/imageviewer.scss"
+                  ],
+                  "scripts": [],
+                  "aot": false,
+                  "vendorChunk": true,
+                  "extractLicenses": false,
+                  "buildOptimizer": false,
+                  "sourceMap": true,
+                  "optimization": false,
+                  "namedChunks": true
+              },
+              "configurations": {
+                  "production": {
+                      "optimization": true,
+                      "outputHashing": "all",
+                      "sourceMap": false,
+                      "namedChunks": false,
+                      "aot": true,
+                      "extractLicenses": true,
+                      "vendorChunk": false,
+                      "buildOptimizer": true
+                  },
+                  "git": {
+                      "optimization": true,
+                      "outputHashing": "all",
+                      "sourceMap": false,
+                      "namedChunks": false,
+                      "aot": true,
+                      "extractLicenses": true,
+                      "vendorChunk": false,
+                      "buildOptimizer": true,
+                      "fileReplacements": [
+                          {
+                              "replace": "src/environments/environment.ts",
+                              "with": "src/environments/environment.git.ts"
+                          }
+                      ]
+                  }
+              },
+              "defaultConfiguration": ""
           },
-          "configurations": {
-            "production": {
-                "optimization": true,
-                "outputHashing": "all",
-                "sourceMap": false,
-                "namedChunks": false,
-                "aot": true,
-                "extractLicenses": true,
-                "vendorChunk": false,
-                "buildOptimizer": true
-            },
-            "git": {
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.git.ts"
-                }
-              ]
-            }
+          "serve": {
+              "builder": "@angular-devkit/build-angular:dev-server",
+              "options": {},
+              "configurations": {
+                  "production": {
+                      "browserTarget": "frontend:build:production"
+                  },
+                  "development": {
+                      "browserTarget": "frontend:build"
+                  }
+              },
+              "defaultConfiguration": "development"
           },
-          "defaultConfiguration": ""
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-        "options": {},
-          "configurations": {
-            "production": {
-              "browserTarget": "frontend:build:production"
-            },
-            "development": {
-                "browserTarget": "frontend:build"
-            }
-        },
-        "defaultConfiguration": "development"
-    },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "frontend:build"
+          "extract-i18n": {
+              "builder": "@angular-devkit/build-angular:extract-i18n",
+              "options": {
+                  "browserTarget": "frontend:build"
+              }
+          },
+          "test": {
+              "builder": "@angular-devkit/build-angular:karma",
+              "options": {
+                  "main": "src/test.ts",
+                  "karmaConfig": "./karma.conf.js",
+                  "polyfills": "src/polyfills.ts",
+                  "tsConfig": "src/tsconfig.spec.json",
+                  "scripts": [],
+                  "styles": [
+                      "node_modules/primeicons/primeicons.css",
+                      "node_modules/primeng/resources/primeng.css",
+                      "src/styles.scss",
+                      "node_modules/font-awesome/css/font-awesome.min.css"
+                  ],
+                  "assets": ["src/assets"]
+              }
+          },
+          "lint": {
+              "builder": "@angular-eslint/builder:lint",
+              "options": {
+                  "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+              }
           }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
-            "styles": [
-              "node_modules/primeicons/primeicons.css",
-              "node_modules/primeng/resources/primeng.css",
-              "src/styles.scss",
-              "node_modules/font-awesome/css/font-awesome.min.css"
-            ],
-            "assets": [
-              "src/assets"
-            ]
-          }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
-          }
-        }
-      }
-    },
-    "frontend-e2e": {
-      "root": "e2e",
-      "sourceRoot": "e2e",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "frontend:serve"
-          }
-        }
       }
     }
   },

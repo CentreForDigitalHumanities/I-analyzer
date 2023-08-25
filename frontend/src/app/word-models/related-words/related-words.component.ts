@@ -1,17 +1,21 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services/index';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+
 import { showLoading } from '../../utils/utils';
-import { BehaviorSubject } from 'rxjs';
+import { Corpus, WordSimilarity } from '../../models';
+import { ParamService, WordmodelsService } from '../../services/index';
+import { ParamDirective } from '../../param/param-directive';
+
 
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
     styleUrls: ['./related-words.component.scss']
 })
-export class RelatedWordsComponent implements OnChanges {
+export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
@@ -27,8 +31,16 @@ export class RelatedWordsComponent implements OnChanges {
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
     faCheck = faCheck;
+    nullableParameters: ['neighbours'];
 
-    constructor(private wordModelsService: WordmodelsService) { }
+    constructor(
+        route: ActivatedRoute,
+        router: Router,
+        paramService: ParamService,
+        private wordModelsService: WordmodelsService
+    ) {
+        super(route, router, paramService);
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus || changes.queryText) {
@@ -36,7 +48,16 @@ export class RelatedWordsComponent implements OnChanges {
         }
     }
 
+    initialize() {}
+
+    teardown() {}
+
+    setStateFromParams(params: Params) {
+        this.neighbours = _.get(params, 'neighbours', 5);
+    }
+
     getData(): void {
+        this.setParams({ neighbours: this.neighbours });
         showLoading(this.isLoading, this.getTotalData());
     }
 

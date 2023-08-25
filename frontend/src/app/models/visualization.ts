@@ -1,5 +1,6 @@
 import { AggregateResult, DateResult } from '.';
-import { EsQuery, EsQuerySorted } from '../services';
+import { EsQuery, EsQuerySorted } from './elasticsearch';
+import { QueryParameters } from './search-requests';
 
 export interface TermFrequencyResult {
     key: string;
@@ -57,26 +58,24 @@ export interface HistogramBin {field_value: string|number; size: number }
 
 export type TimeCategory =  'year'|'week'|'month'|'day';
 
-export interface TermFrequencyParameters<Bin> {
-    es_query: EsQuery | EsQuerySorted;
+export type TermFrequencyParameters<Bin> = {
     corpus_name: string;
     field_name: string;
     bins: Bin[];
     full_data?: boolean;
     unit?: TimeCategory;
-}
+} & QueryParameters;
 
 
 export type AggregateTermFrequencyParameters = TermFrequencyParameters<HistogramBin>;
 export type DateTermFrequencyParameters = TermFrequencyParameters<TimelineBin>;
 
 
-export interface WordcloudParameters {
-    es_query: EsQuery;
+export type WordcloudParameters = {
     corpus: string;
     field: string;
     size?: number;
-}
+} & QueryParameters;
 
 
 export interface FreqTableHeader {
@@ -100,8 +99,7 @@ export interface ChartParameters {
     chartType: ChartType;
 }
 
-export interface NGramRequestParameters {
-    es_query: EsQuery;
+export type NGramRequestParameters = {
     corpus_name: string;
     field: string;
     ngram_size?: number;
@@ -111,7 +109,7 @@ export interface NGramRequestParameters {
     max_size_per_interval?: number;
     number_of_ngrams?: number;
     date_field: string;
-}
+} & QueryParameters;
 
 export interface NgramParameters {
     size: number;
@@ -122,21 +120,6 @@ export interface NgramParameters {
     numberOfNgrams: number;
     dateField: string;
 }
-
-export const ngramSetNull: NgramParameters = {
-    size: null,
-    positions: null,
-    freqCompensation: null,
-    analysis: null,
-    maxDocuments: null,
-    numberOfNgrams: null,
-    dateField: null
-};
-
-export const barChartSetNull: Object = {
-    normalize: null,
-    visualizeTerm: null
-};
 
 export interface FieldCoverage {
     [field: string]: number;

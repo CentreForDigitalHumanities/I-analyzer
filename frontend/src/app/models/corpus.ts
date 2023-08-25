@@ -30,6 +30,7 @@ export class Corpus implements ElasticSearchIndex {
         public category: string,
         public descriptionpage?: string,
         public documentContext?: DocumentContext,
+        public new_highlight?: boolean,
     ) { }
 
     get minYear(): number {
@@ -72,6 +73,7 @@ export interface ApiCorpusField {
     visualizations: string[];
     visualization_sort: string | null;
     es_mapping: any;
+    positionsOffsets?: boolean;
     indexed: boolean;
     hidden: boolean;
     required: boolean;
@@ -95,6 +97,7 @@ export class CorpusField {
     visualizations?: string[];
     visualizationSort?: string;
     multiFields?: string[];
+    positionsOffsets?: boolean;
     hidden: boolean;
     sortable: boolean;
     primarySort: boolean;
@@ -116,6 +119,7 @@ export class CorpusField {
         this.multiFields = data['es_mapping']?.fields
             ? Object.keys(data['es_mapping'].fields)
             : undefined;
+        this.positionsOffsets = data['es_mapping']?.term_vector ? true : false;
         this.hidden = data.hidden;
         this.sortable = data.sortable;
         this.primarySort = data.primary_sort;
