@@ -317,7 +317,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, True),
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,
