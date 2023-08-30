@@ -1,3 +1,5 @@
+import configparser
+
 import pytest
 from selenium import webdriver
 
@@ -24,6 +26,11 @@ def pytest_generate_tests(metafunc):
     if 'webdriver_name' in metafunc.fixturenames:
         names = metafunc.config.getini(WEBDRIVER_INI_NAME)
         metafunc.parametrize('webdriver_name', names, scope='session')
+
+def get_config(config_name='selenium.ini'):
+    config = configparser.ConfigParser()
+    config.read(config_name)
+    return config
 
 @pytest.fixture(scope='session')
 def webdriver_instance(webdriver_name):
@@ -57,16 +64,35 @@ def browser(webdriver_instance):
     webdriver_instance.delete_all_cookies()
 
 @pytest.fixture(scope='session')
+def credentials():
+    """ Log into interface, using credentials defined in .ini """
+    config = get_config()
+    username = config['credentials']['username']
+    password = config['credentials']['password']
+    yield username, password
+
+@pytest.fixture(scope='session')
+def corpus():
+    """ Provide corpus name to test on """
+    config = get_config()
+    yield {
+        'corpus_name': config['corpus']['name'],
+        'field_name': config['corpus']['field'],
+        'first_option': config['corpus']['first_option'],
+        'query_term': config['corpus']['query']
+    }
+
+@pytest.fixture(scope='session')
 def base_address(pytestconfig):
     return pytestconfig.getoption(BASE_ADDRESS_OPTION_NAME)
 
 @pytest.fixture
-def search_address(base_address):
-    return base_address + 'search/parliament-canada'
+def search_address(base_address, corpus):
+    return base_address + 'search/{}'.format(corpus['corpus_name'])
 
 @pytest.fixture
-def wordmodels_address(base_address):
-    return base_address + 'word-models/parliament-canada'
+def wordmodels_address(base_address, corpus):
+    return base_address + 'word-models/{}'.format(corpus['corpus_name'])
 
 @pytest.fixture
 def admin_address(base_address):
