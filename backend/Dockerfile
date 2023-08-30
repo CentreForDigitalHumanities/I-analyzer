@@ -6,9 +6,12 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get -y update
 RUN apt-get install -y pkg-config libxml2-dev libxmlsec1-dev libxmlsec1-openssl default-libmysqlclient-dev
 
+RUN pip install --upgrade pip
+RUN pip install pip-tools
 # make a directory in the container
 WORKDIR /backend
 # copy files from the host system to the directory in the container
-COPY requirements.txt /backend/
+COPY requirements.in /backend/
+RUN pip-compile
 # run pip install on container
 RUN pip install -r requirements.txt
