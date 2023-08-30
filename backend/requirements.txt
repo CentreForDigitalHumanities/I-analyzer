@@ -323,7 +323,7 @@ tomli==2.0.1
     #   coverage
     #   ipdb
     #   pytest
-tornado==6.3.2
+tornado==6.3.3
     # via django-livereload-server
 tqdm==4.64.1
     # via
