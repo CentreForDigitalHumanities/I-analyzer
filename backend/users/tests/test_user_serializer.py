@@ -25,5 +25,4 @@ def test_admin_serializer(admin_client, admin_credentials):
         'download_limit': 10000,
         'is_admin': True,
         'saml': False
-
     }
