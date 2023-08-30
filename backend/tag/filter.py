@@ -1,5 +1,21 @@
 from tag.models import Tag, TaggedDocument
 from visualization.query import add_filter
+from addcorpus.permissions import corpus_name_from_request
+
+def handle_tags_in_request(request, parameter_key = None):
+    '''
+    If tags are specified in the request data,
+    add them to the elasticsearch query as a filter
+    '''
+    data = request.data[parameter_key] if parameter_key else request.data
+
+    if 'tags' in data:
+        corpus_name = corpus_name_from_request(request)
+        data['es_query'] = include_tag_filter(
+            data['es_query'],
+            data['tags'],
+            corpus_name
+        )
 
 def include_tag_filter(es_query, tag_ids, corpus_name):
     '''

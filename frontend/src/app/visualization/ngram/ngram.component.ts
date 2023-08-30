@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
-import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
+import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
 import { ApiService, ParamService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
@@ -54,6 +54,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     faCheck = faCheck;
     faTimes = faTimes;
 
+    nullableParameters = ['size', 'position', 'freqCompensation', 'analysis', 'maxDocuments', 'numberOfNgrams', 'dateField'];
+
     constructor(
         private apiService: ApiService,
         private visualizationService: VisualizationService,
@@ -64,13 +66,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         super(route, router, paramService);
     }
 
-    initialize(): void {
-
-    }
+    initialize() {}
 
     teardown(): void {
         this.apiService.abortTasks({task_ids: this.tasksToCancel});
-        this.setParams(ngramSetNull);
     }
 
     setStateFromParams(params: ParamMap) {

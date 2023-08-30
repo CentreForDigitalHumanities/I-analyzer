@@ -16,6 +16,7 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
 
     queries: string[] = [];
     public showReset = false;
+    nullableParameters = ['compareTerm'];
 
     @Output() queriesChanged = new EventEmitter<string[]>();
     @Output() clearQueries = new EventEmitter<void>();
@@ -28,13 +29,9 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
         paramService: ParamService
     ) { super(route, router, paramService)}
 
-    initialize() {
-        
-    }
+    initialize() {}
 
-    teardown() {
-        this.setParams({ compareTerm: null });
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
         if (params.has('compareTerm')) {

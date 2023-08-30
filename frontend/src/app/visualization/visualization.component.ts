@@ -2,7 +2,7 @@ import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/co
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, QueryModel, CorpusField, ngramSetNull } from '../models/index';
+import { Corpus, QueryModel, CorpusField } from '../models/index';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -62,6 +62,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     faQuestion = faCircleQuestion;
 
+    nullableParameters = ['visualize', 'visualizedField'];
+
     constructor(
         route: ActivatedRoute,
         router: Router,
@@ -116,20 +118,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         }
     }
 
-    teardown() {
-        /* set all visualization params to null here -
-        so all params, also from children are guaranteed to be null */
-        this.setParams(
-            Object.assign(
-                {
-                    visualize: null,
-                    visualizedField: null,
-                    normalize: null,
-                    compareTerm: null
-                },
-                ngramSetNull
-        ));
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {

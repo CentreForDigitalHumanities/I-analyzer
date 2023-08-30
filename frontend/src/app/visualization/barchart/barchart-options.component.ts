@@ -36,6 +36,8 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     faCheck = faCheck;
 
+    nullableParameters = ['normalize'];
+
     constructor(
         route: ActivatedRoute,
         router: Router,
@@ -62,7 +64,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         const chartParameters: ChartParameters = {
             normalizer: this.currentNormalizer,
             chartType: this.currentChartType
-        }
+        };
         this.chartParameters.emit(chartParameters);
         const route = {};
         if (this.currentNormalizer !== 'raw' || 'terms') {
@@ -76,9 +78,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     initialize() {}
 
-    teardown() {
-        this.setParams({ normalize: null });
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
         if (params.has('normalize')) {

@@ -1,6 +1,7 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import * as _ from 'lodash';
 
 import { ParamService } from '../services';
 
@@ -9,6 +10,7 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
 
     public queryParamMap: Subscription;
     private paramSubscription: Subscription;
+    abstract nullableParameters: string[];
 
     constructor(
         public route: ActivatedRoute,
@@ -40,6 +42,10 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
     ngOnDestroy(): void {
         this.queryParamMap.unsubscribe();
         this.paramSubscription.unsubscribe();
+        const toNull = Object.assign({}, ...this.nullableParameters.map(f => ({[f]: null})));
+        this.setParams(
+            toNull
+        );
         this.teardown();
     }
 
@@ -50,6 +56,6 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
     abstract initialize();
 
     abstract teardown();
-
+ 
     abstract setStateFromParams(params: Params);
 }
