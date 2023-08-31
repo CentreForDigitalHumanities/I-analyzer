@@ -169,7 +169,10 @@ class CorpusDefinition(object):
         TODO: remove this property and its references when all corpora are reindexed using the
         current definitions (with the top-level term vector for speech)
         '''
-        highlight_corpora = settings.get('NEW_HIGHLIGHT_CORPORA', [])
+        try:
+            highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
+        except:
+            return False
         return self.title in highlight_corpora
 
     '''
