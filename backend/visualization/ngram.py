@@ -7,35 +7,16 @@ from visualization import query, termvectors
 from es import download
 
 
-def get_ngrams(es_query, corpus, field,
-    ngram_size=2, positions='any', freq_compensation=True, subfield='none', max_size_per_interval=50,
-    number_of_ngrams=10, date_field = 'date'):
+def get_ngrams(results, freq_compensation=True, number_of_ngrams=10):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
-
-    bins = get_time_bins(es_query, corpus)
-    time_labels = [format_time_label(start_year, end_year) for start_year, end_year in bins]
-
-    positions_dict = {
-        'any': list(range(ngram_size)),
-        'first': [0],
-        'second': [1],
-        'third': [2],
-        'fourth': [3],
-    }
-    term_positions = positions_dict[positions]
-
-    # find ngrams
-
-    docs, total_frequencies = tokens_by_time_interval(
-        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval,
-        date_field
-    )
+    ngrams = []
+    binned_counts = [r['ngrams'] for r in results]
     if freq_compensation:
-        ngrams = get_top_n_ngrams(docs, total_frequencies, number_of_ngrams)
+        ngrams = get_top_n_ngrams(binned_counts, number_of_ngrams)
     else:
-        ngrams = get_top_n_ngrams(docs, dict(), number_of_ngrams)
+        ngrams = get_top_n_ngrams(binned_counts, dict(), number_of_ngrams)
 
-    return { 'words': ngrams, 'time_points' : time_labels }
+    return { 'words': ngrams, 'time_points': [r['time_points'] for r in results] }
 
 
 def format_time_label(start_year, end_year):
@@ -95,67 +76,67 @@ def get_time_bins(es_query, corpus):
     return bins
 
 
-def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval, date_field):
+def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_position, freq_compensation, subfield, max_size_per_interval, date_field):
     index = get_index(corpus)
     client = elasticsearch(corpus)
-    ngrams_per_bin = []
+    positions_dict = {
+        'any': list(range(ngram_size)),
+        'first': [0],
+        'second': [1],
+        'third': [2],
+        'fourth': [3],
+    }
+    term_positions = positions_dict[term_position]
     ngram_ttfs = dict()
 
     query_text = query.get_query_text(es_query)
     field = field if subfield == 'none' else '.'.join([field, subfield])
 
-    for (start_year, end_year) in bins:
-        start_date = datetime(start_year, 1, 1)
-        end_date = datetime(end_year, 12, 31)
+    start_date = datetime(bin(0), 1, 1)
+    end_date = datetime(bin(1), 12, 31)
 
-        # filter query on this time bin
-        date_filter = query.make_date_filter(start_date, end_date, date_field)
-        narrow_query = query.add_filter(es_query, date_filter)
-
-        #search for the query text
-        search_results = search(
-            corpus=corpus,
-            query_model = narrow_query,
-            client = client,
-            size = max_size_per_interval,
+    # filter query on this time bin
+    date_filter = query.make_date_filter(start_date, end_date, date_field)
+    narrow_query = query.add_filter(es_query, date_filter)
+    #search for the query text
+    search_results = search(
+        corpus=corpus,
+        query_model = narrow_query,
+        client = client,
+        size = max_size_per_interval,
+    )
+    bin_ngrams = Counter()
+    for hit in search_results['hits']['hits']:
+        identifier = hit['_id']
+        # get the term vectors for the hit
+        result = client.termvectors(
+            index=index,
+            id=identifier,
+            term_statistics=freq_compensation,
+            fields = [field]
         )
-
-        bin_ngrams = Counter()
-
-        for hit in search_results['hits']['hits']:
-            identifier = hit['_id']
-
-            # get the term vectors for the hit
-            result = client.termvectors(
-                index=index,
-                id=identifier,
-                term_statistics=freq_compensation,
-                fields = [field]
-            )
-
-            terms = termvectors.get_terms(result, field)
-
-            if terms:
-                sorted_tokens = termvectors.get_tokens(terms, sort=True)
-
-                for match_start, match_stop, match_content in termvectors.token_matches(sorted_tokens, query_text, index, field, client):
-                    for j in term_positions:
-                        start = match_start - j
-                        stop = match_stop - 1 - j + ngram_size
-                        if start >= 0 and stop <= len(sorted_tokens):
-                            ngram = sorted_tokens[start:stop]
-                            words = ' '.join([token['term'] for token in ngram])
-                            ttf = sum(token['ttf'] for token in ngram) / len(ngram)
-                            ngram_ttfs[words] = ttf
-                            bin_ngrams.update({ words: 1})
-
-        # output per bin: all tokens from this time interval
-        ngrams_per_bin.append(bin_ngrams)
-
-    return ngrams_per_bin, ngram_ttfs
+        terms = termvectors.get_terms(result, field)
+        if terms:
+            sorted_tokens = termvectors.get_tokens(terms, sort=True)
+            for match_start, match_stop, match_content in termvectors.token_matches(sorted_tokens, query_text, index, field, client):
+                for j in term_positions:
+                    start = match_start - j
+                    stop = match_stop - 1 - j + ngram_size
+                    if start >= 0 and stop <= len(sorted_tokens):
+                        ngram = sorted_tokens[start:stop]
+                        words = ' '.join([token['term'] for token in ngram])
+                        ttf = sum(token['ttf'] for token in ngram) / len(ngram)
+                        ngram_ttfs[words] = ttf
+                        bin_ngrams.update({ words: 1})
+    
+    return {
+        'time_interval': format_time_label(bin(0), bin(1)),
+        'ngrams': bin_ngrams,
+        'ngram_ttfs': ngram_ttfs
+    }
 
 
-def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
+def get_top_n_ngrams(counters, total_frequencies=None, number_of_ngrams=10):
     """
     Converts a list of documents with tokens into n dataseries, listing the
     frequency of the top n tokens and their frequency in each document.

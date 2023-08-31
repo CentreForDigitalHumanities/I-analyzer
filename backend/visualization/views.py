@@ -59,7 +59,7 @@ class NgramView(APIView):
             handle_tags_in_request(request)
             ngram_counts_task = tasks.get_ngram_data.delay(request.data)
             return Response({
-                'task_ids': [ngram_counts_task.id]
+                'task_id': ngram_counts_task.id
             })
         except Exception as e:
             logger.error(e)
