@@ -12,12 +12,16 @@ import csv
 import sys
 import gzip
 from datetime import datetime
-from langcodes import Language, standardize_tag
 from os.path import isdir
+
+from django.conf import settings
+from langcodes import Language, standardize_tag
+
+from addcorpus.constants import CATEGORIES
+
 import logging
 logger = logging.getLogger('indexing')
-from addcorpus.constants import CATEGORIES
-from ianalyzer.settings import NEW_HIGHLIGHT_CORPORA
+
 
 
 class CorpusDefinition(object):
@@ -166,7 +170,11 @@ class CorpusDefinition(object):
         TODO: remove this property and its references when all corpora are reindexed using the
         current definitions (with the top-level term vector for speech)
         '''
-        return self.es_index in NEW_HIGHLIGHT_CORPORA
+        try:
+            highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
+        except:
+            return False
+        return self.title in highlight_corpora
 
     '''
     Allow the downloading of source images

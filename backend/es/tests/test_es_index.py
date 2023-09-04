@@ -4,7 +4,6 @@ from time import sleep
 
 from addcorpus.load_corpus import load_corpus
 from es.es_index import perform_indexing
-from ianalyzer import elasticsearch
 
 start = datetime.strptime('1970-01-01','%Y-%m-%d')
 end = datetime.strptime('1970-12-31','%Y-%m-%d')
@@ -51,3 +50,6 @@ def test_add_clear(mock_corpus, es_index_client, corpus_definition):
     )
     res = es_index_client.count(index='times-test*')
     assert res.get('count') == 0
+
+def test_mismatch_corpus_index_names(mock_corpus, corpus_definition, es_index_client):
+    assert corpus_definition.es_index != mock_corpus
