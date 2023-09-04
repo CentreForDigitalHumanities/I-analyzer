@@ -168,28 +168,29 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             ),
             extractor=Metadata('date')
         ),
-        FieldDefinition(
-            name='ocr',
-            display_name='OCR confidence',
-            description='OCR confidence level.',
-            es_mapping={'type': 'float'},
-            search_filter=filters.RangeFilter(0, 100,
-                                              description=(
-                                                  'Accept only articles for which the Opitical Character Recognition confidence '
-                                                  'indicator is in this range.'
-                                              )
-                                              ),
-            extractor=XML(tag='OCRConfidencelevel',
-                toplevel=True,
-                recursive=True,
-                external_file={
-                    'xml_tag_toplevel': 'DIDL',
-                    'xml_tag_entry': 'dcx'
-                },
-                transform=lambda x: float(x)*100
-            ),
-            sortable=True
-        ),
+        # OCRConfidencelevel is not available in the new data of the KB
+        # FieldDefinition(
+        #     name='ocr',
+        #     display_name='OCR confidence',
+        #     description='OCR confidence level.',
+        #     es_mapping={'type': 'float'},
+        #     search_filter=filters.RangeFilter(0, 100,
+        #                                       description=(
+        #                                           'Accept only articles for which the Opitical Character Recognition confidence '
+        #                                           'indicator is in this range.'
+        #                                       )
+        #                                       ),
+        #     extractor=XML(tag='OCRConfidencelevel',
+        #         toplevel=True,
+        #         recursive=True,
+        #         external_file={
+        #             'xml_tag_toplevel': 'DIDL',
+        #             'xml_tag_entry': 'dcx'
+        #         },
+        #         transform=lambda x: float(x)*100
+        #     ),
+        #     sortable=True
+        # ),
         FieldDefinition(
             name='newspaper_title',
             display_name='Newspaper title',
