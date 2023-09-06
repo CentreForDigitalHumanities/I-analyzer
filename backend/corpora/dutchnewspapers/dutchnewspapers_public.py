@@ -48,8 +48,10 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     # New data members
     definition_pattern = re.compile(r'didl')
     page_pattern = re.compile(r'.*_(\d+)_alto')
-    article_pattern = re.compile(r'.*_(\d+)_text')  # *_articletext in old corpora
-
+    article_patterns = [
+        re.compile(r'.*_(\d+)_text'),  # text for KRANTEN corpus
+        re.compile(r'.*_(\d+)_articletext')  # articletext for DDD corpus
+    ]
     filename_pattern = re.compile(r'[a-zA-z]+_(\d+)_(\d+)')
 
     non_xml_msg = 'Skipping non-XML file {}'
@@ -95,7 +97,10 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                         continue
                     #def_match = self.definition_pattern.match(name)
 
-                    article_match = self.article_pattern.match(name)
+                    article_match = False
+                    for pattern in self.article_patterns:
+                        if pattern.match(name):
+                            article_match = True
 
                     if article_match:
                         parts = name.split("_")
@@ -169,28 +174,28 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             extractor=Metadata('date')
         ),
         # OCRConfidencelevel is not available in the new data of the KB
-        # FieldDefinition(
-        #     name='ocr',
-        #     display_name='OCR confidence',
-        #     description='OCR confidence level.',
-        #     es_mapping={'type': 'float'},
-        #     search_filter=filters.RangeFilter(0, 100,
-        #                                       description=(
-        #                                           'Accept only articles for which the Opitical Character Recognition confidence '
-        #                                           'indicator is in this range.'
-        #                                       )
-        #                                       ),
-        #     extractor=XML(tag='OCRConfidencelevel',
-        #         toplevel=True,
-        #         recursive=True,
-        #         external_file={
-        #             'xml_tag_toplevel': 'DIDL',
-        #             'xml_tag_entry': 'dcx'
-        #         },
-        #         transform=lambda x: float(x)*100
-        #     ),
-        #     sortable=True
-        # ),
+        FieldDefinition(
+            name='ocr',
+            display_name='OCR confidence',
+            description='OCR confidence level.',
+            es_mapping={'type': 'float'},
+            search_filter=filters.RangeFilter(0, 100,
+                                              description=(
+                                                  'Accept only articles for which the Opitical Character Recognition confidence '
+                                                  'indicator is in this range.'
+                                              )
+                                              ),
+            extractor=XML(tag='OCRConfidencelevel',
+                toplevel=True,
+                recursive=True,
+                external_file={
+                    'xml_tag_toplevel': 'DIDL',
+                    'xml_tag_entry': 'dcx'
+                },
+                transform=lambda x: float(x)*100
+            ),
+            sortable=True
+        ),
         FieldDefinition(
             name='newspaper_title',
             display_name='Newspaper title',
