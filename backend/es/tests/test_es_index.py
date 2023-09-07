@@ -13,13 +13,14 @@ def mock_client(es_index_client):
     return es_index_client
 
 
-@pytest.mark.parametrize("prod, expected", [(True, "times-test-1"), (False, "times-test")])
-def test_prod_flag(mock_corpus, es_index_client, corpus_definition, prod, expected):
+@pytest.mark.parametrize("prod, name, shards", [(True, "times-test-1", '5'), (False, "times-test", '1')])
+def test_prod_flag(mock_corpus, es_index_client, corpus_definition, prod, name, shards):
     perform_indexing(
         mock_corpus, corpus_definition, start, end,
         mappings_only=True, add=False, clear=False, prod=prod, rollover=False)
-    indices = es_index_client.indices.get(index='times-test*')
-    assert expected in list(indices.keys())
+    
+    assert es_index_client.indices.exists(index=name)
+    assert es_index_client.indices.get_settings(index=name).get(name)['settings']['index']['number_of_shards'] == shards
 
 @pytest.mark.parametrize("mappings_only, expected", [(False, 2), (True, 0)])
 def test_mappings_only_flag(mock_corpus, es_index_client, corpus_definition, mappings_only, expected):
