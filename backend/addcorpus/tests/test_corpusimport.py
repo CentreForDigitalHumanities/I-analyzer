@@ -35,6 +35,7 @@ class Times():
     title = "Times"
     description = "Newspaper archive, 1785-2010"
     fields = []
+    es_index = 'some-other-name'
 '''
 
 @pytest.fixture()
@@ -62,3 +63,7 @@ def test_import_from_anywhere(db, temp_times_definition):
 def test_corpus_dir_is_absolute(db, temp_times_definition):
     corpus_dir = load_corpus.corpus_dir('times')
     assert os.path.isabs(corpus_dir)
+
+def test_mismatch_corpus_index_names(temp_times_definition):
+    times = load_corpus.load_corpus('times')
+    assert times.es_index == 'some-other-name'
