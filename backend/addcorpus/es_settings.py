@@ -54,7 +54,7 @@ def get_nltk_stopwords(language_code):
         raise NotImplementedError('language {} has no nltk stopwords list'.format(language))
 
 
-def es_settings(language = None, stopword_analyzer = False, stemming_analyzer = False):
+def es_settings(language=None, stopword_analyzer=False, stemming_analyzer=False):
     '''
     Make elasticsearch settings json for a corpus index. Options:
     - `language`: string with the language code. See addcorpus.constants for options, and which languages support stopwords/stemming

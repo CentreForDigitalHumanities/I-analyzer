@@ -1,0 +1,87 @@
+from datetime import datetime
+from glob import glob
+
+from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.extract import CSV, Combined, Constant
+from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.field_defaults as field_defaults
+from corpora.utils.constants import document_context
+from corpora.utils import formatting
+
+from django.conf import settings
+
+class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
+    title = 'People and Parliament (Finland, 1863-1905)'
+    description = 'Speeches from the early Finnish estates'
+    max_date = datetime(year=1905, month=12, day=31)
+    min_date = datetime(year=1863, month=1, day=1)
+    data_directory = settings.PP_FINLAND_OLD_DATA
+    es_index = getattr(settings, 'PP_FINLAND_OLD_INDEX', 'parliament-finland-old')
+
+    def sources(self, start, end):
+        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
+            yield csv_file, {}
+
+    languages = ['swe', 'fi']
+    description_page = 'finland.md'
+    image = 'finland.jpg'
+
+    document_context = document_context()
+
+    country = field_defaults.country()
+    country.extractor = Constant('Finland')
+
+    date_earliest = field_defaults.date_earliest()
+    date_earliest.extractor = CSV(
+        field='year_start',
+        transform=lambda value: formatting.get_date_from_year(value, 'earliest')
+    )
+    date_earliest.search_filter.lower = min_date
+    date_earliest.search_filter.upper = max_date
+
+    date_latest = field_defaults.date_latest()
+    date_latest.extractor = CSV(
+        field='year_end',
+        transform=lambda value: formatting.get_date_from_year(value, 'latest')
+    )
+    date_latest.primary_sort = True
+    date_latest.search_filter.lower = min_date
+    date_latest.search_filter.upper = max_date
+
+    era = field_defaults.era(include_aggregations=True)
+    era.extractor = CSV(field='estate')
+
+    language = field_defaults.language()
+    language.extractor = CSV(field='language')
+
+    page = field_defaults.page()
+    page.extractor = CSV(field='page')
+
+    source_archive = field_defaults.source_archive()
+    source_archive.extractor = CSV(field='file')
+
+    speech = field_defaults.speech()
+    speech.extractor = CSV(field='text')
+
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = Combined(
+        CSV(field='file'),
+        CSV(field='volume'),
+        CSV(field='page'),
+        transform=lambda x: '_'.join(x)
+    )
+
+    speech_type = field_defaults.speech_type()
+    speech_type.extractor = CSV(field='type')
+
+    def __init__(self):
+        self.fields = [
+            self.country,
+            self.date_earliest,
+            self.date_latest,
+            self.language,
+            self.page,
+            self.source_archive,
+            self.speech,
+            self.speech_id, self.speech_type,
+        ]
