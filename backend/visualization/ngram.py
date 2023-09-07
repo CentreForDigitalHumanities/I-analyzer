@@ -8,6 +8,7 @@ from es import download
 
 
 def get_ngrams(results, freq_compensation=True, number_of_ngrams=10):
+    print(results)
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
     ngrams = []
     binned_counts = [r['ngrams'] for r in results]
@@ -92,8 +93,8 @@ def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_posit
     query_text = query.get_query_text(es_query)
     field = field if subfield == 'none' else '.'.join([field, subfield])
 
-    start_date = datetime(bin(0), 1, 1)
-    end_date = datetime(bin(1), 12, 31)
+    start_date = datetime(bin[0], 1, 1)
+    end_date = datetime(bin[1], 12, 31)
 
     # filter query on this time bin
     date_filter = query.make_date_filter(start_date, end_date, date_field)
@@ -130,7 +131,7 @@ def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_posit
                         bin_ngrams.update({ words: 1})
     
     return {
-        'time_interval': format_time_label(bin(0), bin(1)),
+        'time_interval': format_time_label(bin[0], bin[1]),
         'ngrams': bin_ngrams,
         'ngram_ttfs': ngram_ttfs
     }

@@ -9,42 +9,40 @@ def get_wordcloud_data(request_json):
     word_counts = wordcloud.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
     return word_counts
 
-@shared_task()
-def get_ngram_per_data_bin(request_json):
-    return ngram.get_ngrams(
-        request_json['field'],
-        ngram_size=request_json['ngram_size'],
-        positions=request_json['term_position'],
-        freq_compensation=request_json['freq_compensation'],
-        subfield=request_json['subfield'],
-        max_size_per_interval=request_json['max_size_per_interval'],
-        number_of_ngrams=request_json['number_of_ngrams'],
-        date_field = request_json['date_field']
-    )
+@shared_task
+def get_ngram_data_bin(**kwargs):
+    return ngram.tokens_by_time_interval(**kwargs)
 
-def get_ngram_data(request_json):
-    es_query = request_json['es_query']
+@shared_task
+def integrate_ngram_results(results, **kwargs):
+    return ngram.get_ngrams(results, **kwargs)
+
+def ngram_data_tasks(request_json):
     corpus = request_json['corpus_name']
+    es_query = request_json['es_query']
+    freq_compensation = request_json['freq_compensation']
     bins = ngram.get_time_bins(es_query, corpus)
-    freq_compensation=request_json['freq_compensation'],
+
     return chain(group([
-        ngram.tokens_by_time_interval.s(
-            corpus,
-            es_query,
+        get_ngram_data_bin.s(
+            corpus=corpus,
+            es_query=es_query,
             field=request_json['field'],
-            bin=time_bin,
+            bin=b,
             ngram_size=request_json['ngram_size'],
-            term_position=request_json['term_position'],
+            positions=request_json['term_position'],
             freq_compensation=freq_compensation,
             subfield=request_json['subfield'],
             max_size_per_interval=request_json['max_size_per_interval'],
             date_field=request_json['date_field']
-        ) for time_bin in bins
-    ]), ngram.get_ngrams(
-        bins,
-        freq_compensation=freq_compensation,
-        number_of_ngrams=request_json['number_of_ngrams']))
-
+        )
+        for b in bins
+    ]), integrate_ngram_results.s(
+            freq_compensation=freq_compensation,
+            number_of_ngrams=request_json['number_of_ngrams']
+        )
+    )
+    
 @shared_task()
 def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_value, size, include_query_in_result = False):
     '''
