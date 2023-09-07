@@ -38,7 +38,7 @@ def load_corpus_definition(corpus_name):
         raise
 
     corpus_spec.loader.exec_module(corpus_mod)
-    # assume the class name of the endpoint is the same as the corpus name,
+    # assume the class name is the same as the corpus name,
     # allowing for differences in camel case vs. lower case
     regex = re.compile('[^a-zA-Z]')
     corpus_name = regex.sub('', corpus_name)

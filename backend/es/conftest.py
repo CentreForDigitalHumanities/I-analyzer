@@ -1,13 +1,10 @@
 import pytest
 from time import sleep
 from django.contrib.auth.models import Group
-import warnings
-import os
 
 from addcorpus.load_corpus import load_corpus_definition
 from ianalyzer.elasticsearch import elasticsearch
 from es import es_index
-from users.models import CustomUser
 from addcorpus.models import Corpus
 
 @pytest.fixture(scope='session')
