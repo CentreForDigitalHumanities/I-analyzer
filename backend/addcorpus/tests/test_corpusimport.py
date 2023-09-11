@@ -65,5 +65,5 @@ def test_corpus_dir_is_absolute(db, temp_times_definition):
     assert os.path.isabs(corpus_dir)
 
 def test_mismatch_corpus_index_names(temp_times_definition):
-    times = load_corpus.load_corpus('times')
+    times = load_corpus.load_corpus_definition('times')
     assert times.es_index == 'some-other-name'
