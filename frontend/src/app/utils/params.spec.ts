@@ -75,7 +75,7 @@ describe('paramsHaveChanged', () => {
         queryModel.setQueryText('test');
 
         const noHighlight = convertToParamMap({ query: 'test' });
-        const withHighlight = convertToParamMap({ query: 'test', highlight: 200 });
+        const withHighlight = convertToParamMap({ query: 'test', highlight: '200' });
 
         expect(paramsHaveChanged(queryModel, noHighlight)).toBeFalse();
         expect(paramsHaveChanged(queryModel, withHighlight)).toBeTrue();
