@@ -1,6 +1,5 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { QueryModel } from '../models';
-import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -8,33 +7,22 @@ import { Subscription } from 'rxjs';
   templateUrl: './highlight-selector.component.html',
   styleUrls: ['./highlight-selector.component.scss']
 })
-export class HighlightSelectorComponent implements OnChanges, OnDestroy, OnInit {
+export class HighlightSelectorComponent implements OnDestroy {
     @Input() queryModel: QueryModel;
-    public highlight = 0;
-    private highlightSubscription: Subscription;
 
     constructor() {
     }
 
-    ngOnInit() {
-        this.highlightSubscription = this.queryModel.update.subscribe(() => {
-            this.setStateFromQueryModel();
-        });
+    get highlight(): number {
+        return this.queryModel?.highlightSize;
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (this.queryModel) {
-            this.setStateFromQueryModel();
-        }
+    get highlightDisabled(): boolean {
+        return this.queryModel?.highlightDisabled;
     }
 
     ngOnDestroy(): void {
         this.queryModel.setHighlight();
-        this.highlightSubscription.unsubscribe();
-    }
-
-    setStateFromQueryModel() {
-        this.highlight = this.queryModel.highlightSize;
     }
 
     updateHighlightSize(instruction?: string) {
