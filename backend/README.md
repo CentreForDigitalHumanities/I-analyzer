@@ -65,6 +65,14 @@ If you are overriding the default settings, you may pass `--pythonpath` and `--s
 
 ### Running the application (development server)
 
+If you made any changes to your configured corpora, load them into the database before running the aplication.
+
+```console
+$ python manage.py loadcorpora
+```
+
+Start the development server with:
+
 ```console
 $ python manage.py runserver
 ```

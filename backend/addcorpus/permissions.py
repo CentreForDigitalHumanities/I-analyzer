@@ -1,8 +1,8 @@
 from rest_framework import permissions
-from addcorpus.load_corpus import load_corpus
 from rest_framework.exceptions import NotFound
 from users.models import CustomUser
-from typing import Dict, Any
+from typing import List
+from addcorpus.models import Corpus
 
 def corpus_name_from_request(request):
         '''
@@ -29,13 +29,17 @@ def corpus_name_from_request(request):
         return corpus
 
 
-def filter_user_corpora(corpora: Dict[str, Any], user: CustomUser) -> Dict[str, any]:
-    '''Filter all available corpora to only
-    include the ones the user has access to'''
-    return {name: definition
-            for (name, definition) in corpora.items()
-            if user.has_access(name)
-            }
+def filter_user_corpora(corpora: List[Corpus], user: CustomUser) -> List[Corpus]:
+    '''
+    Filter all available corpora to only
+    include the ones the user has access to
+    '''
+
+    return [
+         corpus
+         for corpus in corpora
+         if user.has_access(corpus.name)
+    ]
 
 
 class CorpusAccessPermission(permissions.BasePermission):
@@ -43,11 +47,12 @@ class CorpusAccessPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
-        corpus = corpus_name_from_request(request)
+        corpus_name = corpus_name_from_request(request)
 
         # check if the corpus exists
         try:
-            load_corpus(corpus)
+            corpus = Corpus.objects.get(name=corpus_name)
+            assert corpus.active
         except:
             raise NotFound('Corpus does not exist')
 

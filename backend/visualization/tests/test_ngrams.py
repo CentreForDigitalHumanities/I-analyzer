@@ -2,7 +2,7 @@ from random import sample
 from typing import Counter
 from visualization import query, ngram
 from visualization.tests.mock_corpora.small_mock_corpus import SmallMockCorpus
-from datetime import datetime
+from datetime import datetime, date
 import pytest
 
 FILTER_MIN_DATE = datetime(1850, 1, 1)
@@ -24,8 +24,8 @@ CENTURY_BINS = [
 def test_total_time_interval_no_filter(basic_query, small_mock_corpus, small_mock_corpus_specs):
     # no date filter: should use corpus min_date/max_date
     min_date, max_date = ngram.get_total_time_interval(basic_query, small_mock_corpus)
-    assert min_date == small_mock_corpus_specs['min_date']
-    assert max_date == small_mock_corpus_specs['max_date']
+    assert date.__eq__(min_date, small_mock_corpus_specs['min_date'])
+    assert date.__eq__(max_date,small_mock_corpus_specs['max_date'])
 
 def test_total_time_interval_with_filter(mock_corpus, basic_query):
     datefilter = query.make_date_filter(FILTER_MIN_DATE, FILTER_MAX_DATE)
