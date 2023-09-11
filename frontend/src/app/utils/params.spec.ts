@@ -70,4 +70,22 @@ describe('paramsHaveChanged', () => {
 
         expect(paramsHaveChanged(queryModel, params)).toBeTrue();
     });
+
+    it('should detect changes in highlighting', () => {
+        const noHighlight = convertToParamMap({});
+        const withHighlight = convertToParamMap({ highlight: 200 });
+
+        expect(paramsHaveChanged(queryModel, noHighlight)).toBeFalse();
+        expect(paramsHaveChanged(queryModel, withHighlight)).toBeTrue();
+
+        queryModel.setHighlight(200);
+
+        expect(paramsHaveChanged(queryModel, noHighlight)).toBeTrue();
+        expect(paramsHaveChanged(queryModel, withHighlight)).toBeFalse();
+
+        queryModel.setHighlight(0, true);
+
+        expect(paramsHaveChanged(queryModel, noHighlight)).toBeFalse();
+        expect(paramsHaveChanged(queryModel, withHighlight)).toBeTrue();
+    });
 });
