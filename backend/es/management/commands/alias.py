@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from es.es_alias import alias
 
 class Command(BaseCommand):
@@ -25,5 +25,5 @@ class Command(BaseCommand):
         )
 
     def handle(self, corpus, clean=False, **options):
-        corpus_definition = load_corpus(corpus)
+        corpus_definition = load_corpus_definition(corpus)
         alias(corpus, corpus_definition, clean)

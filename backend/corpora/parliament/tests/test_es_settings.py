@@ -1,5 +1,4 @@
 import addcorpus.es_settings as es_settings
-from addcorpus.load_corpus import load_corpus
 import pytest
 import os
 import shutil
@@ -49,28 +48,6 @@ def test_stopwords(clean_nltk_data_directory):
         for word in case['stopwords']:
             assert word in stopwords
 
-def test_no_nltk_download_in_serialization(parliament_corpora_settings, clean_nltk_data_directory):
-    """
-    Test that corpus.serialize() does not retrieve the nltk data
-    """
-
-    # assert nltk data directory is clean
-    data_path = clean_nltk_data_directory
-    data_downloaded = lambda: os.path.isdir(data_path)
-    assert not data_downloaded()
-
-    # load corpus: still should not be downloading data
-    corpus = load_corpus('parliament-netherlands')
-    assert not data_downloaded()
-
-    # serialize corpus: again, no data download
-    serialized = corpus.serialize()
-    assert not data_downloaded()
-
-    # retrieve es_settings (like during indexing)
-    # should download data now
-    es_settings = corpus.es_settings
-    assert data_downloaded()
 
 @pytest.fixture
 def clean_nltk_data_directory():

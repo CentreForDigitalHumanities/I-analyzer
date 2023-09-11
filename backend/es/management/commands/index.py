@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from django.core.management import BaseCommand
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from es.es_index import perform_indexing
 from es.es_update import update_index, update_by_query
 
@@ -71,7 +71,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, corpus, start = None, end = None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
-        this_corpus = load_corpus(corpus)
+        this_corpus = load_corpus_definition(corpus)
 
         try:
             if start:

@@ -89,7 +89,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpusDefinition):
             self.book_id, self.book_label,
             self.era,
             self.date, self.date_is_estimate,
-            self.page, self.url,
+            self.page,
             self.speech, self.speech_id,
             self.url,
         ]

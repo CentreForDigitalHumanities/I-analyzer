@@ -1,4 +1,4 @@
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 import pytest
 import os.path as op
 from operator import itemgetter
@@ -16,7 +16,7 @@ def rechtspraak_test_settings(settings):
 
 @pytest.fixture
 def test_corpus(rechtspraak_test_settings):
-    return load_corpus('rechtspraak')
+    return load_corpus_definition('rechtspraak')
 
 
 @pytest.fixture

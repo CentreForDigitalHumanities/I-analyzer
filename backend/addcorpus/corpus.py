@@ -3,10 +3,7 @@ Module contains the base classes from which corpora can derive;
 '''
 
 from . import extract
-from zipfile import ZipExtFile
 import itertools
-import inspect
-import json
 import bs4
 import csv
 import sys
@@ -19,8 +16,9 @@ from langcodes import Language, standardize_tag
 from addcorpus.constants import CATEGORIES
 
 import logging
-logger = logging.getLogger('indexing')
+from ianalyzer.settings import NEW_HIGHLIGHT_CORPORA
 
+logger = logging.getLogger('indexing')
 
 
 class CorpusDefinition(object):
@@ -234,72 +232,6 @@ class CorpusDefinition(object):
                 if field.es_mapping and field.indexed
             }
         }
-
-    def json(self):
-        '''
-        Corpora should be able to produce JSON, so that the fields they define
-        can be used by other codebases, while retaining the Python class as the
-        single source of truth.
-        '''
-        corpus_dict = self.serialize()
-        json_dict = json.dumps(corpus_dict)
-        return json_dict
-
-    def serialize(self):
-        """
-        Convert corpus object to a JSON-friendly dict format.
-        """
-        corpus_dict = {}
-
-        # gather attribute names
-        # exclude:
-        # - methods not implemented in Corpus class
-        # - hidden attributes
-        # - attributes listed in `exclude`
-        # - bound methods
-        exclude = ['data_directory', 'es_settings', 'word_model_path']
-        corpus_attribute_names = [
-            a for a in dir(self)
-            if a in dir(CorpusDefinition) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
-        ]
-
-        # collect values
-        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
-
-        for ca in corpus_attributes:
-            if ca[0] == 'fields':
-                field_list = []
-                for field in self.fields:
-                    field_list.append(field.serialize())
-                corpus_dict[ca[0]] = field_list
-            elif ca[0] == 'languages':
-                format = lambda tag: Language.make(standardize_tag(tag)).display_name() if tag else 'Unknown'
-                corpus_dict[ca[0]] = [
-                    format(tag)
-                    for tag in ca[1]
-                ]
-            elif ca[0] == 'category':
-                corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
-            elif type(ca[1]) == datetime:
-                timedict = {'year': ca[1].year,
-                            'month': ca[1].month,
-                            'day': ca[1].day,
-                            'hour': ca[1].hour,
-                            'minute': ca[1].minute}
-                corpus_dict[ca[0]] = timedict
-            else:
-                corpus_dict[ca[0]] = ca[1]
-        return corpus_dict
-
-    def _format_option(self, value, options):
-        '''
-        For serialisation: format language or category based on list of options
-        '''
-        return next(
-            nice_string
-            for code, nice_string in options
-            if value == code
-        )
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
@@ -753,13 +685,13 @@ class FieldDefinition(object):
                  name=None,
                  display_name=None,
                  display_type=None,
-                 description=None,
+                 description='',
                  indexed=True,
                  hidden=False,
                  results_overview=False,
                  csv_core=False,
                  search_field_core=False,
-                 visualizations=None,
+                 visualizations=[],
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
@@ -772,9 +704,11 @@ class FieldDefinition(object):
                  **kwargs
                  ):
 
+        mapping_type = es_mapping['type']
+
         self.name = name
-        self.display_name = display_name
-        self.display_type = display_type
+        self.display_name = display_name or name
+        self.display_type = display_type or mapping_type
         self.description = description
         self.search_filter = search_filter
         self.results_overview = results_overview
@@ -790,7 +724,7 @@ class FieldDefinition(object):
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
-            es_mapping['type'] in ['integer', 'float', 'date']
+            mapping_type in ['integer', 'float', 'date']
 
         self.primary_sort = primary_sort
 
@@ -798,32 +732,13 @@ class FieldDefinition(object):
         # Keyword fields without a filter are also searchable.
         self.searchable = searchable if searchable != None else \
             not hidden and indexed and \
-            ((self.es_mapping['type'] == 'text') or
-             (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
+            ((mapping_type == 'text') or
+             (mapping_type == 'keyword' and self.search_filter == None))
         # Add back reference to field in filter
         self.downloadable = downloadable
 
         if self.search_filter:
             self.search_filter.field = self
-
-    def serialize(self):
-        """
-        Convert Field object to a JSON-friendly dict format.
-        """
-        field_dict = {}
-        for key, value in self.__dict__.items():
-            if key == 'search_filter' and value != None:
-                filter_name = str(type(value)).split(
-                    sep='.')[-1][:-2]
-                search_dict = {'name': filter_name}
-                for search_key, search_value in value.__dict__.items():
-                    if search_key == 'search_filter' or search_key != 'field':
-                        search_dict[search_key] = search_value
-                field_dict['search_filter'] = search_dict
-            elif key != 'extractor':
-                field_dict[key] = value
-
-        return field_dict
 
 
 # Helper functions ############################################################
