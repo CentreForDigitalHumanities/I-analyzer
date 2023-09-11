@@ -1,7 +1,7 @@
 import { convertToParamMap } from '@angular/router';
 import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
 import { EsDateFilter, EsTermsFilter } from './elasticsearch';
-import { DateFilter, DateFilterData, MultipleChoiceFilter } from './search-filter';
+import { DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
 import { of } from 'rxjs';
 import { distinct } from 'rxjs/operators';
 
@@ -25,17 +25,21 @@ describe('SearchFilter', () => {
     it('should toggle', () => {
         expect(isActive()).toBeFalse();
 
-        filter.toggle();
+        // set some non-default data so the filter will not reject activation
+        filter.set(exampleData);
         expect(isActive()).toBeTrue();
+
         filter.toggle();
         expect(isActive()).toBeFalse();
+        filter.toggle();
+        expect(isActive()).toBeTrue();
 
         filter.deactivate();
         expect(isActive()).toBeFalse();
         filter.activate();
         expect(isActive()).toBeTrue();
-        filter.deactivate();
-        expect(isActive()).toBeFalse();
+        filter.activate();
+        expect(isActive()).toBeTrue();
     });
 
     it('should activate when value is set to non-default', () => {
@@ -53,6 +57,16 @@ describe('SearchFilter', () => {
         expect(isActive()).toBeTrue();
 
         filter.reset();
+        expect(isActive()).toBeFalse();
+    });
+
+    it('should ignore activation without data', () => {
+        expect(isActive()).toBeFalse();
+
+        filter.activate();
+        expect(isActive()).toBeFalse();
+
+        filter.toggle();
         expect(isActive()).toBeFalse();
     });
 

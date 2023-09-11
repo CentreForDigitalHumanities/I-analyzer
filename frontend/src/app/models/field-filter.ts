@@ -1,43 +1,24 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
-import { distinct, map } from 'rxjs/operators';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
-import { BooleanFilterOptions, DateFilterOptions, FilterOptions, MultipleChoiceFilterOptions,
-    RangeFilterOptions } from './search-filter-options';
-import { ParamMap } from '@angular/router';
+import {
+    BooleanFilterOptions, DateFilterOptions, FieldFilterOptions, MultipleChoiceFilterOptions,
+    RangeFilterOptions
+} from './field-filter-options';
+import { BaseFilter } from './base-filter';
 
-abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
-	corpusField: CorpusField;
-	defaultData: FilterData;
-	data: BehaviorSubject<FilterData>;
-    active: BehaviorSubject<boolean>;
 
-    update = new Subject<void>();
-
-	constructor(corpusField: CorpusField) {
-		this.corpusField = corpusField;
-		this.defaultData = this.makeDefaultData(corpusField.filterOptions);
-		this.data = new BehaviorSubject<FilterData>(this.defaultData);
-        this.active = new BehaviorSubject<boolean>(false);
-	}
+abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FieldFilterOptions, FilterData> {
+    constructor(public corpusField: CorpusField) {
+        super(corpusField.filterOptions);
+    }
 
     get filterType() {
         return this.corpusField.filterOptions?.name;
     }
 
-    get currentData() {
-		return this.data?.value;
-	}
-
-    get isDefault$(): Observable<boolean> {
-        return this.data.asObservable().pipe(
-            map(data => _.isEqual(data, this.defaultData))
-        );
-    }
-
-
+    /** a filter is "ad hoc" if the field does not have a predefined filter */
     get adHoc() {
         return !(this.corpusField.filterOptions);
     }
@@ -50,37 +31,8 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         }
     }
 
-    set(data: FilterData) {
-        if (!_.isEqual(data, this.currentData)) {
-            this.data.next(data);
-
-            const active = this.active.value;
-            const toDefault = _.isEqual(data, this.defaultData);
-            const deactivate = active && toDefault;
-            const activate = !active && !toDefault;
-
-            if (deactivate || activate) {
-                this.toggle();
-            } else if (active) {
-                this.update.next();
-            }
-        }
-    }
-
-	reset() {
-        this.set(this.defaultData);
-	}
-
-    /**
-     * set value based on route parameter
-     */
-    setFromParams(params: ParamMap): void {
-        const value = params.get(this.corpusField.name);
-        if (value) {
-            this.set(this.dataFromString(value));
-        } else {
-            this.reset();
-        }
+    get routeParamName() {
+        return this.corpusField.name;
     }
 
     /**
@@ -91,98 +43,73 @@ abstract class AbstractSearchFilter<FilterData, EsFilterType extends EsFilter> {
         this.set(this.dataFromValue(value));
     }
 
-    toRouteParam(): {[param: string]: any} {
-        const value = this.active.value ? this.dataToString(this.currentData) : undefined;
-        return {
-            [this.corpusField.name]: value || null
-        };
-    }
-
+    /**
+     * convert the filter state to a query clause in elasticsearch query DSL
+     *
+     * returns undefined if the filter is inactive
+     */
     toEsFilter(): EsFilterType {
         if (this.active.value) {
             return this.dataToEsFilter();
         }
     }
 
-    public activate() {
-        if (!this.active.value) {
-            this.toggle();
-        }
-    }
+    /** convert a single field value to filter data that selects that value */
+    abstract dataFromValue(value: any): FilterData;
 
-    public deactivate() {
-        if (this.active.value) {
-            this.toggle();
-        }
-    }
+    /** export data as query clause in elasticsearch query language */
+    abstract dataToEsFilter(): EsFilterType;
 
-    public toggle() {
-        this.active.next(!this.active.value);
-        this.update.next();
-    }
-
-    abstract makeDefaultData(filterOptions: FilterOptions): FilterData;
-
-	abstract dataFromValue(value: any): FilterData;
-
-	abstract dataFromString(value: string): FilterData;
-
-	abstract dataToString(data: FilterData): string;
-
-	/**
-	 * export data as filter specification in elasticsearch query language
-	 */
-	abstract dataToEsFilter(): EsFilterType;
-
+    /** convert a query clause in elasticsearch query langauge to filter data */
     abstract dataFromEsFilter(esFilter: EsFilterType): FilterData;
 
 }
 
 export interface DateFilterData {
-	min: Date;
-	max: Date;
+    min: Date;
+    max: Date;
 }
 
-export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilter> {
-	makeDefaultData(filterOptions: DateFilterOptions) {
-		return {
-			min: this.parseDate(filterOptions.lower),
-			max: this.parseDate(filterOptions.upper)
-		};
-	}
+export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
+    makeDefaultData(filterOptions: DateFilterOptions) {
+        return {
+            min: this.parseDate(filterOptions.lower),
+            max: this.parseDate(filterOptions.upper)
+        };
+    }
 
-	dataFromValue(value: Date) {
-		return {
-			min: value,
-			max: value,
-		};
-	}
+    dataFromValue(value: Date) {
+        return {
+            min: value,
+            max: value,
+        };
+    }
 
-	dataFromString(value: string) {
-		const [minString, maxString] = parseMinMax(value.split(','));
-		return {
-			min: this.parseDate(minString),
-			max: this.parseDate(maxString),
-		};
-	}
+    dataFromString(value: string) {
+        const [minString, maxString] = parseMinMax(value.split(','));
+        return {
+            min: this.parseDate(minString),
+            max: this.parseDate(maxString),
+        };
+    }
 
-	dataToString(data: DateFilterData) {
-		const min = this.formatDate(data.min);
-		const max = this.formatDate(data.max);
-		return `${min}:${max}`;
-	}
+    dataToString(data: DateFilterData) {
+        const min = this.formatDate(data.min);
+        const max = this.formatDate(data.max);
+        return `${min}:${max}`;
+    }
 
-	dataToEsFilter(): EsDateFilter {
-		return {
-			range: {
-				[this.corpusField.name]: {
-					gte: this.formatDate(this.currentData.min),
-					lte: this.formatDate(this.currentData.max),
-					format: 'yyyy-MM-dd'
-				}
-			}
-		};
-	}
+    dataToEsFilter(): EsDateFilter {
+        return {
+            range: {
+                [this.corpusField.name]: {
+                    gte: this.formatDate(this.currentData.min),
+                    lte: this.formatDate(this.currentData.max),
+                    format: 'yyyy-MM-dd'
+                }
+            }
+        };
+    }
 
     dataFromEsFilter(esFilter: EsDateFilter): DateFilterData {
         const data = _.first(_.values(esFilter.range));
@@ -191,16 +118,16 @@ export class DateFilter extends AbstractSearchFilter<DateFilterData, EsDateFilte
         return { min, max };
     }
 
-	private formatDate(date: Date): string {
-		return moment(date).format('YYYY-MM-DD');
-	}
+    private formatDate(date: Date): string {
+        return moment(date).format('YYYY-MM-DD');
+    }
 
     private parseDate(dateString: string): Date {
         return moment(dateString, 'YYYY-MM-DD').toDate();
     }
 }
 
-export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter> {
+export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
         return false;
@@ -212,7 +139,7 @@ export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter
 
     dataFromString(value: string): boolean {
         return value === 'true';
-	}
+    }
 
     dataToString(data: boolean): string {
         return data.toString();
@@ -234,7 +161,7 @@ export class BooleanFilter extends AbstractSearchFilter<boolean, EsBooleanFilter
 
 type MultipleChoiceFilterData = string[];
 
-export class MultipleChoiceFilter extends AbstractSearchFilter<MultipleChoiceFilterData, EsTermsFilter> {
+export class MultipleChoiceFilter extends AbstractFieldFilter<MultipleChoiceFilterData, EsTermsFilter> {
     makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
     }
@@ -272,12 +199,12 @@ export interface RangeFilterData {
     max: number;
 }
 
-export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFilter> {
+export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
-			min: filterOptions.lower,
-			max: filterOptions.upper
-		};
+            min: filterOptions.lower,
+            max: filterOptions.upper
+        };
     }
 
     dataFromValue(value: number): RangeFilterData {
@@ -315,8 +242,8 @@ export class RangeFilter extends AbstractSearchFilter<RangeFilterData, EsRangeFi
     }
 }
 
-export class AdHocFilter extends AbstractSearchFilter<any, EsTermFilter> {
-    makeDefaultData(filterOptions: FilterOptions) {}
+export class AdHocFilter extends AbstractFieldFilter<any, EsTermFilter> {
+    makeDefaultData(filterOptions: FieldFilterOptions) { }
 
     dataFromValue(value: any) {
         return value;

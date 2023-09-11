@@ -8,7 +8,7 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> {
+export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> {
     min: number;
     max: number;
 

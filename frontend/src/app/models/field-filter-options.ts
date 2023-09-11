@@ -1,6 +1,6 @@
 // Types for serialised filter options for a corpus by the API
 
-export type SearchFilterType = 'DateFilter' | 'MultipleChoiceFilter' | 'RangeFilter' | 'BooleanFilter';
+export type FieldFilterType = 'DateFilter' | 'MultipleChoiceFilter' | 'RangeFilter' | 'BooleanFilter';
 
 export interface HasDescription {
     description: string;
@@ -28,7 +28,7 @@ export type BooleanFilterOptions = {
     checked: boolean;
 } & HasDescription;
 
-export type FilterOptions =
+export type FieldFilterOptions =
     DateFilterOptions |
     MultipleChoiceFilterOptions |
     RangeFilterOptions |

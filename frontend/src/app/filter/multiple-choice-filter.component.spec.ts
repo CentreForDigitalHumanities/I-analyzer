@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { mockCorpus, mockFieldMultipleChoice } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
-import { QueryModel } from '../models';
+import { MultipleChoiceFilter, QueryModel } from '../models';
 
 import { MultipleChoiceFilterComponent } from './multiple-choice-filter.component';
 import * as _ from 'lodash';
@@ -21,7 +21,7 @@ describe('MultipleChoiceFilterComponent', () => {
     const corpus = _.cloneDeep(mockCorpus);
     corpus.fields.push(mockFieldMultipleChoice);
     component.queryModel = new QueryModel(corpus);
-    component.filter = component.queryModel.filterForField(mockFieldMultipleChoice);
+      component.filter = component.queryModel.filterForField(mockFieldMultipleChoice) as MultipleChoiceFilter;
     fixture.detectChanges();
   });
 

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angul
 import { mockCorpus3, mockField } from '../../mock-data/corpus';
 
 import { commonTestBed } from '../common-test-bed';
-import { QueryModel } from '../models';
+import { BooleanFilter, QueryModel } from '../models';
 import { BooleanFilterComponent } from './boolean-filter.component';
 import { By } from '@angular/platform-browser';
 
@@ -18,7 +18,7 @@ describe('BooleanFilterComponent', () => {
         fixture = TestBed.createComponent(BooleanFilterComponent);
         component = fixture.componentInstance;
         component.queryModel = new QueryModel(mockCorpus3);
-        component.filter = component.queryModel.filterForField(mockField);
+        component.filter = component.queryModel.filterForField(mockField) as BooleanFilter;
         fixture.detectChanges();
     });
 
