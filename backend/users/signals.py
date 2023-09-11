@@ -32,6 +32,6 @@ def ensure_admin_email(sender, instance, created, **kwargs):
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.get_or_create(
+        UserProfile.objects.create(
             user=instance
         )
