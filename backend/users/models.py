@@ -21,6 +21,10 @@ class CustomUser(AbstractUser):
 
 
 class UserProfile(models.Model):
+    ''' User information that is not relevant to authentication.
+    E.g. settings, preferences, optional personal information.
+    '''
+
     user = models.OneToOneField(
         to=CustomUser,
         on_delete=models.CASCADE,

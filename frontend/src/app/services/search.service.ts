@@ -43,13 +43,9 @@ export class SearchService {
         const user = await this.authService.getCurrentUserPromise();
         const request = () => this.elasticSearchService.search(queryModel);
 
-        let resultsPromise: Promise<SearchResults>;
-
-        if (user.enableSearchHistory) {
-            resultsPromise = this.searchAndSave(queryModel, user, request);
-        } else {
-            resultsPromise = request();
-        }
+        const resultsPromise = user.enableSearchHistory ?
+            this.searchAndSave(queryModel, user, request) :
+            request();
 
         return resultsPromise.then(results =>
             this.filterResultsFields(results, queryModel)

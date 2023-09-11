@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'ia-search-history-settings',
     templateUrl: './search-history-settings.component.html',
     styleUrls: ['./search-history-settings.component.scss']
 })
-export class SearchHistorySettingsComponent implements OnInit {
+export class SearchHistorySettingsComponent {
 
     constructor() { }
-
-    ngOnInit(): void {
-    }
 
 }
