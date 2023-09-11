@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import * as _ from 'lodash';
 
 import { BaseFilterComponent } from './base-filter.component';
-import { MultipleChoiceFilterOptions } from '../models';
+import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../models';
 import { SearchService } from '../services';
 
 @Component({
@@ -11,7 +11,7 @@ import { SearchService } from '../services';
   templateUrl: './multiple-choice-filter.component.html',
   styleUrls: ['./multiple-choice-filter.component.scss']
 })
-export class MultipleChoiceFilterComponent extends BaseFilterComponent<string[]> {
+export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilter> {
     options: { label: string; value: string; doc_count: number }[] = [];
 
     constructor(private searchService: SearchService) {

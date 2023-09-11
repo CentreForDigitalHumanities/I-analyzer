@@ -1,9 +1,21 @@
 # How to add a new corpus to I-analzyer
 
+The steps of adding a new corpus are usually the following:
+
+- Create a new python class in the I-analyzer repository, which will describe the corpus
+- Include the corpus in your local django settings and include (local) source data
+- Load the corpus into your local database
+- Create and populate a local elasticsearch index for the corpus
+- Workshop the corpus definition, add unit tests
+- Make a pull request
+- Create and populate a production elasticsearch index on the test server (using your test branch)
+- Include the corpus definition in the next release and deploy it in production
+- Verify everything works as expected and adjust the corpus permissions in the production admin interface, so users can see it.
+
 ## Corpus definition
 Adding a new corpus starts by adding a new corpus description `corpusname.py` to the `backend/corpora` directory. The corpus description imports global variables from `backend/ianalyzer/settings.py`. The definition file should be listed under `CORPORA` in the settings. In a development environment, this should happen in `backend/ianalyzer/settings_local.py`. More on the use of settings below.
 
-The corpus definition is a python class definition, subclassing `Corpus` class, found in `addcorpus/corpus.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+The corpus definition is a python class definition, subclassing `CorpusDefinition` class, found in `addcorpus/corpus.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
 
 The corpus class should define the following properties:
 
@@ -103,3 +115,13 @@ Optional flags:
 - `-d` specifies that an existing index of the same name should be deleted first (if not specified, defaults to false, meaning that extra data can be added while existing data is not overwritten)
 
 The start and end date flags are passed on the `sources` function of the corpus (see above). If you did not utilise them there, they will not do anything.
+
+## Validation
+
+The `CorpusDefinition` class has no built-in validation. However, once you start using the corpus, many of the properties defined in the python class will be loaded into the `CorpusConfiguration` database model. This step does include some validation, so it may raise errors. You can run the import script with `yarn django loadcorpora`. It is also run when you start a development server with `yarn start-back`.
+
+## Unit testing
+
+It is strongly recommended that you include unit tests for your corpus. A minimal test is to try to load your corpus into the database. In addition, it is recommended that you include some tests that check the output of the data extraction.
+
+The rechtspraak corpus includes good examples of such tests.

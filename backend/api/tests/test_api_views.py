@@ -1,11 +1,9 @@
-from rest_framework.test import APIClient
-import pytest
 from datetime import datetime
 from addcorpus.models import Corpus
 from rest_framework.status import is_success
 
 def test_search_history_view(admin_user, admin_client):
-    corpus = Corpus.objects.create(name = 'mock-corpus', description = '')
+    corpus = Corpus.objects.create(name = 'mock-corpus')
 
     # get search history
     response = admin_client.get('/api/search_history/')
@@ -15,7 +13,7 @@ def test_search_history_view(admin_user, admin_client):
     # add a query to search history
     data = {
         'aborted': False,
-        'corpus': 'mock-corpus',
+        'corpus': corpus.name,
         'user': admin_user.id,
         'started': datetime.now().isoformat(),
         'completed': datetime.now().isoformat(),

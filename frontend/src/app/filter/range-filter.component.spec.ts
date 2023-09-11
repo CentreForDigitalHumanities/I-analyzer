@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { RangeFilterComponent } from './range-filter.component';
-import { QueryModel } from '../models';
+import { QueryModel, RangeFilter } from '../models';
 import { mockCorpus3, mockField3 } from '../../mock-data/corpus';
 
 describe('RangeFilterComponent', () => {
@@ -18,7 +18,7 @@ describe('RangeFilterComponent', () => {
     fixture = TestBed.createComponent(RangeFilterComponent);
     component = fixture.componentInstance;
     component.queryModel = new QueryModel(mockCorpus3);
-    component.filter = component.queryModel.filterForField(mockField3);
+      component.filter = component.queryModel.filterForField(mockField3) as RangeFilter;
     component.filter.set({min: 1984, max: 1984});
     fixture.detectChanges();
   });
