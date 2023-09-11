@@ -177,12 +177,15 @@ describe('QueryModel', () => {
         expect(highlightParam()).toBe(null);
 
         query.setHighlight(200);
+        expect(highlightParam() as any).toBe(null);
+
+        query.setQueryText('test');
         expect(highlightParam() as any).toBe(200);
 
         query.setHighlight(400);
         expect(highlightParam() as any).toBe(400);
 
-        query.setHighlight(0, true);
+        query.setHighlight();
         expect(highlightParam()).toBe(null);
     });
 

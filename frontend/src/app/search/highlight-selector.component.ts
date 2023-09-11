@@ -29,7 +29,7 @@ export class HighlightSelectorComponent implements OnChanges, OnDestroy, OnInit 
     }
 
     ngOnDestroy(): void {
-        this.queryModel.setHighlight(0, true);
+        this.queryModel.setHighlight();
         this.highlightSubscription.unsubscribe();
     }
 
@@ -38,14 +38,14 @@ export class HighlightSelectorComponent implements OnChanges, OnDestroy, OnInit 
     }
 
     updateHighlightSize(instruction?: string) {
-        if (instruction === 'on' && this.queryModel.highlightSize === 0) {
+        if (instruction === 'on' && !this.queryModel.highlightSize) {
             this.queryModel.setHighlight(200);
         } else if (instruction === 'more' && this.queryModel.highlightSize < 800) {
             this.queryModel.setHighlight(this.queryModel.highlightSize + 200);
         } else if (instruction === 'less' && this.queryModel.highlightSize > 200) {
             this.queryModel.setHighlight(this.queryModel.highlightSize - 200);
         } else if (instruction === 'off') {
-            this.queryModel.setHighlight(0, true);
+            this.queryModel.setHighlight();
         }
     }
 
