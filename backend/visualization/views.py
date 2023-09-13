@@ -57,8 +57,8 @@ class NgramView(APIView):
 
         try:
             handle_tags_in_request(request)
-            chain = tasks.ngram_data_tasks(request.data)
-            subtasks = [chain, chain.parent, *chain.parent.children]
+            chord = tasks.ngram_data_tasks(request.data)
+            subtasks = [chord, chord.parent, *chord.parent.children]
             return Response({'task_ids': [task.id for task in subtasks]})
         except Exception as e:
             logger.error(e)

@@ -1,4 +1,4 @@
-from celery import chain, group, shared_task
+from celery import chord, group, shared_task
 from django.conf import settings
 from visualization import wordcloud, ngram, term_frequency
 from es import download as es_download
@@ -23,7 +23,7 @@ def ngram_data_tasks(request_json):
     freq_compensation = request_json['freq_compensation']
     bins = ngram.get_time_bins(es_query, corpus)
 
-    return (group([
+    return chord(group([
         get_ngram_data_bin.s(
             corpus=corpus,
             es_query=es_query,
@@ -37,11 +37,11 @@ def ngram_data_tasks(request_json):
             date_field=request_json['date_field']
         )
         for b in bins
-    ]) | integrate_ngram_results.s(
+    ]), integrate_ngram_results.s(
             freq_compensation=freq_compensation,
             number_of_ngrams=request_json['number_of_ngrams']
         )
-    )
+    )()
     
 @shared_task()
 def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_value, size, include_query_in_result = False):

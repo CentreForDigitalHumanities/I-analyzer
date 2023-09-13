@@ -68,11 +68,11 @@ def ngram_body(basic_query, small_mock_corpus):
         'date_field': 'date',
     }
 
-def test_ngrams(transactional_db, admin_client, ngram_body, index_small_mock_corpus, celery_worker):
+def test_ngrams(admin_client, ngram_body):
     post_response = admin_client.post('/api/visualization/ngram', ngram_body, content_type='application/json')
     assert post_response.status_code == 200
 
-def test_aggregate_term_frequency(transactional_db, admin_client, aggregate_term_frequency_body, index_small_mock_corpus, celery_worker):
+def test_aggregate_term_frequency(admin_client, aggregate_term_frequency_body):
     post_response = admin_client.post('/api/visualization/aggregate_term_frequency', aggregate_term_frequency_body, content_type='application/json')
     assert post_response.status_code == 200
     del aggregate_term_frequency_body['es_query']
