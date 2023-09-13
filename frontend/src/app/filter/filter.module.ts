@@ -10,6 +10,7 @@ import { SearchService } from '../services';
 import { SliderModule } from 'primeng/slider';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CheckboxModule } from 'primeng/checkbox';
+import { FilterBoxComponent } from './filter-box/filter-box.component';
 
 
 
@@ -25,6 +26,7 @@ import { CheckboxModule } from 'primeng/checkbox';
         FilterManagerComponent,
         MultipleChoiceFilterComponent,
         RangeFilterComponent,
+        FilterBoxComponent,
     ],
     imports: [
         CheckboxModule,
