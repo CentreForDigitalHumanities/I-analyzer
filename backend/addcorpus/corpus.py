@@ -16,7 +16,6 @@ from langcodes import Language, standardize_tag
 from addcorpus.constants import CATEGORIES
 
 import logging
-from ianalyzer.settings import NEW_HIGHLIGHT_CORPORA
 
 logger = logging.getLogger('indexing')
 

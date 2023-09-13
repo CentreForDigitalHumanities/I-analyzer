@@ -140,11 +140,6 @@ export class ApiService {
         return this.http.post<AggregateResult[]>(url, data).toPromise();
     }
 
-    public wordcloudTasks(data: WordcloudParameters): Promise<TaskResult> {
-        const url = this.apiRoute(this.visApiURL, 'wordcloud_task');
-        return this.http.post<TaskResult>(url, data).toPromise();
-    }
-
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
         const url = this.apiRoute(this.visApiURL, 'ngram');
         return this.http.post<TaskResult>(url, data).toPromise();
