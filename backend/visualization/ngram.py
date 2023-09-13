@@ -8,7 +8,6 @@ from es import download
 
 
 def get_ngrams(results, freq_compensation=True, number_of_ngrams=10):
-    print(results)
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
     ngrams = []
     binned_counts = [r['ngrams'] for r in results]
@@ -17,7 +16,7 @@ def get_ngrams(results, freq_compensation=True, number_of_ngrams=10):
     else:
         ngrams = get_top_n_ngrams(binned_counts, dict(), number_of_ngrams)
 
-    return { 'words': ngrams, 'time_points': [r['time_points'] for r in results] }
+    return { 'words': ngrams, 'time_points': [r['time_interval'] for r in results] }
 
 
 def format_time_label(start_year, end_year):

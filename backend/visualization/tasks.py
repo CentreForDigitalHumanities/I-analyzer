@@ -23,7 +23,7 @@ def ngram_data_tasks(request_json):
     freq_compensation = request_json['freq_compensation']
     bins = ngram.get_time_bins(es_query, corpus)
 
-    return chain(group([
+    return (group([
         get_ngram_data_bin.s(
             corpus=corpus,
             es_query=es_query,
@@ -37,7 +37,7 @@ def ngram_data_tasks(request_json):
             date_field=request_json['date_field']
         )
         for b in bins
-    ]), integrate_ngram_results.s(
+    ]) | integrate_ngram_results.s(
             freq_compensation=freq_compensation,
             number_of_ngrams=request_json['number_of_ngrams']
         )
