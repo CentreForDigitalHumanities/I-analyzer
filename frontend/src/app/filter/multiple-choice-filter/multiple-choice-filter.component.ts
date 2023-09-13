@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { BaseFilterComponent } from './base-filter.component';
-import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../models';
-import { SearchService } from '../services';
+import { BaseFilterComponent } from '../base-filter.component';
+import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../../models';
+import { SearchService } from '../../services';
 
 @Component({
-  selector: 'ia-multiple-choice-filter',
-  templateUrl: './multiple-choice-filter.component.html',
-  styleUrls: ['./multiple-choice-filter.component.scss']
+    selector: 'ia-multiple-choice-filter',
+    templateUrl: './multiple-choice-filter.component.html',
+    styleUrls: ['./multiple-choice-filter.component.scss']
 })
 export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilter> {
     options: { label: string; value: string; doc_count: number }[] = [];
@@ -29,7 +29,7 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
     private async getOptions(): Promise<void> {
         if (this.filter && this.queryModel) {
             const optionCount = (this.filter.corpusField.filterOptions as MultipleChoiceFilterOptions).option_count;
-            const aggregator = {name: this.filter.corpusField.name, size: optionCount};
+            const aggregator = { name: this.filter.corpusField.name, size: optionCount };
             const queryModel = this.queryModel.clone();
             queryModel.filterForField(this.filter.corpusField).deactivate();
             this.searchService.aggregateSearch(queryModel.corpus, queryModel, [aggregator]).then(
