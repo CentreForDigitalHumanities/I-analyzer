@@ -30,7 +30,7 @@ def ngram_data_tasks(request_json):
             field=request_json['field'],
             bin=b,
             ngram_size=request_json['ngram_size'],
-            positions=request_json['term_position'],
+            term_position=request_json['term_position'],
             freq_compensation=freq_compensation,
             subfield=request_json['subfield'],
             max_size_per_interval=request_json['max_size_per_interval'],
