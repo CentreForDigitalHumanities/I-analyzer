@@ -4,7 +4,7 @@ import mimetypes
 import warnings
 import os
 
-from addcorpus.constants import MappingType, VisualizationType
+from addcorpus.constants import MappingType, VisualizationType, FORBIDDEN_FIELD_NAMES
 from addcorpus.filters import VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
 
 def primary_mapping_type(es_mapping):
@@ -98,24 +98,7 @@ def validate_name_is_not_a_route_parameter(value):
     be interpreted as filter settings for the field.
     '''
 
-    forbidden = [
-        'query',
-        'fields',
-        'sort',
-        'highlight',
-        'visualize',
-        'visualizedField',
-        'normalize',
-        'size',
-        'positions',
-        'freqCompensation',
-        'analysis',
-        'maxDocuments',
-        'numberOfNgrams',
-        'dateField',
-    ]
-
-    if value in forbidden:
+    if value in FORBIDDEN_FIELD_NAMES:
         raise ValidationError(
             f'{value} cannot be used as a field name, because it is also a route parameter'
         )

@@ -4,6 +4,7 @@ passed through to ElasticSearch.
 '''
 
 from datetime import datetime
+from addcorpus.constants import MappingType
 
 class Filter(object):
     '''
@@ -11,7 +12,7 @@ class Filter(object):
     the ElasticSearch filter that is sent to the client.
     '''
 
-    mapping_types = []
+    mapping_types = tuple()
     '''accepted mapping types for this filter'''
 
     def __init__(self, description=None):
@@ -34,7 +35,7 @@ class DateFilter(Filter):
     Filter for datetime values: produces two datepickers for min and max date.
     '''
 
-    mapping_types = ['date']
+    mapping_types = (MappingType.DATE,)
 
     def __init__(self, lower, upper, *nargs, **kwargs):
         self.lower = lower
@@ -47,7 +48,7 @@ class RangeFilter(Filter):
     Filter for numerical values: produces a slider between two values.
     '''
 
-    mapping_types = ['integer', 'float']
+    mapping_types = (MappingType.INTEGER, MappingType.FLOAT)
 
     def __init__(self, lower, upper, *nargs, **kwargs):
         self.lower = lower
@@ -60,7 +61,7 @@ class MultipleChoiceFilter(Filter):
     Filter for keyword values: produces a set of buttons.
     '''
 
-    mapping_types = ['keyword']
+    mapping_types = (MappingType.KEYWORD,)
     # note: the multiple choice filter is imlemented as a terms query
     # which is also valid for integer/float/boolean/date,
     # but those should be rejected so the appropriate filter is used instead
@@ -77,7 +78,7 @@ class BooleanFilter(Filter):
     Filter for boolean values: produces a drop-down menu.
     '''
 
-    mapping_types = ['boolean']
+    mapping_types = (MappingType.BOOLEAN,)
 
     def __init__(self, true, false, *nargs, **kwargs):
         self.true = true
@@ -85,7 +86,7 @@ class BooleanFilter(Filter):
         super().__init__(*nargs, **kwargs)
 
 VALID_MAPPINGS = {
-    f.__name__: f.mapping_types
+    f.__name__: tuple(mt.value for mt in f.mapping_types)
     for f in
     [DateFilter, RangeFilter, MultipleChoiceFilter, BooleanFilter]
 }
