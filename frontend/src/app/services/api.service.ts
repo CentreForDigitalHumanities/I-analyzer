@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { timer } from 'rxjs';
-import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { EMPTY, timer } from 'rxjs';
+import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
     AggregateResult,
@@ -116,11 +116,15 @@ export class ApiService {
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
         return timer(0, 5000)
             .pipe(
+                takeUntil(stopPolling$),
                 switchMap((_) =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
-                filter(this.tasksDone),
-                take(1)
+                catchError(error => {
+                    console.error(error);
+                    return EMPTY;
+                }),
+                filter(this.tasksDone)
                 // eslint-disable-next-line @typescript-eslint/no-shadow
             )
             .toPromise()
@@ -132,6 +136,8 @@ export class ApiService {
                             : reject()
                     )
             );
+
+            this.stopPolling$.subscribe(() => loading = false);
     }
 
     // Visualization
