@@ -94,14 +94,15 @@ def test_top_10_ngrams():
         'b': 200,
         'c': 150,
     }
+    test_results = {'ngrams': counts, 'time_interval': '1820-1888'}
 
-    output_absolute = ngram.get_top_n_ngrams(counts)
+    output_absolute = ngram.get_top_n_ngrams(test_results)
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
 
-
-    output_relative = ngram.get_top_n_ngrams(counts, ttf)
+    test_results['ngram_ttfs'] = ttf
+    output_relative = ngram.get_top_n_ngrams(test_results)
 
     for word in target_data:
         dataset_relative = next(series for series in output_relative if series['label'] == word)
@@ -165,7 +166,7 @@ def test_absolute_bigrams(small_mock_corpus, index_small_mock_corpus, basic_quer
 
     assert sorted([r['time_interval'] for r in results]) == sorted(['{}-{}'.format(start, end) for start, end in CENTURY_BINS])
 
-    integrated_results = ngram.get_ngrams(results, freq_compensation=False)
+    integrated_results = ngram.get_ngrams(results)
     for bigram in bigrams:
         data = next((item for item in integrated_results['words'] if item['label'] == bigram['label']), None)
         assert data
@@ -206,7 +207,7 @@ def test_bigrams_with_quote(small_mock_corpus, basic_query):
         # search for a word that occurs a few times
         case_query = query.set_query_text(basic_query, case['query'])
 
-        result = ngram.get_ngrams(get_binned_results(small_mock_corpus, case_query), freq_compensation=False)
+        result = ngram.get_ngrams(get_binned_results(small_mock_corpus, case_query))
 
         ngrams = case['ngrams']
 
@@ -262,7 +263,14 @@ def test_number_of_ngrams(small_mock_corpus, basic_query):
     max_frequency = 6
 
     for number_of_ngrams in range(1, max_frequency + 2):
-        result = ngram.get_ngrams(get_binned_results(small_mock_corpus, frequent_query), freq_compensation=False, number_of_ngrams=number_of_ngrams)
+        result = ngram.get_ngrams(get_binned_results(small_mock_corpus, frequent_query), number_of_ngrams=number_of_ngrams)
         series = result['words']
 
         assert len(series) == min(max_frequency, number_of_ngrams)
+
+def test_freq_compensation(small_mock_corpus, basic_query):
+    frequent_query = query.set_query_text(basic_query, 'to')
+    result = ngram.get_ngrams(get_binned_results(small_mock_corpus, frequent_query))
+    assert result
+                              
+
