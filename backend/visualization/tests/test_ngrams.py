@@ -81,7 +81,7 @@ def test_top_10_ngrams():
         ['a', 'c']
     ]
 
-    counts = [Counter(doc) for doc in docs]
+    time_intervals = ['1820-1830','1830-1840','1840-1850']
 
     target_data = {
         'a': [1, 1, 1],
@@ -94,14 +94,14 @@ def test_top_10_ngrams():
         'b': 200,
         'c': 150,
     }
-    test_results = {'ngrams': counts, 'time_interval': '1820-1888'}
+    test_results = [{'ngrams': Counter(doc), 'time_interval': time_intervals[i]} for i, doc in enumerate(docs)]
 
     output_absolute = ngram.get_top_n_ngrams(test_results)
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
 
-    test_results['ngram_ttfs'] = ttf
+    [r.update({'ngram_ttfs': ttf}) for r in test_results]
     output_relative = ngram.get_top_n_ngrams(test_results)
 
     for word in target_data:

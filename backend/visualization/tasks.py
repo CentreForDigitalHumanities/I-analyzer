@@ -38,7 +38,6 @@ def ngram_data_tasks(request_json):
         )
         for b in bins
     ]), integrate_ngram_results.s(
-            freq_compensation=freq_compensation,
             number_of_ngrams=request_json['number_of_ngrams']
         )
     )()

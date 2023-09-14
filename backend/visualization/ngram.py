@@ -1,4 +1,7 @@
 from collections import Counter
+
+import numpy as np
+
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, search
@@ -122,7 +125,7 @@ def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_posit
                         words = ' '.join([token['term'] for token in ngram])
                         if freq_compensation:
                             ttf = sum(token['ttf'] for token in ngram) / len(ngram)
-                            ngram_ttfs[words] = ttf + ngram_ttfs.get(words, 0.0)
+                            ngram_ttfs[words] = ttf
                         bin_ngrams.update({ words: 1})
     
     results = {
@@ -142,10 +145,9 @@ def get_top_n_ngrams(results, number_of_ngrams=10):
     Input:
     - `results`: a list of dictionaries with the following fields:
     'ngram': Counter objects with ngram frequencies
-    'ngram-ttf': averaged total term frequencies
     'time_interval': the time intervals for which the ngrams were counted
+    (optional): 'ngram-ttf': averaged total term frequencies - only computed if freq_compensation was requested
     - `number_of_ngrams`: the number of top ngrams to return
-    - `freq_compensation`: whether the total term frequencies should be used to normalize raw frequencies
 
     Output:
     A list of number_of_ngrams data series. Each series is a dict with two keys: `'label'` contains the content of a token (presumably an
@@ -162,9 +164,7 @@ def get_top_n_ngrams(results, number_of_ngrams=10):
     if 'ngram_ttfs' in results[0]:
         total_frequencies = {}
         for r in results:
-            ttfs = r['ngram_ttfs']
-            for ngram in ttfs:
-                total_frequencies[ngram] = ttfs[ngram] + total_frequencies.get(ngram, 0.0)
+            total_frequencies.update(r['ngram_ttfs'])
         def frequency(ngram, counter): return counter[ngram] / max(1.0, total_frequencies[ngram])
         def overall_frequency(ngram): return frequency(ngram, total_counter)
         top_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:number_of_results]
