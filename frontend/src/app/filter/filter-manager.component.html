@@ -18,37 +18,8 @@
         </p>
     </div>
     <ng-container *ngFor="let filter of filters">
-        <div class="box filter-container" *ngIf="!filter.adHoc || filter.active.value" [ngClass]="{'on': filter.active.value}">
-            <div class="field has-addons">
-                <div class="control is-expanded" iaBalloon="{{ filter.description }}"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
-                    <label class="label" [for]="'filter' + filter.corpusField.name">{{ filter.corpusField.displayName
-                        }}</label>
-                </div>
-                <p class="control">
-                    <button *ngIf="(filter.isDefault$ | async) === false" class="button icon filter-icon is-primary is-inverted is-round"
-                        (click)="filter.reset()" iaBalloon="Reset this filter to its default values"
-                        iaBalloonPosition="down-left">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                    <button *ngIf="(filter.isDefault$ | async) === false"
-                        class="button icon filter-icon is-primary is-inverted is-round"
-                        [ngClass]="{'is-primary': filter.active.value}"
-                        (click)="filter.toggle()" iaBalloon="{{filter.active.value ? 'Disable this filter' : 'Enable this filter'}}"
-                        iaBalloonPosition="down-left">
-                        <i class="fa fa-filter"></i>
-                    </button>
-                </p>
-            </div>
-            <ng-container *ngIf="filter.adHoc">
-                <ia-ad-hoc-filter [filter]="filter" [queryModel]="queryModel"></ia-ad-hoc-filter>
-            </ng-container>
-            <ng-container *ngIf="!filter.adHoc" [ngSwitch]="filter.filterType">
-                <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [filter]="filter" [queryModel]="queryModel"></ia-boolean-filter>
-                <ia-date-filter *ngSwitchCase="'DateFilter'" [filter]="filter" [queryModel]="queryModel"></ia-date-filter>
-                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="filter" [queryModel]="queryModel"></ia-multiple-choice-filter>
-                <ia-range-filter *ngSwitchCase="'RangeFilter'" [filter]="filter" [queryModel]="queryModel"></ia-range-filter>
-            </ng-container>
+        <div class="block" *ngIf="!filter.adHoc || filter.active.value">
+            <ia-filter-box [filter]="filter" [queryModel]="queryModel"></ia-filter-box>
         </div>
     </ng-container>
 </div>

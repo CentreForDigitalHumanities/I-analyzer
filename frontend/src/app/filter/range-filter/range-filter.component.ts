@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
-import { RangeFilterData, RangeFilter } from '../models';
-import { BaseFilterComponent } from './base-filter.component';
+import { RangeFilterData, RangeFilter } from '../../models';
+import { BaseFilterComponent } from '../base-filter.component';
 
 @Component({
-  selector: 'ia-range-filter',
-  templateUrl: './range-filter.component.html',
-  styleUrls: ['./range-filter.component.scss']
+    selector: 'ia-range-filter',
+    templateUrl: './range-filter.component.html',
+    styleUrls: ['./range-filter.component.scss']
 })
 export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> {
     min: number;
