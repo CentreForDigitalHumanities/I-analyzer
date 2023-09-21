@@ -270,7 +270,8 @@ def test_number_of_ngrams(small_mock_corpus, basic_query):
 
 def test_freq_compensation(small_mock_corpus, basic_query):
     frequent_query = query.set_query_text(basic_query, 'to')
-    result = ngram.get_ngrams(get_binned_results(small_mock_corpus, frequent_query))
-    assert result
+    results = get_binned_results(small_mock_corpus, frequent_query, freq_compensation=True)
+    top_grams = ngram.get_top_n_ngrams(results)
+    assert top_grams
                               
 

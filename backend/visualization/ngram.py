@@ -154,10 +154,10 @@ def get_top_n_ngrams(results, number_of_ngrams=10):
     ngram string), `'data'` contains a list of the frequency of that token in each document. Depending on `divide_by_ttf`,
     this is absolute or relative to the total term frequencies provided.
     """
-    sorted_results = sorted(results, key=lambda r: r['time_interval'])
     total_counter = Counter()
     for r in results:
         total_counter.update(r['ngrams'])
+    sorted_results = sorted(results, key=lambda r: r['time_interval'])
 
     number_of_results = min(number_of_ngrams, len(total_counter))
 
@@ -165,13 +165,12 @@ def get_top_n_ngrams(results, number_of_ngrams=10):
         total_frequencies = {}
         for r in results:
             total_frequencies.update(r['ngram_ttfs'])
-        def frequency(ngram, counter): return counter[ngram] / max(1.0, total_frequencies[ngram])
+        def frequency(ngram, counter): return counter.get(ngram, 0.0) / max(1.0, total_frequencies[ngram])
         def overall_frequency(ngram): return frequency(ngram, total_counter)
         top_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:number_of_results]
     else:
-        def frequency(ngram, counter): return counter[ngram]
+        def frequency(ngram, counter): return counter.get(ngram, 0)
         top_ngrams = [word for word, freq in total_counter.most_common(number_of_results)]
-
     output = [{
             'label': ngram,
             'data': [frequency(ngram, c['ngrams'])
