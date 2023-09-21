@@ -42,7 +42,7 @@ class GuardianObserver(XMLCorpusDefinition):
     image = 'guardianobserver.jpg'
     scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
     languages = ['en']
-    category = 'newspaper'
+    category = 'periodical'
 
     @property
     def es_settings(self):
