@@ -477,6 +477,19 @@ OSLO LOBO MEDIA AS 2005""",
         'n_documents': 22,
     },
     {
+        'name': 'parliament-finland-old',
+        'docs': [
+            {
+                'country': 'Finland',
+                'speech': 'Täysistunto alkaa. Toivotan kaikki tervetulleiksi tänne Sibelius-taloon Sibeliuksen juhlavuotena aloittamaan vastuullista työtämme isänmaan hyväksi. Iältäni vanhimpana eduskunnan jäsenenä johdan puhetta tässä valtiopäivien ensimmäisessä täysistunnossa, kunnes eduskunta on työjärjestyksen 4 §:n mukaan valinnut puhemiehen ja kaksi varapuhemiestä ja nämä ovat antaneet eduskunnalle juhlallisen vakuutuksen. Plenum börjar. Som den riksdagsledamot som är äldst till åren är det min uppgift att föra ordet vid första plenum under riksmötet till dess att riksdagen enligt 4 § i riksdagens arbets-ordning inom sig valt talman och två vice talmän och dessa har avgett högtidlig försäkran inför riksdagen.',
+                'id': '2015_1_1',
+                'sequence': '1',
+                'date': '2015-04-28',
+            },
+        ],
+        'n_documents': 22,
+    },
+    {
         'name': 'parliament-ireland',
         'end': datetime(1999, 12, 31),
         'docs': [
