@@ -256,7 +256,7 @@ TOKENS_EXAMPLE = [
     }
 ]
 
-def test_number_of_ngrams(small_mock_corpus, basic_query):
+def test_number_of_ngrams(small_mock_corpus, index_small_mock_corpus, basic_query):
     # search for a word that occurs a few times
     frequent_query = query.set_query_text(basic_query, 'to')
 
@@ -268,7 +268,7 @@ def test_number_of_ngrams(small_mock_corpus, basic_query):
 
         assert len(series) == min(max_frequency, number_of_ngrams)
 
-def test_freq_compensation(small_mock_corpus, basic_query):
+def test_freq_compensation(small_mock_corpus, index_small_mock_corpus, basic_query):
     frequent_query = query.set_query_text(basic_query, 'to')
     results = get_binned_results(small_mock_corpus, frequent_query, freq_compensation=True)
     top_grams = ngram.get_top_n_ngrams(results)
