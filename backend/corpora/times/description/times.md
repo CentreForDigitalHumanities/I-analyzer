@@ -28,3 +28,7 @@ All issues of this period are present, with the following exceptions:
 ### Availability
 
 This corpus is published by [Gale](https://en.wikipedia.org/wiki/Gale_(publisher)) and is only available to members of Utrecht University.
+
+### Image source
+
+Corpus image from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Twice_round_the_clock;_or,_The_hours_of_the_day_and_night_in_London_(1859)_(14776691334).jpg)
