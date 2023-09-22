@@ -14,7 +14,10 @@ def get_ngrams(results, number_of_ngrams=10):
     ngrams = []
     ngrams = get_top_n_ngrams(results, number_of_ngrams)
 
-    return { 'words': ngrams, 'time_points': sorted([r['time_interval'] for r in results]) }
+    return { 
+        'words': ngrams, 
+        'time_points': sorted([result['time_interval'] for result in results])
+    }
 
 
 def format_time_label(start_year, end_year):
@@ -155,16 +158,16 @@ def get_top_n_ngrams(results, number_of_ngrams=10):
     this is absolute or relative to the total term frequencies provided.
     """
     total_counter = Counter()
-    for r in results:
-        total_counter.update(r['ngrams'])
+    for result in results:
+        total_counter.update(result['ngrams'])
     sorted_results = sorted(results, key=lambda r: r['time_interval'])
 
     number_of_results = min(number_of_ngrams, len(total_counter))
 
     if 'ngram_ttfs' in results[0]:
         total_frequencies = {}
-        for r in results:
-            total_frequencies.update(r['ngram_ttfs'])
+        for result in results:
+            total_frequencies.update(result['ngram_ttfs'])
         def frequency(ngram, counter): return counter.get(ngram, 0.0) / max(1.0, total_frequencies[ngram])
         def overall_frequency(ngram): return frequency(ngram, total_counter)
         top_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:number_of_results]
@@ -173,8 +176,8 @@ def get_top_n_ngrams(results, number_of_ngrams=10):
         top_ngrams = [word for word, freq in total_counter.most_common(number_of_results)]
     output = [{
             'label': ngram,
-            'data': [frequency(ngram, c['ngrams'])
-                for c in sorted_results]
+            'data': [frequency(ngram, result['ngrams'])
+                for result in sorted_results]
         }
         for ngram in top_ngrams]
 
