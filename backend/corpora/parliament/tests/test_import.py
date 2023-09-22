@@ -481,13 +481,17 @@ OSLO LOBO MEDIA AS 2005""",
         'docs': [
             {
                 'country': 'Finland',
-                'speech': 'Täysistunto alkaa. Toivotan kaikki tervetulleiksi tänne Sibelius-taloon Sibeliuksen juhlavuotena aloittamaan vastuullista työtämme isänmaan hyväksi. Iältäni vanhimpana eduskunnan jäsenenä johdan puhetta tässä valtiopäivien ensimmäisessä täysistunnossa, kunnes eduskunta on työjärjestyksen 4 §:n mukaan valinnut puhemiehen ja kaksi varapuhemiestä ja nämä ovat antaneet eduskunnalle juhlallisen vakuutuksen. Plenum börjar. Som den riksdagsledamot som är äldst till åren är det min uppgift att föra ordet vid första plenum under riksmötet till dess att riksdagen enligt 4 § i riksdagens arbets-ordning inom sig valt talman och två vice talmän och dessa har avgett högtidlig försäkran inför riksdagen.',
-                'id': '2015_1_1',
-                'sequence': '1',
-                'date': '2015-04-28',
+                'speech': 'FÖUDT HOS FINLANDS RIDDERSKAP OCR ADEL VID LANDTDAGEN ÅR 1877.TREDJE HÄFTET. Från den 1 till den 31 Oktober. FINSKA LITTERATUR-SÄLLBKAPETS TRYCKERl, 1878.',
+                'id': 'Adeln_Prot_1877_III.pdf_3_0',
+                'date_earliest': '1877-01-01',
+                'date_latest': '1877-12-31',
+                'page': 0,
+                'language': 'swe',
+                'era': 'nobility',
+                'source_archive': 'Adeln_Prot_1877_III.pdf'
             },
         ],
-        'n_documents': 22,
+        'n_documents': 21,
     },
     {
         'name': 'parliament-ireland',
