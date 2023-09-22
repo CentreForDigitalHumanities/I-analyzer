@@ -177,7 +177,7 @@ def test_absolute_bigrams(small_mock_corpus, index_small_mock_corpus, basic_quer
             else:
                 assert freq == 0
 
-def test_bigrams_with_quote(small_mock_corpus, basic_query):
+def test_bigrams_with_quote(small_mock_corpus, index_small_mock_corpus, basic_query):
     cases = [
         {
             'query': '"to hear"',
