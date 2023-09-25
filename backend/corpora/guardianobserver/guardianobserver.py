@@ -34,6 +34,7 @@ PROCESSED = "corpora/guardianobserver/processed.txt"
 class GuardianObserver(XMLCorpusDefinition):
     title = "Guardian-Observer"
     description = "Newspaper archive, 1791-2003"
+    description_page = 'guardianobserver.md'
     min_date = datetime(year=1791, month=1, day=1)
     max_date = datetime(year=2003, month=12, day=31)
     data_directory = settings.GO_DATA
@@ -41,7 +42,7 @@ class GuardianObserver(XMLCorpusDefinition):
     image = 'guardianobserver.jpg'
     scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
     languages = ['en']
-    category = 'newspaper'
+    category = 'periodical'
 
     @property
     def es_settings(self):
