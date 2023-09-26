@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('addcorpus', '0003_add_corpusconfiguration'),
+        ('addcorpus', '0004_alter_corpusconfiguration_category'),
     ]
 
     operations = [
