@@ -1,9 +1,8 @@
 from enum import Enum
 
 CATEGORIES = [
-    ('newspaper', 'Newspapers'),
     ('parliament', 'Parliamentary debates'),
-    ('periodical', 'Periodicals'),
+    ('periodical', 'Newspapers and other periodicals'),
     ('finance', 'Financial reports'),
     ('ruling', 'Court rulings'),
     ('review', 'Online reviews'),
