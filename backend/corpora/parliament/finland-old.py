@@ -28,6 +28,9 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     document_context = document_context()
 
+    chamber = field_defaults.chamber()
+    chamber.extractor = CSV(field='estate')
+    
     country = field_defaults.country()
     country.extractor = Constant('Finland')
 
@@ -47,9 +50,6 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
     date_latest.primary_sort = True
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
-
-    era = field_defaults.era(include_aggregations=True)
-    era.extractor = CSV(field='estate')
 
     language = field_defaults.language()
     language.extractor = CSV(field='language')
@@ -76,6 +76,7 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     def __init__(self):
         self.fields = [
+            self.chamber,
             self.country,
             self.date_earliest,
             self.date_latest,

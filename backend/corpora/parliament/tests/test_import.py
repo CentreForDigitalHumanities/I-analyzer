@@ -481,13 +481,27 @@ OSLO LOBO MEDIA AS 2005""",
         'docs': [
             {
                 'country': 'Finland',
-                'speech': 'FÖUDT HOS FINLANDS RIDDERSKAP OCR ADEL VID LANDTDAGEN ÅR 1877.TREDJE HÄFTET. Från den 1 till den 31 Oktober. FINSKA LITTERATUR-SÄLLBKAPETS TRYCKERl, 1878.',
+                'speech': """FÖUDT HOS
+
+FINLANDS RIDDERSKAP OCR ADEL
+
+VID
+
+LANDTDAGEN ÅR 1877.
+
+TREDJE HÄFTET.
+
+Från den 1 till den 31 Oktober.
+
+FINSKA LITTERATUR-SÄLLBKAPETS TRYCKERl,
+
+1878.""",
                 'id': 'Adeln_Prot_1877_III.pdf_3_0',
+                'chamber': 'nobility',
                 'date_earliest': '1877-01-01',
                 'date_latest': '1877-12-31',
-                'page': 0,
+                'page': '0',
                 'language': 'swe',
-                'era': 'nobility',
                 'source_archive': 'Adeln_Prot_1877_III.pdf'
             },
         ],
