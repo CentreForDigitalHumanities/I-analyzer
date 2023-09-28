@@ -22,7 +22,7 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
             yield csv_file, {}
 
-    languages = ['swe', 'fi']
+    languages = ['sv', 'fi']
     description_page = 'finland.md'
     image = 'finland.jpg'
 
