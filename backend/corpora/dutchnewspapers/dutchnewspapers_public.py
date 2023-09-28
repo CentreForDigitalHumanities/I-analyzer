@@ -36,7 +36,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
-    category = 'newspaper'
+    category = 'periodical'
 
     @property
     def es_settings(self):

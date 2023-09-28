@@ -1,11 +1,11 @@
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.es_settings import get_stopwords_from_settings
 from es import download as download
 
 def corpus_stopwords(corpus_name):
-    corpus = load_corpus(corpus_name)
+    corpus = load_corpus_definition(corpus_name)
     return get_stopwords_from_settings(corpus.es_settings)
 
 def make_wordcloud_data(documents, field, corpus):

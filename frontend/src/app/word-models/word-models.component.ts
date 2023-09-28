@@ -72,7 +72,7 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
     teardown() {}
 
     setStateFromParams(params: Params) {
-        this.queryText = _.get(params, 'query', undefined);
+        this.queryText = params.get('query');
         if (this.queryText) {
             this.activeQuery = this.queryText;
             this.validateQuery();

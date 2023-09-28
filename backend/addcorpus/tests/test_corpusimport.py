@@ -11,7 +11,7 @@ def test_key_error(db, settings):
     settings.CORPORA = {}
 
     with pytest.raises(KeyError) as e:
-        corpora = load_corpus.load_all_corpora()
+        corpora = load_corpus.load_all_corpus_definitions()
         corpora['times']
 
 def test_import_error(db, settings):
@@ -22,11 +22,11 @@ def test_import_error(db, settings):
     settings.CORPORA = {'times2': '/somewhere/times/times.py'}
 
     with pytest.raises(FileNotFoundError) as e:
-        load_corpus.load_corpus('times2')
+        load_corpus.load_corpus_definition('times2')
 
     # corpus should not be included when
     # loading all corpora
-    corpora = load_corpus.load_all_corpora()
+    corpora = load_corpus.load_all_corpus_definitions()
     assert 'times2' not in corpora
     assert not Corpus.objects.filter(name='times2')
 
@@ -55,7 +55,7 @@ def test_import_from_anywhere(db, temp_times_definition):
     ''' Verify that the corpus definition
     can live anywhere in the file system
     '''
-    corpus_definitions = load_corpus.load_all_corpora()
+    corpus_definitions = load_corpus.load_all_corpus_definitions()
     assert 'times' in corpus_definitions
     corpus = corpus_definitions['times']
     assert corpus.title == 'Times'
@@ -65,5 +65,5 @@ def test_corpus_dir_is_absolute(db, temp_times_definition):
     assert os.path.isabs(corpus_dir)
 
 def test_mismatch_corpus_index_names(temp_times_definition):
-    times = load_corpus.load_corpus('times')
+    times = load_corpus.load_corpus_definition('times')
     assert times.es_index == 'some-other-name'

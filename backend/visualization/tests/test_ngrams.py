@@ -1,8 +1,6 @@
-from random import sample
 from typing import Counter
 from visualization import query, ngram
-from visualization.tests.mock_corpora.small_mock_corpus import SmallMockCorpus
-from datetime import datetime
+from datetime import datetime, date
 import pytest
 
 FILTER_MIN_DATE = datetime(1850, 1, 1)
@@ -24,8 +22,8 @@ CENTURY_BINS = [
 def test_total_time_interval_no_filter(basic_query, small_mock_corpus, small_mock_corpus_specs):
     # no date filter: should use corpus min_date/max_date
     min_date, max_date = ngram.get_total_time_interval(basic_query, small_mock_corpus)
-    assert min_date == small_mock_corpus_specs['min_date']
-    assert max_date == small_mock_corpus_specs['max_date']
+    assert date.__eq__(min_date, small_mock_corpus_specs['min_date'])
+    assert date.__eq__(max_date,small_mock_corpus_specs['max_date'])
 
 def test_total_time_interval_with_filter(mock_corpus, basic_query):
     datefilter = query.make_date_filter(FILTER_MIN_DATE, FILTER_MAX_DATE)
@@ -83,7 +81,7 @@ def test_top_10_ngrams():
         ['a', 'c']
     ]
 
-    counts = [Counter(doc) for doc in docs]
+    time_intervals = ['1820-1830','1830-1840','1840-1850']
 
     target_data = {
         'a': [1, 1, 1],
@@ -96,14 +94,15 @@ def test_top_10_ngrams():
         'b': 200,
         'c': 150,
     }
+    test_results = [{'ngrams': Counter(doc), 'time_interval': time_intervals[i]} for i, doc in enumerate(docs)]
 
-    output_absolute = ngram.get_top_n_ngrams(counts)
+    output_absolute = ngram.get_top_n_ngrams(test_results)
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
 
-
-    output_relative = ngram.get_top_n_ngrams(counts, ttf)
+    [r.update({'ngram_ttfs': ttf}) for r in test_results]
+    output_relative = ngram.get_top_n_ngrams(test_results)
 
     for word in target_data:
         dataset_relative = next(series for series in output_relative if series['label'] == word)
@@ -112,13 +111,16 @@ def test_top_10_ngrams():
             for w in target_data }
         assert dataset_relative['data'] == relative_frequencies[word]
 
-
+def get_binned_results(corpus, query, time_bins=CENTURY_BINS, ngram_size=2, term_position='any', freq_compensation=None, subfield='none', max_size_per_interval=20, date_field='date'):
+    return [
+        ngram.tokens_by_time_interval(
+            corpus, query, 'content', bin, ngram_size, term_position, freq_compensation, subfield, max_size_per_interval, date_field)
+        for bin in time_bins
+    ]
 
 def test_absolute_bigrams(small_mock_corpus, index_small_mock_corpus, basic_query):
     # search for a word that occurs a few times
     frequent_query = query.set_query_text(basic_query, 'to')
-
-
 
     # expected bigram frequencies
     bigrams = [
@@ -160,12 +162,13 @@ def test_absolute_bigrams(small_mock_corpus, index_small_mock_corpus, basic_quer
         }
     ]
 
-    result = ngram.get_ngrams(frequent_query, small_mock_corpus, 'content', freq_compensation=False)
+    results = get_binned_results(small_mock_corpus, frequent_query)
 
-    assert result['time_points'] == ['{}-{}'.format(start, end) for start, end in CENTURY_BINS]
+    assert sorted([r['time_interval'] for r in results]) == sorted(['{}-{}'.format(start, end) for start, end in CENTURY_BINS])
 
+    integrated_results = ngram.get_ngrams(results)
     for bigram in bigrams:
-        data = next((item for item in result['words'] if item['label'] == bigram['label']), None)
+        data = next((item for item in integrated_results['words'] if item['label'] == bigram['label']), None)
         assert data
 
         for bin, freq in enumerate(data['data']):
@@ -204,7 +207,7 @@ def test_bigrams_with_quote(small_mock_corpus, index_small_mock_corpus, basic_qu
         # search for a word that occurs a few times
         case_query = query.set_query_text(basic_query, case['query'])
 
-        result = ngram.get_ngrams(case_query, small_mock_corpus, 'content', freq_compensation=False)
+        result = ngram.get_ngrams(get_binned_results(small_mock_corpus, case_query))
 
         ngrams = case['ngrams']
 
@@ -259,8 +262,16 @@ def test_number_of_ngrams(small_mock_corpus, index_small_mock_corpus, basic_quer
 
     max_frequency = 6
 
-    for size in range(1, max_frequency + 2):
-        result = ngram.get_ngrams(frequent_query, small_mock_corpus, 'content', number_of_ngrams= size)
+    for number_of_ngrams in range(1, max_frequency + 2):
+        result = ngram.get_ngrams(get_binned_results(small_mock_corpus, frequent_query), number_of_ngrams=number_of_ngrams)
         series = result['words']
 
-        assert len(series) == min(max_frequency, size)
+        assert len(series) == min(max_frequency, number_of_ngrams)
+
+def test_freq_compensation(small_mock_corpus, index_small_mock_corpus, basic_query):
+    frequent_query = query.set_query_text(basic_query, 'to')
+    results = get_binned_results(small_mock_corpus, frequent_query, freq_compensation=True)
+    top_grams = ngram.get_top_n_ngrams(results)
+    assert top_grams
+                              
+
