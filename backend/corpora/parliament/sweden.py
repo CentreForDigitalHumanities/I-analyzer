@@ -46,6 +46,7 @@ class ParliamentSweden(Parliament, CSVCorpusDefinition):
     min_date = datetime(year=1920, month=1, day=1)
     data_directory = settings.PP_SWEDEN_DATA
     es_index = getattr(settings, 'PP_SWEDEN_INDEX', 'parliament-sweden')
+    word_model_path = getattr(settings, 'PP_SWEDEN_WM', None)
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
