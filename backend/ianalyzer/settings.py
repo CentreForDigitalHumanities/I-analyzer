@@ -103,3 +103,40 @@ except ImportError as e:
     )
 
 DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    'formatters': {
+        'standard': {
+            'format': '\n --> %(asctime)s %(levelname)s in ' 
+                        '%(pathname)s:%(lineno)d\n%(message)s',
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "/backend/.log/indexing.log",
+            "formatter": "standard"
+        }
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "indexing": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propragate": True
+        }
+    },
+}
