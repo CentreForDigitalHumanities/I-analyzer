@@ -1,9 +1,12 @@
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { Observable, Observer } from 'rxjs';
-import { distinct, filter, map, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { distinct, filter, map, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 const isDistinct = ([a, b]) => !_.isEqual(a, b);
+
+const mergeCurrentIntoPushing = ([current, pushing]) =>
+    [current, _.extend(current, pushing)];
 
 export class QueryParamManager<State> {
     constructor(
@@ -14,9 +17,14 @@ export class QueryParamManager<State> {
         private updateStateFromParams: (params: Params) => void,
         private complete$: Observable<void>,
         private relevantKeys: string[],
+        resetOnComplete = true,
     ) {
         this.subscribeRouteToState();
         this.subscribeStateToRoute();
+
+        if (resetOnComplete) {
+            this.resetOnComplete();
+        }
     }
 
     /** subscribe to state update and send updates to the route */
@@ -27,8 +35,7 @@ export class QueryParamManager<State> {
             map(this.paramsFromState),
         );
 
-        const mergeCurrentIntoPushing = ([current, pushing]) =>
-            [current, _.extend(current, pushing)];
+
 
         const paramPushes$ = paramsFromState$.pipe(
             // merge the data pushed by the state  update with the latest route data
@@ -68,5 +75,23 @@ export class QueryParamManager<State> {
         );
 
         statePushes$.subscribe(params => this.updateStateFromParams(params));
+    }
+
+    private resetOnComplete() {
+        const nullParams = Object.assign({}, ...this.relevantKeys.map(f => ({ [f]: null })));
+
+        this.complete$.pipe(
+            // only need to do this once
+            take(1),
+
+            // signal null parameters
+            map(() => nullParams),
+
+            // merge null parameters into latests parameters
+            withLatestFrom(this.paramUpdate$),
+            map(mergeCurrentIntoPushing),
+        ).subscribe(params =>
+            this.paramsObserver$.next(params)
+        );
     }
 };
