@@ -202,7 +202,13 @@ def save_flask_download(row):
 
 def import_and_save_table(directory, flask_table_name, save_function, **kwargs):
     for row in import_table_data(directory, flask_table_name):
-        save_function(row, **kwargs)
+        try:
+            save_function(row, **kwargs)
+        except:
+            warnings.warn(
+                f'Could not migrate row {row}',
+                Warning
+            )
 
 
 def import_and_save_all_data(directory):
