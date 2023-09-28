@@ -1,7 +1,7 @@
-import { EsQuery, EsQuerySorted } from '../services';
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
+import { QueryParameters } from './search-requests';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -83,15 +83,20 @@ export interface QueryFeedback {
 
 export interface TaskResult { task_ids: string[] };
 
-export type TasksOutcome<ExpectedResult> = { status: 'failed' } | { status: 'working' } |
-    { status: 'done'; done: true; results: ExpectedResult[] };
+export interface TaskSuccess {
+    success: true;
+}
 
-export interface ResultsDownloadParameters {
+export type TasksOutcome<ExpectedResult> =
+    | { status: 'failed' }
+    | { status: 'working' }
+    | { status: 'done'; done: true; results: ExpectedResult[] };
+
+export type ResultsDownloadParameters = {
     corpus: string;
-    es_query: EsQuery | EsQuerySorted;
     fields: string[];
     route: string;
-}
+} & QueryParameters;
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
 

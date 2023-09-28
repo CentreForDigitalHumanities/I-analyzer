@@ -3,25 +3,24 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import logging
-from pprint import pprint
-import random
 import re
-import sys
-from datetime import datetime, timedelta
-from os.path import join, isfile, split, splitext
+from datetime import datetime
+from os.path import join, split, splitext
 import os
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
 from addcorpus import filters
-from addcorpus.extract import Combined, Metadata, XML
+from addcorpus.extract import Metadata, XML
 from addcorpus.load_corpus import corpus_dir
 
-# Source files ################################################################
+from corpora.utils.constants import document_context
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 
-class DutchNewspapersPublic(XMLCorpus):
+class DutchNewspapersPublic(XMLCorpusDefinition):
     '''
     The public portion of KB newspapers
 
@@ -37,7 +36,11 @@ class DutchNewspapersPublic(XMLCorpus):
     es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
-    category = 'newspaper'
+    category = 'periodical'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'text'
     tag_entry = 'p'
@@ -117,12 +120,21 @@ class DutchNewspapersPublic(XMLCorpus):
         'onbekend': 'unknown',
     }
 
+    document_context = document_context(
+        ['newspaper_title', 'issue_number'],
+        None,
+        None,
+        'issue'
+    )
+
+
     @property
     def fields(self):
-        return [Field(
+        return [FieldDefinition(
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
+            es_mapping=keyword_mapping(),
             extractor=XML(tag='identifier',
                                   toplevel=True,
                                   recursive=True,
@@ -137,7 +149,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   }
             )
         ),
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             description='Publication date.',
@@ -154,7 +166,7 @@ class DutchNewspapersPublic(XMLCorpus):
             ),
             extractor=Metadata('date')
         ),
-        Field(
+        FieldDefinition(
             name='ocr',
             display_name='OCR confidence',
             description='OCR confidence level.',
@@ -176,7 +188,7 @@ class DutchNewspapersPublic(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(
+        FieldDefinition(
             name='newspaper_title',
             display_name='Newspaper title',
             description='Title of the newspaper',
@@ -190,14 +202,14 @@ class DutchNewspapersPublic(XMLCorpus):
             ),
             extractor=Metadata('title')
         ),
-        Field(
+        FieldDefinition(
             name='version_of',
             display_name='Version of',
             description='The newspaper is a version of this newspaper.',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('isVersionOf')
         ),
-        Field(
+        FieldDefinition(
             name='issue_number',
             display_name='Issue number',
             description='Issue number of the newspaper',
@@ -205,7 +217,7 @@ class DutchNewspapersPublic(XMLCorpus):
             es_mapping={'type': 'integer'},
             extractor=Metadata('issuenumber')
         ),
-        Field(
+        FieldDefinition(
             name='category',
             display_name='Category',
             description='Whether the item is an article, advertisment, etc.',
@@ -229,7 +241,7 @@ class DutchNewspapersPublic(XMLCorpus):
                 option_count=2,
             ),
         ),
-        Field(
+        FieldDefinition(
             name='circulation',
             display_name='Circulation',
             description='The area in which the newspaper was distributed.',
@@ -241,21 +253,22 @@ class DutchNewspapersPublic(XMLCorpus):
                 option_count=7
             ),
         ),
-        Field(
+        FieldDefinition(
             name='publisher',
             display_name='Publisher',
             description='Publisher',
+            es_mapping=keyword_mapping(),
             search_field_core=True,
             extractor=Metadata('publisher')
         ),
-        Field(
+        FieldDefinition(
             name='language',
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('language')
         ),
-        Field(
+        FieldDefinition(
             name='article_title',
             display_name='Article title',
             description='Article title',
@@ -263,27 +276,27 @@ class DutchNewspapersPublic(XMLCorpus):
             search_field_core=True,
             extractor=XML(tag='title', flatten=True, toplevel=True)
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
             extractor=Metadata('id')
         ),
-        Field(
+        FieldDefinition(
             name='source',
             display_name='Source',
             description='Library or archive which keeps the hard copy of this newspaper.',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('source')
         ),
-        Field(
+        FieldDefinition(
             name='pub_place',
             display_name='Publication Place',
             description='Where the newspaper was published',
             es_mapping={'type': 'keyword'},
             extractor=Metadata('pub_place')
         ),
-        Field(
+        FieldDefinition(
             name='temporal',
             display_name='Edition',
             description='Newspaper edition for the given date',
@@ -297,11 +310,12 @@ class DutchNewspapersPublic(XMLCorpus):
             ),
             extractor=Metadata('temporal')
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,

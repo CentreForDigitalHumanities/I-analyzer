@@ -6,6 +6,8 @@ import logging
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
+from tag.filter import handle_tags_in_request
+from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)
 
@@ -20,19 +22,33 @@ def get_query_parameters(request):
 
 class ForwardSearchView(APIView):
     '''
-    Forward search request to elasticsearch
+    Forward search request to elasticsearch search API
+
+    The request may specify:
+    - `es_query`: a query for the elasticsearch search API
+    https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html
+    - `tags`: an array of tag IDs that the results should be filtered on. Multiple tags
+    are combined with OR logic: a document must match any of them.
+
+    You can optionally include extra query parameters in the request, which should be valid
+    parameters for the elasticsearch API. They will be merged with the query body. E.g.,
+    adding `size=100&from=200` as a query parameter will merge `{"size":100, "from": 200}`
+    into the query. If you specify a parameter in both the body and as a query parameter,
+    the query parameter will be used.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
 
+        handle_tags_in_request(request)
+
         # combine request json with query parameters (size, scroll)
         query = {
-            **request.data,
+            **request.data.get('es_query', {}),
             **get_query_parameters(request)
         }
 

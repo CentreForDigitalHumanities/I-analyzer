@@ -136,7 +136,7 @@ def save_flask_user(row):
 
 
 def save_flask_corpus(row):
-    corpus = Corpus(**row)
+    corpus = Corpus(id=row['id'], name=row['name'])
     corpus.save()
 
 

@@ -58,25 +58,25 @@ export class SearchService {
         } as SearchResults;
     }
 
-    public async aggregateSearch<TKey>(
+    public async aggregateSearch(
         corpus: Corpus,
         queryModel: QueryModel,
         aggregators: any
     ): Promise<AggregateQueryFeedback> {
-        return this.elasticSearchService.aggregateSearch<TKey>(
+        return this.elasticSearchService.aggregateSearch(
             corpus,
             queryModel,
             aggregators
         );
     }
 
-    public async dateHistogramSearch<TKey>(
+    public async dateHistogramSearch(
         corpus: Corpus,
         queryModel: QueryModel,
         fieldName: string,
         timeInterval: string
     ): Promise<AggregateQueryFeedback> {
-        return this.elasticSearchService.dateHistogramSearch<TKey>(
+        return this.elasticSearchService.dateHistogramSearch(
             corpus,
             queryModel,
             fieldName,

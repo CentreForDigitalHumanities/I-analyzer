@@ -1,4 +1,6 @@
-from addcorpus.corpus import Field
+from datetime import datetime
+
+from addcorpus.corpus import FieldDefinition
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping, main_content_mapping
@@ -9,9 +11,13 @@ from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping, m
 
 # Corpora that include a `foo` field should initialise it with `foo()` and then modify attributes as needed.
 
+MIN_DATE = datetime(year=1800, month=1, day=1)
+MAX_DATE = datetime(year=2022, month=12, day=31)
+
+
 def book_id():
     """Unique ID of the book in which the speech was recorded"""
-    return Field(
+    return FieldDefinition(
         name='book_id',
         display_name='Book ID',
         description='Unique identifier of the book in which the speech was recorded',
@@ -20,7 +26,7 @@ def book_id():
 
 def book_label():
     """Label of the book in which the speech was recorded"""
-    return Field(
+    return FieldDefinition(
         name='book_label',
         display_name='Book label',
         description='Label of the book in which the speech was recorded',
@@ -29,7 +35,7 @@ def book_label():
 
 def chamber():
     "human-readable name of chamber (commons, senate, etc)"
-    return Field(
+    return FieldDefinition(
         name='chamber',
         display_name='Chamber',
         description='Chamber in which the debate took place',
@@ -43,7 +49,7 @@ def chamber():
 
 def committee():
     'Committee that held the debate.'
-    return Field(
+    return FieldDefinition(
         name = 'committee',
         display_name = 'Committee',
         description = 'Committee that held the debate',
@@ -56,7 +62,7 @@ def committee():
 
 def country():
     "Country in which the debate took place"
-    return Field(
+    return FieldDefinition(
         name='country',
         display_name='Country',
         description='Country in which the debate took place',
@@ -65,7 +71,7 @@ def country():
 
 def date():
     "The date on which the debate took place."
-    return Field(
+    return FieldDefinition(
         name='date',
         display_name='Date',
         description='The date on which the debate took place.',
@@ -83,7 +89,7 @@ def date():
 
 def date_is_estimate():
     """Wether the date field is an estimate. Boolean value."""
-    return Field(
+    return FieldDefinition(
         name='date_is_estimate',
         display_name='Date is estimate',
         description='Whether the recorded date is an estimate',
@@ -93,7 +99,7 @@ def date_is_estimate():
 
 def date_earliest():
     "The earliest date on which the debate may have taken place"
-    return Field(
+    return FieldDefinition(
         name='date_earliest',
         display_name='Earliest date',
         description='The date on which the debate took place.',
@@ -110,7 +116,7 @@ def date_earliest():
 
 def date_latest():
     "The latest date on which the debate may have taken place"
-    return Field(
+    return FieldDefinition(
         name='date_latest',
         display_name='Latest date',
         description='The date on which the debate took place.',
@@ -127,7 +133,7 @@ def date_latest():
 
 def era(include_aggregations = True):
     if include_aggregations:
-        return Field(
+        return FieldDefinition(
             name='era',
             es_mapping=keyword_mapping(),
             display_name='Era',
@@ -139,7 +145,7 @@ def era(include_aggregations = True):
             ),
         )
     else:
-        return Field(
+        return FieldDefinition(
             name = 'era',
             display_name='Era',
             description='The parliamentary era in which the speech or debate was held',
@@ -148,7 +154,7 @@ def era(include_aggregations = True):
 
 def chamber():
     "human-readable name of house (commons, senate, etc)"
-    return Field(
+    return FieldDefinition(
         name='chamber',
         display_name='Chamber',
         description='Chamber in which the debate took place',
@@ -162,7 +168,7 @@ def chamber():
 
 def column():
     "column number or range (used in UK data) (string)"
-    return Field(
+    return FieldDefinition(
         name='column',
         display_name='Column(s)',
         description='Column(s) of the speech in the original document',
@@ -172,7 +178,7 @@ def column():
 
 def debate_type():
     "Type of debate in which the speech occurred"
-    return Field(
+    return FieldDefinition(
         name='debate_type',
         display_name='Debate type',
         description='Type of debate in which the speech occurred',
@@ -181,7 +187,7 @@ def debate_type():
 
 def debate_title():
     "Title of the debate in which the speech was held"
-    return Field(
+    return FieldDefinition(
         name='debate_title',
         display_name='Debate title',
         description='Title of the debate in which the speech was held',
@@ -191,7 +197,7 @@ def debate_title():
 
 def debate_id():
     "unique ID for the debate"
-    return Field(
+    return FieldDefinition(
         name='debate_id',
         display_name='Debate ID',
         description='Unique identifier of the debate in which the speech was held',
@@ -199,7 +205,7 @@ def debate_id():
     )
 
 def language():
-    return Field(
+    return FieldDefinition(
         name='language',
         display_name='Language',
         description='Language of the speech',
@@ -213,7 +219,7 @@ def language():
 
 def legislature():
     ""
-    return Field(
+    return FieldDefinition(
         name='legislature',
         display_name='Legislature',
         description='Title of individuals elected to parliament',
@@ -227,7 +233,7 @@ def legislature():
 
 def topic():
     "if debates are divided into topics, they are specified here"
-    return Field(
+    return FieldDefinition(
         name='topic',
         display_name='Topic',
         description='Topic of the debate in which the speech was held',
@@ -237,7 +243,7 @@ def topic():
 
 def subtopic():
     "further division of topics into subtopics"
-    return Field(
+    return FieldDefinition(
         name='subtopic',
         display_name='Subtopic',
         description='Subtopic of the debate in which the speech was held',
@@ -247,7 +253,7 @@ def subtopic():
 def subject():
     """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
     subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
-    return Field(
+    return FieldDefinition(
         name='subject',
         display_name='Subject',
         description='Subject that the speech is concerned with',
@@ -261,7 +267,7 @@ def subject():
 
 def sequence():
     "integer index of the speech in a debate"
-    return Field(
+    return FieldDefinition(
         name='sequence',
         display_name='Sequence',
         description='Index of the sequence of speeches in a debate',
@@ -276,7 +282,7 @@ def source_archive():
     A field which can be used to (internally) keep track of the source
     of the specific dataset
     """
-    return Field(
+    return FieldDefinition(
         name='source_archive',
         es_mapping=keyword_mapping(),
         hidden=True
@@ -288,12 +294,12 @@ def speech():
     speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
     stopword and stemmer filter need to be defined for each language
     """
-    return Field(
+    return FieldDefinition(
         name='speech',
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True),
+        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True, updated_highlighting=True),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
@@ -303,7 +309,7 @@ def speech():
 
 def speech_id():
     "unique (corpus-level) ID for the speech"
-    return Field(
+    return FieldDefinition(
         name='id',
         display_name='Speech ID',
         description='Unique identifier of the speech',
@@ -313,7 +319,7 @@ def speech_id():
 
 def speaker():
     "name of the speaker"
-    return Field(
+    return FieldDefinition(
         name='speaker',
         display_name='Speaker',
         description='The speaker of the transcribed speech',
@@ -326,7 +332,7 @@ def speaker():
 
 def speech_type():
     "type of speech, e.g. question, answer, interjection, point of order"
-    return Field(
+    return FieldDefinition(
         name='speech_type',
         display_name='Speech type',
         description='The type of speech',
@@ -335,7 +341,7 @@ def speech_type():
 
 def speaker_id():
     "unique (corpus level) ID for the speaker"
-    return Field(
+    return FieldDefinition(
         name='speaker_id',
         display_name='Speaker ID',
         description='Unique identifier of the speaker',
@@ -344,7 +350,7 @@ def speaker_id():
 
 def speaker_constituency():
     "Constituency represented by the speaker"
-    return Field(
+    return FieldDefinition(
         name='speaker_constituency',
         display_name='Speaker constituency',
         description='Constituency represented by the speaker',
@@ -354,7 +360,7 @@ def speaker_constituency():
 
 def speaker_birthplace():
     """Birthplace of the speaker (string)"""
-    return Field(
+    return FieldDefinition(
         name='speaker_birthplace',
         display_name='Speaker place of birth',
         description='Birthplace of the speaker',
@@ -363,7 +369,7 @@ def speaker_birthplace():
 
 def speaker_birth_country():
     """Birth country of the speaker (string)"""
-    return Field(
+    return FieldDefinition(
         name='speaker_birth_country',
         display_name='Speaker country of birth',
         description='Country in which the speaker was born',
@@ -372,7 +378,7 @@ def speaker_birth_country():
 
 def speaker_birth_year():
     """Year in which the speaker was born (int)"""
-    return Field(
+    return FieldDefinition(
         name='speaker_birth_year',
         display_name='Speaker year of birth',
         description='Year in which the speaker was born',
@@ -381,7 +387,7 @@ def speaker_birth_year():
 
 def speaker_death_year():
     """Year in which the speaker died (int)"""
-    return Field(
+    return FieldDefinition(
         name='speaker_death_year',
         display_name='Speaker year of death',
         description='Year in which the speaker died',
@@ -390,7 +396,7 @@ def speaker_death_year():
 
 def speaker_gender():
     """Gender of the speaker."""
-    return Field(
+    return FieldDefinition(
         name='speaker_gender',
         display_name='Speaker gender',
         description='Gender of the speaker',
@@ -400,7 +406,7 @@ def speaker_gender():
 
 def speaker_profession():
     """Profession of the speaker."""
-    return Field(
+    return FieldDefinition(
         name='speaker_profession',
         display_name='Speaker profession',
         description='Profession of the speaker',
@@ -409,7 +415,7 @@ def speaker_profession():
 
 def speaker_aristocracy():
     """Whether the speaker is a member of the aristocracy"""
-    return Field(
+    return FieldDefinition(
         name='speaker_aristocracy',
         display_name='Speaker aristocracy',
         description='Aristocratic title of the speaker',
@@ -418,7 +424,7 @@ def speaker_aristocracy():
 
 def speaker_academic_title():
     """Academic title of the speaker"""
-    return Field(
+    return FieldDefinition(
         name='speaker_academic_title',
         display_name='Speaker academic title',
         description='Academic title of the speaker',
@@ -428,7 +434,7 @@ def speaker_academic_title():
 
 def parliamentary_role():
     "parliamentary role of the speaker (speaker, chair, MP, etc...)"
-    return Field(
+    return FieldDefinition(
         name='role',
         display_name='Parliamentary role',
         description='Role of the speaker in parliament',
@@ -441,7 +447,7 @@ def parliamentary_role():
 
 def ministerial_role():
     'Ministerial role of the speaker (minister of such-and-such, etc.)'
-    return Field(
+    return FieldDefinition(
         name='ministerial_role',
         display_name='Ministerial role',
         description='Ministerial role of the speaker',
@@ -454,7 +460,7 @@ def ministerial_role():
 
 def role_long():
     """Expanded description of the value for `role`."""
-    return Field(
+    return FieldDefinition(
         name='role_long',
         display_name='Role (long)',
         description='Expanded description of role of the speaker in the debate',
@@ -463,7 +469,7 @@ def role_long():
 
 def party():
     "name of the political party of the speaker"
-    return Field(
+    return FieldDefinition(
         name='party',
         display_name='Party',
         description='Political party that the speaker belongs to',
@@ -477,7 +483,7 @@ def party():
 
 def party_id():
     "unique ID of the party"
-    return Field(
+    return FieldDefinition(
         name='party_id',
         display_name='Party ID',
         description='Unique identifier of the political party the speaker belongs to',
@@ -486,7 +492,7 @@ def party_id():
 
 def party_full():
     "human-readable name of the party"
-    return Field(
+    return FieldDefinition(
         name='party_full',
         display_name='Party (full name)',
         description='Full name of the political party that the speaker belongs to',
@@ -497,7 +503,7 @@ def party_role():
     """
     Role of the speaker's party in parliament (opposition, coalition, cabinet, etc.)
     """
-    return Field(
+    return FieldDefinition(
         name='party_role',
         display_name='Party role',
         description='Role of the speaker\'s political party in parliament at the time of speaking',
@@ -511,7 +517,7 @@ def party_role():
 
 def page():
     "page number or range (string)"
-    return Field(
+    return FieldDefinition(
         name='page',
         display_name='Page(s)',
         description='Page(s) of the speech in the original document',
@@ -521,7 +527,7 @@ def page():
 
 def page_source():
     "page number in source document (can contain letters)"
-    return Field(
+    return FieldDefinition(
         name='page_source',
         display_name='Source page number',
         description='Page number in source document',
@@ -532,7 +538,7 @@ def page_source():
 def subject():
     """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
     subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
-    return Field(
+    return FieldDefinition(
         name='subject',
         display_name='Subject',
         description='Subject that the speech is concerned with',
@@ -546,7 +552,7 @@ def subject():
 
 def url():
     """url of the source file"""
-    return Field(
+    return FieldDefinition(
         name='url',
         display_name='Source url',
         description='URL to source file of this speech',

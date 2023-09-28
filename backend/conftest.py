@@ -1,7 +1,10 @@
 import pytest
 from allauth.account.models import EmailAddress
+from time import sleep
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.load_corpus import load_all_corpora
+from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.save_corpus import load_and_save_all_corpora
+from es import es_index as index
 
 # user credentials and logged-in api clients
 @pytest.fixture
@@ -76,8 +79,22 @@ def es_client():
 
 # mock corpora
 
-@pytest.fixture(scope='function')
-def django_db_setup(django_db_setup, django_db_blocker):
+@pytest.fixture(autouse=True)
+def add_mock_corpora_to_db(db):
     #add mock corpora to the database at the start of each test
-    with django_db_blocker.unblock():
-        load_all_corpora()
+    load_and_save_all_corpora()
+
+def index_test_corpus(es_client, corpus_name):
+    corpus = load_corpus_definition(corpus_name)
+    index.create(es_client, corpus, False, True, False)
+    index.populate(es_client, corpus_name, corpus)
+
+    # ES is "near real time", so give it a second before we start searching the index
+    sleep(2)
+
+def clear_test_corpus(es_client, corpus_name):
+    corpus = load_corpus_definition(corpus_name)
+    index = corpus.es_index
+    # check existence in case teardown is executed more than once
+    if es_client.indices.exists(index = index):
+        es_client.indices.delete(index = index)

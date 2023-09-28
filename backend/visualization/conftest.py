@@ -1,12 +1,73 @@
 import pytest
 import os
-from es import es_index as index
-from addcorpus.load_corpus import load_corpus
-from time import sleep
+import random
+
+from conftest import index_test_corpus, clear_test_corpus
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+class MockIndex(object):
+    def analyze(self, index, body):
+        return {'tokens': [{'token': 'test'}]}
+
+class MockClient(object):
+    ''' Mock ES Client returning random hits and term vectors '''
+    def __init__(self, num_hits):
+        self.num_hits = num_hits
+        self.indices = MockIndex()
+
+    def search(self, index, size, **kwargs):
+        return {'hits':
+            {'total': {'value': self.num_hits},
+            'hits': [{'_id': hit_id} for hit_id in range(min(size, self.num_hits))]},
+            '_scroll_id': '42'
+        }
+    
+    def clear_scroll(self, scroll_id):
+        return {'status': 'ok'}
+
+    def termvectors(self, index, id, fields):
+        ''' return 10 matches for term `test` '''
+        return {'term_vectors': {field: {
+            "terms": {'test': {
+                    'ttf': random.randrange(1, 20000),
+                    'tokens': [
+                        {
+                        "position": random.randrange(1, 200)
+                        }
+                        for j in range(10)
+                    ]
+                }, 'nottest': {
+                    'ttf': random.randrange(1, 20000),
+                    'tokens': [
+                        {
+                        "position": random.randrange(1, 200)
+                        }
+                        for j in range(5)
+                    ]
+                }
+                }
+            } for field in fields}}
+
+@pytest.fixture()
+def es_client_m_hits():
+    ''' return a client that is expected to give:
+    - 5000 total hits
+    - size hits
+    - size * 10 term matches
+    '''
+    return MockClient(5000)
+
+@pytest.fixture()
+def es_client_k_hits():
+    ''' return a client that is expected give:
+    - 500 total hits
+    - size hits
+    - size * 10 term matches
+    '''
+    return MockClient(500)
 
 @pytest.fixture(scope='session')
 def small_mock_corpus():
@@ -42,21 +103,6 @@ def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus,
         large_mock_corpus: large_mock_corpus_specs,
     }
     return specs[mock_corpus]
-
-def index_test_corpus(es_client, corpus_name):
-    corpus = load_corpus(corpus_name)
-    index.create(es_client, corpus, False, True, False)
-    index.populate(es_client, corpus_name, corpus)
-
-    # ES is "near real time", so give it a second before we start searching the index
-    sleep(2)
-
-def clear_test_corpus(es_client, corpus_name):
-    corpus = load_corpus(corpus_name)
-    index = corpus.es_index
-    # check existence in case teardown is executed more than once
-    if es_client.indices.exists(index = index):
-        es_client.indices.delete(index = index)
 
 @pytest.fixture(scope='session')
 def index_small_mock_corpus(small_mock_corpus, es_client):
@@ -96,3 +142,4 @@ def basic_query():
             }
         }
     }
+

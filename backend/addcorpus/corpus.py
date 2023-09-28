@@ -3,22 +3,24 @@ Module contains the base classes from which corpora can derive;
 '''
 
 from . import extract
-from zipfile import ZipExtFile
 import itertools
-import inspect
-import json
 import bs4
 import csv
 import sys
 from datetime import datetime
-from langcodes import Language, standardize_tag
 from os.path import isdir
-import logging
-logger = logging.getLogger('indexing')
+
+from django.conf import settings
+from langcodes import Language, standardize_tag
+
 from addcorpus.constants import CATEGORIES
 
+import logging
 
-class Corpus(object):
+logger = logging.getLogger('indexing')
+
+
+class CorpusDefinition(object):
     '''
     Subclasses of this class define corpora and their documents by specifying:
 
@@ -38,7 +40,7 @@ class Corpus(object):
     @property
     def description(self):
         '''
-        Minimum timestamp for data files.
+        Short description of the corpus
         '''
         raise NotImplementedError()
 
@@ -63,15 +65,14 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def languages(self):
-        '''
-        Language(s) used in the corpus
 
-        Should be a list of strings. Each language should
-        correspond to an ISO-639 code.
-        '''
-        return ['']
+    '''
+    Language(s) used in the corpus
+
+    Should be a list of strings. Each language should
+    correspond to an ISO-639 code.
+    '''
+    languages = ['']
 
     @property
     def category(self):
@@ -89,23 +90,19 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def es_alias(self):
-        '''
-        Elasticsearch alias. Defaults to None.
-        '''
-        return None
+    '''
+    Elasticsearch alias. Defaults to None.
+    '''
+    es_alias = None
 
-    @property
-    def es_settings(self):
-        '''
-        Dictionary containing ElasticSearch settings for the corpus' index.
-        Can be overridden in case we want, e.g., "AND" instead of "OR" for
-        combining query terms. By default contains the setting to ensure `number_of_replicas`
-        is zero on index creation (this is better while creating an index). Should you choose
-        to overwrite this, consider copying this setting.
-        '''
-        return {'index': {'number_of_replicas': 0}}
+    '''
+    Dictionary containing ElasticSearch settings for the corpus' index.
+    Can be overridden, usually to set analysers for fields. By default contains the
+    setting to ensure `number_of_replicas` is zero on index creation (this is better
+    while creating an index). Should you choose to overwrite this, consider  using
+    the `addcorpus.es_settings` module.
+    '''
+    es_settings = {'index': {'number_of_replicas': 0}}
 
     @property
     def fields(self):
@@ -116,27 +113,25 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def document_context(self):
-        '''
-        A dictionary that specifies how documents can be grouped into a "context". For example,
-        parliamentary speeches may be grouped into debates. The dictionary has two keys:
-        - `'context_fields'`: a list of the `name`s of the fields that can be used to
-        group documents. The context of a document is the set of documents that match
-        its value for all the listed fields.
-        - `'sort_field'`: the `name` of the field by which documents can be sorted
-        within their respective group. The field should be marked as `sortable`. If `None`,
-        no sorting will be applied.
-        - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
-        - `'context_display_name'`: The display name for the context used in the interface. If
-        `None`, use the displayName of the first context field.
-        '''
 
-        return {
-            'context_fields': None,
-            'sort_field': None,
-            'context_display_name': None
-        }
+    '''
+    A dictionary that specifies how documents can be grouped into a "context". For example,
+    parliamentary speeches may be grouped into debates. The dictionary has two keys:
+    - `'context_fields'`: a list of the `name`s of the fields that can be used to
+    group documents. The context of a document is the set of documents that match
+    its value for all the listed fields.
+    - `'sort_field'`: the `name` of the field by which documents can be sorted
+    within their respective group. The field should be marked as `sortable`. If `None`,
+    no sorting will be applied.
+    - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
+    - `'context_display_name'`: The display name for the context used in the interface. If
+    `None`, use the displayName of the first context field.
+    '''
+    document_context = {
+        'context_fields': None,
+        'sort_field': None,
+        'context_display_name': None
+    }
 
     @property
     def image(self):
@@ -146,20 +141,15 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    def scan_image_type(self):
-        '''
-        Filetype of scanned documents (images)
-        '''
-        if self.scan_image_type is None:
-            return None
-        else:
-            return self.scan_image_type
+    '''
+    MIME type of scanned documents (images)
+    '''
+    scan_image_type = None
 
-    @property
-    def word_model_path(self):
-        ''' (optional) path where word models are stored
-        '''
-        return None
+    '''
+    path where word models are stored
+    '''
+    word_model_path = None
 
     @property
     def word_models_present(self):
@@ -168,20 +158,29 @@ class Corpus(object):
         '''
         return self.word_model_path != None and isdir(self.word_model_path)
 
-    def allow_image_download(self):
+    @property
+    def new_highlight(self):
         '''
-        Allow the downloading of source images
+        if the corpus has been re-indexed using the top-level term vector 'with_positions_offsets'
+        for the main content field, needed for the updated highlighter
+        TODO: remove this property and its references when all corpora are reindexed using the
+        current definitions (with the top-level term vector for speech)
         '''
-        if self.allow_image_download is None:
+        try:
+            highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
+        except:
             return False
-        else:
-            return self.allow_image_download
+        return self.title in highlight_corpora
 
-    def description_page(self):
-        '''
-        URL to markdown document with a comprehensive description
-        '''
-        return None
+    '''
+    Allow the downloading of source images
+    '''
+    allow_image_download = False
+
+    '''
+    filename of markdown document with a comprehensive description
+    '''
+    description_page = None
 
     def update_body(self, **kwargs):
         ''' given one document in the index, give an instruction
@@ -233,72 +232,6 @@ class Corpus(object):
             }
         }
 
-    def json(self):
-        '''
-        Corpora should be able to produce JSON, so that the fields they define
-        can be used by other codebases, while retaining the Python class as the
-        single source of truth.
-        '''
-        corpus_dict = self.serialize()
-        json_dict = json.dumps(corpus_dict)
-        return json_dict
-
-    def serialize(self):
-        """
-        Convert corpus object to a JSON-friendly dict format.
-        """
-        corpus_dict = {}
-
-        # gather attribute names
-        # exclude:
-        # - methods not implemented in Corpus class
-        # - hidden attributes
-        # - attributes listed in `exclude`
-        # - bound methods
-        exclude = ['data_directory', 'es_settings']
-        corpus_attribute_names = [
-            a for a in dir(self)
-            if a in dir(Corpus) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
-        ]
-
-        # collect values
-        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
-
-        for ca in corpus_attributes:
-            if ca[0] == 'fields':
-                field_list = []
-                for field in self.fields:
-                    field_list.append(field.serialize())
-                corpus_dict[ca[0]] = field_list
-            elif ca[0] == 'languages':
-                format = lambda tag: Language.make(standardize_tag(tag)).display_name() if tag else 'Unknown'
-                corpus_dict[ca[0]] = [
-                    format(tag)
-                    for tag in ca[1]
-                ]
-            elif ca[0] == 'category':
-                corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
-            elif type(ca[1]) == datetime:
-                timedict = {'year': ca[1].year,
-                            'month': ca[1].month,
-                            'day': ca[1].day,
-                            'hour': ca[1].hour,
-                            'minute': ca[1].minute}
-                corpus_dict[ca[0]] = timedict
-            else:
-                corpus_dict[ca[0]] = ca[1]
-        return corpus_dict
-
-    def _format_option(self, value, options):
-        '''
-        For serialisation: format language or category based on list of options
-        '''
-        return next(
-            nice_string
-            for code, nice_string in options
-            if value == code
-        )
-
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
@@ -342,34 +275,33 @@ class Corpus(object):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
 
-class XMLCorpus(Corpus):
+class XMLCorpusDefinition(CorpusDefinition):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
 
-    @property
-    def tag_toplevel(self):
-        '''
-        The top-level tag in the source documents.
 
-        Can be:
-        - None
-        - A string with the name of the tag
-        - A dictionary that gives the named arguments to soup.find_all()
-        - A bound method that takes the metadata of the document as input and outputs one of the above.
-        '''
+    '''
+    The top-level tag in the source documents.
 
-    @property
-    def tag_entry(self):
-        '''
-        The tag that corresponds to a single document entry.
+    Can be:
+    - None
+    - A string with the name of the tag
+    - A dictionary that gives the named arguments to soup.find_all()
+    - A bound method that takes the metadata of the document as input and outputs one of the above.
+    '''
+    tag_toplevel = None
 
-        Can be:
-        - None
-        - A string with the name of the tag
-        - A dictionary that gives the named arguments to soup.find_all()
-        - A bound method that takes the metadata of the document as input and outputs one of the above.
-        '''
+    '''
+    The tag that corresponds to a single document entry.
+
+    Can be:
+    - None
+    - A string with the name of the tag
+    - A dictionary that gives the named arguments to soup.find_all()
+    - A bound method that takes the metadata of the document as input and outputs one of the above.
+    '''
+    tag_entry = None
 
     def source2dicts(self, source):
         '''
@@ -478,9 +410,14 @@ class XMLCorpus(Corpus):
             spoon = None
             if field.extractor.secondary_tag:
                 # find a specific subtree in the xml tree identified by matching a secondary tag
-                spoon = bowl.find(
-                    field.extractor.secondary_tag['tag'],
-                    string=metadata[field.extractor.secondary_tag['match']]).parent
+                try:
+                    spoon = bowl.find(
+                        field.extractor.secondary_tag['tag'],
+                        string=metadata[field.extractor.secondary_tag['match']]).parent
+                except:
+                    logging.debug('tag {} not found in metadata'.format(
+                        field.extractor.secondary_tag
+                    ))
             if not spoon:
                 spoon = field.extractor.external_file['xml_tag_entry']
             if bowl:
@@ -570,7 +507,7 @@ class XMLCorpus(Corpus):
         return out_dict
 
 
-class HTMLCorpus(XMLCorpus):
+class HTMLCorpusDefinition(XMLCorpusDefinition):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
@@ -626,39 +563,33 @@ class HTMLCorpus(XMLCorpus):
             }
 
 
-class CSVCorpus(Corpus):
+class CSVCorpusDefinition(CorpusDefinition):
     '''
     An CSVCorpus is any corpus that extracts its data from CSV sources.
     '''
 
-    @property
-    def field_entry(self):
-        '''
-        If applicable, the field that identifies entries. Subsequent rows with the same
-        value for this field are treated as a single document. If left blank, each row
-        is treated as a document.
-        '''
+    '''
+    If applicable, the field that identifies entries. Subsequent rows with the same
+    value for this field are treated as a single document. If left blank, each row
+    is treated as a document.
+    '''
+    field_entry = None
 
-    @property
-    def required_field(self):
-        '''
-        Specifies a required field, for example the main content. Rows with
-        an empty value for `required_field` will be skipped.
-        '''
+    '''
+    Specifies a required field, for example the main content. Rows with
+    an empty value for `required_field` will be skipped.
+    '''
+    required_field = None
 
-    @property
-    def delimiter(self):
-        '''
-        Set the delimiter for the CSV reader.
-        '''
-        return ','
+    '''
+    The delimiter for the CSV reader.
+    '''
+    delimiter = ','
 
-    @property
-    def skip_lines(self):
-        '''
-        Number of lines to skip before reading the header
-        '''
-        return 0
+    '''
+    Number of lines to skip before reading the header
+    '''
+    skip_lines = 0
 
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
@@ -723,7 +654,7 @@ class CSVCorpus(Corpus):
 
 # Fields ######################################################################
 
-class Field(object):
+class FieldDefinition(object):
     '''
     Fields may hold the following data:
     - a short hand name (name)
@@ -753,13 +684,13 @@ class Field(object):
                  name=None,
                  display_name=None,
                  display_type=None,
-                 description=None,
+                 description='',
                  indexed=True,
                  hidden=False,
                  results_overview=False,
                  csv_core=False,
                  search_field_core=False,
-                 visualizations=None,
+                 visualizations=[],
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
@@ -772,9 +703,11 @@ class Field(object):
                  **kwargs
                  ):
 
+        mapping_type = es_mapping['type']
+
         self.name = name
-        self.display_name = display_name
-        self.display_type = display_type
+        self.display_name = display_name or name
+        self.display_type = display_type or mapping_type
         self.description = description
         self.search_filter = search_filter
         self.results_overview = results_overview
@@ -790,7 +723,7 @@ class Field(object):
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
-            es_mapping['type'] in ['integer', 'float', 'date']
+            mapping_type in ['integer', 'float', 'date']
 
         self.primary_sort = primary_sort
 
@@ -798,32 +731,13 @@ class Field(object):
         # Keyword fields without a filter are also searchable.
         self.searchable = searchable if searchable != None else \
             not hidden and indexed and \
-            ((self.es_mapping['type'] == 'text') or
-             (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
+            ((mapping_type == 'text') or
+             (mapping_type == 'keyword' and self.search_filter == None))
         # Add back reference to field in filter
         self.downloadable = downloadable
 
         if self.search_filter:
             self.search_filter.field = self
-
-    def serialize(self):
-        """
-        Convert Field object to a JSON-friendly dict format.
-        """
-        field_dict = {}
-        for key, value in self.__dict__.items():
-            if key == 'search_filter' and value != None:
-                filter_name = str(type(value)).split(
-                    sep='.')[-1][:-2]
-                search_dict = {'name': filter_name}
-                for search_key, search_value in value.__dict__.items():
-                    if search_key == 'search_filter' or search_key != 'field':
-                        search_dict[search_key] = search_value
-                field_dict['search_filter'] = search_dict
-            elif key != 'extractor':
-                field_dict[key] = value
-
-        return field_dict
 
 
 # Helper functions ############################################################

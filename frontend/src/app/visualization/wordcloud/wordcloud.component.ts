@@ -86,20 +86,6 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         );
     }
 
-    loadMoreData() {
-        if (this.readyToLoad) {
-            showLoading(
-                this.isLoading,
-                this.visualizationService.getWordcloudTasks(this.visualizedField.name, this.queryModel, this.corpus.name).then(response => {
-                    this.tasksToCancel = response;
-                    return this.apiService.pollTasks<AggregateResult[]>(response).then( outcome =>
-                        this.onDataLoaded(outcome[0])
-                    );
-                }).catch(this.emitError.bind(this))
-            );
-        }
-    }
-
     emitError(error: {message: string}) {
         this.error.emit(error.message);
     }

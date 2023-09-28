@@ -31,12 +31,12 @@ from es import urls as es_urls
 from api.views import QueryViewset
 from api import urls as api_urls
 from media import urls as media_urls
+from tag import urls as tag_urls
 from tag.views import TagViewSet
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
 api_router.register('search_history', QueryViewset, basename='query')
-api_router.register('tags', TagViewSet)
-
+api_router.register('tag/tags', TagViewSet)
 
 if settings.PROXY_FRONTEND:
     spa_url = re_path(r'^(?P<path>.*)$', proxy_frontend)
@@ -56,6 +56,7 @@ urlpatterns = [
     path('api/download/', include(download_urls)),
     path('api/wordmodels/', include(wordmodels_urls)),
     path('api/es/', include(es_urls)),
+    path('api/tag/', include(tag_urls)),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',

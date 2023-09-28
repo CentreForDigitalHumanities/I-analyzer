@@ -7,6 +7,7 @@ from tag.models import TaggedDocument
 def test_tag_models(db, auth_user, auth_user_tag, tagged_documents):
     assert len(auth_user.tags.all()) == 1
     assert len(auth_user_tag.tagged_docs.all()) == 3
+    assert auth_user_tag.count == 3
 
 
 def test_tag_lookup(mock_corpus, tagged_documents,

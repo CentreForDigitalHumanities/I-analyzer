@@ -1,9 +1,11 @@
 from rest_framework import status
 from users.models import CustomUser
 from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
+from addcorpus.save_corpus import load_and_save_all_corpora
 
 def test_no_corpora(db, settings, admin_client):
     settings.CORPORA = {}
+    load_and_save_all_corpora()
 
     response = admin_client.get('/api/corpus/')
 
@@ -28,8 +30,13 @@ def test_no_corpus_access(db, client, mock_corpus):
 
 def test_corpus_serialization(admin_client, mock_corpus):
     response = admin_client.get('/api/corpus/')
-    corpus = next(c for c in response.data if c['title'] == MockCSVCorpus.title)
+    corpus = next(c for c in response.data if c['name'] == mock_corpus)
     assert corpus
     assert corpus['languages'] == ['English']
     assert corpus['category'] == 'Books'
     assert len(corpus['fields']) == 2
+
+    secrets = ['data_directory', 'word_model_path', 'es_settings']
+    for property in secrets:
+        assert property not in corpus
+

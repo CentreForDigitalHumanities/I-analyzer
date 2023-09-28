@@ -9,13 +9,15 @@ from django.conf import settings
 import openpyxl
 
 from addcorpus.extract import CSV, Metadata
-# SliderRangeFilter, BoxRangeFilter
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import CSVCorpus, Field
+from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
+
+from addcorpus.es_mappings import main_content_mapping
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
-class GoodReads(CSVCorpus):
+class GoodReads(CSVCorpusDefinition):
     """ Home-scraped CSV corpus of GoodReads reviews. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
@@ -62,7 +64,7 @@ class GoodReads(CSVCorpus):
                 }
 
     fields = [
-        Field(
+        FieldDefinition(
             name='year',
             display_name='Year',
             description='Year the review was written.',
@@ -81,7 +83,7 @@ class GoodReads(CSVCorpus):
             ),
             hidden=True
         ),
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='ID of the review.',
@@ -91,7 +93,7 @@ class GoodReads(CSVCorpus):
             es_mapping={'type': 'keyword'},
             csv_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='book_title',
             display_name='Book title',
             description='The title of the book reviews were made for. Encompasses all editions.',
@@ -103,7 +105,7 @@ class GoodReads(CSVCorpus):
             ),
             csv_core=True
         ),
-        Field(
+        FieldDefinition(
             name='original_language',
             display_name='Original language',
             description='The original language the book reviews were made for was written in.',
@@ -115,7 +117,7 @@ class GoodReads(CSVCorpus):
             ),
             csv_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='edition_id',
             display_name='Edition ID',
             description='ID of the edition the review was made for.',
@@ -124,7 +126,7 @@ class GoodReads(CSVCorpus):
             ),
             es_mapping={'type': 'keyword'},
         ),
-        Field(
+        FieldDefinition(
             name='edition_language',
             display_name='Edition language',
             description='The language that the edition that the review is for was written in',
@@ -140,7 +142,7 @@ class GoodReads(CSVCorpus):
             csv_core=True,
             visualizations=['resultscount', 'termfrequency'],
         ),
-        Field(
+        FieldDefinition(
             name='book_genre',
             display_name='Genre',
             description='The genre of the reviewed book',
@@ -152,7 +154,7 @@ class GoodReads(CSVCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='age_category',
             display_name='Age category',
             description='The age category of the target audience of the reviewed book',
@@ -164,7 +166,7 @@ class GoodReads(CSVCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='url',
             display_name='URL',
             description='URL of the review.',
@@ -173,21 +175,21 @@ class GoodReads(CSVCorpus):
             ),
             es_mapping={'type': 'keyword'},
         ),
-        Field(
+        FieldDefinition(
             name='text',
             display_name='Text',
             description='Fulltext of the review.',
             extractor=CSV(
                 field='text',
             ),
-            es_mapping={'type': 'text'},
+            es_mapping=main_content_mapping(),
             display_type='text_content',
             csv_core=True,
             results_overview=True,
             searchable=True,
             visualizations=['wordcloud'],
         ),
-        Field(
+        FieldDefinition(
             name='language',
             display_name='Review language',
             description='The language of the review.',
@@ -203,7 +205,7 @@ class GoodReads(CSVCorpus):
             csv_core=True,
             visualizations=['resultscount', 'termfrequency'],
         ),
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             description='Date the review was written.',
@@ -212,9 +214,9 @@ class GoodReads(CSVCorpus):
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
-            es_mapping={'type': 'keyword'}
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
         ),
-        Field(
+        FieldDefinition(
             name='rating_text',
             display_name='Goodreads rating',
             description='Rating in the Goodreads style, e.g. \'really liked it\'.',
@@ -223,7 +225,7 @@ class GoodReads(CSVCorpus):
             ),
             es_mapping={'type': 'keyword'},
         ),
-        Field(
+        FieldDefinition(
             name='rating_no',
             display_name='Rating',
             description='Rating as a number.',
@@ -239,7 +241,7 @@ class GoodReads(CSVCorpus):
             visualizations=['resultscount', 'termfrequency'],
             visualization_sort='key'
         ),
-        Field(
+        FieldDefinition(
             name='word_count',
             display_name='Word count',
             description='Number of words (whitespace-delimited) in the review.',
@@ -255,7 +257,7 @@ class GoodReads(CSVCorpus):
                     'Accept only book reviews with word count in this range.'
             ))
         ),
-        Field(
+        FieldDefinition(
             name='edition_publisher',
             display_name='Edition publisher',
             description='Publisher of the edition the review was written for',
@@ -264,7 +266,7 @@ class GoodReads(CSVCorpus):
             ),
             es_mapping={'type': 'keyword'},
         ),
-        Field(
+        FieldDefinition(
             name='edition_publishing_year',
             display_name='Edition publishing year',
             description='Year the edition the review was written for was published.',

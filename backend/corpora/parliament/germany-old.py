@@ -5,14 +5,14 @@ from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
 def standardize_bool(date_is_estimate):
     return date_is_estimate.lower()
 
-class ParliamentGermanyOld(Parliament, CSVCorpus):
+class ParliamentGermanyOld(Parliament, CSVCorpusDefinition):
     title = 'People & Parliament (Germany Reichstag - 1867-1942)'
     description = "Speeches from the Reichstag"
     min_date = datetime(year=1867, month=1, day=1)
@@ -89,7 +89,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
             self.book_id, self.book_label,
             self.era,
             self.date, self.date_is_estimate,
-            self.page, self.url,
+            self.page,
             self.speech, self.speech_id,
             self.url,
         ]

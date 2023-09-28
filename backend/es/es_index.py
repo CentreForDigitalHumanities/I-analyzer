@@ -44,18 +44,18 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        settings['index'] = {
+        settings['index'].update({
             'number_of_replicas' : 0,
-            'number_of_shards': 6
-        }
+            'number_of_shards': 5
+        })
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
     try:
         client.indices.create(
             index=corpus_definition.es_index,
-            settings = settings,
-            mappings = corpus_definition.es_mapping(),
+            settings=settings,
+            mappings=corpus_definition.es_mapping(),
         )
     except RequestError as e:
         if not 'already_exists' in e.error:
@@ -117,6 +117,12 @@ def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, 
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
+    logger.info(
+        vars(client).get('_max_retries'))
+
+    logger.info(
+        vars(client).get('_retry_on_timeout')
+    )
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
 

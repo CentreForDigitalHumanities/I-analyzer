@@ -5,31 +5,6 @@ from langcodes import Language
 HERE = os.path.abspath(os.path.dirname(__file__))
 NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
 
-SETTINGS = {
-    'index': {'number_of_replicas': 0},
-    "analysis": {
-        "analyzer": {
-            "clean": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords"]
-            },
-            "stemmed": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords", "stemmer"]
-            }
-        },
-        "char_filter":{
-            "number_filter":{
-                "type":"pattern_replace",
-                "pattern":"\\d+",
-                "replacement":""
-            }
-        }
-    }
-}
-
 def get_language_key(language_code):
     '''
     Get the nltk stopwords file / elasticsearch stemmer name for a language code
@@ -61,7 +36,7 @@ def es_settings(language = None, stopword_analyzer = False, stemming_analyzer = 
     - `stopword_analyzer`: define an analyser that removes stopwords.
     - `stemming_analyzer`: define an analyser that removes stopwords and performs stemming.
     '''
-    settings = {}
+    settings = {'index': {'number_of_shards': 1, 'number_of_replicas': 1}}
 
     if stopword_analyzer or stemming_analyzer:
         settings["analysis"] = {
@@ -115,3 +90,12 @@ def make_stemmed_analyzer():
         "char_filter": ["number_filter"],
         "filter": ["lowercase", "stopwords", "stemmer"]
     }
+
+def get_stopwords_from_settings(es_settings):
+    try:
+        token_filter = es_settings["analysis"]['filter']['stopwords']
+        stopwords = token_filter['stopwords']
+    except:
+        stopwords = None
+
+    return stopwords

@@ -6,10 +6,12 @@ from os import makedirs, remove
 from typing import Optional
 from zipfile import ZipFile, BadZipFile
 
-from addcorpus import extract, filters
-from addcorpus.corpus import Field, XMLCorpus
 from django.conf import settings
 
+from addcorpus import extract, filters
+from addcorpus.corpus import FieldDefinition, XMLCorpusDefinition
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
@@ -28,7 +30,7 @@ def rdf_description_extractor(tag, section='xml', **kwargs):
     )
 
 
-class Rechtspraak(XMLCorpus):
+class Rechtspraak(XMLCorpusDefinition):
     title = "Judicial system Netherlands"
     description = "Open data of (anonymised) court rulings of the Dutch judicial system"
     min_date = datetime(year=1900, month=1, day=1)
@@ -40,6 +42,10 @@ class Rechtspraak(XMLCorpus):
     toplevel_zip_file = 'OpenDataUitspraken.zip'
     languages = ['nl']
     category = 'ruling'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'open-rechtspraak'
 
@@ -131,14 +137,15 @@ class Rechtspraak(XMLCorpus):
                 yield f, {'year': year}
 
     fields = [
-        Field(
+        FieldDefinition(
             name='id',
             display_name='ID',
             description='',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('dcterms:identifier'),
             csv_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='has_content',
             display_name='Has text content',
             description='Document has available text content.',
@@ -157,13 +164,14 @@ class Rechtspraak(XMLCorpus):
                 )
             ),
         ),
-        Field(
+        FieldDefinition(
             name='year',
             display_name='Year',
+            es_mapping={'type': 'integer'},
             extractor=extract.Metadata('year'),
             search_filter=filters.RangeFilter(min_date.year, max_date.year)
         ),
-        Field(
+        FieldDefinition(
             name='date',
             display_name='Date',
             extractor=rdf_description_extractor('dcterms:date'),
@@ -180,7 +188,7 @@ class Rechtspraak(XMLCorpus):
             ),
 
         ),
-        Field(
+        FieldDefinition(
             name='issued',
             display_name='Publication Date',
             extractor=rdf_description_extractor('dcterms:issued'),
@@ -193,13 +201,13 @@ class Rechtspraak(XMLCorpus):
                 )
             ),
         ),
-        Field(
+        FieldDefinition(
             name='publisher',
             display_name='Publisher',
             extractor=rdf_description_extractor('dcterms:publisher'),
             es_mapping={'type': 'keyword'}
         ),
-        Field(
+        FieldDefinition(
             name='creator',
             display_name='Court',
             extractor=rdf_description_extractor('dcterms:creator'),
@@ -212,12 +220,13 @@ class Rechtspraak(XMLCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='zaaknr',
             display_name='Case Number',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('psi:zaaknummer')
         ),
-        Field(
+        FieldDefinition(
             name='type',
             display_name='Type',
             extractor=rdf_description_extractor('dcterms:type'),
@@ -230,7 +239,7 @@ class Rechtspraak(XMLCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='procedure',
             display_name='(type of) Procedure',
             extractor=rdf_description_extractor('psi:procedure'),
@@ -242,12 +251,13 @@ class Rechtspraak(XMLCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='spatial',
             display_name='Location',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('dcterms:spatial')
         ),
-        Field(
+        FieldDefinition(
             name='subject',
             display_name='Area of law',
             extractor=rdf_description_extractor('dcterms:subject'),
@@ -259,7 +269,7 @@ class Rechtspraak(XMLCorpus):
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
-        Field(
+        FieldDefinition(
             name='title',
             display_name='Title',
             extractor=rdf_description_extractor(
@@ -267,16 +277,17 @@ class Rechtspraak(XMLCorpus):
             results_overview=True,
             search_field_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='abstract',
             display_name='Abstract',
             extractor=extract.XML(tag='inhoudsindicatie', flatten=True),
             results_overview=True,
         ),
-        Field(
+        FieldDefinition(
             name='content',
             display_name='Content',
             display_type='text_content',
+            es_mapping=main_content_mapping(True, True, True),
             extractor=extract.Backup(
                 extract.XML('uitspraak', flatten=True),
                 extract.XML('conclusie', flatten=True),
@@ -285,9 +296,10 @@ class Rechtspraak(XMLCorpus):
             csv_core=True,
             search_field_core=True,
         ),
-        Field(
+        FieldDefinition(
             name='url',
             display_name='URL',
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')
         )

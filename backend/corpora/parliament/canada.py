@@ -2,17 +2,17 @@ from datetime import datetime
 from glob import glob
 import logging
 import re
+
 from django.conf import settings
-from corpora.parliament.utils.constants import document_context
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, Combined, CSV
-from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import MultipleChoiceFilter
+from corpora.utils.constants import document_context
+from addcorpus.extract import Constant,CSV
+from addcorpus.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
 
-class ParliamentCanada(Parliament, CSVCorpus):
+class ParliamentCanada(Parliament, CSVCorpusDefinition):
     title = 'People & Parliament (Canada)'
     description = "Speeches from House of Commons"
     min_date = datetime(year=1901, month=1, day=1)

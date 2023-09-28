@@ -2,8 +2,8 @@ import pytest
 import os
 from download.tests.mock_corpora.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
 from visualization.conftest import small_mock_corpus, large_mock_corpus, index_small_mock_corpus, \
-    index_large_mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs, index_test_corpus, \
-    clear_test_corpus
+    index_large_mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs
+from conftest import index_test_corpus, clear_test_corpus
 from visualization.query import MATCH_ALL
 from download import tasks
 

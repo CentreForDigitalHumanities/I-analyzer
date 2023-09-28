@@ -22,6 +22,13 @@ class Tag(models.Model):
                              name='unique_name_for_user')
         ]
 
+    @property
+    def count(self):
+        return self.tagged_docs.count()
+
+
+    def __str__(self):
+        return f'Tag #{self.id}: "{self.name}" by {self.user.username}'
 
 class TaggedDocument(models.Model):
     doc_id = models.CharField(max_length=512)

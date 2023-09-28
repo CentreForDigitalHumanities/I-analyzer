@@ -3,11 +3,11 @@ from datetime import datetime
 from django.conf import settings
 
 from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpus
+from addcorpus.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
-import corpora.parliament.utils.formatting as formatting
-from corpora.parliament.utils.constants import document_context
+import corpora.utils.formatting as formatting
+from corpora.utils.constants import document_context
 
 def extract_ministerial_role(speaker, question_answered_by_minister_title):
     """
@@ -41,7 +41,7 @@ def format_language(language):
 
 EMPTY_VALUES = ['', 'NA']
 
-class ParliamentNorwayNew(Parliament, CSVCorpus):
+class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
     '''
     Class for indexing Norwegian parliamentary data
     '''

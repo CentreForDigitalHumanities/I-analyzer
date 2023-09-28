@@ -40,19 +40,21 @@
                 <div class="column is-flex" tabindex="0" (click)="onViewDocument(document)" (keydown.enter)="onViewDocument(document)" role="button">
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
-                            <tr *ngIf="document.fieldValues[field.name]">
+                            <tr *ngIf="document.fieldValue(field)">
                                 <td>
                                     <b>{{field.displayName}}: </b>
                                 </td>
                                 <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
                                     <td>
                                         <ng-container *ngFor="let highlight of document.highlight[field.name]">
-                                            <tr><div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div></tr>
+                                            <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
+                                            <!-- insert ellipsis [...] in between snippets or at the end of a single snippet -->
+                                            <hr *ngIf="highlight != document.highlight[field.name][document.highlight[field.name].length-1]">
                                         </ng-container>
                                     </td>
                                 </ng-container>
                                 <ng-template #unhighlightedRow>
-                                    <td style="word-break:break-word" [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
+                                    <td style="word-break:break-word" [innerHtml]="document.fieldValue(field) | highlight:query:true"></td>
                                 </ng-template>
                             </tr>
                         </ng-container>
@@ -80,7 +82,7 @@
 <p-dialog [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
     *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
-    <ia-document-view [document]="viewDocument" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ia-document-view [document]="viewDocument" [queryModel]="queryModel" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
     <ng-template pTemplate="footer">
         <div class="columns" style="text-align:left">
             <div class="column">
@@ -101,7 +103,7 @@
                     <span>Link</span>
                 </a>
                 &nbsp;
-                <a *ngIf="hasContext(viewDocument)" [routerLink]="['/search', corpus.name]" [queryParams]="contextParams(viewDocument)"
+                <a *ngIf="viewDocument.hasContext" [routerLink]="['/search', corpus.name]" [queryParams]="viewDocument.contextQueryParams"
                     iaBalloon="view all documents from this {{contextDisplayName}}"
                     tabindex="0">
                     <span class="icon">

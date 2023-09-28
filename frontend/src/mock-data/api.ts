@@ -62,4 +62,8 @@ export class ApiServiceMock {
     public fieldCoverage() {
         return Promise.resolve({});
     }
+
+    requestMedia() {
+        return Promise.resolve({});
+    }
 }
