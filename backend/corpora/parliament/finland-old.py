@@ -3,6 +3,7 @@ from glob import glob
 
 from addcorpus.corpus import CSVCorpusDefinition
 from addcorpus.extract import CSV, Combined, Constant
+from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context
@@ -30,6 +31,10 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(field='estate')
+    chamber.search_filter = MultipleChoiceFilter(
+        description='Search only in debates from the selected chamber(s)',
+        option_count=4
+    )
     
     country = field_defaults.country()
     country.extractor = Constant('Finland')
@@ -66,7 +71,6 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
     speech_id = field_defaults.speech_id()
     speech_id.extractor = Combined(
         CSV(field='file'),
-        CSV(field='volume'),
         CSV(field='page'),
         transform=lambda x: '_'.join(x)
     )
