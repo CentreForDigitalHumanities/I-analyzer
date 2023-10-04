@@ -15,14 +15,14 @@ describe('NgramParameters', ()=> {
         );
     });
 
-    it('should convert themselves to a param string', () => {
+    it('should convert itself to a param string', () => {
         const paramString = ngramParameters.toRouteParam();
         expect(paramString).toEqual(
             's:2,p:any,c:false,a:none,m:50,n:10,f:date'
         );
     });
 
-    it('should set themselvers from a param string', () => {
+    it('should set itself from a param string', () => {
         ngramParameters.fromRouteParam(
             's:3,p:first,c:true,a:none,m:50,n:20,f:date'
         );
