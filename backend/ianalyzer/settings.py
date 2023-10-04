@@ -107,21 +107,10 @@ DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    'formatters': {
-        'standard': {
-            'format': '\n --> %(asctime)s %(levelname)s in ' 
-                        '%(pathname)s:%(lineno)d\n%(message)s',
-        },
-    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
         },
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": "/backend/.log/indexing.log",
-            "formatter": "standard"
-        }
     },
     "root": {
         "handlers": ["console"],
@@ -134,7 +123,7 @@ LOGGING = {
             "propagate": False,
         },
         "indexing": {
-            "handlers": ["file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propragate": True
         }
