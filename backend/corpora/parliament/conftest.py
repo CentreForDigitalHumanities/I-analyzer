@@ -17,6 +17,7 @@ def parliament_corpora_settings(settings):
         'parliament-denmark': os.path.join(here, 'denmark.py'),
         'parliament-denmark-new': os.path.join(here, 'denmark-new.py'),
         'parliament-finland': os.path.join(here, 'finland.py'),
+        'parliament-finland-old': os.path.join(here, 'finland-old.py'),
         'parliament-norway': os.path.join(here, 'norway.py'),
         'parliament-norway-new': os.path.join(here, 'norway-new.py'),
         'parliament-ireland': os.path.join(here, 'ireland.py')
@@ -34,6 +35,7 @@ def parliament_corpora_settings(settings):
     settings.PP_SWEDEN_DATA = os.path.join(here, 'tests', 'data', 'sweden')
     settings.PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
     settings.PP_FINLAND_DATA = os.path.join(here, 'tests', 'data', 'finland')
+    settings.PP_FINLAND_OLD_DATA = os.path.join(here, 'tests', 'data', 'finland-old')
     settings.PP_NORWAY_DATA = os.path.join(here, 'tests', 'data', 'norway')
     settings.PP_NORWAY_NEW_DATA = os.path.join(here, 'tests', 'data', 'norway-new')
     settings.PP_DENMARK_DATA = os.path.join(here, 'tests', 'data', 'denmark')

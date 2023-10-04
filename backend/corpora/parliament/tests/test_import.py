@@ -477,6 +477,37 @@ OSLO LOBO MEDIA AS 2005""",
         'n_documents': 22,
     },
     {
+        'name': 'parliament-finland-old',
+        'docs': [
+            {
+                'country': 'Finland',
+                'speech': """FÖUDT HOS
+
+FINLANDS RIDDERSKAP OCR ADEL
+
+VID
+
+LANDTDAGEN ÅR 1877.
+
+TREDJE HÄFTET.
+
+Från den 1 till den 31 Oktober.
+
+FINSKA LITTERATUR-SÄLLBKAPETS TRYCKERl,
+
+1878.""",
+                'id': 'Adeln_Prot_1877_III.pdf_0',
+                'chamber': 'nobility',
+                'date_earliest': '1877-01-01',
+                'date_latest': '1877-12-31',
+                'page': '0',
+                'language': 'swe',
+                'source_archive': 'Adeln_Prot_1877_III.pdf'
+            },
+        ],
+        'n_documents': 4,
+    },
+    {
         'name': 'parliament-ireland',
         'end': datetime(1999, 12, 31),
         'docs': [
