@@ -159,20 +159,15 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     cacheResult(result: any, params: NgramParameters): void {
-        const key = this.parametersKey(params);
+        const key = params.toRouteParam();
         this.resultsCache[key] = result;
     }
 
     getCachedResult(params: NgramParameters): any {
-        const key = this.parametersKey(params);
+        const key = params.toRouteParam();
         if (_.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
-    }
-
-    parametersKey(params: NgramParameters): string {
-        const values = _.values(params);
-        return _.join(values, '/');
     }
 
     setPositionsOptions(size) {
