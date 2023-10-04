@@ -41,13 +41,6 @@ FORBIDDEN_FIELD_NAMES = [
     'visualize',
     'visualizedField',
     'normalize',
-    'size',
-    'positions',
-    'freqCompensation',
-    'analysis',
-    'maxDocuments',
-    'numberOfNgrams',
-    'dateField',
 ]
 '''
 Field names that cannot be used because they are also query parameters in frontend routes.
