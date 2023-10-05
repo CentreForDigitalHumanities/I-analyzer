@@ -16,6 +16,7 @@ import {
     FoundDocument,
     LimitedResultsDownloadParameters,
     NGramRequestParameters,
+    NgramParameters,
     QueryDb,
     ResultsDownloadParameters,
     TaskResult,
@@ -175,6 +176,12 @@ export class ApiService {
             | {
                   visualization: 'aggregate_term_frequency';
                   parameters: AggregateTermFrequencyParameters[];
+                  corpus: string;
+              }
+            |
+              {
+                  visualization: 'ngram';
+                  parameters: NgramParameters;
                   corpus: string;
               }
     ): Promise<TaskResult> {

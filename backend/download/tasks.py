@@ -8,7 +8,7 @@ from es import download as es_download
 from download import create_csv
 from download.models import Download
 from addcorpus.models import Corpus
-from visualization.tasks import histogram_term_frequency_tasks, timeline_term_frequency_tasks
+from visualization.tasks import histogram_term_frequency_tasks, timeline_term_frequency_tasks, ngram_data_tasks
 from visualization import query
 from download.mail import send_csv_email
 
@@ -110,6 +110,9 @@ def term_frequency_full_data_tasks(parameters_per_series, visualization_type):
         task_function(series_parameters, True) for series_parameters in parameters_unlimited
     )
 
+def ngram_full_data_tasks(ngram_parameters):
+    ngram_data_tasks(ngram_parameters)
+
 def extract_term_frequency_download_metadata(parameters_per_series):
     '''
     Get some relevant metadata for a term frequency request:
@@ -153,7 +156,8 @@ def download_full_data(request_json, user):
 
     task_per_type = {
         'date_term_frequency': term_frequency_full_data_tasks,
-        'aggregate_term_frequency': term_frequency_full_data_tasks
+        'aggregate_term_frequency': term_frequency_full_data_tasks,
+        'ngram': ngram_data_tasks,
     }
 
     parameters = request_json['parameters']

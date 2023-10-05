@@ -5,6 +5,7 @@ import numpy as np
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, search
+from es.download import scroll
 from ianalyzer.elasticsearch import elasticsearch
 from visualization import query, termvectors
 
@@ -100,14 +101,14 @@ def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_posit
     date_filter = query.make_date_filter(start_date, end_date, date_field)
     narrow_query = query.add_filter(es_query, date_filter)
     #search for the query text
-    search_results = search(
+    search_results, _total = scroll(
         corpus=corpus,
         query_model = narrow_query,
         client = client,
         size = max_size_per_interval,
     )
     bin_ngrams = Counter()
-    for hit in search_results['hits']['hits']:
+    for hit in search_results:
         identifier = hit['_id']
         # get the term vectors for the hit
         result = client.termvectors(

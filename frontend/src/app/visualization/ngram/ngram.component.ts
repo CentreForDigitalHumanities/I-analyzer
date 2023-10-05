@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
-import { ApiService, ParamService, VisualizationService } from '../../services';
+import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -59,9 +59,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     constructor(
         private apiService: ApiService,
         private visualizationService: VisualizationService,
+        private notificationService: NotificationService,
         route: ActivatedRoute,
         router: Router,
-        paramService: ParamService
+        paramService: ParamService,
     ) {
         super(route, router, paramService);
     }
@@ -253,5 +254,25 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         }
 
         return `${value}`;
+    }
+
+    requestFullData() {
+        this.apiService.requestFullData({
+            visualization: 'ngram',
+            parameters: this.currentParameters,
+            corpus: this.corpus.name,
+        }).then(() =>
+            this.notificationService.showMessage(
+                'Full data requested! You will receive an email when your download is ready.',
+                'success',
+                {
+                    text: 'view downloads',
+                    route: ['/download-history']
+                }
+            )
+        ).catch(error => {
+            console.error(error);
+            this.notificationService.showMessage('Could not set up data generation.', 'danger');
+        });
     }
 }
