@@ -1,5 +1,3 @@
-from rest_framework.test import APIClient
-import pytest
 from datetime import datetime
 from addcorpus.models import Corpus
 from rest_framework.status import is_success
@@ -21,7 +19,7 @@ def mock_query_data(user, corpus_name):
     }
 
 def test_search_history_view(admin_user, admin_client):
-    corpus = Corpus.objects.create(name = 'mock-corpus', description = '')
+    corpus = Corpus.objects.create(name = 'mock-corpus')
 
     # get search history
     response = admin_client.get('/api/search_history/')
@@ -41,7 +39,7 @@ def test_search_history_view(admin_user, admin_client):
 
 def test_delete_search_history(auth_client, auth_user, db):
     mock_corpus = 'mock-corpus'
-    corpus = Corpus.objects.create(name = mock_corpus, description = '')
+    corpus = Corpus.objects.create(name = mock_corpus)
     query = mock_query_data(auth_user, mock_corpus)
     auth_client.post('/api/search_history/', query, content_type='application/json')
 

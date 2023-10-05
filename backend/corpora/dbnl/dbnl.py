@@ -383,6 +383,7 @@ class DBNL(XMLCorpusDefinition):
         display_name='Primary',
         description='Whether this is the primary document for this book - each book has only one primary document',
         extractor=Order(transform = lambda index : index == 0),
+        es_mapping=bool_mapping(),
         search_filter=BooleanFilter(
             true='Primary',
             false='Other',

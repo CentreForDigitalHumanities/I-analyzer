@@ -18,6 +18,16 @@ export const searchFieldsFromParams = (params: ParamMap, corpus: Corpus): Corpus
     }
 };
 
+// highlight
+
+export const highlightToParams = (queryModel: QueryModel): { highlight: string | null } => {
+    if (queryModel.highlightDisabled || !queryModel.highlightSize) {
+        return { highlight: null };
+    }
+
+    return { highlight: queryModel.highlightSize.toString() };
+};
+
 export const highlightFromParams = (params: ParamMap): number =>
     Number(params.get('highlight'));
 

@@ -4,10 +4,8 @@ from glob import glob
 from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Combined, Constant, Metadata
 from corpora.parliament.parliament import Parliament
-import corpora.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context
-import re
 from bs4 import BeautifulSoup
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor, clean_value
 
@@ -39,7 +37,7 @@ def find_date(speech_node):
 
 
 class ParliamentFinland(Parliament, XMLCorpusDefinition):
-    title = 'People and Parliament (Finland)'
+    title = 'People and Parliament (Finland, 1907-)'
     description = 'Speeches from the eduskunta'
     min_date = datetime(year=1907, month=1, day=1)
     data_directory = settings.PP_FINLAND_DATA

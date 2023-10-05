@@ -1,10 +1,12 @@
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, Field
+from addcorpus.corpus import CorpusDefinition, FieldDefinition
 from django.contrib.auth.models import Group
 from django.conf import settings
 import re
 from os.path import abspath, dirname
 from importlib import util
 import logging
+import sys
 logger = logging.getLogger(__name__)
 
 
@@ -19,7 +21,7 @@ def corpus_dir(corpus_name):
     """
     return dirname(corpus_path(corpus_name))
 
-def load_corpus(corpus_name):
+def load_corpus_definition(corpus_name):
     filepath = corpus_path(corpus_name)
 
     try:
@@ -36,7 +38,7 @@ def load_corpus(corpus_name):
         raise
 
     corpus_spec.loader.exec_module(corpus_mod)
-    # assume the class name of the endpoint is the same as the corpus name,
+    # assume the class name is the same as the corpus name,
     # allowing for differences in camel case vs. lower case
     regex = re.compile('[^a-zA-Z]')
     corpus_name = regex.sub('', corpus_name)
@@ -45,32 +47,19 @@ def load_corpus(corpus_name):
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 
-def _save_corpus_in_database(corpus_name, corpus_definition):
-    '''
-    Save a corpus in the SQL database if it is not saved already.
-
-    Parameters:
-    - `corpus_name`: key of the corpus in settings.CORPORA
-    - `corpus_definition`: a corpus object, output of `load_corpus`
-    '''
-    corpus_db, _ = Corpus.objects.get_or_create(name=corpus_name)
-    corpus_db.description = corpus_definition.description
-    corpus_db.save()
-
-def _try_loading_corpus(corpus_name):
+def _try_loading_corpus_definition(corpus_name, stderr=sys.stderr):
     try:
-        return load_corpus(corpus_name)
+        return load_corpus_definition(corpus_name)
     except Exception as e:
         message = 'Could not load corpus {}: {}'.format(corpus_name, e)
-        logger.error(message)
+        print(message, file=stderr)
 
-
-def load_all_corpora():
+def load_all_corpus_definitions(stderr=sys.stderr):
     '''
     Return a dict with corpus names and corpus definition objects.
     '''
     corpus_definitions_unfiltered = {
-        corpus_name: _try_loading_corpus(corpus_name)
+        corpus_name: _try_loading_corpus_definition(corpus_name, stderr)
         for corpus_name in settings.CORPORA.keys()
     }
 
@@ -80,8 +69,5 @@ def load_all_corpora():
         for name, definition in corpus_definitions_unfiltered.items()
         if definition
     }
-
-    for corpus_name, corpus_definition in corpus_definitions.items():
-        _save_corpus_in_database(corpus_name, corpus_definition)
 
     return corpus_definitions

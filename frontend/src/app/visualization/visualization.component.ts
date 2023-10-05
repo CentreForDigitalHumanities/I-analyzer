@@ -87,7 +87,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     setupDropdowns() {
         this.allVisualizationFields = [];
         if (this.corpus && this.corpus.fields) {
-            this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations);
+            this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations?.length);
         }
         this.visDropdown = [];
         const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
