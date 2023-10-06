@@ -9,6 +9,7 @@ CATEGORIES = [
     ('inscription', 'Funerary inscriptions'),
     ('oration', 'Orations'),
     ('book', 'Books'),
+    ('collection', 'Collecion of different sources')
 ]
 '''
 Types of data

@@ -143,6 +143,10 @@ class Order(Extractor):
     def _apply(self, index=None, *nargs, **kwargs):
         return index
 
+class JSON(Extractor):
+    def _apply(self, key, *nargs, **kwargs):
+        return key
+
 class XML(Extractor):
     '''
     This extractor extracts attributes or contents from a BeautifulSoup node.

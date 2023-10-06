@@ -81,3 +81,6 @@ def int_mapping():
 
 def bool_mapping():
     return {'type': 'boolean'}
+
+def geo_mapping():
+    return {'type': 'geo_point'}

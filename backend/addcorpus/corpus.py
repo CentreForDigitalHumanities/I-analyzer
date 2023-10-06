@@ -11,6 +11,7 @@ from datetime import datetime
 from os.path import isdir
 
 from django.conf import settings
+import requests
 from langcodes import Language, standardize_tag
 
 from addcorpus.constants import CATEGORIES
@@ -650,7 +651,15 @@ class CSVCorpusDefinition(CorpusDefinition):
 
         return doc
 
+class ApiCorpusDefinition(CorpusDefinition):
+    '''
+    An ApiCorpus is any corpus that extracts its data from an API.
+    If the data is served as JSON, it can be consumed directly.
+    '''
 
+    def source2dicts(self, source):
+       document = requests.get(source)
+       yield document
 
 # Fields ######################################################################
 
