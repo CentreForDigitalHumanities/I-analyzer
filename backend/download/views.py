@@ -21,14 +21,15 @@ from tag.filter import handle_tags_in_request
 
 logger = logging.getLogger()
 
-def send_csv_file(directory, filename, download_type, encoding, format=None):
+def send_csv_file(download, directory, filename, download_type, encoding, format=None):
     '''
     Perform final formatting and send a CSV file as a FileResponse
     '''
     converted_filename = convert_csv.convert_csv(
         directory, filename, download_type, encoding, format)
     path = os.path.join(directory, converted_filename)
-    return FileResponse(open(path, 'rb'), filename=filename, as_attachment=True)
+
+    return FileResponse(open(path, 'rb'), filename=download.nice_filename(), as_attachment=True)
 
 class ResultsDownloadView(APIView):
     '''
@@ -57,7 +58,7 @@ class ResultsDownloadView(APIView):
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
-            return send_csv_file(directory, filename, 'search_results', request.data['encoding'])
+            return send_csv_file(download, directory, filename, 'search_results', request.data['encoding'])
         except Exception as e:
             logger.error(e)
             raise APIException(detail = 'Download failed: could not generate csv file')
@@ -138,13 +139,13 @@ class FileDownloadView(APIView):
         encoding = request.query_params.get('encoding', 'utf-8')
         format = request.query_params.get('table_format', None)
 
-        record = Download.objects.get(id=id)
-        if not record.user == request.user:
+        download = Download.objects.get(id=id)
+        if not download.user == request.user:
             raise PermissionDenied(detail='User has no access to this download')
 
         directory = settings.CSV_FILES_PATH
 
-        if not os.path.isfile(os.path.join(directory, record.filename)):
+        if not os.path.isfile(os.path.join(directory, download.filename)):
             raise NotFound(detail='File does not exist')
 
-        return send_csv_file(directory, record.filename, record.download_type, encoding, format)
+        return send_csv_file(download, directory, download.filename, download.download_type, encoding, format)
