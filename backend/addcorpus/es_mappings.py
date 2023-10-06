@@ -1,4 +1,4 @@
-def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, updated_highlighting=False):
+def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, updated_highlighting=True):
     '''
     Mapping for the main content field. Options:
 
