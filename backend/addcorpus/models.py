@@ -8,7 +8,7 @@ from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validators import validate_language_code, validate_image_filename_extension, \
     validate_markdown_filename_extension, validate_es_mapping, validate_mimetype, validate_search_filter, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, validate_searchable_field_has_full_text_search, \
-    validate_visualizations_with_mapping, validate_implication, any_fields_with_ngram_visualisation, any_date_fields
+    validate_visualizations_with_mapping, validate_implication, any_date_fields, visualisations_require_date_field
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -125,14 +125,6 @@ class CorpusConfiguration(models.Model):
 
     def __str__(self):
         return f'Configuration of <{self.corpus.name}>'
-
-    def clean(self):
-        # validate that ngram visualisations are only included if there is also a date field
-        validate_implication(
-            self.fields, self.fields,
-            'the ngram visualisation can only be used if the corpus has a field with date mapping',
-            any_fields_with_ngram_visualisation, any_date_fields
-        )
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
@@ -277,3 +269,9 @@ class Field(models.Model):
             validate_implication(self.search_field_core, self.searchable, "Core search fields must be searchable")
         except ValidationError as e:
             warnings.warn(e.message)
+
+        validate_implication(
+            self.visualizations, self.corpus_configuration.fields.all(),
+            'The ngram visualisation requires a date field on the corpus',
+            visualisations_require_date_field, any_date_fields,
+        )

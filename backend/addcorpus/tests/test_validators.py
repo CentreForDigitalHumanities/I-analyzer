@@ -88,16 +88,16 @@ def test_validate_ngram_has_date_field():
     without_date_field = [text_field]
 
     validate_implication(
-        with_date_field, with_date_field,
+        text_field.visualizations, with_date_field,
         '',
-        any_fields_with_ngram_visualisation,
+        visualisations_require_date_field,
         any_date_fields
     )
 
     with pytest.raises(ValidationError):
         validate_implication(
-            without_date_field, without_date_field,
+            text_field.visualizations, without_date_field,
             '',
-            any_fields_with_ngram_visualisation,
+            visualisations_require_date_field,
             any_date_fields
         )
