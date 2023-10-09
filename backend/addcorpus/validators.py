@@ -152,3 +152,11 @@ def validate_markdown_filename_extension(filename):
 def validate_image_filename_extension(filename):
     allowed = ['.jpeg', '.jpg', '.png', '.JPG']
     validate_filename_extension(filename, allowed)
+
+def any_date_fields(fields):
+    is_date = lambda field: primary_mapping_type(field.es_mapping) == 'date'
+    return any(map(is_date, fields))
+
+def any_fields_with_ngram_visualisation(fields):
+    has_ngram = lambda field: field.visualizations and 'ngram' in field.visualizations
+    return any(map(has_ngram, fields))
