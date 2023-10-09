@@ -362,7 +362,7 @@ class DBNL(XMLCorpusDefinition):
             transform_soup_func=utils.pad_content,
         ),
         es_mapping=main_content_mapping(token_counts=True),
-        visualizations=['wordcloud', 'ngram'],
+        visualizations=['wordcloud'],
     )
 
     has_content = FieldDefinition(
