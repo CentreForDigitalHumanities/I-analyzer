@@ -21,12 +21,12 @@ from tag.filter import handle_tags_in_request
 
 logger = logging.getLogger()
 
-def send_csv_file(download, directory, filename, download_type, encoding, format=None):
+def send_csv_file(download, directory, encoding, format=None):
     '''
     Perform final formatting and send a CSV file as a FileResponse
     '''
     converted_filename = convert_csv.convert_csv(
-        directory, filename, download_type, encoding, format)
+        directory, download.filename, download.download_type, encoding, format)
     path = os.path.join(directory, converted_filename)
 
     return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
@@ -58,7 +58,7 @@ class ResultsDownloadView(APIView):
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
-            return send_csv_file(download, directory, filename, 'search_results', request.data['encoding'])
+            return send_csv_file(download, directory, request.data['encoding'])
         except Exception as e:
             logger.error(e)
             raise APIException(detail = 'Download failed: could not generate csv file')
@@ -148,4 +148,4 @@ class FileDownloadView(APIView):
         if not os.path.isfile(os.path.join(directory, download.filename)):
             raise NotFound(detail='File does not exist')
 
-        return send_csv_file(download, directory, download.filename, download.download_type, encoding, format)
+        return send_csv_file(download, directory, encoding, format)
