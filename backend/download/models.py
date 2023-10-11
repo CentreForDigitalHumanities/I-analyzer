@@ -52,7 +52,7 @@ class Download(models.Model):
         self.completed = datetime.now()
         self.save()
 
-    def nice_filename(self):
+    def descriptive_filename(self):
         corpus_name = self.corpus.name
         type_name = self.download_type
         timestamp = self.completed.strftime('%Y-%m-%d %H:%M')

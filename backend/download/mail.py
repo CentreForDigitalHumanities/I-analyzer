@@ -21,7 +21,7 @@ def send_csv_email(user_email, username, download_id):
     subject = 'I-Analyzer CSV download'
     from_email = settings.DEFAULT_FROM_EMAIL
     download = Download.objects.get(id=download_id)
-    filename = download.nice_filename()
+    filename = download.descriptive_filename()
 
     context = {
         'email_title': 'Download CSV',

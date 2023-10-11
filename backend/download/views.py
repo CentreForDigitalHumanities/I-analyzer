@@ -29,7 +29,7 @@ def send_csv_file(download, directory, filename, download_type, encoding, format
         directory, filename, download_type, encoding, format)
     path = os.path.join(directory, converted_filename)
 
-    return FileResponse(open(path, 'rb'), filename=download.nice_filename(), as_attachment=True)
+    return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
 
 class ResultsDownloadView(APIView):
     '''
