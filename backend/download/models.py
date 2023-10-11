@@ -57,4 +57,4 @@ class Download(models.Model):
         type_name = self.download_type
         timestamp = self.completed.strftime('%Y-%m-%d %H:%M')
 
-        return f'{type_name} {corpus_name} {timestamp}.csv'
+        return f'{type_name}__{corpus_name}__{timestamp}.csv'
