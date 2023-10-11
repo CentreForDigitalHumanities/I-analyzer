@@ -24,8 +24,8 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
             yield csv_file, {}
 
     languages = ['sv', 'fi']
-    description_page = 'finland.md'
-    image = 'finland.jpg'
+    description_page = 'finland-old.md'
+    image = 'finland-old.jpg'
 
     document_context = document_context()
 
