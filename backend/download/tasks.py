@@ -110,7 +110,7 @@ def term_frequency_full_data_tasks(parameters_per_series, visualization_type):
         task_function(series_parameters, True) for series_parameters in parameters_unlimited
     )
 
-def ngram_full_data_tasks(ngram_parameters):
+def ngram_full_data_tasks(ngram_parameters, dummy):
     ngram_data_tasks(ngram_parameters)
 
 def extract_term_frequency_download_metadata(parameters_per_series):
@@ -157,11 +157,11 @@ def download_full_data(request_json, user):
     task_per_type = {
         'date_term_frequency': term_frequency_full_data_tasks,
         'aggregate_term_frequency': term_frequency_full_data_tasks,
-        'ngram': ngram_data_tasks,
+        'ngram': ngram_full_data_tasks,
     }
 
     parameters = request_json['parameters']
-    corpus_name = request_json['corpus']
+    corpus_name = request_json['corpus_name']
     corpus = Corpus.objects.get(name=corpus_name)
     task = task_per_type[visualization_type](parameters, visualization_type)
 

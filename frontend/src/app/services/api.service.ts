@@ -16,7 +16,6 @@ import {
     FoundDocument,
     LimitedResultsDownloadParameters,
     NGramRequestParameters,
-    NgramParameters,
     QueryDb,
     ResultsDownloadParameters,
     TaskResult,
@@ -171,18 +170,18 @@ export class ApiService {
             | {
                   visualization: 'date_term_frequency';
                   parameters: DateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
               }
             | {
                   visualization: 'aggregate_term_frequency';
                   parameters: AggregateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
               }
             |
               {
                   visualization: 'ngram';
-                  parameters: NgramParameters;
-                  corpus: string;
+                  parameters: NGramRequestParameters;
+                  corpus_name: string;
               }
     ): Promise<TaskResult> {
         const url = this.apiRoute(this.downloadApiURL, 'full_data');

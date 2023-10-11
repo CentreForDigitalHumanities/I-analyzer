@@ -254,10 +254,16 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     requestFullData() {
+        const parameters = this.visualizationService.makeNgramRequestParameters(
+            this.corpus,
+            this.queryModel,
+            this.visualizedField.name,
+            this.currentParameters
+        );
         this.apiService.requestFullData({
+            corpus_name: this.corpus.name,
             visualization: 'ngram',
-            parameters: this.currentParameters,
-            corpus: this.corpus.name,
+            parameters
         }).then(() =>
             this.notificationService.showMessage(
                 'Full data requested! You will receive an email when your download is ready.',

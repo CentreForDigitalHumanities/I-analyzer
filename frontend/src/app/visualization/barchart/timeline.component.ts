@@ -113,7 +113,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         return this.apiService.requestFullData({
             visualization: 'date_term_frequency',
             parameters: paramsPerSeries,
-            corpus: this.corpus.name,
+            corpus_name: this.corpus.name,
         });
     }
 

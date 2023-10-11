@@ -97,7 +97,7 @@ class FullDataDownloadTaskView(APIView):
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
-        check_json_keys(request, ['visualization', 'parameters', 'corpus'])
+        check_json_keys(request, ['visualization', 'parameters', 'corpus_name'])
 
         visualization_type = request.data['visualization']
         known_visualisations = ['date_term_frequency', 'aggregate_term_frequency', 'ngram']
