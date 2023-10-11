@@ -9,14 +9,6 @@ from addcorpus.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
 
-def get_date_from_year(value, limit='earliest'):
-    if value and value.isnumeric():
-        year = int(value)
-        if limit == 'earliest':
-            date = datetime(year=year, month=1, day=1)
-        else:
-            date = datetime(year=year, month=12, day=31)
-        return date.strftime('%Y-%m-%d')
 
 def get_book_id(page_id):
     if page_id:
@@ -81,7 +73,7 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
         field='year',
-        transform= lambda value: get_date_from_year(value, 'earliest')
+        transform= lambda value: formatting.get_date_from_year(value, 'earliest')
     )
     date_earliest.search_filter.lower = min_date
     date_earliest.search_filter.upper = max_date
@@ -89,7 +81,7 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
         field='year',
-        transform= lambda value: get_date_from_year(value, 'latest')
+        transform= lambda value: formatting.get_date_from_year(value, 'latest')
     )
     date_latest.primary_sort = True
     date_latest.search_filter.lower = min_date
