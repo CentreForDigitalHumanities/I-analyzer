@@ -108,4 +108,21 @@ def format_field_value(value, unit):
             'week': '%Y-%m-%d',
             'day': '%Y-%m-%d'
         }
-        return date.strftime(formats[unit])
+        return 
+    
+def ngram_csv(results, filename):
+    rows = ngram_table(results)
+    fieldnames = ['date', 'N-gram', 'Frequency']
+    filepath = write_file(filename, fieldnames, rows)
+    return filepath
+
+def ngram_table(results):
+    rows = []
+    for index, time_point in enumerate(results['time_points']):
+        for ngram in results['words']:
+            rows.append({
+                'date': time_point,
+                'N-gram': ngram['label'],
+                'Frequency': ngram['data'][index]
+            })
+    return rows

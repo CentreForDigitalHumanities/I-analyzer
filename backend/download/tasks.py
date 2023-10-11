@@ -90,10 +90,12 @@ def download_search_results(request_json, user):
     return try_download(make_chain, download)
 
 @shared_task()
-def make_term_frequency_csv(results_per_series, parameters_per_series):
+def make_full_data_csv(results_per_series, visualization_type, parameters_per_series):
     '''
     Export term frequency results to a csv.
     '''
+    if visualization_type == 'ngram':
+        return create_csv.ngram_csv(results_per_series)
     query_per_series, field_name, unit = extract_term_frequency_download_metadata(parameters_per_series)
     return create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
 
@@ -170,7 +172,7 @@ def download_full_data(request_json, user):
 
     make_chain = lambda : chain(
         task,
-        make_term_frequency_csv.s(parameters),
+        make_full_data_csv.s(visualization_type, parameters),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
