@@ -63,15 +63,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         paramService: ParamService
     ) {
         super(route, router, paramService);
-        this.currentParameters = new NgramParameters(
-            this.sizeOptions[0].value,
-            this.positionsOptions[0].value,
-            this.freqCompensationOptions[0].value,
-            'none',
-            this.maxDocumentsOptions[0].value,
-            this.numberOfNgramsOptions[0].value,
-            'date'
-        );
     }
 
     initialize() {}
@@ -90,6 +81,15 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             this.resultsCache = {};
             this.allDateFields = this.corpus.fields.filter(field => field.mappingType === 'date');
             this.dateField = this.allDateFields[0];
+            this.currentParameters = new NgramParameters(
+                this.sizeOptions[0].value,
+                this.positionsOptions[0].value,
+                this.freqCompensationOptions[0].value,
+                'none',
+                this.maxDocumentsOptions[0].value,
+                this.numberOfNgramsOptions[0].value,
+                this.dateField.name
+            );
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
