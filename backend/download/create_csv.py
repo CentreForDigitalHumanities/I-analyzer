@@ -108,7 +108,7 @@ def format_field_value(value, unit):
             'week': '%Y-%m-%d',
             'day': '%Y-%m-%d'
         }
-        return 
+        return date.strftime(formats[unit]) 
     
 def ngram_csv(results, filename):
     rows = ngram_table(results)
