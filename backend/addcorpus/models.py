@@ -134,6 +134,7 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),
+    (MappingType.GEO_POINT.value, 'geo_point')
 ]
 
 FIELD_VISUALIZATIONS = [

@@ -8,8 +8,7 @@ CATEGORIES = [
     ('review', 'Online reviews'),
     ('inscription', 'Funerary inscriptions'),
     ('oration', 'Orations'),
-    ('book', 'Books'),
-    ('collection', 'Collecion of different sources')
+    ('book', 'Books')
 ]
 '''
 Types of data
@@ -24,6 +23,7 @@ class MappingType(Enum):
     INTEGER  = 'integer'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
+    GEO_POINT = 'geo_point'
 
 
 class VisualizationType(Enum):
