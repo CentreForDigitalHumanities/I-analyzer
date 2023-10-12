@@ -153,7 +153,6 @@ def download_full_data(request_json, user):
     '''
     Download the full data for a visualisation
     '''
-
     visualization_type = request_json['visualization']
 
     task_per_type = {

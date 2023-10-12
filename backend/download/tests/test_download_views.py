@@ -85,7 +85,7 @@ def test_full_data_download_view(transactional_db, admin_client, small_mock_corp
     request_json = {
         'visualization': 'date_term_frequency',
         'parameters': [parameters],
-        'corpus': small_mock_corpus
+        'corpus_name': small_mock_corpus
     }
     response = admin_client.post(
         '/api/download/full_data',
