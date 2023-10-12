@@ -4,7 +4,7 @@ from django.conf import settings
 import requests
 
 from addcorpus.corpus import ApiCorpusDefinition, FieldDefinition
-from addcorpus.es_mappings import geo_mapping, keyword_mapping, text_mapping
+from addcorpus.es_mappings import geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
 import addcorpus.extract as extract
 
 
@@ -87,4 +87,88 @@ class JewishMigration(ApiCorpusDefinition):
             es_mapping=geo_mapping,
             extractor=extract.JSON('coordinates'),
         ),
+        FieldDefinition(
+            name='site_type',
+            display_name='Site Type',
+            description='Type of site where evidence for settlement was found',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('site_type')
+        ),
+        FieldDefinition(
+            name='inscription_type',
+            display_name='Inscription type',
+            description='Type of inscription',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('inscription_type')
+        ),
+        FieldDefinition(
+            name='period',
+            display_name='Period',
+            description='Period in which the inscription was made',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('period')
+        ),
+        FieldDefinition(
+            name='centuries',
+            display_name='Centuries',
+            description='Centuries in which the inscription was made',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('centuries')
+        ),
+        FieldDefinition(
+            name='inscription_count',
+            display_name='Inscription count',
+            description='Number of inscriptions',
+            es_mapping=int_mapping,
+            extractor=extract.JSON('inscriptions_count')
+        ),
+        FieldDefinition(
+            name='religious_profession',
+            display_name='Religious profession',
+            description='Religious profession of deceased',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('religious_profession')
+        ),
+        FieldDefinition(
+            name='sex_dedicator',
+            display_name='Gender dedicator',
+            description='Gender of the dedicator',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('sex_dedicator')
+        ),
+        FieldDefinition(
+            name='sex_deceased',
+            display_name='Gender deceased',
+            description='Gender of the deceased',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('sex_deceased')
+        ),
+        FieldDefinition(
+            name='symbol',
+            display_name='Symbol',
+            description='Symbol in inscription',
+            es_mapping=keyword_mapping,
+            extractor=extract.JSON('symbol')
+        ),
+        FieldDefinition(
+            name='comments',
+            display_name='Comments',
+            description='Comments by collector',
+            es_mapping=text_mapping,
+            extractor=extract.JSON('comments')
+        ),
+        FieldDefinition(
+            name='inscription',
+            display_name='Inscription',
+            description='Text of the inscription',
+            es_mapping=text_mapping,
+            extractor=extract.JSON('inscription')
+        ),
+        FieldDefinition(
+            name='transcription',
+            display_name='Transcription',
+            description='Transcription of the inscription to English',
+            es_mapping=main_content_mapping(),
+            extractor=extract.JSON('transcription')
+        )
     ]

@@ -23,7 +23,8 @@ def corpus_dir(corpus_name):
 
 def load_corpus_definition(corpus_name):
     filepath = corpus_path(corpus_name)
-
+    if corpus_name == 'jewishmigration':
+        breakpoint()
     try:
         corpus_spec = util.spec_from_file_location(
             corpus_name,
