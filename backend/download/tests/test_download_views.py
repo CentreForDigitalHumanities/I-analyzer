@@ -48,21 +48,7 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
     # TODO: construct query from query module, which is much more convenient
     query_text = mock_corpus_specs['example_query']
     search_field = mock_corpus_specs['content_field']
-    query = {
-        "query": {
-            "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": query_text,
-                        "fields": [search_field],
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
-                "filter": []
-            }
-        }
-    }
+    query = test_es_query(query_text, search_field)
     return {
         'es_query':  query,
         'corpus_name': mock_corpus,
@@ -78,12 +64,46 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
         'unit': 'year',
     }
 
+def ngram_parameters(mock_corpus, mock_corpus_specs):
+    query_text = mock_corpus_specs['example_query']
+    search_field = mock_corpus_specs['content_field']
+    return {
+        'corpus_name': mock_corpus,
+        'es_query': test_es_query(query_text, search_field),
+        'field': search_field,
+        'ngram_size': 2,
+        'term_position': [0, 1],
+        'freq_compensation': True,
+        'subfield': 'clean',
+        'max_size_per_interval': 2,
+        'number_of_ngrams': 10,
+        'date_field': 'date'
+    }
+
+def test_es_query(query_text, search_field):
+    return {
+        "query": {
+            "bool": {
+                "must": {
+                    "simple_query_string": {
+                        "query": query_text,
+                        "fields": [search_field],
+                        "lenient": True,
+                        "default_operator": "or"
+                    }
+                },
+                "filter": []
+            }
+        }
+    }
+
+@pytest.mark.parametrize("visualization_type, request_parameters", [('date_term_frequency', term_frequency_parameters), ('ngram', ngram_parameters)])
 def test_full_data_download_view(transactional_db, admin_client, small_mock_corpus,
                                  index_small_mock_corpus, small_mock_corpus_specs, celery_worker,
-                                 csv_directory):
-    parameters = term_frequency_parameters(small_mock_corpus, small_mock_corpus_specs)
+                                 csv_directory, visualization_type, request_parameters):
+    parameters = request_parameters(small_mock_corpus, small_mock_corpus_specs)
     request_json = {
-        'visualization': 'date_term_frequency',
+        'visualization': visualization_type,
         'parameters': [parameters],
         'corpus_name': small_mock_corpus
     }
