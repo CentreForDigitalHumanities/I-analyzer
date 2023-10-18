@@ -1,8 +1,9 @@
 from django.db import models
+from django.conf import settings
+from django.utils import timezone
+
 from users.models import CustomUser
 from addcorpus.models import Corpus
-from django.conf import settings
-from datetime import datetime
 
 MAX_LENGTH_FILENAME = 254
 
@@ -17,6 +18,7 @@ class Download(models.Model):
             ('search_results', 'Search results'),
             ('date_term_frequency', 'Term frequency (timeline)'),
             ('aggregate_term_frequency', 'Term frequency (histogram)'),
+            ('ngram', 'Neighbouring words')
         ],
         help_text='Type of download (search results or a type of visualisation)')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE, to_field='name', related_name='downloads')
@@ -49,5 +51,5 @@ class Download(models.Model):
         '''
 
         self.filename = filename
-        self.completed = datetime.now()
+        self.completed = timezone.now()
         self.save()
