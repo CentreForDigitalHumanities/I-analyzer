@@ -48,7 +48,7 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
     # TODO: construct query from query module, which is much more convenient
     query_text = mock_corpus_specs['example_query']
     search_field = mock_corpus_specs['content_field']
-    query = test_es_query(query_text, search_field)
+    query = mock_es_query(query_text, search_field)
     return {
         'es_query':  query,
         'corpus_name': mock_corpus,
@@ -69,10 +69,10 @@ def ngram_parameters(mock_corpus, mock_corpus_specs):
     search_field = mock_corpus_specs['content_field']
     return {
         'corpus_name': mock_corpus,
-        'es_query': test_es_query(query_text, search_field),
+        'es_query': mock_es_query(query_text, search_field),
         'field': search_field,
         'ngram_size': 2,
-        'term_position': [0, 1],
+        'term_position': 'any',
         'freq_compensation': True,
         'subfield': 'clean',
         'max_size_per_interval': 2,
@@ -80,7 +80,7 @@ def ngram_parameters(mock_corpus, mock_corpus_specs):
         'date_field': 'date'
     }
 
-def test_es_query(query_text, search_field):
+def mock_es_query(query_text, search_field):
     return {
         "query": {
             "bool": {
@@ -102,9 +102,12 @@ def test_full_data_download_view(transactional_db, admin_client, small_mock_corp
                                  index_small_mock_corpus, small_mock_corpus_specs, celery_worker,
                                  csv_directory, visualization_type, request_parameters):
     parameters = request_parameters(small_mock_corpus, small_mock_corpus_specs)
+    if visualization_type != 'ngram':
+        # timeline and histogram expect a series of parameters
+        parameters = [parameters]
     request_json = {
         'visualization': visualization_type,
-        'parameters': [parameters],
+        'parameters': parameters,
         'corpus_name': small_mock_corpus
     }
     response = admin_client.post(
