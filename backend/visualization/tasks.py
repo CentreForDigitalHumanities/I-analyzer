@@ -40,7 +40,7 @@ def ngram_data_tasks(request_json):
     ]), integrate_ngram_results.s(
             number_of_ngrams=request_json['number_of_ngrams']
         )
-    )()
+    )
     
 @shared_task()
 def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_value, size, include_query_in_result = False):

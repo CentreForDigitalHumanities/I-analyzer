@@ -75,7 +75,7 @@ def ngram_parameters(mock_corpus, mock_corpus_specs):
         'term_position': 'any',
         'freq_compensation': True,
         'subfield': 'clean',
-        'max_size_per_interval': 2,
+        'max_size_per_interval': 50,
         'number_of_ngrams': 10,
         'date_field': 'date'
     }
