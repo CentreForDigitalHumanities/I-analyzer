@@ -113,6 +113,7 @@ def term_frequency_full_data_tasks(parameters_per_series, visualization_type):
     )
 
 def ngram_full_data_tasks(ngram_parameters, dummy):
+    ngram_parameters['max_size_per_interval'] = None
     return ngram_data_tasks(ngram_parameters)
 
 def extract_term_frequency_download_metadata(parameters_per_series):
