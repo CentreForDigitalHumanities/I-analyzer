@@ -103,9 +103,9 @@ def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_posit
     #search for the query text
     search_results, _total = scroll(
         corpus=corpus,
-        query_model = narrow_query,
-        client = client,
-        size = max_size_per_interval,
+        query_model=narrow_query,
+        client=client,
+        download_size=max_size_per_interval,
     )
     bin_ngrams = Counter()
     for hit in search_results:
@@ -115,7 +115,7 @@ def tokens_by_time_interval(corpus, es_query, field, bin, ngram_size, term_posit
             index=index,
             id=identifier,
             term_statistics=freq_compensation,
-            fields = [field]
+            fields=[field]
         )
         terms = termvectors.get_terms(result, field)
         if terms:
