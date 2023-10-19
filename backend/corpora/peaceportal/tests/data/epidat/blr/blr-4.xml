@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://relaxng.org/ns/structure/1.0"?><?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://purl.oclc.org/dsdl/schematron"?><TEI xml:lang="en" xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0">
+<teiHeader>
+<fileDesc>
+<titleStmt>
+<title>epidat, blr-4</title>
+<!-- respStmt to be done -->
+</titleStmt>
+<editionStmt>
+<edition/>
+</editionStmt>
+<extent/>
+<publicationStmt>
+<publisher>
+<orgName ref="http://d-nb.info/gnd/212562-6">
+      Salomon Ludwig Steinheim-Institut 
+      <address>
+<addrLine>Edmund-Körner-Platz 2</addrLine>
+<addrLine>D-45127 Essen</addrLine>
+</address>
+</orgName>
+</publisher>
+<idno>blr-4</idno>
+<idno type="url">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=blr-4</idno>
+<availability status="free" xml:lang="en">
+<licence>
+<ref target="http://creativecommons.org/licenses/by/4.0/">Distributed under a Creative Commons licence Attribution-BY 4.0</ref>
+<p>
+       All reuse or distribution of this work must contain somewhere a link back to the URL 
+       <ref>http://www.steinheim-institut.de:80/cgi-bin/epidat?id=blr-4</ref>
+</p>
+</licence>
+</availability>
+</publicationStmt>
+<notesStmt>
+<note/>
+</notesStmt>
+<sourceDesc>
+<bibl>born digital</bibl>
+<msDesc>
+<msIdentifier>
+<repository>epidat</repository>
+<idno>blr-4</idno>
+<altIdentifier>
+<idno type="html">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=blr-4</idno>
+<note/>
+</altIdentifier>
+<altIdentifier>
+<idno type="xml">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=blr-4-t</idno>
+<note/>
+</altIdentifier>
+<publications/></msIdentifier>
+<physDesc>
+<objectDesc>
+<supportDesc>
+<support>
+<p>
+<material>stone</material>
+<objectType ref="http://vocab.getty.edu/page/aat/300005909">sepulchral monument</objectType>
+</p>
+</support>
+</supportDesc>
+<layoutDesc>
+<layout/>
+</layoutDesc>
+</objectDesc>
+</physDesc>
+<history>
+<origin>
+<origDate>
+<date notBefore="1865-02-28">1865-02-28</date>
+</origDate>
+<origPlace>
+<country key="XA-DE-TH" type="ISO_3166">
+         Germany
+         <region>Thuringa</region>
+</country>
+<settlement key="tgn:1036472" ref="http://vocab.getty.edu/tgn/1036472" type="city">
+         Bleicherode 
+         <geogName ref="http://d-nb.info/gnd/4331943-9">
+          Jewish Cemetery
+          <geo decls="#WGS">51.434387 10.571183</geo>
+</geogName>
+</settlement>
+</origPlace>
+</origin>
+</history>
+</msDesc>
+</sourceDesc>
+</fileDesc>
+<encodingDesc>
+<schemaRef url="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng">
+<desc>EpiDoc: TEI XML for epigraphic Documents Schema</desc>
+</schemaRef>
+<classDecl>
+<taxonomy>
+<category xml:id="foto1">
+<catDesc>Julia Buchmann, Nicola Wiemann, Maike Schlotterhose; Bleicherode</catDesc>
+</category>
+</taxonomy>
+</classDecl>
+<geoDecl datum="WGS84" xml:id="WGS">World Geodetic System</geoDecl>
+</encodingDesc>
+<profileDesc>
+<particDesc>
+<listPerson>
+<person sex="1" xml:id="blr-4-1">
+<persName>Natan Schönfeld (Nathan Schönfeld)</persName>
+<death when="1865-02-28"/>
+</person>
+</listPerson>
+</particDesc>
+<langUsage>
+<!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
+<language ident="he" usage="62">Hebrew</language>
+<language ident="de" usage="38">German</language>
+</langUsage>
+</profileDesc>
+<revisionDesc>
+<change/>
+</revisionDesc>
+</teiHeader>
+<facsimile>
+<graphic url="http://steinheim-institut.de/daten/picsblr/xl/0004_blr_2012.jpg">
+<desc>
+<ref target="#foto1"/>
+<date when="2012"/>
+    recto
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picsblr/xl/0004rblr_2012.jpg">
+<desc>
+<ref target="#foto1"/>
+<date when="2012"/>
+    Detail
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picsblr/xl/0004dblr_2012.jpg">
+<desc>
+<ref target="#foto1"/>
+<date when="2012"/>
+    verso
+   </desc>
+</graphic>
+</facsimile>
+<text>
+<body>
+<div type="edition">
+<head>Edition</head>
+<div subtype="recto" type="textpart">
+<ab>
+<lb n="1"/>
+      Hier ruhet
+      <lb n="2"/>
+      der Kaufmann
+      <lb n="3"/>
+      Nathan Schönfeld
+      <lb n="4"/>
+      geb. d. 4. April 1812
+      <lb n="5"/>
+      gest. d. [28.] Februar 1865
+     </ab>
+</div>
+<div subtype="verso" type="textpart">
+<ab>
+<lb n="6"/>
+      ‎‏פ״נ‏‎
+      <lb n="7"/>
+      ‎‏איש חמדות יקר רוח אוהב‏‎
+      <lb n="8"/>
+      ‎‏צדק ופועל טוב כ״ה נתן‏‎
+      <lb n="9"/>
+      ‎‏שאנפעלד נולד ח׳ של פסח‏‎
+      <lb n="10"/>
+      ‎‏תקע״ב ונפטר בשם טוב יום ג׳‏‎
+      <lb n="11"/>
+      ‎‏ב׳ אדר תרכ״ה לפ״ק‏‎
+      <lb n="12"/>
+      ‎‏תנצב״ה‏‎
+     </ab>
+</div>
+</div>
+<div type="translation">
+<head>Übersetzung</head>
+<div subtype="recto" type="textpart">
+<ab/>
+</div>
+<lb n="6"/>
+    Hier ist begraben
+    <lb n="7"/>
+    #.:ein werter Mann#.;, #.:edelmütig#.;, Wohltat
+    <lb n="8"/>
+    liebend und Gutes wirkend, der geehrte Herr Natan
+    <lb n="9"/>
+    Schönfeld, geboren 8. (Tag) von Pessach 572
+    <lb n="10"/>
+    und verschieden #.:mit gutem Namen#.; Tag 3,
+    <lb n="11"/>
+    2. Adar 625 der kleinen Zählung.
+    <lb n="12"/>
+    Seine Seele sei eingebunden in das Bündel des Lebens
+   </div>
+<div subtype="Zitate" type="commentary">
+<head>Zitate</head>
+<p>Zl 7: Dan 10,11 | Zl 7: Spr 17,27</p>
+<p>Zl 10: bBer 17a</p>
+</div>
+<div subtype="Prosopographie" type="commentary">
+<head>Prosopographie</head>
+</div>
+<div type="bibliography">
+<head>Bibliographie</head>
+</div>
+</body>
+</text>
+</TEI>
