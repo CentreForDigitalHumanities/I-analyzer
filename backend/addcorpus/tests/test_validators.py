@@ -1,5 +1,6 @@
 import pytest
-from addcorpus.es_mappings import int_mapping, text_mapping, keyword_mapping
+from addcorpus.models import Field
+from addcorpus.es_mappings import int_mapping, text_mapping, keyword_mapping, main_content_mapping, date_mapping
 from addcorpus.validators import *
 
 def test_validate_mimetype():
@@ -71,3 +72,32 @@ def test_filename_validation():
     with pytest.raises(ValidationError):
         validate_image_filename_extension('image.txt')
 
+def test_validate_ngram_has_date_field():
+    text_field = Field(
+        name='content',
+        es_mapping=main_content_mapping(),
+        visualizations=['wordcloud', 'ngram']
+    )
+
+    date_field = Field(
+        name='date',
+        es_mapping=date_mapping()
+    )
+
+    with_date_field = [text_field, date_field]
+    without_date_field = [text_field]
+
+    validate_implication(
+        text_field.visualizations, with_date_field,
+        '',
+        visualisations_require_date_field,
+        any_date_fields
+    )
+
+    with pytest.raises(ValidationError):
+        validate_implication(
+            text_field.visualizations, without_date_field,
+            '',
+            visualisations_require_date_field,
+            any_date_fields
+        )
