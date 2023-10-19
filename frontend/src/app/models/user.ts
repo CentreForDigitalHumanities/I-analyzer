@@ -1,5 +1,9 @@
 import * as _ from 'lodash';
 
+interface UserProfileResponse {
+    enable_search_history: boolean;
+}
+
 export interface UserResponse {
     id: number;
     username: string;
@@ -7,6 +11,7 @@ export interface UserResponse {
     download_limit: number;
     is_admin: boolean;
     saml: boolean;
+    profile: UserProfileResponse;
 }
 
 export class User {
@@ -15,6 +20,7 @@ export class User {
         public name,
         public isAdmin: boolean,
         public downloadLimit: number = 0, // The download limit for this user, will be 0 if there is no limit.
-        public isSamlLogin: boolean
+        public isSamlLogin: boolean,
+        public enableSearchHistory: boolean,
     ) {}
 }
