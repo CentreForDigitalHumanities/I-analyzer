@@ -1,4 +1,4 @@
-def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, updated_highlighting=False):
+def main_content_mapping(token_counts=True, stopword_analyzer=None, stemming_analyzer=None, updated_highlighting=False):
     '''
     Mapping for the main content field. Options:
 
@@ -17,23 +17,23 @@ def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_an
         'term_vector': 'with_positions_offsets' # include char positions on _source (in addition to the multifields) for highlighting
     })
 
-    if any([token_counts, stopword_analysis, stemming_analysis]):
+    if any([token_counts, stopword_analyzer, stemming_analyzer]):
         multifields = {}
         if token_counts:
             multifields['length'] = {
                 "type":     "token_count",
                 "analyzer": "standard"
             }
-        if stopword_analysis:
+        if stopword_analyzer:
             multifields['clean'] = {
                 "type": "text",
-                "analyzer": "clean",
+                "analyzer": stopword_analyzer,
                 "term_vector": "with_positions_offsets" # include character positions for highlighting
             }
-        if stemming_analysis:
+        if stemming_analyzer:
             multifields['stemmed'] = {
                 "type": "text",
-                "analyzer": "stemmed",
+                "analyzer": stemming_analyzer,
                 "term_vector": "with_positions_offsets",
             }
         mapping['fields'] = multifields
