@@ -45,7 +45,7 @@ mock_es_result = {
 def result_csv_with_highlights(csv_directory):
     route = 'parliament-netherlands_query=test'
     fields = ['speech']
-    file = create_csv.search_results_csv(hits(mock_es_result), fields, route)
+    file = create_csv.search_results_csv(hits(mock_es_result), fields, route, 0)
     return file
 
 def test_create_csv(result_csv_with_highlights):
@@ -190,7 +190,7 @@ mock_timeline_expected_data = [
 
 @pytest.fixture()
 def term_frequency_file(index_small_mock_corpus, csv_directory):
-    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
+    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', 0, unit = 'year')
     return filename
 
 

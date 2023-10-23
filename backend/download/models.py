@@ -51,3 +51,10 @@ class Download(models.Model):
         self.filename = filename
         self.completed = datetime.now()
         self.save()
+
+    def descriptive_filename(self):
+        corpus_name = self.corpus.name
+        type_name = self.download_type
+        timestamp = self.completed.strftime('%Y-%m-%d %H:%M')
+
+        return f'{type_name}__{corpus_name}__{timestamp}.csv'
