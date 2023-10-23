@@ -1659,6 +1659,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@ngtools/webpack@13.3.11":
   version "13.3.11"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.3.11.tgz#3295a7ae2b93f2cc5e197b72efb0f5b9c63c4685"
@@ -1872,10 +1877,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/chart.js@^2.9.35":
-  version "2.9.35"
-  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-2.9.35.tgz#10ddee097ab9320f8eabd8a31017fda3644d9218"
-  integrity sha512-MWx/zZlh4wHBbM4Tm4YsZyYGb1/LkTiFLFwX/FXb0EJCvXX2xWTRHwlJ2RAAEXWxLrOdaAWP8vFtJXny+4CpEw==
+"@types/chart.js@^2.9.37":
+  version "2.9.39"
+  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-2.9.39.tgz#b0487b82a85ff1874afd871e6e027bc44e61939a"
+  integrity sha512-FAsZ6v8ds40mVCgM44T1/ZDKuT1Lh6/a2D3nD8ZNX9SqBObBc0vH2VrcLjYP3PL8onPPt9rIw+QyEkgrzj31TQ==
   dependencies:
     moment "^2.10.2"
 
@@ -1928,7 +1933,7 @@
   resolved "https://registry.yarnpkg.com/@types/d3-chord/-/d3-chord-1.0.9.tgz#ccc5de03ff079025491b7aa6b750670a140b45ae"
   integrity sha512-UA6lI9CVW5cT5Ku/RV4hxoFn4mKySHm7HEgodtfRthAj1lt9rKZEPon58vyYfk+HIAm33DtJJgZwMXy2QgyPXw==
 
-"@types/d3-cloud@^1.2.5":
+"@types/d3-cloud@^1.2.7":
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/@types/d3-cloud/-/d3-cloud-1.2.7.tgz#6db7c90604355c7249ff4308ee23b5830b9abda7"
   integrity sha512-W6glNfUNLZB+YEAjrZZT0LRCCvRcasa9vH0TDIEKW7EE125aG/t5tM6LGz8vnAKSXz7oDkW7CdoZQqflwgTPag==
@@ -3181,28 +3186,30 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-chart.js@^3.9.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-3.9.1.tgz#3abf2c775169c4c71217a107163ac708515924b8"
-  integrity sha512-Ro2JbLmvg83gXF5F4sniaQ+lTbSv18E+TIf2cOeiH1Iqd2PGFOtem+DUufMZsCJwFE7ywPOpfXFBwRTGq7dh6w==
-
-chartjs-adapter-moment@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/chartjs-adapter-moment/-/chartjs-adapter-moment-1.0.0.tgz#9174b1093c68bcfe285aff24f7388ad60d44e8f7"
-  integrity sha512-PqlerEvQcc5hZLQ/NQWgBxgVQ4TRdvkW3c/t+SUEQSj78ia3hgLkf2VZ2yGJtltNbEEFyYGm+cA6XXevodYvWA==
-
-chartjs-chart-wordcloud@^3.10.0:
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/chartjs-chart-wordcloud/-/chartjs-chart-wordcloud-3.10.0.tgz#493bfb3ffc87af712c4acb3fd25e40e61bd93b0d"
-  integrity sha512-vxoNjYBsurNZXJcw7u/UEtd6E8D6KJQDWam0SiIlvKHZNN4i7JJMsexNZFHbQULnldt5BZ5tYZbdFyAGTcc0FQ==
+chart.js@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.4.0.tgz#df843fdd9ec6bd88d7f07e2b95348d221bd2698c"
+  integrity sha512-vQEj6d+z0dcsKLlQvbKIMYFHd3t8W/7L2vfJIbYcfyPcRx92CsHqECpueN8qVGNlKyDcr5wBrYAYKnfu/9Q1hQ==
   dependencies:
-    "@types/d3-cloud" "^1.2.5"
-    d3-cloud "^1.2.5"
+    "@kurkle/color" "^0.3.0"
 
-chartjs-plugin-zoom@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/chartjs-plugin-zoom/-/chartjs-plugin-zoom-1.2.0.tgz#dad0861b2d171bca1f6d11b3e3e917bc12b950ff"
-  integrity sha512-cLYKUHHx4bevuZQDpEKdjpvZ6HGu6NF8laTThgA0I9af+PV1N4qVTRZmyDNh0SAzsHZPtDOhuO3I7B4CF1lstw==
+chartjs-adapter-moment@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/chartjs-adapter-moment/-/chartjs-adapter-moment-1.0.1.tgz#0f04c30d330b207c14bfb57dfaae9ce332f09102"
+  integrity sha512-Uz+nTX/GxocuqXpGylxK19YG4R3OSVf8326D+HwSTsNw1LgzyIGRo+Qujwro1wy6X+soNSnfj5t2vZ+r6EaDmA==
+
+chartjs-chart-wordcloud@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/chartjs-chart-wordcloud/-/chartjs-chart-wordcloud-4.3.2.tgz#3942074da3b2213a2fb5312ba11224956efe13b2"
+  integrity sha512-ayPoZxXC5sqGvs2naEVaRhddMnjSKntE+TZdqLTQ/PfchwgFs1tAqYGJtldHbsNrFdRJPvIs4bwtrgZ2M+S6Tw==
+  dependencies:
+    "@types/d3-cloud" "^1.2.7"
+    d3-cloud "^1.2.7"
+
+chartjs-plugin-zoom@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/chartjs-plugin-zoom/-/chartjs-plugin-zoom-2.0.1.tgz#3db76f92a4741e46cb148cb966181c1b1a974abc"
+  integrity sha512-ogOmLu6e+Q7E1XWOCOz9YwybMslz9qNfGV2a+qjfmqJYpsw5ZMoRHZBUyW+NGhkpQ5PwwPA/+rikHpBZb7PZuA==
   dependencies:
     hammerjs "^2.0.8"
 
@@ -3661,7 +3668,7 @@ d3-chord@3:
   dependencies:
     d3-path "1 - 3"
 
-d3-cloud@^1.2.5, d3-cloud@^1.2.7:
+d3-cloud@^1.2.7:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/d3-cloud/-/d3-cloud-1.2.7.tgz#5a733c4bae43238cbb4760bb8f2d15912a8ad7a5"
   integrity sha512-8TrgcgwRIpoZYQp7s3fGB7tATWfhckRb8KcVd1bOgqkNdkJRDGWfdSf4HkHHzZxSczwQJdSxvfPudwir5IAJ3w==
