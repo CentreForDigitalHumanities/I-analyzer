@@ -84,15 +84,17 @@ export abstract class BarchartDirective
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
-            xAxis: {
+            x: {
                 title: { display: true },
-                grid: { drawBorder: true, drawOnChartArea: false }
+                border: { display: true },
+                grid: { drawOnChartArea: false }
             },
-            yAxis: {
+            y: {
                 type: 'linear',
                 beginAtZero: true,
                 title: { display: true, text: 'Frequency' },
-                grid: { drawBorder: true, drawOnChartArea: false, },
+                border: { display: true },
+                grid: { drawOnChartArea: false, },
                 ticks: {
                     callback: (value, index, values) => this.formatValue(this.normalizer)(value as number),
                 },
@@ -481,7 +483,7 @@ export abstract class BarchartDirective
 
         this.chart = new Chart(barchartID,
             {
-                type: this.chartType,
+                type: 'bar',
                 data: {
                     labels,
                     datasets
@@ -490,7 +492,6 @@ export abstract class BarchartDirective
                 options
             }
         );
-
 
         this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
@@ -504,7 +505,6 @@ export abstract class BarchartDirective
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
-        this.chart.config.type = this.chartType;
         this.chart.options = this.chartOptions(datasets);
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
