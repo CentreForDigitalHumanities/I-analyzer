@@ -1,6 +1,5 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
-import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
 import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
@@ -23,8 +22,6 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     private currentTimeCategory: TimeCategory;
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
-    /** formatting function for time in ES queries */
-    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d'); // Todo: use moment instead of d3
     /** domain on the axis */
     public xDomain: [Date, Date];
 
