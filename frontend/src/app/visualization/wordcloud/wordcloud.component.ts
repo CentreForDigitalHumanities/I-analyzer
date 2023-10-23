@@ -17,13 +17,28 @@ import { selectColor } from '../../utils/select-color';
 const MIN_FONT_SIZE = 10;
 const MAX_FONT_SIZE = 48;
 
+/** returns a scaling function for words based on their frequency */
+export const sizeScale = (min: number, max: number): (frequency: number) => number => {
+    const normalize = unitScale(min, max);
+    const sizeRange = MAX_FONT_SIZE - MIN_FONT_SIZE;
+    return (frequency: number) =>
+        MIN_FONT_SIZE + sizeRange * normalize(frequency);
+};
+
+/** returns a function that maps values in [min, max] onto [0,1]
+ */
+const unitScale = (min: number, max: number): (frequency: number) => number => {
+    const frequencyRange = (max - min) || 1; // avoid zero-division if all values are the same
+    return (frequency: number) => (frequency - min) / frequencyRange;
+};
+
 @Component({
     selector: 'ia-wordcloud',
     templateUrl: './wordcloud.component.html',
     styleUrls: ['./wordcloud.component.scss'],
 })
 
-export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
+export class WordcloudComponent implements OnChanges, OnDestroy {
     @Input() visualizedField: CorpusField;
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
@@ -40,27 +55,14 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     ];
 
     public significantText: AggregateResult[];
-    public disableLoadMore = false;
-    private tasksToCancel: string[] = [];
-
-    private batchSize = 1000;
 
     private chart: Chart;
+    private batchSize = 1000;
 
-    constructor(private visualizationService: VisualizationService, private apiService: ApiService) { }
+    constructor(private visualizationService: VisualizationService) { }
 
     get readyToLoad() {
         return (this.corpus && this.visualizedField && this.queryModel && this.palette);
-    }
-
-    ngOnInit() {
-        if (this.resultsCount > 0) {
-            this.disableLoadMore = this.resultsCount < this.batchSize;
-        }
-    }
-
-    ngOnDestroy() {
-        this.apiService.abortTasks({task_ids: this.tasksToCancel});
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -73,6 +75,10 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         } else {
             this.makeChart();
         }
+    }
+
+    ngOnDestroy(): void {
+        this.chart.destroy();
     }
 
     loadData() {
@@ -94,14 +100,17 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     makeChart() {
-        const data = this.chartData();
-        const options = this.chartOptions();
+        if (!this.asTable) {
+            const data = this.chartData();
+            const options = this.chartOptions();
 
-        this.chart = new WordCloudChart('wordcloud', { data, options });
-    }
-
-    private chartLabels(result: AggregateResult[]): string[] {
-        return result.map(item => item.key);
+            if (this.chart) {
+                this.chart.data = data;
+                this.chart.update();
+            } else {
+                this.chart = new WordCloudChart('wordcloud', { data, options });
+            }
+        }
     }
 
     private chartData(): ChartData<'wordCloud'> {
@@ -115,9 +124,13 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         return { labels: [], datasets: [] };
     }
 
+    private chartLabels(result: AggregateResult[]): string[] {
+        return result.map(item => item.key);
+    }
+
     private chartDataset(result: AggregateResult[]): ChartDataset<'wordCloud'> {
         const frequencies = result.map(item => item.doc_count);
-        const scale = this.sizeScale(_.min(frequencies), _.max(frequencies));
+        const scale = sizeScale(_.min(frequencies), _.max(frequencies));
         const sizes = frequencies.map(scale);
 
         const color = (dataIndex: number) => selectColor(this.palette, dataIndex);
@@ -127,24 +140,6 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             data: sizes,
             color: (context: ScriptableContext<'wordCloud'>) => color(context.dataIndex),
         };
-    }
-
-    /** returns a scaling functions for words based on their frequency */
-    private sizeScale(min: number, max: number): (frequency: number) => number {
-        const normalize = this.normalize(min, max);
-        const sizeRange = MAX_FONT_SIZE - MIN_FONT_SIZE;
-        return (frequency: number) =>
-            MIN_FONT_SIZE + sizeRange * normalize(frequency);
-    }
-
-    /** returns a normaliser function based on a min and max value
-     *
-     * values in [min, max] are mapped onto [0,1]
-     */
-    private normalize(min: number, max: number): (frequency: number) => number {
-        const frequencyRange = (max - min) || 1; // avoid zero-division if all values are the same
-        return (frequency: number) => (frequency - min) / frequencyRange;
-
     }
 
     private chartOptions(): ChartOptions<'wordCloud'> {
