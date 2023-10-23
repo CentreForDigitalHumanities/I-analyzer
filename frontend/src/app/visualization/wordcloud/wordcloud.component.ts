@@ -120,11 +120,11 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
         const layout = cloud()
             .size([this.width, this.height])
-            .words(significantText)
+            .words(significantText as cloud.Word[])
             .padding(5)
             .rotate(() => ~~(Math.random() * 2) * 90)
             .font('Impact')
-            .fontSize(d => this.scaleFontSize((d.doc_count)))
+            .fontSize(d => this.scaleFontSize((d['doc_count'])))
             .on('end', (words) => {
                 // as d3 overwrites the "this" scope, this function is kept inline (cannot access the dom element otherwise)
                 chart
