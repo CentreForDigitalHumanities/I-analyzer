@@ -34,12 +34,6 @@ export class VisualizationService {
         });
     }
 
-    public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<string[]> {
-        const esQuery = queryModel.toEsQuery();
-        return this.apiService.wordcloudTasks({es_query: esQuery, corpus, field: fieldName})
-            .then(result =>result['task_ids']);
-    }
-
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],
     ): AggregateTermFrequencyParameters {

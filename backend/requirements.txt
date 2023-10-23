@@ -45,27 +45,22 @@ click-repl==0.2.0
     # via celery
 cryptography==39.0.1
     # via
-    #   pyjwt
     #   pyopenssl
     #   pysaml2
 defusedxml==0.7.1
     # via
     #   djangosaml2
     #   pysaml2
-    #   python3-openid
 dj-rest-auth[with_social]==2.2.7
     # via -r requirements.in
 django==4.1.10
     # via
     #   -r requirements.in
     #   dj-rest-auth
-    #   django-allauth
     #   django-livereload-server
     #   django-revproxy
     #   djangorestframework
     #   djangosaml2
-django-allauth==0.52.0
-    # via dj-rest-auth
 django-livereload-server==0.4
     # via -r requirements.in
 django-revproxy @ git+https://github.com/jazzband/django-revproxy.git@1defbb2dad5c0632391d54bcd3dbdaeabf46266a
@@ -120,13 +115,12 @@ numpy==1.24.1
     #   fst-pso
     #   fuzzytm
     #   gensim
+    #   miniful
     #   pandas
     #   pyfume
     #   scikit-learn
     #   scipy
     #   simpful
-oauthlib==3.2.2
-    # via requests-oauthlib
 openpyxl==3.1.2
     # via -r requirements.in
 packaging==23.0
@@ -145,8 +139,6 @@ pycparser==2.21
     # via cffi
 pyfume==0.2.25
     # via fuzzytm
-pyjwt[crypto]==2.6.0
-    # via django-allauth
 pyopenssl==23.1.1
     # via pysaml2
 pypdf2==3.0.1
@@ -168,8 +160,6 @@ python-dateutil==2.8.2
     # via
     #   pandas
     #   pysaml2
-python3-openid==3.2.0
-    # via django-allauth
 pytz==2022.7
     # via
     #   celery
@@ -182,18 +172,15 @@ regex==2022.10.31
     # via nltk
 requests==2.31.0
     # via
-    #   django-allauth
     #   pysaml2
-    #   requests-oauthlib
     #   simpful
-requests-oauthlib==1.3.1
-    # via django-allauth
 scikit-learn==1.2.1
     # via -r requirements.in
 scipy==1.10.0
     # via
     #   fuzzytm
     #   gensim
+    #   miniful
     #   pyfume
     #   scikit-learn
     #   simpful
@@ -214,13 +201,13 @@ textdistance==4.5.0
     # via -r requirements.in
 threadpoolctl==3.1.0
     # via scikit-learn
-tornado==6.3.2
+tornado==6.3.3
     # via django-livereload-server
 tqdm==4.64.1
     # via
     #   -r requirements.in
     #   nltk
-urllib3==1.26.13
+urllib3==1.26.17
     # via
     #   django-revproxy
     #   elastic-transport

@@ -1,4 +1,4 @@
-import { SearchFilter } from '../app/models/search-filter';
+import { SearchFilter } from '../app/models/field-filter';
 import { AggregateQueryFeedback, Corpus, CorpusField, QueryModel } from '../app/models/index';
 
 export class SearchServiceMock {

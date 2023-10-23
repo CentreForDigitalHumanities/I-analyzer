@@ -5,31 +5,6 @@ from langcodes import Language
 HERE = os.path.abspath(os.path.dirname(__file__))
 NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
 
-SETTINGS = {
-    'index': {'number_of_replicas': 0},
-    "analysis": {
-        "analyzer": {
-            "clean": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords"]
-            },
-            "stemmed": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords", "stemmer"]
-            }
-        },
-        "char_filter":{
-            "number_filter":{
-                "type":"pattern_replace",
-                "pattern":"\\d+",
-                "replacement":""
-            }
-        }
-    }
-}
-
 def get_language_key(language_code):
     '''
     Get the nltk stopwords file / elasticsearch stemmer name for a language code
@@ -54,14 +29,14 @@ def get_nltk_stopwords(language_code):
         raise NotImplementedError('language {} has no nltk stopwords list'.format(language))
 
 
-def es_settings(language = None, stopword_analyzer = False, stemming_analyzer = False):
+def es_settings(language=None, stopword_analyzer=False, stemming_analyzer=False):
     '''
     Make elasticsearch settings json for a corpus index. Options:
     - `language`: string with the language code. See addcorpus.constants for options, and which languages support stopwords/stemming
     - `stopword_analyzer`: define an analyser that removes stopwords.
     - `stemming_analyzer`: define an analyser that removes stopwords and performs stemming.
     '''
-    settings = {}
+    settings = {'index': {'number_of_shards': 1, 'number_of_replicas': 1}}
 
     if stopword_analyzer or stemming_analyzer:
         settings["analysis"] = {

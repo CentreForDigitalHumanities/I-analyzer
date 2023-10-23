@@ -41,25 +41,6 @@ class WordcloudView(APIView):
             raise APIException(detail='could not generate word cloud data')
 
 
-class WordcloudTaskView(APIView):
-    '''
-    Schedule a task to retrieve the word cloud
-    for a large number of results
-    '''
-
-    def post(self, request, *args, **kwargs):
-        # This view is not used but maintained in case
-        # we re-introduce this functionality
-
-        try:
-            word_counts_task = tasks.get_wordcloud_data.delay(request.data)
-            return Response({
-                'task_ids': [word_counts_task.id, word_counts_task.parent.id]
-            })
-        except:
-            raise APIException('Could not set up word cloud generation')
-
-
 class NgramView(APIView):
     '''
     Schedule a task to retrieve ngrams containing the search term
@@ -76,10 +57,9 @@ class NgramView(APIView):
 
         try:
             handle_tags_in_request(request)
-            ngram_counts_task = tasks.get_ngram_data.delay(request.data)
-            return Response({
-                'task_ids': [ngram_counts_task.id]
-            })
+            chord = tasks.ngram_data_tasks(request.data)
+            subtasks = [chord, *chord.parent.children]
+            return Response({'task_ids': [task.id for task in subtasks]})
         except Exception as e:
             logger.error(e)
             raise APIException(detail='Could not set up ngram generation.')

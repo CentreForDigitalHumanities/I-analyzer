@@ -35,7 +35,7 @@ class Times(XMLCorpusDefinition):
     scan_image_type = getattr(settings, 'TIMES_SCAN_IMAGE_TYPE', 'image/png')
     description_page = 'times.md'
     languages = ['en']
-    category = 'newspaper'
+    category = 'periodical'
 
     @property
     def es_settings(self):

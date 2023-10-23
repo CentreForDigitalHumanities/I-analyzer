@@ -44,8 +44,7 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        index_settings = settings.get('index', {})
-        index_settings.update({
+        settings['index'].update({
             'number_of_replicas' : 0,
             'number_of_shards': 5
         })
@@ -55,8 +54,8 @@ def create(client, corpus_definition, add, clear, prod):
     try:
         client.indices.create(
             index=corpus_definition.es_index,
-            settings = settings,
-            mappings = corpus_definition.es_mapping(),
+            settings=settings,
+            mappings=corpus_definition.es_mapping(),
         )
     except RequestError as e:
         if not 'already_exists' in e.error:
