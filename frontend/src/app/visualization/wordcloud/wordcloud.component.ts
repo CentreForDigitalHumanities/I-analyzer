@@ -1,26 +1,29 @@
 import {
-    Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges,
-    ViewChild, ViewEncapsulation
+    Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
 
-import * as cloud from 'd3-cloud';
-import * as d3 from 'd3';
 
 import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
 import { ApiService } from '../../services/index';
 import { BehaviorSubject } from 'rxjs';
 import { VisualizationService } from '../../services/visualization.service';
 import { showLoading } from '../../utils/utils';
+import { Chart, ChartData, ChartDataset, ChartOptions, ScriptableContext, TooltipItem } from 'chart.js';
+import { WordCloudChart } from 'chartjs-chart-wordcloud';
+import * as _ from 'lodash';
+import { selectColor } from '../../utils/select-color';
+
+// maximum font size in px
+const MIN_FONT_SIZE = 10;
+const MAX_FONT_SIZE = 48;
 
 @Component({
     selector: 'ia-wordcloud',
     templateUrl: './wordcloud.component.html',
     styleUrls: ['./wordcloud.component.scss'],
-    encapsulation: ViewEncapsulation.None
 })
 
 export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
-    @ViewChild('wordcloud', { static: true }) private chartContainer: ElementRef;
     @Input() visualizedField: CorpusField;
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
@@ -42,12 +45,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     private batchSize = 1000;
 
-    private width = 600;
-    private height = 400;
-    private scaleFontSize = d3.scaleLinear();
-
-    private chartElement: any;
-    private svg: any;
+    private chart: Chart;
 
     constructor(private visualizationService: VisualizationService, private apiService: ApiService) { }
 
@@ -96,48 +94,73 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     makeChart() {
-        this.chartElement = this.chartContainer.nativeElement;
-        d3.select('svg.wordcloud').remove();
-        const inputRange = d3.extent(this.significantText.map(d => d.doc_count)) as number[];
-        const outputRange = [20, 80];
-        this.scaleFontSize.domain(inputRange).range(outputRange);
-        this.drawWordCloud(this.significantText);
+        const data = this.chartData();
+        const options = this.chartOptions();
+
+        this.chart = new WordCloudChart('wordcloud', { data, options });
+    }
+
+    private chartLabels(result: AggregateResult[]): string[] {
+        return result.map(item => item.key);
+    }
+
+    private chartData(): ChartData<'wordCloud'> {
+        if (this.significantText) {
+            const labels = this.chartLabels(this.significantText);
+            const datasets = [this.chartDataset(this.significantText)];
+            return {
+                labels, datasets
+            };
+        }
+        return { labels: [], datasets: [] };
+    }
+
+    private chartDataset(result: AggregateResult[]): ChartDataset<'wordCloud'> {
+        const frequencies = result.map(item => item.doc_count);
+        const scale = this.sizeScale(_.min(frequencies), _.max(frequencies));
+        const sizes = frequencies.map(scale);
+
+        const color = (dataIndex: number) => selectColor(this.palette, dataIndex);
+
+        return {
+            label: 'Frequency',
+            data: sizes,
+            color: (context: ScriptableContext<'wordCloud'>) => color(context.dataIndex),
+        };
+    }
+
+    /** returns a scaling functions for words based on their frequency */
+    private sizeScale(min: number, max: number): (frequency: number) => number {
+        const normalize = this.normalize(min, max);
+        const sizeRange = MAX_FONT_SIZE - MIN_FONT_SIZE;
+        return (frequency: number) =>
+            MIN_FONT_SIZE + sizeRange * normalize(frequency);
+    }
+
+    /** returns a normaliser function based on a min and max value
+     *
+     * values in [min, max] are mapped onto [0,1]
+     */
+    private normalize(min: number, max: number): (frequency: number) => number {
+        const frequencyRange = (max - min) || 1; // avoid zero-division if all values are the same
+        return (frequency: number) => (frequency - min) / frequencyRange;
 
     }
 
-    drawWordCloud(significantText: AggregateResult[]) {
-        this.svg = d3.select(this.chartElement)
-            .append('svg')
-            .classed('wordcloud', true)
-            .attr('width', this.width)
-            .attr('height', this.height);
-        const chart = this.svg
-            .append('g')
-            .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')')
-            .selectAll('text');
-
-        const fill = d3.scaleOrdinal(this.palette);
-
-        const layout = cloud()
-            .size([this.width, this.height])
-            .words(significantText as cloud.Word[])
-            .padding(5)
-            .rotate(() => ~~(Math.random() * 2) * 90)
-            .font('Impact')
-            .fontSize(d => this.scaleFontSize((d['doc_count'])))
-            .on('end', (words) => {
-                // as d3 overwrites the "this" scope, this function is kept inline (cannot access the dom element otherwise)
-                chart
-                    .data(words)
-                    .enter().append('text')
-                    .style('font-size', (d) => d.size + 'px')
-                    .style('font-family', 'Impact')
-                    .style('fill', (d, i) => fill(i))
-                    .attr('text-anchor', 'middle')
-                    .attr('transform', (d) => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
-                    .text(d => d.key);
-            });
-
-        layout.start();
+    private chartOptions(): ChartOptions<'wordCloud'> {
+        return {
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    displayColors: false,
+                    callbacks: {
+                        label: (item: TooltipItem<'wordCloud'>) =>
+                            this.significantText[item.dataIndex].doc_count.toString()
+                    }
+                }
+            }
+        };
     }
 }
