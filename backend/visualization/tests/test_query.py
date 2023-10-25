@@ -109,3 +109,10 @@ def test_is_date_filter():
             }
         }
     })
+
+def test_get_date_range():
+    min_date = datetime(1800, 1, 1)
+    max_date = datetime(1900, 1, 1)
+    date_filter = query.make_date_filter(min_date, max_date, 'publication_date')
+    q = query.add_filter(query.MATCH_ALL, date_filter)
+    assert query.get_date_range(q) == (min_date, max_date)

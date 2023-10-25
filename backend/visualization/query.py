@@ -149,7 +149,11 @@ def get_date_range(query: Dict):
         datefilters = list(filter(is_date_filter, filters))
 
         if len(datefilters):
-            parameters = [f['range']['date'] for f in datefilters]
+            parameters = [
+                data
+                for f in datefilters
+                for data in f['range'].values()
+            ]
             min_dates = [parse_date(p['gte'])
                          for p in parameters if 'gte' in p]
             max_dates = [parse_date(p['lte'])
