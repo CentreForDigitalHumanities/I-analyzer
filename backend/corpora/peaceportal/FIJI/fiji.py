@@ -2,7 +2,8 @@ import re
 import os
 import os.path as op
 import logging
-from flask import current_app
+
+from django.conf import settings
 
 from addcorpus.extract import XML, Constant, Combined
 from addcorpus.corpus import Field
@@ -16,9 +17,9 @@ class FIJI(PeacePortal):
     than in the earlier version (i.e. the one under corpora/jewishinscriptions).
     '''
 
-    data_directory = current_app.config['PEACEPORTAL_FIJI_DATA']
-    es_index = current_app.config['PEACEPORTAL_FIJI_ES_INDEX']
-    es_alias = current_app.config['PEACEPORTAL_ALIAS']
+    data_directory = settings.PEACEPORTAL_FIJI_DATA
+    es_index = settings.PEACEPORTAL_FIJI_ES_INDEX
+    es_alias = settings.PEACEPORTAL_ALIAS
     filename_pattern = re.compile('\d+')
 
     def sources(self, start, end):

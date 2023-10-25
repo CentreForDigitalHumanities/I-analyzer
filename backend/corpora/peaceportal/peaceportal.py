@@ -7,7 +7,7 @@ from langdetect.lang_detect_exception import LangDetectException
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import XMLCorpus, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 from addcorpus.extract import XML, Constant
@@ -32,7 +32,7 @@ class PeacePortal(XMLCorpus):
     min_year = -530
     max_date = datetime(year=1950, month=12, day=31)
     visualize = []
-    es_index = current_app.config['PEACEPORTAL_ALIAS']
+    es_index = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime(year=746, month=1, day=1)
@@ -76,7 +76,7 @@ class PeacePortal(XMLCorpus):
             images = []
         return { 'media': images }
 
-    source_database = Field(
+    source_database = FieldDefinition(
         name='source_database',
         display_name='Source database',
         description='The database a record originates from.',
@@ -88,7 +88,7 @@ class PeacePortal(XMLCorpus):
         csv_core=True
     )
 
-    _id = Field(
+    _id = FieldDefinition(
         name='id',
         display_name='ID',
         description='ID of the inscription entry.',
@@ -97,7 +97,7 @@ class PeacePortal(XMLCorpus):
         search_field_core=True
     )
 
-    url = Field(
+    url = FieldDefinition(
         name='url',
         display_name='URL',
         description='URL of the inscription entry.',
@@ -105,7 +105,7 @@ class PeacePortal(XMLCorpus):
         search_field_core=True
     )
 
-    year = Field(
+    year = FieldDefinition(
         name='year',
         display_name='Year',
         description='Year of origin of the inscription.',
@@ -122,7 +122,7 @@ class PeacePortal(XMLCorpus):
         results_overview=True
     )
 
-    not_before = Field(
+    not_before = FieldDefinition(
         name='not_before',
         display_name='Not before',
         description='Inscription is dated not earlier than this year.',
@@ -130,7 +130,7 @@ class PeacePortal(XMLCorpus):
         hidden=True
     )
 
-    not_after = Field(
+    not_after = FieldDefinition(
         name='not_after',
         display_name='Not after',
         description='Inscription is dated not later than this year.',
@@ -138,7 +138,7 @@ class PeacePortal(XMLCorpus):
         hidden=True
     )
 
-    transcription = Field(
+    transcription = FieldDefinition(
         name='transcription',
         es_mapping=main_content_mapping(),
         display_name='Transcription',
@@ -148,43 +148,43 @@ class PeacePortal(XMLCorpus):
         display_type='text_content'
     )
 
-    transcription_german = Field(
+    transcription_german = FieldDefinition(
         name='transcription_german',
         es_mapping={'type': 'text', 'analyzer': 'german' },
         hidden=True
     )
 
-    transcription_english = Field(
+    transcription_english = FieldDefinition(
         name='transcription_english',
         es_mapping={'type': 'text', 'analyzer': 'english'},
         hidden=True
     )
 
-    transcription_hebrew = Field(
+    transcription_hebrew = FieldDefinition(
         name='transcription_hebrew',
         es_mapping={'type': 'text'},
         hidden=True
     )
 
-    transcription_latin = Field(
+    transcription_latin = FieldDefinition(
         name='transcription_latin',
         es_mapping={'type': 'text'},
         hidden=True
     )
 
-    transcription_greek = Field(
+    transcription_greek = FieldDefinition(
         name='transcription_greek',
         es_mapping={'type': 'text', 'analyzer': 'greek'},
         hidden=True
     )
 
-    transcription_dutch = Field(
+    transcription_dutch = FieldDefinition(
         name='transcription_dutch',
         es_mapping={'type': 'text', 'analyzer': 'dutch'},
         hidden=True
     )
 
-    age = Field(
+    age = FieldDefinition(
         name='age',
         display_name='Age',
         description='Age of the buried person(s)',
@@ -200,7 +200,7 @@ class PeacePortal(XMLCorpus):
     )
 
     # A string with all the names occuring in the source
-    names = Field(
+    names = FieldDefinition(
         name='names',
         es_mapping=text_mapping(),
         display_name='Names',
@@ -209,7 +209,7 @@ class PeacePortal(XMLCorpus):
     )
 
     # Should be an array with potentially multiple values from these: 'M', 'F', or None.
-    sex = Field(
+    sex = FieldDefinition(
         name='sex',
         display_name='Sex',
         description='Gender(s) of the buried person(s). None if the sex is unknown.',
@@ -221,7 +221,7 @@ class PeacePortal(XMLCorpus):
         csv_core=True
     )
 
-    country = Field(
+    country = FieldDefinition(
         name='country',
         display_name='Country',
         description='Country where the inscription was found.',
@@ -234,7 +234,7 @@ class PeacePortal(XMLCorpus):
         results_overview=True
     )
 
-    settlement = Field(
+    settlement = FieldDefinition(
         name='settlement',
         display_name='Settlement',
         description='The settlement where the inscription was found.',
@@ -246,7 +246,7 @@ class PeacePortal(XMLCorpus):
         visualization_type='term_frequency'
     )
 
-    region = Field(
+    region = FieldDefinition(
         name='region',
         display_name='Region',
         description='The region where the inscription was found.',
@@ -258,14 +258,14 @@ class PeacePortal(XMLCorpus):
         visualization_type='term_frequency'
     )
 
-    location_details = Field(
+    location_details = FieldDefinition(
         name='location_details',
         display_name='Location details',
         description='Details about the location of the inscription',
         es_mapping=text_mapping()
     )
 
-    material = Field(
+    material = FieldDefinition(
         name='material',
         display_name='Material',
         description='Type of material the inscription is written on.',
@@ -277,7 +277,7 @@ class PeacePortal(XMLCorpus):
         visualization_type='term_frequency'
     )
 
-    material_details = Field(
+    material_details = FieldDefinition(
         name='material_details',
         display_name='Material details',
         description='Details about the material the inscription is written on.',
@@ -285,7 +285,7 @@ class PeacePortal(XMLCorpus):
         search_field_core=True
     )
 
-    language = Field(
+    language = FieldDefinition(
         name='language',
         display_name='Language',
         description='Language written on the inscription.',
@@ -298,14 +298,14 @@ class PeacePortal(XMLCorpus):
         visualization_type='term_frequency'
     )
 
-    bibliography = Field(
+    bibliography = FieldDefinition(
         name='bibliography',
         es_mapping=keyword_mapping(),
         display_name='Bibliography',
         description='Reference(s) to who edited and published this funerary inscription.'
     )
 
-    comments = Field(
+    comments = FieldDefinition(
         name='comments',
         es_mapping=text_mapping(),
         display_name='Commentary',
@@ -313,7 +313,7 @@ class PeacePortal(XMLCorpus):
         search_field_core=True,
     )
 
-    images = Field(
+    images = FieldDefinition(
         name='images',
         es_mapping=keyword_mapping(),
         display_name='Images',
@@ -321,14 +321,14 @@ class PeacePortal(XMLCorpus):
         hidden=True
     )
 
-    coordinates = Field(
+    coordinates = FieldDefinition(
         name='coordinates',
         es_mapping=keyword_mapping(),
         display_name='Coordinates',
         description='GIS coordinates for the inscription.'
     )
 
-    iconography = Field(
+    iconography = FieldDefinition(
         name='iconography',
         es_mapping=text_mapping(),
         display_name='Iconography',
@@ -336,7 +336,7 @@ class PeacePortal(XMLCorpus):
         search_field_core=True
     )
 
-    dates_of_death = Field(
+    dates_of_death = FieldDefinition(
         name='dates_of_death',
         es_mapping=keyword_mapping(),
         display_name='Date of death',
