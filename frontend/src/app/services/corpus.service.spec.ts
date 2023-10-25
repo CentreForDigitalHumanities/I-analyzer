@@ -199,6 +199,8 @@ describe('CorpusService', () => {
             expect(items.length).toBe(1);
             const corpus = _.first(items);
 
+            expect(corpus.scan_image_type).toBe('png');
+
             const fieldData = [
                 {
                     description: 'Banking concern to which the report belongs.',
@@ -275,6 +277,7 @@ describe('CorpusService', () => {
                     expect(result[key]).toEqual(expected[key]);
                 });
             });
+
         });
     });
 });
