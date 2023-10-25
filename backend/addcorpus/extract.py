@@ -144,8 +144,12 @@ class Order(Extractor):
         return index
 
 class JSON(Extractor):
-    def _apply(self, key, *nargs, **kwargs):
-        return key
+    def __init__(self, key, *nargs, **kwargs):
+        self.key = key
+        super().__init__(*nargs, **kwargs)
+
+    def _apply(self, data, **kwargs):
+        return data.get(self.key)
 
 class XML(Extractor):
     '''

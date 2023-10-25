@@ -3,17 +3,17 @@ from datetime import datetime
 from django.conf import settings
 import requests
 
-from addcorpus.corpus import ApiCorpusDefinition, FieldDefinition
+from addcorpus.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
 import addcorpus.extract as extract
 
 
-class JewishMigration(ApiCorpusDefinition):
+class JewishMigration(JSONCorpusDefinition):
     ''' Class for indexing Jewish Migration data '''
     title = "Modelling Jewish Migration"
     description = "Inscriptions and book entries documenting Jewish settlements in the Mediterranean"
-    min_date = datetime(year=1800, month=1, day=1)
-    max_date = datetime(year=1, month=12, day=31)
+    min_date = datetime(year=1, month=1, day=1)
+    max_date = datetime(year=1800, month=12, day=31)
     data_directory = getattr(settings, 'JMIG_DATA', 'localhost:4242')
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
@@ -24,7 +24,8 @@ class JewishMigration(ApiCorpusDefinition):
     category = 'inscription'
 
     def sources(self, start, end):
-        list_of_sources = requests.get(self.data_directory)
+        response = requests.get(self.data_directory)
+        list_of_sources = response.json()
         for source in list_of_sources:
             yield source
     
@@ -34,7 +35,7 @@ class JewishMigration(ApiCorpusDefinition):
             display_name='Identifier',
             description='Identifier of the resource',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('id'),
+            extractor=extract.JSON(key='identifier'),
             csv_core=True,
             sortable=True
         ),
@@ -43,132 +44,132 @@ class JewishMigration(ApiCorpusDefinition):
             display_name='Source',
             description='Where evidence for migration was found',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('source'),
+            extractor=extract.JSON(key='source'),
         ),
         FieldDefinition(
             name='language',
             display_name='Language',
             description='Which language the source is in',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('language'),
+            extractor=extract.JSON(key='language'),
         ),
         FieldDefinition(
             name='script',
             display_name='Script',
             description='Which alphabet the source was written in',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('script'),
+            extractor=extract.JSON(key='script'),
         ),
         FieldDefinition(
             name='place',
             display_name='Place Name',
             description='In which place there was a settlement',
             es_mapping=keyword_mapping(True),
-            extractor=extract.JSON('place_name'),
+            extractor=extract.JSON(key='place_name'),
         ),
         FieldDefinition(
             name='area',
             display_name='Area',
             description='In which area there was a settlement',
             es_mapping=keyword_mapping(True),
-            extractor=extract.JSON('area'),
+            extractor=extract.JSON(key='area'),
         ),
         FieldDefinition(
             name='region',
             display_name='Region',
             description='In which region there was a settlement',
             es_mapping=keyword_mapping(True),
-            extractor=extract.JSON('region'),
+            extractor=extract.JSON(key='region'),
         ),
         FieldDefinition(
             name='coordinates',
             display_name='Geo-coordinates',
             description='Geo-coordinates of the settlement',
             es_mapping=geo_mapping(),
-            extractor=extract.JSON('coordinates'),
+            extractor=extract.JSON(key='coordinates'),
         ),
         FieldDefinition(
             name='site_type',
             display_name='Site Type',
             description='Type of site where evidence for settlement was found',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('site_type')
+            extractor=extract.JSON(key='site_type')
         ),
         FieldDefinition(
             name='inscription_type',
             display_name='Inscription type',
             description='Type of inscription',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('inscription_type')
+            extractor=extract.JSON(key='inscription_type')
         ),
         FieldDefinition(
             name='period',
             display_name='Period',
             description='Period in which the inscription was made',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('period')
+            extractor=extract.JSON(key='period')
         ),
         FieldDefinition(
             name='centuries',
             display_name='Centuries',
             description='Centuries in which the inscription was made',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('centuries')
+            extractor=extract.JSON(key='centuries')
         ),
         FieldDefinition(
             name='inscription_count',
             display_name='Inscription count',
             description='Number of inscriptions',
             es_mapping=int_mapping(),
-            extractor=extract.JSON('inscriptions_count')
+            extractor=extract.JSON(key='inscriptions_count')
         ),
         FieldDefinition(
             name='religious_profession',
             display_name='Religious profession',
             description='Religious profession of deceased',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('religious_profession')
+            extractor=extract.JSON(key='religious_profession')
         ),
         FieldDefinition(
             name='sex_dedicator',
             display_name='Gender dedicator',
             description='Gender of the dedicator',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('sex_dedicator')
+            extractor=extract.JSON(key='sex_dedicator')
         ),
         FieldDefinition(
             name='sex_deceased',
             display_name='Gender deceased',
             description='Gender of the deceased',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('sex_deceased')
+            extractor=extract.JSON(key='sex_deceased')
         ),
         FieldDefinition(
             name='symbol',
             display_name='Symbol',
             description='Symbol in inscription',
             es_mapping=keyword_mapping(),
-            extractor=extract.JSON('symbol')
+            extractor=extract.JSON(key='symbol')
         ),
         FieldDefinition(
             name='comments',
             display_name='Comments',
             description='Comments by collector',
             es_mapping=text_mapping(),
-            extractor=extract.JSON('comments')
+            extractor=extract.JSON(key='comments')
         ),
         FieldDefinition(
             name='inscription',
             display_name='Inscription',
             description='Text of the inscription',
             es_mapping=text_mapping(),
-            extractor=extract.JSON('inscription')
+            extractor=extract.JSON(key='inscription')
         ),
         FieldDefinition(
             name='transcription',
             display_name='Transcription',
             description='Transcription of the inscription to English',
             es_mapping=main_content_mapping(),
-            extractor=extract.JSON('transcription')
+            extractor=extract.JSON(key='transcription')
         )
     ]
