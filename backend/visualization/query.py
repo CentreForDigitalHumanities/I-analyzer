@@ -131,7 +131,11 @@ def get_filters(query):
 
 def is_date_filter(filter):
     """Checks if a filter object is a date filter"""
-    return has_path(filter, 'range', 'date')
+    range_filters = filter.get('range', dict()).keys()
+    return any(
+        has_path(filter, 'range', filter_name, 'format')
+        for filter_name in range_filters
+    )
 
 
 def parse_date(datestring):

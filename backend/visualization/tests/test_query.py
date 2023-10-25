@@ -79,3 +79,33 @@ def test_manipulation_is_pure(basic_query):
     assert query.get_date_range(basic_query) == (None, None)
     assert query.get_date_range(narrow_query) == narrow_timeframe
     assert query.get_date_range(wide_query) == wide_timeframe
+
+def test_is_date_filter():
+    assert query.is_date_filter({
+        'range': {
+            'date': {
+                'gte': '1950-01-01',
+                'lte': '1959-12-31',
+                'format': 'yyyy-MM-dd'
+            }
+        }
+    })
+
+    assert query.is_date_filter({
+        'range': {
+            'publication_date': {
+                'gte': '1950-01-01',
+                'lte': '1959-12-31',
+                'format': 'yyyy-MM-dd'
+            }
+        }
+    })
+
+    assert not query.is_date_filter({
+        'range': {
+            'year': {
+                'gte': 1950,
+                'lte': 1959,
+            }
+        }
+    })
