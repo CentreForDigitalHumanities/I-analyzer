@@ -95,7 +95,7 @@ def make_full_data_csv(results_per_series, visualization_type, parameters_per_se
     Export term frequency results to a csv.
     '''
     if visualization_type == 'ngram':
-        return create_csv.ngram_csv(results_per_series)
+        return create_csv.ngram_csv(results_per_series, parameters_per_series)
     query_per_series, field_name, unit = extract_term_frequency_download_metadata(parameters_per_series)
     return create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
 

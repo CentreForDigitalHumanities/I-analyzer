@@ -5,6 +5,7 @@ import os
 
 from django.conf import settings
 
+from visualization.query import get_query_text
 from visualization.term_frequency import parse_datestring
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
@@ -110,11 +111,19 @@ def format_field_value(value, unit):
         }
         return date.strftime(formats[unit]) 
     
-def ngram_csv(results, filename):
+def ngram_csv(results, parameters):
     rows = ngram_table(results)
     fieldnames = ['date', 'N-gram', 'Frequency']
+    filename = ngram_filename(parameters)
     filepath = write_file(filename, fieldnames, rows)
     return filepath
+
+def ngram_filename(parameters):
+    query_string = get_query_text(parameters['es_query'])
+    timestamp = datetime.now().isoformat(sep='_', timespec='minutes') # ensure csv filenames are unique with timestamp
+    suffix = '_' + timestamp + '.csv'
+    description = 'ngram_{}_{}'.format(query_string, suffix)
+    return create_filename(description, suffix)
 
 def ngram_table(results):
     rows = []
