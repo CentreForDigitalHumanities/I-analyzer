@@ -309,7 +309,7 @@ class XMLCorpusDefinition(CorpusDefinition):
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
-        self._reject_extractors(extract.HTML, extract.CSV)
+        self._reject_extractors(extract.CSV)
 
         # extract information from external xml files first, if applicable
         metadata = {}
