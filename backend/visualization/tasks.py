@@ -25,7 +25,7 @@ def ngram_data_tasks(request_json):
 
     return chord(group([
         get_ngram_data_bin.s(
-            corpus=corpus,
+            corpus_name=corpus,
             es_query=es_query,
             field=request_json['field'],
             bin=b,
@@ -40,7 +40,7 @@ def ngram_data_tasks(request_json):
     ]), integrate_ngram_results.s(
             number_of_ngrams=request_json['number_of_ngrams']
         )
-    )()
+    )
     
 @shared_task()
 def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_value, size, include_query_in_result = False):

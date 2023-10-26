@@ -5,6 +5,7 @@ import os
 
 from django.conf import settings
 
+from visualization.query import get_query_text
 from visualization.term_frequency import parse_datestring
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
@@ -99,4 +100,22 @@ def format_field_value(value, unit):
             'week': '%Y-%m-%d',
             'day': '%Y-%m-%d'
         }
-        return date.strftime(formats[unit])
+        return date.strftime(formats[unit]) 
+    
+def ngram_csv(results, log_id):
+    rows = ngram_table(results)
+    fieldnames = ['date', 'N-gram', 'Frequency']
+    filename = create_filename(log_id)
+    filepath = write_file(filename, fieldnames, rows)
+    return filepath
+
+def ngram_table(results):
+    rows = []
+    for index, time_point in enumerate(results['time_points']):
+        for ngram in results['words']:
+            rows.append({
+                'date': time_point,
+                'N-gram': ngram['label'],
+                'Frequency': ngram['data'][index]
+            })
+    return rows

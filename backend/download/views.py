@@ -98,10 +98,10 @@ class FullDataDownloadTaskView(APIView):
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
-        check_json_keys(request, ['visualization', 'parameters', 'corpus'])
+        check_json_keys(request, ['visualization', 'parameters', 'corpus_name'])
 
         visualization_type = request.data['visualization']
-        known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
+        known_visualisations = ['date_term_frequency', 'aggregate_term_frequency', 'ngram']
         if visualization_type not in known_visualisations:
             raise ParseError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
