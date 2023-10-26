@@ -81,21 +81,10 @@ def ngram_parameters(mock_corpus, mock_corpus_specs):
     }
 
 def mock_es_query(query_text, search_field):
-    return {
-        "query": {
-            "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": query_text,
-                        "fields": [search_field],
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
-                "filter": []
-            }
-        }
-    }
+    q = query.MATCH_ALL
+    q = query.set_query_text(q, query_text)
+    q = query.set_search_fields(q, [search_field])
+    return q
 
 @pytest.mark.parametrize("visualization_type, request_parameters", [('date_term_frequency', term_frequency_parameters), ('ngram', ngram_parameters)])
 def test_full_data_download_view(transactional_db, admin_client, small_mock_corpus,
