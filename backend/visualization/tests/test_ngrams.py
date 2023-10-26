@@ -111,10 +111,10 @@ def test_top_10_ngrams():
             for w in target_data }
         assert dataset_relative['data'] == relative_frequencies[word]
 
-def get_binned_results(corpus, query, time_bins=CENTURY_BINS, ngram_size=2, term_position='any', freq_compensation=None, subfield='none', max_size_per_interval=20, date_field='date'):
+def get_binned_results(corpus_name, query, time_bins=CENTURY_BINS, ngram_size=2, term_position='any', freq_compensation=None, subfield='none', max_size_per_interval=20, date_field='date'):
     return [
         ngram.tokens_by_time_interval(
-            corpus, query, 'content', bin, ngram_size, term_position, freq_compensation, subfield, max_size_per_interval, date_field)
+            corpus_name, query, 'content', bin, ngram_size, term_position, freq_compensation, subfield, max_size_per_interval, date_field)
         for bin in time_bins
     ]
 

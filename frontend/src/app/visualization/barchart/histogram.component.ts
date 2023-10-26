@@ -87,7 +87,7 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
         return this.apiService.requestFullData({
             visualization: 'aggregate_term_frequency',
             parameters: paramsPerSeries,
-            corpus: this.corpus.name,
+            corpus_name: this.corpus.name,
         });
     }
 
