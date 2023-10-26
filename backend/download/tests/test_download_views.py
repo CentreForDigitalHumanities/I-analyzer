@@ -6,7 +6,7 @@ from download.models import Download
 from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
 import io
-from visualization.query import MATCH_ALL
+from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
 
@@ -172,7 +172,7 @@ def test_csv_download_view(admin_client, finished_download):
 def some_document_id(admin_client, small_mock_corpus, index_small_mock_corpus):
     search_response = admin_client.post(
         f'/api/es/{small_mock_corpus}/_search',
-        {'es_query': MATCH_ALL},
+        {'es_query': query.MATCH_ALL},
          content_type='application/json'
     )
 
@@ -200,7 +200,7 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     encoding = 'utf-8'
     download_request_json = {
         'corpus': small_mock_corpus,
-        'es_query': MATCH_ALL,
+        'es_query': query.MATCH_ALL,
         'tags': [tag_on_some_document.id],
         'fields': ['date','content'],
         'size': 3,

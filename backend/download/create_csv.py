@@ -102,19 +102,12 @@ def format_field_value(value, unit):
         }
         return date.strftime(formats[unit]) 
     
-def ngram_csv(results, parameters):
+def ngram_csv(results, log_id):
     rows = ngram_table(results)
     fieldnames = ['date', 'N-gram', 'Frequency']
-    filename = ngram_filename(parameters)
+    filename = create_filename(log_id)
     filepath = write_file(filename, fieldnames, rows)
     return filepath
-
-def ngram_filename(parameters):
-    query_string = get_query_text(parameters['es_query'])
-    timestamp = datetime.now().isoformat(sep='_', timespec='minutes') # ensure csv filenames are unique with timestamp
-    suffix = '_' + timestamp + '.csv'
-    description = 'ngram_{}_{}'.format(query_string, suffix)
-    return create_filename(description, suffix)
 
 def ngram_table(results):
     rows = []
