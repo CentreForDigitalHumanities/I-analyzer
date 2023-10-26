@@ -25,7 +25,7 @@ def ngram_data_tasks(request_json):
 
     return chord(group([
         get_ngram_data_bin.s(
-            corpus=corpus,
+            corpus_name=corpus,
             es_query=es_query,
             field=request_json['field'],
             bin=b,
