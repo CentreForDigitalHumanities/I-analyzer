@@ -14,5 +14,7 @@ def peace_corpus_settings(settings):
 
     settings.PEACEPORTAL_EPIDAT_DATA= os.path.join(here, 'tests', 'data', 'epidat')
     settings.PEACEPORTAL_FIJI_DATA= os.path.join(here, 'tests', 'data', 'fiji')
-    settings.PEACEPORTAL_IIS_DATA = os.path.join(here, 'tests', 'data', 'iis')
+    settings.PEACEPORTAL_IIS_DATA = os.path.join(here, 'tests', 'data', 'iis', 'xml')
+    settings.PEACEPORTAL_IIS_TXT_DATA = os.path.join(here, 'tests', 'data', 'iis', 'transcription_txts')
     settings.PEACEPORTAL_TOL_DATA = os.path.join(here, 'tests', 'data', 'tol')
+    settings.PEACEPORTAL_ALIAS = 'peaceportal'

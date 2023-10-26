@@ -3,14 +3,13 @@ from copy import copy
 from django.conf import settings
 
 from addcorpus.extract import XML, Constant, HTML, ExternalFile, Combined
-from addcorpus.corpus import Field
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 
 
-class IIS(PeacePortal):
+class PeaceportalIIS(PeacePortal):
     data_directory = settings.PEACEPORTAL_IIS_DATA
     external_file_folder = settings.PEACEPORTAL_IIS_TXT_DATA
-    es_index = settings.PEACEPORTAL_IIS_ES_INDEX
+    es_index = getattr(settings, 'PEACEPORTAL_IIS_ES_INDEX', 'peaceportal-iis')
     es_alias = settings.PEACEPORTAL_ALIAS
 
     def __init__(self):

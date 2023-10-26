@@ -4,13 +4,12 @@ from copy import copy
 from django.conf import settings
 
 from addcorpus.extract import XML, Constant, HTML, Combined
-from addcorpus.corpus import Field
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 
 
-class TOL(PeacePortal):
+class PeaceportalTOL(PeacePortal):
     data_directory = settings.PEACEPORTAL_TOL_DATA
-    es_index = settings.PEACEPORTAL_TOL_ES_INDEX
+    es_index = getattr(settings, 'PEACEPORTAL_TOL_ES_INDEX', 'peaceportal-tol')
     es_alias = settings.PEACEPORTAL_ALIAS
 
     def __init__(self):

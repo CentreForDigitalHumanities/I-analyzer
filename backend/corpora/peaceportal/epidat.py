@@ -8,10 +8,10 @@ from addcorpus.es_settings import es_settings
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 
 
-class Epidat(PeacePortal):
+class PeaceportalEpidat(PeacePortal):
 
     data_directory = settings.PEACEPORTAL_EPIDAT_DATA
-    es_index = settings.PEACEPORTAL_EPIDAT_ES_INDEX
+    es_index = getattr(settings, 'PEACEPORTAL_EPIDAT_ES_INDEX', 'peaceportal-epidat')
     es_alias = settings.PEACEPORTAL_ALIAS
 
     languages = ['german', 'hebrew', 'english', 'dutch']

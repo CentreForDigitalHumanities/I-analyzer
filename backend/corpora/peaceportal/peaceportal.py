@@ -7,15 +7,15 @@ from langdetect.lang_detect_exception import LangDetectException
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpus, FieldDefinition
+from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
-from addcorpus.extract import XML, Constant
+from addcorpus.extract import Constant
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 
 
 
-class PeacePortal(XMLCorpus):
+class PeacePortal(XMLCorpusDefinition):
     '''
     Base class for corpora in the PEACE portal.
 
@@ -52,7 +52,7 @@ class PeacePortal(XMLCorpus):
     languages = []
 
     def es_settings(self):
-        return es_settings()
+        return es_settings(self.languages, True, True)
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -150,37 +150,37 @@ class PeacePortal(XMLCorpus):
 
     transcription_german = FieldDefinition(
         name='transcription_german',
-        es_mapping={'type': 'text', 'analyzer': 'german' },
+        es_mapping=main_content_mapping(stopword_analyzer='clean_german', stemming_analyzer='stemmed_german'),
         hidden=True
     )
 
     transcription_english = FieldDefinition(
         name='transcription_english',
-        es_mapping={'type': 'text', 'analyzer': 'english'},
+        es_mapping=main_content_mapping(stopword_analyzer='clean_english', stemming_analyzer='stemmed_english'),
         hidden=True
     )
 
     transcription_hebrew = FieldDefinition(
-        name='transcription_hebrew',
+        name='transcription_hebrew', # no stopwords / stemmers available
         es_mapping={'type': 'text'},
         hidden=True
     )
 
     transcription_latin = FieldDefinition(
         name='transcription_latin',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'text'}, # no stopwords / stemmers available
         hidden=True
     )
 
     transcription_greek = FieldDefinition(
         name='transcription_greek',
-        es_mapping={'type': 'text', 'analyzer': 'greek'},
+        es_mapping=main_content_mapping(stopword_analyzer='clean_greek', stemming_analyzer='stemmed_greek'),
         hidden=True
     )
 
     transcription_dutch = FieldDefinition(
         name='transcription_dutch',
-        es_mapping={'type': 'text', 'analyzer': 'dutch'},
+        es_mapping=main_content_mapping(stopword_analyzer='clean_dutch', stemming_analyzer='stemmed_dutch'),
         hidden=True
     )
 

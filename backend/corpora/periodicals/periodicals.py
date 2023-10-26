@@ -38,7 +38,7 @@ class Periodicals(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'

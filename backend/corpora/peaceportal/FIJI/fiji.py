@@ -6,11 +6,10 @@ import logging
 from django.conf import settings
 
 from addcorpus.extract import XML, Constant, Combined
-from addcorpus.corpus import Field
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, join_commentaries, get_text_in_language
 
 
-class FIJI(PeacePortal):
+class PeaceportalFIJI(PeacePortal):
     '''
     This is a fresh version of Ortal-Paz Saar's 'Funerary Inscriptions of Jews from Italy' corpus,
     updated to align with the PEACE portal index. This mostly implies that there are less fields
@@ -18,7 +17,7 @@ class FIJI(PeacePortal):
     '''
 
     data_directory = settings.PEACEPORTAL_FIJI_DATA
-    es_index = settings.PEACEPORTAL_FIJI_ES_INDEX
+    es_index = getattr(settings, 'PEACEPORTAL_FIJI_ES_INDEX', 'peaceportal-fiji')
     es_alias = settings.PEACEPORTAL_ALIAS
     filename_pattern = re.compile('\d+')
 
