@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
@@ -52,6 +52,11 @@ export class ApiService {
         `${this.apiUrl}/${subApi}/${route}`;
 
     constructor(private http: HttpClient) {}
+
+
+    public deleteSearchHistory(): Observable<any> {
+        return this.http.post('/api/search_history/delete_all/', {});
+    }
 
     // General / misc
     public saveQuery(options: QueryDb) {
@@ -297,6 +302,14 @@ export class ApiService {
                 new_password1: newPassword1,
                 new_password2: newPassword2,
             }
+        );
+    }
+
+    /** send PATCH request to update settings for the user */
+    public updateUserSettings(details: Partial<UserResponse>): Observable<UserResponse> {
+        return this.http.patch<UserResponse>(
+            this.authApiRoute('user'),
+            details
         );
     }
 

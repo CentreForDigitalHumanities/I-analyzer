@@ -29,7 +29,7 @@
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="tabIcons.text">
                     <div class="content" [innerHtml]="highlightedInnerHtml(field)"></div>
                 </ng-template>
-                <ng-template iaTabPanel id="scan" *ngIf="showScanTab">
+                <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="tabIcons.scan">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
                 </ng-template>
             </ia-tabs>

@@ -1,4 +1,4 @@
-import { FoundDocument } from '../app/models';
+import { FoundDocument, SearchResults } from '../app/models';
 import { makeDocument } from './constructor-helpers';
 
 export class ElasticSearchServiceMock {
@@ -11,4 +11,15 @@ export class ElasticSearchServiceMock {
     getDocumentById(): Promise<FoundDocument> {
         return Promise.resolve(makeDocument({content: 'Hello world!'}));
     }
+
+    search(): Promise<SearchResults> {
+        return Promise.resolve({
+            total: {
+                relation: 'eq',
+                value: 1
+            },
+            documents: [makeDocument({content: 'Hello world!'})]
+        });
+    }
+
 }

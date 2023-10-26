@@ -24,7 +24,8 @@ def test_timeline_full_data(small_mock_corpus, index_small_mock_corpus, small_mo
     visualization_type = 'date_term_frequency'
     group = tasks.term_frequency_full_data_tasks(full_data_parameters, visualization_type)
     results = group.apply().get()
-    filename = tasks.make_full_data_csv(results, visualization_type, full_data_parameters)
+    log_id = 0 # fake ID
+    filename = tasks.make_full_data_csv(results, visualization_type, full_data_parameters, log_id)
 
     with open(filename) as f:
         reader = csv.DictReader(f)
