@@ -18,3 +18,24 @@ class CustomUser(AbstractUser):
         # check if any corpus added to the user's group(s) match the corpus name
         return any(corpus for group in self.groups.all()
                    for corpus in group.corpora.filter(name=corpus_name))
+
+
+class UserProfile(models.Model):
+    ''' User information that is not relevant to authentication.
+    E.g. settings, preferences, optional personal information.
+    '''
+
+    user = models.OneToOneField(
+        to=CustomUser,
+        on_delete=models.CASCADE,
+        related_name='profile',
+    )
+
+    enable_search_history = models.BooleanField(
+        help_text='Whether to save the search history of this user',
+        default=True,
+    )
+
+    def __str__(self):
+        return f'Profile of {self.user.username}'
+
