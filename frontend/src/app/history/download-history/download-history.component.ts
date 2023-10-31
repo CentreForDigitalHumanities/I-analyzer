@@ -39,7 +39,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         const displayNames = {
             search_results: 'Search results',
             date_term_frequency: 'Term frequency',
-            aggregate_term_frequency: 'Term frequency'
+            aggregate_term_frequency: 'Term frequency',
+            ngram: 'Neighbouring words'
             // timeline/histogram distinction is relevant for backend but not for the user
         };
         return displayNames[type];

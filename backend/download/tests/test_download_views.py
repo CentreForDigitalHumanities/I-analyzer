@@ -6,7 +6,7 @@ from download.models import Download
 from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
 import io
-from visualization.query import MATCH_ALL
+from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
 
@@ -48,21 +48,7 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
     # TODO: construct query from query module, which is much more convenient
     query_text = mock_corpus_specs['example_query']
     search_field = mock_corpus_specs['content_field']
-    query = {
-        "query": {
-            "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": query_text,
-                        "fields": [search_field],
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
-                "filter": []
-            }
-        }
-    }
+    query = mock_es_query(query_text, search_field)
     return {
         'es_query':  query,
         'corpus_name': mock_corpus,
@@ -78,14 +64,40 @@ def term_frequency_parameters(mock_corpus, mock_corpus_specs):
         'unit': 'year',
     }
 
+def ngram_parameters(mock_corpus, mock_corpus_specs):
+    query_text = mock_corpus_specs['example_query']
+    search_field = mock_corpus_specs['content_field']
+    return {
+        'corpus_name': mock_corpus,
+        'es_query': mock_es_query(query_text, search_field),
+        'field': search_field,
+        'ngram_size': 2,
+        'term_position': 'any',
+        'freq_compensation': True,
+        'subfield': 'clean',
+        'max_size_per_interval': 50,
+        'number_of_ngrams': 10,
+        'date_field': 'date'
+    }
+
+def mock_es_query(query_text, search_field):
+    q = query.MATCH_ALL
+    q = query.set_query_text(q, query_text)
+    q = query.set_search_fields(q, [search_field])
+    return q
+
+@pytest.mark.parametrize("visualization_type, request_parameters", [('date_term_frequency', term_frequency_parameters), ('ngram', ngram_parameters)])
 def test_full_data_download_view(transactional_db, admin_client, small_mock_corpus,
                                  index_small_mock_corpus, small_mock_corpus_specs, celery_worker,
-                                 csv_directory):
-    parameters = term_frequency_parameters(small_mock_corpus, small_mock_corpus_specs)
+                                 csv_directory, visualization_type, request_parameters):
+    parameters = request_parameters(small_mock_corpus, small_mock_corpus_specs)
+    if visualization_type != 'ngram':
+        # timeline and histogram expect a series of parameters
+        parameters = [parameters]
     request_json = {
-        'visualization': 'date_term_frequency',
-        'parameters': [parameters],
-        'corpus': small_mock_corpus
+        'visualization': visualization_type,
+        'parameters': parameters,
+        'corpus_name': small_mock_corpus
     }
     response = admin_client.post(
         '/api/download/full_data',
@@ -160,7 +172,7 @@ def test_csv_download_view(admin_client, finished_download):
 def some_document_id(admin_client, small_mock_corpus, index_small_mock_corpus):
     search_response = admin_client.post(
         f'/api/es/{small_mock_corpus}/_search',
-        {'es_query': MATCH_ALL},
+        {'es_query': query.MATCH_ALL},
          content_type='application/json'
     )
 
@@ -188,7 +200,7 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     encoding = 'utf-8'
     download_request_json = {
         'corpus': small_mock_corpus,
-        'es_query': MATCH_ALL,
+        'es_query': query.MATCH_ALL,
         'tags': [tag_on_some_document.id],
         'fields': ['date','content'],
         'size': 3,

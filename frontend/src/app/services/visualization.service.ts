@@ -4,13 +4,13 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    NGramRequestParameters,
     NgramParameters,
     QueryModel,
     TaskResult,
     TimeCategory,
 } from '../models';
 import { ApiService } from './api.service';
-import { ElasticSearchService } from './elastic-search.service';
 
 @Injectable({
   providedIn: 'root'
@@ -71,17 +71,14 @@ export class VisualizationService {
         };
     }
 
-    public async dateTermFrequencySearch<TKey>(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number; start_date: Date; end_date?: Date}[],
-        unit: TimeCategory,
-    ): Promise<TaskResult> {
-        const params = this.makeDateTermFrequencyParameters(corpus, queryModel, fieldName, bins, unit);
-        return this.apiService.getDateTermFrequency(params);
-    }
-
-    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramParameters): Promise<TaskResult> {
+    public makeNgramRequestParameters(
+        corpus: Corpus,
+        queryModel: QueryModel,
+        field: string,
+        params: NgramParameters
+    ): NGramRequestParameters {
         const esQuery = queryModel.toEsQuery();
-        return this.apiService.ngramTasks({
+        return {
             es_query: esQuery,
             corpus_name: corpus.name,
             field,
@@ -91,8 +88,21 @@ export class VisualizationService {
             subfield: params.analysis,
             max_size_per_interval: params.maxDocuments,
             number_of_ngrams: params.numberOfNgrams,
-            date_field: params.dateField,
-        });
+            date_field: params.dateField
+        };
+    }
+
+    public async dateTermFrequencySearch<TKey>(
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number; start_date: Date; end_date?: Date}[],
+        unit: TimeCategory,
+    ): Promise<TaskResult> {
+        const params = this.makeDateTermFrequencyParameters(corpus, queryModel, fieldName, bins, unit);
+        return this.apiService.getDateTermFrequency(params);
+    }
+
+    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramParameters): Promise<TaskResult> {
+        const ngramRequestParams = this.makeNgramRequestParameters(corpus, queryModel, field, params);
+        return this.apiService.ngramTasks(ngramRequestParams);
     }
 
 

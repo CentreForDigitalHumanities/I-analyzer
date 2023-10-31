@@ -43,6 +43,6 @@ def normal_search(corpus, query_model, size):
     result = search(
         corpus = corpus,
         query_model=query_model,
-        size = size,
+        size=size,
     )
     return hits(result)

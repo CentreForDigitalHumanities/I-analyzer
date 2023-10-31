@@ -37,6 +37,8 @@ import { ResetPasswordComponent } from './login/reset-password/reset-password.co
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { ManualComponent } from './manual/manual.component';
 import { ManualModule } from './manual/manual.module';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsModule } from './settings/settings.module';
 import { MenuComponent } from './menu/menu.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PrivacyComponent } from './privacy/privacy.component';
@@ -117,6 +119,11 @@ export const appRoutes: Routes = [
         component: VerifyEmailComponent,
     },
     {
+        path: 'settings',
+        component: SettingsComponent,
+        canActivate: [LoggedOnGuard],
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
@@ -144,6 +151,7 @@ export const imports: any[] = [
     ManualModule,
     MenuModule,
     SearchModule,
+    SettingsModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
 ];

@@ -102,7 +102,7 @@ export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | Ag
 
 export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
 
-export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency';
+export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency' | 'ngram';
 export type DownloadStatus = 'done' | 'working' | 'error';
 export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters;
 
