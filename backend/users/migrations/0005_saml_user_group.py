@@ -15,7 +15,7 @@ def add_saml_users_to_group(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_sitedomain'),
+        ('users', '0004_userprofile'),
     ]
 
     operations = [
