@@ -37,12 +37,11 @@
     "balloon-css": "^0.5.2",
     "bulma": "^0.5.1",
     "bulma-switch": "^2.0.0",
-    "chart.js": "^3.7.1",
-    "chartjs-adapter-moment": "^1.0.0",
-    "chartjs-plugin-zoom": "^1.2.0",
+    "chart.js": "^4.4.0",
+    "chartjs-adapter-moment": "^1.0.1",
+    "chartjs-chart-wordcloud": "^4.3.2",
+    "chartjs-plugin-zoom": "^2.0.1",
     "core-js": "^2.6.11",
-    "d3": "^7.8.5",
-    "d3-cloud": "^1.2.7",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "html-to-image": "^1.9.0",
@@ -72,8 +71,7 @@
     "@angular-eslint/template-parser": "13.5.0",
     "@angular/compiler-cli": "^13.2.2",
     "@angular/language-service": "^13.2.2",
-    "@types/chart.js": "^2.9.35",
-    "@types/d3": "^7.4.0",
+    "@types/chart.js": "^2.9.37",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^6.14.10",
@@ -104,7 +102,6 @@
   "resolutions": {
     "loader-utils": "^2.0.4",
     "terser": "^5.14.2",
-    "d3-color": "^3.1.0",
     "semver": "^7.5.2"
   }
 }
