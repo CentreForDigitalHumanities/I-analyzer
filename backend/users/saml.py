@@ -16,4 +16,5 @@ class CustomSaml2Backend(Saml2Backend):
 def saml_user_group():
     group_name = getattr(settings, 'SAML_GROUP_NAME', None)
     if group_name:
-        return Group.objects.get_or_create(name=group_name)
+        group, _ = Group.objects.get_or_create(name=group_name)
+        return group

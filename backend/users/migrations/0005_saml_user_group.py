@@ -9,7 +9,7 @@ def add_saml_users_to_group(apps, schema_editor):
 
     if saml_group:
         for user in saml_users:
-            user.groups.add(saml_group)
+            user.groups.add(saml_group.id)
             user.save()
 
 class Migration(migrations.Migration):
