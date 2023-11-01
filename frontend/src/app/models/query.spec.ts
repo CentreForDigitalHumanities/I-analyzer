@@ -1,10 +1,10 @@
 import { mockField2, mockFieldDate, mockFieldMultipleChoice } from '../../mock-data/corpus';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
-import { DateFilter, MultipleChoiceFilter, SearchFilter } from './field-filter';
+import { SearchFilter } from './field-filter';
 import { convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { paramsHaveChanged } from '../utils/params';
+import { EsQuery } from './elasticsearch';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -208,5 +208,32 @@ describe('QueryModel', () => {
         filter.setToValue(new Date('Jan 2 1850'));
         expect(query.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 2 1850'));
         expect(clone.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 1 1850'));
+    });
+
+    it('should present an esQuery observable', async () => {
+        const q1: EsQuery = {
+            query: {
+                match_all: {}
+            }
+        };
+        expect(query.esQuery$.value).toEqual(q1);
+
+        query.setQueryText('test');
+
+        const q2: EsQuery = {
+            query: {
+                bool: {
+                    must: {
+                        simple_query_string: {
+                            query: 'test',
+                            lenient: true,
+                            default_operator: 'or',
+                        }
+                    },
+                    filter: [],
+                }
+            }
+        };
+        expect(query.esQuery$.value).toEqual(q2);
     });
 });
