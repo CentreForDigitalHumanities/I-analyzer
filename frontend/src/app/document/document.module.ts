@@ -6,6 +6,7 @@ import { ImageViewModule } from '../image-view/image-view.module';
 import { SearchRelevanceComponent } from '../search';
 import { CorpusModule } from '../corpus-header/corpus.module';
 import { TagModule } from '../tag/tag.module';
+import { DocumentPopupComponent } from './document-popup/document-popup.component';
 
 
 
@@ -14,6 +15,7 @@ import { TagModule } from '../tag/tag.module';
         DocumentViewComponent,
         DocumentPageComponent,
         SearchRelevanceComponent,
+        DocumentPopupComponent,
     ],
     imports: [
         CorpusModule,
