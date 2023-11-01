@@ -6,6 +6,7 @@ import { SortBy, SortDirection } from './sort';
 import { FoundDocument } from './found-document';
 import { SearchService } from '../services';
 import { SearchResults } from './search-results';
+import { CorpusField } from './corpus';
 
 abstract class Results<Parameters, Result> {
     parameters$: BehaviorSubject<Parameters>;
@@ -17,7 +18,7 @@ abstract class Results<Parameters, Result> {
     ) {
         this.parameters$ = new BehaviorSubject(initialParameters);
         this.result$ = combineLatest([query.esQuery$, this.parameters$]).pipe(
-            mergeMap(this.fetch)
+            mergeMap(this.fetch.bind(this))
         );
     }
 
@@ -42,11 +43,23 @@ export interface PageResultsParameters {
 export class DocumentPage {
     focus$ = new BehaviorSubject<FoundDocument>(undefined);
 
-    constructor(public documents: FoundDocument[], public total: number) { }
+    constructor(
+        public documents: FoundDocument[],
+        public total: number,
+        public fields?: CorpusField[]
+    ) { }
+
+    focus(document: FoundDocument) {
+        this.focus$.next(document);
+    }
+
+    blur() {
+        this.focus$.next(undefined);
+    }
 }
 
 const parseResults = (results: SearchResults): DocumentPage =>
-    new DocumentPage(results.documents, results.total.value);
+    new DocumentPage(results.documents, results.total.value, results.fields);
 
 export class PageResults extends Results<PageResultsParameters, DocumentPage> {
     constructor(

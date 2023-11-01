@@ -7,6 +7,7 @@ import { SearchRelevanceComponent } from '../search';
 import { CorpusModule } from '../corpus-header/corpus.module';
 import { TagModule } from '../tag/tag.module';
 import { DocumentPopupComponent } from './document-popup/document-popup.component';
+import { DialogModule } from 'primeng/dialog';
 
 
 
@@ -18,6 +19,7 @@ import { DocumentPopupComponent } from './document-popup/document-popup.componen
         DocumentPopupComponent,
     ],
     imports: [
+        DialogModule,
         CorpusModule,
         SharedModule,
         ImageViewModule,
@@ -25,6 +27,7 @@ import { DocumentPopupComponent } from './document-popup/document-popup.componen
     ], exports: [
         DocumentViewComponent,
         DocumentPageComponent,
+        DocumentPopupComponent,
         SearchRelevanceComponent,
     ]
 })
