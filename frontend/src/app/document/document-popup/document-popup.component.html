@@ -1,1 +1,55 @@
-<p>document-popup works!</p>
+<ng-container *ngIf="page?.focus$ | async as document">
+    <p-dialog [(visible)]="visible"
+        header="Document bla of bla">
+        Document...
+        <ng-template pTemplate="footer">
+            Footer
+        </ng-template>
+    </p-dialog>
+</ng-container>
+
+
+<!-- <p-dialog *ngIf="viewDocument$ | async as viewDocument" [visible]="true" width="100%"
+    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
+    header="Document {{viewDocument.position}} of {{totalResults}}">
+    <ia-document-view [document]="viewDocument" [queryModel]="queryModel" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ng-template pTemplate="footer">
+        <div class="columns" style="text-align:left">
+            <div class="column">
+                <a *ngIf="viewDocument && viewDocument.position > 1"
+                    iaBalloon="view previous document" iaBalloonPosition="right"
+                    (click)="prevDocument(viewDocument)" (keydown.enter)="prevDocument(viewDocument)"
+                    role="button" tabindex="0">
+                    <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
+                </a>
+            </div>
+            <div class="column" style="text-align:center">
+                <a [routerLink]="['/document', corpus.name, viewDocument.id]"
+                    iaBalloon="view this document on its own page" autofocus
+                    tabindex="0">
+                    <span class="icon">
+                        <fa-icon [icon]="linkIcon"></fa-icon>
+                    </span>
+                    <span>Link</span>
+                </a>
+                &nbsp;
+                <a *ngIf="viewDocument.hasContext" [routerLink]="['/search', corpus.name]" [queryParams]="viewDocument.contextQueryParams"
+                    iaBalloon="view all documents from this {{contextDisplayName}}"
+                    tabindex="0">
+                    <span class="icon">
+                        <fa-icon [icon]="contextIcon"></fa-icon>
+                    </span>
+                    <span>View {{contextDisplayName}}</span>
+                </a>
+            </div>
+            <div class="column" style="text-align:right">
+                <a *ngIf="viewDocument && viewDocument.position < totalResults"
+                    iaBalloon="view next document" iaBalloonPosition="left"
+                    (click)="nextDocument(viewDocument)" (keydown.enter)="nextDocument(viewDocument)"
+                    role="button" tabindex="0">
+                    <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
+                </a>
+            </div>
+        </div>
+    </ng-template>
+</p-dialog> -->

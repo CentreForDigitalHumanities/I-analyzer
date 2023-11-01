@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import * as _ from 'lodash';
 import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
-import { makeContextParams } from '../utils/document-context';
+import { PageResults } from '../models/results';
+import { Observable } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -40,6 +42,8 @@ export class SearchResultsComponent implements OnChanges {
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
 
+    public pageResults: PageResults;
+
     public isLoading = false;
     public isScrolledDown: boolean;
 
@@ -61,6 +65,7 @@ export class SearchResultsComponent implements OnChanges {
      * Whether a document has been selected to be shown.
      */
     public showDocument = false;
+
     /**
      * The document to view separately.
      */
@@ -74,9 +79,14 @@ export class SearchResultsComponent implements OnChanges {
 
     constructor(private searchService: SearchService) { }
 
-    ngOnChanges() {
-        if (this.queryModel) {
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.queryModel) {
             this.fromIndex = 0;
+            const params = {
+                from: this.fromIndex,
+                size: this.resultsPerPage,
+            };
+            this.pageResults = new PageResults(this.searchService, this.queryModel, params);
             this.search();
             this.queryModel.update.subscribe(() => this.search());
         }
