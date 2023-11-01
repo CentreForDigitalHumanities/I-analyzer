@@ -6,7 +6,9 @@
             </h2>
             <h2 class="subtitle" *ngIf="page.total > 5">
                 {{page.total}} results.
-                <!-- Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}: -->
+                Showing results {{(pageResults.from$ | async) + 1}}
+                -
+                {{(pageResults.to$ | async)}}
             </h2>
             <ia-highlight-selector *ngIf="!!queryModel.queryText" [queryModel]="queryModel"></ia-highlight-selector>
         </div>
@@ -29,12 +31,12 @@
                     <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
                 </div>
             </div>
-            <!-- <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
+            <div class="level-right has-text-centered" *ngIf="page.total > resultsPerPage" >
                 <div>
                     <p class="heading">Pages</p>
-                    <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
+                    <ia-pagination [totalResults]="page.total" [fromIndex]="pageResults.from$ | async" (parameters)="setParameters($event)"></ia-pagination>
                 </div>
-            </div> -->
+            </div>
         </div>
     </section>
 

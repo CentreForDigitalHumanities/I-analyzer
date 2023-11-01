@@ -6,7 +6,7 @@ import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import * as _ from 'lodash';
 import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
-import { PageResults } from '../models/results';
+import { PageResults, PageResultsParameters } from '../models/results';
 import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
@@ -90,6 +90,10 @@ export class SearchResultsComponent implements OnChanges {
             this.search();
             this.queryModel.update.subscribe(() => this.search());
         }
+    }
+
+    setParameters(parameters: PageResultsParameters) {
+        this.pageResults?.setParameters(parameters);
     }
 
     @HostListener('window:scroll', [])

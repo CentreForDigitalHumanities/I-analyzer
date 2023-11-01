@@ -85,12 +85,21 @@ const parseResults = (results: SearchResults): DocumentPage =>
     new DocumentPage(results.documents, results.total.value, results.fields);
 
 export class PageResults extends Results<PageResultsParameters, DocumentPage> {
+    from$: Observable<number>;
+    to$: Observable<number>;
+
     constructor(
         private searchService: SearchService,
         query: QueryModel,
         params: PageResultsParameters,
     ) {
         super(query, params);
+        this.from$ = this.parameters$.pipe(
+            map(parameters => parameters.from)
+        );
+        this.to$ = combineLatest([this.parameters$, this.result$]).pipe(
+            map(this.highestDocumentIndex)
+        );
     }
 
     fetch([esQuery, params]: [EsQuery, PageResultsParameters]): Observable<DocumentPage> {
@@ -99,5 +108,10 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         )).pipe(
             map(parseResults)
         );
+    }
+
+    private highestDocumentIndex([parameters, result]: [PageResultsParameters, DocumentPage]) {
+        const limit = parameters.from + parameters.size;
+        return _.min([limit, result.total]);
     }
 }
