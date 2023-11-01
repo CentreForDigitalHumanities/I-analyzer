@@ -1,35 +1,32 @@
 <ng-container *ngIf="pageResults?.result$ | async as page; else loading">
-    <!--
+
     <div class="level">
-        <h2 class="subtitle" *ngIf="results.total <= 5">
-            {results.total.value, plural, =1 {1 hit} other {{{results.total.value}} hits}}
+        <h2 class="subtitle" *ngIf="page.total <= 5">
+            {page.total, plural, =1 {1 hit} other {{{page.total}} hits}}
         </h2>
-        <h2 class="subtitle" *ngIf="results.total.value > 5">
-            {{results.total.value}} results.
-            Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
+        <h2 class="subtitle" *ngIf="page.total > 5">
+            {{page.total}} results.
+            <!-- Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}: -->
         </h2>
-        <ng-content *ngIf="!(queryText===null || queryText==='')" select="ia-highlight-selector"></ng-content>
+        <ia-highlight-selector *ngIf="!!queryModel.queryText" [queryModel]="queryModel"></ia-highlight-selector>
     </div>
 
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
-
-    <div class="level">
-
-    <div class="level-left has-text-centered">
-        <div>
-            <p class="heading">Sort By</p>
-            <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
+        <div class="level">
+            <div class="level-left has-text-centered">
+                <div>
+                    <p class="heading">Sort By</p>
+                    <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
+                </div>
+            </div>
+            <!-- <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
+                <div>
+                    <p class="heading">Pages</p>
+                    <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
+                </div>
+            </div> -->
         </div>
-    </div>
-    <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
-        <div>
-            <p class="heading">Pages</p>
-            <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
-        </div>
-        </div>
-    </div>
     </section>
-    -->
 
     <section *ngIf="page.documents.length; else noResults" aria-label="search results">
         <div class="hits" [ngClass]="{'is-loading':isLoading}">
