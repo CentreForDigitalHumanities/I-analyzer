@@ -5,6 +5,7 @@ import { DocumentPageComponent } from '../document-page/document-page.component'
 import { ImageViewModule } from '../image-view/image-view.module';
 import { SearchRelevanceComponent } from '../search';
 import { CorpusModule } from '../corpus-header/corpus.module';
+import { DocumentPopupComponent } from './document-popup/document-popup.component';
 
 
 
@@ -13,6 +14,7 @@ import { CorpusModule } from '../corpus-header/corpus.module';
         DocumentViewComponent,
         DocumentPageComponent,
         SearchRelevanceComponent,
+        DocumentPopupComponent,
     ],
     imports: [
         CorpusModule,
