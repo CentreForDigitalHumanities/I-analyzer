@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DocumentPage } from '../../models/results';
 import { filter } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-document-popup',
@@ -12,6 +13,9 @@ export class DocumentPopupComponent implements OnChanges {
     @Input() page: DocumentPage;
 
     visible = true;
+
+    faArrowLeft = faArrowLeft;
+    faArrowRight = faArrowRight;
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.page) {
