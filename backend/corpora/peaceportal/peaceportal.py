@@ -40,7 +40,6 @@ class PeacePortal(XMLCorpusDefinition):
     data_directory = 'bogus'
 
     # Data overrides from .common.XMLCorpus
-    tag_toplevel = ''
     tag_entry = 'TEI'
 
     # New data members
@@ -48,7 +47,7 @@ class PeacePortal(XMLCorpusDefinition):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
-    external_file_folder = '.'
+    external_file_folder = None
     languages = []
 
     def es_settings(self):
@@ -57,6 +56,7 @@ class PeacePortal(XMLCorpusDefinition):
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
+            print(filenames)
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
@@ -65,10 +65,15 @@ class PeacePortal(XMLCorpusDefinition):
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
 
-                yield full_path, {
+                metadata = {}
+
+                if self.external_file_folder:
+                    metadata = {
                     # applies only to iis corpus
                     'associated_file': os.path.join(self.external_file_folder, filename)
                 }
+
+                yield full_path, metadata
 
     def request_media(self, document):
         images = document['fieldValues']['images']
