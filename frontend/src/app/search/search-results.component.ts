@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 
-import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
+import { User, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
-import * as _ from 'lodash';
-import { faBookOpen, faArrowLeft, faArrowRight, faLink } from '@fortawesome/free-solid-svg-icons';
 import { PageResults, PageResultsParameters } from '../models/results';
-import { Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -30,12 +26,6 @@ export class SearchResultsComponent implements OnChanges {
     @Input()
     public user: User;
 
-    @Input()
-    public corpus: Corpus;
-
-    @Input()
-    public parentElement: HTMLElement;
-
     @Output('view')
     public viewEvent = new EventEmitter<{document: FoundDocument; tabIndex?: number}>();
 
@@ -50,9 +40,6 @@ export class SearchResultsComponent implements OnChanges {
     public results: SearchResults;
 
     public resultsPerPage = 20;
-    public totalResults: number;
-
-    public fromIndex = 0;
 
     public imgSrc: Uint8Array;
 
@@ -61,34 +48,18 @@ export class SearchResultsComponent implements OnChanges {
      */
     public showError: false | undefined | ShowError;
 
-    /**
-     * Whether a document has been selected to be shown.
-     */
-    public showDocument = false;
-
-    /**
-     * The document to view separately.
-     */
-    public viewDocument: FoundDocument;
+    /** tab on which the focused document should be opened */
     public documentTabIndex: number;
-
-    contextIcon = faBookOpen;
-    linkIcon = faLink;
-    faArrowLeft = faArrowLeft;
-    faArrowRight = faArrowRight;
 
     constructor(private searchService: SearchService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
-            this.fromIndex = 0;
             const params = {
-                from: this.fromIndex,
+                from: 0,
                 size: this.resultsPerPage,
             };
             this.pageResults = new PageResults(this.searchService, this.queryModel, params);
-            this.search();
-            this.queryModel.update.subscribe(() => this.search());
         }
     }
 
@@ -105,95 +76,11 @@ export class SearchResultsComponent implements OnChanges {
         }
     }
 
-    private search() {
-        this.isLoading = true;
-        this.searchService.search(this.queryModel).then(results => {
-            this.results = results;
-            this.results.documents.map((d, i) => d.position = i + 1);
-            this.searched(this.queryModel.queryText, this.results.total.value);
-            this.totalResults = this.results.total.value <= MAXIMUM_DISPLAYED ? this.results.total.value : MAXIMUM_DISPLAYED;
-        }, error => {
-            this.showError = {
-                date: (new Date()).toISOString(),
-                href: location.href,
-                message: error.message || 'An unknown error occurred'
-            };
-            console.trace(error);
-            // if an error occurred, return query text and 0 results
-            this.searched(this.queryModel.queryText, 0);
-        });
+    private onError(error: any): void {
+        this.showError = {
+            date: (new Date()).toISOString(),
+            href: location.href,
+            message: error.message || 'An unknown error occurred'
+        };
     }
-
-    public async loadResults(searchParameters: SearchParameters) {
-        this.isLoading = true;
-        this.fromIndex = searchParameters.from;
-        this.resultsPerPage = searchParameters.size;
-        this.results = await this.searchService.loadResults(this.queryModel, searchParameters.from, searchParameters.size);
-        this.results.documents.map( (d, i) => d.position = i + searchParameters.from + 1 );
-        this.isLoading = false;
-    }
-
-    public searched(queryText: string, resultsCount: number) {
-        // emit searchedEvent to search component
-        this.searchedEvent.next({ queryText, resultsCount });
-        this.isLoading = false;
-    }
-
-    public goToScan(document: FoundDocument, event: any) {
-        this.onViewDocument(document);
-        this.documentTabIndex = 1;
-        event.stopPropagation();
-    }
-
-    public onViewDocument(document: FoundDocument) {
-        this.showDocument = true;
-        this.viewDocument = document;
-        this.documentTabIndex = 0;
-    }
-
-    get contextDisplayName(): string {
-        if (this.corpus && this.corpus.documentContext) {
-            return this.corpus.documentContext.displayName;
-        }
-    }
-
-    public async nextDocument(document: FoundDocument) {
-        const newPosition = document.position + 1;
-        const maxPosition = this.fromIndex + this.results.documents.length;
-
-        if (newPosition > maxPosition) {
-            this.fromIndex = maxPosition + 1;
-            await this.loadResults({
-                from: maxPosition,
-                size: this.resultsPerPage,
-            });
-            this.viewDocumentAtPosition(newPosition);
-        } else {
-            this.viewDocumentAtPosition(newPosition);
-        }
-    }
-
-    public async prevDocument(document: FoundDocument) {
-        const newPosition = document.position - 1;
-        const minPosition = this.fromIndex + 1;
-
-        if (newPosition < minPosition) {
-            this.fromIndex = this.fromIndex - this.resultsPerPage;
-            await this.loadResults({
-                from: this.fromIndex,
-                size: this.resultsPerPage,
-            });
-            this.viewDocumentAtPosition(newPosition);
-        } else {
-            this.viewDocumentAtPosition(newPosition);
-        }
-    }
-
-    viewDocumentAtPosition(position: number) {
-        const document = this.results.documents.find(doc =>
-            doc.position === position
-        );
-        this.onViewDocument(document);
-    }
-
 }
