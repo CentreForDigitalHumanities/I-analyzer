@@ -41,10 +41,9 @@ describe('Search Results Component', () => {
                 relation: 'gte'
             }
         };
-        component.corpus = _.merge(mockCorpus, fields);
-        component.fromIndex = 0;
+        const corpus = _.merge(mockCorpus, fields);
         component.resultsPerPage = 20;
-        const query = new QueryModel(component.corpus);
+        const query = new QueryModel(corpus);
         query.setQueryText('wally');
         query.setHighlight(10);
         component.queryModel = query;
