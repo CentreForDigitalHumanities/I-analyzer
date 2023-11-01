@@ -1,6 +1,6 @@
-import { BehaviorSubject, Observable, combineLatest, from } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, from, of } from 'rxjs';
 import { QueryModel } from './query';
-import { map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, share, tap } from 'rxjs/operators';
 import { EsQuery } from './elasticsearch';
 import { SortBy, SortDirection } from './sort';
 import { FoundDocument } from './found-document';
@@ -12,22 +12,36 @@ import * as _ from 'lodash';
 abstract class Results<Parameters, Result> {
     parameters$: BehaviorSubject<Parameters>;
     result$: Observable<Result>;
+    error$: BehaviorSubject<any>;
 
     constructor(
         public query: QueryModel,
         initialParameters: Parameters,
     ) {
         this.parameters$ = new BehaviorSubject(initialParameters);
+        this.error$ = new BehaviorSubject(undefined);
         this.result$ = combineLatest([query.esQuery$, this.parameters$]).pipe(
-            mergeMap(this.fetch.bind(this))
+            mergeMap(this.fetch.bind(this)),
+            catchError(err => {
+                this.error$.next(err);
+                return of(undefined);
+            }),
         );
     }
 
     setParameters(parameters: Parameters) {
+        this.clearError();
         this.parameters$.next(parameters);
     }
 
+    private clearError() {
+        if (this.error$.value) {
+            this.error$.next(undefined);
+        }
+    }
+
     abstract fetch(data: [EsQuery, Parameters]): Observable<Result>;
+
 }
 
 interface DocumentResultsParameters {
