@@ -1,7 +1,10 @@
 <ng-container *ngIf="page?.focus$ | async as document">
-    <p-dialog [(visible)]="visible"
+    <p-dialog [(visible)]="visible" width="100%"
+        [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
         header="Document {{document.position}} of {{page.total}}">
-        Document...
+
+        <ia-document-view [document]="document" [queryModel]="queryModel" [corpus]="document.corpus" [documentTabIndex]="0"></ia-document-view>
+
         <ng-template pTemplate="footer">
             <div class="columns" style="text-align:left">
                 <div class="column">
@@ -12,8 +15,8 @@
                         <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
                     </a>
                 </div>
-                <!-- <div class="column" style="text-align:center">
-                    <a [routerLink]="['/document', corpus.name, viewDocument.id]"
+                <div class="column" style="text-align:center">
+                    <a [routerLink]="documentPageLink"
                         iaBalloon="view this document on its own page" autofocus
                         tabindex="0">
                         <span class="icon">
@@ -22,7 +25,8 @@
                         <span>Link</span>
                     </a>
                     &nbsp;
-                    <a *ngIf="viewDocument.hasContext" [routerLink]="['/search', corpus.name]" [queryParams]="viewDocument.contextQueryParams"
+                    <a *ngIf="document.hasContext"
+                        [routerLink]="['/search', document.corpus.name]" [queryParams]="document.contextQueryParams"
                         iaBalloon="view all documents from this {{contextDisplayName}}"
                         tabindex="0">
                         <span class="icon">
@@ -30,7 +34,7 @@
                         </span>
                         <span>View {{contextDisplayName}}</span>
                     </a>
-                </div> -->
+                </div>
                 <div class="column" style="text-align:right">
                     <a *ngIf="document.position < page.documents.length - 1"
                         iaBalloon="view next document" iaBalloonPosition="left"
@@ -43,13 +47,3 @@
         </ng-template>
     </p-dialog>
 </ng-container>
-
-
-<!-- <p-dialog *ngIf="viewDocument$ | async as viewDocument" [visible]="true" width="100%"
-    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    header="Document {{viewDocument.position}} of {{totalResults}}">
-    <ia-document-view [document]="viewDocument" [queryModel]="queryModel" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
-    <ng-template pTemplate="footer">
-        </div>
-    </ng-template>
-</p-dialog> -->
