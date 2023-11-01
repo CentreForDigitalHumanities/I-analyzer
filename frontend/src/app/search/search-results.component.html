@@ -1,4 +1,4 @@
-<ng-container *ngIf="pageResults?.result$ | async as page; else loading">
+<ng-container *ngIf="pageResults?.result$ | async as page; else noResult">
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
         <div class="level">
             <h2 class="subtitle" *ngIf="page.total <= 5">
@@ -40,7 +40,7 @@
         </div>
     </section>
 
-    <section *ngIf="page.documents.length; else noResults" aria-label="search results">
+    <section *ngIf="page.documents.length; else noHits" aria-label="search results">
         <div class="hits" [ngClass]="{'is-loading':isLoading}">
             <article *ngFor="let document of page.documents" class="document box">
                 <div class="columns">
@@ -90,14 +90,16 @@
     <ia-document-popup [page]="page" [queryModel]="queryModel"></ia-document-popup>
 </ng-container>
 
-<ng-template #loading>
-    <div class="is-loading" aria-label="loading results"></div>
-</ng-template>
-
-<ng-template #noResults>
+<ng-template #noHits>
     <section aria-label="search results">
         No results
     </section>
 </ng-template>
 
-<!-- <ia-error *ngIf="showError" [showError]="showError"></ia-error> -->
+<ng-template #noResult>
+    <ia-error *ngIf="error$ | async as error; else loading" [showError]="error"></ia-error>
+</ng-template>
+
+<ng-template #loading>
+    <div class="is-loading" aria-label="loading results"></div>
+</ng-template>

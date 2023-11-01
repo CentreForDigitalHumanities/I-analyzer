@@ -5,6 +5,8 @@ import { User, SearchResults, FoundDocument, QueryModel, ResultOverview } from '
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import { PageResults, PageResultsParameters } from '../models/results';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -43,10 +45,7 @@ export class SearchResultsComponent implements OnChanges {
 
     public imgSrc: Uint8Array;
 
-    /**
-     * For failed searches.
-     */
-    public showError: false | undefined | ShowError;
+    error$: Observable<ShowError>;
 
     /** tab on which the focused document should be opened */
     public documentTabIndex: number;
@@ -60,6 +59,9 @@ export class SearchResultsComponent implements OnChanges {
                 size: this.resultsPerPage,
             };
             this.pageResults = new PageResults(this.searchService, this.queryModel, params);
+            this.error$ = this.pageResults.error$.pipe(
+                map(this.parseError)
+            );
         }
     }
 
@@ -76,11 +78,13 @@ export class SearchResultsComponent implements OnChanges {
         }
     }
 
-    private onError(error: any): void {
-        this.showError = {
-            date: (new Date()).toISOString(),
-            href: location.href,
-            message: error.message || 'An unknown error occurred'
-        };
+    private parseError(error): ShowError {
+        if (error) {
+            return {
+                date: (new Date()).toISOString(),
+                href: location.href,
+                message: error.message || 'An unknown error occurred'
+            };
+        }
     }
 }
