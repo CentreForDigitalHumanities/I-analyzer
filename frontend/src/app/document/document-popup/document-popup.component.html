@@ -36,7 +36,7 @@
                     </a>
                 </div>
                 <div class="column" style="text-align:right">
-                    <a *ngIf="document.position < page.documents.length - 1"
+                    <a *ngIf="document.position < page.documents.length"
                         iaBalloon="view next document" iaBalloonPosition="left"
                         (click)="page.focusNext(document)" (keydown.enter)="page.focusNext(document)"
                         role="button" tabindex="0">
