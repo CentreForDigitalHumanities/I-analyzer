@@ -62,6 +62,9 @@ export class SearchResultsComponent implements OnChanges {
             this.error$ = this.pageResults.error$.pipe(
                 map(this.parseError)
             );
+            this.pageResults.result$.subscribe(result => {
+                this.searchedEvent.emit({ queryText: this.queryModel.queryText, resultsCount: result.total });
+            });
         }
     }
 
