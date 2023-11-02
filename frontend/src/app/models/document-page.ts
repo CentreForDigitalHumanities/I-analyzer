@@ -1,11 +1,17 @@
-import { BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { FoundDocument } from './found-document';
 import { CorpusField } from './corpus';
 import * as _ from 'lodash';
 
+export type DocumentView = 'content' | 'scan';
+
+export interface DocumentFocus {
+    document: FoundDocument;
+    view: DocumentView;
+}
 
 export class DocumentPage {
-    focus$ = new BehaviorSubject<FoundDocument>(undefined);
+    focus$ = new Subject<DocumentFocus>();
 
     constructor(
         public documents: FoundDocument[],
@@ -15,27 +21,24 @@ export class DocumentPage {
         this.documents.forEach((d, i) => d.position = i + 1);
     }
 
-    focus(document: FoundDocument) {
-        this.focus$.next(document);
+    focus(document: FoundDocument, view: DocumentView = 'content') {
+        this.focus$.next({ document, view });
     }
 
-    focusNext() {
-        this.focusShift(1);
+    focusNext(document: FoundDocument) {
+        this.focusShift(document, 1);
     }
 
-    focusPrevious() {
-        this.focusShift(-1);
+    focusPrevious(document: FoundDocument) {
+        this.focusShift(document, -1);
     }
 
     blur() {
         this.focus$.next(undefined);
     }
 
-    private focusShift(shift: number) {
-        const document = this.focus$.value;
-        if (document) {
-            this.focusPosition(document.position + shift);
-        }
+    private focusShift(document: FoundDocument, shift: number) {
+        this.focusPosition(document.position + shift);
     }
 
     private focusPosition(position: number) {
