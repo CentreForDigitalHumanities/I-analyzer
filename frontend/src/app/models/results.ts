@@ -1,7 +1,6 @@
 import { BehaviorSubject, Observable, merge, of } from 'rxjs';
 import { QueryModel } from './query';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
-import { EsQuery } from './elasticsearch';
+import { catchError, map, mergeMap, share, shareReplay, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 
@@ -26,6 +25,7 @@ export abstract class Results<Parameters, Result> {
                 this.error$.next(err);
                 return of(undefined);
             }),
+            shareReplay(1),
         );
         this.loading$ = this.makeLoadingObservable();
     }
