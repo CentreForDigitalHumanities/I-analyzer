@@ -1,6 +1,5 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
-import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
@@ -9,7 +8,6 @@ import {
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
 import { SearchFilter } from './field-filter';
-import { map } from 'rxjs/operators';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -81,8 +79,6 @@ export class QueryModel {
 
 	update = new Subject<void>();
 
-    esQuery$: BehaviorSubject<EsQuery>;
-
     constructor(corpus: Corpus, params?: ParamMap) {
 		this.corpus = corpus;
         this.filters = this.corpus.fields.map(field => field.makeSearchFilter());
@@ -91,9 +87,6 @@ export class QueryModel {
             this.setFromParams(params);
         }
         this.subscribeToFilterUpdates();
-
-        this.esQuery$ = new BehaviorSubject(this.toEsQuery());
-        this.update.subscribe(() => this.esQuery$.next(this.toEsQuery()));
     }
 
     get activeFilters() {

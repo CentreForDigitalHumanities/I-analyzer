@@ -1,21 +1,19 @@
 import { BehaviorSubject, Observable, combineLatest, from } from 'rxjs';
 import { QueryModel } from './query';
 import { map } from 'rxjs/operators';
-import { EsQuery } from './elasticsearch';
 import { FoundDocument } from './found-document';
 import { SearchService } from '../services';
 import { SearchResults } from './search-results';
 import { CorpusField } from './corpus';
 import * as _ from 'lodash';
-import { HasEsQuery, Results } from './results';
+import { Results } from './results';
 
+const RESULTS_PER_PAGE = 20;
 
-export interface PageParameters {
+export interface PageResultsParameters {
     from: number;
     size: number;
 }
-
-export type PageResultsParameters = HasEsQuery & PageParameters;
 
 export class DocumentPage {
     focus$ = new BehaviorSubject<FoundDocument>(undefined);
@@ -56,7 +54,8 @@ export class DocumentPage {
         this.focus(this.documents[index]);
     }
 }
-const parseResults = (results: SearchResults): DocumentPage => new DocumentPage(results.documents, results.total.value, results.fields);
+const parseResults = (results: SearchResults): DocumentPage =>
+    new DocumentPage(results.documents, results.total.value, results.fields);
 
 export class PageResults extends Results<PageResultsParameters, DocumentPage> {
     from$: Observable<number>;
@@ -65,9 +64,11 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
     constructor(
         private searchService: SearchService,
         query: QueryModel,
-        params: PageResultsParameters
     ) {
-        super(query, params);
+        super(query, {
+            from: 0,
+            size: RESULTS_PER_PAGE,
+        });
         this.from$ = this.parameters$.pipe(
             map(parameters => parameters.from)
         );
@@ -76,11 +77,9 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         );
     }
 
-    setEsQuery(esQuery: EsQuery, currentParameters: PageResultsParameters): PageResultsParameters {
+    assignOnQueryUpdate(): Partial<PageResultsParameters> {
         return {
-            esQuery,
-            from: 0,
-            size: currentParameters.size
+            from: 0
         };
     }
 
@@ -92,8 +91,8 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         );
     }
 
-    private highestDocumentIndex([parameters, result]: [PageResultsParameters, DocumentPage]) {
+    private highestDocumentIndex([parameters, result]: [PageResultsParameters, DocumentPage]): number {
         const limit = parameters.from + parameters.size;
-        return _.min([limit, result.total]);
+        return Math.min(limit, result.total);
     }
 }
