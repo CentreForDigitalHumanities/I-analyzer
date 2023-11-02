@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Ou
 import { User, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
-import { PageResults, PageResultsParameters } from '../models/results';
+import { PageResults, PageResultsParameters } from '../models/page-results';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
