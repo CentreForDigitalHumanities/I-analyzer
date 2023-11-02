@@ -14,17 +14,6 @@
         </div>
 
         <div class="level">
-            <h2 class="subtitle" *ngIf="page.total <= 5">
-                {page.total, plural, =1 {1 hit} other {{{page.total}} hits}}
-            </h2>
-            <h2 class="subtitle" *ngIf="page.total > 5">
-                {{page.total}} results.
-                <!-- Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}: -->
-            </h2>
-            <ng-content *ngIf="!(queryText===null || queryText==='')" select="ia-highlight-selector"></ng-content>
-        </div>
-
-        <div class="level">
             <div class="level-left has-text-centered">
                 <div>
                     <p class="heading">Sort By</p>
@@ -57,7 +46,6 @@
                                         <td>
                                             <ng-container *ngFor="let highlight of document.highlight[field.name]">
                                                 <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
-                                                 insert ellipsis [...] in between snippets or at the end of a single snippet
                                                 <hr *ngIf="highlight !== document.highlight[field.name][document.highlight[field.name].length-1]">
                                             </ng-container>
                                         </td>
