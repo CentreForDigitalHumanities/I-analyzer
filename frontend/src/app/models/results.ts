@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subject, combineLatest, from, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, combineLatest, from, merge, of } from 'rxjs';
 import { QueryModel } from './query';
 import { catchError, map, mergeMap, share, tap } from 'rxjs/operators';
 import { EsQuery } from './elasticsearch';
@@ -13,6 +13,7 @@ abstract class Results<Parameters, Result> {
     parameters$: BehaviorSubject<Parameters>;
     result$: Observable<Result>;
     error$: BehaviorSubject<any>;
+    loading$: Observable<boolean>;
 
     constructor(
         public query: QueryModel,
@@ -27,11 +28,20 @@ abstract class Results<Parameters, Result> {
                 return of(undefined);
             }),
         );
+        this.loading$ = this.makeLoadingObservable();
     }
 
     setParameters(parameters: Parameters) {
         this.clearError();
         this.parameters$.next(parameters);
+    }
+
+    private makeLoadingObservable(): Observable<boolean> {
+        const onQueryUpdate$ = this.query.update.pipe(map(() => true));
+        const onParameterChange$ = this.parameters$.pipe(map(() => true));
+        const onResult$ = this.result$.pipe(map(() => false));
+        const onError$ = this.error$.pipe(map(() => false));
+        return merge(onQueryUpdate$, onParameterChange$, onResult$, onError$);
     }
 
     private clearError() {

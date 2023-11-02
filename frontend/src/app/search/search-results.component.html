@@ -41,7 +41,7 @@
     </section>
 
     <section *ngIf="page.documents.length; else noHits" aria-label="search results">
-        <div class="hits" [ngClass]="{'is-loading':isLoading}">
+        <div class="hits" [ngClass]="{'is-loading': pageResults.loading$ | async }">
             <article *ngFor="let document of page.documents" class="document box">
                 <div class="columns">
                     <div class="column is-flex" tabindex="0" role="button"
