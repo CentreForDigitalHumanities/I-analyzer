@@ -8,12 +8,11 @@ import {
 } from '../models/index';
 import * as _ from 'lodash';
 import { QueryParameters } from '../models/search-requests';
+import { RESULTS_PER_PAGE } from '../models/page-results';
 
 
 @Injectable()
 export class ElasticSearchService {
-
-    private resultsPerPage = 20;
 
     constructor(private http: HttpClient) {
     }
@@ -78,29 +77,17 @@ export class ElasticSearchService {
         };
     }
 
-
-
-    public async search(
-        queryModel: QueryModel,
-        size?: number,
-    ): Promise<SearchResults> {
-        const esQuery = queryModel.toEsQuery();
-
-        // Perform the search
-        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage);
-        return this.parseResponse(queryModel.corpus, response);
-    }
-
-
     /**
      * Load results for requested page
      */
     public async loadResults(
-        queryModel: QueryModel, from: number,
-        size: number): Promise<SearchResults> {
+        queryModel: QueryModel,
+        from: number,
+        size: number = RESULTS_PER_PAGE
+    ): Promise<SearchResults> {
         const esQuery = queryModel.toEsQuery();
         // Perform the search
-        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage, from);
+        const response = await this.execute(queryModel.corpus, esQuery, size, from);
         return this.parseResponse(queryModel.corpus, response);
     }
 
