@@ -34,7 +34,7 @@
             <div class="level-right has-text-centered" *ngIf="page.total > resultsPerPage" >
                 <div>
                     <p class="heading">Pages</p>
-                    <ia-pagination [totalResults]="page.total" [fromIndex]="pageResults.from$ | async" (parameters)="setParameters($event)"></ia-pagination>
+                    <ia-pagination [totalResults]="totalDisplayed(page.total)" [fromIndex]="pageResults.from$ | async" (parameters)="setParameters($event)"></ia-pagination>
                 </div>
             </div>
         </div>

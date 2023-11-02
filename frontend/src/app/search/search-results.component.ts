@@ -69,6 +69,10 @@ export class SearchResultsComponent implements OnChanges {
         this.pageResults?.setParameters(parameters);
     }
 
+    totalDisplayed(totalResults: number) {
+        return Math.min(totalResults, MAXIMUM_DISPLAYED);
+    }
+
     @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)
