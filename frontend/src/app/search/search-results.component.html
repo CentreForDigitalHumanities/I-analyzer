@@ -1,18 +1,18 @@
 <ng-container *ngIf="pageResults?.result$ | async as page; else noResult">
-    <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
-        <div class="level">
-            <h2 class="subtitle" *ngIf="page.total <= 5">
-                {page.total, plural, =1 {1 hit} other {{{page.total}} hits}}
-            </h2>
-            <h2 class="subtitle" *ngIf="page.total > 5">
-                {{page.total}} results.
-                Showing results {{pageResults.from$ | async}}
-                -
-                {{(pageResults.to$ | async)}}
-            </h2>
-            <ia-highlight-selector *ngIf="!!queryModel.queryText" [queryModel]="queryModel"></ia-highlight-selector>
-        </div>
+    <div class="level">
+        <h2 class="subtitle" *ngIf="page.total <= 5">
+            {page.total, plural, =1 {1 hit} other {{{page.total}} hits}}
+        </h2>
+        <h2 class="subtitle" *ngIf="page.total > 5">
+            {{page.total}} results.
+            Showing results {{pageResults.from$ | async}}
+            -
+            {{(pageResults.to$ | async)}}
+        </h2>
+        <ia-highlight-selector *ngIf="!!queryModel.queryText" [queryModel]="queryModel"></ia-highlight-selector>
+    </div>
 
+    <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
         <div class="level">
             <div class="level-left has-text-centered">
                 <div>
