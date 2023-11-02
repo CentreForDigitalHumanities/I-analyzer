@@ -6,7 +6,7 @@ import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';
 
-const RESULTS_PER_PAGE = 20;
+export const RESULTS_PER_PAGE = 20;
 
 export interface PageResultsParameters {
     from: number;

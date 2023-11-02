@@ -45,7 +45,7 @@ describe('SearchService', () => {
 
     it('should search', inject([SearchService], async (service: SearchService) => {
         const queryModel = new QueryModel(mockCorpus);
-        const results = await service.search(queryModel);
+        const results = await service.loadResults(queryModel, 0, 20);
         expect(results).toBeTruthy();
         expect(results.total.value).toBeGreaterThan(0);
     }));

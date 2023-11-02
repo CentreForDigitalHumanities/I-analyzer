@@ -30,16 +30,7 @@ export class SearchService {
             from,
             size
         );
-        results.fields = queryModel.corpus.fields.filter((field) => field.resultsOverview);
-        return results;
-    }
-
-    public async search(queryModel: QueryModel
-    ): Promise<SearchResults> {
-        const request = this.elasticSearchService.search(queryModel);
-        return request.then(results =>
-            this.filterResultsFields(results, queryModel)
-        );
+        return this.filterResultsFields(results, queryModel);
     }
 
     public async aggregateSearch(
