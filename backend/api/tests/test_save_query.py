@@ -1,9 +1,11 @@
 from django.utils import timezone
 import pytest
-from visualization.query import MATCH_ALL
+from copy import deepcopy
+
+from visualization.query import MATCH_ALL, set_query_text
 from addcorpus.models import Corpus
 from api.models import Query
-from api.save_query import recent_queries
+from api.save_query import recent_queries, same_query
 
 
 @pytest.fixture()
@@ -28,3 +30,16 @@ def test_recent_queries(auth_user, saved_query):
 
     assert saved_query not in recent_queries(auth_user)
 
+def test_same_query():
+    assert same_query(MATCH_ALL, MATCH_ALL)
+
+    q1 = deepcopy(MATCH_ALL)
+    q1.update({
+        'size': 20,
+        'from': 21,
+    })
+
+    assert same_query(q1, MATCH_ALL)
+
+    q2 = set_query_text(MATCH_ALL, 'test')
+    assert not same_query(q2, MATCH_ALL)

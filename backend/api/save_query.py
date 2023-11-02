@@ -25,5 +25,19 @@ def recent_queries(user):
 def has_aggregations(es_query):
     return 'aggs' in es_query
 
+IGNORE_KEYS = [
+    'size',
+    'scroll',
+    'from',
+    'aggs',
+]
+
+def _filter_relevant_keys(es_query):
+    return {
+        key: value
+        for (key, value) in es_query.items()
+        if key not in IGNORE_KEYS
+    }
+
 def same_query(es_query_1, es_query_2):
-    return es_query_1 == es_query_2
+    return _filter_relevant_keys(es_query_1) == _filter_relevant_keys(es_query_2)
