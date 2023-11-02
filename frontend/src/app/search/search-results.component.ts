@@ -28,9 +28,6 @@ export class SearchResultsComponent implements OnChanges {
     @Input()
     public user: User;
 
-    @Output('view')
-    public viewEvent = new EventEmitter<{document: FoundDocument; tabIndex?: number}>();
-
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
 
