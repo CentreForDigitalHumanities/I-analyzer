@@ -7,7 +7,8 @@ import { CorpusField, FoundDocument, QueryModel } from '../models/index';
 
 import { SearchResultsComponent } from './search-results.component';
 import { makeDocument } from '../../mock-data/constructor-helpers';
-import { DocumentPage, PageResults } from '../models/page-results';
+import { PageResults } from '../models/page-results';
+import { DocumentPage } from '../models/document-page';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 

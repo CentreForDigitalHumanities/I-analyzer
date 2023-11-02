@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { DocumentPage } from '../../models/page-results';
+import { DocumentPage } from '../../models/document-page';
 import { filter } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { faArrowLeft, faArrowRight, faBookOpen, faLink } from '@fortawesome/free-solid-svg-icons';
