@@ -1,10 +1,14 @@
-import { BehaviorSubject, Observable, combineLatest, merge, of } from 'rxjs';
+import { BehaviorSubject, Observable, merge, of } from 'rxjs';
 import { QueryModel } from './query';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { EsQuery } from './elasticsearch';
+import * as _ from 'lodash';
 
+export interface HasEsQuery {
+    esQuery: EsQuery;
+}
 
-export abstract class Results<Parameters, Result> {
+export abstract class Results<Parameters extends HasEsQuery, Result> {
     parameters$: BehaviorSubject<Parameters>;
     result$: Observable<Result>;
     error$: BehaviorSubject<any>;
@@ -15,8 +19,12 @@ export abstract class Results<Parameters, Result> {
         initialParameters: Parameters,
     ) {
         this.parameters$ = new BehaviorSubject(initialParameters);
+        this.query.esQuery$.subscribe(esQuery => {
+            const params = this.setEsQuery(esQuery, this.parameters$.value);
+            return this.parameters$.next(params);
+        });
         this.error$ = new BehaviorSubject(undefined);
-        this.result$ = combineLatest([query.esQuery$, this.parameters$]).pipe(
+        this.result$ = this.parameters$.pipe(
             mergeMap(this.fetch.bind(this)),
             catchError(err => {
                 this.error$.next(err);
@@ -26,9 +34,17 @@ export abstract class Results<Parameters, Result> {
         this.loading$ = this.makeLoadingObservable();
     }
 
-    setParameters(parameters: Parameters) {
+    /** Set the elasticsearch query in the parameters.
+     * Can be overwritten if things need to be reset on query updates.
+     */
+    setEsQuery(esQuery: EsQuery, currentParameters: Parameters): Parameters {
+        return _.set(currentParameters, 'esQuery', esQuery);
+    }
+
+    setParameters(newValues: Partial<Parameters>) {
         this.clearError();
-        this.parameters$.next(parameters);
+        const params: Parameters = _.assign(this.parameters$.value, newValues);
+        this.parameters$.next(params);
     }
 
     private makeLoadingObservable(): Observable<boolean> {
@@ -45,7 +61,8 @@ export abstract class Results<Parameters, Result> {
         }
     }
 
-    abstract fetch(data: [EsQuery, Parameters]): Observable<Result>;
+
+    abstract fetch(parameters: Parameters): Observable<Result>;
 
 }
 

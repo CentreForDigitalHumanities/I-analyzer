@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { PageResultsParameters } from '../../models/page-results';
+import { PageParameters } from '../../models/page-results';
 
 @Component({
   selector: 'ia-pagination',
@@ -17,7 +17,7 @@ export class PaginationComponent implements OnChanges {
     public currentPage: number;
 
     @Output('parameters')
-    public loadResultsEvent = new EventEmitter<PageResultsParameters>();
+    public loadResultsEvent = new EventEmitter<PageParameters>();
 
 
     constructor() { }
