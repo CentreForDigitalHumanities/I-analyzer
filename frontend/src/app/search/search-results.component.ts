@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Ou
 import { User, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
-import { PageParameters, PageResults } from '../models/page-results';
+import { PageResultsParameters, PageResults } from '../models/page-results';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -54,12 +54,7 @@ export class SearchResultsComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
-            const params = {
-                esQuery: this.queryModel.toEsQuery(),
-                from: 0,
-                size: this.resultsPerPage,
-            };
-            this.pageResults = new PageResults(this.searchService, this.queryModel, params);
+            this.pageResults = new PageResults(this.searchService, this.queryModel);
             this.error$ = this.pageResults.error$.pipe(
                 map(this.parseError)
             );
@@ -69,7 +64,7 @@ export class SearchResultsComponent implements OnChanges {
         }
     }
 
-    setParameters(parameters: PageParameters) {
+    setParameters(parameters: PageResultsParameters) {
         this.pageResults?.setParameters(parameters);
     }
 

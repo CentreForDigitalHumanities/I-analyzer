@@ -4,11 +4,8 @@ import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { EsQuery } from './elasticsearch';
 import * as _ from 'lodash';
 
-export interface HasEsQuery {
-    esQuery: EsQuery;
-}
 
-export abstract class Results<Parameters extends HasEsQuery, Result> {
+export abstract class Results<Parameters, Result> {
     parameters$: BehaviorSubject<Parameters>;
     result$: Observable<Result>;
     error$: BehaviorSubject<any>;
@@ -18,12 +15,11 @@ export abstract class Results<Parameters extends HasEsQuery, Result> {
         public query: QueryModel,
         initialParameters: Parameters,
     ) {
-        this.parameters$ = new BehaviorSubject(initialParameters);
-        this.query.esQuery$.subscribe(esQuery => {
-            const params = this.setEsQuery(esQuery, this.parameters$.value);
-            return this.parameters$.next(params);
-        });
         this.error$ = new BehaviorSubject(undefined);
+        this.parameters$ = new BehaviorSubject(initialParameters);
+        this.query.update.subscribe(() =>
+            this.setParameters(this.assignOnQueryUpdate())
+        );
         this.result$ = this.parameters$.pipe(
             mergeMap(this.fetch.bind(this)),
             catchError(err => {
@@ -34,11 +30,9 @@ export abstract class Results<Parameters extends HasEsQuery, Result> {
         this.loading$ = this.makeLoadingObservable();
     }
 
-    /** Set the elasticsearch query in the parameters.
-     * Can be overwritten if things need to be reset on query updates.
-     */
-    setEsQuery(esQuery: EsQuery, currentParameters: Parameters): Parameters {
-        return _.set(currentParameters, 'esQuery', esQuery);
+    /** Parameters to re-assign when the query model is updated. */
+    assignOnQueryUpdate(): Partial<Parameters> {
+        return {};
     }
 
     setParameters(newValues: Partial<Parameters>) {
