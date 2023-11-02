@@ -6,7 +6,7 @@
             </h2>
             <h2 class="subtitle" *ngIf="page.total > 5">
                 {{page.total}} results.
-                Showing results {{(pageResults.from$ | async) + 1}}
+                Showing results {{pageResults.from$ | async}}
                 -
                 {{(pageResults.to$ | async)}}
             </h2>

@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, combineLatest, from } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, from, of } from 'rxjs';
 import { QueryModel } from './query';
 import { map } from 'rxjs/operators';
 import { FoundDocument } from './found-document';
@@ -70,7 +70,7 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
             size: RESULTS_PER_PAGE,
         });
         this.from$ = this.parameters$.pipe(
-            map(parameters => parameters.from)
+            map(parameters => parameters.from + 1)
         );
         this.to$ = combineLatest([this.parameters$, this.result$]).pipe(
             map(this.highestDocumentIndex)
