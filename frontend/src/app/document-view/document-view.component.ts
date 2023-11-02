@@ -1,14 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
 import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
+import { DocumentView } from '../models/document-page';
 
 @Component({
     selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
-export class DocumentViewComponent {
+export class DocumentViewComponent implements OnChanges {
 
     @Input()
     public document: FoundDocument;
@@ -20,13 +21,15 @@ export class DocumentViewComponent {
     public corpus: Corpus;
 
     @Input()
-    public documentTabIndex: number;
+    public view: DocumentView;
 
 
     tabIcons = {
         text: faBook,
         scan: faImage,
     };
+
+    activeTab: 'scan' | undefined;
 
     public imgNotFound: boolean;
     public imgPath: string;
@@ -46,6 +49,14 @@ export class DocumentViewComponent {
 
     get showScanTab() {
         return !!this.corpus.scan_image_type;
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.view) {
+            if (this.view === 'scan' && this.showScanTab) {
+                this.activeTab = 'scan';
+            }
+        }
     }
 
     isUrlField(field: CorpusField) {

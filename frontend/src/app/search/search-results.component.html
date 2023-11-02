@@ -76,7 +76,9 @@
                             </div>
                             <search-relevance [value]="document.relevance"></search-relevance>
                         </ng-container>
-                        <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted" iaBalloon="View Scan" (click)="goToScan(document, $event)">
+                        <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted"
+                            iaBalloon="View Scan" aria-label="view scan"
+                            (click)="goToScan(page, document, $event)">
                             <span class="icon">
                                 <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
                             </span>

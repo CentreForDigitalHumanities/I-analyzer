@@ -7,6 +7,7 @@ import { ShowError } from '../error/error.component';
 import { PageResultsParameters, PageResults } from '../models/page-results';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { DocumentPage } from '../models/document-page';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -68,6 +69,11 @@ export class SearchResultsComponent implements OnChanges {
     totalDisplayed(totalResults: number) {
         return Math.min(totalResults, MAXIMUM_DISPLAYED);
     }
+
+    goToScan(page: DocumentPage, document: FoundDocument, event: Event) {
+        page.focus(document, 'scan');
+        event.stopPropagation();
+    };
 
     @HostListener('window:scroll', [])
     onWindowScroll() {

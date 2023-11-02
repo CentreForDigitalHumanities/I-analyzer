@@ -1,16 +1,16 @@
-<ng-container *ngIf="page?.focus$ | async as document">
+<ng-container *ngIf="document">
     <p-dialog [(visible)]="visible" width="100%"
         [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
         header="Document {{document.position}} of {{page.total}}">
 
-        <ia-document-view [document]="document" [queryModel]="queryModel" [corpus]="document.corpus" [documentTabIndex]="0"></ia-document-view>
+        <ia-document-view [document]="document" [queryModel]="queryModel" [corpus]="document.corpus" [view]="view"></ia-document-view>
 
         <ng-template pTemplate="footer">
             <div class="columns" style="text-align:left">
                 <div class="column">
                     <a *ngIf="document.position > 1"
                         iaBalloon="view previous document" iaBalloonPosition="right"
-                        (click)="page.focusPrevious()" (keydown.enter)="page.focusPrevious()"
+                        (click)="page.focusPrevious(document)" (keydown.enter)="page.focusPrevious(document)"
                         role="button" tabindex="0">
                         <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
                     </a>
@@ -38,7 +38,7 @@
                 <div class="column" style="text-align:right">
                     <a *ngIf="document.position < page.documents.length - 1"
                         iaBalloon="view next document" iaBalloonPosition="left"
-                        (click)="page.focusNext()" (keydown.enter)="page.focusNext()"
+                        (click)="page.focusNext(document)" (keydown.enter)="page.focusNext(document)"
                         role="button" tabindex="0">
                         <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
                     </a>

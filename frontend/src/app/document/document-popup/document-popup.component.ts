@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { DocumentPage } from '../../models/document-page';
+import { DocumentPage, DocumentView } from '../../models/document-page';
 import { filter } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { faArrowLeft, faArrowRight, faBookOpen, faLink } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,9 @@ export class DocumentPopupComponent implements OnChanges {
     @Input() page: DocumentPage;
     @Input() queryModel: QueryModel;
 
+    document: FoundDocument;
+    view: DocumentView;
+
     visible = true;
 
     faArrowLeft = faArrowLeft;
@@ -22,28 +25,26 @@ export class DocumentPopupComponent implements OnChanges {
     contextIcon = faBookOpen;
 
     get documentPageLink(): string[] {
-        if (this.focusedDocument) {
-            return ['/document', this.focusedDocument.corpus.name, this.focusedDocument.id];
+        if (this.document) {
+            return ['/document', this.document.corpus.name, this.document.id];
         }
     }
 
     get contextDisplayName(): string {
-        if (this.focusedDocument.corpus.documentContext) {
-            return this.focusedDocument.corpus.documentContext.displayName;
+        if (this.document.corpus.documentContext) {
+            return this.document.corpus.documentContext.displayName;
         }
-    }
-
-    private get focusedDocument(): FoundDocument {
-        return this.page?.focus$.value;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.page) {
             this.page.focus$.pipe(
                 filter(focus => !!focus),
-            ).subscribe(() =>
-                this.visible = true
-            );
+            ).subscribe(focus => {
+                this.document = focus.document;
+                this.view = focus.view;
+                this.visible = true;
+            });
         }
     }
 }
