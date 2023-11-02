@@ -7,14 +7,15 @@ import { SearchService } from '../services';
 import { SearchResults } from './search-results';
 import { CorpusField } from './corpus';
 import * as _ from 'lodash';
-import { Results } from './results';
+import { HasEsQuery, Results } from './results';
 
 
-export interface PageResultsParameters {
+export interface PageParameters {
     from: number;
     size: number;
 }
-;
+
+export type PageResultsParameters = HasEsQuery & PageParameters;
 
 export class DocumentPage {
     focus$ = new BehaviorSubject<FoundDocument>(undefined);
@@ -75,7 +76,15 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         );
     }
 
-    fetch([esQuery, params]: [EsQuery, PageResultsParameters]): Observable<DocumentPage> {
+    setEsQuery(esQuery: EsQuery, currentParameters: PageResultsParameters): PageResultsParameters {
+        return {
+            esQuery,
+            from: 0,
+            size: currentParameters.size
+        };
+    }
+
+    fetch(params: PageResultsParameters): Observable<DocumentPage> {
         return from(this.searchService.loadResults(
             this.query, params.from, params.size
         )).pipe(
