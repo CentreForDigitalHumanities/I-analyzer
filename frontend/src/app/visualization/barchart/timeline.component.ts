@@ -1,6 +1,5 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
-import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
 import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
@@ -23,8 +22,6 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     private currentTimeCategory: TimeCategory;
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
-    /** formatting function for time in ES queries */
-    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d'); // Todo: use moment instead of d3
     /** domain on the axis */
     public xDomain: [Date, Date];
 
@@ -120,7 +117,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
-            const unit = (this.chart.options.scales.xAxis as any).time.unit as TimeCategory;
+            const unit = (this.chart.options.scales.x as any).time.unit as TimeCategory;
             if (unit) {
                 this.currentTimeCategory = unit;
             }
@@ -134,8 +131,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         return this.rawData.map((series, seriesIndex) => {
             const data = this.chartDataFromSeries(series);
             return {
-                xAxisID: 'xAxis',
-                yAxisID: 'yAxis',
+                type: this.chartType,
                 label: series.queryText ? series.queryText : '(no query)',
                 data,
                 backgroundColor: selectColor(this.palette, seriesIndex),
@@ -158,22 +154,22 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     }
 
     chartOptions(datasets) {
-        const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const xLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const margin = moment.duration(1, this.currentTimeCategory);
         const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
-        const xAxis = options.scales.xAxis;
-        (xAxis as any).title.text = xAxisLabel;
-        xAxis.type = 'time';
-        (xAxis as any).time = {
+        const x = options.scales.x;
+        (x as any).title.text = xLabel;
+        x.type = 'time';
+        (x as any).time = {
             minUnit: 'day',
             unit: this.currentTimeCategory,
         };
-        xAxis.min = xMin.toISOString();
-        xAxis.max = xMax.toISOString();
+        x.min = xMin.toISOString();
+        x.max = xMax.toISOString();
         options.plugins.tooltip = {
             callbacks: {
                 title: ([tooltipItem]) => this.formatDate(Date.parse(tooltipItem.label as string)),
@@ -186,7 +182,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
         // zoom limits
         options.plugins.zoom.limits = {
-            xAxis: {
+            x: {
                 // convert dates to numeric rather than string here,
                 // as zoom plugin does not accept strings
                 min: xMin.valueOf(),
@@ -194,7 +190,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
             }
         };
 
-        options.scales.xAxis.type = 'time';
+        options.scales.x.type = 'time';
         options.plugins.legend = {display: datasets.length > 1};
         return options;
     }
@@ -211,8 +207,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     onZoomIn(chart, triggeredByDataUpdate = false) {
         const initialTimeCategory = this.calculateTimeCategory(...this.xDomain);
         const previousTimeCategory = this.currentTimeCategory;
-        const min = new Date(chart.scales.xAxis.min);
-        const max = new Date(chart.scales.xAxis.max);
+        const min = new Date(chart.scales.x.min);
+        const max = new Date(chart.scales.x.max);
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
 
         if ((this.currentTimeCategory !== previousTimeCategory) ||
@@ -260,7 +256,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
             chart.data.datasets[seriesIndex].data = this.chartDataFromSeries(data);
         });
 
-        chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        chart.options.scales.x.time.unit = this.currentTimeCategory;
         chart.update('show'); // fade into view
 
     }
@@ -281,7 +277,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     zoomOut(): void {
         this.chart.resetZoom();
         this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
-        (this.chart.options.scales.xAxis as any).time.unit = this.currentTimeCategory;
+        (this.chart.options.scales.x as any).time.unit = this.currentTimeCategory;
         this.chart.update();
 
         this.setChart();
@@ -365,6 +361,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
      * Format for dates based on the time category.
      * Returns a formatting function.
      */
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get formatDate(): (date) => string {
         let dateFormat: string;
         switch (this.currentTimeCategory) {
@@ -382,12 +379,13 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         return (date: Date) => moment(date).format(dateFormat);
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get isZoomedIn(): boolean {
-        // check whether this.chart is zoomed on xAxis
+        // check whether this.chart is zoomed on x axis
 
         if (this.chart) {
-            const initialBounds = this.chart.getInitialScaleBounds().xAxis;
-            const currentBounds = { min : this.chart.scales.xAxis.min, max: this.chart.scales.xAxis.max };
+            const initialBounds = this.chart.getInitialScaleBounds().x;
+            const currentBounds = { min: this.chart.scales.x.min, max: this.chart.scales.x.max };
 
             return (initialBounds.min && initialBounds.min < currentBounds.min) ||
                 (initialBounds.max && initialBounds.max > currentBounds.max);
