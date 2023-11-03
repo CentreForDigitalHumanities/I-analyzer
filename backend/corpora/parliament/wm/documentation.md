@@ -1,5 +1,10 @@
 The word models for these parliamentary speeches were trained with Word2Vec, as implemented in the Python library [Gensim](https://radimrehurek.com/gensim/models/word2vec.html).
 
-One model for all speeches from 1880-2020 was trained; this was used to retrain separate models for 20-year time windows, with a shift of 5 years.
+In the 20th century, models for 20-year time windows, with a shift of 10 years, were trained. For earlier periods, due to limited availability of training data, the data spans larger time slices.
 
-The minimum count for a word to be included in the word model is 50, and the resulting word vectors have 128 dimensions.
+Training parameters:
+- training algorithm: CBOW
+- window size: 5
+- minimum word count for inclusion in model: 80
+- vector dimensionality: 100
+- vocabulary limit: None

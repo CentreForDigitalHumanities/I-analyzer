@@ -2,13 +2,13 @@ import numpy as np
 
 import pytest
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from wordmodels.utils import load_word_models, word_in_models, transform_query
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
 from wordmodels.utils import load_wm_documentation
 
 def test_import(mock_corpus):
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     models = load_word_models(corpus)
     assert len(models) == len(TEST_BINS)
 
@@ -45,7 +45,7 @@ def test_word_in_models(mock_corpus):
     ]
 
     for case in cases:
-        corpus = load_corpus(mock_corpus)
+        corpus = load_corpus_definition(mock_corpus)
         result = word_in_models(case['term'], corpus, 1)
         assert result == case['expected']
 
@@ -54,7 +54,7 @@ def test_description_import(mock_corpus):
     assert description == 'Description for testing.\n'
 
 def test_query_transform(mock_corpus):
-    corpus = load_corpus(mock_corpus)
+    corpus = load_corpus_definition(mock_corpus)
     model = load_word_models(corpus)
 
     cases = [

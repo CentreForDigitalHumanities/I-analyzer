@@ -58,6 +58,11 @@ export class ApiService {
 
     constructor(private http: HttpClient) {}
 
+
+    public deleteSearchHistory(): Observable<any> {
+        return this.http.post('/api/search_history/delete_all/', {});
+    }
+
     // General / misc
     public saveQuery(options: QueryDb) {
         return this.http.post('/api/search_history/', options).toPromise();
@@ -145,11 +150,6 @@ export class ApiService {
         return this.http.post<AggregateResult[]>(url, data).toPromise();
     }
 
-    public wordcloudTasks(data: WordcloudParameters): Promise<TaskResult> {
-        const url = this.apiRoute(this.visApiURL, 'wordcloud_task');
-        return this.http.post<TaskResult>(url, data).toPromise();
-    }
-
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
         const url = this.apiRoute(this.visApiURL, 'ngram');
         return this.http.post<TaskResult>(url, data).toPromise();
@@ -180,12 +180,18 @@ export class ApiService {
             | {
                   visualization: 'date_term_frequency';
                   parameters: DateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
               }
             | {
                   visualization: 'aggregate_term_frequency';
                   parameters: AggregateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
+              }
+            |
+              {
+                  visualization: 'ngram';
+                  parameters: NGramRequestParameters;
+                  corpus_name: string;
               }
     ): Promise<TaskResult> {
         const url = this.apiRoute(this.downloadApiURL, 'full_data');
@@ -331,6 +337,14 @@ export class ApiService {
                 new_password1: newPassword1,
                 new_password2: newPassword2,
             }
+        );
+    }
+
+    /** send PATCH request to update settings for the user */
+    public updateUserSettings(details: Partial<UserResponse>): Observable<UserResponse> {
+        return this.http.patch<UserResponse>(
+            this.authApiRoute('user'),
+            details
         );
     }
 

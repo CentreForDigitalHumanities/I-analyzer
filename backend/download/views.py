@@ -21,14 +21,15 @@ from tag.filter import handle_tags_in_request
 
 logger = logging.getLogger()
 
-def send_csv_file(directory, filename, download_type, encoding, format=None):
+def send_csv_file(download, directory, encoding, format=None):
     '''
     Perform final formatting and send a CSV file as a FileResponse
     '''
     converted_filename = convert_csv.convert_csv(
-        directory, filename, download_type, encoding, format)
+        directory, download.filename, download.download_type, encoding, format)
     path = os.path.join(directory, converted_filename)
-    return FileResponse(open(path, 'rb'), filename=filename, as_attachment=True)
+
+    return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
 
 class ResultsDownloadView(APIView):
     '''
@@ -51,13 +52,13 @@ class ResultsDownloadView(APIView):
             handle_tags_in_request(request)
             search_results = es_download.normal_search(
                 corpus_name, request.data['es_query'], request.data['size'])
-            csv_path = tasks.make_csv(search_results, request.data)
-            directory, filename = os.path.split(csv_path)
-            # Create download for download history
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
+            csv_path = tasks.make_csv(search_results, request.data, download.id)
+            directory, filename = os.path.split(csv_path)
+            # Create download for download history
             download.complete(filename=filename)
-            return send_csv_file(directory, filename, 'search_results', request.data['encoding'])
+            return send_csv_file(download, directory, request.data['encoding'])
         except Exception as e:
             logger.error(e)
             raise APIException(detail = 'Download failed: could not generate csv file')
@@ -97,10 +98,10 @@ class FullDataDownloadTaskView(APIView):
     permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
-        check_json_keys(request, ['visualization', 'parameters', 'corpus'])
+        check_json_keys(request, ['visualization', 'parameters', 'corpus_name'])
 
         visualization_type = request.data['visualization']
-        known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
+        known_visualisations = ['date_term_frequency', 'aggregate_term_frequency', 'ngram']
         if visualization_type not in known_visualisations:
             raise ParseError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
@@ -138,13 +139,13 @@ class FileDownloadView(APIView):
         encoding = request.query_params.get('encoding', 'utf-8')
         format = request.query_params.get('table_format', None)
 
-        record = Download.objects.get(id=id)
-        if not record.user == request.user:
+        download = Download.objects.get(id=id)
+        if not download.user == request.user:
             raise PermissionDenied(detail='User has no access to this download')
 
         directory = settings.CSV_FILES_PATH
 
-        if not os.path.isfile(os.path.join(directory, record.filename)):
+        if not os.path.isfile(os.path.join(directory, download.filename)):
             raise NotFound(detail='File does not exist')
 
-        return send_csv_file(directory, record.filename, record.download_type, encoding, format)
+        return send_csv_file(download, directory, encoding, format)

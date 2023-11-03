@@ -3,7 +3,7 @@ import warnings
 import pytest
 from datetime import datetime
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 
 CORPUS_TEST_DATA = [
     {
@@ -477,6 +477,37 @@ OSLO LOBO MEDIA AS 2005""",
         'n_documents': 22,
     },
     {
+        'name': 'parliament-finland-old',
+        'docs': [
+            {
+                'country': 'Finland',
+                'speech': """FÖUDT HOS
+
+FINLANDS RIDDERSKAP OCR ADEL
+
+VID
+
+LANDTDAGEN ÅR 1877.
+
+TREDJE HÄFTET.
+
+Från den 1 till den 31 Oktober.
+
+FINSKA LITTERATUR-SÄLLBKAPETS TRYCKERl,
+
+1878.""",
+                'id': 'Adeln_Prot_1877_III.pdf_0',
+                'chamber': 'nobility',
+                'date_earliest': '1877-01-01',
+                'date_latest': '1877-12-31',
+                'page': '0',
+                'language': 'swe',
+                'source_archive': 'Adeln_Prot_1877_III.pdf'
+            },
+        ],
+        'n_documents': 4,
+    },
+    {
         'name': 'parliament-ireland',
         'end': datetime(1999, 12, 31),
         'docs': [
@@ -581,7 +612,7 @@ def corpus_test_name(corpus_spec):
 
 @pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
 def test_imports(parliament_corpora_settings, corpus_object):
-    corpus = load_corpus(corpus_object.get('name'))
+    corpus = load_corpus_definition(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
 
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date

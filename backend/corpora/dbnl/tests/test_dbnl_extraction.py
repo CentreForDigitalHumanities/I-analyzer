@@ -2,7 +2,7 @@ import pytest
 import os
 from bs4 import BeautifulSoup
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.extract import XML
 from corpora.dbnl.utils import append_to_tag, index_by_id, which_unique, language_name
 
@@ -40,7 +40,7 @@ def test_which_unique(items, uniquenesses):
     assert result == uniquenesses
 
 def test_metadata_extraction(dbnl_corpus):
-    corpus = load_corpus('dbnl_metadata')
+    corpus = load_corpus_definition('dbnl_metadata')
     data = index_by_id(corpus.documents())
     assert len(data) == 9
 
@@ -186,7 +186,7 @@ expected_docs = [
 ]
 
 def test_dbnl_extraction(dbnl_corpus):
-    corpus = load_corpus(dbnl_corpus)
+    corpus = load_corpus_definition(dbnl_corpus)
     docs = list(corpus.documents())
 
     assert len(docs) == 3 + 8 # 3 chapters + 7 metadata-only books

@@ -89,6 +89,10 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER', 'redis://')
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'
 
+# list of corpora that have been re-indexed using the top-level term vector
+# for main content fields, needed for the new highlighter
+NEW_HIGHLIGHT_CORPORA = []
+
 # This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:
     from ianalyzer.settings_local import *
@@ -99,3 +103,29 @@ except ImportError as e:
     )
 
 DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "indexing": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propragate": True
+        }
+    },
+}

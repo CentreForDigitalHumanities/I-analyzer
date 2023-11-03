@@ -10,10 +10,12 @@ def test_user_crud(db, user_credentials, admin_credentials):
     assert len(User.objects.all()) == 2
     assert admin.username == 'admin'
     assert user.email == 'basicuser@ianalyzer.com'
+    assert admin.profile
 
     admin.is_superuser = True
     admin.is_staff = True
     admin.save()
+
 
     admin.delete()
     user.delete()

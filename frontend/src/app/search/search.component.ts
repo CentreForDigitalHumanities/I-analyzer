@@ -3,16 +3,10 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 
-import {
-    Corpus,
-    CorpusField,
-    QueryModel,
-    ResultOverview,
-    User,
-} from '../models/index';
+import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
+import { CorpusService, DialogService, ParamService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
-import { CorpusService, DialogService } from '../services/index';
 import { paramsHaveChanged } from '../utils/params';
 import { filter } from 'rxjs/operators';
 import { faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
@@ -69,14 +63,17 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
+    nullableParameters = [];
+
     constructor(
         private authService: AuthService,
         private corpusService: CorpusService,
         private dialogService: DialogService,
+        paramService: ParamService,
         route: ActivatedRoute,
         router: Router
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     async initialize(): Promise<void> {

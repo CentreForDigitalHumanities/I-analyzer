@@ -2,13 +2,12 @@ import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/co
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
+import { Corpus, QueryModel, CorpusField } from '../models/index';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { DialogService } from '../services';
-import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { findByName } from '../utils/utils';
+import { ParamService } from '../services';
 
 
 
@@ -63,12 +62,14 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     faQuestion = faCircleQuestion;
 
+    nullableParameters = ['visualize', 'visualizedField'];
+
     constructor(
-        private dialogService: DialogService,
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        paramService: ParamService
     ) {
-        super(route, router);
+        super(route, router, paramService);
     }
 
     ngDoCheck() {
@@ -86,7 +87,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     setupDropdowns() {
         this.allVisualizationFields = [];
         if (this.corpus && this.corpus.fields) {
-            this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations);
+            this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations?.length);
         }
         this.visDropdown = [];
         const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
@@ -117,19 +118,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         }
     }
 
-    teardown() {
-        /* set all visualization params to null here -
-        so all params, also from children are guaranteed to be null */
-        this.setParams(
-            Object.assign(
-                {
-                    visualize: null,
-                    visualizedField: null
-                },
-                barChartSetNull,
-                ngramSetNull
-        ));
-    }
+    teardown() {}
 
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {

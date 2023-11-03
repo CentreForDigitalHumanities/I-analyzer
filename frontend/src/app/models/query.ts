@@ -5,10 +5,10 @@ import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
-    filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
+    filtersFromParams, highlightFromParams, highlightToParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
-import { SearchFilter } from './search-filter';
+import { SearchFilter } from './field-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -94,6 +94,10 @@ export class QueryModel {
         return this.filters.filter(f => f.active.value);
     }
 
+    get highlightDisabled() {
+        return !this.queryText;
+    }
+
 	setQueryText(text?: string) {
 		this.queryText = text || undefined;
 		this.update.next();
@@ -134,7 +138,7 @@ export class QueryModel {
     }
 
     setHighlight(size?: number) {
-        this.highlightSize = size;
+        this.highlightSize = size || undefined;
         this.update.next();
     }
 
@@ -150,12 +154,13 @@ export class QueryModel {
      *
      * All query-related params are explicity listed;
      * empty parameters have value null.
+     *
      */
     toRouteParam(): {[param: string]: string|null} {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = this.sort.toRouteParam();
-        const highlightParams = { highlight: this.highlightSize  || null };
+        const highlightParams = highlightToParams(this);
         const filterParams = queryFiltersToParams(this);
 
         return {

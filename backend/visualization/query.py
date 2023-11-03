@@ -131,7 +131,11 @@ def get_filters(query):
 
 def is_date_filter(filter):
     """Checks if a filter object is a date filter"""
-    return has_path(filter, 'range', 'date')
+    range_filters = filter.get('range', dict()).keys()
+    return any(
+        has_path(filter, 'range', filter_name, 'format')
+        for filter_name in range_filters
+    )
 
 
 def parse_date(datestring):
@@ -145,7 +149,11 @@ def get_date_range(query: Dict):
         datefilters = list(filter(is_date_filter, filters))
 
         if len(datefilters):
-            parameters = [f['range']['date'] for f in datefilters]
+            parameters = [
+                data
+                for f in datefilters
+                for data in f['range'].values()
+            ]
             min_dates = [parse_date(p['gte'])
                          for p in parameters if 'gte' in p]
             max_dates = [parse_date(p['lte'])

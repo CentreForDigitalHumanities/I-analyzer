@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './search-filter';
-import { FilterOptions } from './search-filter-options';
+import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './field-filter';
+import { FieldFilterOptions } from './field-filter-options';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
@@ -30,6 +30,7 @@ export class Corpus implements ElasticSearchIndex {
         public category: string,
         public descriptionpage?: string,
         public documentContext?: DocumentContext,
+        public new_highlight?: boolean,
     ) { }
 
     get minYear(): number {
@@ -65,13 +66,14 @@ export interface ApiCorpusField {
     display_name: string;
     display_type: FieldDisplayType;
     description: string;
-    search_filter: FilterOptions | null;
+    search_filter: FieldFilterOptions | null;
     results_overview: boolean;
     csv_core: boolean;
     search_field_core: boolean;
     visualizations: string[];
     visualization_sort: string | null;
     es_mapping: any;
+    positionsOffsets?: boolean;
     indexed: boolean;
     hidden: boolean;
     required: boolean;
@@ -95,13 +97,14 @@ export class CorpusField {
     visualizations?: string[];
     visualizationSort?: string;
     multiFields?: string[];
+    positionsOffsets?: boolean;
     hidden: boolean;
     sortable: boolean;
     primarySort: boolean;
     searchable: boolean;
     downloadable: boolean;
     name: string;
-    filterOptions: FilterOptions;
+    filterOptions: FieldFilterOptions;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
 
     constructor(data: ApiCorpusField) {
@@ -116,6 +119,7 @@ export class CorpusField {
         this.multiFields = data['es_mapping']?.fields
             ? Object.keys(data['es_mapping'].fields)
             : undefined;
+        this.positionsOffsets = data['es_mapping']?.term_vector ? true : false;
         this.hidden = data.hidden;
         this.sortable = data.sortable;
         this.primarySort = data.primary_sort;

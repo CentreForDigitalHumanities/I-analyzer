@@ -1,40 +1,40 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { QueryModel } from '../models';
 
-
-const HIGHLIGHT = 200;
 
 @Component({
   selector: 'ia-highlight-selector',
   templateUrl: './highlight-selector.component.html',
   styleUrls: ['./highlight-selector.component.scss']
 })
-export class HighlightSelectorComponent implements OnChanges, OnDestroy {
+export class HighlightSelectorComponent implements OnDestroy {
     @Input() queryModel: QueryModel;
-    public highlight: number = HIGHLIGHT;
 
     constructor() {
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel) {
-            this.setStateFromQueryModel();
-            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
-        }
+    get highlight(): number {
+        return this.queryModel?.highlightSize;
+    }
+
+    get highlightDisabled(): boolean {
+        return this.queryModel?.highlightDisabled;
     }
 
     ngOnDestroy(): void {
-        this.queryModel.setHighlight(undefined);
+        this.queryModel.setHighlight();
     }
 
-    setStateFromQueryModel() {
-        this.highlight = this.queryModel.highlightSize;
-    }
-
-
-    updateHighlightSize(event) {
-        const highlightSize = event.target.value;
-        this.queryModel.setHighlight(highlightSize);
+    updateHighlightSize(instruction?: string) {
+        if (instruction === 'on' && !this.queryModel.highlightSize) {
+            this.queryModel.setHighlight(200);
+        } else if (instruction === 'more' && this.queryModel.highlightSize < 800) {
+            this.queryModel.setHighlight(this.queryModel.highlightSize + 200);
+        } else if (instruction === 'less' && this.queryModel.highlightSize > 200) {
+            this.queryModel.setHighlight(this.queryModel.highlightSize - 200);
+        } else if (instruction === 'off') {
+            this.queryModel.setHighlight();
+        }
     }
 
 }
