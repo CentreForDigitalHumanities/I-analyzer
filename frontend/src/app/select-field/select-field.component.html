@@ -7,6 +7,8 @@
     [ngModelOptions]="{standalone: true}"
     dropdownIcon="fa fa-cog">
     <p-footer *ngIf="optionFields">
-        <a class="button is-primary" (click)="toggleAllFields()">{{allVisible? 'Show default fields' : 'Show all fields'}}</a>
+        <button class="button is-primary" (click)="toggleAllFields()">
+            {{allVisible? 'Show default fields' : 'Show all fields'}}
+    </button>
     </p-footer>
 </p-multiSelect>
