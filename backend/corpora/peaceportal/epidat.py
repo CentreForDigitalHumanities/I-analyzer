@@ -75,7 +75,7 @@ class PeaceportalEpidat(PeacePortal):
             transform_soup_func=extract_transcript
         )
 
-        self.transcription_german.extractor = XML(
+        self.transcription_de.extractor = XML(
             tag=['text', 'body', ],
             toplevel=False,
             multiple=False,
@@ -215,19 +215,19 @@ class PeaceportalEpidat(PeacePortal):
             multiple=True
         )
 
-        self.transcription_hebrew.extractor = Combined(
+        self.transcription_he.extractor = Combined(
             self.transcription.extractor,
             Constant('he'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_english.extractor = Combined(
+        self.transcription_en.extractor = Combined(
             self.transcription.extractor,
             Constant('en'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_dutch.extractor = Combined(
+        self.transcription_nl.extractor = Combined(
             self.transcription.extractor,
             Constant('nl'),
             transform=lambda x: get_text_in_language(x)

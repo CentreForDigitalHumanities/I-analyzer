@@ -28,6 +28,8 @@ def get_nltk_stopwords(language_code):
     else:
         raise NotImplementedError('language {} has no nltk stopwords list'.format(language))
 
+def add_language_string(name, language):
+    return '{}_{}'.format(name, language) if language else name
 
 def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
     '''
@@ -43,15 +45,17 @@ def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
     stemmed_analyzer_name = 'stemmed'
     
     for language in languages:
-        add_language_string = lambda name: '{}_{}'.format(language, name) if len(languages) > 0 else name
+        # do not attach language isocodes if there is just one language
+        language_string = language if len(languages) > 1 else None
+
         if stopword_analyzer or stemming_analyzer:
-            if not set_stopword_filter(settings, language, add_language_string(stopword_filter_name)):
+            if not set_stopword_filter(settings, add_language_string(stopword_filter_name, language_string), language):
                 continue # skip languages for which we do not have a stopword list
 
             if stopword_analyzer:
-                set_clean_analyzer(settings, language, add_language_string(stopword_filter_name), add_language_string(clean_analyzer_name))
+                set_clean_analyzer(settings, stopword_filter_name, clean_analyzer_name, language)
             if stemming_analyzer:
-                set_stemmed_analyzer(settings, language, add_language_string(stemmer_filter_name), add_language_string(stemmed_analyzer_name))
+                set_stemmed_analyzer(settings, stopword_filter_name, stemmer_filter_name, stemmed_analyzer_name, language)
 
     return settings
 
@@ -62,7 +66,7 @@ def number_filter():
         "replacement":""
     }
 
-def make_stopword_filter(language, stopword_filter_name):
+def make_stopword_filter(stopword_filter_name, language):
     try:
         stopwords = get_nltk_stopwords(language)
         return {
@@ -86,11 +90,11 @@ def make_stemmer_filter(language):
         "language": stemmer_language
     }
 
-def make_stemmed_analyzer(stemmer_filter_name):
+def make_stemmed_analyzer(stopword_filter_name, stemmer_filter_name):
     return {
         "tokenizer": "standard",
         "char_filter": ["number_filter"],
-        "filter": ["lowercase", "stopwords", stemmer_filter_name]
+        "filter": ["lowercase", stopword_filter_name, stemmer_filter_name]
     }
 
 def get_stopwords_from_settings(es_settings):
@@ -102,22 +106,27 @@ def get_stopwords_from_settings(es_settings):
 
     return stopwords
 
-def set_stemmed_analyzer(settings, language, stemmer_filter_name, stemmed_analyzer_name):
+def set_stemmed_analyzer(settings, stopword_filter_name, stemmer_filter_name, stemmed_analyzer_name, language):
+    stopword_filter_name = add_language_string(stopword_filter_name, language)
+    stemmer_filter_name = add_language_string(stemmer_filter_name, language)
+    stemmed_analyzer_name = add_language_string(stemmed_analyzer_name, language)
     settings['analysis']['filter'][stemmer_filter_name] = make_stemmer_filter(language)
-    settings["analysis"]['analyzer'][stemmed_analyzer_name] = make_stemmed_analyzer(stemmer_filter_name)
+    settings["analysis"]['analyzer'][stemmed_analyzer_name] = make_stemmed_analyzer(stopword_filter_name, stemmer_filter_name)
 
-def set_stopword_filter(settings, language, stopword_filter_name):
-    stopword_filter = make_stopword_filter(language, stopword_filter_name)
+def set_stopword_filter(settings, stopword_filter_name, language):
+    stopword_filter = make_stopword_filter(stopword_filter_name, language)
     if not stopword_filter:
         return False
     settings["analysis"] = {
         "analyzer": {},
         "char_filter":{ "number_filter": number_filter() },
         'filter': {
-            "stopwords": stopword_filter
+            stopword_filter_name: stopword_filter
         }
     }
     return True
     
-def set_clean_analyzer(settings, language, stopword_filter_name, clean_analyzer_name):
-    settings["analysis"]['analyzer'][clean_analyzer_name] = make_clean_analyzer(language, stopword_filter_name)
+def set_clean_analyzer(settings, stopword_filter_name, clean_analyzer_name, language):
+    settings["analysis"]['analyzer'][
+        add_language_string(clean_analyzer_name, language)
+        ] = make_clean_analyzer(add_language_string(stopword_filter_name, language))

@@ -7,7 +7,7 @@ from langdetect.lang_detect_exception import LangDetectException
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition, XMLCorpusDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 from addcorpus.extract import Constant
@@ -15,7 +15,7 @@ from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 
 
 
-class PeacePortal(XMLCorpusDefinition):
+class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
     '''
     Base class for corpora in the PEACE portal.
 
@@ -48,7 +48,7 @@ class PeacePortal(XMLCorpusDefinition):
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
     external_file_folder = None
-    languages = []
+    languages = ['en', 'de', 'nl', 'he', 'la', 'el'] # el stands for modern Greek (1500-)
 
     def es_settings(self):
         return es_settings(self.languages, True, True)
@@ -56,7 +56,6 @@ class PeacePortal(XMLCorpusDefinition):
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
-            print(filenames)
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
@@ -66,7 +65,6 @@ class PeacePortal(XMLCorpusDefinition):
                     continue
 
                 metadata = {}
-
                 if self.external_file_folder:
                     metadata = {
                     # applies only to iis corpus
@@ -154,37 +152,37 @@ class PeacePortal(XMLCorpusDefinition):
     )
 
     transcription_german = FieldDefinition(
-        name='transcription_german',
+        name='transcription_de',
         es_mapping=main_content_mapping(stopword_analyzer='clean_german', stemming_analyzer='stemmed_german'),
         hidden=True
     )
 
     transcription_english = FieldDefinition(
-        name='transcription_english',
+        name='transcription_en',
         es_mapping=main_content_mapping(stopword_analyzer='clean_english', stemming_analyzer='stemmed_english'),
         hidden=True
     )
 
     transcription_hebrew = FieldDefinition(
-        name='transcription_hebrew', # no stopwords / stemmers available
+        name='transcription_he', # no stopwords / stemmers available
         es_mapping={'type': 'text'},
         hidden=True
     )
 
     transcription_latin = FieldDefinition(
-        name='transcription_latin',
+        name='transcription_la',
         es_mapping={'type': 'text'}, # no stopwords / stemmers available
         hidden=True
     )
 
     transcription_greek = FieldDefinition(
-        name='transcription_greek',
+        name='transcription_el',
         es_mapping=main_content_mapping(stopword_analyzer='clean_greek', stemming_analyzer='stemmed_greek'),
         hidden=True
     )
 
     transcription_dutch = FieldDefinition(
-        name='transcription_dutch',
+        name='transcription_nl',
         es_mapping=main_content_mapping(stopword_analyzer='clean_dutch', stemming_analyzer='stemmed_dutch'),
         hidden=True
     )
@@ -347,37 +345,38 @@ class PeacePortal(XMLCorpusDefinition):
         display_name='Date of death',
     )
 
-    fields = [
-        _id,
-        url,
-        year,
-        not_before,
-        not_after,
-        source_database,
-        transcription,
-        names,
-        sex,
-        dates_of_death,
-        age,
-        country,
-        region,
-        settlement,
-        location_details,
-        language,
-        iconography,
-        images,
-        coordinates,
-        material,
-        material_details,
-        bibliography,
-        comments,
-        transcription_german,
-        transcription_hebrew,
-        transcription_latin,
-        transcription_greek,
-        transcription_english,
-        transcription_dutch
-    ]
+    def __init__(self):
+        self.fields = [
+            self._id,
+            self.url,
+            self.year,
+            self.not_before,
+            self.not_after,
+            self.source_database,
+            self.transcription,
+            self.names,
+            self.sex,
+            self.dates_of_death,
+            self.age,
+            self.country,
+            self.region,
+            self.settlement,
+            self.location_details,
+            self.language,
+            self.iconography,
+            self.images,
+            self.coordinates,
+            self.material,
+            self.material_details,
+            self.bibliography,
+            self.comments,
+            self.transcription_german,
+            self.transcription_hebrew,
+            self.transcription_latin,
+            self.transcription_greek,
+            self.transcription_english,
+            self.transcription_dutch
+        ]
 
 
 def clean_newline_characters(text):

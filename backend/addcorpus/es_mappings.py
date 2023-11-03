@@ -1,4 +1,6 @@
-def main_content_mapping(token_counts=True, stopword_analyzer=None, stemming_analyzer=None, updated_highlighting=False):
+from addcorpus.es_settings import add_language_string
+
+def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, language=None, updated_highlighting=False):
     '''
     Mapping for the main content field. Options:
 
@@ -17,27 +19,23 @@ def main_content_mapping(token_counts=True, stopword_analyzer=None, stemming_ana
         'term_vector': 'with_positions_offsets' # include char positions on _source (in addition to the multifields) for highlighting
     })
 
-    if any([token_counts, stopword_analyzer, stemming_analyzer]):
+    if any([token_counts, stopword_analysis, stemming_analysis]):
         multifields = {}
         if token_counts:
             multifields['length'] = {
                 "type":     "token_count",
                 "analyzer": "standard"
             }
-        if stopword_analyzer:
-            if type(stopword_analyzer)==bool:
-                stopword_analyzer = 'clean'
+        if stopword_analysis:
             multifields['clean'] = {
                 "type": "text",
-                "analyzer": stopword_analyzer,
+                "analyzer": add_language_string('clean', language),
                 "term_vector": "with_positions_offsets" # include character positions for highlighting
             }
-        if stemming_analyzer:
-            if type(stemming_analyzer)==bool:
-                stemming_analyzer = 'stemmed'
+        if stemming_analysis:
             multifields['stemmed'] = {
                 "type": "text",
-                "analyzer": stemming_analyzer,
+                "analyzer": add_language_string('stemmed', language),
                 "term_vector": "with_positions_offsets",
             }
         mapping['fields'] = multifields

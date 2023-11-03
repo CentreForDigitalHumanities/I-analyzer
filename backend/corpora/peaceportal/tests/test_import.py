@@ -43,6 +43,7 @@ def test_imports(peace_corpus_settings, corpus_object):
     resulted_fields = set()
 
     docs = get_documents(corpus, start, end)
+    print(list(docs))
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
@@ -55,7 +56,7 @@ def test_imports(peace_corpus_settings, corpus_object):
 
     for key in resulted_fields:
         if not key in tested_fields:
-            message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
+            message = 'Key "{}" is included in the result for {} but has no specification'.format(key, corpus_object.get('name'))
             warnings.warn(message)
 
     docs = get_documents(corpus, start, end)

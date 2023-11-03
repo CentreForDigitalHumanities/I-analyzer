@@ -12,6 +12,8 @@ class PeaceportalTOL(PeacePortal):
     es_index = getattr(settings, 'PEACEPORTAL_TOL_ES_INDEX', 'peaceportal-tol')
     es_alias = settings.PEACEPORTAL_ALIAS
 
+    languages = ['en', 'nl', 'he']
+
     def __init__(self):
         self.source_database.extractor = Constant(
             value='Medieval funerary inscriptions from Toledo'
@@ -199,23 +201,51 @@ class PeaceportalTOL(PeacePortal):
             multiple=True
         )
 
-        self.transcription_hebrew.extractor = Combined(
+        self.transcription_he.extractor = Combined(
             self.transcription.extractor,
             Constant('he'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_english.extractor = Combined(
+        self.transcription_en.extractor = Combined(
             self.transcription.extractor,
             Constant('en'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_dutch.extractor = Combined(
+        self.transcription_nl.extractor = Combined(
             self.transcription.extractor,
             Constant('nl'),
             transform=lambda x: get_text_in_language(x)
         )
+
+        self.fields = [
+            self.bibliography,
+            self.comments,
+            self.coordinates,
+            self.country,
+            self.dates_of_death,
+            self.iconography,
+            self._id,
+            self.images,
+            self.language,
+            self.location_details,
+            self.material,
+            self.material_details,
+            self.names,
+            self.not_after,
+            self.not_before,
+            self.region,
+            self.settlement,
+            self.sex,
+            self.source_database,
+            self.transcription,
+            self.transcription_nl,
+            self.transcription_en,
+            self.transcription_he,
+            self.url,
+            self.year
+        ]
 
 
 def convert_sex(values):

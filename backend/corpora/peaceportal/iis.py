@@ -62,7 +62,7 @@ class PeaceportalIIS(PeacePortal):
             stream_handler=extract_transcript
         )
 
-        self.transcription_english.extractor = HTML(
+        self.transcription_en.extractor = HTML(
             tag=['div'],
             toplevel=True,
             multiple=False,
@@ -229,19 +229,19 @@ class PeaceportalIIS(PeacePortal):
             multiple=True
         )
 
-        self.transcription_hebrew.extractor = Combined(
+        self.transcription_he.extractor = Combined(
             self.transcription.extractor,
             Constant('he'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_latin.extractor = Combined(
+        self.transcription_la.extractor = Combined(
             self.transcription.extractor,
             Constant('la'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_greek.extractor = Combined(
+        self.transcription_el.extractor = Combined(
             self.transcription.extractor,
             Constant('el'),
             transform=lambda x: get_text_in_language(x)

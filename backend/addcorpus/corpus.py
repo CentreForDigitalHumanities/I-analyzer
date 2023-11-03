@@ -274,6 +274,25 @@ class CorpusDefinition(object):
             if isinstance(field.extractor, inapplicable_extractors):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
+    
+class ParentCorpusDefinition(CorpusDefinition):
+    ''' A class from which other corpus definitions can inherit
+    '''
+    #define fields property so it can be set in __init__
+    @property
+    def fields(self):
+        return self._fields
+
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
+
+    def __init__(self):
+        ''' specify a list of fields here which all subclasses share
+            should be overwritten in subclasses
+        '''
+        self.fields = []
+
 
 class XMLCorpusDefinition(CorpusDefinition):
     '''
