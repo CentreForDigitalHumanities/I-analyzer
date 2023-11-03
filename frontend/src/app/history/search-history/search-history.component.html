@@ -7,23 +7,18 @@
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
-                <th>Timestamp</th>
-                <th>Query</th>
-                <th>Filters</th>
-                <th>Results</th>
+                <th rowspan="2">Timestamp</th>
+                <th rowspan="2">Query</th>
+                <th rowspan="2">Filters</th>
+                <th rowspan="2">Results</th>
                 <th>Corpus</th>
-                <th>Link</th>
+                <th rowspan="2">Link</th>
             </tr>
             <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
                 <th>
                     <p-dropdown [options]="corpusMenuItems" [style]="{'width':'100%'}" placeholder="Any" showClear="true"
                         (onChange)="dt.filter($event.value, 'corpus', 'equals')"></p-dropdown>
                 </th>
-                <th></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-query>
