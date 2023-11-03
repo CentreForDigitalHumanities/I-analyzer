@@ -12,6 +12,7 @@
                 <th>Filters</th>
                 <th>Results</th>
                 <th>Corpus</th>
+                <th>Link</th>
             </tr>
             <tr>
                 <th></th>
@@ -22,15 +23,22 @@
                     <p-dropdown [options]="corpusMenuItems" [style]="{'width':'100%'}" placeholder="Any" showClear="true"
                         (onChange)="dt.filter($event.value, 'corpus', 'equals')"></p-dropdown>
                 </th>
+                <th></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-query>
-            <tr (click)="returnToSavedQuery(query)">
+            <tr>
                 <td>{{query.started | date:'medium'}}</td>
                 <td>{{query.queryModel | formatQueryText }}</td>
                 <td ia-query-filters [queryModel]="query.queryModel"></td>
                 <td>{{query.total_results}}</td>
                 <td>{{corpusTitle(query.corpus)}}</td>
+                <td><a [routerLink]="routerLink(query)" [queryParams]="queryParams(query)">
+                    <span class="icon" aria-label="open this query">
+                        <fa-icon [icon]="linkIcon"></fa-icon>
+                    </span>
+                    </a>
+                </td>
             </tr>
         </ng-template>
     </p-table>
