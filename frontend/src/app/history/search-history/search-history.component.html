@@ -1,8 +1,16 @@
 <section class="section">
+    <h1 class="title">Search history</h1>
+
+    <p class="block">
+        Here you can see an overview of your search history.
+        You can turn search history on or off in
+        <a [routerLink]="['/settings']">settings</a>.
+    </p>
+
     <p-table #dt *ngIf="queries" [value]="queries" [paginator]="true" [rows]="10">
         <ng-template pTemplate="caption">
-            <div style="text-align: left">
-                Search History
+            <div>
+                Search history
             </div>
         </ng-template>
         <ng-template pTemplate="header">

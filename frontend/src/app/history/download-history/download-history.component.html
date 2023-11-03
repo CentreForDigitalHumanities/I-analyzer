@@ -1,7 +1,9 @@
 <section class="section">
+    <h1 class="title">Downloads</h1>
+
     <p-table #dt *ngIf="downloads && corpora" [value]="downloads" [paginator]="true" [rows]="10">
         <ng-template pTemplate="caption">
-            <div style="text-align: left">
+            <div>
                 Downloads
             </div>
         </ng-template>
