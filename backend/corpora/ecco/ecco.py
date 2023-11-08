@@ -47,6 +47,10 @@ class Ecco(XMLCorpusDefinition):
 
     meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
 
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+
     def sources(self, start=min_date, end=max_date):
         logging.basicConfig(filename='ecco.log', level=logging.INFO)
 

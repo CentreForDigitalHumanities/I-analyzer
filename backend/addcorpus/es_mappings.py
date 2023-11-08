@@ -1,6 +1,6 @@
 from addcorpus.es_settings import add_language_string
 
-def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, language=None, updated_highlighting=False):
+def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, language=None, updated_highlighting=True):
     '''
     Mapping for the main content field. Options:
 
