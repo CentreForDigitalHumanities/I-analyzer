@@ -154,36 +154,42 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
     transcription_german = FieldDefinition(
         name='transcription_de',
         es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='de'),
+        language='de',
         hidden=True
     )
 
     transcription_english = FieldDefinition(
         name='transcription_en',
         es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='en'),
+        language='en',
         hidden=True
     )
 
     transcription_hebrew = FieldDefinition(
         name='transcription_he', # no stopwords / stemmers available
         es_mapping={'type': 'text'},
+        language='he',
         hidden=True
     )
 
     transcription_latin = FieldDefinition(
         name='transcription_la',
         es_mapping={'type': 'text'}, # no stopwords / stemmers available
+        language='la',
         hidden=True
     )
 
     transcription_greek = FieldDefinition(
         name='transcription_el',
         es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='el'),
+        language='el',
         hidden=True
     )
 
     transcription_dutch = FieldDefinition(
         name='transcription_nl',
         es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='nl'),
+        language='nl',
         hidden=True
     )
 

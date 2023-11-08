@@ -712,6 +712,7 @@ class FieldDefinition(object):
                  visualizations=[],
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
+                 language=None,
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
@@ -735,6 +736,7 @@ class FieldDefinition(object):
         self.visualizations = visualizations
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
+        self.language = language
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
