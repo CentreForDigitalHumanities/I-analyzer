@@ -4,9 +4,8 @@
             <ia-dropdown
                 [options]="filteredTags"
                 optionLabel="name"
-                [disabled]="!filteredTags.length"
                 (onChange)="selectedTag = $event"
-                [placeholder]="filteredTags.length ? 'Assign a tag' : 'No more tags to assign'"
+                placeholder="Assign a tag"
                 styleClass="tag-button"
                 >
                 <footer>
