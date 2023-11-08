@@ -67,9 +67,9 @@ describe('FoundDocument', () => {
         const doc = makeDocument({ great_field: 'test' });
         expect(doc.tags$.value).toEqual(mockTags);
         const tag = _.first(mockTags);
-        doc.removeTag(tag.id);
+        doc.removeTag(tag);
         expect(doc.tags$.value.length).toBe(1);
-        doc.addTag(tag.id);
+        doc.addTag(tag);
         expect(doc.tags$.value.length).toBe(2);
     });
 });
