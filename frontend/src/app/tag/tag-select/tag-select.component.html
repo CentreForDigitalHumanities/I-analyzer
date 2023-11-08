@@ -8,7 +8,7 @@
         </ng-container>
     </div>
     <div class="control">
-        <button class="button tag" aria-label="add tag" (click)="confirm()">
+        <button class="button tag" aria-label="add tag" (click)="confirm()" [disabled]="!selectedTag">
             <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
         </button>
     </div>

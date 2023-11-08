@@ -35,5 +35,6 @@ export class TagSelectComponent {
 
     confirm() {
         this.selection.emit(this.selectedTag);
+        this.selectedTag = undefined;
     }
 }
