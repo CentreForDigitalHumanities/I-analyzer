@@ -29,7 +29,7 @@ export class TagSelectComponent {
         this.tags$ = this.tagService.tags$;
     }
 
-    filterTags(tags: Tag[], exclude?: Tag[]) {
+    filterTags(tags: Tag[], exclude?: Tag[]): Tag[] {
         return _.differenceBy(tags, exclude || [], 'name');
     }
 
