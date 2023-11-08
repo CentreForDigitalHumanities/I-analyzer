@@ -1,13 +1,6 @@
 <div class="field has-addons">
     <div class="control">
-        <div class="select tag-select is-small" *ngIf="tags$ | async as tags">
-            <select #tagSelect aria-label="select a tag">
-                <option *ngFor="let tag of filterTags(tags, exclude)"
-                    [value]="tag.id">
-                    {{tag.name}}
-                </option>
-            </select>
-        </div>
+        <p-dropdown [options]="tags$ | async" [(ngModel)]="selectedTag" optionLabel="name"></p-dropdown>
     </div>
     <div class="control">
         <button class="button tag" aria-label="add tag"

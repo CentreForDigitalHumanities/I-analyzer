@@ -40,7 +40,6 @@ export class FoundDocument {
         this.fetchTags();
     }
 
-
     /**
      * whether the document has a "context" that it belongs to
      *
@@ -53,8 +52,11 @@ export class FoundDocument {
             return false;
         }
 
-        const notBlank = value => value !== undefined && value !== null && value !== '';
-        const contextValues = spec.contextFields.map(this.fieldValue.bind(this));
+        const notBlank = (value) =>
+            value !== undefined && value !== null && value !== '';
+        const contextValues = spec.contextFields.map(
+            this.fieldValue.bind(this)
+        );
         return _.every(contextValues, notBlank);
     }
 
@@ -71,29 +73,25 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
-    addTag(tagId: number): void {
-        const newTagIds = this.tags$.value.map(tag => tag.id).concat([tagId]);
-        this.setTags(newTagIds);
+    addTag(tag: Tag): void {
+        const newTags = this.tags$.value.concat([tag]);
+        this.setTags(newTags);
     }
 
-    removeTag(tagId: number): void {
-        const newTagIds = _.without(
-            this.tags$.value.map(tag => tag.id),
-            tagId,
-        );
-        this.setTags(newTagIds);
+    removeTag(tag: Tag): void {
+        const newTags = _.without(this.tags$.value, tag);
+        this.setTags(newTags);
     }
 
-    setTags(tagIds: number[]): void {
-        this.tagService.setDocumentTags(this, tagIds).subscribe(
-            value => this.tags$.next(value)
-        );
+    setTags(tags: Tag[]): void {
+        this.tagService
+            .setDocumentTags(this, tags)
+            .subscribe((value) => this.tags$.next(value));
     }
 
     private fetchTags(): void {
-        this.tagService.getDocumentTags(this).subscribe(
-            value => this.tags$.next(value)
-        );
+        this.tagService
+            .getDocumentTags(this)
+            .subscribe((value) => this.tags$.next(value));
     }
-
 }

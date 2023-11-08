@@ -9,11 +9,11 @@ import * as _ from 'lodash';
 @Component({
     selector: 'ia-tag-select',
     templateUrl: './tag-select.component.html',
-    styleUrls: ['./tag-select.component.scss']
+    styleUrls: ['./tag-select.component.scss'],
 })
 export class TagSelectComponent {
     @Input() exclude: Tag[];
-    @Output() selection = new EventEmitter<number>();
+    @Output() selection = new EventEmitter<Tag>();
     @Output() cancel = new EventEmitter<void>();
 
     @ViewChild('tagSelect') tagSelect: ElementRef;
@@ -23,14 +23,10 @@ export class TagSelectComponent {
     faCheck = faCheck;
     faTimes = faTimes;
 
+    selectedTag: Tag;
 
     constructor(private tagService: TagService) {
         this.tags$ = this.tagService.tags$;
-    }
-
-    get selectedTagId(): number {
-        const option = this.tagSelect.nativeElement.selectedOptions[0];
-        return parseInt(option.value, 10);
     }
 
     filterTags(tags: Tag[], exclude?: Tag[]) {
@@ -38,6 +34,6 @@ export class TagSelectComponent {
     }
 
     confirm() {
-        this.selection.emit(this.selectedTagId);
+        this.selection.emit(this.selectedTag);
     }
 }

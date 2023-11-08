@@ -5,9 +5,9 @@ import { first, map, mergeMap } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 @Component({
-  selector: 'ia-document-tags',
-  templateUrl: './document-tags.component.html',
-  styleUrls: ['./document-tags.component.scss']
+    selector: 'ia-document-tags',
+    templateUrl: './document-tags.component.html',
+    styleUrls: ['./document-tags.component.scss'],
 })
 export class DocumentTagsComponent implements OnInit {
     @Input() document: FoundDocument;
@@ -17,16 +17,15 @@ export class DocumentTagsComponent implements OnInit {
 
     showAddNew = false;
 
-    constructor() { }
+    constructor() {}
 
-    ngOnInit(): void {
-    }
+    ngOnInit(): void {}
 
-    addTag(tagId: number) {
-        this.document.addTag(tagId);
+    addTag(tag: Tag) {
+        this.document.addTag(tag);
     }
 
     removeTag(tag: Tag) {
-        this.document.removeTag(tag.id);
+        this.document.removeTag(tag);
     }
 }

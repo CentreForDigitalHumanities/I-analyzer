@@ -7,7 +7,7 @@ import { ApiService } from './api.service';
 
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class TagService {
     /** all tags from the user */
@@ -18,21 +18,22 @@ export class TagService {
     }
 
     makeTag(name: string, description?: string): Observable<Tag> {
-        return this.apiService.createTag(name, description).pipe(
-            tap(() => this.fetch())
-        );
+        return this.apiService
+            .createTag(name, description)
+            .pipe(tap(() => this.fetch()));
     }
 
     getDocumentTags(document: FoundDocument): Observable<Tag[]> {
-        return this.apiService.documentTags(document).pipe(
-            map(response => response.tags)
-        );
+        return this.apiService
+            .documentTags(document)
+            .pipe(map((response) => response.tags));
     }
 
-    setDocumentTags(document: FoundDocument, tagIds: number[]): Observable<Tag[]> {
-        return this.apiService.setDocumentTags(document, tagIds).pipe(
-            map(response => response.tags)
-        );
+    setDocumentTags(document: FoundDocument, tags: Tag[]): Observable<Tag[]> {
+        const tagIds = tags.map((t) => t.id);
+        return this.apiService
+            .setDocumentTags(document, tagIds)
+            .pipe(map((response) => response.tags));
     }
 
     private fetch() {
