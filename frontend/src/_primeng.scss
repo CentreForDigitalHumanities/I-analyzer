@@ -186,6 +186,19 @@ body {
         &:hover {
             border-color: rgb(184, 184, 184) !important;
         }
+        &.is-small {
+            height: 1.5em;
+            vertical-align: top;
+            align-items: center;
+
+            .p-dropdown-label {
+                font-size: 12px;
+            }
+
+            .p-dropdown-item {
+                font-size: 12px;
+            }
+        }
     }
 }
 

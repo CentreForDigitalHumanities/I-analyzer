@@ -3,13 +3,12 @@
         <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
             <p-dropdown [options]="filteredTags" [(ngModel)]="selectedTag" optionLabel="name" emptyMessage="niks hier"
                 [disabled]="!filteredTags.length"
-                [placeholder]="filteredTags.length ? 'Assign a tag' : 'No more tags to assign'">
+                [placeholder]="filteredTags.length ? 'Assign a tag' : 'No more tags to assign'" styleClass="is-small">
             </p-dropdown>
         </ng-container>
     </div>
     <div class="control">
-        <button class="button tag" aria-label="add tag"
-            (click)="confirm()">
+        <button class="button tag" aria-label="add tag" (click)="confirm()">
             <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
         </button>
     </div>
