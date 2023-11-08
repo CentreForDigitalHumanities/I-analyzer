@@ -153,13 +153,13 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
 
     transcription_german = FieldDefinition(
         name='transcription_de',
-        es_mapping=main_content_mapping(stopword_analyzer='clean_german', stemming_analyzer='stemmed_german'),
+        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='de'),
         hidden=True
     )
 
     transcription_english = FieldDefinition(
         name='transcription_en',
-        es_mapping=main_content_mapping(stopword_analyzer='clean_english', stemming_analyzer='stemmed_english'),
+        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='en'),
         hidden=True
     )
 
@@ -177,13 +177,13 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
 
     transcription_greek = FieldDefinition(
         name='transcription_el',
-        es_mapping=main_content_mapping(stopword_analyzer='clean_greek', stemming_analyzer='stemmed_greek'),
+        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='el'),
         hidden=True
     )
 
     transcription_dutch = FieldDefinition(
         name='transcription_nl',
-        es_mapping=main_content_mapping(stopword_analyzer='clean_dutch', stemming_analyzer='stemmed_dutch'),
+        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='nl'),
         hidden=True
     )
 
@@ -344,6 +344,15 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
         display_name='Date of death',
     )
+
+        #define fields property so it can be set in __init__
+    @property
+    def fields(self):
+        return self._fields
+
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
 
     def __init__(self):
         self.fields = [

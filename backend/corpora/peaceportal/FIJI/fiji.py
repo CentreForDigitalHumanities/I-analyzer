@@ -40,6 +40,7 @@ class PeaceportalFIJI(PeacePortal):
                 }
 
     def __init__(self):
+        super().__init__()
         self.source_database.extractor = Constant(
             value='Funerary Inscriptions of Jews from Italy (Utrecht University)'
         )
@@ -157,19 +158,19 @@ class PeaceportalFIJI(PeacePortal):
             toplevel=False
         )
 
-        self.transcription_he.extractor = Combined(
+        self.transcription_hebrew.extractor = Combined(
             self.transcription.extractor,
             Constant('he'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_la.extractor = Combined(
+        self.transcription_latin.extractor = Combined(
             self.transcription.extractor,
             Constant('la'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_el.extractor = Combined(
+        self.transcription_greek.extractor = Combined(
             self.transcription.extractor,
             Constant('el'),
             transform=lambda x: get_text_in_language(x)

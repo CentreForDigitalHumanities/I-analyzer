@@ -201,19 +201,19 @@ class PeaceportalTOL(PeacePortal):
             multiple=True
         )
 
-        self.transcription_he.extractor = Combined(
+        self.transcription_hebrew.extractor = Combined(
             self.transcription.extractor,
             Constant('he'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_en.extractor = Combined(
+        self.transcription_english.extractor = Combined(
             self.transcription.extractor,
             Constant('en'),
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.transcription_nl.extractor = Combined(
+        self.transcription_dutch.extractor = Combined(
             self.transcription.extractor,
             Constant('nl'),
             transform=lambda x: get_text_in_language(x)
@@ -240,9 +240,9 @@ class PeaceportalTOL(PeacePortal):
             self.sex,
             self.source_database,
             self.transcription,
-            self.transcription_nl,
-            self.transcription_en,
-            self.transcription_he,
+            self.transcription_dutch,
+            self.transcription_english,
+            self.transcription_hebrew,
             self.url,
             self.year
         ]
