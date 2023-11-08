@@ -1,17 +1,36 @@
 <div class="field has-addons">
-    <div class="control">
+    <ng-container *ngIf="!createMode">
+        <div class="control" *ngIf="!createMode">
         <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
             <p-dropdown [options]="filteredTags" [(ngModel)]="selectedTag" optionLabel="name" emptyMessage="niks hier"
                 [disabled]="!filteredTags.length"
                 [placeholder]="filteredTags.length ? 'Assign a tag' : 'No more tags to assign'" styleClass="is-small">
+            <ng-template pTemplate="footer">
+                <button class="button tag" aria-label="add tag" (click)="toggleCreate()">
+                    <span class="icon"><fa-icon [icon]="faPlus"></fa-icon></span>
+                    <span>Create a new tag</span>
+                </button>
+            </ng-template>
             </p-dropdown>
         </ng-container>
     </div>
     <div class="control">
-        <button class="button tag" aria-label="add tag" (click)="confirm()" [disabled]="!selectedTag">
+        <button class="button tag" aria-label="add tag" (click)="addTag()" [disabled]="!selectedTag">
             <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
         </button>
     </div>
+</ng-container>
+<ng-container *ngIf="createMode">
+    <div class="control">
+        <input type="text" class="input tag" placeholder="Enter tag name" [(ngModel)]="newTagName">
+    </div>
+    <div class="control">
+        <button class="button tag" aria-label="create tag" (click)="createTag()" [disabled]="!newTagName">
+            <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
+        </button>
+    </div>
+</ng-container>
+
     <div class="control">
         <button class="button tag" aria-label="cancel" type="reset" (click)="cancel.emit()">
             <span class="icon"><fa-icon [icon]="faTimes"></fa-icon></span>

@@ -253,7 +253,7 @@ export class ApiService {
 
     public createTag(name: string, description?: string): Observable<Tag> {
         const url = this.apiRoute(this.tagApiUrl, 'tags/');
-        return this.http.put<Tag>(url, { name, description });
+        return this.http.post<Tag>(url, { name, description });
     }
 
     public documentTags(document: FoundDocument): Observable<DocumentTagsResponse> {
