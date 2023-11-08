@@ -10,7 +10,7 @@
         </button>
     </div>
 
-    <div class="control">
+    <div class="control" style="max-width: 100%;" >
         <ng-container *ngIf="showAddNew; else toggleAddNew">
             <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
         </ng-container>

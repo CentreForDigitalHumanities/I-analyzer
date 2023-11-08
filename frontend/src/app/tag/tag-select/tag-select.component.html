@@ -1,39 +1,47 @@
-<div class="field has-addons">
-    <ng-container *ngIf="!createMode">
-        <div class="control" *ngIf="!createMode">
+<form class="field has-addons">
+    <div class="control" *ngIf="!createMode">
         <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
-            <p-dropdown [options]="filteredTags" [(ngModel)]="selectedTag" optionLabel="name" emptyMessage="niks hier"
+            <ia-dropdown
+                [options]="filteredTags"
+                optionLabel="name"
                 [disabled]="!filteredTags.length"
-                [placeholder]="filteredTags.length ? 'Assign a tag' : 'No more tags to assign'" styleClass="is-small">
-            <ng-template pTemplate="footer">
-                <button class="button tag" aria-label="add tag" (click)="toggleCreate()">
-                    <span class="icon"><fa-icon [icon]="faPlus"></fa-icon></span>
-                    <span>Create a new tag</span>
-                </button>
-            </ng-template>
-            </p-dropdown>
+                (onChange)="selectedTag = $event"
+                [placeholder]="filteredTags.length ? 'Assign a tag' : 'No more tags to assign'"
+                styleClass="tag-button"
+                >
+                <footer>
+                    <a role="button" class="dropdown-item"
+                        tabindex="0"
+                        (click)="toggleCreate()"
+                        (keydown.enter)="toggleCreate()">
+                        <span class="icon"><fa-icon [icon]="faPlus"></fa-icon></span>
+                        <span>Create a new tag</span>
+                    </a>
+                </footer>
+            </ia-dropdown>
         </ng-container>
     </div>
+    <div class="control"  *ngIf="createMode">
+        <input type="text"
+            class="input is-small tag-input" placeholder="Enter tag name"
+            name="tag-name"
+            [(ngModel)]="newTagName">
+    </div>
     <div class="control">
-        <button class="button tag" aria-label="add tag" (click)="addTag()" [disabled]="!selectedTag">
+        <button
+            class="button tag"
+            aria-label="confirm"
+            type="submit"
+            (click)="createMode ? createTag() : addTag()"
+            [disabled]="createMode ? !newTagName?.length : !selectedTag"
+            >
             <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
         </button>
     </div>
-</ng-container>
-<ng-container *ngIf="createMode">
     <div class="control">
-        <input type="text" class="input tag" placeholder="Enter tag name" [(ngModel)]="newTagName">
-    </div>
-    <div class="control">
-        <button class="button tag" aria-label="create tag" (click)="createTag()" [disabled]="!newTagName">
-            <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
-        </button>
-    </div>
-</ng-container>
-
-    <div class="control">
-        <button class="button tag" aria-label="cancel" type="reset" (click)="cancel.emit()">
+        <button class="button tag" aria-label="cancel" type="reset" (click)="cancel.emit()"
+            type="button">
             <span class="icon"><fa-icon [icon]="faTimes"></fa-icon></span>
         </button>
     </div>
-</div>
+</form>
