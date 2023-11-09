@@ -5,6 +5,15 @@ from langcodes import Language
 HERE = os.path.abspath(os.path.dirname(__file__))
 NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
 
+# available Elasticsearch stemmers [https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-stemmer-tokenfilter.html]
+AVAILABLE_ES_STEMMERS = ['arabic', 'armenian', 'basque', 'bengali', 'brazilian', 
+                         'bulgarian', 'catalan', 'cjk', 'czech', 'danish', 'dutch', 
+                         'english', 'estonian', 'finnish', 'french', 'galician',
+                         'german', 'greek', 'hindi', 'hungarian', 'indonesian', 
+                         'irish', 'italian', 'latvian', 'lithuanian', 'norwegian', 
+                         'persian', 'portuguese', 'romanian', 'russian', 'sorani', 
+                         'spanish', 'swedish', 'turkish', 'thai']
+
 def get_language_key(language_code):
     '''
     Get the nltk stopwords file / elasticsearch stemmer name for a language code
@@ -44,6 +53,8 @@ def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
     stemmer_filter_name = 'stemmer'
     stemmed_analyzer_name = 'stemmed'
     
+    set_char_filter(settings)
+    
     for language in languages:
         # do not attach language isocodes if there is just one language
         language_string = language if len(languages) > 1 else None
@@ -57,9 +68,8 @@ def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
                     settings,
                     add_language_string(stopword_filter_name, language_string),
                     add_language_string(clean_analyzer_name, language_string),
-                    language
                 )
-            if stemming_analyzer:
+            if stemming_analyzer and get_language_key(language) in AVAILABLE_ES_STEMMERS:
                 set_stemmed_analyzer(
                     settings,
                     add_language_string(stopword_filter_name, language_string),
@@ -118,23 +128,31 @@ def get_stopwords_from_settings(es_settings):
     return stopwords
 
 def set_stemmed_analyzer(settings, stopword_filter_name, stemmer_filter_name, stemmed_analyzer_name, language):
-    settings['analysis']['filter'][stemmer_filter_name] = make_stemmer_filter(language)
-    settings["analysis"]['analyzer'][stemmed_analyzer_name] = make_stemmed_analyzer(stopword_filter_name, stemmer_filter_name)
+    filters = settings['analysis'].get('filter', {})
+    filters.update({stemmer_filter_name: make_stemmer_filter(language)})
+    settings['analysis']['filter'] = filters
+    analyzers = settings['analysis'].get('analyzer')
+    analyzers.update({stemmed_analyzer_name: make_stemmed_analyzer(stopword_filter_name, stemmer_filter_name)})
+    settings['analysis']['analyzer'] = analyzers
+
+def set_char_filter(settings):
+    settings["analysis"] = {
+        "char_filter": { "number_filter": number_filter() }
+    }
 
 def set_stopword_filter(settings, stopword_filter_name, language):
     stopword_filter = make_stopword_filter(stopword_filter_name, language)
     if not stopword_filter:
         return False
-    settings["analysis"] = {
-        "analyzer": {},
-        "char_filter":{ "number_filter": number_filter() },
-        'filter': {
-            stopword_filter_name: stopword_filter
-        }
-    }
+    filters = settings['analysis'].get('filter', {})
+    filters.update({
+        stopword_filter_name: stopword_filter
+    })
+    settings['analysis']['filter'] = filters
     return True
     
-def set_clean_analyzer(settings, stopword_filter_name, clean_analyzer_name, language):
-    settings["analysis"]['analyzer'][clean_analyzer_name] = make_clean_analyzer(
-        stopword_filter_name
-    )
+def set_clean_analyzer(settings, stopword_filter_name, clean_analyzer_name):
+    clean_analyzer = make_clean_analyzer(stopword_filter_name)
+    analyzers = settings['analysis'].get('analyzer', {})
+    analyzers.update({clean_analyzer_name: clean_analyzer})
+    settings["analysis"]['analyzer'] = analyzers

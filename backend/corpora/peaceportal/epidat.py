@@ -14,10 +14,7 @@ class PeaceportalEpidat(PeacePortal):
     es_index = getattr(settings, 'PEACEPORTAL_EPIDAT_ES_INDEX', 'peaceportal-epidat')
     es_alias = settings.PEACEPORTAL_ALIAS
 
-    languages = ['german', 'hebrew', 'english', 'dutch']
-
-    def es_settings(self):
-        return es_settings(self.languages, stopword_analyzer=True, stemming_analyzer=True)
+    languages = ['de', 'he', 'en', 'nl']
 
     def __init__(self):
         super().__init__()

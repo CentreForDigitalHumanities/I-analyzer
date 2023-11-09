@@ -43,7 +43,6 @@ def test_imports(peace_corpus_settings, corpus_object):
     resulted_fields = set()
 
     docs = get_documents(corpus, start, end)
-    print(list(docs))
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:

@@ -30,10 +30,6 @@ class Ecco(XMLCorpusDefinition):
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
 
-    @property
-    def es_settings(self):
-        return es_settings(self.languages[:1], stopword_analyzer=True, stemming_analyzer=True)
-
     data_directory = settings.ECCO_DATA
     es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
@@ -49,7 +45,7 @@ class Ecco(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analyzer=True, stemming_analyzer=True)
 
     def sources(self, start=min_date, end=max_date):
         logging.basicConfig(filename='ecco.log', level=logging.INFO)

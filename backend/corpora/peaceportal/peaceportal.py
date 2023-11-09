@@ -36,7 +36,8 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime(year=746, month=1, day=1)
-    image = 'bogus'
+    image = 'bogus.jpg'
+    category = 'inscription'
     data_directory = 'bogus'
 
     # Data overrides from .common.XMLCorpus
@@ -50,8 +51,9 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
     external_file_folder = None
     languages = ['en', 'de', 'nl', 'he', 'la', 'el'] # el stands for modern Greek (1500-)
 
+    @property
     def es_settings(self):
-        return es_settings(self.languages, True, True)
+        return es_settings(self.languages, stopword_analyzer=True, stemming_analyzer=True)
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -166,8 +168,8 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
     )
 
     transcription_hebrew = FieldDefinition(
-        name='transcription_he', # no stopwords / stemmers available
-        es_mapping={'type': 'text'},
+        name='transcription_he', # no stemmers available
+        es_mapping=main_content_mapping(stopword_analysis=True, language='he'),
         language='he',
         hidden=True
     )
