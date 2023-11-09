@@ -3,12 +3,14 @@ from copy import copy
 
 from django.conf import settings
 
+from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, HTML, Combined
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
+from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
 
-class PeaceportalEpidat(PeacePortal):
+class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
 
     data_directory = settings.PEACEPORTAL_EPIDAT_DATA
     es_index = getattr(settings, 'PEACEPORTAL_EPIDAT_ES_INDEX', 'peaceportal-epidat')
@@ -230,6 +232,8 @@ class PeaceportalEpidat(PeacePortal):
             Constant('nl'),
             transform=lambda x: get_text_in_language(x)
         )
+
+        self.fields = exclude_fields_without_extractor(self.fields)
 
 
 def convert_sex(values):

@@ -3,11 +3,12 @@ from copy import copy
 
 from django.conf import settings
 
+from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, HTML, Combined
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
+from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
-
-class PeaceportalTOL(PeacePortal):
+class PeaceportalTOL(PeacePortal, XMLCorpusDefinition):
     data_directory = settings.PEACEPORTAL_TOL_DATA
     es_index = getattr(settings, 'PEACEPORTAL_TOL_ES_INDEX', 'peaceportal-tol')
     es_alias = settings.PEACEPORTAL_ALIAS
@@ -15,6 +16,7 @@ class PeaceportalTOL(PeacePortal):
     languages = ['en', 'nl', 'he']
 
     def __init__(self):
+        super().__init__()
         self.source_database.extractor = Constant(
             value='Medieval funerary inscriptions from Toledo'
         )
@@ -219,33 +221,7 @@ class PeaceportalTOL(PeacePortal):
             transform=lambda x: get_text_in_language(x)
         )
 
-        self.fields = [
-            self.bibliography,
-            self.comments,
-            self.coordinates,
-            self.country,
-            self.dates_of_death,
-            self.iconography,
-            self._id,
-            self.images,
-            self.language,
-            self.location_details,
-            self.material,
-            self.material_details,
-            self.names,
-            self.not_after,
-            self.not_before,
-            self.region,
-            self.settlement,
-            self.sex,
-            self.source_database,
-            self.transcription,
-            self.transcription_dutch,
-            self.transcription_english,
-            self.transcription_hebrew,
-            self.url,
-            self.year
-        ]
+        self.fields = exclude_fields_without_extractor(self.fields)
 
 
 def convert_sex(values):

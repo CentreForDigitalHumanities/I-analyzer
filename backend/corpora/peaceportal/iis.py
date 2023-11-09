@@ -1,19 +1,27 @@
 from copy import copy
+from os.path import join
 
 from django.conf import settings
 
+from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, HTML, ExternalFile, Combined
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
+from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
-
-class PeaceportalIIS(PeacePortal):
+class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
     data_directory = settings.PEACEPORTAL_IIS_DATA
-    external_file_folder = settings.PEACEPORTAL_IIS_TXT_DATA
     es_index = getattr(settings, 'PEACEPORTAL_IIS_ES_INDEX', 'peaceportal-iis')
     es_alias = settings.PEACEPORTAL_ALIAS
 
+    def add_metadata(self, filename):
+        external_file_folder = settings.PEACEPORTAL_IIS_TXT_DATA
+        return  {
+            'associated_file': join(external_file_folder, filename)
+        }
+
     def __init__(self):
         super().__init__()
+        self.external_file_folder = settings.PEACEPORTAL_IIS_TXT_DATA
         self.source_database.extractor = Constant(
             value='Inscriptions of Israel/Palestine (Brown University)'
         )
@@ -247,6 +255,8 @@ class PeaceportalIIS(PeacePortal):
             Constant('el'),
             transform=lambda x: get_text_in_language(x)
         )
+
+        self.fields = exclude_fields_without_extractor(self.fields)
 
 
 def extract_transcript(filestream):

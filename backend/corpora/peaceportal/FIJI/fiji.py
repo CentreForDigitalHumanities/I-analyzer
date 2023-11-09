@@ -5,11 +5,12 @@ import logging
 
 from django.conf import settings
 
+from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, Combined
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, join_commentaries, get_text_in_language
+from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
-
-class PeaceportalFIJI(PeacePortal):
+class PeaceportalFIJI(PeacePortal, XMLCorpusDefinition):
     '''
     This is a fresh version of Ortal-Paz Saar's 'Funerary Inscriptions of Jews from Italy' corpus,
     updated to align with the PEACE portal index. This mostly implies that there are less fields
@@ -175,6 +176,8 @@ class PeaceportalFIJI(PeacePortal):
             Constant('el'),
             transform=lambda x: get_text_in_language(x)
         )
+
+        self.fields = exclude_fields_without_extractor(self.fields)
 
 
 def transform_age(age):

@@ -33,8 +33,14 @@ def corpus_test_name(corpus_spec):
 
 @pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
 def test_imports(peace_corpus_settings, corpus_object):
+    parent_corpus = load_corpus_definition('peaceportal')
     corpus = load_corpus_definition(corpus_object.get('name'))
+    print(corpus.add_metadata('somefile.txt'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
+    fully_specified = ['peaceportal-iis', 'peaceportal-tol']
+    if corpus_object.get('name') not in fully_specified:
+        # only IIS / TOL have all fields
+        assert len(corpus.fields) != len(parent_corpus.fields)
 
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
     end = corpus_object['end'] if 'end' in corpus_object else corpus.max_date

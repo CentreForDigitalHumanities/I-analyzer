@@ -6,6 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 @pytest.fixture()
 def peace_corpus_settings(settings):
     settings.CORPORA = {
+        'peaceportal': os.path.join(here, 'peaceportal.py'),
         'peaceportal-epidat': os.path.join(here, 'epidat.py'),
         'peaceportal-fiji': os.path.join(here, 'FIJI', 'fiji.py'),
         'peaceportal-iis': os.path.join(here, 'iis.py'),

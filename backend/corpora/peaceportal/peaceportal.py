@@ -7,15 +7,13 @@ from langdetect.lang_detect_exception import LangDetectException
 
 from django.conf import settings
 
-from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition, XMLCorpusDefinition
+from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 from addcorpus.extract import Constant
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 
-
-
-class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
+class PeacePortal(ParentCorpusDefinition):
     '''
     Base class for corpora in the PEACE portal.
 
@@ -48,7 +46,6 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
-    external_file_folder = None
     languages = ['en', 'de', 'nl', 'he', 'la', 'el'] # el stands for modern Greek (1500-)
 
     @property
@@ -56,24 +53,27 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
         return es_settings(self.languages, stopword_analyzer=True, stemming_analyzer=True)
 
     def sources(self, start, end):
-        logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
-
-                if extension != '.xml':
-                    logger.debug(self.non_xml_msg.format(full_path))
+                if not self.validate_extension(extension, full_path):
                     continue
-
-                metadata = {}
-                if self.external_file_folder:
-                    metadata = {
-                    # applies only to iis corpus
-                    'associated_file': os.path.join(self.external_file_folder, filename)
-                }
-
+                metadata = self.add_metadata(filename)
                 yield full_path, metadata
+    
+    def add_metadata(self, filename):
+        return {}
+
+    def validate_extension(self, extension, full_path):
+        '''
+        Check that the file is valid for this corpus.
+        So far, all PeacePortal corpora are XML, but may include CSV corpora in the future 
+        '''
+        logger = logging.getLogger(__name__)
+        if extension == 'xml':
+            return True
+        logger.debug(self.non_xml_msg.format(full_path))
 
     def request_media(self, document):
         images = document['fieldValues']['images']
@@ -352,15 +352,6 @@ class PeacePortal(ParentCorpusDefinition, XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
         display_name='Date of death',
     )
-
-        #define fields property so it can be set in __init__
-    @property
-    def fields(self):
-        return self._fields
-
-    @fields.setter
-    def fields(self, value):
-        self._fields = value
 
     def __init__(self):
         self.fields = [
