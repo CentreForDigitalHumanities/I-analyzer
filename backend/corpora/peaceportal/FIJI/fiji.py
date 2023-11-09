@@ -56,7 +56,7 @@ class PeaceportalFIJI(PeacePortal, XMLCorpusDefinition):
         )
 
         # the year is commented out: need to have not before / not after fields
-        # this is advisable since often we only roughly now the century
+        # this is advisable since often we only roughly know the century
         # self.year.extractor = XML(
         #     tag=['teiHeader', 'fileDesc', 'sourceDesc',
         #          'msDesc', 'history', 'origin', 'origDate'],
