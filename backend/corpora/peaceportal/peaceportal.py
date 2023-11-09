@@ -71,7 +71,7 @@ class PeacePortal(ParentCorpusDefinition):
         So far, all PeacePortal corpora are XML, but may include CSV corpora in the future 
         '''
         logger = logging.getLogger(__name__)
-        if extension == 'xml':
+        if extension == '.xml':
             return True
         logger.debug(self.non_xml_msg.format(full_path))
 

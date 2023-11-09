@@ -12,12 +12,12 @@ CORPUS_TEST_DATA = [
         'n_documents': 2
     },
     {
-        'name': 'peaceportal-fiji',
+        'name': 'peaceportal-iis',
         'docs': [],
         'n_documents': 3
     },
     {
-        'name': 'peaceportal-iis',
+        'name': 'peaceportal-fiji',
         'docs': [],
         'n_documents': 3
     },
@@ -35,7 +35,6 @@ def corpus_test_name(corpus_spec):
 def test_imports(peace_corpus_settings, corpus_object):
     parent_corpus = load_corpus_definition('peaceportal')
     corpus = load_corpus_definition(corpus_object.get('name'))
-    print(corpus.add_metadata('somefile.txt'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
     fully_specified = ['peaceportal-iis', 'peaceportal-tol']
     if corpus_object.get('name') not in fully_specified:
