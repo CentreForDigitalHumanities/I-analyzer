@@ -33,37 +33,37 @@ class CorpusDefinition(object):
     @property
     def title(self):
         '''
-        Path to source data directory.
+        Title of the corpus
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing title')
 
     @property
     def description(self):
         '''
         Short description of the corpus
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing description')
 
     @property
     def data_directory(self):
         '''
         Path to source data directory.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing data_directory')
 
     @property
     def min_date(self):
         '''
         Minimum timestamp for data files.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing min_date')
 
     @property
     def max_date(self):
         '''
         Maximum timestamp for data files.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing max_date')
 
 
     '''
@@ -81,14 +81,14 @@ class CorpusDefinition(object):
 
         See addcorpus.constants.CATEGORIES for options
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing category')
 
     @property
     def es_index(self):
         '''
         ElasticSearch index name.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing category')
 
     '''
     Elasticsearch alias. Defaults to None.
@@ -111,7 +111,7 @@ class CorpusDefinition(object):
         the `Field` class, containing information about each attribute.
         MUST include a field with `name='id'`.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing fields')
 
 
     '''
@@ -139,7 +139,7 @@ class CorpusDefinition(object):
         Name of the corpus image. Should be relative path from a directory 'images'
         in the same directory as the corpus definition file.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing image')
 
     '''
     MIME type of scanned documents (images)
@@ -241,7 +241,7 @@ class CorpusDefinition(object):
         empty or contains only a timestamp; but any data that is to be
         extracted without reading the file itself can be specified there.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing sources')
 
     def source2dicts(self, sources):
         '''
@@ -249,7 +249,7 @@ class CorpusDefinition(object):
 
         The dictionaries are created from this corpus' `Field`s.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing source2dicts')
 
     def documents(self, sources=None):
         '''
