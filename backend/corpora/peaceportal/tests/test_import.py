@@ -82,15 +82,15 @@ sepulchral monument
           "country": "Israel/Palestine",
           "region": "Judaea",
           "settlement": "Jerusalem",
-          "location_details": [
+          "location_details": (
             "Judaea Jerusalem Akeldama Cave 2 chamber B",
             "",
             ""
-          ],
-          "language": [
+          ),
+          "language": (
             "Greek",
             None
-          ],
+          ),
           "iconography": "Painted Red",
           "material": [
             "Limestone",
