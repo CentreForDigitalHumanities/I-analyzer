@@ -4,8 +4,7 @@ from copy import copy
 from django.conf import settings
 
 from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Constant, HTML, Combined
-from addcorpus.es_settings import es_settings
+from addcorpus.extract import XML, Constant, Combined, FilterAttribute
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -32,7 +31,7 @@ class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
             flatten=True
         )
 
-        self.url.extractor = HTML(
+        self.url.extractor = FilterAttribute(
             tag=['teiHeader', 'fileDesc', 'publicationStmt', 'idno'],
             multiple=False,
             toplevel=False,

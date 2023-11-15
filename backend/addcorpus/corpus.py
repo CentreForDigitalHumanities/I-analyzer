@@ -11,9 +11,6 @@ from datetime import datetime
 from os.path import isdir
 
 from django.conf import settings
-from langcodes import Language, standardize_tag
-
-from addcorpus.constants import CATEGORIES
 
 import logging
 
@@ -544,7 +541,7 @@ class HTMLCorpusDefinition(XMLCorpusDefinition):
         '''
         (filename, metadata) = source
 
-        self._reject_extractors(extract.XML, extract.CSV)
+        self._reject_extractors(extract.CSV)
 
         # Loading HTML
         logger.info('Reading HTML file {} ...'.format(filename))
@@ -619,7 +616,7 @@ class CSVCorpusDefinition(CorpusDefinition):
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
-        self._reject_extractors(extract.XML, extract.HTML)
+        self._reject_extractors(extract.XML, extract.FilterAttribute)
 
         if isinstance(source, str):
             filename = source

@@ -4,7 +4,7 @@ from os.path import join
 from django.conf import settings
 
 from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Constant, HTML, ExternalFile, Combined
+from addcorpus.extract import Combined, Constant, ExternalFile, FilterAttribute, XML
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -35,7 +35,7 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
             transform=lambda x: ''.join(x.lower().split())
         )
 
-        self.url.extractor = HTML(
+        self.url.extractor = FilterAttribute(
             tag=['teiHeader', 'fileDesc', 'sourceDesc',
                  'msDesc', 'msIdentifier', 'idno'],
             multiple=False,
@@ -71,7 +71,7 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
             stream_handler=extract_transcript
         )
 
-        self.transcription_english.extractor = HTML(
+        self.transcription_english.extractor = FilterAttribute(
             tag=['div'],
             toplevel=True,
             multiple=False,
