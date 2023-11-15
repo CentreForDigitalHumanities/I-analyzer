@@ -179,12 +179,6 @@ class PeaceportalFIJI(PeacePortal, XMLCorpusDefinition):
         self.fields = exclude_fields_without_extractor(self.fields)
 
 
-def transform_age(age):
-    if age in ['?', 'none', 'none?']:
-        return 'Unknown'
-    return age
-
-
 def transform_age_integer(age):
     try:
         return int(age)

@@ -5,6 +5,7 @@ from django.conf import settings
 
 from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import Combined, Constant, ExternalFile, FilterAttribute, XML
+from addcorpus.serializers import LanguageField
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -351,17 +352,8 @@ def extract_dimensions(soup):
 
 
 def normalize_language(text):
-    if not text:
-        return
-    ltext = text.lower().strip()
-    if ltext in ['grc']:
-        return 'Greek'
-    if ltext in ['he', 'heb']:
-        return 'Hebrew'
-    if ltext in ['arc']:
-        return 'Aramaic'
-    if ltext in ['la', 'latin']:
-        return 'Latin'
+    serializer = LanguageField()
+    return serializer.to_representation(text)
 
     # excluded (for now):
     # revision history

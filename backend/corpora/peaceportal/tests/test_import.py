@@ -88,8 +88,8 @@ sepulchral monument
             ""
           ),
           "language": (
-            "Greek",
-            None
+            "Ancient Greek",
+            "Unknown"
           ),
           "iconography": "Painted Red",
           "material": [
