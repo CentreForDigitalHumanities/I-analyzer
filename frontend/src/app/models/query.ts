@@ -9,7 +9,7 @@ import {
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
 import { isFieldFilter, SearchFilter } from './field-filter';
-import { TagFilter } from './tag-filter';
+import { isTagFilter, TagFilter } from './tag-filter';
 import { TagService } from '../services/tag.service';
 import { makeTagSpecification } from '../utils/api-query';
 import { APIQuery } from './search-requests';
@@ -112,10 +112,9 @@ export class QueryModel {
 		this.update.next();
 	}
 
-	addFilter(filter: SearchFilter) {
-        this.filterForField(filter.corpusField).set(filter.currentData);
+    addFilter(filter: FilterInterface) {
+        this.setFilter(filter);
 	}
-
 
     setSortBy(value: SortBy) {
         this.sort.setSortBy(value);
@@ -155,7 +154,7 @@ export class QueryModel {
      * make a clone of the current query.
      */
 	clone() {
-        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()));
+        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()), this.tagService);
 	}
 
     /**
@@ -229,11 +228,20 @@ export class QueryModel {
     private setFromParams(params: ParamMap) {
         this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
-        filtersFromParams(params, this.corpus).forEach(filter => {
-            this.filterForField(filter.corpusField).set(filter.data.value);
-        });
+        filtersFromParams(params, this.corpus, this.tagService)
+            .forEach(this.setFilter.bind(this));
         this.sort = new SortConfiguration(this.corpus, params);
         this.highlightSize = highlightFromParams(params);
+    }
+
+    private setFilter(newFilter: FilterInterface): void {
+        let currentFilter: FilterInterface;
+        if (isTagFilter(newFilter)) {
+            currentFilter = this.filters.find(isTagFilter);
+        } else if (isFieldFilter(newFilter)) {
+            currentFilter = this.filterForField(newFilter.corpusField);
+        }
+        currentFilter?.set(newFilter.currentData);
     }
 
     private subscribeToFilterUpdates() {

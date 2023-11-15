@@ -36,13 +36,14 @@ export class ElasticSearchService {
     public async aggregateSearch(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
-        aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
+        aggregators: Aggregator[]
+    ): Promise<AggregateQueryFeedback> {
         const aggregations = {};
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
         const query = queryModel.toAPIQuery();
-        const aggregationModel = Object.assign({ aggs: aggregations }, query);
+        const aggregationModel = _.set(query, 'es_query.aggs', aggregations);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {

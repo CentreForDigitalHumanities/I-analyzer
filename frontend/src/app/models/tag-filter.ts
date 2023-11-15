@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { TagService } from '../services/tag.service';
-import { BaseFilter } from './base-filter';
+import { BaseFilter, FilterInterface } from './base-filter';
 import { Tag } from './tag';
 
 export const TAG_FILTER = 'TagFilter';
@@ -33,7 +33,7 @@ export class TagFilter extends BaseFilter<void, Tag[]> {
         const ids = value.split(SEPARATOR);
         const included = (tag: Tag) => ids.includes(this.tagToString(tag));
         const userTags = this.tagService.tags$.value;
-        return userTags.filter(included);
+        return userTags?.filter(included) || [];
     }
 
     dataToAPI(data: Tag[]): number[] {
@@ -46,3 +46,6 @@ export class TagFilter extends BaseFilter<void, Tag[]> {
         return tag.id.toString();
     }
 }
+
+export const isTagFilter = (filter: FilterInterface): filter is TagFilter =>
+    filter.filterType === TAG_FILTER;
