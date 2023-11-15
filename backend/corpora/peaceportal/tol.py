@@ -11,7 +11,6 @@ from corpora.utils.exclude_fields import exclude_fields_without_extractor
 class PeaceportalTOL(PeacePortal, XMLCorpusDefinition):
     data_directory = settings.PEACEPORTAL_TOL_DATA
     es_index = getattr(settings, 'PEACEPORTAL_TOL_ES_INDEX', 'peaceportal-tol')
-    es_alias = settings.PEACEPORTAL_ALIAS
 
     languages = ['en', 'nl', 'he']
 

@@ -11,7 +11,6 @@ from corpora.utils.exclude_fields import exclude_fields_without_extractor
 class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
     data_directory = settings.PEACEPORTAL_IIS_DATA
     es_index = getattr(settings, 'PEACEPORTAL_IIS_ES_INDEX', 'peaceportal-iis')
-    es_alias = settings.PEACEPORTAL_ALIAS
 
     def add_metadata(self, filename):
         external_file_folder = settings.PEACEPORTAL_IIS_TXT_DATA

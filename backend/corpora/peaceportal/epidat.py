@@ -13,7 +13,6 @@ class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
 
     data_directory = settings.PEACEPORTAL_EPIDAT_DATA
     es_index = getattr(settings, 'PEACEPORTAL_EPIDAT_ES_INDEX', 'peaceportal-epidat')
-    es_alias = settings.PEACEPORTAL_ALIAS
 
     languages = ['de', 'he', 'en', 'nl']
 

@@ -19,7 +19,6 @@ class PeaceportalFIJI(PeacePortal, XMLCorpusDefinition):
 
     data_directory = settings.PEACEPORTAL_FIJI_DATA
     es_index = getattr(settings, 'PEACEPORTAL_FIJI_ES_INDEX', 'peaceportal-fiji')
-    es_alias = settings.PEACEPORTAL_ALIAS
     filename_pattern = re.compile(r'\d+')
 
     def sources(self, start, end):

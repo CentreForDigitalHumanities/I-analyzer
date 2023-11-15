@@ -31,6 +31,7 @@ class PeacePortal(ParentCorpusDefinition):
     max_date = datetime(year=1950, month=12, day=31)
     visualize = []
     es_index = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
+    es_alias = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime(year=746, month=1, day=1)
