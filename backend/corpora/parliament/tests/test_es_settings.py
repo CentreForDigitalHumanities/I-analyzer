@@ -3,7 +3,7 @@ import pytest
 import os
 import shutil
 
-def test_stopwords(clean_nltk_data_directory, settings):
+def test_stopwords(clean_nltk_data_directory, settings, connected_to_internet):
     """
     Check that stopwords results are valid and all languages are included
     """
