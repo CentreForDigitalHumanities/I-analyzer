@@ -14,4 +14,4 @@ def test_exclude_fields():
         )
     ]
     new_fields = exclude_fields.exclude_fields_without_extractor(fields)
-    assert new_fields != fields
+    assert len(new_fields) == 1
