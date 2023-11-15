@@ -6,7 +6,7 @@ import {
     BooleanFilterOptions, DateFilterOptions, FieldFilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions
 } from './field-filter-options';
-import { BaseFilter } from './base-filter';
+import { BaseFilter, FilterInterface } from './base-filter';
 
 
 abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FieldFilterOptions, FilterData> {
@@ -288,3 +288,6 @@ const parseMinMax = (value: string[]): [string, string] => {
 };
 
 export type SearchFilter = DateFilter | MultipleChoiceFilter | RangeFilter | BooleanFilter | AdHocFilter;
+
+export const isFieldFilter = (filter: FilterInterface): filter is SearchFilter =>
+    'corpusField' in filter;

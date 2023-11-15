@@ -2,12 +2,14 @@ import { TagService } from '../services/tag.service';
 import { BaseFilter } from './base-filter';
 import { Tag } from './tag';
 
+export const TAG_FILTER = 'TagFilter';
+
 const SEPARATOR = ',';
 
 export class TagFilter extends BaseFilter<void, Tag[]> {
     displayName = 'tags';
     description = 'filter tagged documents';
-    filterType = 'TagFilter';
+    filterType = TAG_FILTER;
     routeParamName = 'tags';
 
     constructor(private tagService: TagService) {
@@ -28,6 +30,12 @@ export class TagFilter extends BaseFilter<void, Tag[]> {
         const included = (tag: Tag) => ids.includes(this.tagToString(tag));
         const userTags = this.tagService.tags$.value;
         return userTags.filter(included);
+    }
+
+    dataToAPI(data: Tag[]): number[] {
+        if (data?.length) {
+            return data.map(t => t.id);
+        }
     }
 
     private tagToString(tag: Tag): string {

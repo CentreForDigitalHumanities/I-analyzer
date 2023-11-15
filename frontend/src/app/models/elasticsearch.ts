@@ -34,7 +34,14 @@ export interface EsRangeFilter {
     };
 }
 
+
 export type EsFilter = EsDateFilter | EsTermFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
+
+// TAGS
+
+export interface EsTagFilter {
+    tags?: number[];
+}
 
 // QUERIES
 
@@ -74,13 +81,13 @@ export type EsQuerySorted = EsQuery & {
     sort: { [fieldName: string]: 'desc' | 'asc' }[];
 };
 
-export interface EsQuery {
+export type EsQuery = {
     aborted?: boolean;
     completed?: Date;
     query: EsSearchClause | BooleanQuery | EsFilter;
     highlight?: unknown;
     transferred?: number;
-}
+} & EsTagFilter;
 
 export interface Aggregator {
     name: string;

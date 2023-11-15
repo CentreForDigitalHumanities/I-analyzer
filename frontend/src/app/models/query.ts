@@ -1,13 +1,16 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
-import { Subject } from 'rxjs';
-import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection, } from '../models/index';
+import * as _ from 'lodash';
+import { combineLatest, Subject } from 'rxjs';
+import { Corpus, CorpusField, EsFilter, FilterInterface, SortBy, SortConfiguration, SortDirection, Tag, } from '../models/index';
 import { EsQuery } from '../models';
-import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
+import { combineSearchClauseAndFilters, makeHighlightSpecification, makeTagSpecification } from '../utils/es-query';
 import {
     filtersFromParams, highlightFromParams, highlightToParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
-import { SearchFilter } from './field-filter';
+import { isFieldFilter, SearchFilter } from './field-filter';
+import { TagFilter } from './tag-filter';
+import { TagService } from '../services/tag.service';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -74,15 +77,15 @@ export class QueryModel {
     corpus: Corpus;
 	queryText: string;
 	searchFields: CorpusField[];
-	filters: SearchFilter[];
+    filters: FilterInterface[];
     sort: SortConfiguration;
     highlightSize: number;
 
 	update = new Subject<void>();
 
-    constructor(corpus: Corpus, params?: ParamMap) {
+    constructor(corpus: Corpus, params?: ParamMap, private tagService?: TagService) {
 		this.corpus = corpus;
-        this.filters = this.corpus.fields.map(field => field.makeSearchFilter());
+        this.filters = this.makeFilters();
         this.sort = new SortConfiguration(this.corpus);
         if (params) {
             this.setFromParams(params);
@@ -96,6 +99,10 @@ export class QueryModel {
 
     get highlightDisabled() {
         return !this.queryText;
+    }
+
+    private get fieldFilters(): SearchFilter[] {
+        return this.filters.filter(isFieldFilter);
     }
 
 	setQueryText(text?: string) {
@@ -125,12 +132,12 @@ export class QueryModel {
 
     /** get an active search filter on this query for the field (undefined if none exists) */
     filterForField(field: CorpusField): SearchFilter {
-        return this.filters.find(filter => filter.corpusField.name === field.name);
+        return this.fieldFilters.find(filter => filter.corpusField.name === field.name);
     }
 
     /** remove all filters that apply to a corpus field */
     deactivateFiltersForField(field: CorpusField) {
-        this.filters.filter(filter =>
+        this.fieldFilters.filter(filter =>
             filter.corpusField.name === field.name
         ).forEach(filter =>
             filter.deactivate()
@@ -184,16 +191,28 @@ export class QueryModel {
 
     /** convert the query to an elasticsearch query */
 	toEsQuery(): EsQuery {
-        const filters = this.activeFilters.map(filter => filter.toEsFilter()) as EsFilter[];
+        const filters = this.activeFilters
+            .filter(isFieldFilter)
+            .map(filter => filter.toEsFilter()) as EsFilter[];
         const query = combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
 
         const sort = this.sort.toEsQuerySort();
         const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);
+        const tags = makeTagSpecification(this.activeFilters);
 
         return {
             ...query, ...sort, ...highlight
         };
 	}
+
+    private makeFilters(): FilterInterface[] {
+        const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter());
+        if (this.tagService) {
+            const tagFilter = new TagFilter(this.tagService);
+            return fieldFilters.concat([tagFilter]);
+        }
+        return fieldFilters;
+    }
 
     /** set the query values from a parameter map */
     private setFromParams(params: ParamMap) {
