@@ -5,6 +5,7 @@ import { Tag } from './tag';
 const SEPARATOR = ',';
 
 export class TagFilter extends BaseFilter<void, Tag[]> {
+    displayName = 'tags';
     description = 'filter tagged documents';
     filterType = 'TagFilter';
     routeParamName = 'tags';

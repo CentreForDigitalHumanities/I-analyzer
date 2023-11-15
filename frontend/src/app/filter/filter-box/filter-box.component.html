@@ -2,8 +2,9 @@
     <div class="field has-addons">
         <div class="control is-expanded" iaBalloon="{{ filter.description }}"
             iaBalloonPosition="up-left" iaBalloonLength="fit">
-            <label class="label" [for]="'filter' + filter.corpusField.name">{{ filter.corpusField.displayName
-                }}</label>
+            <label class="label" [for]="'filter' + filter.displayName">
+                {{ filter.displayName}}
+            </label>
         </div>
         <p class="control">
             <button *ngIf="(filter.isDefault$ | async) === false" class="button icon filter-icon is-primary is-inverted is-round"

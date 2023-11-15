@@ -23,6 +23,10 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
         return !(this.corpusField.filterOptions);
     }
 
+    get displayName() {
+        return this.corpusField.displayName;
+    }
+
     get description() {
         if (this.corpusField?.filterOptions?.description) {
             return this.corpusField.filterOptions.description;
