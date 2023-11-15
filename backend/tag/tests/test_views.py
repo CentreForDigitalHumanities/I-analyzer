@@ -105,6 +105,39 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
     assert status.is_success(response.status_code)
     assert auth_user_tag.count == 0
 
+def test_assign_multiple_tags_at_once(auth_client, multiple_tags, mock_corpus, auth_user_corpus_acces):
+    doc = 'test'
+    patch_request = lambda data: auth_client.patch(
+        f'/api/tag/document_tags/{mock_corpus}/{doc}',
+        data,
+        content_type='application/json'
+    )
+
+    response = patch_request({
+        'tags': [tag.id for tag in multiple_tags]
+    })
+    assert status.is_success(response.status_code)
+    doc = TaggedDocument.objects.get(doc_id=doc)
+    assert doc.tags.count() == len(multiple_tags)
+
+def test_assign_multiple_tags_one_by_one(auth_client, multiple_tags, mock_corpus, auth_user_corpus_acces):
+    doc = 'test'
+    patch_request = lambda data: auth_client.patch(
+        f'/api/tag/document_tags/{mock_corpus}/{doc}',
+        data,
+        content_type='application/json'
+    )
+
+    for i in range(len(multiple_tags)):
+        response = patch_request({
+            'tags': [tag.id for tag in multiple_tags][:i+1]
+        })
+
+        assert status.is_success(response.status_code)
+        doc = TaggedDocument.objects.get(doc_id=doc)
+        n_tags = doc.tags.count()
+        assert doc.tags.count() == i + 1
+
 def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, mock_corpus, mock_corpus_obj, auth_user_corpus_acces):
     '''
     Verify that patching tags does not affect the tags of other users

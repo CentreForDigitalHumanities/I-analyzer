@@ -16,25 +16,6 @@ export class CorpusInfoComponent implements OnInit {
     wordModelDocumentation: string;
     fieldCoverage: FieldCoverage;
 
-    tabs = [
-        {
-            name: 'general',
-            title: 'General information',
-            property: 'descriptionpage',
-        }, {
-            name: 'fields',
-            title: 'Fields',
-            property: 'fields',
-        }, {
-            name: 'models',
-            title: 'Word models',
-            property: 'word_models_present',
-        }
-    ];
-
-    currentTab = new BehaviorSubject<'general'|'fields'|'models'>(
-        'general'
-    );
 
     constructor(private corpusService: CorpusService, private apiService: ApiService, private wordModelsService: WordmodelsService) { }
 
@@ -47,9 +28,7 @@ export class CorpusInfoComponent implements OnInit {
         if (corpus.descriptionpage) {
             this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name})
             .then(marked.parse)
-            .then(doc => this.description = doc);
-        } else {
-            this.currentTab.next('fields');
+                .then(doc => this.description = doc);
         }
         this.apiService.fieldCoverage(corpus.name).then(
             result => this.fieldCoverage = result

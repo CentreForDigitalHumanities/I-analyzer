@@ -1,6 +1,11 @@
+import { TestBed } from '@angular/core/testing';
 import { makeDocument } from '../../mock-data/constructor-helpers';
 import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { FoundDocument } from './found-document';
+import { TagService } from '../services/tag.service';
+import { TagServiceMock, mockTags } from '../../mock-data/tag';
+import { Tag } from './tag';
+import * as _ from 'lodash';
 
 const maxScore = 2.9113607;
 const mockResponse = {
@@ -26,8 +31,19 @@ const mockResponse = {
 };
 
 describe('FoundDocument', () => {
+    let tagService: TagService;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: TagService, useValue: new TagServiceMock() }
+            ]
+        });
+        tagService = TestBed.inject(TagService);
+    });
+
     it('should construct from an elasticsearch response', () => {
-        const document = new FoundDocument(mockCorpus, mockResponse, maxScore);
+        const document = new FoundDocument(tagService, mockCorpus, mockResponse, maxScore);
 
         expect(document.id).toBe('1994_troonrede');
         expect(document.fieldValues['monarch']).toBe('Beatrix');
@@ -45,5 +61,15 @@ describe('FoundDocument', () => {
             date: new Date('1800-01-01')
         }, mockCorpus3);
         expect(shouldHaveContext.hasContext).toBeTrue();
+    });
+
+    it('should set tags', () => {
+        const doc = makeDocument({ great_field: 'test' });
+        expect(doc.tags$.value).toEqual(mockTags);
+        const tag = _.first(mockTags);
+        doc.removeTag(tag);
+        expect(doc.tags$.value.length).toBe(1);
+        doc.addTag(tag);
+        expect(doc.tags$.value.length).toBe(2);
     });
 });

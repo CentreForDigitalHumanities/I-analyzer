@@ -2,8 +2,8 @@
     <ia-dropdown placeholder="Relevance" canDeselect="true" [value]="sortField" [options]="sortableFields" optionLabel="displayName" (onChange)="changeField($event)"></ia-dropdown>
 </div>
 <div class="control">
-    <a class="button" (click)="toggleSortType()" [ngClass]="{ 'is-static': !sortField }">
-        <span class="icon is-small" [ngSwitch]="sortType">
+    <button class="button" (click)="toggleSortType()" [ngClass]="{ 'is-static': !sortField }">
+        <span class="icon is-small" [ngSwitch]="sortType" aria-hidden="true">
             <i *ngSwitchCase="'alphaDesc'" class="fa fa-sort-alpha-desc"></i>
             <i *ngSwitchCase="'alphaAsc'" class="fa fa-sort-alpha-asc"></i>
             <i *ngSwitchCase="'numericDesc'" class="fa fa-sort-numeric-desc"></i>
@@ -11,5 +11,5 @@
         </span>
         <span *ngIf="ascending">Ascending</span>
         <span *ngIf="!ascending">Descending</span>
-    </a>
+    </button>
 </div>
