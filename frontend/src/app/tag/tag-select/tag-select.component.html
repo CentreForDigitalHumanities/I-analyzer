@@ -1,0 +1,46 @@
+<form class="field has-addons">
+    <div class="control" *ngIf="!createMode">
+        <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
+            <ia-dropdown
+                [options]="filteredTags"
+                optionLabel="name"
+                (onChange)="selectedTag = $event"
+                placeholder="Assign a tag"
+                styleClass="tag-button"
+                >
+                <footer>
+                    <a role="button" class="dropdown-item"
+                        tabindex="0"
+                        (click)="toggleCreate()"
+                        (keydown.enter)="toggleCreate()">
+                        <span class="icon"><fa-icon [icon]="faPlus"></fa-icon></span>
+                        <span>Create a new tag</span>
+                    </a>
+                </footer>
+            </ia-dropdown>
+        </ng-container>
+    </div>
+    <div class="control"  *ngIf="createMode">
+        <input type="text"
+            class="input is-small tag-input" placeholder="Enter tag name"
+            name="tag-name"
+            [(ngModel)]="newTagName">
+    </div>
+    <div class="control">
+        <button
+            class="button tag"
+            aria-label="confirm"
+            type="submit"
+            (click)="createMode ? createTag() : addTag()"
+            [disabled]="createMode ? !newTagName?.length : !selectedTag"
+            >
+            <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
+        </button>
+    </div>
+    <div class="control">
+        <button class="button tag" aria-label="cancel" type="reset" (click)="cancel.emit()"
+            type="button">
+            <span class="icon"><fa-icon [icon]="faTimes"></fa-icon></span>
+        </button>
+    </div>
+</form>

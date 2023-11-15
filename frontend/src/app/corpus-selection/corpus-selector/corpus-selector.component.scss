@@ -45,7 +45,11 @@
 
     &:hover {
         border-color: $text-primary-color;
-            background-color: $contrast-primary-accent-color;
+        background-color: $contrast-primary-accent-color;
+    }
+
+    &:focus {
+        border-width: 3px;
     }
 }
 

@@ -78,7 +78,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.chart.destroy();
+        this.chart?.destroy();
     }
 
     loadData() {
