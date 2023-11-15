@@ -1,9 +1,8 @@
-import nltk
 import os
-from langcodes import Language
 
-HERE = os.path.abspath(os.path.dirname(__file__))
-NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
+from django.conf import settings
+from langcodes import Language
+import nltk
 
 # available Elasticsearch stemmers [https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-stemmer-tokenfilter.html]
 AVAILABLE_ES_STEMMERS = ['arabic', 'armenian', 'basque', 'bengali', 'brazilian', 
@@ -24,8 +23,8 @@ def get_language_key(language_code):
     return Language.make(language_code).display_name().lower()
 
 def get_nltk_stopwords(language_code):
-    nltk.download('stopwords', NLTK_DATA_PATH)
-    stopwords_dir = os.path.join(NLTK_DATA_PATH, 'corpora', 'stopwords')
+    nltk.download('stopwords', settings.NLTK_DATA_PATH)
+    stopwords_dir = os.path.join(settings.NLTK_DATA_PATH, 'corpora', 'stopwords')
     languages = os.listdir(stopwords_dir)
     language = get_language_key(language_code)
 

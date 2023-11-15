@@ -3,11 +3,11 @@ import pytest
 import os
 import shutil
 
-def test_stopwords(clean_nltk_data_directory):
+def test_stopwords(clean_nltk_data_directory, settings):
     """
     Check that stopwords results are valid and all languages are included
     """
-
+    settings.NLTK_DATA_PATH = clean_nltk_data_directory
     cases = [
         {
             'language': 'en',
@@ -50,30 +50,14 @@ def test_stopwords(clean_nltk_data_directory):
 
 
 @pytest.fixture
-def clean_nltk_data_directory():
+def clean_nltk_data_directory(settings):
     """
     Temporarily move already downloaded nltk_data if it was already downloaded,
     and restore the nltk_data directory after testing. If no nltk_data folder existed,
     data downloaded during testing will also be removed when done.
     """
-    data_path = es_settings.NLTK_DATA_PATH
+    here = os.path.dirname(os.path.abspath(__file__))
+    data_path = os.path.join(here, '_nltk_data_temp')
+    yield data_path
 
-    if os.path.isdir(data_path):
-        # remove already downloaded data
-        temp_path = os.path.join(es_settings.HERE, '_nltk_data_temp')
-        shutil.move(data_path, temp_path)
-
-        yield data_path
-
-        # clear test data
-        if os.path.exists(data_path):
-            shutil.rmtree(data_path)
-
-        # move the old data back
-        shutil.move(temp_path, data_path)
-    else:
-        yield data_path
-
-        # clear test data
-        if os.path.isdir(data_path):
-            shutil.rmtree(data_path)
+    shutil.rmtree(data_path)
