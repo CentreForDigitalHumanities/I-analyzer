@@ -262,11 +262,6 @@ def test_imports(peace_corpus_settings, corpus_object):
         for key in doc:
             resulted_fields.add(key)
 
-    for key in resulted_fields:
-        if not key in tested_fields:
-            message = 'Key "{}" is included in the result for {} but has no specification'.format(key, corpus_object.get('name'))
-            warnings.warn(message)
-
     docs = get_documents(corpus, start, end)
     assert len(list(docs)) == corpus_object.get('n_documents')
 

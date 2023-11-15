@@ -54,7 +54,7 @@ class PeacePortal(ParentCorpusDefinition):
 
     def sources(self, start, end):
         for directory, _, filenames in os.walk(self.data_directory):
-            for filename in filenames:
+            for filename in sorted(filenames):
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
                 if not self.validate_extension(extension, full_path):
