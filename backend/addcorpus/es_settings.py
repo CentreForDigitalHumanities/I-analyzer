@@ -56,24 +56,23 @@ def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
     
     for language in languages:
         # do not attach language isocodes if there is just one language
-        language_string = language if len(languages) > 1 else None
 
         if stopword_analyzer or stemming_analyzer:
-            if not set_stopword_filter(settings, add_language_string(stopword_filter_name, language_string), language):
+            if not set_stopword_filter(settings, add_language_string(stopword_filter_name, language), language):
                 continue # skip languages for which we do not have a stopword list
 
             if stopword_analyzer:
                 set_clean_analyzer(
                     settings,
-                    add_language_string(stopword_filter_name, language_string),
-                    add_language_string(clean_analyzer_name, language_string),
+                    add_language_string(stopword_filter_name, language),
+                    add_language_string(clean_analyzer_name, language),
                 )
             if stemming_analyzer and get_language_key(language) in AVAILABLE_ES_STEMMERS:
                 set_stemmed_analyzer(
                     settings,
-                    add_language_string(stopword_filter_name, language_string),
-                    add_language_string(stemmer_filter_name, language_string),
-                    add_language_string(stemmed_analyzer_name, language_string),
+                    add_language_string(stopword_filter_name, language),
+                    add_language_string(stemmer_filter_name, language),
+                    add_language_string(stemmed_analyzer_name, language),
                     language
                 )
 
