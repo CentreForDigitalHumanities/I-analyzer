@@ -1,1 +1,8 @@
-<p>tag-filter works!</p>
+<ng-container *ngIf="filter">
+    <p-multiSelect
+        [options]="filter.options$ | async"
+        optionLabel="name"
+        placeholder="Choose tags"
+        (onChange)="update($event.value)"
+    ></p-multiSelect>
+</ng-container>

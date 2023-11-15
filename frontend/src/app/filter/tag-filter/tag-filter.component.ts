@@ -8,5 +8,4 @@ import { TagFilter } from '../../models/tag-filter';
     styleUrls: ['./tag-filter.component.scss']
 })
 export class TagFilterComponent extends BaseFilterComponent<TagFilter> {
-
 }

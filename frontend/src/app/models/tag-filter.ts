@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { TagService } from '../services/tag.service';
 import { BaseFilter } from './base-filter';
 import { Tag } from './tag';
@@ -7,13 +8,16 @@ export const TAG_FILTER = 'TagFilter';
 const SEPARATOR = ',';
 
 export class TagFilter extends BaseFilter<void, Tag[]> {
-    displayName = 'tags';
-    description = 'filter tagged documents';
+    displayName = 'Your tags';
+    description = 'select tagged documents';
     filterType = TAG_FILTER;
     routeParamName = 'tags';
 
+    options$: Observable<Tag[]>;
+
     constructor(private tagService: TagService) {
         super();
+        this.options$ = this.tagService.tags$;
     }
 
     makeDefaultData(): Tag[] {
