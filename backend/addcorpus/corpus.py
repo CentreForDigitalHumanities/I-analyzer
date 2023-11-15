@@ -276,7 +276,12 @@ class CorpusDefinition(object):
                     "Specified extractor method cannot be used with this type of data")
     
 class ParentCorpusDefinition(CorpusDefinition):
-    ''' A class from which other corpus definitions can inherit
+    ''' A class from which other corpus definitions can inherit.
+    This class is in charge of setting fields, usually without defining an extractor.
+    The subclassed CorpusDefinitions will set extractors on the fields -
+    this way, CorpusDefinitions can share the same mappings and filters,
+    while the logic to collect sources and populate the fields can be different.
+    The ParentCorpusDefinition can also be used to allow cross-corpus search and filtering.
     '''
     #define fields property so it can be set in __init__
     @property
@@ -288,8 +293,9 @@ class ParentCorpusDefinition(CorpusDefinition):
         self._fields = value
 
     def __init__(self):
-        ''' specify a list of fields here which all subclasses share
-            should be overwritten in subclasses
+        ''' Specify a list of fields which all subclasses share
+            A subclass of ParentCorpusDefinition will provide extractors for the fields,
+            and potentially prune done the list of fields to those which have an extractor
         '''
         self.fields = []
 
