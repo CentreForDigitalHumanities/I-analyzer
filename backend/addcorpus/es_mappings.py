@@ -5,9 +5,9 @@ def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_an
     Mapping for the main content field. Options:
 
     - `token_counts`: enables aggregations for the total number of words. Used for relative term frequencies.
-    - `stopword_analyzer`: enables analysis using stopword removal. Can be a string specifying `clean-{language}` analyser in the `es_settings` of the corpus, or True for `clean`
-    - `stemming_analysis`: enables analysis using stemming. Can be a string specifying a `stemmed-{}` analyser in the `es_settings` for the corpus, or Truem for `stemmed`
-    - 'updated_highlighting': enables the new highlighter, which only works for fields that are indexed with the term vector set to 'with_positions_offsets'.
+    - `stopword_analysis`: enables analysis using stopword removal.
+    - `stemming_analysis`: enables analysis using stemming.
+    - `updated_highlighting`: enables the new highlighter, which only works for fields that are indexed with the term vector set to 'with_positions_offsets'.
     '''
 
     mapping = {
