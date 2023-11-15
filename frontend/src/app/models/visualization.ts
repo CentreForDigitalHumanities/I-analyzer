@@ -1,5 +1,5 @@
 import { AggregateResult, DateResult } from '.';
-import { QueryParameters } from './search-requests';
+import { APIQuery } from './search-requests';
 
 export interface TermFrequencyResult {
     key: string;
@@ -63,7 +63,7 @@ export type TermFrequencyParameters<Bin> = {
     bins: Bin[];
     full_data?: boolean;
     unit?: TimeCategory;
-} & QueryParameters;
+} & APIQuery;
 
 
 export type AggregateTermFrequencyParameters = TermFrequencyParameters<HistogramBin>;
@@ -74,7 +74,7 @@ export type WordcloudParameters = {
     corpus: string;
     field: string;
     size?: number;
-} & QueryParameters;
+} & APIQuery;
 
 
 export interface FreqTableHeader {
@@ -108,7 +108,7 @@ export type NGramRequestParameters = {
     max_size_per_interval?: number;
     number_of_ngrams?: number;
     date_field: string;
-} & QueryParameters;
+} & APIQuery;
 
 export class NgramParameters {
     size: number;

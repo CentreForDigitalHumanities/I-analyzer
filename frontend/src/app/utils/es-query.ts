@@ -2,13 +2,12 @@
 
 import * as _ from 'lodash';
 import {
-    BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, EsTagFilter, FilterInterface, MatchAll,
+    BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, FilterInterface, MatchAll,
     QueryModel,
     SimpleQueryString, SortBy, SortDirection } from '../models';
 import { EsQuery } from '../models';
 import { findByName } from './utils';
 import { SearchFilter } from '../models/field-filter';
-import { TAG_FILTER, TagFilter } from '../models/tag-filter';
 
 // conversion from query model -> elasticsearch query language
 
@@ -107,16 +106,6 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
             ),
         },
     };
-};
-
-export const makeTagSpecification = (filters: FilterInterface[]): EsTagFilter => {
-    const tagFilter = filters.find(f => f.filterType === TAG_FILTER) as TagFilter;
-    if (tagFilter?.active) {
-        const tags = tagFilter.dataToAPI(tagFilter.data.value);
-        return { tags };
-    } else {
-        return {};
-    }
 };
 
 // conversion from elasticsearch query language -> query model

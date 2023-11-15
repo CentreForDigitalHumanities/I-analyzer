@@ -25,11 +25,11 @@ export class DownloadService {
         highlightFragmentSize: number,
         fileOptions: DownloadOptions
     ): Promise<string | void> {
-        const esQuery = queryModel.toEsQuery(); // to create elastic search query
+        const query = queryModel.toAPIQuery();
         const parameters = _.merge(
             {
+                ...query,
                 corpus: corpus.name,
-                es_query: esQuery,
                 fields: fields.map((field) => field.name),
                 size: requestedResults,
                 route,
@@ -50,31 +50,26 @@ export class DownloadService {
             });
     }
 
+    /**
+     * Downloads the given tabular data as a CSV file on the backend.
+     * Link to CSV is sent to user per email
+     *
+     * @param corpus Corpus to be queried for constructing the file.
+     * @param queryModel QueryModel for which download is requested.
+     * @param fields The fields to appear as columns in the csv.
+     */
     public async downloadTask(
         corpus: Corpus,
         queryModel: QueryModel,
-        fields: CorpusField[],
+        fields:
+        CorpusField[],
         route: string,
         highlightFragmentSize: number
     ) {
-        /**
-         * Downloads the given tabular data as a CSV file on the backend.
-         * Link to CSV is sent to user per email
-         *
-         * @param corpus Corpus to be queried for constructing the file.
-         * @param queryModel QueryModel for which download is requested.
-         * @param fields The fields to appear as columns in the csv.
-         */
-        const esQuery = queryModel.toEsQuery(); // to create elastic search query
-        return this.apiService
-            .downloadTask({
-                corpus: corpus.name,
-                es_query: esQuery,
-                fields: fields.map((field) => field.name),
-                route,
-            })
-            .then((result) => result)
-            .catch((error) => {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.downloadTask({ corpus: corpus.name, ...query, fields: fields.map(field => field.name), route })
+            .then(result => result)
+            .catch(error => {
                 throw new Error(error.headers.message[0]);
             });
     }

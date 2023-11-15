@@ -1,7 +1,7 @@
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
-import { QueryParameters } from './search-requests';
+import { APIQuery } from './search-requests';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -96,7 +96,7 @@ export type ResultsDownloadParameters = {
     corpus: string;
     fields: string[];
     route: string;
-} & QueryParameters;
+} & APIQuery;
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
 

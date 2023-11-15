@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { combineLatest, Subject } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, FilterInterface, SortBy, SortConfiguration, SortDirection, Tag, } from '../models/index';
 import { EsQuery } from '../models';
-import { combineSearchClauseAndFilters, makeHighlightSpecification, makeTagSpecification } from '../utils/es-query';
+import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
     filtersFromParams, highlightFromParams, highlightToParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
@@ -11,6 +11,8 @@ import {
 import { isFieldFilter, SearchFilter } from './field-filter';
 import { TagFilter } from './tag-filter';
 import { TagService } from '../services/tag.service';
+import { makeTagSpecification } from '../utils/api-query';
+import { APIQuery } from './search-requests';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -198,12 +200,21 @@ export class QueryModel {
 
         const sort = this.sort.toEsQuerySort();
         const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);
-        const tags = makeTagSpecification(this.activeFilters);
 
         return {
-            ...query, ...sort, ...highlight
+            ...query, ...sort, ...highlight,
         };
-	}
+    }
+
+    toAPIQuery(): APIQuery {
+        const esQuery = this.toEsQuery();
+        const tags = makeTagSpecification(this.activeFilters);
+        return {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            es_query: esQuery,
+            ...tags,
+        };
+    }
 
     private makeFilters(): FilterInterface[] {
         const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter());
