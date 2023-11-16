@@ -1,6 +1,7 @@
 <div class="dropdown" [ngClass]="{'is-active': showDropdown}">
     <div class="dropdown-trigger" (click)="toggleDropdown()">
-        <button class="button" aria-haspopup="true">
+        <button class="button" aria-haspopup="true"
+            [disabled]="disabled" [class]="styleClass">
             <span class="icon" *ngIf="icon">
                 <fa-icon [icon]="icon"></fa-icon>
             </span>
@@ -22,6 +23,7 @@
                 <ng-container *ngIf="optionLabel === undefined">{{option}}</ng-container>
                 <ng-container *ngIf="optionLabel !== undefined">{{option[optionLabel]}}</ng-container>
             </a>
+            <ng-content select="footer"></ng-content>
         </div>
     </div>
 </div>

@@ -70,4 +70,8 @@ export class ApiServiceMock {
     requestMeQdia() {
         return Promise.resolve({});
     }
+
+    userTags() {
+        return of([]);
+    }
 }

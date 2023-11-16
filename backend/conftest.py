@@ -1,6 +1,9 @@
-import pytest
-from allauth.account.models import EmailAddress
 from time import sleep
+
+import pytest
+import requests
+from allauth.account.models import EmailAddress
+
 from ianalyzer.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.save_corpus import load_and_save_all_corpora
@@ -60,8 +63,18 @@ def admin_client(client, admin_user, admin_credentials):
     yield client
     client.logout()
 
-# elasticsearch
+@pytest.fixture(scope='session')
+def connected_to_internet():
+    """
+    Check if there is internet connection. Skip if no connection can be made.
+    """
+    try:
+        requests.get("https://1.1.1.1")
+    except:
+        pytest.skip('Cannot connect to internet')
+    
 
+# elasticsearch
 @pytest.fixture(scope='session')
 def es_client():
     """
@@ -78,7 +91,6 @@ def es_client():
     return client
 
 # mock corpora
-
 @pytest.fixture(autouse=True)
 def add_mock_corpora_to_db(db):
     #add mock corpora to the database at the start of each test

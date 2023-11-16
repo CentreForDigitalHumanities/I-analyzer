@@ -1,4 +1,4 @@
-<nav class="navbar" *ngIf="currentUser">
+<nav class="navbar" *ngIf="currentUser" aria-label="primary navigation">
     <div class="container is-fluid">
         <div class="navbar-brand">
             <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']"> <img src="/assets/logo.png" width="50" height="50"> I-ANALYZER</a>
@@ -14,7 +14,7 @@
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
                     <button class="navbar-link is-hoverable" (click)="corpora.toggle($event)">
-                        <span class="icon">
+                        <span class="icon" aria-hidden="true">
                             <i class="fa fa-database"></i>
                         </span>
                         Corpora
@@ -22,13 +22,13 @@
                     <p-menu #corpora [popup]="true" [model]="menuCorporaItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
                 </div>
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
-                    <span class="icon">
+                    <span class="icon" aria-hidden="true">
                         <i class="fa fa-book"></i>
                     </span>
                     Manual
                 </a>
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/about']">
-                    <span class="icon">
+                    <span class="icon" aria-hidden="true">
                         <i class="fa fa-info-circle"></i>
                     </span>
                     About
@@ -38,7 +38,7 @@
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
                     <button class="navbar-link is-hoverable" (click)="admin.toggle($event)">
-                        <span class="icon">
+                        <span class="icon" aria-hidden="true">
                             <i class="fa fa-user-circle"></i>
                         </span>
                         {{currentUser.name}}

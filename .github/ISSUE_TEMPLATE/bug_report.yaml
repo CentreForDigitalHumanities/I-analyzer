@@ -1,0 +1,66 @@
+---
+name: Bug report
+description: Let us know that something isn't working right
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for making a bug report! Please fill in this information so we can get to the
+        bottom of your issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What went wrong?
+      description: Please describe what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: If you can make a screenshot of the issue, please include it!
+    validations:
+      required: false
+  - type: checkboxes
+    id: instance
+    attributes:
+      label: Where did you find the bug?
+      description: Please add where you found the bug.
+      options:
+        - label: https://ianalyzer.hum.uu.nl
+        - label: https://peopleandparliament.hum.uu.nl
+        - label: https://peace.sites.uu.nl
+        - label: a server hosted elsewhere (i.e. not by the research software lab)
+        - label: a local server
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: |
+        For third-party and local servers, please add information about the version of the
+        software, if you know it. A version number (e.g "1.2.3") is great. For a pre-release
+        build, you can provide the branch or commit hash.
+    validations:
+      required: false
+  - type: textarea
+    id: to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: |
+        How can a developer replicate the issue? Please provide any information you can. For
+        example: "I went to
+        https://ianalyzer.hum.uu.nl/search/troonredes?date=1814-01-01:1972-01-01 and then
+        clicked on Download CSV. I pressed cancel and then I clicked Download CSV again."
+    validations:
+      required: true
+---
