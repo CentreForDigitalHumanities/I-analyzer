@@ -36,7 +36,7 @@ services:
       - type: bind
         source: $DATA_DIR
         target: /corpora
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate && python manage.py loadcorpora && python manage.py runserver 0.0.0.0:8000"
   frontend:
     build:
       context: ./frontend
