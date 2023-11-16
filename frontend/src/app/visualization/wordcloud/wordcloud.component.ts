@@ -4,7 +4,6 @@ import {
 
 
 import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
-import { ApiService } from '../../services/index';
 import { BehaviorSubject } from 'rxjs';
 import { VisualizationService } from '../../services/visualization.service';
 import { showLoading } from '../../utils/utils';

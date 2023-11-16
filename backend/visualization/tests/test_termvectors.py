@@ -67,7 +67,7 @@ QUERY_ANALYSIS_CASES = [
     }, {
         'query_text': 'regarded with such "evil forebodings"',
         'components': ['regarded', 'with', 'such', 'evil forebodings'],
-        'analyzed': [['regarded'], ['with'], ['such'], ['evil', 'forebodings']]
+        'analyzed': [['regarded'], ['evil', 'forebodings']]
     }, {
         'query_text': 'evil + forebodings',
         'components': ['evil', '+', 'forebodings'],
@@ -83,7 +83,7 @@ QUERY_ANALYSIS_CASES = [
     }, {
         'query_text': 'rejoice~1 to hear',
         'components': ['rejoice~1', 'to', 'hear'],
-        'analyzed': [['rejoice~1'], ['to'], ['hear']]
+        'analyzed': [['rejoice~1'], ['hear']]
     }
 ]
 
