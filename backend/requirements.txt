@@ -55,7 +55,7 @@ defusedxml==0.7.1
     #   djangosaml2
     #   pysaml2
     #   python3-openid
-dj-rest-auth[with_social]==2.2.7
+dj-rest-auth[with-social,with_social]==2.2.7
     # via -r requirements.in
 django==4.1.10
     # via
@@ -155,7 +155,9 @@ pycparser==2.21
 pyfume==0.2.25
     # via fuzzytm
 pyjwt[crypto]==2.8.0
-    # via django-allauth
+    # via
+    #   django-allauth
+    #   pyjwt
 pyopenssl==23.1.1
     # via pysaml2
 pypdf2==3.0.1
@@ -235,7 +237,7 @@ tqdm==4.64.1
     #   nltk
 typing-extensions==4.8.0
     # via pypdf2
-urllib3==1.26.17
+urllib3==1.26.18
     # via
     #   django-revproxy
     #   elastic-transport
