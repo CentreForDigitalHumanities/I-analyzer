@@ -300,7 +300,7 @@ class PeacePortal(ParentCorpusDefinition):
     language = FieldDefinition(
         name='language',
         display_name='Language',
-        description='Language written on the inscription.',
+        description='Language of the inscription.',
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Search only within these languages.',
@@ -308,6 +308,13 @@ class PeacePortal(ParentCorpusDefinition):
         ),
         csv_core=True,
         visualization_type='term_frequency'
+    )
+
+    language_code = FieldDefinition(
+        name='language_code',
+        display_name='Language code',
+        description='ISO 639 code for the language of the inscription.',
+        es_mapping=keyword_mapping()
     )
 
     bibliography = FieldDefinition(
@@ -372,6 +379,7 @@ class PeacePortal(ParentCorpusDefinition):
             self.settlement,
             self.location_details,
             self.language,
+            self.language_code,
             self.iconography,
             self.images,
             self.coordinates,

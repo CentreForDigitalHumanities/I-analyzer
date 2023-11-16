@@ -178,6 +178,20 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
                 transform=lambda x: normalize_language(x)
             )
         )
+        self.language_code.extractor = Combined(
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msContents',
+                     'textLang'],
+                attribute='mainLang',
+                toplevel=False
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msContents',
+                     'textLang'],
+                attribute='otherLangs',
+                toplevel=False
+            )
+        )
 
         self.comments.extractor = Combined(
             XML(
