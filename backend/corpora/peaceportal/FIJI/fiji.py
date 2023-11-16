@@ -13,7 +13,7 @@ from corpora.utils.exclude_fields import exclude_fields_without_extractor
 class PeaceportalFIJI(PeacePortal, XMLCorpusDefinition):
     '''
     This is a fresh version of Ortal-Paz Saar's 'Funerary Inscriptions of Jews from Italy' corpus,
-    updated to align with the PEACE portal index. This mostly implies that there are less fields
+    updated to align with the PEACE portal index. This mostly implies that there are fewer fields
     than in the earlier version (i.e. the one under corpora/jewishinscriptions).
     '''
 
