@@ -45,7 +45,7 @@ class Ecco(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[:1], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     def sources(self, start=min_date, end=max_date):
         logging.basicConfig(filename='ecco.log', level=logging.INFO)
@@ -150,7 +150,7 @@ class Ecco(XMLCorpusDefinition):
                 name='content',
                 display_name='Content',
                 display_type='text_content',
-                es_mapping=main_content_mapping(True, True, True),
+                es_mapping=main_content_mapping(True, True, True, 'en'),
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,

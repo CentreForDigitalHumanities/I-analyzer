@@ -39,12 +39,12 @@ def get_nltk_stopwords(language_code):
 def add_language_string(name, language):
     return '{}_{}'.format(name, language) if language else name
 
-def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
+def es_settings(languages=[], stopword_analysis=False, stemming_analysis=False):
     '''
     Make elasticsearch settings json for a corpus index. Options:
-    - `language`: array of language codes. See addcorpus.constants for options, and which languages support stopwords/stemming
-    - `stopword_analyzer`: define an analyzer that removes stopwords.
-    - `stemming_analyzer`: define an analyzer that removes stopwords and performs stemming.
+    - `languages`: array of language codes. See addcorpus.constants for options, and which languages support stopwords/stemming
+    - `stopword_analysis`: set to True to add an analyzer that removes stopwords.
+    - `stemming_analysis`: set to True to add an analyzer that removes stopwords and performs stemming.
     '''
     settings = {'index': {'number_of_shards': 1, 'number_of_replicas': 1}}
     stopword_filter_name = 'stopwords'
@@ -57,17 +57,20 @@ def es_settings(languages=[], stopword_analyzer=False, stemming_analyzer=False):
     for language in languages:
         # do not attach language isocodes if there is just one language
 
-        if stopword_analyzer or stemming_analyzer:
+        if stopword_analysis or stemming_analysis:
             if not set_stopword_filter(settings, add_language_string(stopword_filter_name, language), language):
                 continue # skip languages for which we do not have a stopword list
 
-            if stopword_analyzer:
+            if stopword_analysis:
                 set_clean_analyzer(
                     settings,
                     add_language_string(stopword_filter_name, language),
                     add_language_string(clean_analyzer_name, language),
                 )
-            if stemming_analyzer and get_language_key(language) in AVAILABLE_ES_STEMMERS:
+            if stemming_analysis:
+                if not get_language_key(language) in AVAILABLE_ES_STEMMERS:
+                    raise UserWarning('You specified `stemming_analysis=True`, but \
+                                      there is no stemmer available for this language')
                 set_stemmed_analyzer(
                     settings,
                     add_language_string(stopword_filter_name, language),
@@ -85,12 +88,12 @@ def number_filter():
         "replacement":""
     }
 
-def make_stopword_filter(stopword_filter_name, language):
+def make_stopword_filter(language):
     try:
         stopwords = get_nltk_stopwords(language)
         return {
             "type": "stop",
-            stopword_filter_name: stopwords
+            'stopwords': stopwords
         }
     except:
         return None
@@ -116,14 +119,15 @@ def make_stemmed_analyzer(stopword_filter_name, stemmer_filter_name):
         "filter": ["lowercase", stopword_filter_name, stemmer_filter_name]
     }
 
-def get_stopwords_from_settings(es_settings):
+def get_stopwords_from_settings(es_settings, analyzer):
     try:
-        token_filter = es_settings["analysis"]['filter']['stopwords']
-        stopwords = token_filter['stopwords']
+        # the name of the stopword filter is second in the list, after "lowercase"
+        stopword_filter_name = es_settings['analysis']['analyzer'].get(
+            analyzer).get('filter')[-1]
+        token_filter = es_settings["analysis"]['filter'][stopword_filter_name]
+        return token_filter['stopwords']
     except:
-        stopwords = None
-
-    return stopwords
+        return []
 
 def set_stemmed_analyzer(settings, stopword_filter_name, stemmer_filter_name, stemmed_analyzer_name, language):
     filters = settings['analysis'].get('filter', {})
@@ -139,7 +143,7 @@ def set_char_filter(settings):
     }
 
 def set_stopword_filter(settings, stopword_filter_name, language):
-    stopword_filter = make_stopword_filter(stopword_filter_name, language)
+    stopword_filter = make_stopword_filter(language)
     if not stopword_filter:
         return False
     filters = settings['analysis'].get('filter', {})

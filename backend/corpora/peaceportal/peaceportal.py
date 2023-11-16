@@ -51,7 +51,7 @@ class PeacePortal(ParentCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages, stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages, stopword_analysis=True, stemming_analysis=True)
 
     def sources(self, start, end):
         for directory, _, filenames in os.walk(self.data_directory):

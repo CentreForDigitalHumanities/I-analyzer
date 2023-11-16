@@ -38,7 +38,7 @@ class Parliament(CorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[:1], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
 
     # overwrite below in child class if you need to extract the (converted) transcription

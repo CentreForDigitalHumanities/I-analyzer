@@ -26,8 +26,8 @@ Elasticsearch supports specifying a `fields` parameter to a field to define subf
 
 The one way in which multifields _are_ used is to allow different analyzers on the same text field. Text fields typically use the default analyzer, which performs basic tokenisation and converts text to lowercase. For more extensive analysis, subfields can be added. I-analyzer uses the following naming convention:
 
-- `*.clean-{iso-language-code}`: uses a language-specific analyzer to filter stopwords.
-- `*.stemmed-{iso-language-code}`: uses a language-specific analyzer to filter stopwords and stem words.
+- `*.clean`: uses a language-specific analyzer to filter stopwords.
+- `*.stemmed`: uses a language-specific analyzer to filter stopwords and stem words.
 - `*.length`: specifies the token count of the text, which is useful for aggregations.
 - `*.text`: a field with text mapping. Can be added to a keyword field to support full-text search in the field.
 

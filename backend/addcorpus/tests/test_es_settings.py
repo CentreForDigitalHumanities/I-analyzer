@@ -11,16 +11,16 @@ test_cases = {
         'stemming': True,
         'expected': {
             'filter': {
-                'stemmer': {'type': 'stemmer', 'language': 'english'},
-                'stopwords': {'type': 'stop', 'stopwords': list()}
+                'stemmer_en': {'type': 'stemmer', 'language': 'english'},
+                'stopwords_en': {'type': 'stop', 'stopwords': list()},
             },
             'analyzer': {
-                'clean': {
-                    'filter': ['lowercase', 'stopwords'],
+                'clean_en': {
+                    'filter': ['lowercase', 'stopwords_en'],
                     **char_filter_tokenizer
                 },
-                'stemmed': {
-                    'filter': ['lowercase', 'stopwords', 'stemmer'],
+                'stemmed_en': {
+                    'filter': ['lowercase', 'stopwords_en', 'stemmer_en'],
                     **char_filter_tokenizer
                 }
             }

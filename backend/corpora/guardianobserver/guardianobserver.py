@@ -46,7 +46,7 @@ class GuardianObserver(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[:1], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     tag_toplevel = 'Record'
 
@@ -170,7 +170,7 @@ class GuardianObserver(XMLCorpusDefinition):
         ),
         FieldDefinition(
             name='content',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'en'),
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
