@@ -1,7 +1,7 @@
 <nav class="navbar" *ngIf="currentUser" aria-label="primary navigation">
     <div class="container is-fluid">
         <div class="navbar-brand">
-            <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']"> <img src="/assets/logo.png" width="50" height="50"> I-ANALYZER</a>
+            <a class="navbar-item" [routerLink]="['/home']"> <img src="/assets/logo.png" width="50" height="50"> I-ANALYZER</a>
 
             <a (click)="toggleMenu($event)" role="button" [ngClass]="{'navbar-burger': true, 'is-active': menuOpen}" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
@@ -12,15 +12,12 @@
         <div [ngClass]="{'navbar-menu': true, 'is-active': menuOpen}">
             <div class="navbar-start">
                 <!-- navbar items -->
-                <div class="navbar-item has-dropdown">
-                    <button class="navbar-link is-hoverable" (click)="corpora.toggle($event)">
-                        <span class="icon" aria-hidden="true">
-                            <i class="fa fa-database"></i>
-                        </span>
-                        Corpora
-                    </button>
-                    <p-menu #corpora [popup]="true" [model]="menuCorporaItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
-                </div>
+                <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">
+                    <span class="icon" aria-hidden="true">
+                        <i class="fa fa-database"></i>
+                    </span>
+                    Corpora
+                </a>
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
                     <span class="icon" aria-hidden="true">
                         <i class="fa fa-book"></i>

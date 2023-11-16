@@ -15,7 +15,6 @@ import * as _ from 'lodash';
     styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnDestroy, OnInit {
-    public menuCorporaItems: MenuItem[];
     public currentUser: User | undefined;
     public isAdmin = false;
     public menuAdminItems: MenuItem[];
@@ -76,19 +75,6 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     private setMenuItems() {
-        // Note that this call to the corpus service ensures the existence of a CSRF token / cookie.
-        // Even on the login screen. If, for some reason, the order of events changes, please make
-        // sure the CSRF cookie is still received from the server (also on login screen, i.e.  before POSTing the credentials).
-        this.corpusService.get().then((corpora) => {
-            this.menuCorporaItems = _.isEmpty(corpora)
-                ? [{ label: 'No corpora available.' }]
-                : corpora.map((corpus) => ({
-                      label: corpus.title,
-                      command: (click) =>
-                          this.router.navigate(['/search', corpus.name]),
-                  }));
-        });
-
         this.menuAdminItems = [
             {
                 label: 'Search history',
