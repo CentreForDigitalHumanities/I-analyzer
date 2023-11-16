@@ -10,11 +10,17 @@ asgiref==3.7.2
     # via django
 async-timeout==4.0.3
     # via redis
-attrs==22.2.0
-    # via pytest
-backports-zoneinfo==0.2.1
-    # via django
-beautifulsoup4==4.11.1
+attrs==23.1.0
+    # via
+    #   outcome
+    #   seleniumbase
+    #   trio
+backports-zoneinfo[tzdata]==0.2.1;python_version<"3.9" # needed as backports-zoneinfo isn't compatbile with Python 3.10+
+    # via
+    #   celery
+    #   django
+    #   kombu
+beautifulsoup4==4.12.2
     # via
     #   -r requirements.in
     #   django-livereload-server
@@ -100,9 +106,19 @@ elementpath==4.1.5
 et-xmlfile==1.1.0
     # via openpyxl
 exceptiongroup==1.1.3
-    # via pytest
-execnet==1.9.0
-    # via pytest-xdist
+    # via
+    #   pytest
+    #   seleniumbase
+    #   trio
+    #   trio-websocket
+execnet==2.0.2
+    # via
+    #   pytest-xdist
+    #   seleniumbase
+fasteners==0.18
+    # via seleniumbase
+filelock==3.13.1
+    # via seleniumbase
 fst-pso==1.8.1
     # via pyfume
 fuzzytm==2.0.5
@@ -114,7 +130,10 @@ h11==0.14.0
     #   seleniumbase
     #   wsproto
 idna==3.4
-    # via requests
+    # via
+    #   requests
+    #   seleniumbase
+    #   trio
 importlib-resources==6.1.0
     # via pysaml2
 iniconfig==2.0.0
@@ -145,16 +164,22 @@ mdurl==0.1.2
     # via
     #   markdown-it-py
     #   seleniumbase
+miniful==0.0.6
+    # via fst-pso
 nltk==3.8.1
     # via -r requirements.in
 numpy==1.24.4
     # via
     #   -r requirements.in
+    #   fst-pso
+    #   fuzzytm
     #   gensim
     #   miniful
     #   pandas
+    #   pyfume
     #   scikit-learn
     #   scipy
+    #   simpful
 oauthlib==3.2.2
     # via requests-oauthlib
 openpyxl==3.1.2
@@ -169,7 +194,9 @@ packaging==23.1
     #   pytest-rerunfailures
     #   seleniumbase
 pandas==2.0.3
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   fuzzytm
 parameterized==0.9.0
     # via seleniumbase
 parse==1.19.1
@@ -191,12 +218,14 @@ pluggy==1.3.0
     #   seleniumbase
 prompt-toolkit==3.0.39
     # via click-repl
-psycopg==3.1.10
+psycopg2==2.9.9
     # via -r requirements.in
 py==1.11.0
     # via seleniumbase
 pycparser==2.21
     # via cffi
+pyfume==0.2.25
+    # via fuzzytm
 pygments==2.16.1
     # via
     #   pdbp
@@ -276,21 +305,26 @@ scikit-learn==1.3.0
     # via -r requirements.in
 scipy==1.10.1
     # via
+    #   fuzzytm
     #   gensim
     #   miniful
     #   pyfume
     #   scikit-learn
+    #   simpful
 selenium==4.11.2
     # via
     #   -r requirements.in
     #   seleniumbase
 seleniumbase==4.17.13
     # via -r requirements.in
+simpful==2.11.0
+    # via pyfume
 six==1.16.0
     # via
     #   behave
     #   django-livereload-server
     #   langdetect
+    #   parse-type
     #   python-dateutil
     #   seleniumbase
 smart-open==6.3.0
@@ -337,9 +371,7 @@ trio-websocket==0.10.3
 typing-extensions==4.7.1
     # via
     #   asgiref
-    #   filelock
     #   kombu
-    #   psycopg
     #   pypdf2
     #   rich
 tzdata==2023.3
