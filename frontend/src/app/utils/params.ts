@@ -47,10 +47,10 @@ export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): 
 
 // filters
 
-export const filtersFromParams = (params: ParamMap, corpus: Corpus, tagService?: TagService): FilterInterface[] => {
+export const filtersFromParams = (params: ParamMap, corpus: Corpus): FilterInterface[] => {
     const fieldFilters = fieldFiltersFromParams(params, corpus);
-    const tagFilter = tagService ? [tagFilterFromParams(params, tagService)] : [];
-    return [...fieldFilters, ...tagFilter];
+    const tagFilter = tagFilterFromParams(params);
+    return [...fieldFilters, tagFilter];
 };
 
 const fieldFiltersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[] => {
@@ -62,8 +62,8 @@ const fieldFiltersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[
     });
 };
 
-const tagFilterFromParams = (params: ParamMap, tagService: TagService): TagFilter => {
-    const filter = new TagFilter(tagService);
+const tagFilterFromParams = (params: ParamMap): TagFilter => {
+    const filter = new TagFilter();
     filter.setFromParams(params);
     return filter;
 };

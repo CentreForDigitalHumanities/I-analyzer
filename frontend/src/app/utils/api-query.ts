@@ -5,12 +5,7 @@ import { TAG_FILTER, TagFilter } from '../models/tag-filter';
 
 export const makeTagSpecification = (filters: FilterInterface[]): APITagFilter => {
     const tagFilter = filters.find(isTagFilter);
-    if (tagFilter?.active) {
-        const tags = tagFilter.dataToAPI(tagFilter.data.value);
-        return { tags };
-    } else {
-        return {};
-    }
+    return tagFilter.dataToAPI();
 };
 
 const isTagFilter = (filter: FilterInterface): filter is TagFilter =>

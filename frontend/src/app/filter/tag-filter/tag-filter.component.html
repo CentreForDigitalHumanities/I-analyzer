@@ -1,7 +1,8 @@
-<ng-container *ngIf="filter">
+<ng-container *ngIf="tags$ | async as tags">
     <p-multiSelect
-        [options]="filter.options$ | async"
+        [options]="tags"
         optionLabel="name"
+        optionValue="id"
         placeholder="Choose tags"
         (onChange)="update($event.value)"
     ></p-multiSelect>

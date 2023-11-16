@@ -4,8 +4,6 @@ import { QueryModel } from './query';
 import { SearchFilter } from './field-filter';
 import { convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { TagServiceMock } from '../../mock-data/tag';
-import { TagService } from '../services/tag.service';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -32,13 +30,12 @@ describe('QueryModel', () => {
     let query: QueryModel;
     let filter: SearchFilter;
     let filter2: SearchFilter;
-    const tagService: TagService = new TagServiceMock() as unknown as TagService;
 
     const someDate = new Date('Jan 1 1850');
     const someSelection = ['hooray!'];
 
     beforeEach(() => {
-        query = new QueryModel(corpus, undefined, tagService);
+        query = new QueryModel(corpus, undefined);
 
         filter = query.filterForField(mockFieldDate);
         filter2 = query.filterForField(mockFieldMultipleChoice);
@@ -172,7 +169,7 @@ describe('QueryModel', () => {
             date: '1850-01-01:1850-01-01',
         });
 
-        const newQuery = new QueryModel(corpus, params, tagService);
+        const newQuery = new QueryModel(corpus, params);
         expect(newQuery.queryText).toEqual('test');
         expect(newQuery.activeFilters.length).toBe(1);
     });

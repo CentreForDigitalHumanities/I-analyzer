@@ -1,6 +1,6 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { combineLatest, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, FilterInterface, SortBy, SortConfiguration, SortDirection, Tag, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
@@ -10,7 +10,6 @@ import {
 } from '../utils/params';
 import { isFieldFilter, SearchFilter } from './field-filter';
 import { isTagFilter, TagFilter } from './tag-filter';
-import { TagService } from '../services/tag.service';
 import { makeTagSpecification } from '../utils/api-query';
 import { APIQuery } from './search-requests';
 
@@ -85,7 +84,7 @@ export class QueryModel {
 
 	update = new Subject<void>();
 
-    constructor(corpus: Corpus, params?: ParamMap, private tagService?: TagService) {
+    constructor(corpus: Corpus, params?: ParamMap) {
 		this.corpus = corpus;
         this.filters = this.makeFilters();
         this.sort = new SortConfiguration(this.corpus);
@@ -154,7 +153,7 @@ export class QueryModel {
      * make a clone of the current query.
      */
 	clone() {
-        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()), this.tagService);
+        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()));
 	}
 
     /**
@@ -207,7 +206,7 @@ export class QueryModel {
 
     toAPIQuery(): APIQuery {
         const esQuery = this.toEsQuery();
-        const tags = makeTagSpecification(this.activeFilters);
+        const tags = makeTagSpecification(this.filters);
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             es_query: esQuery,
@@ -217,18 +216,15 @@ export class QueryModel {
 
     private makeFilters(): FilterInterface[] {
         const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter());
-        if (this.tagService) {
-            const tagFilter = new TagFilter(this.tagService);
-            return fieldFilters.concat([tagFilter]);
-        }
-        return fieldFilters;
+        const tagFilter = new TagFilter();
+        return [...fieldFilters, tagFilter];
     }
 
     /** set the query values from a parameter map */
     private setFromParams(params: ParamMap) {
         this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
-        filtersFromParams(params, this.corpus, this.tagService)
+        filtersFromParams(params, this.corpus)
             .forEach(this.setFilter.bind(this));
         this.sort = new SortConfiguration(this.corpus, params);
         this.highlightSize = highlightFromParams(params);

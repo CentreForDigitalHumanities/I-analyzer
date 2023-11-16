@@ -10,7 +10,6 @@ import { AuthService } from '../services/auth.service';
 import { paramsHaveChanged } from '../utils/params';
 import { filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
-import { TagService } from '../services/tag.service';
 
 @Component({
     selector: 'ia-search',
@@ -68,7 +67,6 @@ export class SearchComponent extends ParamDirective {
         private authService: AuthService,
         private corpusService: CorpusService,
         private dialogService: DialogService,
-        private tagService: TagService,
         paramService: ParamService,
         route: ActivatedRoute,
         router: Router
@@ -145,7 +143,7 @@ export class SearchComponent extends ParamDirective {
 
     private setQueryModel(reset: boolean) {
         const params = reset ? undefined : this.route.snapshot.queryParamMap;
-        const queryModel = new QueryModel(this.corpus, params, this.tagService);
+        const queryModel = new QueryModel(this.corpus, params);
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {

@@ -1,49 +1,41 @@
-import { Observable } from 'rxjs';
-import { TagService } from '../services/tag.service';
+import * as _ from 'lodash';
 import { BaseFilter, FilterInterface } from './base-filter';
-import { Tag } from './tag';
+import { APITagFilter } from './search-requests';
 
 export const TAG_FILTER = 'TagFilter';
 
 const SEPARATOR = ',';
 
-export class TagFilter extends BaseFilter<void, Tag[]> {
+export class TagFilter extends BaseFilter<void, number[]> {
     displayName = 'Your tags';
     description = 'select tagged documents';
     filterType = TAG_FILTER;
     routeParamName = 'tags';
 
-    options$: Observable<Tag[]>;
-
-    constructor(private tagService: TagService) {
+    constructor() {
         super();
-        this.options$ = this.tagService.tags$;
     }
 
-    makeDefaultData(): Tag[] {
+    makeDefaultData(): number[] {
         return [];
     }
 
-    dataToString(data: Tag[]): string {
-        const ids = data.map(this.tagToString);
-        return ids.join(SEPARATOR);
+    dataToString(data: number[]): string {
+        return data.join(SEPARATOR);
     }
 
-    dataFromString(value: string): Tag[] {
+    dataFromString(value: string): number[] {
         const ids = value.split(SEPARATOR);
-        const included = (tag: Tag) => ids.includes(this.tagToString(tag));
-        const userTags = this.tagService.tags$.value;
-        return userTags?.filter(included) || [];
+        const parsed = ids.map(item => parseInt(item, 10));
+        return parsed.filter(_.negate(_.isNaN));
     }
 
-    dataToAPI(data: Tag[]): number[] {
-        if (data?.length) {
-            return data.map(t => t.id);
+    dataToAPI(): APITagFilter {
+        if (this.active.value) {
+            return { tags: this.currentData };
+        } else {
+            return {};
         }
-    }
-
-    private tagToString(tag: Tag): string {
-        return tag.id.toString();
     }
 }
 
