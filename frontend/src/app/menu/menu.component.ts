@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { MenuItem } from 'primeng/api';
 import { User } from '../models/index';
-import { CorpusService } from '../services/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { takeUntil, throttleTime } from 'rxjs/operators';
@@ -25,7 +24,6 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     constructor(
         private authService: AuthService,
-        private corpusService: CorpusService,
         private router: Router
     ) {
         this.routerSubscription = router.events
