@@ -4,7 +4,7 @@ import os
 here = os.path.abspath(os.path.dirname(__file__))
 
 @pytest.fixture()
-def peace_corpus_settings(settings):
+def peace_test_settings(settings):
     settings.CORPORA = {
         'peaceportal': os.path.join(here, 'peaceportal.py'),
         'peaceportal-epidat': os.path.join(here, 'epidat.py'),

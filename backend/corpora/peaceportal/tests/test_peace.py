@@ -1,9 +1,9 @@
 import os
-import warnings
 import pytest
-from datetime import datetime
 
 from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.models import Corpus
 
 CORPUS_TEST_DATA = [
     {
@@ -236,7 +236,7 @@ def corpus_test_name(corpus_spec):
     return corpus_spec['name']
 
 @pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
-def test_imports(peace_corpus_settings, corpus_object):
+def test_imports(peace_test_settings, corpus_object):
     parent_corpus = load_corpus_definition('peaceportal')
     corpus = load_corpus_definition(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
@@ -271,3 +271,10 @@ def get_documents(corpus, start, end):
         end=end
     )
     return corpus.documents(sources)
+
+def test_peaceportal_validation(db, peace_test_settings):
+    load_and_save_all_corpora()
+    corpus_names = [case['name'] for case in CORPUS_TEST_DATA]
+    for corpus_name in corpus_names:
+      corpus = Corpus.objects.get(name=corpus_name) 
+      assert corpus.active 
