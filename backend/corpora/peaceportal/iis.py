@@ -4,7 +4,6 @@ from os.path import join
 from django.conf import settings
 
 from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.es_settings import get_language_key
 from addcorpus.extract import Combined, Constant, ExternalFile, FilterAttribute, XML
 from addcorpus.serializers import LanguageField
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
@@ -169,14 +168,14 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
                      'textLang'],
                 attribute='mainLang',
                 toplevel=False,
-                transform=lambda x: get_language_key(x)
+                transform=lambda x: normalize_language(x)
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msContents',
                      'textLang'],
                 attribute='otherLangs',
                 toplevel=False,
-                transform=lambda x: get_language_key(x)
+                transform=lambda x: normalize_language(x)
             )
         )
 
@@ -351,6 +350,10 @@ def extract_dimensions(soup):
     cloned_soup.string = result
     return cloned_soup
 
+
+def normalize_language(text):
+    serializer = LanguageField()
+    return serializer.to_representation(text)
 
     # excluded (for now):
     # revision history
