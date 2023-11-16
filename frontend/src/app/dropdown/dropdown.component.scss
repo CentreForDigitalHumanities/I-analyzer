@@ -4,4 +4,8 @@
     // this prevents the .dropdown item rule from being overwritten
     // when the dropdown is used within a <table>
     color: $text !important;
+
+    &.is-active {
+        color: $text-invert !important;
+    }
 }
