@@ -38,7 +38,7 @@ class Periodicals(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -145,7 +145,7 @@ class Periodicals(XMLCorpusDefinition):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'en'),
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,

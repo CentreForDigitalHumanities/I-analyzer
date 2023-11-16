@@ -63,7 +63,15 @@ export class ApiServiceMock {
         return Promise.resolve({});
     }
 
-    requestMedia() {
+    saveQuery() {
+        return Promise.resolve();
+    }
+
+    requestMeQdia() {
         return Promise.resolve({});
+    }
+
+    userTags() {
+        return of([]);
     }
 }

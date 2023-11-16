@@ -2,7 +2,7 @@ from functools import reduce
 from operator import concat
 import pandas as pd
 
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
 from wordmodels.similarity import find_n_most_similar, term_similarity
 from wordmodels.utils import load_word_models
 
@@ -10,7 +10,7 @@ from wordmodels.utils import load_word_models
 NUMBER_SIMILAR = 8
 
 def get_similarity_over_time(query_term, comparison_term, corpus_string):
-    corpus = load_corpus(corpus_string)
+    corpus = load_corpus_definition(corpus_string)
     wm_list = load_word_models(corpus)
     data = [
         term_similarity(
@@ -41,7 +41,7 @@ def get_time_labels(binned_model):
     ]
 
 def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIMILAR):
-    corpus = load_corpus(corpus_string)
+    corpus = load_corpus_definition(corpus_string)
     wm_list = load_word_models(corpus)
     times = get_time_labels(wm_list)
     data_per_timeframe = [

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://relaxng.org/ns/structure/1.0"?><?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://purl.oclc.org/dsdl/schematron"?><TEI xml:lang="en" xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0">
+<teiHeader>
+<fileDesc>
+<titleStmt>
+<title>epidat, hlh-12</title>
+<!-- respStmt to be done -->
+</titleStmt>
+<editionStmt>
+<edition/>
+</editionStmt>
+<extent/>
+<publicationStmt>
+<publisher>
+<orgName ref="http://d-nb.info/gnd/212562-6">
+      Salomon Ludwig Steinheim-Institut 
+      <address>
+<addrLine>Edmund-Körner-Platz 2</addrLine>
+<addrLine>D-45127 Essen</addrLine>
+</address>
+</orgName>
+</publisher>
+<idno>hlh-12</idno>
+<idno type="url">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=hlh-12</idno>
+<availability status="free" xml:lang="en">
+<licence>
+<ref target="http://creativecommons.org/licenses/by/4.0/">Distributed under a Creative Commons licence Attribution-BY 4.0</ref>
+<p>
+       All reuse or distribution of this work must contain somewhere a link back to the URL 
+       <ref>http://www.steinheim-institut.de:80/cgi-bin/epidat?id=hlh-12</ref>
+</p>
+</licence>
+</availability>
+</publicationStmt>
+<notesStmt>
+<note/>
+</notesStmt>
+<sourceDesc>
+<bibl>born digital</bibl>
+<msDesc>
+<msIdentifier>
+<repository>epidat</repository>
+<idno>hlh-12</idno>
+<altIdentifier>
+<idno type="html">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=hlh-12</idno>
+<note/>
+</altIdentifier>
+<altIdentifier>
+<idno type="xml">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=hlh-12-t</idno>
+<note/>
+</altIdentifier>
+<publications><publication>Stadt Mülheim an der Ruhr, Sterberegister Broich 1891 (1196/5/14), Nr. 247.</publication><publication>Kaufhold, Barbara, Jüdischen Leben in Mülheim an der Ruhr, Essen 2004.</publication></publications></msIdentifier>
+<physDesc>
+<objectDesc>
+<supportDesc>
+<support>
+<p>
+<material>stone</material>
+<objectType ref="http://vocab.getty.edu/page/aat/300005909">sepulchral monument</objectType>
+</p>
+</support>
+<condition>
+<p>
+<date>2013</date>
+           Der Zustand des Steins hat sich seit 1986 kaum verändert
+         </p>
+</condition>
+</supportDesc>
+<layoutDesc>
+<layout/>
+</layoutDesc>
+</objectDesc>
+<decoDesc>
+<decoNote type="symbol"/>
+<decoNote type="ornament">sechzackiger Stern</decoNote>
+</decoDesc>
+</physDesc>
+<history>
+<origin>
+<origDate>
+<date notBefore="1891-12-06">1891-12-06</date>
+</origDate>
+<origPlace>
+<country key="XA-DE-NW" type="ISO_3166">
+         Germany
+         <region>North Rhine-Westphalia</region>
+</country>
+<settlement key="tgn:1039517" ref="http://vocab.getty.edu/tgn/1039517" type="city">
+         Kettwig (Neuer Friedhof in Heiligenhaus) 
+         <geogName ref="http://d-nb.info/gnd/4331943-9">
+          Jewish Cemetery
+          <geo decls="#WGS">51.346014 6.924709</geo>
+</geogName>
+</settlement>
+</origPlace>
+</origin>
+</history>
+</msDesc>
+</sourceDesc>
+</fileDesc>
+<encodingDesc>
+<schemaRef url="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng">
+<desc>EpiDoc: TEI XML for epigraphic Documents Schema</desc>
+</schemaRef>
+<classDecl>
+<taxonomy>
+<category xml:id="foto1">
+<catDesc>
+       Epigraphisches Bildarchiv, 
+       <orgName ref="http://d-nb.info/gnd/212562-6">Steinheim-Institut</orgName>
+</catDesc>
+</category>
+<category xml:id="foto2">
+<catDesc>Nathanja Hüttenmeister, Carmen Wedemeyer</catDesc>
+</category>
+</taxonomy>
+</classDecl>
+<geoDecl datum="WGS84" xml:id="WGS">World Geodetic System</geoDecl>
+</encodingDesc>
+<profileDesc>
+<particDesc>
+<listPerson>
+<person sex="2" xml:id="hlh-12-1">
+<persName>Gitle bat Mosche (Clara Leffmann)</persName>
+<death when="1891-12-06"/>
+</person>
+<listRelation>
+<relation active="#hlh-3-1 #hlh-30-1" name="parent" passive="#hlh-12-1"/>
+</listRelation>
+</listPerson>
+</particDesc>
+<langUsage>
+<!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
+<language ident="he" usage="50">Hebrew</language>
+<language ident="de" usage="50">German</language>
+</langUsage>
+</profileDesc>
+<revisionDesc>
+<change/>
+</revisionDesc>
+</teiHeader>
+<facsimile>
+<graphic url="http://steinheim-institut.de/daten/picshlh/xl/0012_dhlh_2013.png">
+<desc>
+<ref target="#foto2"/>
+<date when="2013"/>
+    recto
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picshlh/xl/0012_hlh_1986.png">
+<desc>
+<ref target="#foto1"/>
+<date when="1986"/>
+    recto
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picshlh/xl/0012_hlh_2013.png">
+<desc>
+<ref target="#foto2"/>
+<date when="2013"/>
+    recto
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picshlh/xl/0012dhlh_1986.png">
+<desc>
+<ref target="#foto1"/>
+<date when="1986"/>
+    Detail
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picshlh/xl/0012dhlh_2013(2).png">
+<desc>
+<ref target="#foto2"/>
+<date when="2013"/>
+    Detail
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/picshlh/xl/0012dhlh_2013(5).png">
+<desc>
+<ref target="#foto2"/>
+<date when="2013"/>
+    Detail
+   </desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/maps/rir/simplified/hlh.svg" xml:id="simplified_svg">
+<desc subtype="simplified" type="map">
+<date when="2015-06-11T17:00:46"/>
+</desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/maps/rir/simplified/jpg/hlh.jpg" xml:id="simplified_jpg">
+<desc subtype="simplified" type="map">
+<date when="2015-07-22T13:10:51"/>
+</desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/maps/rir/accurate/jpg/hlh.jpg" xml:id="accurate_jpg">
+<desc subtype="accurate" type="map">
+<date when="2015-07-22T13:10:51"/>
+</desc>
+</graphic>
+<graphic url="http://steinheim-institut.de/daten/maps/rir/accurate/hlh.svg" xml:id="accurate_svg">
+<desc subtype="accurate" type="map">
+<date when="2015-06-11T17:00:46"/>
+</desc>
+</graphic>
+</facsimile>
+<text>
+<body>
+<div type="edition">
+<head>Edition</head>
+<div subtype="recto" type="textpart">
+<ab>
+<lb n="1"/>
+      ‎‏פ״ט‏‎
+      <lb n="2"/>
+      ‎‏הבתולה צנועה וחמודה‏‎
+      <lb n="3"/>
+      ‎‏מ׳ גיטלא בת משה‏‎
+      <lb n="4"/>
+      ‎‏ה״ה ראשנה שנקברה בבית‏‎
+      <lb n="5"/>
+      ‎‏החיים החדשה בק״ק‏‎
+      <lb n="6"/>
+      ‎‏קעטטוויג ומתה בשם ט׳‏‎
+      <lb n="7"/>
+      ‎‏ביום א׳ ה׳ כסלו תרנ״ב ל׳‏‎
+      <lb n="8"/>
+      ‎‏תנצב״ה‏‎
+      <lb n="9"/>
+      Hier ruht die Jungfrau
+      <lb n="10"/>
+      Clara Leffmann
+      <lb n="11"/>
+      Sie starb erst 19
+      <lb n="12"/>
+      Jahre alt, gottergeben und
+      <lb n="13"/>
+      tief betrauert von den ihrigen,
+      <lb n="14"/>
+      den 8. Dezbr. 1891
+     </ab>
+</div>
+<div subtype="Postament" type="textpart">
+<ab>
+<lb n="15"/>
+      Friede ihrer Asche.
+     </ab>
+</div>
+</div>
+<div type="translation">
+<head>Übersetzung</head>
+<div subtype="recto" type="textpart">
+<ab>
+<lb n="1"/>
+      Hier ist geborgen
+      <lb n="2"/>
+      die züchtige und liebliche Jungfrau,
+      <lb n="3"/>
+      Frau Gitle, Tochter des Mosche,
+      <lb n="4"/>
+      sie ist die Erste, die begraben wurde auf dem neuen
+      <lb n="5"/>
+      Friedhof der heiligen Gemeinde
+      <lb n="6"/>
+      Kettwig, und sie starb #.:mit gutem Namen#.;
+      <lb n="7"/>
+      am Tag 1, 5. Kislev 652 der Zählung.
+      <lb n="8"/>
+      Ihre Seele sei eingebunden in das Bündel des Lebens
+     </ab>
+</div>
+<div subtype="Postament" type="textpart">
+<ab/>
+</div>
+</div>
+<div subtype="Zitate" type="commentary">
+<head>Zitate</head>
+<p>Zl 6: bBer 17a</p>
+</div>
+<div subtype="Zeilenkommentar" type="commentary">
+<head>Zeilenkommentar</head>
+<p>Zl 5: Friedhof, wörtl. "Haus des Lebens".</p>
+</div>
+<div subtype="Endkommentar" type="commentary">
+<head>Endkommentar</head>
+<p>Vermutlich handelt es sich bei der Angabe des Sterbedatums in der deutschen Inschrift um das Begräbnisdatum. Dieser Stein ist der erste des Friedhofes am Görscheider Weg.</p>
+<p>Zwischen den jüdischen Familien aus Kettwig vor der Brücke und Saarn gab es verwandtschaftliche Verhältnisse, so stammte die Familie Leffmann, deren Angehörige z. T. hier bestattet sind, aus Saarn (Kaufhold, Jüdisches Leben in Mülheim a. d. R., S. ).</p>
+</div>
+<div subtype="Prosopographie" type="commentary">
+<head>Prosopographie</head>
+<p>Clara Leffmann war die Tochter des Saarner Metzgers Moritz Leffmann und seiner Frau Sara geb. Herz. Der Bruder Artur fiel 1917 im Krieg (Engelhardt, Chronik, S. 81).</p>
+</div>
+<div type="bibliography">
+<head>Bibliographie</head>
+<bibl>
+<ref target="http://steinheim-institut.de/daten/maps/rir/description/hlh.xml">Systematische bauhistorische Beschreibung</ref>
+      durch 
+     <orgName>Bau- und Stadtbaugeschichte, Fakultät 6, Institut für Architektur, TU Berlin</orgName>
+</bibl>
+</div>
+</body>
+</text>
+</TEI>

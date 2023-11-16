@@ -1,6 +1,7 @@
 from ianalyzer.elasticsearch import elasticsearch
 from es.search import total_hits, search
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.models import Corpus, CorpusConfiguration
 from visualization.query import MATCH_ALL
 
 def count_field(es_client, corpus_name, fieldname):
@@ -40,13 +41,13 @@ def report_coverage(corpus_name):
     '''
 
     es_client = elasticsearch(corpus_name)
-    corpus = load_corpus(corpus_name)
+    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus_name)
 
     total = count_total(es_client, corpus_name)
 
     return {
         field.name: count_field(es_client, corpus_name, field.name) / total
-        for field in corpus.fields
+        for field in corpus_conf.fields.all()
     }
 
 

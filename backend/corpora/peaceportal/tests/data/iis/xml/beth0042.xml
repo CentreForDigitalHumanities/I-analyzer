@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?oxygen RNGSchema="http://www.stoa.org/epidoc/schema/latest/tei-epidoc.rng"?><TEI n="iip" xml:id="beth0042" xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<teiHeader>
+<fileDesc><!-- ********** <titleStmt> ********** -->
+<titleStmt>
+<title>Inscriptions of Israel/Palestine</title>
+<respStmt>
+<resp>Prinicipal Investigator</resp>
+<persName xml:id="MS">Michael Satlow</persName>
+</respStmt>
+</titleStmt>
+<publicationStmt>
+<xi:include href="http://cds.library.brown.edu/projects/iip/include_publicationStmt.xml">
+<xi:fallback>
+<p>ERROR-could not find publication information which should appear in this space.</p>
+</xi:fallback>
+</xi:include>
+<idno type="IIP">beth0042</idno>
+<!--Beth 0042-->
+</publicationStmt>
+<!-- ********* <sourceDesc> ********* -->
+<sourceDesc>
+<msDesc>
+<msIdentifier>
+<idno>Beth 0042</idno>
+<publications><publication>Frey, J. B. (1952). Corpus Inscriptionum Iudaicarum (Vol. II (Asie-Afrique)). Roma: Pontificio Istituto di Archeologia Cristiana. (insc)</publication><publication>Schwabe, M., &amp; Lifshitz, B. (1974). Beth She’arim. Vol. 2, The Greek Inscriptions. Massada Press on behalf of the Israel Exploration Society. (page 25-26)</publication></publications></msIdentifier>
+<!-- ********* <msContents> ********* -->
+<msContents>
+<textLang mainLang="grc"/>
+<msItem ana="#jewish" class="#funerary">
+<p>Galilee. Beth Shearim. 250 CE to 350 CE. Red painted wall of arcosolium. Funerary.</p>
+</msItem>
+</msContents>
+<!-- ********* <physDesc> ********* -->
+<physDesc><!-- ********* <objectDesc> ********* -->
+<objectDesc ana="#wall">
+<supportDesc>
+<support>
+<dimensions type="surface" unit="cm">
+<height>60</height>
+</dimensions>
+</support>
+<condition ana="#complete.intact">
+<p/>
+</condition>
+</supportDesc>
+<!-- ********* <layoutDesc> ********* -->
+<layoutDesc>
+<layout columns="0" writtenLines="1">
+<p/>
+</layout>
+</layoutDesc>
+</objectDesc>
+<!-- ********* <handDesc> ********* -->
+<handDesc>
+<handNote ana="#painted">
+<dimensions atLeast="8" atMost="10" extent="height" type="letter" unit="cm"/>
+</handNote>
+</handDesc>
+<!-- ********* <decoDesc> ********* -->
+<decoDesc>
+<decoNote ana="#xx">
+<ab/>
+<locus/>
+</decoNote>
+</decoDesc>
+</physDesc>
+<!-- ********* <history> ********* -->
+<history>
+<origin>
+<date notAfter="0350" notBefore="0250" period="Talmudic">250 CE to 350 CE</date>
+<placeName>
+<region>Galilee</region>
+<settlement ref="http://pleiades.stoa.org/places/678063">Beth Shearim</settlement>
+<geogName type="site"/>
+</placeName>
+<p/>
+</origin>
+<provenance>
+<placeName/>
+<date/>
+</provenance>
+</history>
+</msDesc>
+</sourceDesc>
+</fileDesc>
+<!-- ********* <encodingDesc> ********* -->
+<encodingDesc>
+<xi:include href="http://cds.library.brown.edu/projects/iip/include_taxonomies.xml">
+<xi:fallback>
+<p>ERROR: could not find taxonomies file, which should appear in this space.</p>
+</xi:fallback>
+</xi:include>
+</encodingDesc>
+<profileDesc/>
+<!-- ********* <revisionDesc> ********* -->
+<revisionDesc>
+<change when="1996-08-16" who="persons.xml#MLS">Creation</change>
+<change when="2005-07-18" who="persons.xml#Jordan_Rosenblum">Revision</change>
+<change when="2016-12-01" who="persons.xml#Elli_Mylonas">Changed graphic element to facsimile and kept existing url</change>
+<change when="2016-12-14" who="persons.xml#Elli_Mylonas">Adding Pleiades IDs to origin/placenames</change>
+<change when="2019-01-29" who="persons.xml#Elli_Mylonas">
+                adding period attribute to date element, with Periodo value.
+            </change>
+</revisionDesc>
+</teiHeader>
+<!-- ********* <facsimile> ********* -->
+<facsimile>
+<surface>
+<desc/>
+<graphic url="BS0042.reg.gif"/>
+</surface>
+</facsimile>
+<text>
+<body>
+<div type="commentary">
+<p>Catacomb 1, Hall G, room IV, arcosolium 1</p>
+</div>
+<div ana="#b2" corresp="#beth0042.translation" subtype="transcription" type="edition" xml:id="beth0042.transcription">
+<p>Ἀβρᾶ καὶ Σαμῆ </p>
+</div>
+<div ana="#b2" corresp="#beth0042.transcription" type="translation" xml:id="beth0042.translation">
+<p>
+<persName ref="persons.xml#beth0042p01" xml:lang="hbo ">Abra </persName> and <persName ref="persons.xml#beth0042p02" xml:lang="hbo ">Same </persName>
+</p>
+</div>
+</body>
+<back>
+<div type="bibliography">
+<listBibl>
+<bibl xml:id="b1">
+<ptr target="IIP-039.xml" type="biblItem"/>
+<biblScope unit="insc"/>
+</bibl>
+<bibl xml:id="b2">
+<ptr target="IIP-145.xml" type="biblItem"/>
+<biblScope unit="page">25-26</biblScope>
+</bibl>
+</listBibl>
+</div>
+</back>
+</text>
+</TEI>

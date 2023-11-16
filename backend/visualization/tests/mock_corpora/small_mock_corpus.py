@@ -1,8 +1,11 @@
 from datetime import datetime
+import os
+
 from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
 from addcorpus.extract import CSV
-import os
+from addcorpus.es_mappings import date_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
+
 
 # Fake corpus class for unit tests
 
@@ -20,7 +23,7 @@ class SmallMockCorpus(CSVCorpusDefinition):
     languages = ['en']
     category = 'book'
 
-    es_settings = es_settings('en', stopword_analyzer=True)
+    es_settings = es_settings(['en'], stopword_analysis=True)
 
     def sources(self, start=min_date, end=max_date):
         for csv_file in os.listdir(os.path.join(here, 'source_files')):
@@ -28,45 +31,25 @@ class SmallMockCorpus(CSVCorpusDefinition):
 
     date = FieldDefinition(
         name = 'date',
-        es_mapping = {
-            'type': 'date',
-        },
+        es_mapping = date_mapping(),
         extractor = CSV('date')
     )
 
     title_field = FieldDefinition(
         name = 'title',
-        es_mapping = {
-            'type': 'text',
-        },
+        es_mapping = text_mapping(),
         extractor = CSV('title')
     )
 
     content = FieldDefinition(
         name = 'content',
-        es_mapping= {
-            'type': 'text',
-            "fields": {
-                "clean": {
-                    "type": "text",
-                },
-                "stemmed": {
-                    "type": "text",
-                },
-                "length": {
-                    "type": "token_count",
-                    'analyzer': 'standard',
-                }
-            }
-        },
+        es_mapping = main_content_mapping(True, True, False, 'en'),
         extractor = CSV('content')
     )
 
     genre = FieldDefinition(
         name = 'genre',
-        es_mapping= {
-            'type': 'keyword'
-        },
+        es_mapping = keyword_mapping(),
         extractor = CSV('genre')
     )
 

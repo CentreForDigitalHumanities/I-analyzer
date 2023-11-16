@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.8-buster
+FROM docker.io/library/python:3.8-buster
 # Setting this means stdout and stderr streams are sent to terminal in real time
 ENV PYTHONUNBUFFERED 1
 # Get required libraries for xmlsec

@@ -35,6 +35,7 @@ module.exports = function (config) {
             // '--disable-gpu', this might not be needed http://cvuorinen.net/2017/05/running-angular-tests-in-headless-chrome/
             // Without a remote debugging port, Google Chrome exits immediately.
             '--remote-debugging-port=9222',
+            '--no-sandbox'
           ],
         }
       }

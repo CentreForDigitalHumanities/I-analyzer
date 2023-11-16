@@ -250,21 +250,6 @@ def subtopic():
         es_mapping=text_mapping(),
     )
 
-def subject():
-    """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
-    subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
-    return FieldDefinition(
-        name='subject',
-        display_name='Subject',
-        description='Subject that the speech is concerned with',
-        es_mapping=keyword_mapping(),
-        search_filter = MultipleChoiceFilter(
-            description='Search only in speeches about the selected subjects',
-            option_count=50
-        ),
-        visualizations = ['resultscount', 'termfrequency']
-    )
-
 def sequence():
     "integer index of the speech in a debate"
     return FieldDefinition(
@@ -299,7 +284,7 @@ def speech():
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True, updated_highlighting=True),
+        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True, language='en', updated_highlighting=True),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',

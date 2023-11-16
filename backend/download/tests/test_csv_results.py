@@ -45,7 +45,7 @@ mock_es_result = {
 def result_csv_with_highlights(csv_directory):
     route = 'parliament-netherlands_query=test'
     fields = ['speech']
-    file = create_csv.search_results_csv(hits(mock_es_result), fields, route)
+    file = create_csv.search_results_csv(hits(mock_es_result), fields, route, 0)
     return file
 
 def test_create_csv(result_csv_with_highlights):
@@ -190,7 +190,7 @@ mock_timeline_expected_data = [
 
 @pytest.fixture()
 def term_frequency_file(index_small_mock_corpus, csv_directory):
-    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
+    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', 0, unit = 'year')
     return filename
 
 
@@ -208,3 +208,26 @@ def test_date_format():
 
     for value, unit, expected in cases:
         assert create_csv.format_field_value(value, unit) == expected
+
+
+mock_ngram_data = {
+    'words': [
+        {'label': 'ex parrot', 'data': [2, 3]},
+        {'label': 'this parrot what', 'data': [4, 8]},
+        {'label': 'dead parrot when', 'data': [4, 6]},
+    ],
+    'time_points': ['1960-1965', '1962-1967']
+}
+
+expected_csv_table = [
+    {'date': '1960-1965', 'N-gram': 'ex parrot', 'Frequency': 2},
+    {'date': '1960-1965', 'N-gram': 'this parrot what', 'Frequency': 4},
+    {'date': '1960-1965', 'N-gram': 'dead parrot when', 'Frequency': 4},
+    {'date': '1962-1967', 'N-gram': 'ex parrot', 'Frequency': 3},
+    {'date': '1962-1967', 'N-gram': 'this parrot what', 'Frequency': 8},
+    {'date': '1962-1967', 'N-gram': 'dead parrot when', 'Frequency': 6},
+]
+
+def test_ngram_table():
+    table = create_csv.ngram_table(mock_ngram_data)
+    assert table == expected_csv_table

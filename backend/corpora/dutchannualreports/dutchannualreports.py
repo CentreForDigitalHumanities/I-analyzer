@@ -12,8 +12,8 @@ from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from addcorpus.load_corpus import corpus_dir
-
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 from media.media_url import media_url
 
@@ -47,6 +47,10 @@ class DutchAnnualReports(XMLCorpusDefinition):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     dutchannualreports_map = {}
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     with open(op.join(corpus_dir('dutchannualreports'), 'dutchannualreports_mapping.csv')) as f:
         reader = csv.DictReader(f)
@@ -176,7 +180,7 @@ class DutchAnnualReports(XMLCorpusDefinition):
         ),
         FieldDefinition(
             name='content',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'nl'),
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
