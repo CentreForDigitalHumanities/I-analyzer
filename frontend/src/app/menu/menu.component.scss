@@ -22,14 +22,14 @@
     }
 }
 
-.navbar-item.has-dropdown:hover .navbar-link, a.navbar-item.is-active{
+.navbar-item.has-dropdown:hover .navbar-link, a.navbar-item.is-active .navbar-item.has-dropdown.is-active {
     background-color: $contrast-primary-color;
     color: $text-primary-color;
 }
 
 .navbar-link{
     color: $text-primary-color;
-    background: none;
+    background: none !important;
     font: inherit;
     border: none;
     &::after {
@@ -63,25 +63,34 @@
     color: $text-primary-color;
 }
 
+
+
 // Makes the user dropdown in the same theme as the rest of the application. This only affects the dropdown and not the other widget contents like visualizations.
 
-::ng-deep .menu-dropdown {
-    &.p-widget-content {
-        border: 1px solid #dbdbdb;
-        background-color: $primary;
-        color: $text-primary-color;
+.navbar-dropdown {
+    background-color: $primary;
+    color: $text-invert;
+
+    .navbar-item:hover {
+        background-color: $contrast-primary-color;
+        color: $text-invert;
     }
 
-    .p-menuitem .p-menuitem-link {
-        background-color: $primary;
-        .p-menuitem-text, .p-menuitem-icon {
-            color: $text-primary-color;
-        }
-        &:hover {
-            background-color: $contrast-primary-color;
-            .p-menuitem-text, .p-menuitem-icon {
-                color: $text-primary-color;
-            }
-        }
-    }
+    // &.p-widget-content {
+    //     border: 1px solid #dbdbdb;
+    //     background-color: $primary;
+    //     color: $text-primary-color;
+    // }
+
+    // .p-menuitem .p-menuitem-link {
+    //     .p-menuitem-text, .p-menuitem-icon {
+    //         color: $text-primary-color;
+    //     }
+    //     &:hover {
+    //         background-color: $contrast-primary-color;
+    //         .p-menuitem-text, .p-menuitem-icon {
+    //             color: $text-primary-color;
+    //         }
+    //     }
+    // }
 }

@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, combineLatest, fromEvent, merge, timer } from 'rxjs';
 import { MenuItem } from 'primeng/api';
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { takeUntil, throttleTime } from 'rxjs/operators';
+import { filter, map, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 @Component({
@@ -14,35 +14,72 @@ import * as _ from 'lodash';
     styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnDestroy, OnInit {
-    public currentUser: User | undefined;
-    public isAdmin = false;
-    public menuAdminItems: MenuItem[];
-    menuOpen = false;
+    @ViewChild('userDropdown') userDropdown: ElementRef;
 
-    private routerSubscription: Subscription;
+    public currentUser: User | undefined;
+    adminUrl = environment.adminUrl;
+    public isAdmin = false;
+    menuOpen = false;
+    dropdownOpen$ = new BehaviorSubject<boolean>(false);
+
     private destroy$ = new Subject<void>();
 
     constructor(
         private authService: AuthService,
         private router: Router
     ) {
-        this.routerSubscription = router.events
+        router.events
             // throttle router events to make sure this triggers only once upon route change
-            .pipe(throttleTime(0))
+            .pipe(
+                throttleTime(0),
+                takeUntil(this.destroy$),
+            )
             .subscribe(() => this.checkCurrentUser());
     }
 
     ngOnDestroy() {
-        this.routerSubscription.unsubscribe();
         this.destroy$.next();
     }
 
     ngOnInit() {
         this.checkCurrentUser();
+
+        this.dropdownOpen$.pipe(
+            takeUntil(this.destroy$),
+            filter(_.identity)
+        ).subscribe(this.triggerClose.bind(this));
     }
 
-    public gotoAdmin() {
-        window.location.href = environment.adminUrl;
+    toggleDropdown() {
+        this.dropdownOpen$.next(!this.dropdownOpen$.value);
+    }
+
+    toggleMenu() {
+        this.menuOpen = !this.menuOpen;
+    }
+
+    triggerClose() {
+        // listen for clicks and close the dropdown at the next click
+        // timer(0) is used to avoid the opening click event being registered
+        const clicks$ = timer(0).pipe(
+            switchMap(() => fromEvent(document, 'click')),
+        );
+
+        // listen for focus moving out of the dropdown
+        const focusOutOfDropdown = (event: FocusEvent) =>
+            _.isNull(event.relatedTarget) ||
+            (event.relatedTarget as Element).parentElement.id !== 'userDropdown';
+
+        const focusOut$ = fromEvent<FocusEvent>(
+            this.userDropdown.nativeElement,
+            'focusout'
+        ).pipe(
+            filter(focusOutOfDropdown),
+        );
+
+        merge(clicks$, focusOut$).pipe(
+            take(1)
+        ).subscribe(() => this.dropdownOpen$.next(false));
     }
 
     public async logout() {
@@ -61,7 +98,6 @@ export class MenuComponent implements OnDestroy, OnInit {
                 if (user) {
                     this.currentUser = user;
                     this.isAdmin = this.currentUser.isAdmin;
-                    this.setMenuItems();
                 } else {
                     this.isAdmin = false;
                 }
@@ -72,47 +108,4 @@ export class MenuComponent implements OnDestroy, OnInit {
         );
     }
 
-    private setMenuItems() {
-        this.menuAdminItems = [
-            {
-                label: 'Search history',
-                icon: 'fa fa-history',
-                command: (click) => {
-                    this.router.navigate(['search-history']);
-                },
-            },
-            {
-                label: 'Downloads',
-                icon: 'fa fa-download',
-                command: (click) => {
-                    this.router.navigate(['download-history']);
-                },
-            },
-            {
-                label: 'Settings',
-                icon: 'fa fa-cog',
-                command: (click) => {
-                    this.router.navigate(['settings']);
-                }
-            },
-            ...(this.isAdmin
-                ? [
-                      {
-                          label: 'Administration',
-                          icon: 'fa fa-cogs',
-                          command: (click) => this.gotoAdmin(),
-                      },
-                  ]
-                : []),
-            {
-                label: 'Logout',
-                icon: 'fa fa-sign-out',
-                command: (onclick) => this.logout(),
-            },
-        ];
-    }
-
-    toggleMenu() {
-        this.menuOpen = !this.menuOpen;
-    }
 }

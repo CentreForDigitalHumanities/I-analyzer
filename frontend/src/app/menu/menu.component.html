@@ -12,7 +12,7 @@
                     <span aria-hidden="true"></span>
             </a>
         </div>
-        <div [ngClass]="{'navbar-menu': true, 'is-active': menuOpen}">
+        <div class="navbar-menu" [class.is-active]="menuOpen">
             <div class="navbar-start">
                 <!-- navbar items -->
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">
@@ -36,15 +36,44 @@
             </div>
             <div class="navbar-end">
                 <!-- navbar items -->
-                <div class="navbar-item has-dropdown">
-                    <button class="navbar-link is-hoverable" (click)="admin.toggle($event)">
+                <div class="navbar-item has-dropdown"
+                    [class.is-active]="dropdownOpen$ | async">
+                    <a class="navbar-link"
+                        tabindex="0" role="button"
+                        (click)="toggleDropdown()"
+                        (keydown.enter)="toggleDropdown()">
                         <span class="icon" aria-hidden="true">
                             <i class="fa fa-user-circle"></i>
                         </span>
                         {{currentUser.name}}
                         <!-- drop down menu to log out, or see previous queries-->
-                    </button>
-                    <p-menu #admin [popup]="true" [model]="menuAdminItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
+                    </a>
+                    <div class="navbar-dropdown is-right"
+                        id="userDropdown" #userDropdown>
+                        <a class="navbar-item"
+                            [routerLink]="['/search-history']">
+                            Search history
+                        </a>
+                        <a class="navbar-item"
+                            [routerLink]="['/download-history']">
+                            Downloads
+                        </a>
+                        <a class="navbar-item"
+                            [routerLink]="['/settings']">
+                            Settings
+                        </a>
+                        <a class="navbar-item"
+                            href="{{adminUrl}}">
+                            Administration
+                        </a>
+                        <a class="navbar-item"
+                            role="button"
+                            tabindex="0"
+                            (click)="logout()"
+                            (keydown.enter)="logout()">
+                            Logout
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
