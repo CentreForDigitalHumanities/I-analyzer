@@ -21,7 +21,10 @@
         "@angular-eslint/component-selector": [
           "error",
           {
-            "type": "element",
+            "type": [
+                "element",
+                "attribute"
+            ],
             "prefix": "ia",
             "style": "kebab-case"
           }
