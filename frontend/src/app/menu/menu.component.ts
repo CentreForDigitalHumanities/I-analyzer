@@ -1,12 +1,15 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Subject, Subscription, combineLatest, fromEvent, merge, timer } from 'rxjs';
-import { MenuItem } from 'primeng/api';
+import { BehaviorSubject, Subject, fromEvent, merge, timer } from 'rxjs';
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { filter, map, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { filter, switchMap, take, takeUntil, throttleTime } from 'rxjs/operators';
 import * as _ from 'lodash';
+import {
+    faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
+    faUser
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-menu',
@@ -21,6 +24,19 @@ export class MenuComponent implements OnDestroy, OnInit {
     public isAdmin = false;
     menuOpen = false;
     dropdownOpen$ = new BehaviorSubject<boolean>(false);
+
+
+    icons = {
+        corpora: faDatabase,
+        manual: faBook,
+        about: faInfoCircle,
+        user: faUser,
+        searchHistory: faHistory,
+        downloads: faDownload,
+        settings: faCog,
+        admin: faCogs,
+        logout: faSignOut,
+    };
 
     private destroy$ = new Subject<void>();
 
