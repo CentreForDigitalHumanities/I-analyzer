@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Params, Router, UrlSegment } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { filter, map, switchMap, take, takeUntil, throttleTime } from 'rxjs/operators';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
     faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
@@ -19,11 +19,13 @@ import {
 export class MenuComponent implements OnDestroy, OnInit {
     @ViewChild('userDropdown') userDropdown: ElementRef;
 
-    public currentUser: User | undefined;
     adminUrl = environment.adminUrl;
-    public isAdmin = false;
+
     menuOpen = false;
     dropdownOpen$ = new BehaviorSubject<boolean>(false);
+
+    user$: Observable<User>;
+    isAdmin$: Observable<boolean>;
 
     route$: Observable<{
         url: string[];
@@ -48,15 +50,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         private authService: AuthService,
         private router: Router,
         private route: ActivatedRoute,
-    ) {
-        router.events
-            // throttle router events to make sure this triggers only once upon route change
-            .pipe(
-                throttleTime(0),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(() => this.checkCurrentUser());
-    }
+    ) { }
 
     ngOnDestroy() {
         this.destroy$.next();
@@ -68,7 +62,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         this.dropdownOpen$.pipe(
             takeUntil(this.destroy$),
             filter(_.identity)
-        ).subscribe(this.triggerClose.bind(this));
+        ).subscribe(this.triggerCloseDropdown.bind(this));
 
         this.makeRoute();
     }
@@ -82,9 +76,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     public async logout() {
-        const isSamlLogin = this.currentUser.isSamlLogin;
-        await this.authService.logout(isSamlLogin, true).toPromise();
-        this.currentUser = undefined;
+        this.authService.logout(true).subscribe();
     }
 
     public async login() {
@@ -92,6 +84,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     private makeRoute(): void {
+        // observable that fires immediately, and after navigation
         const routeUpdates$ = merge(
             of(null),
             this.router.events.pipe(filter(event => event instanceof NavigationEnd))
@@ -106,14 +99,16 @@ export class MenuComponent implements OnDestroy, OnInit {
         );
     }
 
-    private triggerClose() {
-        // listen for clicks and close the dropdown at the next click
+    /** close user dropdown when the user clicks or focuses elsewhere */
+    private triggerCloseDropdown() {
+        // observable of the next click
         // timer(0) is used to avoid the opening click event being registered
         const clicks$ = timer(0).pipe(
             switchMap(() => fromEvent(document, 'click')),
         );
 
-        // listen for focus moving out of the dropdown
+        // observable of the dropdown losing focus
+
         const focusOutOfDropdown = (event: FocusEvent) =>
             _.isNull(event.relatedTarget) ||
             (event.relatedTarget as Element).parentElement.id !== 'userDropdown';
@@ -125,25 +120,15 @@ export class MenuComponent implements OnDestroy, OnInit {
             filter(focusOutOfDropdown),
         );
 
+        // when either of these happens, close the dropdown
         merge(clicks$, focusOut$).pipe(
             take(1)
         ).subscribe(() => this.dropdownOpen$.next(false));
     }
 
     private checkCurrentUser() {
-        this.authService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(
-            (user) => {
-                if (user) {
-                    this.currentUser = user;
-                    this.isAdmin = this.currentUser.isAdmin;
-                } else {
-                    this.isAdmin = false;
-                }
-            },
-            (_error) => {
-                this.currentUser = undefined;
-            }
-        );
+        this.user$ = this.authService.currentUser$;
+        this.isAdmin$ = this.user$.pipe(map(user => user?.isAdmin));
     }
 
 }

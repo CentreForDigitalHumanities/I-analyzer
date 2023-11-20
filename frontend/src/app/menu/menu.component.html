@@ -1,4 +1,4 @@
-<nav class="navbar is-primary" *ngIf="currentUser" aria-label="primary navigation">
+<nav class="navbar is-primary" *ngIf="user$ | async as user" aria-label="primary navigation">
     <div class="container is-fluid">
         <!-- skip link for keyboard navigation.
             Complicated setup because the menu is outside of router-outlet and so
@@ -58,7 +58,7 @@
                         <span class="icon" aria-hidden="true">
                             <fa-icon [icon]="icons.user"></fa-icon>
                         </span>
-                        {{currentUser.name}}
+                        {{user.name}}
                         <!-- drop down menu to log out, or see previous queries-->
                     </a>
                     <div class="navbar-dropdown is-right"
@@ -88,6 +88,7 @@
                             Settings
                         </a>
                         <a class="navbar-item"
+                            *ngIf="isAdmin$ | async"
                             href="{{adminUrl}}">
                             <span class="icon" aria-hidden="true">
                                 <fa-icon [icon]="icons.admin"></fa-icon>
