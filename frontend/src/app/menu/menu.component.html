@@ -1,4 +1,4 @@
-<nav class="navbar" *ngIf="currentUser" aria-label="primary navigation">
+<nav class="navbar is-primary" *ngIf="currentUser" aria-label="primary navigation">
     <div class="container is-fluid">
         <a class="skip-to-content-link"
             [routerLink]="['.']" fragment="main">
@@ -61,21 +61,24 @@
                     <div class="navbar-dropdown is-right"
                         id="userDropdown" #userDropdown>
                         <a class="navbar-item"
-                            [routerLink]="['/search-history']">
+                            [routerLink]="['/search-history']"
+                            [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
                                 <fa-icon [icon]="icons.searchHistory"></fa-icon>
                             </span>
                             Search history
                         </a>
                         <a class="navbar-item"
-                            [routerLink]="['/download-history']">
+                            [routerLink]="['/download-history']"
+                            [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
                                 <fa-icon [icon]="icons.downloads"></fa-icon>
                             </span>
                             Downloads
                         </a>
                         <a class="navbar-item"
-                            [routerLink]="['/settings']">
+                            [routerLink]="['/settings']"
+                            [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
                                 <fa-icon [icon]="icons.settings"></fa-icon>
                             </span>
