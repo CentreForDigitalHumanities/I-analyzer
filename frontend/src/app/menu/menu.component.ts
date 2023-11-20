@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } fro
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
     faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
@@ -57,7 +57,8 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     ngOnInit() {
-        this.checkCurrentUser();
+        this.user$ = this.authService.currentUser$;
+        this.isAdmin$ = this.user$.pipe(map(user => user?.isAdmin));
 
         this.dropdownOpen$.pipe(
             takeUntil(this.destroy$),
@@ -124,11 +125,6 @@ export class MenuComponent implements OnDestroy, OnInit {
         merge(clicks$, focusOut$).pipe(
             take(1)
         ).subscribe(() => this.dropdownOpen$.next(false));
-    }
-
-    private checkCurrentUser() {
-        this.user$ = this.authService.currentUser$;
-        this.isAdmin$ = this.user$.pipe(map(user => user?.isAdmin));
     }
 
 }

@@ -1,4 +1,4 @@
-<nav class="navbar is-primary" *ngIf="user$ | async as user" aria-label="primary navigation">
+<nav class="navbar is-primary" aria-label="primary navigation">
     <div class="container is-fluid">
         <!-- skip link for keyboard navigation.
             Complicated setup because the menu is outside of router-outlet and so
@@ -26,13 +26,15 @@
         <div class="navbar-menu" id="navigation-menu" [class.is-active]="menuOpen">
             <div class="navbar-start">
                 <!-- navbar items -->
-                <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">
+                <a class="navbar-item" *ngIf="user$ | async"
+                    [routerLinkActive]="'is-active'" [routerLink]="['/home']">
                     <span class="icon" aria-hidden="true">
                         <fa-icon [icon]="icons.corpora"></fa-icon>
                     </span>
                     Corpora
                 </a>
-                <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
+                <a class="navbar-item" *ngIf="user$ | async"
+                    [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
                     <span class="icon" aria-hidden="true">
                         <fa-icon [icon]="icons.manual"></fa-icon>
                     </span>
@@ -45,7 +47,7 @@
                     About
                 </a>
             </div>
-            <div class="navbar-end">
+            <div class="navbar-end" *ngIf="user$ | async as user">
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown"
                     [class.is-active]="dropdownOpen$ | async">
