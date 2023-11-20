@@ -1,5 +1,9 @@
 <nav class="navbar" *ngIf="currentUser" aria-label="primary navigation">
     <div class="container is-fluid">
+        <a class="skip-to-content-link"
+            [routerLink]="['.']" fragment="main">
+            Skip to content
+        </a>
         <div class="navbar-brand">
             <a class="navbar-item" [routerLink]="['/home']">
                 <img src="/assets/logo.png" aria-hidden="true" width="50" height="50">

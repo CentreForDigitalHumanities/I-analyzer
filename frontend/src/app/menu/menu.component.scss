@@ -1,5 +1,19 @@
  @import "../../_utilities";
 
+ .skip-to-content-link {
+    left: 0%;
+    position: absolute;
+    z-index: 1;
+    transform: translateY(-100%);
+    color: $text-primary-color;
+    background: $contrast-primary-color;
+    padding: 10px
+}
+
+.skip-to-content-link:focus {
+    transform: translateY(0%);
+}
+
 .navbar {
     background-color: $primary;
   }
