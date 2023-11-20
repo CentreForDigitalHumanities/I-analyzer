@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Subject, fromEvent, merge, timer } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Params, Router, UrlSegment } from '@angular/router';
+import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { filter, switchMap, take, takeUntil, throttleTime } from 'rxjs/operators';
+import { filter, map, switchMap, take, takeUntil, throttleTime } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
     faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
@@ -25,6 +25,10 @@ export class MenuComponent implements OnDestroy, OnInit {
     menuOpen = false;
     dropdownOpen$ = new BehaviorSubject<boolean>(false);
 
+    route$: Observable<{
+        url: string[];
+        queryParams: Params;
+    }>;
 
     icons = {
         corpora: faDatabase,
@@ -42,7 +46,8 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     constructor(
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute,
     ) {
         router.events
             // throttle router events to make sure this triggers only once upon route change
@@ -64,6 +69,8 @@ export class MenuComponent implements OnDestroy, OnInit {
             takeUntil(this.destroy$),
             filter(_.identity)
         ).subscribe(this.triggerClose.bind(this));
+
+        this.makeRoute();
     }
 
     toggleDropdown() {
@@ -74,7 +81,32 @@ export class MenuComponent implements OnDestroy, OnInit {
         this.menuOpen = !this.menuOpen;
     }
 
-    triggerClose() {
+    public async logout() {
+        const isSamlLogin = this.currentUser.isSamlLogin;
+        await this.authService.logout(isSamlLogin, true).toPromise();
+        this.currentUser = undefined;
+    }
+
+    public async login() {
+        this.authService.showLogin(this.router.url);
+    }
+
+    private makeRoute(): void {
+        const routeUpdates$ = merge(
+            of(null),
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd))
+        );
+
+        this.route$ = routeUpdates$.pipe(
+            map(() => this.route.firstChild?.snapshot),
+            map(snapshot => ({
+                url: snapshot?.url.map(segment => segment.path),
+                queryParams: snapshot?.queryParams,
+            }))
+        );
+    }
+
+    private triggerClose() {
         // listen for clicks and close the dropdown at the next click
         // timer(0) is used to avoid the opening click event being registered
         const clicks$ = timer(0).pipe(
@@ -96,16 +128,6 @@ export class MenuComponent implements OnDestroy, OnInit {
         merge(clicks$, focusOut$).pipe(
             take(1)
         ).subscribe(() => this.dropdownOpen$.next(false));
-    }
-
-    public async logout() {
-        const isSamlLogin = this.currentUser.isSamlLogin;
-        await this.authService.logout(isSamlLogin, true).toPromise();
-        this.currentUser = undefined;
-    }
-
-    public async login() {
-        this.authService.showLogin(this.router.url);
     }
 
     private checkCurrentUser() {

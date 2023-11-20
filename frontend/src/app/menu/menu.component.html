@@ -1,7 +1,10 @@
 <nav class="navbar is-primary" *ngIf="currentUser" aria-label="primary navigation">
     <div class="container is-fluid">
-        <a class="skip-to-content-link"
-            [routerLink]="['.']" fragment="main">
+        <!-- skip link for keyboard navigation.
+            Complicated setup because the menu is outside of router-outlet and so
+            it can't use [routerLink]="." -->
+        <a class="skip-to-content-link" *ngIf="route$ | async as route"
+            [routerLink]="route.url" [queryParams]="route.queryParams" fragment="main">
             Skip to content
         </a>
         <div class="navbar-brand">
