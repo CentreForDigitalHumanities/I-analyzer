@@ -10,13 +10,17 @@
                 I-ANALYZER
             </a>
 
-            <a (click)="toggleMenu($event)" role="button" [ngClass]="{'navbar-burger': true, 'is-active': menuOpen}" aria-label="menu" aria-expanded="false">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
+            <a  role="button" tabindex="0"
+                (click)="toggleMenu($event)" (keydown.enter)="toggleMenu($event)"
+                class="navbar-burger" [class.is-active]="menuOpen"
+                aria-label="menu" [attr.aria-expanded]="menuOpen"
+                data-target="navigation-menu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
             </a>
         </div>
-        <div class="navbar-menu" [class.is-active]="menuOpen">
+        <div class="navbar-menu" id="navigation-menu" [class.is-active]="menuOpen">
             <div class="navbar-start">
                 <!-- navbar items -->
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">
@@ -45,7 +49,9 @@
                     <a class="navbar-link"
                         tabindex="0" role="button"
                         (click)="toggleDropdown()"
-                        (keydown.enter)="toggleDropdown()">
+                        (keydown.enter)="toggleDropdown()"
+                        [attr.aria-expanded]="dropdownOpen$ | async"
+                        data-target="userDropdown">
                         <span class="icon" aria-hidden="true">
                             <fa-icon [icon]="icons.user"></fa-icon>
                         </span>
