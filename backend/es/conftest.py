@@ -3,7 +3,6 @@ from time import sleep
 from django.contrib.auth.models import Group
 
 from addcorpus.load_corpus import load_corpus_definition
-from ianalyzer.elasticsearch import elasticsearch
 from es import es_index
 from addcorpus.models import Corpus
 

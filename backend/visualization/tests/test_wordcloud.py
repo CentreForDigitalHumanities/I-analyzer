@@ -127,7 +127,6 @@ def test_wordcloud_counts(small_mock_corpus):
 
 def test_wordcloud_filters_stopwords(small_mock_corpus, small_mock_corpus_complete_wordcloud):
     stopwords = ['the', 'and', 'of']
-
     for stopword in stopwords:
         match = any(
             item['key'] == stopword for item in small_mock_corpus_complete_wordcloud)
