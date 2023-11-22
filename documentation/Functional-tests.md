@@ -1,7 +1,7 @@
 # Functional test suite
 Functional tests are located in the folder `functional-tests`.
 
-To run functional tests, make sure you have Selenium and Seleniumbase installed (from backend requirements). Also, create an .ini file in the `functional-tests` folder, which should have the following setup:
+To run functional tests, make sure you have Selenium and Seleniumbase installed (from backend requirements). Also, create a `selenium.ini` file in the `functional-tests` folder, which should have the following setup:
 ```
 [credentials]
     username = {your_username}
@@ -14,7 +14,7 @@ To run functional tests, make sure you have Selenium and Seleniumbase installed 
     query = {query_term}
 ```
 
-Note that in order for all tests to work, the corpus should also have associated *word models*
+Note that some tests may be skipped based on the test corpus: e.g., if there are no word models, the corresponding tests will be skipped.
 
 To run tests, navigate to the `functional-tests` folder and run `pytest --rs`. `--rs` stands for "reuse session" so after the view that tests logging in, the browser stays logged in. Other potential arguments:
 ```

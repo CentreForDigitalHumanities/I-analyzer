@@ -1,3 +1,4 @@
+import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 
 def test_title(sb, base_address):
@@ -43,7 +44,11 @@ def test_visualization(sb, search_address):
     sb.wait_for_element('div.block')
     assert 'wordcloud' in sb.get_current_url()
 
-def test_word_models(sb, corpus, wordmodels_address):
+def test_word_models(sb, corpus, api_corpus_address, wordmodels_address):
+    corpus_list = sb.get(api_corpus_address)
+    corpus_config = next((c for c in corpus_list if c['name'] == corpus['name']))
+    if not corpus_config.get('word_models_present'):
+        pytest.skip('No word models found in this corpus, skipping')
     sb.wait_for_element('div.navbar-brand')
     sb.get(wordmodels_address)
     sb.wait_for_element('h1.title')

@@ -101,3 +101,7 @@ def admin_address(base_address):
 @pytest.fixture
 def login_address(base_address):
     return base_address + 'login'
+
+@pytest.fixture
+def api_corpus_address(base_address):
+    return base_address + 'api/corpus/'
