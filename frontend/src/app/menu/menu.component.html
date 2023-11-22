@@ -47,9 +47,9 @@
                     About
                 </a>
             </div>
-            <div class="navbar-end" *ngIf="user$ | async as user">
-                <!-- navbar items -->
-                <div class="navbar-item has-dropdown"
+            <div class="navbar-end">
+                <div *ngIf="user$ | async as user; else notLoggedIn"
+                    class="navbar-item has-dropdown"
                     [class.is-active]="dropdownOpen$ | async">
                     <a class="navbar-link"
                         tabindex="0" role="button"
@@ -105,10 +105,20 @@
                             <span class="icon" aria-hidden="true">
                                 <fa-icon [icon]="icons.logout"></fa-icon>
                             </span>
-                            Logout
+                            Sign out
                         </a>
                     </div>
                 </div>
+                <ng-template #notLoggedIn>
+                    <a class="navbar-item"
+                        [routerLink]="['/login']" [routerLinkActive]="'is-active'">
+                        Sign in
+                    </a>
+                    <a class="navbar-item"
+                    [routerLink]="['/registration']" [routerLinkActive]="'is-active'">
+                        Sign up
+                </a>
+                </ng-template>
             </div>
         </div>
     </div>
