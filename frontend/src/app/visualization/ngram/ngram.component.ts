@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
-import { ApiService, ParamService, VisualizationService } from '../../services';
+import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -34,8 +34,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     currentResults: NgramResults;
 
-
-
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
     positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
@@ -50,20 +48,31 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     currentParameters: NgramParameters;
     lastParameters: NgramParameters;
     parametersChanged = false;
+    ngramSettings: string[];
 
     faCheck = faCheck;
     faTimes = faTimes;
 
-    nullableParameters = ['size', 'position', 'freqCompensation', 'analysis', 'maxDocuments', 'numberOfNgrams', 'dateField'];
+    nullableParameters = ['ngramSettings'];
 
     constructor(
         private apiService: ApiService,
         private visualizationService: VisualizationService,
+        private notificationService: NotificationService,
         route: ActivatedRoute,
         router: Router,
-        paramService: ParamService
+        paramService: ParamService,
     ) {
         super(route, router, paramService);
+        this.currentParameters = new NgramParameters(
+            this.sizeOptions[0].value,
+            this.positionsOptions[0].value,
+            this.freqCompensationOptions[0].value,
+            'none',
+            this.maxDocumentsOptions[0].value,
+            this.numberOfNgramsOptions[0].value,
+            'date'
+        );
     }
 
     initialize() {}
@@ -82,6 +91,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             this.resultsCache = {};
             this.allDateFields = this.corpus.fields.filter(field => field.mappingType === 'date');
             this.dateField = this.allDateFields[0];
+            this.currentParameters.dateField = this.dateField.name;
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
@@ -99,17 +109,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     setParameters(params: Params) {
-        this.currentParameters = {
-            size: parseInt(params.get('size'), 10) || this.sizeOptions[0].value,
-            positions: params.get('positions') || this.positionsOptions[0].value,
-            freqCompensation: params.get('freqCompensation') !==  undefined ?
-                params.get('freqCompensation') === 'true' :
-                this.freqCompensationOptions[0].value,
-            analysis: params.get('analysis') || 'none',
-            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 50,
-            numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
-            dateField: params.get('dateField') || 'date',
-        };
+        const ngramSettings = params.get('ngramSettings');
+        if (ngramSettings) {
+            this.currentParameters.fromRouteParam(ngramSettings);
+        }
     }
 
     loadGraph() {
@@ -158,20 +161,15 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     cacheResult(result: any, params: NgramParameters): void {
-        const key = this.parametersKey(params);
+        const key = params.toRouteParam();
         this.resultsCache[key] = result;
     }
 
     getCachedResult(params: NgramParameters): any {
-        const key = this.parametersKey(params);
+        const key = params.toRouteParam();
         if (_.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
-    }
-
-    parametersKey(params: NgramParameters): string {
-        const values = _.values(params);
-        return _.join(values, '/');
     }
 
     setPositionsOptions(size) {
@@ -186,8 +184,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         this.currentParameters[parameter] = value;
 
         if (parameter === 'size' && value) {
- this.setPositionsOptions(value);
-}
+            this.setPositionsOptions(value);
+        }
 
         this.parametersChanged = true;
     }
@@ -200,7 +198,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     confirmChanges() {
         this.parametersChanged = false;
-        this.setParams(this.currentParameters);
+        this.setParams({ ngramSettings: this.currentParameters.toRouteParam() });
     }
 
     get currentSizeOption() {
@@ -253,5 +251,31 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         }
 
         return `${value}`;
+    }
+
+    requestFullData() {
+        const parameters = this.visualizationService.makeNgramRequestParameters(
+            this.corpus,
+            this.queryModel,
+            this.visualizedField.name,
+            this.currentParameters
+        );
+        this.apiService.requestFullData({
+            corpus_name: this.corpus.name,
+            visualization: 'ngram',
+            parameters
+        }).then(() =>
+            this.notificationService.showMessage(
+                'Full data requested! You will receive an email when your download is ready.',
+                'success',
+                {
+                    text: 'view downloads',
+                    route: ['/download-history']
+                }
+            )
+        ).catch(error => {
+            console.error(error);
+            this.notificationService.showMessage('Could not set up data generation.', 'danger');
+        });
     }
 }

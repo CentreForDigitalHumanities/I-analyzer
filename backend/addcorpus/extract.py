@@ -328,14 +328,14 @@ class XML(Extractor):
             ]
 
 
-class HTML(XML):
+class FilterAttribute(XML):
     '''
     This extractor extracts attributes or contents from a BeautifulSoup node.
-    It is an extension of XML class
+    It is an extension of the XML extractor
     '''
 
     def __init__(self,
-                 attribute_filter={  # Whether to search other xml files for this field, and the file tag these files should have
+                 attribute_filter={  # Specify an attribute / value pair by which to select content
                      'attribute': None,
                      'value': None},
                  *nargs,

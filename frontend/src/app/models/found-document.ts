@@ -2,6 +2,10 @@ import * as _ from 'lodash';
 import { makeContextParams } from '../utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
+import { Tag } from './tag';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { TagService } from '../services/tag.service';
+import { tap } from 'rxjs/operators';
 
 export class FoundDocument {
     id: string;
@@ -20,13 +24,21 @@ export class FoundDocument {
     /** highlighted strings */
     highlight: HighlightResult;
 
-    constructor(public corpus: Corpus, hit: SearchHit, maxScore: number = 1) {
+    /** tags created on the document */
+    tags$ = new BehaviorSubject<Tag[]>(undefined);
+
+    constructor(
+        private tagService: TagService,
+        public corpus: Corpus,
+        hit: SearchHit,
+        maxScore: number = 1
+    ) {
         this.id = hit._id;
         this.relevance = hit._score / maxScore;
         this.fieldValues = Object.assign({ id: hit._id }, hit._source);
         this.highlight = hit.highlight;
+        this.fetchTags();
     }
-
 
     /**
      * whether the document has a "context" that it belongs to
@@ -40,8 +52,11 @@ export class FoundDocument {
             return false;
         }
 
-        const notBlank = value => value !== undefined && value !== null && value !== '';
-        const contextValues = spec.contextFields.map(this.fieldValue.bind(this));
+        const notBlank = (value) =>
+            value !== undefined && value !== null && value !== '';
+        const contextValues = spec.contextFields.map(
+            this.fieldValue.bind(this)
+        );
         return _.every(contextValues, notBlank);
     }
 
@@ -58,4 +73,25 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
+    addTag(tag: Tag): void {
+        const newTags = this.tags$.value.concat([tag]);
+        this.setTags(newTags);
+    }
+
+    removeTag(tag: Tag): void {
+        const newTags = _.without(this.tags$.value, tag);
+        this.setTags(newTags);
+    }
+
+    setTags(tags: Tag[]): void {
+        this.tagService
+            .setDocumentTags(this, tags)
+            .subscribe((value) => this.tags$.next(value));
+    }
+
+    private fetchTags(): void {
+        this.tagService
+            .getDocumentTags(this)
+            .subscribe((value) => this.tags$.next(value));
+    }
 }

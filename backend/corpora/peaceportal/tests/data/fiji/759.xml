@@ -1,0 +1,65 @@
+<TEI xml:space="preserve" xml:lang="en"
+xml:base="ex-epidoctemplate.xml" xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>759</title>
+            </titleStmt>
+            <publicationStmt>
+                <authority/>
+                <idno type="filename"/>
+            </publicationStmt>
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <location>Formerly in Villa Torlonia stables</location>
+                        <publications>
+                            <publication>Noy 1995, p. 390-1 (489)</publication>
+                        </publications>
+                        </msIdentifier>
+                    <history>
+                        <origin>
+                            <provenance>Rome, Villa Torlonia (lower cat.)</provenance>
+                            <origDate>3rd- 4th century</origDate>
+                            <remarksOnDate></remarksOnDate>
+                        </origin>
+                    </history>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+        <profileDesc>
+            <particDesc>
+                <listPerson>
+                    <person sex="F">
+                        <persName>Irene (Εἰρήνη)</persName>
+                    </person>
+                </listPerson>
+            </particDesc>
+            <langUsage>
+                <language>Greek</language>
+            </langUsage>
+        </profileDesc>
+    </teiHeader>
+    <facsimile>
+        <photoFacsimile>CIJ i 1936, p. 19-20 no.21</photoFacsimile>
+        <photosLeonard>None</photosLeonard>
+        <image3D>None</image3D>
+    </facsimile>
+    <text>
+        <body>
+            <transcription>Εἰρήνη τρεζπτὴ προσήλυτος πατρὸς καὶ μητρὸς Εἰουδε͂α
+<lb/>
+Ἰσδραηλίτης ἔζησεν ἤτ(η) γ΄ μ(ῆνας) ζ΄ vac.ἡμ(έ)ρ(αν) α΄.
+<lb/>
+͂</transcription>
+            <inscriptionType>Εpitaph</inscriptionType>
+            <iconographyType>none</iconographyType>
+            <iconographyDescription></iconographyDescription>
+            <material>Stone (grey-blue marble plaque)</material>
+            <incipit>Εἰρήνη</incipit>
+            <age>3</age>
+            <ageComments>The precise age was 3 years, 7 months and 1 day.</ageComments>
+            <commentary></commentary>
+        </body>
+    </text>
+</TEI>

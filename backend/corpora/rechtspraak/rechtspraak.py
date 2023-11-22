@@ -45,7 +45,7 @@ class Rechtspraak(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     tag_toplevel = 'open-rechtspraak'
 
@@ -287,7 +287,7 @@ class Rechtspraak(XMLCorpusDefinition):
             name='content',
             display_name='Content',
             display_type='text_content',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'nl'),
             extractor=extract.Backup(
                 extract.XML('uitspraak', flatten=True),
                 extract.XML('conclusie', flatten=True),

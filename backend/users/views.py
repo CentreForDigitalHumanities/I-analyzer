@@ -6,8 +6,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
-
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 from djangosaml2.views import LogoutView
+from .serializers import CustomUserDetailsSerializer
 
 
 def redirect_confirm(request, key):
@@ -44,3 +46,8 @@ class SamlLogoutView(LogoutView):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+class UserViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CustomUserDetailsSerializer
+

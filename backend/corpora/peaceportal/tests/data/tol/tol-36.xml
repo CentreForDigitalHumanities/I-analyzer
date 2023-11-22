@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:space="preserve" xml:lang="en">
+ <teiHeader>
+  <fileDesc>
+   <titleStmt>
+    <title>epidat, tol-36</title>
+    <respStmt>
+     <resp>edited by</resp>
+     <persName ref="https://orcid.org/0000-0002-2701-4256" role="author">Elíshabá Mata</persName>
+    </respStmt>
+   </titleStmt>
+    <editionStmt>
+    <edition/>
+   </editionStmt>
+   <extent/>
+   <publicationStmt>
+    <publisher>
+     <orgName ref="http://d-nb.info/gnd/212562-6">
+      Salomon Ludwig Steinheim-Institut 
+      <address>
+       <addrLine>Edmund-Körner-Platz 2</addrLine>
+       <addrLine>D-45127 Essen</addrLine>
+      </address>
+     </orgName>
+    </publisher>
+    <idno>tol-36</idno>
+    <idno type="url">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-36</idno>
+    <availability xml:lang="en" status="free">
+     <licence>
+      <ref target="http://creativecommons.org/licenses/by/4.0/">Distributed under a Creative Commons licence Attribution-BY 4.0</ref>
+      <p>
+       All reuse or distribution of this work must contain somewhere a link back to the URL 
+       <ref>http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-36</ref>
+      </p>
+     </licence>
+    </availability>
+   </publicationStmt>
+    <notesStmt>
+    <note/>
+   </notesStmt>
+   <sourceDesc>
+    <bibl>born digital</bibl>
+    <msDesc>
+     <msIdentifier>
+      <repository>epidat</repository>
+      <idno>tol-36</idno>
+      <altIdentifier>
+       <idno type="html">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-36</idno>
+       <note/>
+      </altIdentifier>
+      <altIdentifier>
+       <idno type="xml">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-36-t</idno>
+       <note/>
+      </altIdentifier>
+     </msIdentifier>
+     <physDesc>
+      <objectDesc>
+       <supportDesc>
+        <support>
+         <p>
+          <material>stone (material not specified)</material>
+          <objectType ref="http://vocab.getty.edu/page/aat/300005909">sepulchral monument</objectType>
+         </p>
+        </support>
+       </supportDesc>
+        <layoutDesc>
+        <layout/>
+       </layoutDesc>
+      </objectDesc>
+     </physDesc>
+     <history>
+       <origin>
+       <!-- dateEntry not valid -->
+       <origPlace>
+        <country type="ISO_3166" key="XA-ES">Spain</country>
+        <settlement type='city' key='tgn:7008719' ref='http://vocab.getty.edu/tgn/7008719'>
+         Toledo 
+         <geogName ref="http://d-nb.info/gnd/4331943-9">
+          Jewish Cemetery
+          <geo decls="#WGS">39.871036 -4.022968</geo>
+         </geogName>
+        </settlement>
+       </origPlace>
+      </origin>
+     </history>
+    </msDesc>
+   </sourceDesc>
+  </fileDesc>
+  <profileDesc>
+   <particDesc>
+    <person xml:id="tol-36-1" sex="1">
+      
+     <persName>
+      Yaakov
+      <kov>Yizhaq</kov>
+     </persName>
+     <death when="1349-06-27"></death>
+     <desc>Other transcription of the name: YA#[2018]ĂQŌḆ BEN YIṢḤAQ BEN AL-SARAQOSTAN#[000D]#[000A]Occupation: Physician and counselor#[000D]#[000A]Death in the Black Death</desc>
+    </person>
+   </particDesc>
+    <langUsage>
+    <!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
+    <language ident='he' usage='100'>Hebrew</language>
+   </langUsage>
+  </profileDesc>
+   <revisionDesc>
+   <change/>
+  </revisionDesc>
+ </teiHeader>
+ <text>
+  <body>
+   <div type='edition'>
+    <head>Edition</head>
+    <div type='textpart' subtype='recto'>
+      <ab>
+      <lb n='1'/>
+      ‎‏בְּקֶבֶר זֶה נִקְבַּר‏‎
+      <lb n='2'/>
+      ‎‏אִישׁ שֵׂכֶל וּנְבוֹן דָּבָר‏‎
+      <lb n='3'/>
+      ‎‏נְקִי כַפָיִם וּבַר‏‎
+      <lb n='4'/>
+      ‎‏מָלֵא הוֹד וְחָכְמָה‏‎
+      <lb n='5'/>
+      ‎‏וְדַעַת וּמְזִמָּה‏‎
+      <lb n='6'/>
+      ‎‏יוֹעֵץ וַחֲכָם חֲרָשִׁים‏‎
+      <lb n='7'/>
+      ‎‏טוֹב עִם ה׳ וְעִם אֲנָשִׁים‏‎
+      <lb n='8'/>
+      ‎‏רוֹפֵא מַחֲלִים הַנְפָשִׁים‏‎
+      <lb n='9'/>
+      ‎‏וּמִזְּרַע קְדוֹשִׁים‏‎
+      <lb n='10'/>
+      ‎‏שְׁמוֹ ר׳ יַעֲקֹב בר׳ יִצְחָק נ׳ע ן׳ אַלְסָארַקֹסְטַן‏‎
+      <lb n='11'/>
+      ‎‏נָתַן כָּל־יָמָיו אֶל לִבּוֹ‏‎
+      <lb n='12'/>
+      ‎‏לֶאֱהוֹב אֶת ה׳ וּלְדָבְקָה בוֹ‏‎
+      <lb n='13'/>
+      ‎‏וְכַאֲשֶׁר בָּאָרֶץ פָּרַץ פֶּרֶץ‏‎
+      <lb n='14'/>
+      ‎‏בִּקְדוֹשִׂים אֲשֶׁר בָּאָרֶץ‏‎
+      <lb n='15'/>
+      ‎‏וַתִּפְרֹץ בָּם הַמַּגֵּפָה‏‎
+      <lb n='16'/>
+      ‎‏נֶאֱסַף אֶל עַמּוֹ‏‎
+      <lb n='17'/>
+      ‎‏וְעָזַב אֶת הָאָרֶץ וְעָלָה לִשְׁכוֹן מְרוֹמוֹ‏‎
+      <lb n='18'/>
+      ‎‏ובי׳׳ב בְּתַמּוּז שְׁנַת מְנוּחָה הָיְתָה יַד אֱלֹהָיו עָלָיו‏‎
+      <lb n='19'/>
+      ‎‏לְשׁוֹבֵב יַעֲקֹב אֵלָיו‏‎
+      <lb n='20'/>
+      ‎‏לָתֵּת לוֹ יָד בֵּין חֲסִידָיו וּלַעֲבוֹד בְּרֹאשָׁם‏‎
+      <lb n='21'/>
+      ‎‏וַיֹּאמֶר ה׳ אֶל יַעֲקֹב קוּם עֲלֵה בֵית אֵל וְשֶׁב שָׁם‏‎
+      <lb n='22'/>
+      ‎‏וְיַעֲקֹב הָלַךְ לְדַרְכּוֹ לִרְאוֹת פְּנֵי דָר נְגָהִים‏‎
+      <lb n='23'/>
+      ‎‏וַיִּפְגְּעוּ בוֹ מַלְאֲכֵי אֱלֹהִים‏‎
+      <lb n='24'/>
+     </ab>
+    </div>
+   </div>
+   <div type='translation'>
+    <head>Übersetzung</head>
+    <div type='textpart' subtype='recto'>
+      <ab>
+      <lb n='24'/>
+      <!--JaakovJizchak-->
+     </ab>
+    </div>
+   </div>
+   <div type="commentary" subtype="Prosopographie">
+    <head>Prosopographie</head>
+   </div>
+   <div type="bibliography">
+    <head>Bibliographie</head>
+     <bibl>
+     <ptr target="tol-info-t#Luzatto1841"/>
+     <citedRange unit="page">65-66</citedRange>
+     <idno rend="Nr.">70</idno>
+     <note></note>
+    </bibl>
+     <bibl>
+     <ptr target="tol-info-t#Schwab1910"/>
+     <citedRange unit="page">209-210;C/M (82),135-138</citedRange>
+     <idno rend="Nr.">58</idno>
+     <note></note>
+    </bibl>
+   </div>
+  </body>
+ </text>
+</TEI>

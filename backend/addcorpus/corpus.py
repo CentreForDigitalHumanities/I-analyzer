@@ -11,9 +11,6 @@ from datetime import datetime
 from os.path import isdir
 
 from django.conf import settings
-from langcodes import Language, standardize_tag
-
-from addcorpus.constants import CATEGORIES
 
 import logging
 
@@ -33,37 +30,37 @@ class CorpusDefinition(object):
     @property
     def title(self):
         '''
-        Path to source data directory.
+        Title of the corpus
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing title')
 
     @property
     def description(self):
         '''
         Short description of the corpus
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing description')
 
     @property
     def data_directory(self):
         '''
         Path to source data directory.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing data_directory')
 
     @property
     def min_date(self):
         '''
         Minimum timestamp for data files.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing min_date')
 
     @property
     def max_date(self):
         '''
         Maximum timestamp for data files.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing max_date')
 
 
     '''
@@ -81,14 +78,14 @@ class CorpusDefinition(object):
 
         See addcorpus.constants.CATEGORIES for options
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing category')
 
     @property
     def es_index(self):
         '''
         ElasticSearch index name.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing category')
 
     '''
     Elasticsearch alias. Defaults to None.
@@ -111,7 +108,7 @@ class CorpusDefinition(object):
         the `Field` class, containing information about each attribute.
         MUST include a field with `name='id'`.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing fields')
 
 
     '''
@@ -139,7 +136,7 @@ class CorpusDefinition(object):
         Name of the corpus image. Should be relative path from a directory 'images'
         in the same directory as the corpus definition file.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing image')
 
     '''
     MIME type of scanned documents (images)
@@ -241,7 +238,7 @@ class CorpusDefinition(object):
         empty or contains only a timestamp; but any data that is to be
         extracted without reading the file itself can be specified there.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing sources')
 
     def source2dicts(self, sources):
         '''
@@ -249,7 +246,7 @@ class CorpusDefinition(object):
 
         The dictionaries are created from this corpus' `Field`s.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing source2dicts')
 
     def documents(self, sources=None):
         '''
@@ -274,6 +271,31 @@ class CorpusDefinition(object):
             if isinstance(field.extractor, inapplicable_extractors):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
+    
+class ParentCorpusDefinition(CorpusDefinition):
+    ''' A class from which other corpus definitions can inherit.
+    This class is in charge of setting fields, usually without defining an extractor.
+    The subclassed CorpusDefinitions will set extractors on the fields -
+    this way, CorpusDefinitions can share the same mappings and filters,
+    while the logic to collect sources and populate the fields can be different.
+    The ParentCorpusDefinition can also be used to allow cross-corpus search and filtering.
+    '''
+    #define fields property so it can be set in __init__
+    @property
+    def fields(self):
+        return self._fields
+
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
+
+    def __init__(self):
+        ''' Specify a list of fields which all subclasses share
+            A subclass of ParentCorpusDefinition will provide extractors for the fields,
+            and potentially prune done the list of fields to those which have an extractor
+        '''
+        self.fields = []
+
 
 class XMLCorpusDefinition(CorpusDefinition):
     '''
@@ -309,7 +331,7 @@ class XMLCorpusDefinition(CorpusDefinition):
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
-        self._reject_extractors(extract.HTML, extract.CSV)
+        self._reject_extractors(extract.CSV)
 
         # extract information from external xml files first, if applicable
         metadata = {}
@@ -519,7 +541,7 @@ class HTMLCorpusDefinition(XMLCorpusDefinition):
         '''
         (filename, metadata) = source
 
-        self._reject_extractors(extract.XML, extract.CSV)
+        self._reject_extractors(extract.CSV)
 
         # Loading HTML
         logger.info('Reading HTML file {} ...'.format(filename))
@@ -594,7 +616,7 @@ class CSVCorpusDefinition(CorpusDefinition):
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
-        self._reject_extractors(extract.XML, extract.HTML)
+        self._reject_extractors(extract.XML, extract.FilterAttribute)
 
         if isinstance(source, str):
             filename = source
@@ -704,6 +726,7 @@ class FieldDefinition(object):
                  visualizations=[],
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
+                 language=None,
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
@@ -727,6 +750,7 @@ class FieldDefinition(object):
         self.visualizations = visualizations
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
+        self.language = language
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor

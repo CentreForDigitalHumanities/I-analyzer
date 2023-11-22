@@ -14,7 +14,7 @@ from django.conf import settings
 class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
     title = 'People and Parliament (Finland, 1863-1905)'
     description = 'Speeches from the early Finnish estates'
-    max_date = datetime(year=1905, month=12, day=31)
+    max_date = datetime(year=1906, month=12, day=31)
     min_date = datetime(year=1863, month=1, day=1)
     data_directory = settings.PP_FINLAND_OLD_DATA
     es_index = getattr(settings, 'PP_FINLAND_OLD_INDEX', 'parliament-finland-old')
@@ -24,8 +24,8 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
             yield csv_file, {}
 
     languages = ['sv', 'fi']
-    description_page = 'finland.md'
-    image = 'finland.jpg'
+    description_page = 'finland-old.md'
+    image = 'finland-old.jpg'
 
     document_context = document_context()
 

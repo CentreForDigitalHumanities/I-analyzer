@@ -3,6 +3,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ElasticSearchService, SearchResponse } from './elastic-search.service';
 import { Aggregator, QueryModel } from '../models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
+import { TagService } from './tag.service';
+import { TagServiceMock } from '../../mock-data/tag';
 
 const mockResponse: SearchResponse = {
     took: 4,
@@ -62,6 +64,7 @@ describe('ElasticSearchService', () => {
         TestBed.configureTestingModule({
             providers: [
                 ElasticSearchService,
+                { provide: TagService, useValue: new TagServiceMock() }
             ],
             imports: [ HttpClientTestingModule ]
         });

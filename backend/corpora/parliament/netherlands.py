@@ -124,7 +124,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     title = "People & Parliament (Netherlands)"
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year=1815, month=1, day=1)
-    max_date = datetime(year=2020, month=12, day=31)
+    max_date = datetime(year=2022, month=12, day=31)
     data_directory = settings.PP_NL_DATA
     data_directory_recent = settings.PP_NL_RECENT_DATA
     word_model_path = getattr(settings, 'PP_NL_WM', None)

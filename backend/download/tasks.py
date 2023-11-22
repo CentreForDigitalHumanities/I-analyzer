@@ -2,13 +2,12 @@ import logging
 import re
 from django.conf import settings
 from celery import shared_task, chain, group
-from django.urls import reverse
 
 from es import download as es_download
 from download import create_csv
 from download.models import Download
 from addcorpus.models import Corpus
-from visualization.tasks import histogram_term_frequency_tasks, timeline_term_frequency_tasks
+from visualization.tasks import histogram_term_frequency_tasks, timeline_term_frequency_tasks, ngram_data_tasks
 from visualization import query
 from download.mail import send_csv_email
 
@@ -37,9 +36,9 @@ def download_scroll(request_json, download_size=10000):
     return results
 
 @shared_task()
-def make_csv(results, request_json):
+def make_csv(results, request_json, log_id):
     query = create_query(request_json)
-    filepath = create_csv.search_results_csv(results, request_json['fields'], query)
+    filepath = create_csv.search_results_csv(results, request_json['fields'], query, log_id)
     return filepath
 
 
@@ -82,7 +81,7 @@ def download_search_results(request_json, user):
 
     make_chain = lambda: chain(
         download_scroll.s(request_json, download_limit),
-        make_csv.s(request_json),
+        make_csv.s(request_json, download.id),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
@@ -90,12 +89,14 @@ def download_search_results(request_json, user):
     return try_download(make_chain, download)
 
 @shared_task()
-def make_term_frequency_csv(results_per_series, parameters_per_series):
+def make_full_data_csv(results_per_series, visualization_type, parameters_per_series, log_id):
     '''
     Export term frequency results to a csv.
     '''
+    if visualization_type == 'ngram':
+        return create_csv.ngram_csv(results_per_series, log_id)
     query_per_series, field_name, unit = extract_term_frequency_download_metadata(parameters_per_series)
-    return create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
+    return create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, log_id, unit = unit)
 
 
 def term_frequency_full_data_tasks(parameters_per_series, visualization_type):
@@ -109,6 +110,10 @@ def term_frequency_full_data_tasks(parameters_per_series, visualization_type):
     return group(
         task_function(series_parameters, True) for series_parameters in parameters_unlimited
     )
+
+def ngram_full_data_tasks(ngram_parameters, dummy):
+    ngram_parameters['max_size_per_interval'] = None
+    return ngram_data_tasks(ngram_parameters)
 
 def extract_term_frequency_download_metadata(parameters_per_series):
     '''
@@ -148,16 +153,16 @@ def download_full_data(request_json, user):
     '''
     Download the full data for a visualisation
     '''
-
     visualization_type = request_json['visualization']
 
     task_per_type = {
         'date_term_frequency': term_frequency_full_data_tasks,
-        'aggregate_term_frequency': term_frequency_full_data_tasks
+        'aggregate_term_frequency': term_frequency_full_data_tasks,
+        'ngram': ngram_full_data_tasks,
     }
 
     parameters = request_json['parameters']
-    corpus_name = request_json['corpus']
+    corpus_name = request_json['corpus_name']
     corpus = Corpus.objects.get(name=corpus_name)
     task = task_per_type[visualization_type](parameters, visualization_type)
 
@@ -166,7 +171,7 @@ def download_full_data(request_json, user):
 
     make_chain = lambda : chain(
         task,
-        make_term_frequency_csv.s(parameters),
+        make_full_data_csv.s(visualization_type, parameters, download.id),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))

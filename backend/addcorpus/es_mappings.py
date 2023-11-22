@@ -1,11 +1,13 @@
-def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, updated_highlighting=False):
+from addcorpus.es_settings import add_language_string
+
+def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, language=None, updated_highlighting=True):
     '''
     Mapping for the main content field. Options:
 
     - `token_counts`: enables aggregations for the total number of words. Used for relative term frequencies.
-    - `stopword_analysis`: enables analysis using stopword removal. Requires setting a `clean` analyser in the `es_settings` of the corpus.
-    - `stemming_analysis`: enables analysis using stemming. Requires a `stemmed` analyser in the `es_settings` for the corpus.
-    - 'updated_highlighting': enables the new highlighter, which only works for fields that are indexed with the term vector set to 'with_positions_offsets'.
+    - `stopword_analysis`: enables analysis using stopword removal.
+    - `stemming_analysis`: enables analysis using stemming.
+    - `updated_highlighting`: enables the new highlighter, which only works for fields that are indexed with the term vector set to 'with_positions_offsets'.
     '''
 
     mapping = {
@@ -27,13 +29,13 @@ def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_an
         if stopword_analysis:
             multifields['clean'] = {
                 "type": "text",
-                "analyzer": "clean",
+                "analyzer": add_language_string('clean', language),
                 "term_vector": "with_positions_offsets" # include character positions for highlighting
             }
         if stemming_analysis:
             multifields['stemmed'] = {
                 "type": "text",
-                "analyzer": "stemmed",
+                "analyzer": add_language_string('stemmed', language),
                 "term_vector": "with_positions_offsets",
             }
         mapping['fields'] = multifields

@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    'djangosaml2.middleware.SamlSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'ianalyzer.urls'
@@ -131,3 +131,5 @@ REST_AUTH_SERIALIZERS = {
 }
 
 LOGO_LINK = 'https://dhstatic.hum.uu.nl/logo-cdh/png/UU_CDH_logo_EN_whiteFC.png'
+
+NLTK_DATA_PATH = os.path.join(BASE_DIR, 'addcorpus', 'nltk_data')

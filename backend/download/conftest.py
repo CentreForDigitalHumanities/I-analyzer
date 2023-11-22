@@ -50,18 +50,22 @@ def index_ml_mock_corpus(es_client, ml_mock_corpus):
 def index_mock_corpus(es_client, mock_corpus, index_small_mock_corpus, index_large_mock_corpus, index_ml_mock_corpus):
     yield mock_corpus
 
-def save_all_results_csv(mock_corpus, mock_corpus_specs):
+def all_results_request_json(mock_corpus, mock_corpus_specs):
     fields = mock_corpus_specs['fields']
     query = mock_corpus_specs['example_query']
 
-    request_json = {
+    return {
         'corpus': mock_corpus,
         'es_query': MATCH_ALL,
         'fields': fields,
         'route': '/search/{};query={}'.format(mock_corpus, query)
     }
+
+def save_all_results_csv(mock_corpus, mock_corpus_specs):
+    request_json = all_results_request_json(mock_corpus, mock_corpus_specs)
     results = tasks.download_scroll(request_json)
-    filename = tasks.make_csv(results, request_json)
+    fake_id = mock_corpus + '_all_results'
+    filename = tasks.make_csv(results, request_json, fake_id)
 
     return filename
 

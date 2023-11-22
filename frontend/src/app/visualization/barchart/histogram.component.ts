@@ -87,7 +87,7 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
         return this.apiService.requestFullData({
             visualization: 'aggregate_term_frequency',
             parameters: paramsPerSeries,
-            corpus: this.corpus.name,
+            corpus_name: this.corpus.name,
         });
     }
 
@@ -119,6 +119,7 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
 
         return this.rawData.map((series, seriesIndex) => (
             {
+                type: this.chartType,
                 label: series.queryText ? series.queryText : '(no query)',
                 data: labels.map(key => {
                   const item = series.data.find(i => i.key === key);
@@ -133,12 +134,12 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
     }
 
     chartOptions(datasets: any[]) {
-        const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const xLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
-        options.scales.xAxis.type = 'category';
-        (options.scales.xAxis as any).title.text = xAxisLabel;
-        options.scales.xAxis.ticks = { callback: formatXAxisLabel };
+        options.scales.x.type = 'category';
+        (options.scales.x as any).title.text = xLabel;
+        options.scales.x.ticks = { callback: formatXAxisLabel };
         options.plugins.tooltip = {
             callbacks: {
                 label: (tooltipItem) => {

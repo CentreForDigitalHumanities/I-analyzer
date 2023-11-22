@@ -18,6 +18,12 @@ export class DropdownComponent<T> implements OnDestroy {
     public value: T | undefined = undefined;
 
     @Input()
+    public disabled = false;
+
+    @Input()
+    public styleClass: string;
+
+    @Input()
     public options: T[] = [];
 
     @Input()

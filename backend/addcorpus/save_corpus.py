@@ -48,7 +48,10 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'word_models_present',
     ]
 
-    defined = get_defined_attributes(corpus_definition, attributes_to_copy)
+    try:
+        defined = get_defined_attributes(corpus_definition, attributes_to_copy)
+    except Exception as e:
+        raise e
 
     for attr, value in defined.items():
         configuration.__setattr__(attr, value)
