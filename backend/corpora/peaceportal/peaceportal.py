@@ -8,7 +8,7 @@ from langdetect.lang_detect_exception import LangDetectException
 from django.conf import settings
 
 from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition
-from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
+from addcorpus.es_mappings import geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 from addcorpus.extract import Constant
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
@@ -342,9 +342,9 @@ class PeacePortal(ParentCorpusDefinition):
 
     coordinates = FieldDefinition(
         name='coordinates',
-        es_mapping=keyword_mapping(),
+        es_mapping=geo_mapping(),
         display_name='Coordinates',
-        description='GIS coordinates for the inscription.'
+        description='GIS coordinates of the inscription.'
     )
 
     iconography = FieldDefinition(
