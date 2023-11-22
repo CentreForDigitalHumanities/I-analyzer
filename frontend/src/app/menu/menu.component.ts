@@ -21,7 +21,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     adminUrl = environment.adminUrl;
 
-    menuOpen = false;
+    menuOpen$ = new BehaviorSubject<boolean>(false);
     dropdownOpen$ = new BehaviorSubject<boolean>(false);
 
     user$: Observable<User>;
@@ -73,7 +73,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     toggleMenu() {
-        this.menuOpen = !this.menuOpen;
+        this.menuOpen$.next(!this.menuOpen$.value);
     }
 
     public async logout() {
