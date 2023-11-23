@@ -148,6 +148,11 @@ def test_download_history_view(admin_client, finished_download, small_mock_corpu
     assert download['corpus'] == small_mock_corpus
     assert download['status'] == 'done'
 
+    # These methods should not be allowed
+    assert admin_client.get('/api/download/history/1/').status_code == 405
+    assert admin_client.post('/api/download/history/', {}).status_code == 405
+    assert admin_client.put('/api/download/history/', {}).status_code == 405
+
 def read_file_response(response, encoding):
     content_bytes = io.BytesIO(response.getvalue()).read()
     content_string = bytes.decode(content_bytes, encoding)

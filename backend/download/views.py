@@ -4,6 +4,7 @@ import os
 from addcorpus.models import Corpus
 from addcorpus.permissions import (CorpusAccessPermission,
                                    corpus_name_from_request)
+from api.utils import check_json_keys
 from django.conf import settings
 from django.http.response import FileResponse
 from download import convert_csv, tasks
@@ -12,11 +13,11 @@ from download.serializers import DownloadSerializer
 from es import download as es_download
 from rest_framework.exceptions import (APIException, NotFound, ParseError,
                                        PermissionDenied)
+from rest_framework.mixins import DestroyModelMixin, ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
-from api.utils import check_json_keys
+from rest_framework.viewsets import GenericViewSet
 from tag.filter import handle_tags_in_request
 
 logger = logging.getLogger()
@@ -115,14 +116,13 @@ class FullDataDownloadTaskView(APIView):
             raise APIException('Download failed: server error')
 
 
-class DownloadHistoryViewset(ModelViewSet):
+class DownloadHistoryViewset(GenericViewSet, ListModelMixin, DestroyModelMixin):
     '''
     Retrieve list of all the user's downloads
     '''
 
     serializer_class = DownloadSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         return self.request.user.downloads.all()
