@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 
 import { User, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import { PageResultsParameters, PageResults } from '../models/page-results';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { DocumentPage } from '../models/document-page';
 
 const MAXIMUM_DISPLAYED = 10000;
@@ -16,7 +16,7 @@ const MAXIMUM_DISPLAYED = 10000;
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnChanges {
+export class SearchResultsComponent implements OnChanges, OnDestroy {
     @ViewChild('resultsNavigation', {static: true})
     public resultsNavigation: ElementRef;
 
@@ -48,18 +48,29 @@ export class SearchResultsComponent implements OnChanges {
     /** tab on which the focused document should be opened */
     public documentTabIndex: number;
 
+    private destroy$ = new Subject<void>();
+
     constructor(private searchService: SearchService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
+            this.pageResults?.complete();
             this.pageResults = new PageResults(this.searchService, this.queryModel);
             this.error$ = this.pageResults.error$.pipe(
                 map(this.parseError)
             );
-            this.pageResults.result$.subscribe(result => {
+            this.pageResults.result$.pipe(
+                takeUntil(this.destroy$)
+            ).subscribe(result => {
                 this.searchedEvent.emit({ queryText: this.queryModel.queryText, resultsCount: result.total });
             });
         }
+    }
+
+    ngOnDestroy(): void {
+        this.pageResults?.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     setParameters(parameters: PageResultsParameters) {
