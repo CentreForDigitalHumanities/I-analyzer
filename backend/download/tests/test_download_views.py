@@ -108,7 +108,7 @@ def test_full_data_download_view(transactional_db, admin_client, small_mock_corp
 
 def test_empty_download_history_view(admin_client):
     response = admin_client.get(
-        '/api/download/'
+        '/api/download/history/'
     )
 
     assert status.is_success(response.status_code)
@@ -139,7 +139,7 @@ def finished_download(admin_user, csv_directory, small_mock_corpus):
 
 def test_download_history_view(admin_client, finished_download, small_mock_corpus):
     response = admin_client.get(
-        '/api/download/'
+        '/api/download/history/'
     )
 
     assert status.is_success(response.status_code)

@@ -73,7 +73,7 @@ export class ApiService {
     }
 
     public downloads(): Promise<Download[]> {
-        return this.http.get<Download[]>('/api/download/').toPromise();
+        return this.http.get<Download[]>('/api/download/history/').toPromise();
     }
 
     // Media

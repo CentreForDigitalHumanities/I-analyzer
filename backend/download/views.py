@@ -122,6 +122,7 @@ class DownloadHistoryViewset(ModelViewSet):
 
     serializer_class = DownloadSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         return self.request.user.downloads.all()
