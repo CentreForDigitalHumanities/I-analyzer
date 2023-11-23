@@ -1,7 +1,9 @@
 <div class="field is-grouped is-grouped-multiline" *ngIf="(document?.tags$ | async) as tags">
     <div class="control tags has-addons" *ngFor="let tag of tags">
-        <span class="tag is-primary">
-            {{tag.name}}
+        <span class="tag is-primary tag-name">
+            <span class="name">
+                {{tag.name}}
+            </span>
         </span>
         <button class="button tag" [attr.aria-label]="'remove tag ' + tag.name"
             iaBalloon="remove this tag" iaBalloonPosition="up"
@@ -10,7 +12,7 @@
         </button>
     </div>
 
-    <div class="control" style="max-width: 100%;" >
+    <div class="control">
         <ng-container *ngIf="showAddNew; else toggleAddNew">
             <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
         </ng-container>
