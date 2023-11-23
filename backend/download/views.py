@@ -11,9 +11,10 @@ from download import convert_csv, tasks
 from download.models import Download
 from download.serializers import DownloadSerializer
 from es import download as es_download
+from backend.ianalyzer.mixins import DestroyWithPayloadMixin
 from rest_framework.exceptions import (APIException, NotFound, ParseError,
                                        PermissionDenied)
-from rest_framework.mixins import DestroyModelMixin, ListModelMixin
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -116,7 +117,7 @@ class FullDataDownloadTaskView(APIView):
             raise APIException('Download failed: server error')
 
 
-class DownloadHistoryViewset(GenericViewSet, ListModelMixin, DestroyModelMixin):
+class DownloadHistoryViewset(GenericViewSet, ListModelMixin,  DestroyWithPayloadMixin):
     '''
     Retrieve list of all the user's downloads
     '''
