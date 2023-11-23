@@ -1,7 +1,7 @@
 <ia-notifications></ia-notifications>
-<header ia-menu *ngIf="!iframe"></header>
+<ia-menu role="banner" *ngIf="!iframe"></ia-menu>
 <main id="main" tabindex="-1">
     <router-outlet></router-outlet>
     <ia-dialog></ia-dialog>
 </main>
-<footer ia-footer *ngIf="!iframe"></footer>
+<ia-footer role="contentinfo" *ngIf="!iframe"></ia-footer>

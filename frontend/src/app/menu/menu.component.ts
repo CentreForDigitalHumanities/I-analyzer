@@ -12,7 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-    selector: '[ia-menu]',
+    selector: 'ia-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss'],
 })
