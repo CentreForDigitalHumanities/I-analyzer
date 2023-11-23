@@ -340,6 +340,7 @@ class FieldDefinition(Field):
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  language=None,
+                 language_field='',
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
@@ -369,6 +370,7 @@ class FieldDefinition(Field):
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
         self.language = language
+        self.language_field = language_field
         self.hidden = not indexed or hidden
 
         self.sortable = sortable if sortable != None else \

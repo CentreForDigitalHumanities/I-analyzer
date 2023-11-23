@@ -344,6 +344,18 @@ class Field(models.Model):
         default=True,
         help_text='whether this field can be included in search results downloads',
     )
+    language_field = models.CharField(
+        max_length=MAX_LENGTH_NAME,
+        blank=True,
+        null=False,
+        help_text='name of another field which contains the IETF language tag of the content of this field',
+    )
+    language = models.CharField(
+        max_length=64,
+        blank=True,
+        null=False,
+        help_text='IETF language tag of the content of this field; if language_field is also filled in, this is a fallback',
+    )
 
     class Meta:
         constraints = [
