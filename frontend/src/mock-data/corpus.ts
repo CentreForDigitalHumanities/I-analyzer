@@ -29,6 +29,8 @@ export const mockField = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
+    language_field: '',
 });
 
 /* a keyword field with a multiple choice filter */
@@ -54,6 +56,8 @@ export const mockFieldMultipleChoice = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
+    language_field: '',
 });
 
 /** a text content field */
@@ -75,6 +79,8 @@ export const mockField2 = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
+    language_field: '',
 });
 
 /** a keyword field with sorting option */
@@ -101,6 +107,8 @@ export const mockField3 = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
+    language_field: '',
 });
 
 /** a date field */
@@ -127,6 +135,8 @@ export const mockFieldDate = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
+    language_field: '',
 });
 
 

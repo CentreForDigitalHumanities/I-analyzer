@@ -37,6 +37,8 @@ class FieldSerializer(serializers.ModelSerializer):
             'sortable',
             'searchable',
             'downloadable',
+            'language',
+            'language_field',
         ]
 
 

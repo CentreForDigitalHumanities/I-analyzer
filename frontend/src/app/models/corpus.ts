@@ -86,6 +86,8 @@ export interface ApiCorpusField {
     sortable: boolean;
     searchable: boolean;
     downloadable: boolean;
+    language: string;
+    language_field: string;
 }
 
 export class CorpusField {
@@ -110,6 +112,8 @@ export class CorpusField {
     name: string;
     filterOptions: FieldFilterOptions;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
+    language: string;
+    languageField: string;
 
     constructor(data: ApiCorpusField) {
         this.description = data.description;
@@ -131,6 +135,8 @@ export class CorpusField {
         this.name = data.name;
         this.filterOptions = data['search_filter'];
         this.mappingType = data.es_mapping?.type;
+        this.language = data.language || undefined;
+        this.languageField = data.language_field || undefined;
     }
 
     /** make a SearchFilter for this field */
