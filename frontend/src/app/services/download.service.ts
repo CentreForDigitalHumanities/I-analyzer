@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { Corpus, CorpusField, DownloadOptions, QueryModel } from '../models/index';
+import { Corpus, CorpusField, Download, DownloadOptions, QueryModel } from '../models/index';
 import * as _ from 'lodash';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class DownloadService {
@@ -68,5 +69,9 @@ export class DownloadService {
     public retrieveFinishedDownload(id: number, options: DownloadOptions) {
         const parameters = _.merge({id}, options);
         return this.apiService.csv(parameters);
+    }
+
+    public deleteDownload(id: number): Observable<Download> {
+        return this.apiService.deleteDownload(id);
     }
 }

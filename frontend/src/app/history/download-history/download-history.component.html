@@ -17,6 +17,7 @@
                 <th rowspan="2">Field(s)</th>
                 <th rowspan="2">Status</th>
                 <th rowspan="2">Download</th>
+                <th rowspan="2">Delete</th>
             </tr>
             <tr>
                 <th>
@@ -46,6 +47,15 @@
                             <fa-icon [icon]="faDownload"></fa-icon>
                         </span>
                         <span>download file</span>
+                    </a>
+                </td>
+                <td>
+                    <a *ngIf="download.status === 'done'" role="button" tabindex="0" (click)="deleteDownload(download)"
+                        (keydown.enter)="deleteDownload(download)">
+                        <span class="icon">
+                            <fa-icon [icon]="faTrash"></fa-icon>
+                        </span>
+                        <span>delete download</span>
                     </a>
                 </td>
             </tr>
