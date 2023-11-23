@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
 import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
 import { DocumentView } from '../models/document-page';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-document-view',
@@ -29,7 +30,8 @@ export class DocumentViewComponent implements OnChanges {
         scan: faImage,
     };
 
-    activeTab: 'scan' | undefined;
+    /** active tab on opening */
+    activeTab: string;
 
     public imgNotFound: boolean;
     public imgPath: string;
@@ -53,10 +55,20 @@ export class DocumentViewComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.view) {
-            if (this.view === 'scan' && this.showScanTab) {
-                this.activeTab = 'scan';
-            }
+            this.activeTab = this.tabFromView(this.view);
         }
+    }
+
+    /** get the tab from the view mode
+     *
+     * For "scan" view: select the scan tab if there is one
+     * For "content" view: select the first content field
+     */
+    tabFromView(view: DocumentView): string {
+        if (view === 'scan' && this.showScanTab) {
+            return 'scan';
+        }
+        return _.first(this.contentFields)['name'];
     }
 
     isUrlField(field: CorpusField) {
