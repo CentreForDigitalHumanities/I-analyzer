@@ -37,10 +37,12 @@ export class DocumentPage {
         this.focus$.next(undefined);
     }
 
+    /** set focus to a position relative to the given document */
     private focusShift(document: FoundDocument, shift: number) {
         this.focusPosition(document.position + shift);
     }
 
+    /** focus on the document at the given position in the page */
     private focusPosition(position: number) {
         const index = _.clamp(position - 1, 0, this.documents.length - 1);
         this.focus(this.documents[index]);

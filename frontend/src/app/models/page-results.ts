@@ -13,7 +13,7 @@ export interface PageResultsParameters {
     size: number;
 }
 
-const parseResults = (results: SearchResults): DocumentPage =>
+const resultsToPage = (results: SearchResults): DocumentPage =>
     new DocumentPage(results.documents, results.total.value, results.fields);
 
 export class PageResults extends Results<PageResultsParameters, DocumentPage> {
@@ -36,6 +36,7 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         );
     }
 
+    /** Parameters to re-assign when the query model is updated. */
     assignOnQueryUpdate(): Partial<PageResultsParameters> {
         return {
             from: 0
@@ -46,7 +47,7 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         return from(this.searchService.loadResults(
             this.query, params.from, params.size
         )).pipe(
-            map(parseResults)
+            map(resultsToPage)
         );
     }
 

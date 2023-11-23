@@ -1,14 +1,31 @@
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, merge, of } from 'rxjs';
 import { QueryModel } from './query';
-import { catchError, map, mergeMap, share, shareReplay, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, share, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
 
-
+/**
+ * Abstract class for any kind of results based on a query model
+ *
+ * Child classes can configure additional parameters, and the method
+ * for fetching results. Results will be loaded when the query model
+ * or the parameters update
+ */
 export abstract class Results<Parameters, Result> {
+    /** additional parameters besides the query model */
     parameters$: BehaviorSubject<Parameters>;
+
+    /** retrieved results */
     result$: Observable<Result>;
+
+    /** errors thrown in the last results fetch (if any) */
     error$: BehaviorSubject<any>;
+
+    /** whether the model is currently loading results;
+     * can be used to show a loading spinner
+     */
     loading$: Observable<boolean>;
+
+    private complete$ = new Subject<void>();
 
     constructor(
         public query: QueryModel,
@@ -16,10 +33,16 @@ export abstract class Results<Parameters, Result> {
     ) {
         this.error$ = new BehaviorSubject(undefined);
         this.parameters$ = new BehaviorSubject(initialParameters);
-        this.query.update.subscribe(() =>
-            this.setParameters(this.assignOnQueryUpdate())
+
+        this.query.update.pipe(
+            takeUntil(this.complete$),
+            map(this.assignOnQueryUpdate.bind(this)),
+        ).subscribe((params: Partial<Parameters>) =>
+            this.setParameters(params)
         );
+
         this.result$ = this.parameters$.pipe(
+            takeUntil(this.complete$),
             mergeMap(this.fetch.bind(this)),
             catchError(err => {
                 this.error$.next(err);
@@ -27,6 +50,7 @@ export abstract class Results<Parameters, Result> {
             }),
             shareReplay(1),
         );
+
         this.loading$ = this.makeLoadingObservable();
     }
 
@@ -35,12 +59,29 @@ export abstract class Results<Parameters, Result> {
         return {};
     }
 
+    /** Set parameters.
+     *
+     * The new value can be partial; it will be merged with the current parameters.
+     * Updating parameters will trigger new results being fetched.
+     */
     setParameters(newValues: Partial<Parameters>) {
-        this.clearError();
+        this.error$.next(undefined);
         const params: Parameters = _.assign(this.parameters$.value, newValues);
         this.parameters$.next(params);
     }
 
+    /**
+     * stops the results object from listening to the query model,
+     * and completes observables
+     */
+    complete() {
+        this.complete$.next();
+        this.parameters$.complete();
+        this.error$.complete();
+        this.complete$.complete();
+    }
+
+    /** set up the loading$ observable */
     private makeLoadingObservable(): Observable<boolean> {
         const onQueryUpdate$ = this.query.update.pipe(map(() => true));
         const onParameterChange$ = this.parameters$.pipe(map(() => true));
@@ -49,13 +90,7 @@ export abstract class Results<Parameters, Result> {
         return merge(onQueryUpdate$, onParameterChange$, onResult$, onError$);
     }
 
-    private clearError() {
-        if (this.error$.value) {
-            this.error$.next(undefined);
-        }
-    }
-
-
+    /** fetch results */
     abstract fetch(parameters: Parameters): Observable<Result>;
 
 }
