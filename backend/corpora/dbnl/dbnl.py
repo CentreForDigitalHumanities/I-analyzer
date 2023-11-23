@@ -364,6 +364,8 @@ class DBNL(XMLCorpusDefinition):
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud'],
+        language_field='language_code',
+        language='nl',
     )
 
     has_content = FieldDefinition(

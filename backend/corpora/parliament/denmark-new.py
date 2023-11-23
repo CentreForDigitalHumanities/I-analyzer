@@ -72,9 +72,11 @@ class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
         Metadata('parties'),
         transform = get_party_name
     )
+    party.language = 'da'
 
     role = field_defaults.parliamentary_role()
     role.extractor = CSV(field = 'Role')
+    role.language = 'da'
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(field = 'Name')
@@ -90,12 +92,14 @@ class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field = 'Text')
+    speech.language = 'da'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(field = 'ID')
 
     subject = field_defaults.subject()
     subject.extractor = CSV(field = 'Subject 1')
+    subject.language = 'en'
 
     topic = field_defaults.topic()
     topic.extractor = CSV(field = 'Agenda title')

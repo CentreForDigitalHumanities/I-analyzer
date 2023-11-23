@@ -206,7 +206,8 @@ class Rechtspraak(XMLCorpusDefinition):
             name='publisher',
             display_name='Publisher',
             extractor=rdf_description_extractor('dcterms:publisher'),
-            es_mapping={'type': 'keyword'}
+            es_mapping={'type': 'keyword'},
+            language='nl',
         ),
         FieldDefinition(
             name='creator',
@@ -219,7 +220,8 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings of selected courts.',
                 option_count=9999
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='zaaknr',
@@ -238,7 +240,8 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings of selected type.',
                 option_count=2
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='procedure',
@@ -250,13 +253,15 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings of selected procedure type.',
                 option_count=44
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='spatial',
             display_name='Location',
             es_mapping=keyword_mapping(),
-            extractor=rdf_description_extractor('dcterms:spatial')
+            extractor=rdf_description_extractor('dcterms:spatial'),
+            language='nl',
         ),
         FieldDefinition(
             name='subject',
@@ -268,7 +273,8 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings within this area of law.',
                 option_count=32
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='title',
@@ -277,12 +283,14 @@ class Rechtspraak(XMLCorpusDefinition):
                 'dcterms:title', section='html'),
             results_overview=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='abstract',
             display_name='Abstract',
             extractor=extract.XML(tag='inhoudsindicatie', flatten=True),
             results_overview=True,
+            language='nl',
         ),
         FieldDefinition(
             name='content',
@@ -296,6 +304,7 @@ class Rechtspraak(XMLCorpusDefinition):
             ),
             csv_core=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='url',
