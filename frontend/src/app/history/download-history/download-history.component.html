@@ -50,7 +50,8 @@
                     </a>
                 </td>
                 <td>
-                    <a *ngIf="download.status === 'done'" role="button" tabindex="0" (click)="deleteDownload(download)"
+                    <a *ngIf="download.status === 'done' || download.status ==='error'" role="button" tabindex="0"
+                        (click)="deleteDownload(download)"
                         (keydown.enter)="deleteDownload(download)">
                         <span class="icon">
                             <fa-icon [icon]="faTrash"></fa-icon>
