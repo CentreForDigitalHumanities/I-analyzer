@@ -9,7 +9,7 @@ from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
 from tag.filter import handle_tags_in_request
 from tag.permissions import CanSearchTags
-from api.save_query import save_query
+from api.save_query import should_save_query
 from addcorpus.models import Corpus
 from api.models import Query
 
@@ -56,7 +56,7 @@ class ForwardSearchView(APIView):
             **get_query_parameters(request)
         }
 
-        history_obj = self._log_query_started(request, corpus_name, query)
+        history_obj = self._save_query_started(request, corpus_name, query)
 
         try:
             results = client.search(
@@ -69,12 +69,12 @@ class ForwardSearchView(APIView):
             raise APIException('Search failed')
 
         if history_obj and results:
-            self._log_query_done(history_obj, results)
+            self._save_query_done(history_obj, results)
 
         return Response(results)
 
-    def _log_query_started(self, request, corpus_name, es_query):
-        if save_query(request.user, es_query):
+    def _save_query_started(self, request, corpus_name, es_query):
+        if should_save_query(request.user, es_query):
             corpus = Corpus.objects.get(name=corpus_name)
             return Query.objects.create(
                 user=request.user,
@@ -82,7 +82,7 @@ class ForwardSearchView(APIView):
                 query_json=es_query,
             )
 
-    def _log_query_done(self, query, results):
+    def _save_query_done(self, query, results):
         query.completed = timezone.now()
         query.total_results = total_hits(results)
         query.transferred = len(hits(results))
