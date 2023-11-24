@@ -1,6 +1,5 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
-import * as _ from 'lodash';
-import { combineLatest, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
