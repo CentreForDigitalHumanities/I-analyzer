@@ -2,21 +2,17 @@ import { Injectable } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { QueryService } from './query.service';
 import {
     Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, QueryDb, User
+    AggregateQueryFeedback
 } from '../models/index';
-import { AuthService } from './auth.service';
 
 
 @Injectable()
 export class SearchService {
     constructor(
         private apiService: ApiService,
-        private authService: AuthService,
         private elasticSearchService: ElasticSearchService,
-        private queryService: QueryService,
     ) {
         window['apiService'] = this.apiService;
     }
@@ -40,14 +36,8 @@ export class SearchService {
 
     public async search(queryModel: QueryModel
     ): Promise<SearchResults> {
-        const user = await this.authService.getCurrentUserPromise();
-        const request = () => this.elasticSearchService.search(queryModel);
-
-        const resultsPromise = user.enableSearchHistory ?
-            this.searchAndSave(queryModel, user, request) :
-            request();
-
-        return resultsPromise.then(results =>
+        const request = this.elasticSearchService.search(queryModel);
+        return request.then(results =>
             this.filterResultsFields(results, queryModel)
         );
     }
@@ -76,34 +66,6 @@ export class SearchService {
             fieldName,
             timeInterval
         );
-    }
-
-    /** execute a search request and save the action to the search history log */
-    private searchAndSave(queryModel: QueryModel, user: User, searchRequest: () => Promise<SearchResults>): Promise<SearchResults> {
-        return this.recordTime(searchRequest).then(([results, started, completed]) => {
-            this.saveQuery(queryModel, user, results, started, completed);
-            return results;
-        });
-    }
-
-    /** execute a promise while noting the start and end time */
-    private recordTime<T>(makePromise: () => Promise<T>): Promise<[result: T, started: Date, completed: Date]> {
-        const started = new Date(Date.now());
-
-        return makePromise().then(result => {
-            const completed = new Date(Date.now());
-            return [result, started, completed];
-        });
-    }
-
-    /** save query data to search history */
-    private saveQuery(queryModel: QueryModel, user: User, results: SearchResults, started: Date, completed: Date) {
-        const esQuery = queryModel.toEsQuery();
-        const query = new QueryDb(esQuery, queryModel.corpus.name, user.id);
-        query.started = started;
-        query.total_results = results.total.value;
-        query.completed = completed;
-        this.queryService.save(query);
     }
 
     /** filter search results for fields included in resultsOverview of the corpus */
