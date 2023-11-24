@@ -8,11 +8,6 @@ export class QueryService {
 
     constructor(private apiRetryService: ApiRetryService) { }
 
-    save(query: QueryDb): Promise<any> {
-        return this.apiRetryService.requireLogin(api => api.saveQuery(query));
-    }
-
-
     /**
      * Retrieve saved queries
      */
