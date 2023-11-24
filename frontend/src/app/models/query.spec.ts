@@ -1,10 +1,9 @@
 import { mockField2, mockFieldDate, mockFieldMultipleChoice } from '../../mock-data/corpus';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
-import { DateFilter, MultipleChoiceFilter, SearchFilter } from './field-filter';
+import { SearchFilter } from './field-filter';
 import { convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { paramsHaveChanged } from '../utils/params';
 
 const corpus: Corpus = {
     name: 'mock-corpus',

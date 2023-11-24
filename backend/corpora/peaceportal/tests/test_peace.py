@@ -252,8 +252,10 @@ def test_imports(peace_test_settings, corpus_object):
     resulted_fields = set()
 
     docs = get_documents(corpus, start, end)
+    sorted_docs = (doc for doc in sorted(docs, key=lambda doc: doc['id']))
+
     for target in corpus_object.get('docs'):
-        doc = next(docs)
+        doc = next(sorted_docs)
         for key in target:
             tested_fields.add(key)
             assert key in doc
@@ -276,5 +278,5 @@ def test_peaceportal_validation(db, peace_test_settings):
     load_and_save_all_corpora()
     corpus_names = [case['name'] for case in CORPUS_TEST_DATA]
     for corpus_name in corpus_names:
-      corpus = Corpus.objects.get(name=corpus_name) 
-      assert corpus.active 
+        corpus = Corpus.objects.get(name=corpus_name)
+        assert corpus.active
