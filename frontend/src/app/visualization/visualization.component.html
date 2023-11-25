@@ -82,6 +82,7 @@
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-ngram>
+            <ia-vega *ngSwitchCase="'vega'"></ia-vega>
         </ng-container>
     </div>
 </ng-container>

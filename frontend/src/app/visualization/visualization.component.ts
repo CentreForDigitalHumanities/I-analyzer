@@ -104,6 +104,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
                 value: visType
             })
         );
+        this.visDropdown.push({label: 'vega experiment', value: 'vega'});
     }
 
     async initialize() {
@@ -141,6 +142,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.filteredVisualizationFields = this.allVisualizationFields.filter(field =>
             field.visualizations.includes(visType)
         );
+        if (this.visualizationType === 'vega') {
+            this.filteredVisualizationFields = this.allVisualizationFields;
+        }
         this.fieldDropdown = this.filteredVisualizationFields.map(field => ({
             label: field.displayName || field.name,
             value: field
