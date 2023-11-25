@@ -11,7 +11,7 @@ export class VegaComponent implements OnInit {
     constructor(private el: ElementRef) { }
 
     ngOnInit(): void {
-        const request = fetch('https://vega.github.io/vega/examples/bar-chart.vg.json')
+        const request = fetch('/assets/data.json')
             .then(res => res.json())
             .then(spec => this.render(spec));
     }
