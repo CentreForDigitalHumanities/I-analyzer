@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { View, ViewOptions, parse } from 'vega';
 
 @Component({
@@ -8,7 +8,7 @@ import { View, ViewOptions, parse } from 'vega';
 })
 export class VegaComponent implements OnInit {
 
-    constructor() { }
+    constructor(private el: ElementRef) { }
 
     ngOnInit(): void {
         const request = fetch('https://vega.github.io/vega/examples/bar-chart.vg.json')
@@ -26,6 +26,10 @@ export class VegaComponent implements OnInit {
             parse(spec),
             options
         );
+        const width = this.el.nativeElement['offsetWidth'] * 0.8;
+        const aspectRatio = spec['height'] / spec['width']  || 1;
+        view.width(width);
+        view.height(width * aspectRatio);
         return view.runAsync();
     }
 }
