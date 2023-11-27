@@ -56,3 +56,13 @@ If a field includes the `'resultscount'` and/or `'termfrequency'` visualisations
 `csv_core` determines if a field is included in the CSV download of search results by default.
 
 `sortable` determines whether a field should appear as a sort option.
+
+### Language
+
+For text and keyword fields, you can set the language of the field as follows:
+
+`language` specifies an [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) of the field's contents.
+
+`language_field` can be used if the language in the field is not always the same, and you want to set it dynamically. It provides the `name` of another field in the corpus, which contains the IETF tag for this field's contents.
+
+This language metadata is used to set the `lang` property of the DOM element in the interface. The frontend will try to get the language from the `language_field`. If that hasn't been provided, or its value is null, the constant `language` will be used. If both are empty, the field's contents will be assumed to match the rest of the interface.
