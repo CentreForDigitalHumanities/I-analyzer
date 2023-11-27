@@ -14,7 +14,7 @@
             </a>
 
             <a  role="button" tabindex="0"
-                (click)="toggleMenu($event)" (keydown.enter)="toggleMenu($event)"
+                (click)="toggleMenu()" (keydown.enter)="toggleMenu()"
                 class="navbar-burger" [class.is-active]="menuOpen$ | async"
                 aria-label="menu" [attr.aria-expanded]="menuOpen$ | async"
                 data-target="navigation-menu">
