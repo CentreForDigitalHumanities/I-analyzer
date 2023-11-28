@@ -229,6 +229,10 @@ export class ApiService {
         return this.http.delete<Download>(`/api/download/history/${id}/`);
     }
 
+    public deleteAllDownloads(): Observable<string> {
+        return this.http.get<string>('/api/download/history/delete_all/');
+    }
+
     // Corpus
     public corpusdescription(data: {
         filename: string;

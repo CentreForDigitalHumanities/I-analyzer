@@ -7,6 +7,12 @@
                 Downloads
             </div>
         </ng-template>
+        <ng-template *ngIf="downloads.length" pTemplate="summary">
+            <button class="button is-primary" type="reset" (click)="deleteAllDownloads()">
+                <span class="icon"><fa-icon [icon]="faTrash"></fa-icon></span>
+                <span>Delete all downloads</span>
+            </button>
+        </ng-template>
         <ng-template pTemplate="header">
             <tr>
                 <th rowspan="2">Timestamp</th>

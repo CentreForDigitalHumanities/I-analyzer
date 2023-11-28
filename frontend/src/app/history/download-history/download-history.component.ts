@@ -126,13 +126,26 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnDest
                 tap(() => this.refreshDownloads())
                 )
             .subscribe(
-                this.deleteSuccess,
-                this.deleteFailure
+                res => this.deleteSuccess(),
+                err => this.deleteFailure(err)
             );
     }
 
-    private deleteSuccess = (): void => {
-        this.notificationService.showMessage(`deleted download`, 'success');
+    public deleteAllDownloads(): void {
+        this.downloadService
+            .deleteAll()
+            .pipe(
+                takeUntil(this.destroy$),
+                tap(() => this.refreshDownloads())
+            )
+            .subscribe(
+                (res) => this.deleteSuccess(res),
+                (err) => this.deleteFailure(err)
+            );
+    }
+
+    private deleteSuccess = (msg?: string): void => {
+        this.notificationService.showMessage(msg || 'deleted download', 'success');
     };
 
 

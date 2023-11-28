@@ -22,7 +22,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from tag.filter import handle_tags_in_request
 
-from backend.ianalyzer.mixins import DestroyWithPayloadMixin
+from ianalyzer.mixins import DestroyWithPayloadMixin
 
 logger = logging.getLogger()
 
@@ -131,7 +131,7 @@ class DownloadHistoryViewset(GenericViewSet, ListModelMixin,  DestroyWithPayload
     def get_queryset(self):
         return self.request.user.downloads.all()
 
-    @action(detail=False, url_path='delete_all/')
+    @action(detail=False, url_path='delete_all')
     def delete_all(self, request):
         # For now, only delete downloads that are done/failed
         downloads = request.user.downloads.all()
@@ -144,7 +144,7 @@ class DownloadHistoryViewset(GenericViewSet, ListModelMixin,  DestroyWithPayload
             except Exception as e:
                 logger.error(e)
 
-        return Response(f'deleted {n_deletions} downloads', status=HTTP_200_OK)
+        return Response(f'deleted {n_deletions} download(s)', status=HTTP_200_OK)
 
 
 class FileDownloadView(APIView):

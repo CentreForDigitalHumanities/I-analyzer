@@ -74,4 +74,8 @@ export class DownloadService {
     public deleteDownload(id: number): Observable<Download> {
         return this.apiService.deleteDownload(id);
     }
+
+    public deleteAll(): Observable<string> {
+        return this.apiService.deleteAllDownloads();
+    }
 }
