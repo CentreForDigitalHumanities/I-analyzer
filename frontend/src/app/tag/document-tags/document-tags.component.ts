@@ -1,7 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FoundDocument, Tag } from '../../models';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { first, map, mergeMap } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 @Component({
@@ -9,7 +8,7 @@ import * as _ from 'lodash';
     templateUrl: './document-tags.component.html',
     styleUrls: ['./document-tags.component.scss'],
 })
-export class DocumentTagsComponent implements OnInit {
+export class DocumentTagsComponent implements OnChanges {
     @Input() document: FoundDocument;
 
     faTimes = faTimes;
@@ -19,7 +18,11 @@ export class DocumentTagsComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit(): void {}
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.document) {
+            this.showAddNew = false;
+        }
+    }
 
     addTag(tag: Tag) {
         this.document.addTag(tag);

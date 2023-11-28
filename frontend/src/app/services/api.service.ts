@@ -63,11 +63,6 @@ export class ApiService {
         return this.http.post('/api/search_history/delete_all/', {});
     }
 
-    // General / misc
-    public saveQuery(options: QueryDb) {
-        return this.http.post('/api/search_history/', options).toPromise();
-    }
-
     public searchHistory() {
         return this.http.get<QueryDb[]>('/api/search_history/').toPromise();
     }
