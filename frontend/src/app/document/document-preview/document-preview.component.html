@@ -5,7 +5,7 @@
         <table class="table is-fullwidth">
             <ng-container *ngFor="let field of page.fields">
                 <tr *ngIf="document.fieldValue(field)">
-                    <th>
+                    <th [iaBalloon]="field.description" iaBalloonPosition="up">
                         {{field.displayName}}:
                     </th>
                     <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
