@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?oxygen RNGSchema="http://www.stoa.org/epidoc/schema/latest/tei-epidoc.rng"?><TEI n="iip" xml:id="jeru0014" xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+<teiHeader>
+<fileDesc><!-- ********** <titleStmt> ********** -->
+<titleStmt>
+<title>Inscriptions of Israel/Palestine</title>
+<respStmt>
+<resp>Prinicipal Investigator</resp>
+<persName xml:id="MS">Michael Satlow</persName>
+</respStmt>
+</titleStmt>
+<publicationStmt>
+<xi:include href="http://cds.library.brown.edu/projects/iip/include_publicationStmt.xml">
+<xi:fallback>
+<p>ERROR-could not find publication information which should appear in this space.</p>
+</xi:fallback>
+</xi:include>
+<idno type="IIP">jeru0014</idno>
+<!--Jeru 0014-->
+</publicationStmt>
+<!-- ********* <sourceDesc> ********* -->
+<sourceDesc>
+<msDesc>
+<msIdentifier>
+<idno>jeru0014</idno>
+<publications><publication>Rahmani, L. Y. (1994). A Catalogue of Jewish Ossuaries in the Collections of the State of Israel. (A. Sussmann, Ed.). Israel Antiquities Authority: Israel Academy of Sciences and Humanities. (page 80, plate 4, fig. 21)</publication></publications></msIdentifier>
+<!-- ********* <msContents> ********* -->
+<msContents>
+<textLang mainLang="arc"/>
+<msItem ana="#jewish" class="#funerary">
+<p>Judaea. Jerusalem. 20 BCE to 70 CE. Soft limestone ossuary. Funerary.</p>
+</msItem>
+</msContents>
+<!-- ********* <physDesc> ********* -->
+<physDesc><!-- ********* <objectDesc> ********* -->
+<objectDesc ana="#ossuary">
+<supportDesc>
+<support>
+<dimensions type="surface" unit="cm">
+<height>29.5</height>
+<width>52</width>
+<depth>23</depth>
+</dimensions>
+</support>
+<condition>
+<p/>
+</condition>
+</supportDesc>
+<!-- ********* <layoutDesc> ********* -->
+<layoutDesc>
+<layout columns="0" writtenLines="0">
+<p/>
+</layout>
+</layoutDesc>
+</objectDesc>
+<!-- ********* <handDesc> ********* -->
+<handDesc>
+<handNote ana="#engraved"/>
+</handDesc>
+<!-- ********* <decoDesc> ********* -->
+<decoDesc>
+<decoNote ana="#xx">
+<ab/>
+<locus/>
+</decoNote>
+</decoDesc>
+</physDesc>
+<!-- ********* <history> ********* -->
+<history>
+<origin>
+<date notAfter="0070" notBefore="-0020" period="http://n2t.net/ark:/99152/p0m63njbxb9">20 BCE to 70 CE</date>
+<placeName>
+<region>Judaea</region>
+<settlement ref="http://pleiades.stoa.org/places/687928">Jerusalem</settlement>
+<geogName type="site">Kidron Valley</geogName>
+<geogFeat type="locus">southeast of 'En Rogel</geogFeat>
+</placeName>
+<p>Judaea. Jerusalem. Kidron Valley, southeast of Ἑn Rogel.</p>
+</origin>
+<provenance>
+<placeName/>
+<date/>
+</provenance>
+</history>
+</msDesc>
+</sourceDesc>
+</fileDesc>
+<!-- ********* <encodingDesc> ********* -->
+<encodingDesc>
+<xi:include href="http://cds.library.brown.edu/projects/iip/include_taxonomies.xml">
+<xi:fallback>
+<p>ERROR: could not find taxonomies file, which should appear in this space.</p>
+</xi:fallback>
+</xi:include>
+</encodingDesc>
+<profileDesc/>
+<!-- ********* <revisionDesc> ********* -->
+<revisionDesc>
+<change when="2008-04-09" who="persons.xml#Anna_Schnur-Fishman">Creation</change>
+<change when="2016-12-02" who="persons.xml#Elli_Mylonas">Normalized objectDesc/@ana</change>
+<change when="2016-12-14" who="persons.xml#Elli_Mylonas">Adding Pleiades IDs to origin/placenames</change>
+<change when="2019-01-29" who="persons.xml#Elli_Mylonas">
+                adding period attribute to date element, with Periodo value.
+            </change>
+</revisionDesc>
+</teiHeader>
+<facsimile>
+<surface>
+<desc/>
+<graphic url=""/>
+</surface>
+</facsimile>
+<text>
+<body>
+<div ana="#b1" corresp="#jeru0014.translation" subtype="transcription" type="edition" xml:id="jeru0014.transcription" xml:lang="heb">
+<p>אמא</p>
+</div>
+<div ana="#b1" corresp="#jeru0014.transcription" type="translation" xml:id="jeru0014.translation">
+<p>mother (or Imma)</p>
+</div>
+</body>
+<back>
+<div type="commentary">
+<p>The ossuary has an inner ledge on three sides and a flat, sliding lid with a small fingergrip on its outer edge. The word אמא could be a name or the word meaning "mother." Several examples of a name occuring along with this word support the second interpretation.</p>
+</div>
+<div type="bibliography">
+<listBibl>
+<bibl xml:id="b1">
+<ptr target="IIP-119.xml" type="biblItem"/>
+<biblScope unit="page">80</biblScope>
+</bibl>
+<bibl xml:id="b2">
+<ptr target="IIP-119.xml" type="biblItem"/>
+<biblScope unit="page">plate 4, fig. 21</biblScope>
+</bibl>
+</listBibl>
+</div>
+</back>
+</text>
+</TEI>

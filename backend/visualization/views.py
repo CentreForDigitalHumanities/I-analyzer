@@ -57,10 +57,9 @@ class NgramView(APIView):
 
         try:
             handle_tags_in_request(request)
-            ngram_counts_task = tasks.get_ngram_data.delay(request.data)
-            return Response({
-                'task_ids': [ngram_counts_task.id]
-            })
+            chord = tasks.ngram_data_tasks(request.data)()
+            subtasks = [chord, *chord.parent.children]
+            return Response({'task_ids': [task.id for task in subtasks]})
         except Exception as e:
             logger.error(e)
             raise APIException(detail='Could not set up ngram generation.')

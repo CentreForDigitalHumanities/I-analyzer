@@ -1,0 +1,8 @@
+@import "../../../_utilities";
+
+::ng-deep .p-datepicker {
+    margin: 1px 0;
+    .p-highlight {
+        background-color: $primary !important;
+    };
+}

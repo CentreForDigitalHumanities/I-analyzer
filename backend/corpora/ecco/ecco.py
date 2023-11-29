@@ -26,25 +26,26 @@ from media.media_url import media_url
 class Ecco(XMLCorpusDefinition):
     title = "Eighteenth Century Collections Online"
     description = "Digital collection of books published in Great Britain during the 18th century."
+    description_page = 'ecco.md'
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
-
-    @property
-    def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     data_directory = settings.ECCO_DATA
     es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
     scan_image_type = getattr(settings, 'ECCO_SCAN_IMAGE_TYPE', 'application/pdf')
     es_settings = None
-    languages = ['en', 'cy', 'ga', 'gd'] # according to gale's documentation
+    languages = ['en', 'fr', 'la', 'grc', 'de',  'it', 'cy', 'ga', 'gd']
     category = 'book'
 
     tag_toplevel = 'pageContent'
     tag_entry = 'page'
 
     meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     def sources(self, start=min_date, end=max_date):
         logging.basicConfig(filename='ecco.log', level=logging.INFO)
@@ -149,7 +150,7 @@ class Ecco(XMLCorpusDefinition):
                 name='content',
                 display_name='Content',
                 display_type='text_content',
-                es_mapping=main_content_mapping(True, True, True),
+                es_mapping=main_content_mapping(True, True, True, 'en'),
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,

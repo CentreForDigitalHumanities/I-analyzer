@@ -13,7 +13,6 @@ from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import main_content_mapping
-from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 

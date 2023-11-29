@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { EMPTY, interval, Subject } from 'rxjs';
+import { EMPTY, interval, Observable, Subject } from 'rxjs';
 import { catchError, filter, switchMap, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
@@ -10,6 +10,7 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    DocumentTagsResponse,
     Download,
     DownloadOptions,
     FieldCoverage,
@@ -18,6 +19,7 @@ import {
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
+    Tag,
     TaskResult,
     TaskSuccess,
     TasksOutcome,
@@ -36,7 +38,9 @@ interface SolisLoginResponse {
     queries: QueryDb[];
 }
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class ApiService {
     private apiUrl = environment.apiUrl;
 
@@ -44,6 +48,7 @@ export class ApiService {
     private visApiURL = 'visualization';
     private downloadApiURL = 'download';
     private corpusApiUrl = 'corpus';
+    private tagApiUrl = 'tag';
 
     private authApiRoute = (route: string): string =>
         `/${this.authApiUrl}/${route}/`;
@@ -53,9 +58,9 @@ export class ApiService {
 
     constructor(private http: HttpClient) {}
 
-    // General / misc
-    public saveQuery(options: QueryDb) {
-        return this.http.post('/api/search_history/', options).toPromise();
+
+    public deleteSearchHistory(): Observable<any> {
+        return this.http.post('/api/search_history/delete_all/', {});
     }
 
     public searchHistory() {
@@ -177,12 +182,18 @@ export class ApiService {
             | {
                   visualization: 'date_term_frequency';
                   parameters: DateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
               }
             | {
                   visualization: 'aggregate_term_frequency';
                   parameters: AggregateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
+              }
+            |
+              {
+                  visualization: 'ngram';
+                  parameters: NGramRequestParameters;
+                  corpus_name: string;
               }
     ): Promise<TaskResult> {
         const url = this.apiRoute(this.downloadApiURL, 'full_data');
@@ -233,6 +244,36 @@ export class ApiService {
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Tagging
+
+    public userTags(): Observable<Tag[]> {
+        const url = this.apiRoute(this.tagApiUrl, 'tags/');
+        return this.http.get<Tag[]>(url);
+    }
+
+    public createTag(name: string, description?: string): Observable<Tag> {
+        const url = this.apiRoute(this.tagApiUrl, 'tags/');
+        return this.http.post<Tag>(url, { name, description });
+    }
+
+    public documentTags(document: FoundDocument): Observable<DocumentTagsResponse> {
+        const url = this.apiRoute(
+            this.tagApiUrl,
+            `document_tags/${document.corpus.name}/${document.id}`
+        );
+        return this.http.get<DocumentTagsResponse>(url);
+    }
+
+    public setDocumentTags(document: FoundDocument, tagIds: number[]): Observable<DocumentTagsResponse> {
+        const url = this.apiRoute(
+            this.tagApiUrl,
+            `document_tags/${document.corpus.name}/${document.id}`,
+        );
+        return this.http.patch<DocumentTagsResponse>(url,
+            { tags: tagIds }
+        );
     }
 
     // Authentication API
@@ -298,6 +339,14 @@ export class ApiService {
                 new_password1: newPassword1,
                 new_password2: newPassword2,
             }
+        );
+    }
+
+    /** send PATCH request to update settings for the user */
+    public updateUserSettings(details: Partial<UserResponse>): Observable<UserResponse> {
+        return this.http.patch<UserResponse>(
+            this.authApiRoute('user'),
+            details
         );
     }
 

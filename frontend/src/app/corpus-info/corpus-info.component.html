@@ -21,28 +21,28 @@
 </section>
 
 <section class="section" style="padding-top: 0;" [class.is-loading]="!corpus">
-    <div class="container is-readable" *ngIf="corpus">
-        <div class="tabs is-boxed">
-            <ul>
-                <li *ngFor="let tab of tabs" [class.is-active]="currentTab.value === tab.name">
-                    <a *ngIf="corpus[tab.property]"
-                        role="button" (click)="currentTab.next(tab.name)">
-                        {{tab.title}}
-                    </a>
-                </li>
-            </ul>
-        </div>
+    <div class="container is-readable">
+        <ia-tabs>
+            <ng-template iaTabPanel *ngIf="corpus?.descriptionpage"
+                id="general" title="General information">
+                <div class="content" [class.is-loading]="!description"
+                    [innerHTML]="description"></div>
+            </ng-template>
 
-        <ng-container *ngIf="currentTab | async as tab">
-            <div *ngIf="tab === 'general'" class="content" [class.is-loading]="!description" [innerHTML]="description"></div>
-
-            <div *ngIf="tab === 'fields'">
+            <ng-template iaTabPanel *ngIf="corpus?.fields"
+                id="fields" title="Fields">
                 <div class="block" *ngFor="let field of corpus.fields">
-                    <ia-field-info  [field]="field" [coverage]="fieldCoverage ? fieldCoverage[field.name] : undefined"></ia-field-info>
+                    <ia-field-info  [field]="field"
+                        [coverage]="fieldCoverage ? fieldCoverage[field.name] : undefined">
+                    </ia-field-info>
                 </div>
-            </div>
+            </ng-template>
 
-            <div *ngIf="tab === 'models'" class="content" [class.is-loading]="!wordModelDocumentation" [innerHTML]="wordModelDocumentation"></div>
-        </ng-container>
+            <ng-template iaTabPanel *ngIf="corpus?.word_models_present"
+                id="word_models" title="Word models">
+                <div class="content" [class.is-loading]="!wordModelDocumentation"
+                    [innerHTML]="wordModelDocumentation"></div>
+            </ng-template>
+        </ia-tabs>
     </div>
 </section>

@@ -1,18 +1,19 @@
-<nav class="panel" *ngIf="filtered">
+<nav class="panel" *ngIf="filtered" aria-label="secondary navigation">
     <p class="panel-heading">
         Manual Topics
     </p>
     <div class="panel-block">
         <p class="control has-icons-left">
-            <input class="input is-small" type="text" placeholder="search" [(ngModel)]="filterText">
-            <span class="icon is-small is-left">
+            <input class="input is-small" type="text" placeholder="search" [(ngModel)]="filterText"
+                aria-label="search">
+            <span class="icon is-small is-left" aria-hidden="true">
                 <i class="fa fa-search"></i>
             </span>
         </p>
     </div>
     <ng-container *ngFor="let page of filtered | async">
         <a class="panel-block" routerLinkActive="is-active" [routerLink]="['/manual', page.id]">
-            <span class="panel-icon">
+            <span class="panel-icon" aria-hidden="true">
                 <i class="fa fa-book"></i>
             </span>
             <span [innerHtml]="page.title | highlight:highlightText"></span>

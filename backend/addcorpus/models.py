@@ -1,9 +1,14 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+import warnings
 
-from addcorpus.constants import CATEGORIES
-from addcorpus.validators import validate_language_code
+from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
+from addcorpus.validators import validate_language_code, validate_image_filename_extension, \
+    validate_markdown_filename_extension, validate_es_mapping, validate_mimetype, validate_search_filter, \
+    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, validate_searchable_field_has_full_text_search, \
+    validate_visualizations_with_mapping, validate_implication, any_date_fields, visualisations_require_date_field
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -63,6 +68,7 @@ class CorpusConfiguration(models.Model):
     description_page = models.CharField(
         max_length=128,
         blank=True,
+        validators=[validate_markdown_filename_extension],
         help_text='filename of the markdown documentation file for this corpus',
     )
     description = models.CharField(
@@ -85,6 +91,7 @@ class CorpusConfiguration(models.Model):
     )
     image = models.CharField(
         max_length=126,
+        validators=[validate_image_filename_extension],
         help_text='filename of the corpus image',
     )
     languages = ArrayField(
@@ -104,6 +111,7 @@ class CorpusConfiguration(models.Model):
     scan_image_type = models.CharField(
         max_length=64,
         blank=True,
+        validators=[validate_mimetype],
         help_text='MIME type of scan images',
     )
     title = models.CharField(
@@ -120,29 +128,33 @@ class CorpusConfiguration(models.Model):
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
-    ('text', 'text'),
-    ('keyword', 'keyword'),
-    ('date', 'date'),
-    ('integer', 'integer'),
-    ('float', 'float'),
-    ('boolean', 'boolean'),
+    (MappingType.TEXT.value, 'text'),
+    (MappingType.KEYWORD.value, 'keyword'),
+    (MappingType.DATE.value, 'date'),
+    (MappingType.INTEGER.value, 'integer'),
+    (MappingType.FLOAT.value, 'float'),
+    (MappingType.BOOLEAN.value, 'boolean'),
 ]
 
 FIELD_VISUALIZATIONS = [
-    ('resultscount', 'Number of results'),
-    ('termfrequency', 'Frequency of the search term'),
-    ('ngram', 'Neighbouring words'),
-    ('wordcloud', 'Most frequent words'),
+    (VisualizationType.RESULTS_COUNT.value, 'Number of results'),
+    (VisualizationType.TERM_FREQUENCY.value, 'Frequency of the search term'),
+    (VisualizationType.NGRAM.value, 'Neighbouring words'),
+    (VisualizationType.WORDCLOUD.value, 'Most frequent words'),
 ]
+'''Options for `visualizations` field'''
 
 VISUALIZATION_SORT_OPTIONS = [
     ('key', 'By the value of the field'),
     ('value', 'By frequency')
 ]
+'''Options for `visualization_sort` field'''
+
 
 class Field(models.Model):
     name = models.SlugField(
         max_length=MAX_LENGTH_NAME,
+        validators=[validate_name_is_not_a_route_parameter],
         help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
@@ -167,6 +179,7 @@ class Field(models.Model):
     )
     search_filter = models.JSONField(
         blank=True,
+        validators=[validate_search_filter],
         help_text='specification of the search filter for this field (if any)',
     )
     results_overview = models.BooleanField(
@@ -197,6 +210,7 @@ class Field(models.Model):
         help_text='if the field has results/term frequency charts: how is the x-axis sorted?',
     )
     es_mapping = models.JSONField(
+        validators=[validate_es_mapping],
         help_text='specification of the elasticsearch mapping of this field',
     )
     indexed = models.BooleanField(
@@ -236,3 +250,28 @@ class Field(models.Model):
 
     def __str__(self) -> str:
         return f'{self.name} ({self.corpus_configuration.corpus.name})'
+
+    def clean(self):
+        validate_searchable_field_has_full_text_search(self.es_mapping, self.searchable)
+
+        if self.search_filter:
+            validate_search_filter_with_mapping(self.es_mapping, self.search_filter)
+
+        if self.visualizations:
+            validate_visualizations_with_mapping(self.es_mapping, self.visualizations)
+
+        validate_implication(self.primary_sort, self.sortable, "The primary sorting field must be sortable")
+        validate_implication(self.csv_core, self.downloadable, "Core download fields must be downloadable")
+
+        # core search fields must searchable
+        # not a hard requirement because it is not currently satisfied in all corpora
+        try:
+            validate_implication(self.search_field_core, self.searchable, "Core search fields must be searchable")
+        except ValidationError as e:
+            warnings.warn(e.message)
+
+        validate_implication(
+            self.visualizations, self.corpus_configuration.fields.all(),
+            'The ngram visualisation requires a date field on the corpus',
+            visualisations_require_date_field, any_date_fields,
+        )

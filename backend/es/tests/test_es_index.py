@@ -2,7 +2,6 @@ import pytest
 from datetime import datetime
 from time import sleep
 
-from addcorpus.load_corpus import load_corpus_definition
 from es.es_index import perform_indexing
 
 start = datetime.strptime('1970-01-01','%Y-%m-%d')

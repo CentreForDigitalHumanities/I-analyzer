@@ -171,3 +171,5 @@ SAML_CONFIG = {
         'url': [('https://dig.hum.uu.nl', 'en')],
         },
 }
+
+SAML_GROUP_NAME = 'uu'
