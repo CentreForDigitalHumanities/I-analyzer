@@ -41,6 +41,9 @@ class TaskStatusView(APIView):
         results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
         if not all(results):
             raise APIException(detail='Could not get task data')
+        
+        if any(result.state == 'FAILIRE' for result in results):
+            raise APIException(detail='Task failed')
 
         # all tasks finished
         if all(result.state == 'SUCCESS' for result in results):

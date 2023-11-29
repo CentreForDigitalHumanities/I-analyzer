@@ -186,10 +186,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         this.currentParameters[parameter] = value;
 
         if (parameter === 'size' && value) {
- this.setPositionsOptions(value);
-}
+            this.setPositionsOptions(value);
+        }
 
         this.parametersChanged = true;
+        this.apiService.stopPolling$.next(true);
+        this.isLoading.emit(false);
     }
 
     cancelChanges() {

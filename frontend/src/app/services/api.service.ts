@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { EMPTY, timer } from 'rxjs';
-import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
+import { EMPTY, interval, Subject } from 'rxjs';
+import { catchError, filter, switchMap, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
     AggregateResult,
@@ -113,14 +113,17 @@ export class ApiService {
         return response.status !== 'working';
     }
 
+    public stopPolling$: Subject<boolean>;
+
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
-        return timer(0, 5000)
+        return interval(5000)
             .pipe(
-                takeUntil(stopPolling$),
+                takeUntil(this.stopPolling$),
                 switchMap((_) =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
                 catchError(error => {
+                    this.stopPolling$.next(true);
                     console.error(error);
                     return EMPTY;
                 }),
@@ -136,8 +139,6 @@ export class ApiService {
                             : reject()
                     )
             );
-
-            this.stopPolling$.subscribe(() => loading = false);
     }
 
     // Visualization
