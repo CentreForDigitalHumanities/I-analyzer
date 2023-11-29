@@ -27,6 +27,7 @@ import { DocumentPreviewComponent } from './document-preview/document-preview.co
         ImageViewModule,
         TagModule,
     ], exports: [
+        DocumentPreviewComponent,
         DocumentViewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,

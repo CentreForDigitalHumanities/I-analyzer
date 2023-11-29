@@ -81,11 +81,6 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
         return Math.min(totalResults, MAXIMUM_DISPLAYED);
     }
 
-    goToScan(page: DocumentPage, document: FoundDocument, event: Event) {
-        page.focus(document, 'scan');
-        event.stopPropagation();
-    };
-
     @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)

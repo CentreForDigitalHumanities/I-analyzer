@@ -2,8 +2,9 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DocumentPreviewComponent } from './document-preview.component';
 import { commonTestBed } from '../../common-test-bed';
-import { mockCorpus } from '../../../mock-data/corpus';
+import { mockField } from '../../../mock-data/corpus';
 import { makeDocument } from '../../../mock-data/constructor-helpers';
+import { DocumentPage } from '../../models/document-page';
 
 describe('DocumentPreviewComponent', () => {
     let component: DocumentPreviewComponent;
@@ -16,8 +17,8 @@ describe('DocumentPreviewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DocumentPreviewComponent);
         component = fixture.componentInstance;
-        component.corpus = mockCorpus;
         component.document = makeDocument({ great_field: 'Hello world!' });
+        component.page = new DocumentPage([component.document], 1, [mockField]);
         fixture.detectChanges();
     });
 

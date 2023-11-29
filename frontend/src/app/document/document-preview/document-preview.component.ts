@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FoundDocument } from '../../models';
-import { PageResults } from '../../models/page-results';
+import { DocumentPage } from '../../models/document-page';
 
 @Component({
     selector: 'ia-document-preview',
@@ -9,5 +9,11 @@ import { PageResults } from '../../models/page-results';
 })
 export class DocumentPreviewComponent {
     @Input() document: FoundDocument;
-    @Input() page: PageResults;
+    @Input() page: DocumentPage;
+
+    goToScan(page: DocumentPage, document: FoundDocument, event: Event) {
+        page.focus(document, 'scan');
+        event.stopPropagation();
+    };
+
 }
