@@ -48,7 +48,7 @@ class TaskStatusView(APIView):
         if not all(results):
             raise APIException(detail='Could not get task data')
         
-        if any(result.state == 'FAILIRE' for result in results):
+        if any(result.state == 'FAILURE' for result in results):
             raise APIException(detail='Task failed')
 
         # all tasks finished
@@ -62,11 +62,6 @@ class TaskStatusView(APIView):
         # no failed tasks, but not all finished
         if all(result.state in ['PENDING', 'STARTED', 'SUCCESS'] for result in results):
             return Response({'status': 'working'})
-
-        # some tasks failed
-        for result in results:
-            logger.error(result.info)
-        return Response({'status': 'failed'})
 
 class AbortTasksView(APIView):
     '''

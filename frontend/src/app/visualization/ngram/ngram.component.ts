@@ -116,8 +116,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     loadGraph() {
-        this.isLoading.emit(true);
-
         this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
 
@@ -199,6 +197,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     confirmChanges() {
+        this.isLoading.emit(true);
         this.parametersChanged = false;
         this.setParams({ ngramSettings: this.currentParameters.toRouteParam() });
     }

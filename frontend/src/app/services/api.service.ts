@@ -118,7 +118,7 @@ export class ApiService {
         return response.status !== 'working';
     }
 
-    public stopPolling$: Subject<boolean>;
+    public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
         return interval(5000)
@@ -137,12 +137,14 @@ export class ApiService {
             )
             .toPromise()
             .then(
-                (result) =>
-                    new Promise((resolve, reject) =>
+                (result) => {
+                    this.stopPolling$.next(true);
+                    return new Promise((resolve, reject) =>
                         result.status === 'done'
                             ? resolve(result.results)
                             : reject()
-                    )
+                    );
+                }
             );
     }
 
