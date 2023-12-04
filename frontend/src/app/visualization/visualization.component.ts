@@ -1,4 +1,4 @@
-import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/core';
+import { DoCheck, Input, Component, SimpleChanges, OnChanges, OnDestroy } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
@@ -8,6 +8,8 @@ import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { findByName } from '../utils/utils';
 import { ParamService } from '../services';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 
@@ -64,6 +66,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     nullableParameters = ['visualize', 'visualizedField'];
 
+    reset$ = new Subject<void>();
+    destroy$ = new Subject<void>();
+
     constructor(
         route: ActivatedRoute,
         router: Router,
@@ -80,34 +85,33 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel || changes.corpus) {
+            this.reset$.next();
             this.initialize();
         }
     }
 
-    setupDropdowns() {
+    setVistypeDropdown() {
         this.allVisualizationFields = [];
         if (this.corpus && this.corpus.fields) {
             this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations?.length);
         }
-        this.visDropdown = [];
         const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
-        const filteredTypes = visualisationTypes.filter(visType => {
-            const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords']
-                .find(vis => vis === visType);
-            const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
-            const wordModelsSatisfied = visType !== 'relatedwords' || this.corpus.word_models_present;
-            return searchTermSatisfied && wordModelsSatisfied;
-        });
-        filteredTypes.forEach(visType =>
-            this.visDropdown.push({
-                label: this.visualizationsDisplayNames[visType],
-                value: visType
-            })
+        const filteredTypes = visualisationTypes.filter(vt =>
+            this.includeVisualisationType(vt, this.queryModel)
         );
+        this.visDropdown = this.vistypesToDropdown(filteredTypes);
     }
 
-    async initialize() {
-        this.setupDropdowns();
+    initialize() {
+        this.refreshVisualisations();
+        this.queryModel?.update.pipe(
+            takeUntil(this.destroy$),
+            takeUntil(this.reset$)
+        ).subscribe(() => this.refreshVisualisations());
+    }
+
+    refreshVisualisations() {
+        this.setVistypeDropdown();
         this.showTableButtons = true;
         if (!this.allVisualizationFields.length) {
             this.noVisualizations = true;
@@ -118,7 +122,11 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         }
     }
 
-    teardown() {}
+    teardown() {
+        this.reset$.complete();
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
 
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {
@@ -141,10 +149,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.filteredVisualizationFields = this.allVisualizationFields.filter(field =>
             field.visualizations.includes(visType)
         );
-        this.fieldDropdown = this.filteredVisualizationFields.map(field => ({
-            label: field.displayName || field.name,
-            value: field
-        }));
+        this.fieldDropdown = this.fieldsToDropdown(this.filteredVisualizationFields);
         this.visualizedField = this.filteredVisualizationFields[0];
         this.visualizedFieldDropdownValue = this.fieldDropdown.find(
             item => item.value === this.visualizedField) || this.fieldDropdown[0];
@@ -203,5 +208,24 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         if (this.visualizationType && this.corpus && this.visualizedField) {
             return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
         }
+    }
+
+    private includeVisualisationType(visType: string, queryModel: QueryModel): boolean {
+        const requiresSearchTerm = _.includes(['termfrequency', 'ngram'], visType);
+        return !requiresSearchTerm || !!queryModel.queryText;
+    }
+
+    private vistypesToDropdown(visTypes: string[]): { label: string; value: string}[] {
+        return visTypes.map(visType => ({
+            label: this.visualizationsDisplayNames[visType],
+            value: visType
+        }));
+    }
+
+    private fieldsToDropdown(fields: CorpusField[]): { label: string; value: CorpusField }[] {
+        return fields.map(field => ({
+            label: field.displayName || field.name,
+            value: field
+        }));
     }
 }
