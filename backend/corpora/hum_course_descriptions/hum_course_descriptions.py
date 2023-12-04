@@ -6,7 +6,10 @@ from addcorpus.corpus import FieldDefinition
 from addcorpus.xlsx import XLSXCorpusDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
-from addcorpus.extract import CSV, Combined
+from addcorpus.extract import CSV, Combined, Pass
+from django.utils.html import strip_tags
+import re
+
 
 def filter_label(label):
     def get_content_with_label(data):
@@ -19,6 +22,31 @@ def filter_label(label):
         return '\n'.join(filtered_content)
 
     return get_content_with_label
+
+def html_to_text(content):
+    html_replacements = [
+        (r'<style.*</style>', ''),
+        (r'&nbsp;', ' '),
+        (r'<li>', '<li>- '),
+    ]
+
+    for pattern, repl in html_replacements:
+        content = re.sub(pattern, repl, content, flags=re.DOTALL)
+
+    plain = strip_tags(content)
+
+    stripped_lines = '\n'.join(map(str.strip, plain.splitlines()))
+    return stripped_lines.strip()
+
+def content_extractor(label):
+    return Pass(
+        Combined(
+            CSV('LABEL', multiple=True),
+            CSV('INHOUD', multiple=True),
+            transform=filter_label(label)
+        ),
+        transform=html_to_text,
+    )
 
 class HumCourseDescriptions(XLSXCorpusDefinition):
     title = 'Humanities Course Descriptions'
@@ -85,20 +113,13 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='goal',
             display_name='Course goal',
-            extractor=Combined(
-                CSV('LABEL', multiple=True),
-                CSV('INHOUD', multiple=True),
-                transform=filter_label('DOEL')
-            ),
+            extractor=content_extractor('DOEL'),
             es_mapping=main_content_mapping(),
         ),
         FieldDefinition(
             name='content',
             display_name='Course content',
-            extractor=Combined(
-                CSV('LABEL', multiple=True),
-                CSV('INHOUD', multiple=True),
-                transform=filter_label('INHOUD')
-            ),
+            extractor=content_extractor('INHOUD'),
+            es_mapping=main_content_mapping(),
         ),
     ]

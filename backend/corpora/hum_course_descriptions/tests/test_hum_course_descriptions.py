@@ -18,8 +18,7 @@ def test_hum_course_descriptions_model(hum_course_descriptions_settings, db, adm
     corpus = corpus_from_api(admin_client)
     assert corpus['title'] == 'Humanities Course Descriptions'
 
-description = '''
-- Stap 1 cursusinvoer door contactpersonen; Van dinsdag 1 december t/m vrijdag 15 januari
+description = '''- Stap 1 cursusinvoer door contactpersonen; Van dinsdag 1 december t/m vrijdag 15 januari
 - Stap 2 controle cursusinvoer door opleidings- en programma coördinatoren; van maandag 18 januari t/m vrijdag 29 januari
 - Stap 3 controle cursusinvoer door onderwijscoördinatoren van maandag 1 februari t/m donderdag 18 februari (en door OWS)
 - Consolidatie vrijdag 19 februari 2021.
