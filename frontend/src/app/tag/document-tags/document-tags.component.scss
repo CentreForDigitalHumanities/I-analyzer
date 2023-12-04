@@ -1,0 +1,13 @@
+.control {
+    max-width: 100%;
+}
+
+.tag-name {
+    max-width: 80%;
+
+    .name {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

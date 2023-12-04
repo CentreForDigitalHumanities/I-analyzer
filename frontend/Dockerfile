@@ -1,5 +1,5 @@
 # base image
-FROM node:14-alpine
+FROM docker.io/library/node:14-alpine
 
 RUN apk update && apk add --no-cache --virtual .gyp python3 make g++
 # Install Chrome

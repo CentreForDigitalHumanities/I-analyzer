@@ -1,0 +1,64 @@
+<TEI xml:space="preserve" xml:lang="en"
+xml:base="ex-epidoctemplate.xml" xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>299</title>
+            </titleStmt>
+            <publicationStmt>
+                <authority/>
+                <idno type="filename"/>
+            </publicationStmt>
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <location>Museo Vaticano, lapidario ebraico ex-Lateranense; inv.no.30762</location>
+                        <publications>
+                            <publication>Noy 1995, p. 69-70 (83)</publication>
+                        </publications>
+                        </msIdentifier>
+                    <history>
+                        <origin>
+                            <provenance>Rome, Monteverde</provenance>
+                            <origDate>3rd-4th century</origDate>
+                            <remarksOnDate>Uncertain</remarksOnDate>
+                        </origin>
+                    </history>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+        <profileDesc>
+            <particDesc>
+                <listPerson>
+                    <person sex="M">
+                        <persName>Felicissima  ( the commemorator)     Emarantus ( the decaesed) (Φη&lt;λ&gt;ικίσσιμα                            Ἠμαράντῳ)</persName>
+                    </person>
+                    <person sex="F">
+                        <persName></persName>
+                    </person>
+                </listPerson>
+            </particDesc>
+            <langUsage>
+                <language>Greek</language>
+            </langUsage>
+        </profileDesc>
+    </teiHeader>
+    <facsimile>
+        <photoFacsimile>CIJ i 1936, 266 no.339</photoFacsimile>
+        <photosLeonard>None</photosLeonard>
+        <image3D>None</image3D>
+    </facsimile>
+    <text>
+        <body>
+            <transcription>Φη&lt;λ&gt;ικίσσιμα Ἠμαράντῳ ἐποίησεν.</transcription>
+            <inscriptionType>Epitaph</inscriptionType>
+            <iconographyType>none</iconographyType>
+            <iconographyDescription></iconographyDescription>
+            <material>Stone (white marble plaque)</material>
+            <incipit>Φη<λ>ικίσσιμα</incipit>
+            <age>not mentioned</age>
+            <ageComments>not mentioned</ageComments>
+            <commentary>Found on the 3rd of December 1904 in Cub.XL. The lower third of the plaque was left unused. There are poits between the syllables. Ferrua thought it might be pagan.  </commentary>
+        </body>
+    </text>
+</TEI>

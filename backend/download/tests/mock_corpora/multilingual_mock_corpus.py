@@ -1,7 +1,9 @@
 from datetime import datetime
-from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
-from addcorpus.extract import CSV
 import os
+
+from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
+from addcorpus.es_mappings import keyword_mapping, text_mapping
+from addcorpus.extract import CSV
 
 # Fake corpus class for unit tests
 
@@ -26,17 +28,13 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
-        es_mapping= {
-            'type': 'text',
-        },
+        es_mapping = text_mapping(),
         extractor = CSV('content')
     )
 
     language = FieldDefinition(
         name = 'language',
-        es_mapping= {
-            'type': 'keyword'
-        },
+        es_mapping = keyword_mapping(),
         extractor = CSV('language')
     )
 

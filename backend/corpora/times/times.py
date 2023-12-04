@@ -39,7 +39,7 @@ class Times(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     tag_toplevel = 'issue'
     tag_entry = 'article'
@@ -424,7 +424,7 @@ class Times(XMLCorpusDefinition):
             name='content',
             display_name='Content',
             display_type='text_content',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'en'),
             visualizations=['wordcloud'],
             description='Raw OCR\'ed text (content).',
             results_overview=True,

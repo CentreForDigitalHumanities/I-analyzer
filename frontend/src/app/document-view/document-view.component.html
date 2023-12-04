@@ -9,9 +9,15 @@
                             <search-relevance [value]="document.relevance"></search-relevance>
                         </td>
                     </tr>
+                    <tr>
+                        <th>Your tags</th>
+                        <td>
+                            <ia-document-tags [document]="document"></ia-document-tags>
+                        </td>
+                    </tr>
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValue(field)">
-                            <th>{{field.displayName}}</th>
+                            <th [iaBalloon]="field.description" iaBalloonPosition="up" iaBalloonLength="medium">{{field.displayName}}</th>
                             <td *ngIf="!isUrlField(field)" data-test-field-value [innerHtml]="highlightedInnerHtml(field)"></td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
@@ -25,7 +31,7 @@
 
     <div class="column is-7">
         <div class="box">
-            <ia-tabs>
+            <ia-tabs [activeTab]="activeTab">
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="tabIcons.text">
                     <div class="content" [innerHtml]="highlightedInnerHtml(field)"></div>
                 </ng-template>

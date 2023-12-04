@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres
+    image: docker.io/library/postgres
     environment:
       - POSTGRES_DB=${SQL_DATABASE}
       - POSTGRES_USER=${SQL_USER}
@@ -36,7 +36,7 @@ services:
       - type: bind
         source: $DATA_DIR
         target: /corpora
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate && python manage.py loadcorpora && python manage.py runserver 0.0.0.0:8000"
   frontend:
     build:
       context: ./frontend
@@ -55,6 +55,10 @@ services:
       - cluster.name=ianalizer-es-data-cluster
       - bootstrap.memory_lock=true
       - xpack.security.enabled=false
+      - logger.org.elasticsearch.discovery=ERROR
+      - logger.org.elasticsearch.transport=ERROR
+      - logger.org.elasticsearch.http=ERROR
+      - logger.org.elasticsearch.cluster=ERROR
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - ELASTIC_PASSWORD=$ELASTIC_ROOT_PASSWORD
     ulimits:
@@ -65,6 +69,14 @@ services:
       - ianalyzer-es:/usr/share/elasticsearch/data
     ports:
       - 127.0.0.1:9200:9200
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.5.0
+    depends_on:
+      - elasticsearch
+    environment:
+        - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+    ports:
+      - 127.0.0.1:5601:5601
   redis:
     image: redis:latest
     restart: unless-stopped
