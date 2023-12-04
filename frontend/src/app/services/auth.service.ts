@@ -113,7 +113,8 @@ export class AuthService implements OnDestroy {
         );
     }
 
-    public logout(isSamlLogin: boolean = false, redirectToLogin: boolean = false) {
+    public logout(redirectToLogin: boolean = false) {
+        const isSamlLogin = this.currentUserSubject.value.isSamlLogin;
         this.purgeAuth();
         if (isSamlLogin) {
             window.location.href = environment.samlLogoutUrl;

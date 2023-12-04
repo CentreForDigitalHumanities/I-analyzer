@@ -1,87 +1,53 @@
  @import "../../_utilities";
 
-.navbar {
-    background-color: $primary;
-  }
-  .navbar-item img {
+ .skip-to-content-link {
+    left: 0%;
+    position: absolute;
+    z-index: 1;
+    transform: translateY(-100%);
+    color: $text-primary-color;
+    background: $contrast-primary-color;
+    padding: 10px;
+
+    &:focus {
+        transform: translateY(0%);
+    }
+}
+
+.navbar-item img {
     max-height: 3.75rem;
     margin-right: 7px;
     width: 50px;
 }
 
-.navbar-item{
-    color: $text-primary-color;
-    &:hover{
-        background-color: $contrast-primary-color;
-        color: $text-primary-color;
-    }
+.navbar-item, .navbar-item.has-dropdown {
+    &:hover, &.is-active {
+        background-color: $contrast-primary-color !important;
 
-    &.is-active, .has-dropdown.is-active{
-        background-color: $contrast-primary-color;
-        color: $text-primary-color;
-    }
-}
-
-.navbar-item.has-dropdown:hover .navbar-link, a.navbar-item.is-active{
-    background-color: $contrast-primary-color;
-    color: $text-primary-color;
-}
-
-.navbar-link{
-    color: $text-primary-color;
-    background: none;
-    font: inherit;
-    border: none;
-    &::after {
-        border: 1px solid $text-primary-color;
-        border-right: 0;
-        border-top: 0;
-        content: " ";
-        display: block;
-        height: 0.5em;
-        pointer-events: none;
-        position: absolute;
-        transform: rotate(-45deg);
-        width: 0.5em;
-        margin-top: -0.375em;
-        right: 1.125em;
-        top: 50%;
+        .navbar-link {
+            background-color: $contrast-primary-color !important;
+        }
     }
 }
 
 .navbar-menu {
-    background-color: $primary;
+    background-color: inherit;
+    color: inherit;
+
+    .navbar-item, .navbar-link{
+        color: inherit
+    }
 }
 
 .navbar-burger {
+    color: inherit;
+}
+
+.navbar-dropdown {
     background-color: $primary;
-    color: $text-primary-color;
-}
+    color: $text-invert;
 
-
-.panel-icon {
-    color: $text-primary-color;
-}
-
-// Makes the user dropdown in the same theme as the rest of the application. This only affects the dropdown and not the other widget contents like visualizations.
-
-::ng-deep .menu-dropdown {
-    &.p-widget-content {
-        border: 1px solid #dbdbdb;
-        background-color: $primary;
+    .navbar-item {
         color: $text-primary-color;
-    }
-
-    .p-menuitem .p-menuitem-link {
-        background-color: $primary;
-        .p-menuitem-text, .p-menuitem-icon {
-            color: $text-primary-color;
-        }
-        &:hover {
-            background-color: $contrast-primary-color;
-            .p-menuitem-text, .p-menuitem-icon {
-                color: $text-primary-color;
-            }
-        }
     }
 }

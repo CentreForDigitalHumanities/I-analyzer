@@ -1,12 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
-import { MenuItem } from 'primeng/api';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
+import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { takeUntil, throttleTime } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
+import {
+    faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
+    faUser
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-menu',
@@ -14,105 +17,114 @@ import * as _ from 'lodash';
     styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnDestroy, OnInit {
-    public currentUser: User | undefined;
-    public isAdmin = false;
-    public menuAdminItems: MenuItem[];
-    menuOpen = false;
+    @ViewChild('userDropdown') userDropdown: ElementRef;
 
-    private routerSubscription: Subscription;
+    adminUrl = environment.adminUrl;
+
+    menuOpen$ = new BehaviorSubject<boolean>(false);
+    dropdownOpen$ = new BehaviorSubject<boolean>(false);
+
+    user$: Observable<User>;
+    isAdmin$: Observable<boolean>;
+
+    route$: Observable<{
+        url: string[];
+        queryParams: Params;
+    }>;
+
+    icons = {
+        corpora: faDatabase,
+        manual: faBook,
+        about: faInfoCircle,
+        user: faUser,
+        searchHistory: faHistory,
+        downloads: faDownload,
+        settings: faCog,
+        admin: faCogs,
+        logout: faSignOut,
+    };
+
     private destroy$ = new Subject<void>();
 
     constructor(
         private authService: AuthService,
-        private router: Router
-    ) {
-        this.routerSubscription = router.events
-            // throttle router events to make sure this triggers only once upon route change
-            .pipe(throttleTime(0))
-            .subscribe(() => this.checkCurrentUser());
-    }
+        private router: Router,
+        private route: ActivatedRoute,
+    ) { }
 
     ngOnDestroy() {
-        this.routerSubscription.unsubscribe();
         this.destroy$.next();
     }
 
     ngOnInit() {
-        this.checkCurrentUser();
+        this.user$ = this.authService.currentUser$;
+        this.isAdmin$ = this.user$.pipe(map(user => user?.isAdmin));
+
+        this.dropdownOpen$.pipe(
+            takeUntil(this.destroy$),
+            filter(_.identity)
+        ).subscribe(this.triggerCloseDropdown.bind(this));
+
+        this.makeRoute();
     }
 
-    public gotoAdmin() {
-        window.location.href = environment.adminUrl;
+    toggleDropdown() {
+        this.dropdownOpen$.next(!this.dropdownOpen$.value);
+    }
+
+    toggleMenu() {
+        this.menuOpen$.next(!this.menuOpen$.value);
     }
 
     public async logout() {
-        const isSamlLogin = this.currentUser.isSamlLogin;
-        await this.authService.logout(isSamlLogin, true).toPromise();
-        this.currentUser = undefined;
+        this.authService.logout(true).subscribe();
     }
 
     public async login() {
         this.authService.showLogin(this.router.url);
     }
 
-    private checkCurrentUser() {
-        this.authService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(
-            (user) => {
-                if (user) {
-                    this.currentUser = user;
-                    this.isAdmin = this.currentUser.isAdmin;
-                    this.setMenuItems();
-                } else {
-                    this.isAdmin = false;
-                }
-            },
-            (_error) => {
-                this.currentUser = undefined;
-            }
+    private makeRoute(): void {
+        // observable that fires immediately, and after navigation
+        const routeUpdates$ = merge(
+            of(null),
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd))
+        );
+
+        this.route$ = routeUpdates$.pipe(
+            map(() => this.route.firstChild?.snapshot),
+            map(snapshot => ({
+                url: snapshot?.url.map(segment => segment.path),
+                queryParams: snapshot?.queryParams,
+            }))
         );
     }
 
-    private setMenuItems() {
-        this.menuAdminItems = [
-            {
-                label: 'Search history',
-                icon: 'fa fa-history',
-                command: (click) => {
-                    this.router.navigate(['search-history']);
-                },
-            },
-            {
-                label: 'Downloads',
-                icon: 'fa fa-download',
-                command: (click) => {
-                    this.router.navigate(['download-history']);
-                },
-            },
-            {
-                label: 'Settings',
-                icon: 'fa fa-cog',
-                command: (click) => {
-                    this.router.navigate(['settings']);
-                }
-            },
-            ...(this.isAdmin
-                ? [
-                      {
-                          label: 'Administration',
-                          icon: 'fa fa-cogs',
-                          command: (click) => this.gotoAdmin(),
-                      },
-                  ]
-                : []),
-            {
-                label: 'Logout',
-                icon: 'fa fa-sign-out',
-                command: (onclick) => this.logout(),
-            },
-        ];
+    /** close user dropdown when the user clicks or focuses elsewhere */
+    private triggerCloseDropdown() {
+        // observable of the next click
+        // timer(0) is used to avoid the opening click event being registered
+        const clicks$ = timer(0).pipe(
+            switchMap(() => fromEvent(document, 'click')),
+        );
+
+        // observable of the dropdown losing focus
+
+        const focusOutOfDropdown = (event: FocusEvent) =>
+            _.isNull(event.relatedTarget) ||
+            (event.relatedTarget as Element).parentElement.id !== 'userDropdown';
+
+        const focusOut$ = fromEvent<FocusEvent>(
+            this.userDropdown.nativeElement,
+            'focusout'
+        ).pipe(
+            filter(focusOutOfDropdown),
+        );
+
+        // when either of these happens, close the dropdown
+        merge(clicks$, focusOut$).pipe(
+            take(1)
+        ).subscribe(() => this.dropdownOpen$.next(false));
     }
 
-    toggleMenu() {
-        this.menuOpen = !this.menuOpen;
-    }
 }

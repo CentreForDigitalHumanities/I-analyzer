@@ -14,7 +14,7 @@
     </ul>
 </div>
 
-<div *ngFor="let panel of tabPanels" [attr.id]="panel.id" role="tabpanel" tabindex="0" [hidden]="panel.id !== activeTab">
+<div *ngFor="let panel of tabPanels" [attr.id]="panel.id" role="tabpanel" tabindex="-1" [hidden]="panel.id !== activeTab">
     <ng-container *ngIf="panel.id === activeTab" [ngTemplateOutlet]="panel.templateRef">
     </ng-container>
 </div>
