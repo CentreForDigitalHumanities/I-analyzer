@@ -2,11 +2,13 @@ from datetime import datetime
 import os
 from django.conf import settings
 
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
+from addcorpus.corpus import FieldDefinition
+from addcorpus.xlsx import XLSXCorpusDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping
+from addcorpus.extract import CSV
 
-class HumCourseDescriptions(CSVCorpusDefinition):
+class HumCourseDescriptions(XLSXCorpusDefinition):
     title = 'Humanities Course Descriptions'
     description = 'Courses taught in the UU Humanities faculty in 2023'
     category = 'informative'
@@ -18,8 +20,17 @@ class HumCourseDescriptions(CSVCorpusDefinition):
 
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
 
+
     def sources(self, **kwargs):
         path = os.path.join(self.data_directory, 'doel_inhoud_cursussen2023GW.xlsx')
-        yield path, {}
+        yield path
 
-    fields = []
+    field_entry = 'CURSUS'
+
+    fields = [
+        FieldDefinition(
+            name='id',
+            display_name='Course ID',
+            extractor=CSV('CURSUS')
+        )
+    ]
