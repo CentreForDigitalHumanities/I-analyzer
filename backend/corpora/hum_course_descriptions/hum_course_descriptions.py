@@ -1,4 +1,6 @@
 from datetime import datetime
+import os
+from django.conf import settings
 
 from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
@@ -12,7 +14,12 @@ class HumCourseDescriptions(CSVCorpusDefinition):
     max_date = datetime(2023, 8, 31)
     image = 'uu.png'
     languages = ['nl', 'en']
-
     es_index = 'hum_course_descriptions'
+
+    data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
+
+    def sources(self, **kwargs):
+        path = os.path.join(self.data_directory, 'doel_inhoud_cursussen2023GW.xlsx')
+        yield path, {}
 
     fields = []

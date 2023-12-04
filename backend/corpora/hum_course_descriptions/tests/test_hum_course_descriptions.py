@@ -23,5 +23,5 @@ def test_hum_course_descriptions_extraction(hum_course_descriptions_settings):
     corpus = load_corpus_definition('hum_course_descriptions')
     assert corpus
 
-    docs = corpus.documents()
+    docs = list(corpus.documents())
     assert len(docs) == 1
