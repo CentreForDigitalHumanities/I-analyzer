@@ -18,6 +18,29 @@ def test_hum_course_descriptions_model(hum_course_descriptions_settings, db, adm
     corpus = corpus_from_api(admin_client)
     assert corpus['title'] == 'Humanities Course Descriptions'
 
+description = '''
+- Stap 1 cursusinvoer door contactpersonen; Van dinsdag 1 december t/m vrijdag 15 januari
+- Stap 2 controle cursusinvoer door opleidings- en programma coördinatoren; van maandag 18 januari t/m vrijdag 29 januari
+- Stap 3 controle cursusinvoer door onderwijscoördinatoren van maandag 1 februari t/m donderdag 18 februari (en door OWS)
+- Consolidatie vrijdag 19 februari 2021.
+
+Wat een leuk proces is dit toch!
+
+:-)'''
+
+target_docs = [{
+    'id': '202100017',
+    'academic_year': 2023,
+    'name': 'Dummy; TEST 3',
+    'type': 'CURSUS',
+    'department': 'ONB',
+    'description': 'Onbekend',
+    'faculty': 'GW',
+    'goal': '',
+    'content': description
+}]
+
+
 def test_hum_course_descriptions_extraction(hum_course_descriptions_settings):
     load_and_save_all_corpora()
     corpus = load_corpus_definition('hum_course_descriptions')
@@ -25,3 +48,4 @@ def test_hum_course_descriptions_extraction(hum_course_descriptions_settings):
 
     docs = list(corpus.documents())
     assert len(docs) == 1
+    assert docs == target_docs
