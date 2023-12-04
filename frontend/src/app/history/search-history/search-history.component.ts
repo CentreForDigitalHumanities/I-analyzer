@@ -38,8 +38,10 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
 
     addQueryModel(query?: QueryDb) {
         const corpus = findByName(this.corpora, query.corpus);
-        query.queryModel = esQueryToQueryModel(query.query_json, corpus);
-        return query;
+        if (corpus) {
+            query.queryModel = esQueryToQueryModel(query.query_json, corpus);
+            return query;
+        }
     }
 
     routerLink(query: QueryDb): string[] {
