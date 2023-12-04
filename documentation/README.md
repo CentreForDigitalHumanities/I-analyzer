@@ -27,3 +27,7 @@ This directory contains documentation for developers.
 - [Authentication and authorisation](./Authentication-and-authorization.md)
 - [Email](./Email.md) (used for downloads and authentication)
 - [SAML](./SAML.md)
+
+## Other
+
+- [Making a release](./Making-a-release.md)
