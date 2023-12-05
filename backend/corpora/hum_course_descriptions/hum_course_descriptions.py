@@ -121,7 +121,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
     max_date = datetime(2023, 8, 31)
     image = 'uu_logo_cropped.jpg'
     languages = ['nl', 'en', 'de', 'fr', 'es', 'it']
-    es_index = 'hum_course_descriptions'
+    es_index =  getattr(settings, 'HUM_COURSE_DESCRIPTIONS_INDEX', 'hum_course_descriptions')
 
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
 
