@@ -48,6 +48,13 @@ def content_extractor(label):
         transform=html_to_text,
     )
 
+def get_level(course_id):
+    level = course_id[2]
+    if level in ['1', '2', '3']:
+        return f'Bachelor {level}'
+    else:
+        return 'Master'
+
 class HumCourseDescriptions(XLSXCorpusDefinition):
     title = 'Humanities Course Descriptions'
     description = 'Courses taught in the UU Humanities faculty in 2023'
@@ -59,7 +66,6 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
     es_index = 'hum_course_descriptions'
 
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
-
 
     def sources(self, **kwargs):
         path = os.path.join(self.data_directory, 'doel_inhoud_cursussen2023GW.xlsx')
@@ -85,6 +91,12 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             display_name='Name',
             extractor=CSV('KORTE_NAAM_NL'),
             es_mapping=text_mapping(),
+        ),
+        FieldDefinition(
+            name='level',
+            display_name='Level',
+            extractor=CSV('CURSUS', transform=get_level),
+            es_mapping=keyword_mapping(),
         ),
         FieldDefinition(
             name='type',

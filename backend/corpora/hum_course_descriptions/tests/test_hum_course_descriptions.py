@@ -36,7 +36,8 @@ target_docs = [{
     'description': 'Onbekend',
     'faculty': 'GW',
     'goal': '',
-    'content': description
+    'content': description,
+    'level': 'Bachelor 2',
 }]
 
 
