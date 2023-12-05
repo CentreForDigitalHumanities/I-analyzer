@@ -18,7 +18,7 @@ def filter_label(label):
         has_label = lambda pair: get_label(pair) == label
         filtered = filter(has_label, zip(labels, contents))
         filtered_content = map(get_content, filtered)
-        return '\n'.join(filtered_content)
+        return '\n'.join(filter(None, filtered_content))
 
     return get_content_with_label
 
@@ -34,7 +34,7 @@ def html_to_text(content):
 
     plain = strip_tags(content)
 
-    stripped_lines = '\n'.join(map(str.strip, plain.splitlines()))
+    stripped_lines = '\n'.join(filter(None, map(str.strip, plain.splitlines())))
     return stripped_lines.strip()
 
 def content_extractor(label):
@@ -61,8 +61,9 @@ def filter_teacher_roles(data):
     return filtered
 
 def get_teacher_names(rows):
-    extractor = CSV('names')
-    return extractor.apply(rows)
+    if rows:
+        extractor = CSV('names')
+        return extractor.apply(rows)
 
 def format_names(names):
     format_name = lambda parts: ' '.join(filter(None, parts))
@@ -124,7 +125,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
 
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
 
-    def sources(self, **kwargs):
+    def sources(self, *args, **kwargs):
         teacher_roles = self._extract_teacher_data()
         path = os.path.join(self.data_directory, 'doel_inhoud_cursussen2023GW.xlsx')
         yield path, { 'teacher_roles': teacher_roles }
@@ -135,6 +136,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
         return list(roles)
 
     field_entry = 'CURSUS'
+    required_field = 'CURSUS'
 
     fields = [
         FieldDefinition(

@@ -20,6 +20,12 @@ class XLSXCorpusDefinition(CorpusDefinition):
     field_entry = None
 
     '''
+    Specifies a required field, for example the main content. Rows with
+    an empty value for `required_field` will be skipped.
+    '''
+    required_field = None
+
+    '''
     Number of lines to skip before reading the header
     '''
     skip_lines = 0
@@ -60,6 +66,9 @@ class XLSXCorpusDefinition(CorpusDefinition):
                 col: value
                 for col, value in zip(header, row)
             }
+
+            if self.required_field and not values.get(self.required_field):  # skip row if required_field is empty
+                continue
 
             identifier = values.get(self.field_entry, None)
             is_new_document = identifier == None or identifier != document_id

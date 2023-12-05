@@ -22,9 +22,7 @@ description = '''- Stap 1 cursusinvoer door contactpersonen; Van dinsdag 1 decem
 - Stap 2 controle cursusinvoer door opleidings- en programma coördinatoren; van maandag 18 januari t/m vrijdag 29 januari
 - Stap 3 controle cursusinvoer door onderwijscoördinatoren van maandag 1 februari t/m donderdag 18 februari (en door OWS)
 - Consolidatie vrijdag 19 februari 2021.
-
 Wat een leuk proces is dit toch!
-
 :-)'''
 
 target_docs = [{
