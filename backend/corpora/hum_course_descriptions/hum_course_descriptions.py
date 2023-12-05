@@ -1,15 +1,14 @@
 from datetime import datetime
 import os
 from django.conf import settings
+import re
+from django.utils.html import strip_tags
 
 from addcorpus.corpus import FieldDefinition
 from addcorpus.xlsx import XLSXCorpusDefinition
-from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
 from addcorpus.extract import CSV, Combined, Pass, Constant, Metadata
-from django.utils.html import strip_tags
-import re
-
+from addcorpus.filters import MultipleChoiceFilter
 
 def filter_label(label):
     def get_content_with_label(data):
@@ -81,7 +80,7 @@ def teacher_extractor(role):
         transform=get_teacher_names,
     )
 
-class CourseStaffExtractor(XLSXCorpusDefinition):
+class CourseStaffMetadata(XLSXCorpusDefinition):
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
 
     def sources(self, **kwargs):
@@ -131,7 +130,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
         yield path, { 'teacher_roles': teacher_roles }
 
     def _extract_teacher_data(self):
-        reader = CourseStaffExtractor()
+        reader = CourseStaffMetadata()
         roles = reader.documents()
         return list(roles)
 
@@ -155,24 +154,30 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             display_name='Name',
             extractor=CSV('KORTE_NAAM_NL'),
             es_mapping=text_mapping(),
+            results_overview=True,
         ),
         FieldDefinition(
             name='level',
             display_name='Level',
             extractor=CSV('CURSUS', transform=get_level),
             es_mapping=keyword_mapping(),
+            results_overview=True,
+            search_filter=MultipleChoiceFilter(),
         ),
         FieldDefinition(
             name='type',
             display_name='Course type',
             extractor=CSV('CURSUSTYPE'),
             es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(option_count=100),
         ),
         FieldDefinition(
             name='department',
             display_name='Coordinating department',
             extractor=CSV('COORDINEREND_ONDERDEEL'),
             es_mapping=keyword_mapping(),
+            results_overview=True,
+            search_filter=MultipleChoiceFilter(option_count=100),
         ),
         FieldDefinition(
             name='description',
@@ -226,12 +231,16 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             name='goal',
             display_name='Course goal',
             extractor=content_extractor('DOEL'),
-            es_mapping=main_content_mapping(),
+            es_mapping=main_content_mapping(token_counts=True),
+            display_type='text_content',
+            results_overview=True,
         ),
         FieldDefinition(
             name='content',
             display_name='Course content',
             extractor=content_extractor('INHOUD'),
-            es_mapping=main_content_mapping(),
+            es_mapping=main_content_mapping(token_counts=True),
+            display_type='text_content',
+            results_overview=True,
         ),
     ]
