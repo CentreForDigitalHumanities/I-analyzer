@@ -119,8 +119,8 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
     category = 'informative'
     min_date = datetime(2022, 9, 1)
     max_date = datetime(2023, 8, 31)
-    image = 'uu.png'
-    languages = ['nl', 'en']
+    image = 'uu_logo_cropped.jpg'
+    languages = ['nl', 'en', 'de', 'fr', 'es', 'it']
     es_index = 'hum_course_descriptions'
 
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
@@ -144,6 +144,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             display_name='Course ID',
             extractor=CSV('CURSUS'),
             es_mapping=keyword_mapping(),
+            csv_core=True,
         ),
         FieldDefinition(
             name='academic_year',
@@ -157,6 +158,8 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             extractor=CSV('KORTE_NAAM_NL'),
             es_mapping=text_mapping(),
             results_overview=True,
+            search_field_core=True,
+            csv_core=True,
         ),
         FieldDefinition(
             name='level',
@@ -165,6 +168,8 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=keyword_mapping(),
             results_overview=True,
             search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+            csv_core=True,
         ),
         FieldDefinition(
             name='type',
@@ -172,6 +177,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             extractor=CSV('CURSUSTYPE'),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(option_count=100),
+            visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
             name='department',
@@ -180,6 +186,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=keyword_mapping(),
             results_overview=True,
             search_filter=MultipleChoiceFilter(option_count=100),
+            visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
             name='description',
@@ -236,6 +243,9 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=main_content_mapping(token_counts=True),
             display_type='text_content',
             results_overview=True,
+            visualizations=['wordcloud'],
+            search_field_core=True,
+            csv_core=True,
         ),
         FieldDefinition(
             name='content',
@@ -244,5 +254,8 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=main_content_mapping(token_counts=True),
             display_type='text_content',
             results_overview=True,
+            visualizations=['wordcloud'],
+            search_field_core=True,
+            csv_core=True,
         ),
     ]
