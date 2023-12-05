@@ -6,7 +6,7 @@ from addcorpus.corpus import FieldDefinition
 from addcorpus.xlsx import XLSXCorpusDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
-from addcorpus.extract import CSV, Combined, Pass
+from addcorpus.extract import CSV, Combined, Pass, Constant, Metadata
 from django.utils.html import strip_tags
 import re
 
@@ -55,6 +55,64 @@ def get_level(course_id):
     else:
         return 'Master'
 
+def filter_teacher_roles(data):
+    course_id, role, all_roles = data
+    select = lambda row: row['course_id'] == course_id and row['role'] == role
+    filtered = list(filter(select, all_roles))
+    return filtered
+
+def get_teacher_names(rows):
+    extractor = CSV('names')
+    return extractor.apply(rows)
+
+def format_names(names):
+    format_name = lambda parts: ' '.join(filter(None, parts))
+    full_names = map(format_name, names)
+    return '; '.join(full_names)
+
+def teacher_extractor(role):
+    return Pass(
+        Combined(
+            CSV('CURSUS'),
+            Constant(role),
+            Metadata('teacher_roles'),
+            transform=filter_teacher_roles,
+        ),
+        transform=get_teacher_names,
+    )
+
+class CourseStaffExtractor(XLSXCorpusDefinition):
+    data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
+
+    def sources(self, **kwargs):
+        path = os.path.join(self.data_directory, 'docenten_cursussen2023GW.xlsx')
+        yield path
+
+    field_entry = 'ROL'
+
+    fields = [
+        FieldDefinition(
+            name='course_id',
+            extractor=CSV('CURSUS'),
+        ),
+        FieldDefinition(
+            name='role',
+            extractor=CSV('ROL'),
+        ),
+        FieldDefinition(
+            name='names',
+            extractor=Pass(
+                Combined(
+                    CSV('VOORLETTERS', multiple=True),
+                    CSV('VOORVOEGSELS', multiple=True),
+                    CSV('ACHTERNAAM', multiple=True),
+                    transform=lambda values: zip(*values)
+                ),
+                transform=format_names,
+            ),
+        ),
+    ]
+
 class HumCourseDescriptions(XLSXCorpusDefinition):
     title = 'Humanities Course Descriptions'
     description = 'Courses taught in the UU Humanities faculty in 2023'
@@ -68,8 +126,14 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
     data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
 
     def sources(self, **kwargs):
+        teacher_roles = self._extract_teacher_data()
         path = os.path.join(self.data_directory, 'doel_inhoud_cursussen2023GW.xlsx')
-        yield path
+        yield path, { 'teacher_roles': teacher_roles }
+
+    def _extract_teacher_data(self):
+        reader = CourseStaffExtractor()
+        roles = reader.documents()
+        return list(roles)
 
     field_entry = 'CURSUS'
 
@@ -121,6 +185,42 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             display_name='Faculty',
             extractor=CSV('FACULTEIT'),
             es_mapping=keyword_mapping(),
+        ),
+        FieldDefinition(
+            name='contact',
+            display_name='Contact',
+            extractor=teacher_extractor('CONTACTPERSOON'),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='coordinator',
+            display_name='Coordinator',
+            extractor=teacher_extractor('COORDINATOR'),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='course_coordinator',
+            display_name='Course coordinator',
+            extractor=teacher_extractor('CURSUSCOORDINAT'),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='program_coordinator',
+            display_name='Program coordinator',
+            extractor=teacher_extractor('OPLEIDINGSCOORD'),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='min_coordinator',
+            display_name='Min coordinator',
+            extractor=teacher_extractor('MINCOORDINATOR'),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='teacher',
+            display_name='Teacher',
+            extractor=teacher_extractor('DOCENT'),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='goal',

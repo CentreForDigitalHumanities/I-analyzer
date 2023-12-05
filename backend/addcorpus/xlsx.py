@@ -36,7 +36,7 @@ class XLSXCorpusDefinition(CorpusDefinition):
         else:
             filename, metadata = source
 
-        wb = openpyxl.load_workbook(source)
+        wb = openpyxl.load_workbook(filename)
         logger.info('Reading XLSX file {}...'.format(filename))
 
         sheets = wb.sheetnames
