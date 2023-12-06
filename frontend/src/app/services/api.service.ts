@@ -102,10 +102,9 @@ export class ApiService {
     // Tasks
     public getTasksStatus<ExpectedResult>(
         tasks: TaskResult
-    ): Promise<TasksOutcome<ExpectedResult>> {
+    ): Observable<TasksOutcome<ExpectedResult>> {
         return this.http
-            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
-            .toPromise();
+            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks);
     }
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
@@ -120,31 +119,15 @@ export class ApiService {
 
     public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
-    public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
+    public pollTasks<ExpectedResult>(ids: string[]): Observable<TasksOutcome<ExpectedResult[]>> {
         return interval(5000)
             .pipe(
                 takeUntil(this.stopPolling$),
                 switchMap((_) =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
-                catchError(error => {
-                    this.stopPolling$.next(true);
-                    console.error(error);
-                    return EMPTY;
-                }),
                 filter(this.tasksDone)
                 // eslint-disable-next-line @typescript-eslint/no-shadow
-            )
-            .toPromise()
-            .then(
-                (result) => {
-                    this.stopPolling$.next(true);
-                    return new Promise((resolve, reject) =>
-                        result.status === 'done'
-                            ? resolve(result.results)
-                            : reject()
-                    );
-                }
             );
     }
 
