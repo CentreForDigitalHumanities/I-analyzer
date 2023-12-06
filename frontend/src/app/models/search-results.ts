@@ -1,6 +1,6 @@
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
+import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, NGramRequestParameters } from './visualization';
 import { APIQuery } from './search-requests';
 
 export interface SearchResults {
@@ -104,7 +104,7 @@ export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { siz
 
 export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency' | 'ngram';
 export type DownloadStatus = 'done' | 'working' | 'error';
-export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters;
+export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters | NGramRequestParameters;
 
 export interface PendingDownload {
     download_type: DownloadType;

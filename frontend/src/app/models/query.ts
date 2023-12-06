@@ -23,7 +23,7 @@ export class QueryDb {
     /**
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
-    public query_json: EsQuery;
+    public query_json: APIQuery;
     public queryModel?: QueryModel;
 
     /**
@@ -52,7 +52,7 @@ export class QueryDb {
     public total_results: number;
 
     constructor(
-        esQuery: EsQuery,
+        apiQuery: APIQuery,
         /**
          * Name of the corpus for which the query was performed.
          */
@@ -63,7 +63,7 @@ export class QueryDb {
          */
         public user: number
     ) {
-        this.query_json = esQuery;
+        this.query_json = apiQuery;
     }
 }
 
