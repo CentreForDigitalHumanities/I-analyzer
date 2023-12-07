@@ -26,7 +26,8 @@ from addcorpus.es_settings import es_settings
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
             'Wilhelmina', 'Juliana', 'Beatrix', 'Willem-Alexander']
 
-SPEECH_TYPES = ['openingsrede', 'troonrede', 'inhuldigingsrede']
+SPEECH_TYPES = ['openingsrede', 'troonrede',
+                'inhuldigingsrede', 'abdicatierede', 'other']
 
 
 class Troonredes(XMLCorpusDefinition):
