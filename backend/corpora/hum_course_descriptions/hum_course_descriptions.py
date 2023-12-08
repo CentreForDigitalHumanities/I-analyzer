@@ -58,7 +58,12 @@ def all_content_extractor():
 
 def detect_language(content):
     try:
-        return detect(content)
+        detected = detect(content)
+        if detected == 'af':
+            # dutch is sometimes mistaken for afrikaans
+            # but we know afrikaans is never actually used in this corpus
+            return 'nl'
+        return detected
     except:
         pass
 
