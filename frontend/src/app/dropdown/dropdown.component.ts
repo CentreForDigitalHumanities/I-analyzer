@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnDes
 import { Subject, Subscription } from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import * as _ from 'lodash';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -38,6 +39,8 @@ export class DropdownComponent<T> implements OnDestroy {
     public onChange = new EventEmitter<T>();
 
     public showDropdown = false;
+
+    dropIcon = faAngleDown;
 
     private changeSubject = new Subject<T | undefined>();
     private changeSubscription: Subscription;

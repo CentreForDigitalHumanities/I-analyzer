@@ -2,6 +2,7 @@
 import { combineLatest, BehaviorSubject, Subject } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { DialogService, ManualPageMetaData, HighlightService } from '../services';
+import { faBook, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -15,6 +16,11 @@ export class ManualNavigationComponent implements OnInit {
         this.manifest,
         this.filterTextSubject,
         (manifest, filterText) => Array.from(this.filter(manifest, filterText)));
+
+    icons = {
+        search: faSearch,
+        manual: faBook,
+    };
 
     public set filterText(value: string) {
         this.filterTextSubject.next(value);

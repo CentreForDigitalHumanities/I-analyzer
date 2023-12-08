@@ -4,8 +4,8 @@
             [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
             <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
                 (click)="chooseDownloadMethod()" [disabled]="resultsCount===0">
-                <span class="icon is-small">
-                    <i class="fa fa-download"></i>
+                <span class="icon">
+                    <fa-icon [icon]="downloadIcon" aria-hidden="true"></fa-icon>
                 </span>
                 <span>Download csv</span>
             </button>

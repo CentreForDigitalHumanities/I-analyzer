@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CorpusField, QueryModel, SortConfiguration } from '../models';
+import { faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc } from '@fortawesome/free-solid-svg-icons';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -17,6 +18,13 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
     public showFields = false;
+
+    icons = {
+        alphaDesc: faSortAlphaDesc,
+        alphaAsc: faSortAlphaAsc,
+        numericDesc: faSortNumericDesc,
+        numericAsc: faSortNumericAsc,
+    };
 
     constructor() {}
 

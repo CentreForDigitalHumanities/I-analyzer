@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
+import { faAt, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 
 interface RegisterErrors {
     non_field_errors?: string[];
@@ -35,6 +36,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     public isModalActive = false;
 
     public errors: RegisterErrors;
+
+    icons = {
+        user: faUser,
+        email: faAt,
+        password: faLock,
+    };
 
     private destroy$ = new Subject<boolean>();
 

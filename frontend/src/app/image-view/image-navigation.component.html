@@ -1,13 +1,15 @@
 <div *ngIf="pageIndices.length>1" class="nav-buttons">
-    <button id="prevButton" class="button is-small" (click)="prevPage()">
-        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+    <button id="prevButton" class="button is-small" (click)="prevPage()"
+        aria-label="previous page">
+        <fa-icon [icon]="icons.prev" aria-hidden="true"></fa-icon>
     </button>
     <ng-container *ngFor="let pageNumber of buttonArray">
-        <a class="button is-small" [ngClass]="{'is-primary':pageNumber==page}" (click)="goToPage(pageNumber)">
+        <a class="button is-small" [ngClass]="{'is-primary':pageNumber===page}" (click)="goToPage(pageNumber)">
             {{pageNumber}}
         </a>
     </ng-container>
-    <button id="nextButton" class="button is-small" (click)="nextPage()">
-        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+    <button id="nextButton" class="button is-small" (click)="nextPage()"
+        aria-label="next page">
+        <fa-icon [icon]="icons.next" aria-hidden="true"></fa-icon>
     </button>
 </div>

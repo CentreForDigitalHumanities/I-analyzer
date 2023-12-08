@@ -33,8 +33,8 @@
         <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted"
             iaBalloon="View Scan" aria-label="view scan"
             (click)="goToScan(page, document, $event)">
-            <span class="icon">
-                <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
+            <span class="icon is-large">
+                <fa-icon [icon]="scanIcon" size="3x" aria-hidden="true"></fa-icon>
             </span>
         </button>
     </div>

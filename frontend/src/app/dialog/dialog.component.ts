@@ -4,6 +4,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
 import { DialogService } from './../services/index';
+import { faBook } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'ia-dialog',
@@ -17,6 +18,8 @@ export class DialogComponent implements OnDestroy, OnInit {
     public footerRouterLink: string[];
     public showDialog = false;
     public isLoading = false;
+
+    manualIcon = faBook;
 
     private dialogEventSubscription: Subscription;
 

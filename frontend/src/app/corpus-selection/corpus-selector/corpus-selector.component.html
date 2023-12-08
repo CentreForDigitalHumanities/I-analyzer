@@ -13,8 +13,11 @@
                 <button class="moreInfoLink"
                 role="link"
                 iaBalloon="More information" iaBalloonPosition="down-left"
-                [routerLink]="['/info', corpus.name]">
-                <i class=" fa fa-info-circle info-icon" aria-hidden="true"></i>
+                [routerLink]="['/info', corpus.name]"
+                aria-label="more information">
+                <span class="icon">
+                    <fa-icon [icon]="infoIcon" aria-hidden="true"></fa-icon>
+                </span>
             </button>
 
             </div>

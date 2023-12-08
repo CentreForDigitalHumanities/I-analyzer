@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'login',
@@ -23,6 +24,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     public hasError: boolean;
 
     public showSolis: boolean;
+
+    icons = {
+        user: faUser,
+        password: faLock,
+    };
 
     private returnUrl: string;
 
