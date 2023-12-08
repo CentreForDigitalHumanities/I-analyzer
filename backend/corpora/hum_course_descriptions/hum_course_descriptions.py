@@ -3,12 +3,14 @@ import os
 from django.conf import settings
 import re
 from django.utils.html import strip_tags
+from langdetect import detect
 
 from addcorpus.corpus import FieldDefinition
 from addcorpus.xlsx import XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
 from addcorpus.extract import CSV, Combined, Pass, Constant, Metadata
 from addcorpus.filters import MultipleChoiceFilter
+from addcorpus.serializers import LanguageField
 
 def filter_label(label):
     def get_content_with_label(data):
@@ -46,6 +48,27 @@ def content_extractor(label):
         ),
         transform=html_to_text,
     )
+
+def all_content_extractor():
+    return Combined(
+        content_extractor('DOEL'),
+        content_extractor('INHOUD'),
+        transform='\n'.join
+    )
+
+def detect_language(content):
+    try:
+        detected = detect(content)
+        if detected == 'af':
+            # dutch is sometimes mistaken for afrikaans
+            # but we know afrikaans is never actually used in this corpus
+            return 'nl'
+        return detected
+    except:
+        pass
+
+def language_name(language_code):
+    return LanguageField().to_representation(language_code)
 
 def get_level(course_id):
     level = course_id[2]
@@ -235,6 +258,31 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             display_name='Teacher',
             extractor=teacher_extractor('DOCENT'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='language',
+            display_name='Language',
+            extractor=Pass(
+                    Pass(
+                    all_content_extractor(),
+                    transform=detect_language
+                ),
+                transform=language_name,
+            ),
+            description='Language used in the course description',
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+        ),
+        FieldDefinition(
+            name='language_code',
+            display_name='Language code',
+            extractor=Pass(
+                all_content_extractor(),
+                transform=detect_language
+            ),
+            description='IETF tag of the language used in the course description',
+            es_mapping=keyword_mapping(),
+            hidden=True,
         ),
         FieldDefinition(
             name='goal',
