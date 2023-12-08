@@ -168,6 +168,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
             extractor=CSV('CURSUS'),
             es_mapping=keyword_mapping(),
             csv_core=True,
+            results_overview=True,
         ),
         FieldDefinition(
             name='academic_year',
