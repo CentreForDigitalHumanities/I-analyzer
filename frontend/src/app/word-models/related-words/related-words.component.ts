@@ -13,7 +13,7 @@ import { ParamDirective } from '../../param/param-directive';
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
-    styleUrls: ['./related-words.component.scss']
+    styleUrls: ['./related-words.component.scss'],
 })
 export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     @Input() queryText: string;
@@ -21,7 +21,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    @Output() error = new EventEmitter();
+    @Output() relatedWordsError = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
 
     neighbours = 5;
@@ -62,8 +62,9 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     }
 
     getTotalData(): Promise<void> {
-        return this.wordModelsService.getRelatedWords(this.queryText, this.corpus.name, this.neighbours)
-            .then(results => {
+        return this.wordModelsService
+            .getRelatedWords(this.queryText, this.corpus.name, this.neighbours)
+            .then((results) => {
                 this.totalData = results.similarities_over_time;
                 this.timeIntervals = results.time_points;
                 this.zoomedInData = results.similarities_over_time_local_top_n;
@@ -74,8 +75,6 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     onError(error) {
         this.totalData = undefined;
         this.zoomedInData = undefined;
-        this.error.emit(error);
-
+        this.relatedWordsError.emit(error);
     }
-
 }
