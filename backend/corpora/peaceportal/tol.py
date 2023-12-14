@@ -5,7 +5,9 @@ from django.conf import settings
 
 from addcorpus.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, Combined, FilterAttribute
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
+    clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
+    not_before_extractor, not_after_extractor, transform_to_date_range
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
 class PeaceportalTOL(PeacePortal, XMLCorpusDefinition):
@@ -46,20 +48,13 @@ class PeaceportalTOL(PeacePortal, XMLCorpusDefinition):
             transform=lambda x: get_year(x),
         )
 
-        self.not_before.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-                 'history', 'origin', 'origDate', 'date'],
-            toplevel=False,
-            attribute='notBefore',
-            transform=lambda x: get_year(x),
-        )
+        self.not_before.extractor = not_before_extractor()
+        self.not_after.extractor = not_after_extractor()
 
-        self.not_after.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-                 'history', 'origin', 'origDate', 'date'],
-            toplevel=False,
-            attribute='notAfter',
-            transform=lambda x: get_year(x),
+        self.date.extractor = Combined(
+            not_before_extractor(),
+            not_after_extractor(),
+            transform=transform_to_date_range
         )
 
         self.transcription.extractor = XML(

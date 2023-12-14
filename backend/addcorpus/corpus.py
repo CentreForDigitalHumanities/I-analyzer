@@ -817,3 +817,14 @@ def consolidate_start_end_years(start, end, min_date, max_date):
         start = min_date
     if end > max_date:
         end = max_date
+
+
+def transform_to_date_range(earliest, latest):
+    if not earliest:
+        earliest = '0001-01-01'
+    if not latest:
+        latest = datetime.today().isoformat()[:10]
+    return {
+        'gte': earliest,
+        'lte': latest
+    }

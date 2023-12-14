@@ -5,6 +5,8 @@ from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.save_corpus import load_and_save_all_corpora
 from addcorpus.models import Corpus
 
+from corpora.peaceportal.peaceportal import transform_to_date_range, zero_pad_year
+
 CORPUS_TEST_DATA = [
     {
         'name': 'peaceportal-epidat',
@@ -12,8 +14,9 @@ CORPUS_TEST_DATA = [
           "id": "blr-4",
           "url": "http://www.steinheim-institut.de:80/cgi-bin/epidat?id=blr-4",
           "year": "1865",
-          "not_before": "1865",
+          "not_before": "1865-02-28",
           "not_after": None,
+          "date": '1865-02-28',
           "source_database": "Epidat (Steinheim Institute)",
           "transcription": """Hier ruhet
 der Kaufmann
@@ -71,8 +74,9 @@ sepulchral monument
           "id": "akld0002",
           "url": "https://library.brown.edu/iip/viewinscr/akld0002",
           "year": "0001",
-          "not_before": "0001",
-          "not_after": "0100",
+          "not_before": "0001-01-01",
+          "not_after": "0100-12-31",
+          "date": transform_to_date_range('0001-01-01', '0100-12-31'),
           "source_database": "Inscriptions of Israel/Palestine (Brown University)",
           "transcription": """Χάρητος
 Χάρητος
@@ -236,7 +240,7 @@ def corpus_test_name(corpus_spec):
     return corpus_spec['name']
 
 @pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
-def test_imports(peace_test_settings, corpus_object):
+def test_peace_imports(peace_test_settings, corpus_object):
     parent_corpus = load_corpus_definition('peaceportal')
     corpus = load_corpus_definition(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
@@ -280,3 +284,9 @@ def test_peaceportal_validation(db, peace_test_settings):
     for corpus_name in corpus_names:
         corpus = Corpus.objects.get(name=corpus_name)
         assert corpus.active
+
+def test_zero_pad_year():
+   assert zero_pad_year(2014) == '2014'
+   assert zero_pad_year(898) == '0898'
+   assert zero_pad_year(65) == '0065'
+   assert zero_pad_year(1) == '0001'

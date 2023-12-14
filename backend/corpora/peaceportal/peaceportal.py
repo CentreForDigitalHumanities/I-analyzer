@@ -1,17 +1,18 @@
 import os.path as op
 import logging
 from glob import glob
-from datetime import datetime
+import datetime
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
 
 from django.conf import settings
 
 from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition
-from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
+from addcorpus.extract import XML
+from addcorpus.es_mappings import date_estimate_mapping, date_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 from addcorpus.extract import Constant
-from addcorpus.filters import MultipleChoiceFilter, RangeFilter
+from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 
 class PeacePortal(ParentCorpusDefinition):
     '''
@@ -28,13 +29,13 @@ class PeacePortal(ParentCorpusDefinition):
     description = "A collection of inscriptions on Jewish burial sites"
     # store min_year as int, since datetime does not support BCE dates
     min_year = -530
-    max_date = datetime(year=1950, month=12, day=31)
+    max_date = datetime.datetime(year=1950, month=12, day=31)
     visualize = []
     es_index = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     es_alias = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
-    min_date = datetime(year=746, month=1, day=1)
+    min_date = datetime.datetime(year=746, month=1, day=1)
     image = 'bogus.jpg'
     category = 'inscription'
     data_directory = 'bogus'
@@ -117,7 +118,7 @@ class PeacePortal(ParentCorpusDefinition):
         name='not_before',
         display_name='Not before',
         description='Inscription is dated not earlier than this year.',
-        es_mapping=int_mapping(),
+        es_mapping=date_mapping(),
         hidden=True
     )
 
@@ -125,8 +126,20 @@ class PeacePortal(ParentCorpusDefinition):
         name='not_after',
         display_name='Not after',
         description='Inscription is dated not later than this year.',
-        es_mapping=int_mapping(),
+        es_mapping=date_mapping(),
         hidden=True
+    )
+
+    date = FieldDefinition(
+        name='date',
+        display_name='Estimated date range',
+        description='The estimated date of the description range',
+        es_mapping=date_estimate_mapping(),
+        search_filter=DateFilter(
+            description='Restrict the dates from which search results will be returned.',
+            lower=min_date,
+            upper=max_date,
+        )
     )
 
     transcription = FieldDefinition(
@@ -353,6 +366,7 @@ class PeacePortal(ParentCorpusDefinition):
             self.year,
             self.not_before,
             self.not_after,
+            self.date,
             self.source_database,
             self.transcription,
             self.names,
@@ -505,3 +519,52 @@ def get_text_in_language(_input):
         if detected_code and detected_code == language_code:
             results.append(line)
     return ' '.join(results)
+
+def transform_to_date(input, margin):
+    try:
+        datetime.date.fromisoformat(input)
+        return input
+    except:
+        if not input:
+            return None
+        if int(input) < 1:
+            raise Exception('Years smaller than 1 cannot be transformed to dates')
+        if len(input) < 4:
+            input = zero_pad_year(input)
+        if margin == 'upper':
+            return '{}-12-31'.format(input)
+        elif margin == 'lower':
+            return '{}-01-01'.format(input)
+        else:
+            raise Exception("margin argument must be 'upper' or 'lower'")
+
+def zero_pad_year(input):
+    return ('0' * (4 - len(str(input)))) + str(input)
+
+def transform_to_date_range(earliest, latest):
+    if not earliest:
+        earliest = PeacePortal.min_date
+    if not latest:
+        latest = PeacePortal.max_date
+    return {
+        'gte': earliest,
+        'lte': latest
+    }
+
+def not_after_extractor():
+    return XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'date'],
+        toplevel=False,
+        attribute='notAfter',
+        transform=lambda x: transform_to_date(x, 'upper')
+    )
+
+def not_before_extractor():
+    return XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+             'history', 'origin', 'date'],
+        toplevel=False,
+        attribute='notBefore',
+        transform=lambda x: transform_to_date(x, 'lower')
+    )
