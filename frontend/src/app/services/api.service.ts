@@ -124,7 +124,7 @@ export class ApiService {
             .pipe(
                 takeUntil(this.stopPolling$),
                 switchMap((_) =>
-                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
+                    this.getTasksStatus<ExpectedResult[]>({ task_ids: ids })
                 ),
                 filter(this.tasksDone)
                 // eslint-disable-next-line @typescript-eslint/no-shadow

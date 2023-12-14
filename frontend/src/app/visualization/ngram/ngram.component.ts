@@ -122,27 +122,30 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         if (cachedResult) {
             this.onDataLoaded(cachedResult);
         } else {
-            const poller$ = this.visualizationService.getNgramTasks(this.queryModel, this.corpus, this.visualizedField.name,
-                this.currentParameters).then(response => {
-                this.tasksToCancel = response.task_ids;
-                return this.apiService.pollTasks<NgramResults>(response.task_ids);
-            });
-            poller$.subscribe({
-                error: (error) => this.onFailure(error),
-                next: (result) => this.onSuccess(result)
+            this.visualizationService.getNgramTasks(
+                this.queryModel, this.corpus, this.visualizedField.name,
+                this.currentParameters).then(
+                    response => {
+                        this.tasksToCancel = response.task_ids;
+                        const poller$ = this.apiService.pollTasks<NgramResults>(this.tasksToCancel);
+                        poller$.subscribe({
+                            error: (error) => this.onFailure(error),
+                            next: (result) => this.onDataLoaded(result['results'])
+                    });
             });
         }
     }
 
     onFailure(error: {message: string}) {
         this.apiService.stopPolling$.next(true);
-        console.log(error);
+        console.error(error);
         this.currentResults = undefined;
         this.error.emit(error.message);
         this.isLoading.emit(false);
     }
 
     onDataLoaded(result: NgramResults) {
+        this.apiService.stopPolling$.next();
         this.currentResults = result;
         this.tableData = this.makeTableData(result);
 

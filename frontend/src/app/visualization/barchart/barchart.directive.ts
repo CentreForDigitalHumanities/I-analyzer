@@ -82,6 +82,8 @@ export abstract class BarchartDirective
 
     destroy$ = new Subject<void>();
 
+    tasksToCancel: string[];
+
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
             x: {
@@ -372,17 +374,25 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<BarchartSeries<DataPoint>> {
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result =>
-            this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
-        ).then(res =>
-            this.processSeriesTermFrequency(res, series)
-        ).catch(error => {
-            console.error(error);
-            this.error.emit(`could not load results: ${error.message}`);
-            return series;
+        this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
+            this.tasksToCancel = response.task_ids;
+            const poller$ = this.apiService.pollTasks<TermFrequencyResult>(this.tasksToCancel);
+            poller$.subscribe({
+                error: (error) => this.onFailure(error),
+                next: (result) => {
+                    this.apiService.stopPolling$.next();
+                    this.processSeriesTermFrequency(result['results'], series);
+                }
+            });
         });
+    }
+
+    onFailure(error) {
+        this.apiService.stopPolling$.next(true);
+        console.error(error);
+        this.error.emit(`could not load results: ${error.message}`);
     }
 
     abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
