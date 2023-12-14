@@ -1,4 +1,3 @@
-/* eslint-disable @angular-eslint/no-conflicting-lifecycle */
 import {
     Component,
     DoCheck,
@@ -25,7 +24,8 @@ import { findByName } from '../utils/utils';
 })
 export class VisualizationComponent
     extends ParamDirective
-    implements DoCheck, OnChanges {
+    implements DoCheck, OnChanges
+{
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
 
