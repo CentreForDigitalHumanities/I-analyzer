@@ -569,21 +569,23 @@ def transform_to_date_range(earliest, latest):
     }
 
 
-def not_after_extractor():
+def not_after_extractor(transform=True):
+    ''' extractor for standard epidat format '''
     return XML(
         tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-             'history', 'origin', 'date'],
+             'history', 'origin', 'origDate', 'date'],
         toplevel=False,
         attribute='notAfter',
-        transform=lambda x: transform_to_date(x, 'upper')
+        transform=lambda x: transform_to_date(x, 'upper') if transform else x
     )
 
 
-def not_before_extractor():
+def not_before_extractor(transform=True):
+    ''' extractor for standard epidat format '''
     return XML(
         tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-             'history', 'origin', 'date'],
+             'history', 'origin', 'origDate', 'date'],
         toplevel=False,
         attribute='notBefore',
-        transform=lambda x: transform_to_date(x, 'lower')
+        transform=lambda x: transform_to_date(x, 'lower') if transform else x
     )

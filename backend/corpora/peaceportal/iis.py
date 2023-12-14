@@ -8,15 +8,16 @@ from addcorpus.extract import Combined, Constant, ExternalFile, FilterAttribute,
 from addcorpus.serializers import LanguageField
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, \
     clean_commentary, join_commentaries, get_text_in_language, \
-    not_after_extractor, not_before_extractor, transform_to_date_range
+    transform_to_date, transform_to_date_range
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
+
 
 class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
     data_directory = settings.PEACEPORTAL_IIS_DATA
     es_index = getattr(settings, 'PEACEPORTAL_IIS_ES_INDEX', 'peaceportal-iis')
 
     def add_metadata(self, filename):
-        return  {
+        return {
             'associated_file': join(self.external_file_folder, split(filename)[1])
         }
 
@@ -201,22 +202,24 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
-                    'objectDesc', 'supportDesc', 'condition'],
+                     'objectDesc', 'supportDesc', 'condition'],
                 toplevel=False,
                 transform_soup_func=extract_condition
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
-                    'objectDesc', 'layoutDesc', 'layout', 'p'],
+                     'objectDesc', 'layoutDesc', 'layout', 'p'],
                 toplevel=False,
-                transform=lambda x: 'LAYOUT:\n{}\n\n'.format(clean_commentary(x)) if x else None
+                transform=lambda x: 'LAYOUT:\n{}\n\n'.format(
+                    clean_commentary(x)) if x else None
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
-                    'objectDesc'],
+                     'objectDesc'],
                 toplevel=False,
                 attribute='ana',
-                transform=lambda x: 'OBJECTTYPE:\n{}\n\n'.format(x[1:]) if x else None
+                transform=lambda x: 'OBJECTTYPE:\n{}\n\n'.format(
+                    x[1:]) if x else None
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
@@ -235,7 +238,8 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
                     clean_commentary(x)) if x else None
             ),
             XML(
-                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc', 'handDesc', 'handNote'],
+                tag=['teiHeader', 'fileDesc', 'sourceDesc',
+                     'msDesc', 'physDesc', 'handDesc', 'handNote'],
                 toplevel=False,
                 transform_soup_func=extract_handnotes
             ),
@@ -332,7 +336,8 @@ def extract_condition(soup):
 
 
 def extract_handnotes(soup):
-    if not soup: return
+    if not soup:
+        return
     return extract_attribute_and_child_p(soup, 'HANDNOTES')
 
 
@@ -371,3 +376,25 @@ def normalize_language(text):
 
     # MISSING (i.e. present in Epidat and Fiji)
     # person(s) - names (profileDesc is completely missing)
+
+
+def not_after_extractor():
+    ''' iis misses the enclosing <origDate> tag '''
+    return XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+             'history', 'origin', 'date'],
+        toplevel=False,
+        attribute='notAfter',
+        transform=lambda x: transform_to_date(x, 'upper')
+    )
+
+
+def not_before_extractor():
+    ''' iis misses the enclosing <origDate> tag '''
+    return XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+             'history', 'origin', 'date'],
+        toplevel=False,
+        attribute='notBefore',
+        transform=lambda x: transform_to_date(x, 'lower')
+    )

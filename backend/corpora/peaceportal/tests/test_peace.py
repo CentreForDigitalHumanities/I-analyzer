@@ -15,7 +15,6 @@ CORPUS_TEST_DATA = [
             "url": "http://www.steinheim-institut.de:80/cgi-bin/epidat?id=blr-4",
             "year": "1865",
             "not_before": "1865-02-28",
-            "not_after": None,
             "date": '1865-02-28',
             "source_database": "Epidat (Steinheim Institute)",
             "transcription": """Hier ruhet
