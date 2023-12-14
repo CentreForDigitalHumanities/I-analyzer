@@ -10,11 +10,11 @@
                             <form (ngSubmit)="search()" *ngIf="corpus">
                                 <div class="field has-addons">
                                     <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
-                                        <a class="button" (click)="showQueryDocumentation()">
+                                        <button class="button" (click)="showQueryDocumentation()">
                                             <span class="icon is-small">
-                                                <i class="fa fa-question-circle"></i>
+                                                <fa-icon [icon]="icons.help" aria-label="help"></fa-icon>
                                             </span>
-                                        </a>
+                                        </button>
                                     </div>
                                     <div class="control">
                                         <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text"
@@ -23,7 +23,7 @@
                                     <div class="control">
                                         <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
                                             <span class="icon is-small">
-                                                <i class="fa fa-search"></i>
+                                                <fa-icon [icon]="icons.search" aria-hidden="true"></fa-icon>
                                             </span>
                                             <span>Search</span>
                                         </button>
