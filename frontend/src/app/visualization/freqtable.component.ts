@@ -2,6 +2,7 @@ import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChange
 import * as _ from 'lodash';
 import { saveAs } from 'file-saver';
 import { FreqTableHeader, FreqTableHeaders } from '../models';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-freqtable',
@@ -27,6 +28,9 @@ export class FreqtableComponent implements OnChanges {
     fullTableToggle = false;
     disableFullTable = false;
 
+    icons = {
+        download: faDownload
+    };
 
     constructor() { }
 

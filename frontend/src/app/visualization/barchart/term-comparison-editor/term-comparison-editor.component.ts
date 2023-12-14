@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import { ParamDirective } from '../../../param/param-directive';
 import { ParamService } from '../../../services';
@@ -22,6 +22,11 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
     @Output() clearQueries = new EventEmitter<void>();
 
     faCheck = faCheck;
+
+    icons = {
+        confirm: faCheck,
+        reset: faTimes,
+    };
 
     constructor(
         route: ActivatedRoute,

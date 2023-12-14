@@ -3,7 +3,7 @@
         <div class="level-item" *ngIf="manualPage">
             <button class="button" (click)="showHelp()">
                 <span class="icon">
-                    <fa-icon [icon]="faQuestion"></fa-icon>
+                    <fa-icon [icon]="icons.help" aria-label="help"></fa-icon>
                 </span>
             </button>
         </div>
@@ -14,8 +14,8 @@
         </div>
         <div class="level-item" *ngIf="!tableView && chartElementID">
             <button class="button download-button" *ngIf="!freqtable" (click)="onRequestImage()">
-                <span class="icon is-small">
-                    <i class="fa fa-download"></i>
+                <span class="icon">
+                    <fa-icon [icon]="icons.download" aria-hidden="true"></fa-icon>
                 </span>
                 <span>Download visualization</span>
             </button>

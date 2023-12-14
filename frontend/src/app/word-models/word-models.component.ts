@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
+import { faChartColumn, faTable } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-word-models',
@@ -39,6 +40,11 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
             manual: 'comparesimilarity',
             chartID: 'chart',
         }
+    };
+
+    icons = {
+        chart: faChartColumn,
+        table: faTable,
     };
 
     childComponentLoading: boolean;

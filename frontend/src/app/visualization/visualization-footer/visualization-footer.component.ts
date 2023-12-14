@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { DialogService, NotificationService } from '../../services';
 import * as htmlToImage from 'html-to-image';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { PALETTES } from '../../utils/select-color';
 
 @Component({
@@ -18,7 +18,10 @@ export class VisualizationFooterComponent implements OnInit {
 
     @Output() palette = new BehaviorSubject<string[]>(PALETTES[0]);
 
-    faQuestion = faQuestionCircle;
+    icons = {
+        help: faQuestionCircle,
+        download: faDownload,
+    };
 
     constructor(
       private dialogService: DialogService,

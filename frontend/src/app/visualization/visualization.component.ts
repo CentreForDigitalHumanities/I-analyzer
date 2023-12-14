@@ -3,7 +3,7 @@ import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField } from '../models/index';
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faChartColumn, faTable } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { findByName } from '../utils/utils';
@@ -55,14 +55,17 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         termfrequency: 'termfrequency',
     };
 
+    icons = {
+        chart: faChartColumn,
+        table: faTable,
+    };
+
     public visualExists = false;
     public isLoading = false;
     private childComponentLoading = false;
 
     public palette: string[];
     public params: Params = {};
-
-    faQuestion = faCircleQuestion;
 
     nullableParameters = ['visualize', 'visualizedField'];
 
