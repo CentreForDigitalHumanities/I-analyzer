@@ -3,6 +3,7 @@ from time import sleep
 from addcorpus.es_mappings import date_mapping, date_estimate_mapping
 from addcorpus.corpus import transform_to_date_range
 
+
 def test_date_filter(es_client):
     ''' test that both a date and a date_range field can be queried in the same way'''
     date_name = 'mock-date-corpus'
@@ -44,4 +45,3 @@ def test_date_filter(es_client):
     es_client.indices.delete(
         index=[date_name, date_range_name]
     )
-    

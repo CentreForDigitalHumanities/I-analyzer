@@ -1,5 +1,3 @@
-import os.path as op
-import logging
 from glob import glob
 import datetime
 from langdetect import detect
@@ -9,10 +7,12 @@ from django.conf import settings
 
 from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition
 from addcorpus.extract import XML
-from addcorpus.es_mappings import date_estimate_mapping, date_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
+from addcorpus.es_mappings import date_estimate_mapping, date_mapping, \
+    int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 from addcorpus.extract import Constant
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+
 
 class PeacePortal(ParentCorpusDefinition):
     '''
@@ -48,17 +48,20 @@ class PeacePortal(ParentCorpusDefinition):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
-    languages = ['en', 'de', 'nl', 'he', 'la', 'el'] # el stands for modern Greek (1500-)
+    # el stands for modern Greek (1500-)
+    languages = ['en', 'de', 'nl', 'he', 'la', 'el']
 
     @property
     def es_settings(self):
-        return es_settings(self.languages, stopword_analysis=True, stemming_analysis=True)
+        return es_settings(self.languages, stopword_analysis=True,
+                           stemming_analysis=True)
 
     def sources(self, start, end):
-        for filename in sorted(glob('{}/**/*.xml'.format(self.data_directory), recursive=True)):
+        for filename in sorted(glob('{}/**/*.xml'.format(self.data_directory),
+                                    recursive=True)):
             metadata = self.add_metadata(filename)
             yield filename, metadata
-    
+
     def add_metadata(self, filename):
         return {}
 
@@ -66,7 +69,7 @@ class PeacePortal(ParentCorpusDefinition):
         images = document['fieldValues']['images']
         if not images:
             images = []
-        return { 'media': images }
+        return {'media': images}
 
     source_database = FieldDefinition(
         name='source_database',
@@ -154,20 +157,22 @@ class PeacePortal(ParentCorpusDefinition):
 
     transcription_german = FieldDefinition(
         name='transcription_de',
-        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='de'),
+        es_mapping=main_content_mapping(
+            stopword_analysis=True, stemming_analysis=True, language='de'),
         language='de',
         hidden=True
     )
 
     transcription_english = FieldDefinition(
         name='transcription_en',
-        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='en'),
+        es_mapping=main_content_mapping(
+            stopword_analysis=True, stemming_analysis=True, language='en'),
         language='en',
         hidden=True
     )
 
     transcription_hebrew = FieldDefinition(
-        name='transcription_he', # no stemmers available
+        name='transcription_he',  # no stemmers available
         es_mapping=main_content_mapping(stopword_analysis=True, language='he'),
         language='he',
         hidden=True
@@ -175,21 +180,23 @@ class PeacePortal(ParentCorpusDefinition):
 
     transcription_latin = FieldDefinition(
         name='transcription_la',
-        es_mapping={'type': 'text'}, # no stopwords / stemmers available
+        es_mapping={'type': 'text'},  # no stopwords / stemmers available
         language='la',
         hidden=True
     )
 
     transcription_greek = FieldDefinition(
         name='transcription_el',
-        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='el'),
+        es_mapping=main_content_mapping(
+            stopword_analysis=True, stemming_analysis=True, language='el'),
         language='el',
         hidden=True
     )
 
     transcription_dutch = FieldDefinition(
         name='transcription_nl',
-        es_mapping=main_content_mapping(stopword_analysis=True, stemming_analysis=True, language='nl'),
+        es_mapping=main_content_mapping(
+            stopword_analysis=True, stemming_analysis=True, language='nl'),
         language='nl',
         hidden=True
     )
@@ -400,7 +407,8 @@ def clean_newline_characters(text):
     Remove all spaces surrounding newlines in `text`.
     Also removes multiple newline characters in a row.
     '''
-    if not text: return
+    if not text:
+        return
     parts = text.split('\n')
     cleaned = []
     for part in parts:
@@ -418,6 +426,7 @@ def clean_commentary(commentary):
     '''
     return ' '.join(commentary.split())
 
+
 def join_commentaries(commentaries):
     '''
     Helper function to join the result of a Combined extractor
@@ -429,20 +438,22 @@ def join_commentaries(commentaries):
             results.append(comm)
     return "\n".join(results)
 
+
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
     The Epidat corpus in particular has mainly descriptions of the material.
     Returns a list of categories, i.e. those that appear in `text`.
     '''
-    if not text: return ['Unknown']
+    if not text:
+        return ['Unknown']
 
     categories = ['Sandstein', 'Kalkstein', 'Stein', 'Granit', 'Kunststein',
                   'Lavatuff', 'Marmor', 'Kalk', 'Syenit', 'Labrador', 'Basalt', 'Beton',
                   'Glas', 'Rosenquarz', 'Gabbro', 'Diorit', 'Bronze',
                   # below from FIJI and IIS
                   'Limestone', 'Stone', 'Clay', 'Plaster', 'Glass', 'Kurkar', 'Granite',
-                  'Marble', 'Metal', 'Bone', 'Lead' ]
+                  'Marble', 'Metal', 'Bone', 'Lead']
     result = []
     ltext = text.lower()
 
@@ -459,6 +470,7 @@ def categorize_material(text):
             result.append(text)
 
     return result
+
 
 def translate_category(category):
     '''
@@ -507,7 +519,8 @@ def get_text_in_language(_input):
     language_code = _input[1]
 
     for line in lines:
-        if not line: continue
+        if not line:
+            continue
         detected_code = None
         try:
             # note that Aramaic is detected as Hebrew
@@ -520,6 +533,7 @@ def get_text_in_language(_input):
             results.append(line)
     return ' '.join(results)
 
+
 def transform_to_date(input, margin):
     try:
         datetime.date.fromisoformat(input)
@@ -528,7 +542,8 @@ def transform_to_date(input, margin):
         if not input:
             return None
         if int(input) < 1:
-            raise Exception('Years smaller than 1 cannot be transformed to dates')
+            raise Exception(
+                'Years smaller than 1 cannot be transformed to dates')
         if len(input) < 4:
             input = zero_pad_year(input)
         if margin == 'upper':
@@ -538,8 +553,10 @@ def transform_to_date(input, margin):
         else:
             raise Exception("margin argument must be 'upper' or 'lower'")
 
+
 def zero_pad_year(input):
     return ('0' * (4 - len(str(input)))) + str(input)
+
 
 def transform_to_date_range(earliest, latest):
     if not earliest:
@@ -551,14 +568,16 @@ def transform_to_date_range(earliest, latest):
         'lte': latest
     }
 
+
 def not_after_extractor():
     return XML(
         tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-                 'history', 'origin', 'date'],
+             'history', 'origin', 'date'],
         toplevel=False,
         attribute='notAfter',
         transform=lambda x: transform_to_date(x, 'upper')
     )
+
 
 def not_before_extractor():
     return XML(
