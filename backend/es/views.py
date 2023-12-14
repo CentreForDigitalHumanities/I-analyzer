@@ -7,11 +7,11 @@ import logging
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 from addcorpus.permissions import CorpusAccessPermission
-from tag.filter import handle_tags_in_request
 from tag.permissions import CanSearchTags
 from api.save_query import should_save_query
 from addcorpus.models import Corpus
 from api.models import Query
+from api.api_query import api_query_to_es_query
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ def get_query_parameters(request):
         return {
             key: request.query_params.get(key)
             for key in request.query_params
+            if key != 'tags'
         }
 
 class ForwardSearchView(APIView):
@@ -48,20 +49,16 @@ class ForwardSearchView(APIView):
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
 
-        handle_tags_in_request(request)
-
         # combine request json with query parameters (size, scroll)
-        query = {
-            **request.data.get('es_query', {}),
-            **get_query_parameters(request)
-        }
+        api_query = self._extract_api_query(request)
+        history_obj = self._save_query_started(request, corpus_name, api_query)
 
-        history_obj = self._save_query_started(request, corpus_name, query)
+        es_query = api_query_to_es_query(api_query, corpus_name)
 
         try:
             results = client.search(
                 index=index,
-                **query,
+                **es_query,
                 track_total_hits=True,
             )
         except Exception as e:
@@ -73,13 +70,25 @@ class ForwardSearchView(APIView):
 
         return Response(results)
 
-    def _save_query_started(self, request, corpus_name, es_query):
-        if should_save_query(request.user, es_query):
+    def _extract_api_query(self, request):
+        es_query = {
+            **request.data.get('es_query', {}),
+            **get_query_parameters(request)
+        }
+        api_query = {'es_query': es_query}
+        if 'tags' in request.data:
+            api_query['tags'] = request.data.get('tags')
+
+        return api_query
+
+    def _save_query_started(self, request, corpus_name, api_query):
+        es_query = api_query_to_es_query(api_query, corpus_name)
+        if should_save_query(request.user, api_query):
             corpus = Corpus.objects.get(name=corpus_name)
             return Query.objects.create(
                 user=request.user,
                 corpus=corpus,
-                query_json=es_query,
+                query_json=api_query,
             )
 
     def _save_query_done(self, query, results):
