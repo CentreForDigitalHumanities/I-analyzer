@@ -7,7 +7,12 @@ For production environments, we use *versioned* index names (e.g. `times-1`, `ti
 On the server, move data to a location in the `/its` share.
 
 ## Deployment settings
-In the Deployment repository, set the variables of the corpus, with the `YOUR_CORPUS_DATA` variable set to the location on the `/its` share. Also add the corpus to the list of `CORPORA`, pointing to the correct location of the corpus definition on the server.
+In the Deployment repository, set the variables of the corpus.
+
+At the very least, you should set:
+- `YOUR_CORPUS_DATA` the location on the `/its` share.
+- `YOUR_CORPUS_INDEX`. The server is only authorised to create indices with a given prefix pattern. Check the other corpora in the setttings file to see what prefix you can use.
+- Adjust `CORPORA` to include the corpus definition.
 
 Change user to www-data (`sudo -iu www-data`), adjust branch and deploy changes with new corpus definition.
 

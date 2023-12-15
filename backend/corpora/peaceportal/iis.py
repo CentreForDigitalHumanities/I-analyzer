@@ -1,5 +1,5 @@
 from copy import copy
-from os.path import join
+from os.path import join, split
 
 from django.conf import settings
 
@@ -14,9 +14,8 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
     es_index = getattr(settings, 'PEACEPORTAL_IIS_ES_INDEX', 'peaceportal-iis')
 
     def add_metadata(self, filename):
-        external_file_folder = settings.PEACEPORTAL_IIS_TXT_DATA
         return  {
-            'associated_file': join(external_file_folder, filename)
+            'associated_file': join(self.external_file_folder, split(filename)[1])
         }
 
     def __init__(self):

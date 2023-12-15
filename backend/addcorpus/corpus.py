@@ -85,7 +85,7 @@ class CorpusDefinition(object):
         '''
         ElasticSearch index name.
         '''
-        raise NotImplementedError('CorpusDefinition missing category')
+        raise NotImplementedError('CorpusDefinition es_index')
 
     '''
     Elasticsearch alias. Defaults to None.
@@ -271,7 +271,7 @@ class CorpusDefinition(object):
             if isinstance(field.extractor, inapplicable_extractors):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
-    
+
 class ParentCorpusDefinition(CorpusDefinition):
     ''' A class from which other corpus definitions can inherit.
     This class is in charge of setting fields, usually without defining an extractor.

@@ -17,7 +17,7 @@
                     </tr>
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValue(field)">
-                            <th>{{field.displayName}}</th>
+                            <th [iaBalloon]="field.description" iaBalloonPosition="up" iaBalloonLength="medium">{{field.displayName}}</th>
                             <td *ngIf="!isUrlField(field)" data-test-field-value [innerHtml]="highlightedInnerHtml(field)"></td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>

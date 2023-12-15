@@ -2,7 +2,7 @@ You can use the search bar to search throug the document in a corpus. By de faul
 
 You can type in multiple query terms. For example, if you type in `tram bike`, you will search for documents that contain `tram` and/or `bike`.
 
-It is also possible to formulate more advanced queries. We use the simple query string syntax of elasticsearch (our database system). This notation is explained in more details in the [Simple Query String manual of Elasticsearch itself](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
+It is also possible to formulate more advanced queries. We use the simple query string syntax of elasticsearch (our database system). This notation is explained in more details in the [Simple Query String manual of Elasticsearch itself](https://www.elastic.co/guide/en/elasticsearch/reference/8.11/query-dsl-simple-query-string-query.html#simple-query-string-syntax).
 
 For your convenience, a summary of the search operators is shown below.
 
