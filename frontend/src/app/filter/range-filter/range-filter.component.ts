@@ -21,7 +21,7 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
     ngOnInit(): void {
         this.sliderValue$.pipe(
             takeUntil(this.destroy$),
-            debounce(() => interval(100))
+            debounce(() => interval(300))
         ).subscribe(value =>
             this.update(this.getFilterData(value))
         );
