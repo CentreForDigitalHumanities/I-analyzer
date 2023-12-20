@@ -152,7 +152,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         this.isLoading.emit(false);
     }
 
-    makeTableData(result: NgramResults): any[] {
+    makeTableData(result: NgramResults): typeof this.tableData {
         return _.flatMap(
             result.time_points.map((date, index) => result.words.map(dataset => ({
                     date,
