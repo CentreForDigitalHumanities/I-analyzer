@@ -1,6 +1,6 @@
-import os
 import os.path as op
 import logging
+from glob import glob
 from datetime import datetime
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
@@ -54,27 +54,12 @@ class PeacePortal(ParentCorpusDefinition):
         return es_settings(self.languages, stopword_analysis=True, stemming_analysis=True)
 
     def sources(self, start, end):
-        for directory, _, filenames in os.walk(self.data_directory):
-            for filename in sorted(filenames):
-                name, extension = op.splitext(filename)
-                full_path = op.join(directory, filename)
-                if not self.validate_extension(extension, full_path):
-                    continue
-                metadata = self.add_metadata(filename)
-                yield full_path, metadata
+        for filename in sorted(glob('{}/**/*.xml'.format(self.data_directory), recursive=True)):
+            metadata = self.add_metadata(filename)
+            yield filename, metadata
     
     def add_metadata(self, filename):
         return {}
-
-    def validate_extension(self, extension, full_path):
-        '''
-        Check that the file is valid for this corpus.
-        So far, all PeacePortal corpora are XML, but may include CSV corpora in the future 
-        '''
-        logger = logging.getLogger(__name__)
-        if extension == '.xml':
-            return True
-        logger.debug(self.non_xml_msg.format(full_path))
 
     def request_media(self, document):
         images = document['fieldValues']['images']

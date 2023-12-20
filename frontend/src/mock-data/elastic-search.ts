@@ -12,7 +12,7 @@ export class ElasticSearchServiceMock {
         return Promise.resolve(makeDocument({content: 'Hello world!'}));
     }
 
-    search(): Promise<SearchResults> {
+    loadResults(): Promise<SearchResults> {
         return Promise.resolve({
             total: {
                 relation: 'eq',

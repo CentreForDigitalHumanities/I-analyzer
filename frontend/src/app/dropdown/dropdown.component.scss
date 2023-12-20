@@ -4,4 +4,21 @@
     // this prevents the .dropdown item rule from being overwritten
     // when the dropdown is used within a <table>
     color: $text !important;
+
+    &.is-active {
+        color: $text-invert !important;
+    }
+}
+
+.dropdown {
+    max-width: 100%;
+}
+
+.dropdown-trigger {
+    max-width: 100%;
+
+    .button {
+        max-width: 100%;
+        overflow: hidden;
+    }
 }

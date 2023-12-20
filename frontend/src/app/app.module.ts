@@ -1,7 +1,7 @@
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 
-import { RouterModule, Routes } from '@angular/router';
+import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
@@ -130,6 +130,12 @@ export const appRoutes: Routes = [
     },
 ];
 
+const routerOptions: ExtraOptions = {
+    relativeLinkResolution: 'legacy',
+    scrollPositionRestoration: 'enabled',
+    anchorScrolling: 'enabled',
+};
+
 export const declarations: any[] = [
     AppComponent,
     DialogComponent,
@@ -153,7 +159,7 @@ export const imports: any[] = [
     SearchModule,
     SettingsModule,
     WordModelsModule,
-    RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
+    RouterModule.forRoot(appRoutes, routerOptions),
 ];
 
 export const providers: any[] = [
