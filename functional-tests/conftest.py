@@ -33,37 +33,6 @@ def get_config(config_name='selenium.ini'):
     return config
 
 @pytest.fixture(scope='session')
-def webdriver_instance(webdriver_name):
-    """ Provides a WebDriver instance that persists throughout the session.
-
-        Use the `browser` fixture instead; it performs cleanups after each test.
-    """
-    if webdriver_name == 'Chrome':
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--remote-debugging-port=9222')
-        driver = webdriver.Chrome(options=options)
-    elif webdriver_name == 'Firefox':
-        options = webdriver.FirefoxOptions()
-        options.add_argument('-headless')
-        driver = webdriver.Firefox(options=options)
-    else:
-        factory = getattr(webdriver, webdriver_name)
-        driver = factory()
-    try:
-        yield driver
-    finally:
-        driver.quit()
-
-@pytest.fixture
-def browser(webdriver_instance):
-    """ Provides a WebDriver instance and performs some cleanups afterwards. """
-    yield webdriver_instance
-    webdriver_instance.delete_all_cookies()
-
-@pytest.fixture(scope='session')
 def credentials():
     """ Log into interface, using credentials defined in .ini """
     config = get_config()
