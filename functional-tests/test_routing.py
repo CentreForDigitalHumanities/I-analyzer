@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -9,18 +11,25 @@ def test_admin(sb, admin_address):
     sb.get(admin_address)
     sb.assert_title_contains('Django')
 
-def test_login(sb, login_address, credentials):  
+
+@pytest.fixture
+def login(sb, login_address, credentials):
     sb.get(login_address)
     sb.assert_title_contains('I-Analyzer')
     sb.type('input[name="username"]', credentials[0])
     sb.type('input[name="password"]', credentials[1])
     sb.click('button.button.is-primary')
-    sb.wait_for_element('div.navbar-brand')
+    wait = WebDriverWait(sb, 4)
+    wait.until(lambda sb: sb.get_current_url() != login_address)
+
+
+def test_login(sb, login):
     sb.assert_title_contains('Home')
 
-def test_filter(sb, search_address, corpus):
-    sb.wait_for_element('div.navbar-brand')
+
+def test_filter(sb, login, search_address, corpus):
     sb.get(search_address)
+    sb.wait_for_element('div.navbar-brand')
     sb.assert_text('Search', 'h1.title')
     field_name = corpus['field_name']
     first_option = corpus['first_option']
@@ -30,9 +39,10 @@ def test_filter(sb, search_address, corpus):
     wait.until(lambda sb: sb.get_current_url() != search_address)
     assert sb.get_current_url() == search_address + f'?{field_name}={first_option}'
 
-def test_visualization(sb, search_address):
-    sb.wait_for_element('div.navbar-brand')
+
+def test_visualization(sb, login, search_address):
     sb.get(search_address)
+    sb.wait_for_element('div.navbar-brand')
     sb.click('#tab-visualizations')
     sb.click('.dropdown-trigger')
     sb.click('.dropdown-item:nth-child(2)')
@@ -44,12 +54,13 @@ def test_visualization(sb, search_address):
     sb.wait_for_element('div.block')
     assert 'wordcloud' in sb.get_current_url()
 
-def test_word_models(sb, corpus, api_corpus_address, wordmodels_address):
-    corpus_list = sb.get(api_corpus_address)
-    corpus_config = next((c for c in corpus_list if c['name'] == corpus['name']))
-    if not corpus_config.get('word_models_present'):
-        pytest.skip('No word models found in this corpus, skipping')
-    sb.wait_for_element('div.navbar-brand')
+
+def test_word_models(sb, login, corpus, search_address, wordmodels_address):
+    sb.get(search_address)
+    try:
+        sb.wait_for_element('.fa-diagram-project')
+    except:
+        pytest.skip('No word models found in this configuration, skipping')
     sb.get(wordmodels_address)
     sb.wait_for_element('h1.title')
     sb.assert_text('Word models', 'h1.title')
