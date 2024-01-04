@@ -165,6 +165,7 @@ class Times(XMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             csv_core=True,
             results_overview=True,
+            sortable=True,
             description='Publication date as full string, as found in source file',
             extractor=extract.XML(
                 tag='da', toplevel=True
