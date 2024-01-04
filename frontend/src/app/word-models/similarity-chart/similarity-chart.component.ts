@@ -132,12 +132,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         return avg;
     }
 
-    formatDataPoint(
-        point: any,
-        style: string
-    ): { x: number; y: number } | number {
+    formatDataPoint(point: any, style: string): {x: number; y: number} | number {
         if (style === 'line') {
-            return { x: this.getAverageTime(point.time), y: point.similarity };
+            return {x: this.getAverageTime(point.time), y: point.similarity};
         } else {
             return point.similarity;
         }
@@ -238,9 +235,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 tooltip: {
                     displayColors: true,
                     callbacks: {
-                        title: (
-                            tooltipItems: TooltipItem<ChartType>[]
-                        ): string => this.formatLabel(tooltipItems[0].parsed.x),
+                        title: (tooltipItems: TooltipItem<ChartType>[]): string => this.formatLabel(tooltipItems[0].parsed.x),
                         labelColor: (tooltipItem: any): any => {
                             const color = tooltipItem.dataset.borderColor;
                             return {
@@ -263,7 +258,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (style === 'line') {
             options.plugins.legend.labels = {
-                boxHeight: 0, // flat boxes so the border is a line
+                pointStyle: 'rectRounded'
             };
             options.elements.point.radius = 4;
             options.plugins.legend.labels.usePointStyle = true;

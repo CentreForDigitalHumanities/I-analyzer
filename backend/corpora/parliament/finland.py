@@ -42,6 +42,7 @@ class ParliamentFinland(Parliament, XMLCorpusDefinition):
     min_date = datetime(year=1907, month=1, day=1)
     data_directory = settings.PP_FINLAND_DATA
     es_index = getattr(settings, 'PP_FINLAND_INDEX', 'parliament-finland')
+    word_model_path = getattr(settings, 'PP_FINLAND_WM', None)
 
     def sources(self, start, end):
         for xml_file in glob('{}/**/*.xml'.format(self.data_directory), recursive=True):
