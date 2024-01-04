@@ -242,25 +242,26 @@ class Times(XMLCorpusDefinition):
                 applicable=after(1985)
             )
         ),
-        FieldDefinition(
-            name='cover',
-            display_name='On front page',
-            description='Whether the article is on the front page.',
-            es_mapping={'type': 'boolean'},
-            search_filter=filters.BooleanFilter(
-                true='Front page',
-                false='Other',
-                description=(
-                    'Accept only articles that are on the front page. '
-                    'From 1985.'
-                )
-            ),
-            extractor=extract.XML(
-                tag=['..', 'pageid'], attribute='pageType',
-                transform=string_contains("cover"),
-                applicable=after(1985)
-            )
-        ),
+        # There are no datapoints where this is True, hence the outcomment
+        # FieldDefinition(
+        #     name='cover',
+        #     display_name='On front page',
+        #     description='Whether the article is on the front page.',
+        #     es_mapping={'type': 'boolean'},
+        #     search_filter=filters.BooleanFilter(
+        #         true='Front page',
+        #         false='Other',
+        #         description=(
+        #             'Accept only articles that are on the front page. '
+        #             'From 1985.'
+        #         )
+        #     ),
+        #     extractor=extract.XML(
+        #         tag=['..', 'pageid'], attribute='pageType',
+        #         transform=string_contains("body"),
+        #         applicable=after(1985)
+        #     )
+        # ),
         FieldDefinition(
             name='id',
             display_name='ID',
