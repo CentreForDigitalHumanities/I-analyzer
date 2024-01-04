@@ -78,10 +78,10 @@
             </ng-container>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
-                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
+                (isLoading)="onIsLoading($event)" (wordcloudError)="setErrorMessage($event['message'])"></ia-wordcloud>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [asTable]="freqtable" [palette]="palette"
-                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-ngram>
+                (isLoading)="onIsLoading($event)" (ngramError)="setErrorMessage($event)"></ia-ngram>
         </ng-container>
     </div>
 </ng-container>

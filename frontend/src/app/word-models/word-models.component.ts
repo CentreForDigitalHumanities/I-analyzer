@@ -38,7 +38,7 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
             title: 'Compare similarity',
             manual: 'comparesimilarity',
             chartID: 'chart',
-        }
+        },
     };
 
     childComponentLoading: boolean;
@@ -53,9 +53,26 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         paramService: ParamService,
         private corpusService: CorpusService,
         private authService: AuthService,
-        private wordModelsService: WordmodelsService,
+        private wordModelsService: WordmodelsService
     ) {
         super(route, router, paramService);
+    }
+
+    get imageFileName(): string {
+        if (this.currentTab && this.corpus) {
+            return `${this.currentTab}_${this.corpus.name}.png`;
+        }
+    }
+
+    get tabNames() {
+        return Object.keys(this.tabs);
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown =
+            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     ngDoCheck() {
@@ -131,23 +148,6 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
 
     setErrorMessage(event: { message: string }): void {
         this.errorMessage = event.message;
-    }
-
-    get imageFileName(): string {
-        if (this.currentTab && this.corpus) {
-            return `${this.currentTab}_${this.corpus.name}.png`;
-        }
-    }
-
-    @HostListener('window:scroll', [])
-    onWindowScroll() {
-        // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown =
-            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
-    }
-
-    get tabNames() {
-        return Object.keys(this.tabs);
     }
 
     onTabChange(tab: 'relatedwords' | 'wordsimilarity'): void {

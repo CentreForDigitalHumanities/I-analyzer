@@ -194,14 +194,15 @@ export const mockCorpus3: Corpus = {
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
-    public get(refresh=false): Promise<Corpus[]> {
+    public get(refresh = false): Promise<Corpus[]> {
         return Promise.resolve([mockCorpus, mockCorpus2]);
     }
 
-    public set(corpusName='test1'): Promise<boolean> {
-        return this.get().then(all => {
+    public set(corpusName = 'test1'): Promise<boolean> {
+        return this.get().then((all) => {
             const corpus = findByName(all, corpusName);
             if (!corpus) {
                 return false;
@@ -211,5 +212,4 @@ export class CorpusServiceMock {
             }
         });
     }
-
 }

@@ -11,20 +11,6 @@ import { SearchFilter } from './field-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
-    constructor(
-        esQuery: EsQuery,
-        /**
-         * Name of the corpus for which the query was performed.
-         */
-        public corpus: string,
-
-        /**
-         * User that performed this query.
-         */
-        public user: number) {
-        this.query_json = esQuery;
-    }
-
     /**
      * The query id, when `undefined` it will automatically assign one on save.
      */
@@ -34,7 +20,7 @@ export class QueryDb {
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
     public query_json: EsQuery;
-    queryModel?: QueryModel;
+    public queryModel?: QueryModel;
 
     /**
      * Time the first document was sent.
@@ -60,6 +46,21 @@ export class QueryDb {
      * Number of total results available for the query.
      */
     public total_results: number;
+
+    constructor(
+        esQuery: EsQuery,
+        /**
+         * Name of the corpus for which the query was performed.
+         */
+        public corpus: string,
+
+        /**
+         * User that performed this query.
+         */
+        public user: number
+    ) {
+        this.query_json = esQuery;
+    }
 }
 
 /** These are the from / size parameters emitted by the pagination component */
