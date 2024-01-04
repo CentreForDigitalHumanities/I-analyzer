@@ -98,7 +98,7 @@ export class DocumentViewComponent implements OnChanges {
         let highlighted = this.document.fieldValues[field.name];
         if (this.document.highlight && this.document.highlight.hasOwnProperty(field.name) &&
             this.selectedFieldsContain(field)) { // only apply highlights to selected search fields
-                for (let highlight of this.document.highlight[field.name]) {
+                for (const highlight of this.document.highlight[field.name]) {
                     const stripped_highlight = this.stripTags(highlight);
                     highlighted = highlighted.replace(stripped_highlight, highlight);
                 }

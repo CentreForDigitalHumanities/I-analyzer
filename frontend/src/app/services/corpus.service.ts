@@ -1,19 +1,15 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 
-
-import {
-    Corpus,
-    CorpusField,
-    DocumentContext
-} from '../models/index';
+import { Corpus, CorpusField, DocumentContext } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class CorpusService {
     private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(
