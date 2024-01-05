@@ -73,7 +73,7 @@ export class ApiService {
 
     // Media
     public getMedia(data: { args: string }): Promise<any> {
-        const url = `/api/download/${data.args}`;
+        const url = `/api/get_media${data.args}`;
         return this.http
             .get(url, { observe: 'response', responseType: 'arraybuffer' })
             .toPromise();
@@ -129,7 +129,7 @@ export class ApiService {
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
         return timer(0, 5000)
             .pipe(
-                switchMap((_) =>
+                switchMap(() =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
                 filter(this.tasksDone),
