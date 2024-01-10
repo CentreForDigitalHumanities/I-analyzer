@@ -5,14 +5,19 @@ import { Subject } from 'rxjs';
  * Service for sending notifications to the user
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class NotificationService {
     private subject = new Subject<Notification>();
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     public observable = this.subject.asObservable();
 
-    public showMessage(message: string, type: Notification['type'] = 'warning', link?: NotificationLink) {
+    public showMessage(
+        message: string,
+        type: Notification['type'] = 'warning',
+        link?: NotificationLink
+    ) {
         this.subject.next({ message, type, link });
     }
 }

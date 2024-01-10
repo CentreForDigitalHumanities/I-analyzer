@@ -3,7 +3,7 @@
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
     </button>
     <ng-container *ngFor="let pageNumber of buttonArray">
-        <a class="button is-small" [ngClass]="{'is-primary':pageNumber==page}" (click)="goToPage(pageNumber)">
+        <a class="button is-small" [ngClass]="{'is-primary':pageNumber===page}" (click)="goToPage(pageNumber)">
             {{pageNumber}}
         </a>
     </ng-container>
