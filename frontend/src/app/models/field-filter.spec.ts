@@ -143,7 +143,8 @@ describe('DateFilter', () => {
                 date: {
                     gte: '1850-01-01',
                     lte: '1860-12-31',
-                    format: 'yyyy-MM-dd'
+                    format: 'yyyy-MM-dd',
+                    relation: 'within',
                 }
             }
         });
