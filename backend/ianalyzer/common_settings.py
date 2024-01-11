@@ -125,7 +125,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 AUTH_USER_MODEL = 'users.CustomUser'
 
-REST_AUTH_SERIALIZERS = {
+REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
 }
