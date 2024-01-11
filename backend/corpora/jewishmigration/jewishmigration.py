@@ -5,10 +5,19 @@ from django.conf import settings
 import requests
 
 from addcorpus.corpus import JSONCorpusDefinition, FieldDefinition
-from addcorpus.es_mappings import int_mapping, keyword_mapping, main_content_mapping, text_mapping
+from addcorpus.es_mappings import int_mapping, keyword_mapping
 import addcorpus.extract as extract
 from corpora.peaceportal.peaceportal import PeacePortal
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
+
+
+def transform_language(language_array):
+    ''' transform the language to an iso code 
+    to do: include information about script?'''
+    if not len(language_array):
+        return None
+    lang = Language(language_array[0])
+    return lang.to_tag()
 
 class JewishMigration(PeacePortal, JSONCorpusDefinition):
     ''' Class for indexing Jewish Migration data '''
@@ -28,23 +37,18 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     def sources(self, start, end):
         response = requests.get(self.data_directory)
-        print(response)
         list_of_sources = response.json()
         for source in list_of_sources:
             yield source
-    
-    def transform_language(language_string):
-        ''' transform the language to an iso code 
-        to do: include information about script?'''
-        lang = Language(language_string)
-        return lang.to_tag()
 
     
     def __init__(self):
         super().__init__()
         self.source_database.extractor = extract.JSON(key='source')
-        self.language.extractor = extract.JSON(key='language')
-        self.language_code.extractor = extract.JSON(key='language', transform=self.transform_language)
+        self.language.extractor = extract.JSON(
+            key='languages', transform=lambda x: x[0] if len[x] else None)
+        self.language_code.extractor = extract.JSON(
+            key='languages', transform=transform_language)
         self.country.extractor = extract.JSON(key='area')
         self.region.extractor = extract.JSON(key='region')
         self.settlement.extractor = extract.JSON(key='place_name')
