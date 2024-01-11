@@ -21,6 +21,7 @@ class MappingType(Enum):
     TEXT = 'text'
     KEYWORD = 'keyword'
     DATE = 'date'
+    DATE_RANGE = 'date_range'
     INTEGER  = 'integer'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
