@@ -36,7 +36,6 @@ const unitScale = (min: number, max: number): (frequency: number) => number => {
     templateUrl: './wordcloud.component.html',
     styleUrls: ['./wordcloud.component.scss'],
 })
-
 export class WordcloudComponent implements OnChanges, OnDestroy {
     @Input() visualizedField: CorpusField;
     @Input() queryModel: QueryModel;
@@ -45,12 +44,12 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    @Output() error = new EventEmitter();
+    @Output() wordcloudError = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
 
     tableHeaders: FreqTableHeaders = [
         { key: 'key', label: 'Term' },
-        { key: 'doc_count', label: 'Frequency' }
+        { key: 'doc_count', label: 'Frequency' },
     ];
 
     public significantText: AggregateResult[];
@@ -58,15 +57,22 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     private chart: Chart;
     private batchSize = 1000;
 
-    constructor(private visualizationService: VisualizationService) { }
+    constructor(private visualizationService: VisualizationService) {}
 
     get readyToLoad() {
-        return (this.corpus && this.visualizedField && this.queryModel && this.palette);
+        return (
+            this.corpus &&
+            this.visualizedField &&
+            this.queryModel &&
+            this.palette
+        );
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.readyToLoad  &&
-            (changes.corpus || changes.visualizedField || changes.queryModel)) {
+        if (
+            this.readyToLoad &&
+            (changes.corpus || changes.visualizedField || changes.queryModel)
+        ) {
             if (changes.queryModel) {
                 this.queryModel.update.subscribe(this.loadData.bind(this));
             }
@@ -83,14 +89,20 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     loadData() {
         showLoading(
             this.isLoading,
-            this.visualizationService.getWordcloudData(
-                this.visualizedField.name, this.queryModel, this.corpus, this.batchSize
-            ).then(this.onDataLoaded.bind(this)).catch(this.emitError.bind(this))
+            this.visualizationService
+                .getWordcloudData(
+                    this.visualizedField.name,
+                    this.queryModel,
+                    this.corpus,
+                    this.batchSize
+                )
+                .then(this.onDataLoaded.bind(this))
+                .catch(this.emitError.bind(this))
         );
     }
 
-    emitError(error: {message: string}) {
-        this.error.emit(error.message);
+    emitError(error: { message: string }) {
+        this.wordcloudError.emit(error.message);
     }
 
     onDataLoaded(result: AggregateResult[]) {
@@ -117,27 +129,30 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
             const labels = this.chartLabels(this.significantText);
             const datasets = [this.chartDataset(this.significantText)];
             return {
-                labels, datasets
+                labels,
+                datasets,
             };
         }
         return { labels: [], datasets: [] };
     }
 
     private chartLabels(result: AggregateResult[]): string[] {
-        return result.map(item => item.key);
+        return result.map((item) => item.key);
     }
 
     private chartDataset(result: AggregateResult[]): ChartDataset<'wordCloud'> {
-        const frequencies = result.map(item => item.doc_count);
+        const frequencies = result.map((item) => item.doc_count);
         const scale = sizeScale(_.min(frequencies), _.max(frequencies));
         const sizes = frequencies.map(scale);
 
-        const color = (dataIndex: number) => selectColor(this.palette, dataIndex);
+        const color = (dataIndex: number) =>
+            selectColor(this.palette, dataIndex);
 
         return {
             label: 'Frequency',
             data: sizes,
-            color: (context: ScriptableContext<'wordCloud'>) => color(context.dataIndex),
+            color: (context: ScriptableContext<'wordCloud'>) =>
+                color(context.dataIndex),
         };
     }
 
@@ -151,10 +166,12 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
                     displayColors: false,
                     callbacks: {
                         label: (item: TooltipItem<'wordCloud'>) =>
-                            this.significantText[item.dataIndex].doc_count.toString()
-                    }
-                }
-            }
+                            this.significantText[
+                                item.dataIndex
+                            ].doc_count.toString(),
+                    },
+                },
+            },
         };
     }
 }

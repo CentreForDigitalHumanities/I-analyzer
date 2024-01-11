@@ -1,3 +1,11 @@
 .tag-input {
     height: 2em;
 }
+
+.field {
+    max-width: 100%;
+
+    .control {
+        max-width: 80%;
+    }
+}

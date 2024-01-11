@@ -1,127 +1,55 @@
-<ng-container *ngIf="results===undefined || !results.total; else resultsBlock">
-    <h2 class="subtitle">
-        0 hits
-    </h2>
-</ng-container>
-<ng-template #resultsBlock>
-
+<ng-container *ngIf="pageResults?.result$ | async as page; else noResult">
     <div class="level">
-        <h2 class="subtitle" *ngIf="results.total <= 5">
-            {results.total.value, plural, =1 {1 hit} other {{{results.total.value}} hits}}
+        <h2 class="subtitle" *ngIf="page.total <= 5">
+            {page.total, plural, =1 {1 hit} other {{{page.total}} hits}}
         </h2>
-        <h2 class="subtitle" *ngIf="results.total.value > 5">
-            {{results.total.value}} results.
-            Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
+        <h2 class="subtitle" *ngIf="page.total > 5">
+            {{page.total}} results.
+            Showing results {{pageResults.from$ | async}}
+            -
+            {{(pageResults.to$ | async)}}
         </h2>
-        <ng-content *ngIf="!(queryText===null || queryText==='')" select="ia-highlight-selector"></ng-content>
+        <ia-highlight-selector *ngIf="!!queryModel.queryText" [queryModel]="queryModel"></ia-highlight-selector>
     </div>
 
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
-
-    <div class="level">
-
-    <div class="level-left has-text-centered">
-        <div>
-            <p class="heading">Sort By</p>
-            <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
-        </div>
-    </div>
-    <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
-        <div>
-            <p class="heading">Pages</p>
-            <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
-        </div>
-        </div>
-    </div>
-    </section>
-    <div class="hits" [ngClass]="{'is-loading':isLoading}">
-        <div *ngFor="let document of results.documents" class="document box" role="button">
-            <div class="columns">
-                <div class="column is-flex" tabindex="0" (click)="onViewDocument(document)" (keydown.enter)="onViewDocument(document)" role="button">
-                    <table class="table is-fullwidth">
-                        <ng-container *ngFor="let field of results.fields">
-                            <tr *ngIf="document.fieldValue(field)">
-                                <th>
-                                    {{field.displayName}}:
-                                </th>
-                                <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
-                                    <td>
-                                        <ng-container *ngFor="let highlight of document.highlight[field.name]">
-                                            <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
-                                            <!-- insert ellipsis [...] in between snippets or at the end of a single snippet -->
-                                            <hr *ngIf="highlight != document.highlight[field.name][document.highlight[field.name].length-1]">
-                                        </ng-container>
-                                    </td>
-                                </ng-container>
-                                <ng-template #unhighlightedRow>
-                                    <td style="word-break:break-word" [innerHtml]="document.fieldValue(field) | highlight:query:true"></td>
-                                </ng-template>
-                            </tr>
-                        </ng-container>
-                    </table>
+        <div class="level">
+            <div class="level-left has-text-centered">
+                <div>
+                    <p class="heading">Sort By</p>
+                    <ia-search-sorting [queryModel]="queryModel"></ia-search-sorting>
                 </div>
-                <div class="column is-one-quarter">
-                    <ng-container *ngIf="document.relevance">
-                        <div class="relevance-score">
-                            <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
-                        </div>
-                        <search-relevance [value]="document.relevance"></search-relevance>
-                    </ng-container>
-                    <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted" iaBalloon="View Scan" (click)="goToScan(document, $event)">
-                        <span class="icon">
-                            <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
-                        </span>
-                    </button>
+            </div>
+            <div class="level-right has-text-centered" *ngIf="page.total > resultsPerPage" >
+                <div>
+                    <p class="heading">Pages</p>
+                    <ia-pagination [totalResults]="totalDisplayed(page.total)" [fromIndex]="pageResults.from$ | async" (parameters)="setParameters($event)"></ia-pagination>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <section *ngIf="page.documents.length; else noHits" aria-label="search results">
+        <div class="hits" [ngClass]="{'is-loading': pageResults.loading$ | async }">
+            <article *ngFor="let document of page.documents" class="document box">
+                <ia-document-preview [document]="document" [page]="page"></ia-document-preview>
+            </article>
+        </div>
+    </section>
+
+    <ia-document-popup [page]="page" [queryModel]="queryModel"></ia-document-popup>
+</ng-container>
+
+<ng-template #noHits>
+    <section aria-label="search results">
+        No results
+    </section>
 </ng-template>
 
-<!-- show the selected document -->
-<p-dialog [(visible)]="showDocument" width="100%"
-    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
-    <ia-document-view [document]="viewDocument" [queryModel]="queryModel" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
-    <ng-template pTemplate="footer">
-        <div class="columns" style="text-align:left">
-            <div class="column">
-                <a *ngIf="viewDocument && viewDocument.position > 1"
-                    iaBalloon="view previous document" iaBalloonPosition="right"
-                    (click)="prevDocument(viewDocument)" (keydown.enter)="prevDocument(viewDocument)"
-                    role="button" tabindex="0">
-                    <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
-                </a>
-            </div>
-            <div class="column" style="text-align:center">
-                <a [routerLink]="['/document', corpus.name, viewDocument.id]"
-                    iaBalloon="view this document on its own page" autofocus
-                    tabindex="0">
-                    <span class="icon">
-                        <fa-icon [icon]="linkIcon"></fa-icon>
-                    </span>
-                    <span>Link</span>
-                </a>
-                &nbsp;
-                <a *ngIf="viewDocument.hasContext" [routerLink]="['/search', corpus.name]" [queryParams]="viewDocument.contextQueryParams"
-                    iaBalloon="view all documents from this {{contextDisplayName}}"
-                    tabindex="0">
-                    <span class="icon">
-                        <fa-icon [icon]="contextIcon"></fa-icon>
-                    </span>
-                    <span>View {{contextDisplayName}}</span>
-                </a>
-            </div>
-            <div class="column" style="text-align:right">
-                <a *ngIf="viewDocument && viewDocument.position < totalResults"
-                    iaBalloon="view next document" iaBalloonPosition="left"
-                    (click)="nextDocument(viewDocument)" (keydown.enter)="nextDocument(viewDocument)"
-                    role="button" tabindex="0">
-                    <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
-                </a>
-            </div>
-        </div>
-    </ng-template>
-</p-dialog>
+<ng-template #noResult>
+    <ia-error *ngIf="error$ | async as error; else loading" [showError]="error"></ia-error>
+</ng-template>
 
-<ia-error *ngIf="showError" [showError]="showError"></ia-error>
+<ng-template #loading>
+    <div class="is-loading" aria-label="loading results"></div>
+</ng-template>

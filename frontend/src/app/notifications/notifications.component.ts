@@ -13,7 +13,7 @@ const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['c
 @Component({
     selector: 'ia-notifications',
     templateUrl: './notifications.component.html',
-    styleUrls: ['./notifications.component.scss']
+    styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnDestroy {
     defaultTimeout = 10000;
@@ -22,7 +22,26 @@ export class NotificationsComponent implements OnDestroy {
     public notifications: NotificationDisplay[] = [];
 
     constructor(notificationService: NotificationService) {
-        this.subscription = notificationService.observable.subscribe(notification => this.showNotification(notification));
+        this.subscription = notificationService.observable.subscribe(
+            (notification) => this.showNotification(notification)
+        );
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+    }
+
+    public remove(notification: NotificationDisplay) {
+        notification.canDelete = false;
+        notification.fadeOut = true;
+        setTimeout(() => {
+            this.notifications = this.notifications.filter(
+                (candidate) => candidate !== notification
+            );
+            if (notification.timeout) {
+                clearTimeout(notification.timeout);
+            }
+        }, 2000);
     }
 
     private showNotification(notification: Notification) {
@@ -36,22 +55,10 @@ export class NotificationsComponent implements OnDestroy {
 
         this.notifications.push(notificationDisplay);
 
-        notificationDisplay.timeout = setTimeout(() => this.remove(notificationDisplay), this.defaultTimeout);
-    }
-
-    public remove(notification: NotificationDisplay) {
-        notification.canDelete = false;
-        notification.fadeOut = true;
-        setTimeout(() => {
-            this.notifications = this.notifications.filter(candidate => candidate !== notification);
-            if (notification.timeout) {
-                clearTimeout(notification.timeout);
-            }
-        }, 2000);
-    }
-
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
+        notificationDisplay.timeout = setTimeout(
+            () => this.remove(notificationDisplay),
+            this.defaultTimeout
+        );
     }
 }
 

@@ -8,7 +8,8 @@ CATEGORIES = [
     ('review', 'Online reviews'),
     ('inscription', 'Funerary inscriptions'),
     ('oration', 'Orations'),
-    ('book', 'Books')
+    ('book', 'Books'),
+    ('informative', 'Informative'),
 ]
 '''
 Types of data

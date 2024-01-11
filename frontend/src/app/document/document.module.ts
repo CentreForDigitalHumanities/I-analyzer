@@ -6,6 +6,9 @@ import { ImageViewModule } from '../image-view/image-view.module';
 import { SearchRelevanceComponent } from '../search';
 import { CorpusModule } from '../corpus-header/corpus.module';
 import { TagModule } from '../tag/tag.module';
+import { DocumentPopupComponent } from './document-popup/document-popup.component';
+import { DialogModule } from 'primeng/dialog';
+import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 
 
 
@@ -14,15 +17,20 @@ import { TagModule } from '../tag/tag.module';
         DocumentViewComponent,
         DocumentPageComponent,
         SearchRelevanceComponent,
+        DocumentPopupComponent,
+        DocumentPreviewComponent,
     ],
     imports: [
+        DialogModule,
         CorpusModule,
         SharedModule,
         ImageViewModule,
         TagModule,
     ], exports: [
+        DocumentPreviewComponent,
         DocumentViewComponent,
         DocumentPageComponent,
+        DocumentPopupComponent,
         SearchRelevanceComponent,
     ]
 })
