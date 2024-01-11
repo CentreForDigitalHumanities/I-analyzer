@@ -16,7 +16,8 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     description = "Inscriptions and book entries documenting Jewish settlements in the Mediterranean"
     min_date = datetime(year=1, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
-    data_directory = getattr(settings, 'JMIG_DATA', 'localhost:4242')
+    data_directory = getattr(settings, 'JMIG_DATA',
+                             'localhost:8100/api/records/')
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
@@ -27,6 +28,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     def sources(self, start, end):
         response = requests.get(self.data_directory)
+        print(response)
         list_of_sources = response.json()
         for source in list_of_sources:
             yield source
@@ -40,7 +42,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     
     def __init__(self):
         super().__init__()
-        self._id.extractor = extract.JSON(key='identifier')
         self.source_database.extractor = extract.JSON(key='source')
         self.language.extractor = extract.JSON(key='language')
         self.language_code.extractor = extract.JSON(key='language', transform=self.transform_language)
@@ -53,7 +54,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         self.comments.extractor = extract.JSON(key='comments')
         self.transcription = extract.JSON(key='inscription')
         self.transcription_english = extract.JSON(key='transcription')
-        self.fields = exclude_fields_without_extractor(self.fields)
         extra_fields = [
             FieldDefinition(
                 name='script',
@@ -113,19 +113,3 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
             )
         ]
         self.fields = [*exclude_fields_without_extractor(self.fields), *extra_fields]
-        
-        # TO DO: investigate if it's acceptable to call "inscription"=>"transcription"
-        # FieldDefinition(
-        #     name='inscription',
-        #     display_name='Inscription',
-        #     description='Text of the inscription',
-        #     es_mapping=text_mapping(),
-        #     extractor=extract.JSON(key='inscription')
-        # ),
-        # FieldDefinition(
-        #     name='transcription',
-        #     display_name='Transcription',
-        #     description='Transcription of the inscription to English',
-        #     es_mapping=main_content_mapping(),
-        #     extractor=extract.JSON(key='transcription')
-        # )
