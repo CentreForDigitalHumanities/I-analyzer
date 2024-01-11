@@ -1,24 +1,31 @@
-import { DoCheck, Input, Component, SimpleChanges, OnChanges, OnDestroy } from '@angular/core';
-import { SelectItem } from 'primeng/api';
+import {
+    Component,
+    DoCheck,
+    Input,
+    OnChanges,
+    SimpleChanges,
+} from '@angular/core';
 import * as _ from 'lodash';
+import { SelectItem } from 'primeng/api';
 
-import { Corpus, QueryModel, CorpusField } from '../models/index';
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { findByName } from '../utils/utils';
-import { ParamService } from '../services';
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
-
+import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { ParamDirective } from '../param/param-directive';
+import { ParamService } from '../services';
+import { findByName } from '../utils/utils';
 
 @Component({
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent extends ParamDirective implements DoCheck, OnChanges {
+export class VisualizationComponent
+    extends ParamDirective
+    implements DoCheck, OnChanges
+{
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
 
@@ -40,7 +47,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     public visualizationTypeDropdownValue: SelectItem;
     public visualizedFieldDropdownValue: SelectItem;
 
-    public visualizations: string [];
+    public visualizations: string[];
     public freqtable = false;
     public visualizationsDisplayNames = {
         resultscount: 'Number of results',
@@ -57,17 +64,18 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     public visualExists = false;
     public isLoading = false;
-    private childComponentLoading = false;
 
     public palette: string[];
     public params: Params = {};
 
-    faQuestion = faCircleQuestion;
+    public faQuestion = faCircleQuestion;
 
-    nullableParameters = ['visualize', 'visualizedField'];
+    public nullableParameters = ['visualize', 'visualizedField'];
 
-    reset$ = new Subject<void>();
-    destroy$ = new Subject<void>();
+    private childComponentLoading = false;
+
+    private reset$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
     constructor(
         route: ActivatedRoute,
@@ -77,8 +85,35 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         super(route, router, paramService);
     }
 
+    get manualPage(): string {
+        if (this.visualizationType) {
+            return this.manualPages[this.visualizationType];
+        }
+    }
+
+    get chartElementId(): string {
+        if (
+            this.visualizationType === 'resultscount' ||
+            this.visualizationType === 'termfrequency'
+        ) {
+            return 'barchart';
+        }
+        if (this.visualizationType === 'ngram') {
+            return 'chart';
+        }
+        if (this.visualizationType === 'wordcloud') {
+            return 'wordcloud_div';
+        }
+    }
+
+    get imageFileName(): string {
+        if (this.visualizationType && this.corpus && this.visualizedField) {
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
+        }
+    }
+
     ngDoCheck() {
-        if (this.isLoading !== this.childComponentLoading ) {
+        if (this.isLoading !== this.childComponentLoading) {
             this.isLoading = this.childComponentLoading;
         }
     }
@@ -93,10 +128,17 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     setVistypeDropdown() {
         this.allVisualizationFields = [];
         if (this.corpus && this.corpus.fields) {
-            this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations?.length);
+            this.allVisualizationFields = this.corpus.fields.filter(
+                (field) => field.visualizations?.length
+            );
         }
-        const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
-        const filteredTypes = visualisationTypes.filter(vt =>
+        const visualisationTypes = _.uniq(
+            _.flatMap(
+                this.allVisualizationFields,
+                (field) => field.visualizations
+            )
+        );
+        const filteredTypes = visualisationTypes.filter((vt) =>
             this.includeVisualisationType(vt, this.queryModel)
         );
         this.visDropdown = this.vistypesToDropdown(filteredTypes);
@@ -104,10 +146,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     initialize() {
         this.refreshVisualisations();
-        this.queryModel?.update.pipe(
-            takeUntil(this.destroy$),
-            takeUntil(this.reset$)
-        ).subscribe(() => this.refreshVisualisations());
+        this.queryModel?.update
+            .pipe(takeUntil(this.destroy$), takeUntil(this.reset$))
+            .subscribe(() => this.refreshVisualisations());
     }
 
     refreshVisualisations() {
@@ -117,7 +158,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
             this.noVisualizations = true;
         } else {
             this.noVisualizations = false;
-            this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
+            this.setVisualizationType(
+                this.allVisualizationFields[0].visualizations[0]
+            );
             this.updateParams();
         }
     }
@@ -131,11 +174,16 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {
             this.setVisualizationType(params.get('visualize'));
-            const visualizedField = findByName(this.corpus.fields, params.get('visualizedField'));
+            const visualizedField = findByName(
+                this.corpus.fields,
+                params.get('visualizedField')
+            );
             this.setVisualizedField(visualizedField);
         }
-        this.visualizationTypeDropdownValue = this.visDropdown.find(
-            item => item.value === this.visualizationType) || this.visDropdown[0];
+        this.visualizationTypeDropdownValue =
+            this.visDropdown.find(
+                (item) => item.value === this.visualizationType
+            ) || this.visDropdown[0];
     }
 
     updateParams() {
@@ -146,13 +194,17 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     setVisualizationType(visType: string) {
         this.visualizationType = visType;
-        this.filteredVisualizationFields = this.allVisualizationFields.filter(field =>
-            field.visualizations.includes(visType)
+        this.filteredVisualizationFields = this.allVisualizationFields.filter(
+            (field) => field.visualizations.includes(visType)
         );
-        this.fieldDropdown = this.fieldsToDropdown(this.filteredVisualizationFields);
+        this.fieldDropdown = this.fieldsToDropdown(
+            this.filteredVisualizationFields
+        );
         this.visualizedField = this.filteredVisualizationFields[0];
-        this.visualizedFieldDropdownValue = this.fieldDropdown.find(
-            item => item.value === this.visualizedField) || this.fieldDropdown[0];
+        this.visualizedFieldDropdownValue =
+            this.fieldDropdown.find(
+                (item) => item.value === this.visualizedField
+            ) || this.fieldDropdown[0];
     }
 
     changeVisualizationType(visType: string) {
@@ -166,7 +218,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
         this.visualizedField = selectedField;
         this.visualizedFieldDropdownValue = this.fieldDropdown.find(
-            item => item.value === this.visualizedField);
+            (item) => item.value === this.visualizedField
+        );
 
         this.foundNoVisualsMessage = 'Retrieving data...';
     }
@@ -186,46 +239,32 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.childComponentLoading = event;
     }
 
-    get manualPage(): string {
-        if (this.visualizationType) {
-            return this.manualPages[this.visualizationType];
-        }
-    }
-
-    get chartElementId(): string {
-        if (this.visualizationType === 'resultscount' || this.visualizationType === 'termfrequency') {
-            return 'barchart';
-        }
-        if (this.visualizationType === 'ngram') {
-            return 'chart';
-        }
-        if (this.visualizationType === 'wordcloud') {
-            return 'wordcloud_div';
-        }
-    }
-
-    get imageFileName(): string {
-        if (this.visualizationType && this.corpus && this.visualizedField) {
-            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
-        }
-    }
-
-    private includeVisualisationType(visType: string, queryModel: QueryModel): boolean {
-        const requiresSearchTerm = _.includes(['termfrequency', 'ngram'], visType);
+    private includeVisualisationType(
+        visType: string,
+        queryModel: QueryModel
+    ): boolean {
+        const requiresSearchTerm = _.includes(
+            ['termfrequency', 'ngram'],
+            visType
+        );
         return !requiresSearchTerm || !!queryModel.queryText;
     }
 
-    private vistypesToDropdown(visTypes: string[]): { label: string; value: string}[] {
-        return visTypes.map(visType => ({
+    private vistypesToDropdown(
+        visTypes: string[]
+    ): { label: string; value: string }[] {
+        return visTypes.map((visType) => ({
             label: this.visualizationsDisplayNames[visType],
-            value: visType
+            value: visType,
         }));
     }
 
-    private fieldsToDropdown(fields: CorpusField[]): { label: string; value: CorpusField }[] {
-        return fields.map(field => ({
+    private fieldsToDropdown(
+        fields: CorpusField[]
+    ): { label: string; value: CorpusField }[] {
+        return fields.map((field) => ({
             label: field.displayName || field.name,
-            value: field
+            value: field,
         }));
     }
 }

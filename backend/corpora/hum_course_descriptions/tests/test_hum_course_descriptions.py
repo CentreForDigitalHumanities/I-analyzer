@@ -42,6 +42,8 @@ target_docs = [{
     'goal': '',
     'content': description,
     'level': 'Bachelor 2',
+    'language_code': 'nl',
+    'language': 'Dutch',
 }]
 
 

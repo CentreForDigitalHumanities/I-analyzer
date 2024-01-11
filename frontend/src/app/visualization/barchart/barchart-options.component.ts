@@ -9,30 +9,30 @@ import { ParamService } from '../../services';
 @Component({
     selector: 'ia-barchart-options',
     templateUrl: './barchart-options.component.html',
-    styleUrls: ['./barchart-options.component.scss']
+    styleUrls: ['./barchart-options.component.scss'],
 })
-export class BarchartOptionsComponent extends ParamDirective implements OnChanges {
+export class BarchartOptionsComponent
+    extends ParamDirective
+    implements OnChanges {
     @Input() queryText: string;
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
 
     @Input() freqTable: boolean;
-
-    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-
+    @Input() frequencyMeasure: 'documents' | 'tokens' = 'documents';
     @Input() histogram: boolean;
+
+    @Output() chartParameters = new EventEmitter<ChartParameters>();
+    @Output() queriesChanged = new EventEmitter<string[]>();
+    @Output() clearQueries = new EventEmitter<void>();
 
     currentNormalizer: Normalizer;
 
     currentChartType: ChartType = 'bar';
 
-    @Output() chartParameters = new EventEmitter<ChartParameters>();
-
     public queries: string[] = [];
 
     showEdit = false;
-    @Output() queriesChanged = new EventEmitter<string[]>();
-    @Output() clearQueries = new EventEmitter<void>();
 
     faCheck = faCheck;
 
@@ -46,6 +46,10 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         super(route, router, paramService);
     }
 
+    get showTermFrequency(): boolean {
+        return _.some(this.queries);
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryText) {
             if (this.queryText) {
@@ -55,7 +59,11 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
             }
         }
 
-        if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
+        if (
+            changes.showTokenCountOption &&
+            changes.showTokenCountOption.currentValue &&
+            this.frequencyMeasure === 'tokens'
+        ) {
             this.currentNormalizer = 'terms';
         }
     }
@@ -63,7 +71,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     onChartParametersChange(): void {
         const chartParameters: ChartParameters = {
             normalizer: this.currentNormalizer,
-            chartType: this.currentChartType
+            chartType: this.currentChartType,
         };
         this.chartParameters.emit(chartParameters);
         const route = {};
@@ -71,7 +79,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
             route['normalize'] = this.currentNormalizer;
         } else {
             route['normalize'] = null;
-            }
+        }
 
         this.setParams(route);
     }
@@ -84,7 +92,10 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         if (params.has('normalize')) {
             this.currentNormalizer = params.get('normalize') as Normalizer;
         } else {
-            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+            if (
+                this.frequencyMeasure === 'documents' ||
+                !this.showTokenCountOption
+            ) {
                 this.currentNormalizer = 'raw';
             } else {
                 this.currentNormalizer = 'terms';
@@ -103,11 +114,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     signalClearQueries() {
         this.queries = [this.queryText];
         this.showEdit = false;
-        this.setParams({visualizeTerm: null});
+        this.setParams({ visualizeTerm: null });
         this.clearQueries.emit();
-    }
-
-    get showTermFrequency(): boolean {
-        return _.some(this.queries);
     }
 }

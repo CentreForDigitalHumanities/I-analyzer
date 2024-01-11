@@ -15,15 +15,17 @@ import { showLoading } from '../../utils/utils';
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
-    styleUrls: ['./timeline.component.scss']
+    styleUrls: ['./timeline.component.scss'],
 })
-export class TimelineComponent extends BarchartDirective<TimelineDataPoint> implements OnChanges, OnInit {
+export class TimelineComponent
+    extends BarchartDirective<TimelineDataPoint>
+    implements OnChanges, OnInit {
+    /** domain on the axis */
+    public xDomain: [Date, Date];
     /** time unit on the x-axis */
     private currentTimeCategory: TimeCategory;
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
-    /** domain on the axis */
-    public xDomain: [Date, Date];
 
     refreshChart(): void {
         this.initQueries();
@@ -34,8 +36,10 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
     /** get min/max date for the entire graph and set domain and time category */
     setTimeDomain() {
-        const filter = this.queryModel.filters.find(f => f.corpusField.name === this.visualizedField.name)
-            || this.visualizedField.makeSearchFilter();
+        const filter =
+            this.queryModel.filters.find(
+                (f) => f.corpusField.name === this.visualizedField.name
+            ) || this.visualizedField.makeSearchFilter();
         const currentDomain = filter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
@@ -61,31 +65,44 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
      */
     requestSeriesDocCounts(queryModel: QueryModel) {
         return this.searchService.dateHistogramSearch(
-            this.corpus, queryModel, this.visualizedField.name, this.currentTimeCategory
+            this.corpus,
+            queryModel,
+            this.visualizedField.name,
+            this.currentTimeCategory
         );
     }
-
 
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
         const bins = this.makeTermFrequencyBins(series);
         return this.visualizationService.dateTermFrequencySearch(
-            this.corpus, queryModel, this.visualizedField.name, bins, this.currentTimeCategory
+            this.corpus,
+            queryModel,
+            this.visualizedField.name,
+            bins,
+            this.currentTimeCategory
         );
     }
 
     makeTermFrequencyBins(series: TimelineSeries) {
         return series.data.map((bin, index) => {
-            const [minDate, maxDate] = this.categoryTimeDomain(bin, index, series);
+            const [minDate, maxDate] = this.categoryTimeDomain(
+                bin,
+                index,
+                series
+            );
             return {
                 start_date: minDate,
                 end_date: maxDate,
-                size: this.documentLimitForCategory(bin, series)
+                size: this.documentLimitForCategory(bin, series),
             };
         });
     }
 
-    processSeriesTermFrequency(results: TermFrequencyResult[], series: TimelineSeries) {
-        series.data = _.zip(series.data, results).map(pair => {
+    processSeriesTermFrequency(
+        results: TermFrequencyResult[],
+        series: TimelineSeries
+    ) {
+        series.data = _.zip(series.data, results).map((pair) => {
             const [bin, res] = pair;
             return this.addTermFrequencyToCategory(res, bin);
         });
@@ -95,17 +112,28 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     /** time domain for a bin */
     categoryTimeDomain(cat, catIndex, series): [Date, Date] {
         const startDate = cat.date;
-        const endDate = catIndex < (series.data.length - 1) ? series.data[catIndex + 1].date : undefined;
+        const endDate =
+            catIndex < series.data.length - 1
+                ? series.data[catIndex + 1].date
+                : undefined;
         return [startDate, endDate];
     }
 
     fullDataRequest() {
-        const paramsPerSeries = this.rawData.map(series => {
-            const queryModel = this.queryModelForSeries(series, this.queryModel);
+        const paramsPerSeries = this.rawData.map((series) => {
+            const queryModel = this.queryModelForSeries(
+                series,
+                this.queryModel
+            );
             const bins = this.makeTermFrequencyBins(series);
             const unit = this.calculateTimeCategory(...this.xDomain); // use initial unit, not zoomed-in-status
             return this.visualizationService.makeDateTermFrequencyParameters(
-                this.corpus, queryModel, this.visualizedField.name, bins, unit);
+                this.corpus,
+                queryModel,
+                this.visualizedField.name,
+                bins,
+                unit
+            );
         });
         return this.apiService.requestFullData({
             visualization: 'date_term_frequency',
@@ -117,7 +145,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
-            const unit = (this.chart.options.scales.x as any).time.unit as TimeCategory;
+            const unit = (this.chart.options.scales.x as any).time
+                .unit as TimeCategory;
             if (unit) {
                 this.currentTimeCategory = unit;
             }
@@ -145,16 +174,18 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     }
 
     /** turn a data series into a chartjs-compatible data array */
-    chartDataFromSeries(series: TimelineSeries): {x: string; y: number}[] {
+    chartDataFromSeries(series: TimelineSeries): { x: string; y: number }[] {
         const valueKey = this.currentValueKey;
-        return series.data.map(item => ({
+        return series.data.map((item) => ({
             x: item.date.toISOString(),
             y: item[valueKey],
         }));
     }
 
     chartOptions(datasets) {
-        const xLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const xLabel = this.visualizedField.displayName
+            ? this.visualizedField.displayName
+            : this.visualizedField.name;
         const margin = moment.duration(1, this.currentTimeCategory);
         const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
@@ -172,12 +203,13 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         x.max = xMax.toISOString();
         options.plugins.tooltip = {
             callbacks: {
-                title: ([tooltipItem]) => this.formatDate(Date.parse(tooltipItem.label as string)),
+                title: ([tooltipItem]) =>
+                    this.formatDate(Date.parse(tooltipItem.label as string)),
                 label: (tooltipItem) => {
                     const value = tooltipItem.parsed.y;
                     return this.formatValue(this.normalizer)(value);
-                }
-            }
+                },
+            },
         };
 
         // zoom limits
@@ -187,11 +219,11 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
                 // as zoom plugin does not accept strings
                 min: xMin.valueOf(),
                 max: xMax.valueOf(),
-            }
+            },
         };
 
         options.scales.x.type = 'time';
-        options.plugins.legend = {display: datasets.length > 1};
+        options.plugins.legend = { display: datasets.length > 1 };
         return options;
     }
 
@@ -211,15 +243,20 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         const max = new Date(chart.scales.x.max);
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
 
-        if ((this.currentTimeCategory !== previousTimeCategory) ||
-            (triggeredByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
+        if (
+            this.currentTimeCategory !== previousTimeCategory ||
+            (triggeredByDataUpdate &&
+                this.currentTimeCategory !== initialTimeCategory)
+        ) {
             showLoading(
                 this.isLoading,
                 this.loadZoomedInData(
                     chart,
-                    min, max,
-                    triggeredByDataUpdate = triggeredByDataUpdate,
-            ));
+                    min,
+                    max,
+                    (triggeredByDataUpdate = triggeredByDataUpdate)
+                )
+            );
         }
     }
 
@@ -233,32 +270,46 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
      * @param triggeredByDataUpdate whether the function was triggered by an update in
      * the underlying data (affects animation only)
      */
-    async loadZoomedInData(chart, min: Date, max: Date, triggeredByDataUpdate = false) {
+    async loadZoomedInData(
+        chart,
+        min: Date,
+        max: Date,
+        triggeredByDataUpdate = false
+    ) {
         // when zooming, hide data for smooth transition
         chart.update(triggeredByDataUpdate ? 'none' : 'hide');
 
-        const dataPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
-            const series = this.rawData[seriesIndex];
-            const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
-            return this.getSeriesDocumentData(series, queryModelCopy, false).then(result => {
-                if (this.frequencyMeasure === 'tokens') {
-                    return this.getTermFrequencies(result, queryModelCopy);
-                } else {
-                    return result;
-                }
-
-            });
-        });
+        const dataPromises: Promise<TimelineSeries>[] = chart.data.datasets.map(
+            (dataset, seriesIndex) => {
+                const series = this.rawData[seriesIndex];
+                const queryModelCopy = this.addQueryDateFilter(
+                    this.queryModel,
+                    min,
+                    max
+                );
+                return this.getSeriesDocumentData(
+                    series,
+                    queryModelCopy,
+                    false
+                ).then((result) => {
+                    if (this.frequencyMeasure === 'tokens') {
+                        return this.getTermFrequencies(result, queryModelCopy);
+                    } else {
+                        return result;
+                    }
+                });
+            }
+        );
 
         const zoomedInResults = await Promise.all(dataPromises);
 
         zoomedInResults.forEach((data, seriesIndex) => {
-            chart.data.datasets[seriesIndex].data = this.chartDataFromSeries(data);
+            chart.data.datasets[seriesIndex].data =
+                this.chartDataFromSeries(data);
         });
 
         chart.options.scales.x.time.unit = this.currentTimeCategory;
         chart.update('show'); // fade into view
-
     }
 
     /**
@@ -277,7 +328,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     zoomOut(): void {
         this.chart.resetZoom();
         this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
-        (this.chart.options.scales.x as any).time.unit = this.currentTimeCategory;
+        (this.chart.options.scales.x as any).time.unit =
+            this.currentTimeCategory;
         this.chart.update();
 
         this.setChart();
@@ -301,19 +353,25 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     }
 
     setTableHeaders() {
-        const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        const rightColumnName =
+            this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
         if (this.rawData.length > 1) {
             this.tableHeaders = [
-                { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
-                { key: 'queryText', label: 'Query', isMainFactor: true, },
+                {
+                    key: 'date',
+                    label: 'Date',
+                    format: this.formatDate,
+                    isSecondaryFactor: true,
+                },
+                { key: 'queryText', label: 'Query', isMainFactor: true },
                 {
                     key: valueKey,
                     label: rightColumnName,
                     format: this.formatValue(this.normalizer),
-                    formatDownload: this.formatDownloadValue
-                }
+                    formatDownload: this.formatDownloadValue,
+                },
             ];
         } else {
             this.tableHeaders = [
@@ -323,36 +381,36 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
                     label: 'Document Frequency',
                     format: this.formatValue('raw'),
                     formatDownload: this.formatDownloadValue,
-                    isOptional: 'doc_count' !== valueKey
+                    isOptional: 'doc_count' !== valueKey,
                 },
                 {
                     key: 'relative_doc_count',
                     label: 'Document Frequency (%)',
                     format: this.formatValue('percent'),
                     formatDownload: this.formatDownloadValue,
-                    isOptional: 'relative_doc_count' !== valueKey
+                    isOptional: 'relative_doc_count' !== valueKey,
                 },
                 {
                     key: 'match_count',
                     label: 'Token Frequency',
                     format: this.formatValue('raw'),
                     formatDownload: this.formatDownloadValue,
-                    isOptional: 'match_count' !== valueKey
+                    isOptional: 'match_count' !== valueKey,
                 },
                 {
                     key: 'matches_by_doc_count',
                     label: 'Relative Frequency (documents)',
                     format: this.formatValue('documents'),
                     formatDownload: this.formatDownloadValue,
-                    isOptional: 'matches_by_doc_count' !== valueKey
+                    isOptional: 'matches_by_doc_count' !== valueKey,
                 },
                 {
                     key: 'matches_by_token_count',
                     label: 'Relative Frequency (terms)',
                     format: this.formatValue('terms'),
                     formatDownload: this.formatDownloadValue,
-                    isOptional: 'matches_by_token_count' !== valueKey
-                }
+                    isOptional: 'matches_by_token_count' !== valueKey,
+                },
             ];
         }
     }
@@ -385,10 +443,15 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
 
         if (this.chart) {
             const initialBounds = this.chart.getInitialScaleBounds().x;
-            const currentBounds = { min: this.chart.scales.x.min, max: this.chart.scales.x.max };
+            const currentBounds = {
+                min: this.chart.scales.x.min,
+                max: this.chart.scales.x.max,
+            };
 
-            return (initialBounds.min && initialBounds.min < currentBounds.min) ||
-                (initialBounds.max && initialBounds.max > currentBounds.max);
+            return (
+                (initialBounds.min && initialBounds.min < currentBounds.min) ||
+                (initialBounds.max && initialBounds.max > currentBounds.max)
+            );
         }
         return false;
     }

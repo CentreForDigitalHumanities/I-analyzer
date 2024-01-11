@@ -3,23 +3,31 @@ import { BehaviorSubject, Observable, interval } from 'rxjs';
 import { debounce } from 'rxjs/operators';
 
 @Component({
-  selector: 'ia-time-interval-slider',
-  templateUrl: './time-interval-slider.component.html',
-  styleUrls: ['./time-interval-slider.component.scss']
+    selector: 'ia-time-interval-slider',
+    templateUrl: './time-interval-slider.component.html',
+    styleUrls: ['./time-interval-slider.component.scss'],
 })
 export class TimeIntervalSliderComponent implements OnChanges {
     @Input() labels: string[];
 
-    sliderIndex = new BehaviorSubject<number>(0);
-
     @Output() currentIndex = new BehaviorSubject<number>(0);
     @Output() currentLabel = new BehaviorSubject<string>('');
+
+    sliderIndex = new BehaviorSubject<number>(0);
 
     constructor() {
         this.sliderIndex
             .pipe(debounce(() => interval(300)))
-            .subscribe(value => this.currentIndex.next(value));
-        this.currentIndex.subscribe(index => this.setCurrentLabel());
+            .subscribe((value) => this.currentIndex.next(value));
+        this.currentIndex.subscribe((index) => this.setCurrentLabel());
+    }
+
+    get sliderMax(): number {
+        if (this.labels && this.labels.length) {
+            return this.labels.length - 1;
+        } else {
+            return 0;
+        }
     }
 
     ngOnChanges(): void {
@@ -32,13 +40,4 @@ export class TimeIntervalSliderComponent implements OnChanges {
             this.currentLabel.next(label);
         }
     }
-
-    get sliderMax(): number {
-        if (this.labels && this.labels.length) {
-            return this.labels.length - 1;
-        } else {
-            return 0;
-        }
-    }
-
 }
