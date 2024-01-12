@@ -1,4 +1,5 @@
 import os
+import warnings
 
 from django.conf import settings
 from langcodes import Language
@@ -69,8 +70,9 @@ def es_settings(languages=[], stopword_analysis=False, stemming_analysis=False):
                 )
             if stemming_analysis:
                 if not get_language_key(language) in AVAILABLE_ES_STEMMERS:
-                    raise UserWarning('You specified `stemming_analysis=True`, but \
+                    warnings.warn('You specified `stemming_analysis=True`, but \
                                       there is no stemmer available for this language')
+                    continue
                 set_stemmed_analyzer(
                     settings,
                     add_language_string(stopword_filter_name, language),

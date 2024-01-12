@@ -4,15 +4,20 @@ from copy import copy
 from django.conf import settings
 
 from addcorpus.corpus import XMLCorpusDefinition
+from addcorpus.es_mappings import date_mapping
 from addcorpus.extract import XML, Constant, Combined, FilterAttribute
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
+    clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
+    not_before_extractor
+
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
 
 class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
 
     data_directory = settings.PEACEPORTAL_EPIDAT_DATA
-    es_index = getattr(settings, 'PEACEPORTAL_EPIDAT_ES_INDEX', 'peaceportal-epidat')
+    es_index = getattr(
+        settings, 'PEACEPORTAL_EPIDAT_ES_INDEX', 'peaceportal-epidat')
 
     languages = ['de', 'he', 'en', 'nl']
 
@@ -48,22 +53,15 @@ class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
             transform=lambda x: get_year(x),
         )
 
-        self.not_before.extractor = XML(
+        self.not_before.extractor = not_before_extractor()
+
+        # the dataset of the Steinheim institute is from the 19th/20th century and has accurate dates
+        self.date.es_mapping = date_mapping()
+        self.date.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
                  'history', 'origin', 'origDate', 'date'],
-            toplevel=False,
-            attribute='notBefore',
-            transform=lambda x: get_year(x),
+            toplevel=False
         )
-
-        self.not_after.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-                 'history', 'origin', 'origDate', 'date'],
-            toplevel=False,
-            attribute='notAfter',
-            transform=lambda x: get_year(x),
-        )
-
         self.transcription.extractor = XML(
             tag=['text', 'body', 'div'],
             toplevel=False,
@@ -170,14 +168,14 @@ class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
-                    'objectDesc', 'supportDesc', 'condition'],
+                     'objectDesc', 'supportDesc', 'condition'],
                 toplevel=False,
                 flatten=True,
                 transform=lambda x: 'CONDITION:\n{}\n'.format(x) if x else x
             ),
             XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
-                    'objectDesc', 'supportDesc', 'support', 'p'],
+                     'objectDesc', 'supportDesc', 'support', 'p'],
                 toplevel=False,
                 transform_soup_func=extract_support_comments,
             ),
@@ -302,7 +300,8 @@ def extract_commentary(soup):
     Helper function to extract all commentaries from the <body> tag.
     A single element will be returned with the commentaries found as text content.
     '''
-    if not soup: return
+    if not soup:
+        return
     found = []
     commentaries = soup.find_all('div', {'type': 'commentary'})
 
@@ -313,7 +312,8 @@ def extract_commentary(soup):
                 text = p.get_text()
                 if text:
                     text = clean_commentary(text)
-                    found.append('{}:\n{}\n'.format(commentary['subtype'].strip().upper(), text))
+                    found.append('{}:\n{}\n'.format(
+                        commentary['subtype'].strip().upper(), text))
 
     if len(found) > 1:
         cloned_soup = copy(soup)
@@ -323,13 +323,16 @@ def extract_commentary(soup):
     else:
         return None
 
+
 def extract_support_comments(soup):
-    if not soup: return
+    if not soup:
+        return
     cloned_soup = copy(soup)
     cloned_soup.clear()
 
     commentaries = add_support_comment(soup, '', 'dim', 'DIMENSIONS')
-    commentaries = add_support_comment(soup, commentaries, 'objectType', 'OBJECTTYPE')
+    commentaries = add_support_comment(
+        soup, commentaries, 'objectType', 'OBJECTTYPE')
 
     # add any additional text from the <p> element,
     # i.e. if there is text it is the very last node
@@ -402,4 +405,3 @@ def clone_soup_extract_child(soup, to_extract):
     # organization (incl details, e.g. address)
     # licence
     # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
-
