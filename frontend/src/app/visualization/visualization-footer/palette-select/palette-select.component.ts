@@ -5,18 +5,17 @@ import { PALETTES } from '../../../utils/select-color';
 @Component({
     selector: 'ia-palette-select',
     templateUrl: './palette-select.component.html',
-    styleUrls: ['./palette-select.component.scss']
+    styleUrls: ['./palette-select.component.scss'],
 })
 export class PaletteSelectComponent {
+    @Output() paletteChanged = new EventEmitter<string[]>();
     public palettes = PALETTES;
     public _palette = PALETTES[0];
-
-    @Output() paletteChanged = new EventEmitter<string[]>();
 
     faPalette = faPalette;
     faSquare = faSquare;
 
-    constructor() { }
+    constructor() {}
 
     get palette(): string[] {
         return this._palette;
@@ -26,5 +25,4 @@ export class PaletteSelectComponent {
         this._palette = value;
         this.paletteChanged.emit(value);
     }
-
 }
