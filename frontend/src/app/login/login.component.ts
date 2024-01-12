@@ -9,7 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Component({
-    selector: 'login',
+    selector: 'ia-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
 })

@@ -6,6 +6,7 @@ export interface EsDateFilter {
             gte: string;
             lte: string;
             format: 'yyyy-MM-dd';
+            relation: 'within'; // relevant if the underlying date field has a date_range type
         };
     };
 }

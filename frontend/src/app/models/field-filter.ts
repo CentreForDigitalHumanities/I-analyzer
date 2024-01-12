@@ -105,7 +105,8 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
                 [this.corpusField.name]: {
                     gte: this.formatDate(this.currentData.min),
                     lte: this.formatDate(this.currentData.max),
-                    format: 'yyyy-MM-dd'
+                    format: 'yyyy-MM-dd',
+                    relation: 'within'
                 }
             }
         };
