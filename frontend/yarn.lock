@@ -1594,6 +1594,11 @@
   resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
   integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
 
+"@medv/finder@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@medv/finder/-/finder-2.1.0.tgz#5c53cdaac3b87057b9e5579ca1282b2397624016"
+  integrity sha512-Egrg5XO4kLol24b1Kv50HDfi5hW0yQ6aWSsO0Hea1eJ4rogKElIN0M86FdVnGF4XIGYyA7QWx0MgbOzVPA0qkA==
+
 "@ngtools/webpack@13.3.11":
   version "13.3.11"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.3.11.tgz#3295a7ae2b93f2cc5e197b72efb0f5b9c63c4685"
@@ -5983,6 +5988,14 @@ ngx-cookie-service@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/ngx-cookie-service/-/ngx-cookie-service-2.4.0.tgz#293de6d393220f8fe5712a4c9f724042404e6971"
   integrity sha512-uR/6mCQ1t+XY5G1/irqRhoEddx1PPtmz7JHM/2nn5yQmicnj+n48x8C2PMxwaYDHKRh7QPQ9G5scR36Mmdz09A==
+
+ngx-scroll-position-restoration@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/ngx-scroll-position-restoration/-/ngx-scroll-position-restoration-0.1.5.tgz#2fc56bc0a712b85509fe1ec6bf73c9a9d3727b1c"
+  integrity sha512-UQfteNyNj2QsX17JNGAOcXdUHfFN12Ei7JHCJOx2nleNeQRkqCTkNXUJjynASW996C7PxaBHmKYnt4hnKEfLDA==
+  dependencies:
+    "@medv/finder" "^2.1.0"
+    tslib "^2.0.0"
 
 nice-napi@^1.0.2:
   version "1.0.2"

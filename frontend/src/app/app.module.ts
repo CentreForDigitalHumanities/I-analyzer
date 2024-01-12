@@ -7,6 +7,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
 
+import { NgxScrollPositionRestorationModule } from 'ngx-scroll-position-restoration';
+
 import {
     ApiRetryService,
     ApiService,
@@ -132,7 +134,7 @@ export const appRoutes: Routes = [
 
 const routerOptions: ExtraOptions = {
     relativeLinkResolution: 'legacy',
-    scrollPositionRestoration: 'enabled',
+    scrollPositionRestoration: 'disabled',  // functionality patched by NgxScrollPositionRestorationModule
     anchorScrolling: 'enabled',
 };
 
@@ -160,6 +162,7 @@ export const imports: any[] = [
     SettingsModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
+    NgxScrollPositionRestorationModule.forRoot(),
 ];
 
 export const providers: any[] = [
