@@ -37,11 +37,11 @@
         <ng-template pTemplate="body" let-query>
             <tr>
                 <td>{{query.started | date:'medium'}}</td>
-                <td>{{query.queryModel | formatQueryText }}</td>
+                <td>{{query.queryModel?.queryText }}</td>
                 <td ia-query-filters [queryModel]="query.queryModel"></td>
                 <td>{{query.total_results}}</td>
                 <td>{{corpusTitle(query.corpus)}}</td>
-                <td><a [routerLink]="routerLink(query)" [queryParams]="queryParams(query)">
+                <td><a *ngIf="query.queryModel" [routerLink]="routerLink(query)" [queryParams]="queryParams(query)">
                     <span class="icon" aria-label="open this query">
                         <fa-icon [icon]="linkIcon"></fa-icon>
                     </span>

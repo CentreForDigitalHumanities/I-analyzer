@@ -1,23 +1,38 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    OnChanges,
+    OnDestroy,
+    Output,
+    SimpleChanges,
+    ViewChild,
+} from '@angular/core';
 
-import { User, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
-import { SearchService } from '../services';
-import { ShowError } from '../error/error.component';
-import { PageResultsParameters, PageResults } from '../models/page-results';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { DocumentPage } from '../models/document-page';
+import { ShowError } from '../error/error.component';
+import {
+    QueryModel,
+    ResultOverview,
+    SearchResults,
+    User,
+} from '../models/index';
+import { PageResults, PageResultsParameters } from '../models/page-results';
+import { SearchService } from '../services';
 
 const MAXIMUM_DISPLAYED = 10000;
 
 @Component({
     selector: 'ia-search-results',
     templateUrl: './search-results.component.html',
-    styleUrls: ['./search-results.component.scss']
+    styleUrls: ['./search-results.component.scss'],
 })
 export class SearchResultsComponent implements OnChanges, OnDestroy {
-    @ViewChild('resultsNavigation', {static: true})
+    @ViewChild('resultsNavigation', { static: true })
     public resultsNavigation: ElementRef;
 
     /**
@@ -29,8 +44,8 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     @Input()
     public user: User;
 
-    @Output('searched')
-    public searchedEvent = new EventEmitter<ResultOverview>();
+    @Output()
+    public searched = new EventEmitter<ResultOverview>();
 
     public pageResults: PageResults;
 
@@ -50,20 +65,24 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
 
     private destroy$ = new Subject<void>();
 
-    constructor(private searchService: SearchService) { }
+    constructor(private searchService: SearchService) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
             this.pageResults?.complete();
-            this.pageResults = new PageResults(this.searchService, this.queryModel);
-            this.error$ = this.pageResults.error$.pipe(
-                map(this.parseError)
+            this.pageResults = new PageResults(
+                this.searchService,
+                this.queryModel
             );
-            this.pageResults.result$.pipe(
-                takeUntil(this.destroy$)
-            ).subscribe(result => {
-                this.searchedEvent.emit({ queryText: this.queryModel.queryText, resultsCount: result.total });
-            });
+            this.error$ = this.pageResults.error$.pipe(map(this.parseError));
+            this.pageResults.result$
+                .pipe(takeUntil(this.destroy$))
+                .subscribe((result) => {
+                    this.searched.emit({
+                        queryText: this.queryModel.queryText,
+                        resultsCount: result.total,
+                    });
+                });
         }
     }
 
@@ -81,26 +100,23 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
         return Math.min(totalResults, MAXIMUM_DISPLAYED);
     }
 
-    goToScan(page: DocumentPage, document: FoundDocument, event: Event) {
-        page.focus(document, 'scan');
-        event.stopPropagation();
-    };
-
     @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)
         // this introduces a box shadow
         if (this.resultsNavigation !== undefined) {
-            this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y === 68;
+            this.isScrolledDown =
+                this.resultsNavigation.nativeElement.getBoundingClientRect()
+                    .y === 68;
         }
     }
 
     private parseError(error): ShowError {
         if (error) {
             return {
-                date: (new Date()).toISOString(),
+                date: new Date().toISOString(),
                 href: location.href,
-                message: error.message || 'An unknown error occurred'
+                message: error.message || 'An unknown error occurred',
             };
         }
     }

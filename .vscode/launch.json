@@ -5,15 +5,68 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Django",
+            "name": "django: runserver",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/backend/manage.py",
-            "args": [
-                "runserver"
-            ],
+            "args": ["runserver"],
             "django": true,
             "justMyCode": true
         },
+        {
+            "name": "django: shell",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/manage.py",
+            "args": ["shell"],
+            "django": true,
+            "justMyCode": true
+        },
+        {
+            "name": "django: index",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/manage.py",
+            "args": ["index", "${input:corpusName}"],
+            "django": true,
+            "justMyCode": true
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "attach angular",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}/frontend",
+            "sourceMapPathOverrides": {
+                "webpack:/*": "${webRoot}/*",
+                "/./*": "${webRoot}/*",
+                "/src/*": "${webRoot}/*",
+                "/*": "*",
+                "/./~/*": "${webRoot}/node_modules/*"
+            }
+        },
+        {
+            "name": "angular test",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:9876/debug.html",
+            "webRoot": "${workspaceFolder}/frontend",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack:/*": "${webRoot}/*",
+                "/./*": "${webRoot}/*",
+                "/src/*": "${webRoot}/*",
+                "/*": "*",
+                "/./~/*": "${webRoot}/node_modules/*"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "corpusName",
+            "type": "promptString",
+            "description": "Corpus name",
+            "default": "times"
+        }
     ]
 }

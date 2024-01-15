@@ -7,10 +7,10 @@ import { DialogPageEvent } from '../app/services/dialog.service';
 @Injectable()
 export class DialogServiceMock {
     private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     public pageEvent = this.behavior.asObservable();
 
-    public constructor(private domSanitizer: DomSanitizer) {
-    }
+    public constructor(private domSanitizer: DomSanitizer) {}
 
     public closePage() {
         this.behavior.next({ status: 'hide' });
@@ -35,7 +35,7 @@ export class DialogServiceMock {
         // TODO: in a multilingual application this would need to be modified
         const path = `assets/manual/en-GB/${identifier}.md`;
         this.behavior.next({
-            status: 'loading'
+            status: 'loading',
         });
         const html = await Promise.resolve('<p>Hello world!</p>');
         this.behavior.next({
@@ -45,8 +45,8 @@ export class DialogServiceMock {
             status: 'show',
             footer: {
                 buttonLabel: 'test',
-                routerLink: ['/manual', identifier]
-            }
+                routerLink: ['/manual', identifier],
+            },
         });
     }
 }

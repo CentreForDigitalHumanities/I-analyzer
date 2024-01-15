@@ -8,6 +8,7 @@ import { CorpusModule } from '../corpus-header/corpus.module';
 import { TagModule } from '../tag/tag.module';
 import { DocumentPopupComponent } from './document-popup/document-popup.component';
 import { DialogModule } from 'primeng/dialog';
+import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 
 
 
@@ -17,6 +18,7 @@ import { DialogModule } from 'primeng/dialog';
         DocumentPageComponent,
         SearchRelevanceComponent,
         DocumentPopupComponent,
+        DocumentPreviewComponent,
     ],
     imports: [
         DialogModule,
@@ -25,6 +27,7 @@ import { DialogModule } from 'primeng/dialog';
         ImageViewModule,
         TagModule,
     ], exports: [
+        DocumentPreviewComponent,
         DocumentViewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,

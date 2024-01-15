@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as _ from 'lodash';
 import { QueryFeedback } from '../../models';
 
 @Component({
-  selector: 'ia-query-feedback',
-  templateUrl: './query-feedback.component.html',
-  styleUrls: ['./query-feedback.component.scss']
+    selector: 'ia-query-feedback',
+    templateUrl: './query-feedback.component.html',
+    styleUrls: ['./query-feedback.component.scss'],
 })
 export class QueryFeedbackComponent {
     @Input() query: string;
@@ -17,13 +18,16 @@ export class QueryFeedbackComponent {
         'not in model': 'Query term not found',
         error: 'Error',
         'multiple words': 'Multiple words not allowed',
-        empty: 'No query'
+        empty: 'No query',
     };
 
-    constructor() { }
+    constructor() {}
 
     isFinalTerm(term) {
-        if (this.queryFeedback.similarTerms && this.queryFeedback.similarTerms.length) {
+        if (
+            this.queryFeedback.similarTerms &&
+            this.queryFeedback.similarTerms.length
+        ) {
             return term === _.last(this.queryFeedback.similarTerms);
         }
     }
@@ -31,5 +35,4 @@ export class QueryFeedbackComponent {
     submitNewQuery(term) {
         this.selectedSuggestion.emit(term);
     }
-
 }

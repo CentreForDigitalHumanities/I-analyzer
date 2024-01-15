@@ -267,7 +267,8 @@ class Ecco(XMLCorpusDefinition):
          #the page corresponding to the document
         home_page = int(document['fieldValues']['page'])
         file_name = image_path.split('/')[-1] + '.pdf'
-        pdf_info = get_pdf_info(join(self.data_directory, image_path, file_name))
+        full_image_path = join(self.data_directory, image_path, file_name)
+        pdf_info = get_pdf_info(join(full_image_path))
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         pdf_info = {
             "pageNumbers": [p for p in pages], #change from 0-indexed to real page
@@ -277,7 +278,7 @@ class Ecco(XMLCorpusDefinition):
         }
         image_url = media_url(
             corpus_name,
-            image_path,
+            full_image_path,
             start_page=pages[0]-1,
             end_page=pages[-1],
         )

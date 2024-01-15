@@ -1,16 +1,24 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnDestroy } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    Output,
+    OnDestroy,
+    HostBinding,
+} from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import * as _ from 'lodash';
-
 
 @Component({
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
     styleUrls: ['./dropdown.component.scss'],
-    host: { class: 'control' }
 })
 export class DropdownComponent<T> implements OnDestroy {
+    @HostBinding('class') classes = 'control';
     @Input()
     public canDeselect = false;
 
@@ -47,23 +55,9 @@ export class DropdownComponent<T> implements OnDestroy {
     constructor(private elementRef: ElementRef) {
         // don't trigger a lot of events when a user is quickly looping through the options
         // for example using the keyboard arrows
-        this.changeSubscription = this.changeSubject.pipe(debounceTime(100)).subscribe(value => this.onChange.next(value));
-    }
-
-    ngOnDestroy() {
-        this.changeSubscription.unsubscribe();
-    }
-
-    public toggleDropdown() {
-        this.showDropdown = !this.showDropdown;
-    }
-
-    public select(option: T | undefined, hide = true) {
-        this.value = option;
-        if (hide) {
-            this.showDropdown = false;
-        }
-        this.changeSubject.next(option);
+        this.changeSubscription = this.changeSubject
+            .pipe(debounceTime(100))
+            .subscribe((value) => this.onChange.next(value));
     }
 
     @HostListener('document:click', ['$event'])
@@ -98,9 +92,25 @@ export class DropdownComponent<T> implements OnDestroy {
             }
         }
     }
+
+    ngOnDestroy() {
+        this.changeSubscription.unsubscribe();
+    }
+
+    public toggleDropdown() {
+        this.showDropdown = !this.showDropdown;
+    }
+
+    public select(option: T | undefined, hide = true) {
+        this.value = option;
+        if (hide) {
+            this.showDropdown = false;
+        }
+        this.changeSubject.next(option);
+    }
 }
 
 enum KeyCode {
     Up = 38,
-    Down = 40
+    Down = 40,
 }

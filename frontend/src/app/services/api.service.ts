@@ -28,6 +28,7 @@ import {
     WordcloudParameters,
 } from '../models/index';
 import { environment } from '../../environments/environment';
+import * as _ from 'lodash';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -58,7 +59,6 @@ export class ApiService {
 
     constructor(private http: HttpClient) {}
 
-
     public deleteSearchHistory(): Observable<any> {
         return this.http.post('/api/search_history/delete_all/', {});
     }
@@ -69,7 +69,7 @@ export class ApiService {
 
     // Media
     public getMedia(data: { args: string }): Promise<any> {
-        const url = `/api/download/${data.args}`;
+        const url = `/api/get_media${data.args}`;
         return this.http
             .get(url, { observe: 'response', responseType: 'arraybuffer' })
             .toPromise();
@@ -79,10 +79,18 @@ export class ApiService {
         corpus: string;
         document: FoundDocument;
     }): Promise<{ media: string[]; info?: ImageInfo }> {
+        const serializableDocument = _.pick(data.document, [
+            'id',
+            'fieldValues',
+        ]);
+        const requestData = {
+            corpus: data.corpus,
+            document: serializableDocument,
+        };
         return this.http
             .post<{ media: string[]; info?: ImageInfo }>(
                 '/api/request_media',
-                data
+                requestData
             )
             .toPromise();
     }
@@ -117,7 +125,7 @@ export class ApiService {
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
         return timer(0, 5000)
             .pipe(
-                switchMap((_) =>
+                switchMap(() =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
                 filter(this.tasksDone),
@@ -178,8 +186,7 @@ export class ApiService {
                   parameters: AggregateTermFrequencyParameters[];
                   corpus_name: string;
               }
-            |
-              {
+            | {
                   visualization: 'ngram';
                   parameters: NGramRequestParameters;
                   corpus_name: string;
@@ -259,7 +266,9 @@ export class ApiService {
         return this.http.post<Tag>(url, { name, description });
     }
 
-    public documentTags(document: FoundDocument): Observable<DocumentTagsResponse> {
+    public documentTags(
+        document: FoundDocument
+    ): Observable<DocumentTagsResponse> {
         const url = this.apiRoute(
             this.tagApiUrl,
             `document_tags/${document.corpus.name}/${document.id}`
@@ -267,14 +276,15 @@ export class ApiService {
         return this.http.get<DocumentTagsResponse>(url);
     }
 
-    public setDocumentTags(document: FoundDocument, tagIds: number[]): Observable<DocumentTagsResponse> {
+    public setDocumentTags(
+        document: FoundDocument,
+        tagIds: number[]
+    ): Observable<DocumentTagsResponse> {
         const url = this.apiRoute(
             this.tagApiUrl,
-            `document_tags/${document.corpus.name}/${document.id}`,
+            `document_tags/${document.corpus.name}/${document.id}`
         );
-        return this.http.patch<DocumentTagsResponse>(url,
-            { tags: tagIds }
-        );
+        return this.http.patch<DocumentTagsResponse>(url, { tags: tagIds });
     }
 
     // Authentication API
@@ -344,7 +354,9 @@ export class ApiService {
     }
 
     /** send PATCH request to update settings for the user */
-    public updateUserSettings(details: Partial<UserResponse>): Observable<UserResponse> {
+    public updateUserSettings(
+        details: Partial<UserResponse>
+    ): Observable<UserResponse> {
         return this.http.patch<UserResponse>(
             this.authApiRoute('user'),
             details

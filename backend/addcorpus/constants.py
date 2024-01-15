@@ -9,6 +9,7 @@ CATEGORIES = [
     ('inscription', 'Funerary inscriptions'),
     ('oration', 'Orations'),
     ('book', 'Books'),
+    ('informative', 'Informative'),
 ]
 '''
 Types of data
@@ -20,6 +21,7 @@ class MappingType(Enum):
     TEXT = 'text'
     KEYWORD = 'keyword'
     DATE = 'date'
+    DATE_RANGE = 'date_range'
     INTEGER  = 'integer'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
