@@ -28,7 +28,7 @@
             <div class="relevance-score">
                 <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
             </div>
-            <search-relevance [value]="document.relevance"></search-relevance>
+            <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
         </ng-container>
         <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted"
             iaBalloon="View Scan" aria-label="view scan"

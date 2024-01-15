@@ -74,7 +74,8 @@
                             Password confirmation is required.
                         </div>
 
-                        <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)">
+                        <div class="notification is-warning"
+                            *ngIf=" (signupForm.value.password !==  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)">
                             Passwords do not match.
                         </div>
                     </div>

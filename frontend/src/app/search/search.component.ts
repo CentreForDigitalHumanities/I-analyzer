@@ -25,12 +25,6 @@ export class SearchComponent extends ParamDirective {
     public corpus: Corpus;
 
     /**
-     * This is a constant used to ensure that, when we are displayed in an iframe,
-     * the filters are displayed even if there are no results.
-     */
-    private minIframeHeight = 1300;
-
-    /**
      * The filters have been modified.
      */
     public isSearching: boolean;
@@ -54,8 +48,6 @@ export class SearchComponent extends ParamDirective {
 
     activeTab: string;
 
-    protected corpusSubscription: Subscription;
-
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -68,7 +60,15 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
-    nullableParameters = [];
+    public nullableParameters = [];
+
+    protected corpusSubscription: Subscription;
+
+    /**
+     * This is a constant used to ensure that, when we are displayed in an iframe,
+     * the filters are displayed even if there are no results.
+     */
+    private minIframeHeight = 1300;
 
     constructor(
         private authService: AuthService,
@@ -79,6 +79,13 @@ export class SearchComponent extends ParamDirective {
         router: Router
     ) {
         super(route, router, paramService);
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown =
+            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     async initialize(): Promise<void> {
@@ -105,13 +112,6 @@ export class SearchComponent extends ParamDirective {
         if (paramsHaveChanged(this.queryModel, params)) {
             this.setQueryModel(false);
         }
-    }
-
-    @HostListener('window:scroll', [])
-    onWindowScroll() {
-        // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown =
-            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     /**

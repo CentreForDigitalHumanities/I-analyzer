@@ -52,14 +52,14 @@
                                 [corpus]="corpus" [queryText]="activeQuery"
                                 [asTable]="asTable" [palette]="palette"
                                 (isLoading)="onIsLoading($event)"
-                                (error)="setErrorMessage($event)">
+                                (relatedWordsError)="setErrorMessage($event)">
                             </ia-related-words>
 
                             <ia-word-similarity *ngIf="tab === 'wordsimilarity'"
                                 [corpus]="corpus" [queryText]="activeQuery"
                                 [asTable]="asTable" [palette]="palette"
                                 (isLoading)="onIsLoading($event)"
-                                (error)="setErrorMessage($event)">
+                                (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>
                         </div>
 

@@ -11,8 +11,8 @@
         <ng-template pTemplate="body" let-entry>
             <tr>
                 <td *ngFor="let col of formattedHeaders">
-                    {{col.format != undefined ? col.format(entry[col.key]) : entry[col.key]}}
-                    <span *ngIf="entry[col.key] == undefined" class="has-text-grey-light">
+                    {{col.format !== undefined ? col.format(entry[col.key]) : entry[col.key]}}
+                    <span *ngIf="entry[col.key] === undefined" class="has-text-grey-light">
                         none
                     </span>
                 </td>
@@ -34,7 +34,8 @@
             </div>
         </div>
         <div class="level-item" *ngIf="!disableFullTable">
-            <button class="button" [class.is-primary]="fullTableToggle == true" (click)="toggleFullTable()">Show extra columns</button>
+            <button class="button" [class.is-primary]="fullTableToggle === true" (click)="toggleFullTable()">Show extra
+                columns</button>
         </div>
     </div>
 

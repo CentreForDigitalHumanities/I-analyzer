@@ -7,10 +7,10 @@ import { ApiService } from '../services';
 import { faDownload, faSearchMinus, faSearchPlus, faTimes, faUndo } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'ia-image-view',
-  templateUrl: './image-view.component.html',
-  styleUrls: ['./image-view.component.scss'],
-  providers: [ConfirmationService]
+    selector: 'ia-image-view',
+    templateUrl: './image-view.component.html',
+    styleUrls: ['./image-view.component.scss'],
+    providers: [ConfirmationService],
 })
 export class ImageViewComponent implements OnChanges {
     @Input() public corpus: Corpus;
@@ -28,7 +28,6 @@ export class ImageViewComponent implements OnChanges {
         cancel: faTimes,
     };
 
-    private imageInfo: ImageInfo;
     public noImages: boolean;
 
     public pageIndices: number[];
@@ -37,45 +36,64 @@ export class ImageViewComponent implements OnChanges {
 
     public downloadPath: string; // optional: downloadable content may differ from displayed content
     public zoomFactor = 1.0;
+
+    private imageInfo: ImageInfo;
     private maxZoomFactor = 1.7;
 
-    constructor(private apiService: ApiService, private confirmationService: ConfirmationService) {
-    }
+    constructor(
+        private apiService: ApiService,
+        private confirmationService: ConfirmationService
+    ) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus) {
             this.allowDownload = this.corpus.allow_image_download;
             this.mediaType = this.corpus.scan_image_type;
         }
-        if (changes.document &&
-            changes.document.previousValue !== changes.document.currentValue) {
-                this.imagePaths = undefined;
-                this.apiService.requestMedia({corpus: this.corpus.name, document: this.document}).then( response => {
+        if (
+            changes.document &&
+            changes.document.previousValue !== changes.document.currentValue
+        ) {
+            this.imagePaths = undefined;
+            this.apiService
+                .requestMedia({
+                    corpus: this.corpus.name,
+                    document: this.document,
+                })
+                .then((response) => {
                     this.noImages = false;
                     this.imagePaths = response.media;
                     if (response.info) {
                         this.imageInfo = response.info;
-                        this.showPage = Number(this.imageInfo.homePageIndex) - 1;
-                        this.pageIndices = this.imageInfo.pageNumbers.map( d => Number(d) );
+                        this.showPage =
+                            Number(this.imageInfo.homePageIndex) - 1;
+                        this.pageIndices = this.imageInfo.pageNumbers.map((d) =>
+                            Number(d)
+                        );
                         this.initialPage = this.pageIndices[this.showPage]; //1-indexed
                     } else {
                         this.imageInfo = undefined;
                         const totalPages = this.imagePaths.length;
-                        this.pageIndices = Array.from(Array(totalPages + 1).keys()).slice(1);
-                        this.showPage = this.pageIndices.indexOf(this.initialPage);
+                        this.pageIndices = Array.from(
+                            Array(totalPages + 1).keys()
+                        ).slice(1);
+                        this.showPage = this.pageIndices.indexOf(
+                            this.initialPage
+                        );
                     }
-                }).catch(err => this.noImages = true);
+                })
+                .catch((err) => (this.noImages = true));
         }
     }
 
     zoomIn() {
         if (this.zoomFactor <= this.maxZoomFactor) {
-            this.zoomFactor += .1;
+            this.zoomFactor += 0.1;
         }
     }
 
     zoomOut() {
-        this.zoomFactor -= .1;
+        this.zoomFactor -= 0.1;
     }
 
     resetZoom() {
@@ -98,8 +116,7 @@ export class ImageViewComponent implements OnChanges {
             accept: () => {
                 window.location.href = url;
             },
-            reject: () => {
-            }
+            reject: () => {},
         });
     }
 

@@ -56,6 +56,6 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
     abstract initialize();
 
     abstract teardown();
- 
+
     abstract setStateFromParams(params: Params);
 }

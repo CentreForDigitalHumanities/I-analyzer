@@ -8,18 +8,20 @@ import { ParamService } from '../../../services';
 @Component({
     selector: 'ia-term-comparison-editor',
     templateUrl: './term-comparison-editor.component.html',
-    styleUrls: ['./term-comparison-editor.component.scss']
+    styleUrls: ['./term-comparison-editor.component.scss'],
 })
-export class TermComparisonEditorComponent extends ParamDirective implements OnChanges {
+export class TermComparisonEditorComponent
+    extends ParamDirective
+    implements OnChanges {
     @Input() initialValue = []; // starting value
     @Input() termLimit = 10;
+
+    @Output() queriesChanged = new EventEmitter<string[]>();
+    @Output() clearQueries = new EventEmitter<void>();
 
     queries: string[] = [];
     public showReset = false;
     nullableParameters = ['compareTerm'];
-
-    @Output() queriesChanged = new EventEmitter<string[]>();
-    @Output() clearQueries = new EventEmitter<void>();
 
     faCheck = faCheck;
 
@@ -32,7 +34,16 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
         route: ActivatedRoute,
         router: Router,
         paramService: ParamService
-    ) { super(route, router, paramService)}
+    ) {
+        super(route, router, paramService);
+    }
+
+    get disableConfirm(): boolean {
+        if (!this.queries || !this.queries.length) {
+            return false;
+        }
+        return this.queries.length >= this.termLimit;
+    }
 
     initialize() {}
 
@@ -63,13 +74,5 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
         this.queries = this.initialValue;
         this.clearQueries.emit();
         this.showReset = false;
-    }
-
-
-    get disableConfirm(): boolean {
-        if (!this.queries || !this.queries.length) {
-            return false;
-        }
-        return this.queries.length >= this.termLimit;
     }
 }

@@ -2,56 +2,58 @@ import { Component, EventEmitter, Input, OnInit, Output, OnChanges } from '@angu
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'ia-image-navigation',
-  templateUrl: './image-navigation.component.html',
-  styleUrls: ['./image-navigation.component.scss']
+    selector: 'ia-image-navigation',
+    templateUrl: './image-navigation.component.html',
+    styleUrls: ['./image-navigation.component.scss'],
 })
 export class ImageNavigationComponent implements OnChanges {
     @Input() public pageIndices: number[];
     @Input() public initialPage: number;
 
-    @Output('pageIndexChange')
-    public pageIndexChangeEmitter = new EventEmitter<number>();
+    @Output()
+    public pageIndexChange = new EventEmitter<number>();
 
     public page: number;
     public firstPage: number;
     public lastPage: number;
-
-    // the maximum number of buttons to display for navigation
-    private maxButtons = 8;
-    // array used for generating navigation buttons
-    public buttonArray: number[];
 
     icons = {
         prev: faChevronLeft,
         next: faChevronRight,
     };
 
+    // array used for generating navigation buttons
+    public buttonArray: number[];
+    // the maximum number of buttons to display for navigation
+    private maxButtons = 8;
+
     constructor() { }
 
     ngOnChanges() {
         this.page = this.initialPage;
         this.firstPage = this.pageIndices[0];
-        this.lastPage = this.pageIndices[this.pageIndices.length-1];
+        this.lastPage = this.pageIndices[this.pageIndices.length - 1];
         this.calculateButtonArray();
     }
 
     prevPage() {
-        this.page = this.page - 1 > this.firstPage - 1 ? this.page - 1 : this.lastPage;
+        this.page =
+            this.page - 1 > this.firstPage - 1 ? this.page - 1 : this.lastPage;
         this.calculateButtonArray();
-        this.pageIndexChangeEmitter.emit(this.page);
+        this.pageIndexChange.emit(this.page);
     }
 
     nextPage() {
-        this.page = this.page + 1 < this.lastPage + 1 ? this.page + 1 : this.firstPage;
+        this.page =
+            this.page + 1 < this.lastPage + 1 ? this.page + 1 : this.firstPage;
         this.calculateButtonArray();
-        this.pageIndexChangeEmitter.emit(this.page);
+        this.pageIndexChange.emit(this.page);
     }
 
     goToPage(event: number) {
         this.page = event;
         this.calculateButtonArray();
-        this.pageIndexChangeEmitter.emit(this.page);
+        this.pageIndexChange.emit(this.page);
     }
 
     /**
@@ -64,16 +66,24 @@ export class ImageNavigationComponent implements OnChanges {
             const curPageIndex = this.pageIndices.indexOf(this.page);
             switch (curPageIndex) {
                 case 0:
-                    this.buttonArray = this.pageIndices.slice(curPageIndex, curPageIndex+this.maxButtons);
+                    this.buttonArray = this.pageIndices.slice(
+                        curPageIndex,
+                        curPageIndex + this.maxButtons
+                    );
                     break;
                 case this.pageIndices.length:
-                    this.buttonArray = this.pageIndices.slice(curPageIndex-this.maxButtons, curPageIndex);
+                    this.buttonArray = this.pageIndices.slice(
+                        curPageIndex - this.maxButtons,
+                        curPageIndex
+                    );
                     break;
                 default:
-                    this.buttonArray = this.pageIndices.slice(curPageIndex-this.maxButtons/2, curPageIndex+this.maxButtons/2);
+                    this.buttonArray = this.pageIndices.slice(
+                        curPageIndex - this.maxButtons / 2,
+                        curPageIndex + this.maxButtons / 2
+                    );
                     break;
             }
         }
     }
-
 }

@@ -15,11 +15,14 @@ describe('VisualizationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(VisualizationComponent);
         component = fixture.componentInstance;
-        component.corpus = <any>{
-            fields: [{
-                displayName: 'Test Field', name: 'test_field'
-            }]
-        };
+        component.corpus = {
+            fields: [
+                {
+                    displayName: 'Test Field',
+                    name: 'test_field',
+                },
+            ],
+        } as any;
         fixture.detectChanges();
     });
 

@@ -1,4 +1,11 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    HostBinding,
+    Input,
+    OnChanges,
+    OnDestroy,
+    SimpleChanges,
+} from '@angular/core';
 import { CorpusField, QueryModel, SortConfiguration } from '../models';
 import { faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc } from '@fortawesome/free-solid-svg-icons';
 
@@ -7,9 +14,9 @@ const defaultValueType = 'alpha';
     selector: 'ia-search-sorting',
     templateUrl: './search-sorting.component.html',
     styleUrls: ['./search-sorting.component.scss'],
-    host: { class: 'field has-addons' }
 })
 export class SearchSortingComponent implements OnChanges, OnDestroy {
+    @HostBinding('class') classes = 'field has-addons';
     @Input() queryModel: QueryModel;
 
     public ascending = true;
@@ -33,14 +40,17 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     }
 
     public get sortType(): SortType {
-        return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
+        return `${this.valueType}${
+            this.ascending ? 'Asc' : 'Desc'
+        }` as SortType;
     }
-
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel) {
             this.setSortableFields();
-            this.queryModel.update.subscribe(this.setStateFromQueryModel.bind(this));
+            this.queryModel.update.subscribe(
+                this.setStateFromQueryModel.bind(this)
+            );
         }
     }
 
@@ -49,7 +59,9 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     }
 
     setSortableFields() {
-        this.sortableFields = this.queryModel.corpus.fields.filter(field => field.sortable);
+        this.sortableFields = this.queryModel.corpus.fields.filter(
+            (field) => field.sortable
+        );
         this.setStateFromQueryModel();
     }
 
@@ -71,7 +83,10 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
         if (field === undefined) {
             this.valueType = defaultValueType;
         } else {
-            this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
+            this.valueType =
+                ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0
+                    ? 'numeric'
+                    : 'alpha';
         }
         this.queryModel.setSortBy(field || undefined);
     }

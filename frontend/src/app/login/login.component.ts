@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-    selector: 'login',
+    selector: 'ia-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
 })
