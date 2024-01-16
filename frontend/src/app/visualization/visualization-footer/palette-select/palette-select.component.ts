@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { faPalette, faSquare } from '@fortawesome/free-solid-svg-icons';
 import { PALETTES } from '../../../utils/select-color';
+import { visualizationIcons } from '../../../shared/icons';
 
 @Component({
     selector: 'ia-palette-select',
@@ -12,8 +12,7 @@ export class PaletteSelectComponent {
     public palettes = PALETTES;
     public _palette = PALETTES[0];
 
-    faPalette = faPalette;
-    faSquare = faSquare;
+    visualizationIcons = visualizationIcons;
 
     constructor() {}
 

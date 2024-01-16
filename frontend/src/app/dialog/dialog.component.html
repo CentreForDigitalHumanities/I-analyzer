@@ -4,7 +4,7 @@
   <p-footer *ngIf="!isLoading && footerButtonLabel">
       <a [routerLink]="footerRouterLink" autofocus tabindex="0">
           <span class="icon" aria-hidden="true">
-              <fa-icon [icon]="manualIcon"></fa-icon>
+              <fa-icon [icon]="navIcons.manual"></fa-icon>
           </span>
           <span>{{footerButtonLabel}}</span>
       </a>

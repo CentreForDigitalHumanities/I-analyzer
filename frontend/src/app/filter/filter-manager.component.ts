@@ -6,7 +6,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { FilterInterface, QueryModel } from '../models/index';
-import { faFilter, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { filterIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -16,10 +16,7 @@ import { faFilter, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 export class FilterManagerComponent {
     @Input() queryModel: QueryModel;
 
-    icons = {
-        clear: faTrashCan,
-        toggle: faFilter,
-    };
+    filterIcons = filterIcons;
 
     constructor() {
     }

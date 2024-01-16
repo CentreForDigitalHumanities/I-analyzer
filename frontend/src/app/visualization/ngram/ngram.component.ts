@@ -2,9 +2,9 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleCh
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
 import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { formIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-ngram',
@@ -71,8 +71,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     parametersChanged = false;
     ngramSettings: string[];
 
-    faCheck = faCheck;
-    faTimes = faTimes;
+    formIcons = formIcons;
 
     nullableParameters = ['ngramSettings'];
 

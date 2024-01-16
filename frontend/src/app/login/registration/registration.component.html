@@ -10,7 +10,7 @@
                         <p class="control has-icons-left has-icons-right">
                             <input class="input" type="text" name="username" ngModel #username="ngModel" required>
                             <span class="icon is-left">
-                                <fa-icon [icon]="icons.user" aria-hidden="true"></fa-icon>
+                                <fa-icon [icon]="userIcons.user" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="username.errors?.required  && (username.dirty || username.touched)">
@@ -26,7 +26,7 @@
                         <p class="control has-icons-left">
                             <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" />
                             <span class="icon is-left">
-                                <fa-icon [icon]="icons.email" aria-hidden="true"></fa-icon>
+                                <fa-icon [icon]="userIcons.email" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
@@ -46,7 +46,7 @@
                             <input class="input" type="password" name="password" ngModel #password="ngModel" required
                                 minlength="8" />
                             <span class="icon is-left">
-                                <fa-icon [icon]="icons.password" aria-hidden="true"></fa-icon>
+                                <fa-icon [icon]="userIcons.password" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="password.errors?.required && (password.dirty || password.touched)">
@@ -67,7 +67,7 @@
                             <input class="input" type="password" name="passwordconfirm" ngModel #passwordconfirm="ngModel"
                                 required />
                             <span class="icon is-left">
-                                <fa-icon [icon]="icons.password" aria-hidden="true"></fa-icon>
+                                <fa-icon [icon]="userIcons.password" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="passwordconfirm.errors?.required && (passwordconfirm.dirty || passwordconfirm.touched)">

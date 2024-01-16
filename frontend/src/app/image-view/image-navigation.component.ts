@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges } from '@angular/core';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { scanIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-image-navigation',
@@ -17,10 +17,7 @@ export class ImageNavigationComponent implements OnChanges {
     public firstPage: number;
     public lastPage: number;
 
-    icons = {
-        prev: faChevronLeft,
-        next: faChevronRight,
-    };
+    scanIcons = scanIcons;
 
     // array used for generating navigation buttons
     public buttonArray: number[];

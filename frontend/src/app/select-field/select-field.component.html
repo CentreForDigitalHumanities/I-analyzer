@@ -6,7 +6,7 @@
     (onChange)="onUpdate()"
     [ngModelOptions]="{standalone: true}">
     <ng-template pTemplate="selectedItems">
-        <fa-icon [icon]="icons.config" aria-label="select field"></fa-icon>
+        <fa-icon [icon]="actionIcons.config" aria-label="select field"></fa-icon>
     </ng-template>
     <p-footer *ngIf="optionFields">
         <button class="button is-primary" (click)="toggleAllFields()">

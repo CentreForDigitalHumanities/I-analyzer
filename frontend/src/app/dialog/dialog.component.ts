@@ -4,7 +4,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
 import { DialogService } from './../services/index';
-import { faBook } from '@fortawesome/free-solid-svg-icons';
+import { navIcons } from '../shared/icons';
 
 @Component({
   selector: 'ia-dialog',
@@ -19,7 +19,7 @@ export class DialogComponent implements OnDestroy, OnInit {
     public showDialog = false;
     public isLoading = false;
 
-    manualIcon = faBook;
+    navIcons = navIcons;
 
     private dialogEventSubscription: Subscription;
 

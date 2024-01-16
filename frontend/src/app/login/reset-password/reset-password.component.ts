@@ -7,7 +7,7 @@ import { throwError } from 'rxjs';
 import { catchError, finalize, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { userIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-reset-password',
@@ -22,10 +22,7 @@ export class ResetPasswordComponent implements OnInit {
     public isLoading: boolean;
     public message: string;
 
-    icons = {
-        user: faUser,
-        password: faLock,
-    };
+    userIcons = userIcons;
 
     private uid: string;
     private token: string;

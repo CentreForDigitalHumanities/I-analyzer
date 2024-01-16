@@ -4,7 +4,7 @@ import { ConfirmationService } from 'primeng/api';
 
 import { FoundDocument, Corpus } from '../models';
 import { ApiService } from '../services';
-import { faDownload, faSearchMinus, faSearchPlus, faTimes, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { scanIcons, actionIcons, formIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-image-view',
@@ -20,13 +20,9 @@ export class ImageViewComponent implements OnChanges {
     public mediaType: string;
     public allowDownload: boolean;
 
-    icons = {
-        zoomIn: faSearchPlus,
-        zoomOut: faSearchMinus,
-        zoomReset: faUndo,
-        download: faDownload,
-        cancel: faTimes,
-    };
+    scanIcons = scanIcons;
+    actionIcons = actionIcons;
+    formIcons = formIcons;
 
     public noImages: boolean;
 

@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FoundDocument } from '../../models';
 import { DocumentPage } from '../../models/document-page';
-import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
+import { documentIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-document-preview',
@@ -12,7 +12,7 @@ export class DocumentPreviewComponent {
     @Input() document: FoundDocument;
     @Input() page: DocumentPage;
 
-    scanIcon = faNewspaper;
+    documentIcons = documentIcons;
 
     goToScan(page: DocumentPage, document: FoundDocument, event: Event) {
         page.focus(document, 'scan');

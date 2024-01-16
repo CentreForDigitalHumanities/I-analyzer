@@ -7,13 +7,13 @@
             <span *ngIf="anyActiveFilters$ | async" class="button icon filter-icon is-primary is-active is-medium is-round"
                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                 iaBalloonPosition="down-left">
-                <fa-icon [icon]="icons.clear" aria-hidden="true"></fa-icon>
+                <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
             </span>
             <span *ngIf="anyNonDefaultFilters$ | async" class="button icon filter-icon is-inverted is-round is-primary is-medium"
                 (click)="toggleActiveFilters()"
                 iaBalloon="{{(anyActiveFilters$ | async) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left">
-                <fa-icon [icon]="icons.toggle" aria-hidden="true"></fa-icon>
+                <fa-icon [icon]="filterIcons.toggle" aria-hidden="true"></fa-icon>
             </span>
         </p>
     </div>

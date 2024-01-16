@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { QueryModel } from '../models';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../shared/icons';
 
 
 @Component({
@@ -11,10 +11,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 export class HighlightSelectorComponent implements OnDestroy {
     @Input() queryModel: QueryModel;
 
-    icons = {
-        more: faPlus,
-        less: faMinus,
-    };
+    actionIcons = actionIcons;
 
     constructor() {
     }

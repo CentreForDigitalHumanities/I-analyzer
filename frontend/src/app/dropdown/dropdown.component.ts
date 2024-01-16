@@ -11,7 +11,7 @@ import {
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-dropdown',
@@ -48,7 +48,7 @@ export class DropdownComponent<T> implements OnDestroy {
 
     public showDropdown = false;
 
-    dropIcon = faAngleDown;
+    actionIcons = actionIcons;
 
     private changeSubject = new Subject<T | undefined>();
     private changeSubscription: Subscription;

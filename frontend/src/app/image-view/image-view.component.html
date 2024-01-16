@@ -4,19 +4,19 @@
         <button class="button is-primary is-inverted" (click)="zoomIn()"
             aria-label="zoom in">
             <span class="icon">
-                <fa-icon [icon]="icons.zoomIn" aria-hidden="true"></fa-icon>
+                <fa-icon [icon]="scanIcons.zoomIn" aria-hidden="true"></fa-icon>
             </span>
         </button>
         <button class="button is-primary is-inverted" (click)="zoomOut()"
             aria-label="zoom out">
             <span class="icon">
-                <fa-icon [icon]="icons.zoomOut" aria-hidden="true"></fa-icon>
+                <fa-icon [icon]="scanIcons.zoomOut" aria-hidden="true"></fa-icon>
             </span>
         </button>
         <button class="button is-primary is-inverted" (click)="resetZoom()"
             aria-label="reset zoom">
             <span class="icon">
-                <fa-icon [icon]="icons.zoomReset" aria-hidden="true"></fa-icon>
+                <fa-icon [icon]="scanIcons.zoomReset" aria-hidden="true"></fa-icon>
             </span>
         </button>
     </div>
@@ -24,7 +24,7 @@
     <div class="level-right">
         <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()"
             aria-label="download image">
-            <fa-icon [icon]="icons.download" aria-hidden="true"></fa-icon>
+            <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon>
         </button>
     </div>
     </div>
@@ -40,10 +40,10 @@
     <p-footer>
         <div class="field is-grouped">
             <button class="button is-primary" (click)="cd.accept()">
-                <fa-icon [icon]="icons.download" aria-hidden="true"></fa-icon> Download
+                <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon> Download
             </button>
             <button class="button is-primary" (click)="cd.rejectt()">
-                <fa-icon [icon]="icons.cancel" aria-hidden="true"></fa-icon> Cancel
+                <fa-icon [icon]="formIcons.cancel" aria-hidden="true"></fa-icon> Cancel
             </button>
         </div>
     </p-footer>

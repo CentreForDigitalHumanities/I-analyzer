@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel } from '../models/index';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../shared/icons';
 
 const highlightFragmentSize = 50;
 
@@ -28,7 +28,7 @@ export class DownloadComponent implements OnChanges {
 
     public pendingDownload: PendingDownload;
 
-    downloadIcon = faDownload;
+    actionIcons = actionIcons;
 
     private resultsCutoff = 1000;
 

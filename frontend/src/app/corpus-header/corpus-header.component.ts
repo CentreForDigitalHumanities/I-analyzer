@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { faDiagramProject, faInfo, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Corpus } from '../models';
+import { corpusIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-corpus-header',
@@ -11,9 +11,7 @@ export class CorpusHeaderComponent implements OnChanges, OnInit {
     @Input() corpus: Corpus;
     @Input() currentPage: 'search'|'word-models'|'document'|'info';
 
-    searchIcon = faMagnifyingGlass;
-    wordModelsIcon = faDiagramProject;
-    infoIcon = faInfo;
+    corpusIcons = corpusIcons;
 
     wordModelsPresent: boolean;
 

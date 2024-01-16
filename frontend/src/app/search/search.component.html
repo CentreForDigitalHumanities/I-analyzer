@@ -12,7 +12,7 @@
                                     <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
                                         <button class="button" (click)="showQueryDocumentation()">
                                             <span class="icon">
-                                                <fa-icon [icon]="icons.help" aria-label="help"></fa-icon>
+                                                <fa-icon [icon]="actionIcons.help" aria-label="help"></fa-icon>
                                             </span>
                                         </button>
                                     </div>
@@ -23,7 +23,7 @@
                                     <div class="control">
                                         <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
                                             <span class="icon">
-                                                <fa-icon [icon]="icons.search" aria-hidden="true"></fa-icon>
+                                                <fa-icon [icon]="actionIcons.search" aria-hidden="true"></fa-icon>
                                             </span>
                                             <span>Search</span>
                                         </button>
@@ -54,12 +54,12 @@
             <!-- search results, on right -->
             <div class="column is-9" *ngIf="queryModel">
                 <ia-tabs [activeTab]="showVisualization ? 'visualizations' : 'search-results'">
-                    <ng-template iaTabPanel id="search-results" title="Search results" [icon]="tabIcons.searchResults">
+                    <ng-template iaTabPanel id="search-results" title="Search results" [icon]="searchIcons.documents">
                         <ia-search-results #searchResults [queryModel]="queryModel" [user]="user"
                             (searched)="onSearched($event)" role="tabpanel">
                         </ia-search-results>
                     </ng-template>
-                    <ng-template iaTabPanel id="visualizations" title="Visualizations" [icon]="tabIcons.visualizations">
+                    <ng-template iaTabPanel id="visualizations" title="Visualizations" [icon]="searchIcons.visualizations">
                         <ia-visualization #visualization [corpus]="corpus" [queryModel]="queryModel" role="tabpanel"></ia-visualization>
                     </ng-template>
                 </ia-tabs>

@@ -4,7 +4,7 @@
 <div class="control">
     <button class="button" (click)="toggleSortType()" [ngClass]="{ 'is-static': !sortField }">
         <span class="icon" aria-hidden="true">
-            <fa-icon [icon]="icons[sortType]"></fa-icon>
+            <fa-icon [icon]="sortIcons[sortType]"></fa-icon>
         </span>
         <span *ngIf="ascending">Ascending</span>
         <span *ngIf="!ascending">Descending</span>

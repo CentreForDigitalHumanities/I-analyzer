@@ -1,12 +1,12 @@
 
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { faBook, faSearch } from '@fortawesome/free-solid-svg-icons';
 import {
     DialogService,
     ManualPageMetaData,
     HighlightService,
 } from '../services';
+import { actionIcons, navIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -14,10 +14,8 @@ import {
     styleUrls: ['./manual-navigation.component.scss'],
 })
 export class ManualNavigationComponent implements OnInit {
-    icons = {
-        search: faSearch,
-        manual: faBook,
-    };
+    navIcons = navIcons;
+    actionIcons = actionIcons;
 
     /**
      * The text to use for highlighting the search results. This differs from the filter text, because additional wildcards are added

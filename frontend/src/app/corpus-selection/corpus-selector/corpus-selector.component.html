@@ -16,7 +16,7 @@
                 [routerLink]="['/info', corpus.name]"
                 aria-label="more information">
                 <span class="icon">
-                    <fa-icon [icon]="infoIcon" aria-hidden="true"></fa-icon>
+                    <fa-icon [icon]="corpusIcons.infoAlt" aria-hidden="true"></fa-icon>
                 </span>
             </button>
 
@@ -40,7 +40,7 @@
             <div class="column is-narrow explore-column">
                 <a class="button corpus-action is-medium" [routerLink]="['/search', corpus.name]">
                     <span class="icon" aria-hidden="true">
-                        <fa-icon [icon]="searchIcon"></fa-icon>
+                        <fa-icon [icon]="corpusIcons.search"></fa-icon>
                     </span>
                     <span>Explore</span>
                 </a>

@@ -8,7 +8,7 @@
                 <p class="control has-icons-left has-icons-right">
                     <input class="input" type="text" [(ngModel)]="username" name="username" />
                     <span class="icon is-left">
-                        <fa-icon [icon]="icons.user" aria-hidden="true"></fa-icon>
+                        <fa-icon [icon]="userIcons.user" aria-hidden="true"></fa-icon>
                     </span>
                 </p>
             </div>
@@ -17,7 +17,7 @@
                 <p class="control has-icons-left">
                     <input class="input" type="password" [(ngModel)]="password" name="password" />
                     <span class="icon is-left">
-                        <fa-icon [icon]="icons.password" aria-hidden="true"></fa-icon>
+                        <fa-icon [icon]="userIcons.password" aria-hidden="true"></fa-icon>
                     </span>
                 </p>
             </div>
@@ -38,7 +38,7 @@
                 <div class="level-item">
                 <a [routerLinkActive]="'is-active'" [routerLink]="['/registration']">
                     <span class="icon">
-                        <fa-icon [icon]="icons.user" aria-hidden="true"></fa-icon>
+                        <fa-icon [icon]="userIcons.user" aria-hidden="true"></fa-icon>
                     </span>
                     Sign Up
                 </a>

@@ -7,8 +7,6 @@ import {
 } from '@angular/core';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-
-import { faChartColumn, faTable } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -16,6 +14,7 @@ import { Corpus, CorpusField, QueryModel } from '../models/index';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services';
 import { findByName } from '../utils/utils';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-visualization',
@@ -62,10 +61,7 @@ export class VisualizationComponent
         termfrequency: 'termfrequency',
     };
 
-    icons = {
-        chart: faChartColumn,
-        table: faTable,
-    };
+    visualizationIcons = visualizationIcons;
 
     public visualExists = false;
     public isLoading = false;

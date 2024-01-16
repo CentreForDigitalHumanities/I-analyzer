@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
-import { faChartColumn, faTable } from '@fortawesome/free-solid-svg-icons';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-word-models',
@@ -42,10 +42,7 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         },
     };
 
-    icons = {
-        chart: faChartColumn,
-        table: faTable,
-    };
+    visualizationIcons = visualizationIcons;
 
     childComponentLoading: boolean;
     isLoading: boolean;

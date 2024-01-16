@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import { ParamDirective } from '../../../param/param-directive';
 import { ParamService } from '../../../services';
+import { formIcons } from '../../../shared/icons';
 
 @Component({
     selector: 'ia-term-comparison-editor',
@@ -23,12 +23,7 @@ export class TermComparisonEditorComponent
     public showReset = false;
     nullableParameters = ['compareTerm'];
 
-    faCheck = faCheck;
-
-    icons = {
-        confirm: faCheck,
-        reset: faTimes,
-    };
+    formIcons = formIcons;
 
     constructor(
         route: ActivatedRoute,

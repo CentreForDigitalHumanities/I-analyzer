@@ -6,7 +6,7 @@ import { QueryDb } from '../../models/index';
 import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
 import { findByName } from '../../utils/utils';
-import { faLink } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-search-history',
@@ -16,7 +16,9 @@ import { faLink } from '@fortawesome/free-solid-svg-icons';
 export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: QueryDb[];
     public displayCorpora = false;
-    public linkIcon = faLink;
+
+    actionIcons = actionIcons;
+
     constructor(
         corpusService: CorpusService,
         private queryService: QueryService,

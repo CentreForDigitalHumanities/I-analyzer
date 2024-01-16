@@ -2,7 +2,7 @@
 import * as _ from 'lodash';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CorpusField, QueryModel } from '../models/index';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-select-field',
@@ -24,9 +24,7 @@ export class SelectFieldComponent implements OnChanges {
     // whether to display all field options, or just the core ones
     public allVisible = false;
 
-    icons = {
-        config: faCog,
-    };
+    actionIcons = actionIcons;
 
     constructor() {}
 
