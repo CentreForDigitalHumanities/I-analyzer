@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Subject, Observable, of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { mockUserResponse } from './user';
 
 const fakeNgramResult = {
@@ -15,6 +15,7 @@ const fakeNgramResult = {
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
     public SessionExpired = this.SessionExpiredSubject.asObservable();
+    public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
     constructor(public fakeResult: { [path: string]: any } = {}) {}
 
@@ -45,7 +46,7 @@ export class ApiServiceMock {
             'ngram-task-id': fakeNgramResult,
         };
         const response = ids.map((id) => _.get(fakeResults, id, {}));
-        return Promise.resolve(response);
+        return of(response);
     }
 
     public downloads() {
