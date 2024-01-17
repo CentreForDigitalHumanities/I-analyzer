@@ -7,6 +7,7 @@ import {
     HighlightService,
 } from '../services';
 import { actionIcons, navIcons } from '../shared/icons';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -29,8 +30,11 @@ export class ManualNavigationComponent implements OnInit {
     public filtered = combineLatest([
         this.manifest,
         this.filterTextSubject,
-        (manifest, filterText) => Array.from(this.filter(manifest, filterText)),
-    ]);
+    ]).pipe(
+        map(([manifest, filterText]) =>
+            Array.from(this.filter(manifest, filterText)),
+        )
+    );
 
     constructor(
         private highlightService: HighlightService,
