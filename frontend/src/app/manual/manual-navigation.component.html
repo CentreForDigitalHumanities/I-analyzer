@@ -6,15 +6,15 @@
         <p class="control has-icons-left">
             <input class="input is-small" type="text" placeholder="search" [(ngModel)]="filterText"
                 aria-label="search">
-            <span class="icon is-small is-left" aria-hidden="true">
-                <i class="fa fa-search"></i>
+            <span class="icon is-left" aria-hidden="true">
+                <fa-icon [icon]="actionIcons.search"></fa-icon>
             </span>
         </p>
     </div>
     <ng-container *ngFor="let page of filtered | async">
         <a class="panel-block" routerLinkActive="is-active" [routerLink]="['/manual', page.id]">
             <span class="panel-icon" aria-hidden="true">
-                <i class="fa fa-book"></i>
+                <fa-icon [icon]="navIcons.manual"></fa-icon>
             </span>
             <span [innerHtml]="page.title | highlight:highlightText"></span>
         </a>

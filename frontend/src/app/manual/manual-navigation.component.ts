@@ -6,6 +6,7 @@ import {
     ManualPageMetaData,
     HighlightService,
 } from '../services';
+import { actionIcons, navIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -13,6 +14,9 @@ import {
     styleUrls: ['./manual-navigation.component.scss'],
 })
 export class ManualNavigationComponent implements OnInit {
+    navIcons = navIcons;
+    actionIcons = actionIcons;
+
     /**
      * The text to use for highlighting the search results. This differs from the filter text, because additional wildcards are added
      */

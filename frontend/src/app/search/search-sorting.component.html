@@ -3,11 +3,8 @@
 </div>
 <div class="control">
     <button class="button" (click)="toggleSortType()" [ngClass]="{ 'is-static': !sortField }">
-        <span class="icon is-small" [ngSwitch]="sortType" aria-hidden="true">
-            <i *ngSwitchCase="'alphaDesc'" class="fa fa-sort-alpha-desc"></i>
-            <i *ngSwitchCase="'alphaAsc'" class="fa fa-sort-alpha-asc"></i>
-            <i *ngSwitchCase="'numericDesc'" class="fa fa-sort-numeric-desc"></i>
-            <i *ngSwitchCase="'numericAsc'" class="fa fa-sort-numeric-asc"></i>
+        <span class="icon" aria-hidden="true">
+            <fa-icon [icon]="sortIcons[sortType]"></fa-icon>
         </span>
         <span *ngIf="ascending">Ascending</span>
         <span *ngIf="!ascending">Descending</span>

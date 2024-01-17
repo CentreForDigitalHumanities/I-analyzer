@@ -7,15 +7,14 @@ import {
 } from '@angular/core';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services';
 import { findByName } from '../utils/utils';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-visualization',
@@ -62,15 +61,15 @@ export class VisualizationComponent
         termfrequency: 'termfrequency',
     };
 
+    visualizationIcons = visualizationIcons;
+
     public visualExists = false;
     public isLoading = false;
 
     public palette: string[];
     public params: Params = {};
 
-    public faQuestion = faCircleQuestion;
-
-    public nullableParameters = ['visualize', 'visualizedField'];
+    nullableParameters = ['visualize', 'visualizedField'];
 
     private childComponentLoading = false;
 

@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-word-models',
@@ -40,6 +41,8 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
             chartID: 'chart',
         },
     };
+
+    visualizationIcons = visualizationIcons;
 
     childComponentLoading: boolean;
     isLoading: boolean;

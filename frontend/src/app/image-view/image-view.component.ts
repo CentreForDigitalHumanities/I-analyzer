@@ -4,6 +4,7 @@ import { ConfirmationService } from 'primeng/api';
 
 import { FoundDocument, Corpus } from '../models';
 import { ApiService } from '../services';
+import { scanIcons, actionIcons, formIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-image-view',
@@ -18,6 +19,10 @@ export class ImageViewComponent implements OnChanges {
     public imagePaths: string[];
     public mediaType: string;
     public allowDownload: boolean;
+
+    scanIcons = scanIcons;
+    actionIcons = actionIcons;
+    formIcons = formIcons;
 
     public noImages: boolean;
 

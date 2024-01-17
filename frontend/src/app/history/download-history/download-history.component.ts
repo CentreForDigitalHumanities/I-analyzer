@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { esQueryToQueryModel } from '../../utils/es-query';
 import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
 import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
 import { findByName } from '../../utils/utils';
+import { actionIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-download-history',
@@ -15,7 +15,7 @@ import { findByName } from '../../utils/utils';
 export class DownloadHistoryComponent extends HistoryDirective implements OnInit {
     downloads: Download[];
 
-    faDownload = faDownload;
+    actionIcons = actionIcons;
 
     itemToDownload: Download;
 

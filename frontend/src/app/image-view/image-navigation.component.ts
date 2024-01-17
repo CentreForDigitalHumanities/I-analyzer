@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges } from '@angular/core';
+import { scanIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-image-navigation',
@@ -16,12 +17,14 @@ export class ImageNavigationComponent implements OnChanges {
     public firstPage: number;
     public lastPage: number;
 
+    scanIcons = scanIcons;
+
     // array used for generating navigation buttons
     public buttonArray: number[];
     // the maximum number of buttons to display for navigation
     private maxButtons = 8;
 
-    constructor() {}
+    constructor() { }
 
     ngOnChanges() {
         this.page = this.initialPage;

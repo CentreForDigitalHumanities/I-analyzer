@@ -2,12 +2,11 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-
 import { showLoading } from '../../utils/utils';
 import { Corpus, WordSimilarity } from '../../models';
 import { ParamService, WordmodelsService } from '../../services/index';
 import { ParamDirective } from '../../param/param-directive';
+import { formIcons } from '../../shared/icons';
 
 
 @Component({
@@ -30,7 +29,8 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
-    faCheck = faCheck;
+    formIcons = formIcons;
+
     nullableParameters = ['neighbours'];
 
     constructor(

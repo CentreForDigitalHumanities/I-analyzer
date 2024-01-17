@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../../shared/icons';
 
 @Component({
   selector: 'ia-full-data-button',
@@ -12,7 +12,7 @@ export class FullDataButtonComponent {
     isLoading = false; // show loading spinner in button
     showModal = false;
 
-    faEnvelope = faEnvelope;
+    actionIcons = actionIcons;
 
     constructor() { }
 

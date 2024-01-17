@@ -7,6 +7,7 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { CorpusField, QueryModel, SortConfiguration } from '../models';
+import { sortIcons } from '../shared/icons';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -24,6 +25,8 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
     public showFields = false;
+
+    sortIcons = sortIcons;
 
     constructor() {}
 

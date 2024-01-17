@@ -38,12 +38,12 @@
             <!-- Buttons for switching between table and graphical representation -->
             <div class="control">
                 <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
-                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
                 </button>
             </div>
             <div class="control">
                 <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
-                    <i class="fa fa-table" aria-hidden="true"></i>
+                    <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
                 </button>
             </div>
         </div>

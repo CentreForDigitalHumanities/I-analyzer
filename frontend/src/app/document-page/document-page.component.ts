@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { combineLatest } from 'rxjs';
 import { Corpus, FoundDocument } from '../models';
 import { CorpusService, ElasticSearchService } from '../services';
 import { makeContextParams } from '../utils/document-context';
+import { documentIcons } from '../shared/icons';
 
 @Component({
   selector: 'ia-document-page',
@@ -19,7 +19,7 @@ export class DocumentPageComponent implements OnInit {
 
     documentNotFound: boolean;
 
-    contextIcon = faBookOpen;
+    documentIcons = documentIcons;
 
     constructor(
         private corpusService: CorpusService,
