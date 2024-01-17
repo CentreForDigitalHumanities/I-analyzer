@@ -7,21 +7,21 @@ After 1985, it is described by `GALENP.dtd`.
 '''
 
 import logging
-logger = logging.getLogger(__name__)
 import os
 import os.path
 from datetime import datetime, timedelta
 
-from django.conf import settings
-
-from addcorpus import extract
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
+from addcorpus import extract, filters
+from addcorpus.corpus import (FieldDefinition, XMLCorpusDefinition, after,
+                              consolidate_start_end_years, string_contains,
+                              until)
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
+from corpora.times.times_scans import compose_absolute_image_path
+from django.conf import settings
 from media.media_url import media_url
 
-# Source files ################################################################
+logger = logging.getLogger(__name__)
 
 
 class Times(XMLCorpusDefinition):
@@ -165,6 +165,7 @@ class Times(XMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             csv_core=True,
             results_overview=True,
+            sortable=True,
             description='Publication date as full string, as found in source file',
             extractor=extract.XML(
                 tag='da', toplevel=True
@@ -242,25 +243,26 @@ class Times(XMLCorpusDefinition):
                 applicable=after(1985)
             )
         ),
-        FieldDefinition(
-            name='cover',
-            display_name='On front page',
-            description='Whether the article is on the front page.',
-            es_mapping={'type': 'boolean'},
-            search_filter=filters.BooleanFilter(
-                true='Front page',
-                false='Other',
-                description=(
-                    'Accept only articles that are on the front page. '
-                    'From 1985.'
-                )
-            ),
-            extractor=extract.XML(
-                tag=['..', 'pageid'], attribute='pageType',
-                transform=string_contains("cover"),
-                applicable=after(1985)
-            )
-        ),
+        # There are no datapoints where this is True, hence the outcomment
+        # FieldDefinition(
+        #     name='cover',
+        #     display_name='On front page',
+        #     description='Whether the article is on the front page.',
+        #     es_mapping={'type': 'boolean'},
+        #     search_filter=filters.BooleanFilter(
+        #         true='Front page',
+        #         false='Other',
+        #         description=(
+        #             'Accept only articles that are on the front page. '
+        #             'From 1985.'
+        #         )
+        #     ),
+        #     extractor=extract.XML(
+        #         tag=['..', 'pageid'], attribute='pageType',
+        #         transform=string_contains("body"),
+        #         applicable=after(1985)
+        #     )
+        # ),
         FieldDefinition(
             name='id',
             display_name='ID',
@@ -445,11 +447,10 @@ class Times(XMLCorpusDefinition):
 
     def request_media(self, document, corpus_name):
         field_values = document['fieldValues']
-        if 'image_path' in field_values:
-            image_urls = [
-                media_url(corpus_name, field_values['image_path']),
-            ]
-        else:
-            image_urls = []
-        return {'media': image_urls }
+        id = document.get('id')
+        date = field_values.get('date')
 
+        full_path = compose_absolute_image_path(
+            self.data_directory, date, id)
+        image_urls = [media_url(corpus_name, full_path)]
+        return {'media': image_urls}

@@ -1,4 +1,4 @@
-De database waar I-analyzer mee werkt is georganiseerd met Elasticsearch. Om daarin te zoeken, is het nodig termen en operatoren te gebruiken, die Elasticsearch “begrijpt”. Deze worden uitgebreid uitgelegd in de [Simple Query String-handleiding van Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
+De database waar I-analyzer mee werkt is georganiseerd met Elasticsearch. Om daarin te zoeken, is het nodig termen en operatoren te gebruiken, die Elasticsearch “begrijpt”. Deze worden uitgebreid uitgelegd in de [Simple Query String-handleiding van Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/8.11/query-dsl-simple-query-string-query.html#simple-query-string-syntax).
 
 Hieronder volgt een beschrijving van de ondersteunde operatoren.
 
@@ -18,7 +18,7 @@ Deze zoekmethode ondersteunt de volgende functies:
 
 Tekens zoals `|` en `+`, zijn gereserveerde karakters. Wilt u zoeken op woorden die juist zulke tekens bevatten, dan moet het teken worden voorafgegaan door `\`.
 
-De zoekfunctie staat default ingesteld op `OR`. Dat betekent dat als u intypt: `Plaat Fiets`, er wordt gezocht op of documenten die `Plaat` of documenten die `Fiets` bevatten. Dit heeft ook consequenties voor de `–`functie. `Plaat Fiets –Tafel` wordt: documenten die `Plaat` bevatten of documenten die `Fiets` bevatten of documenten die niet het woord `Tafel` bevatten. 
+De zoekfunctie staat default ingesteld op `OR`. Dat betekent dat als u intypt: `Plaat Fiets`, er wordt gezocht op of documenten die `Plaat` of documenten die `Fiets` bevatten. Dit heeft ook consequenties voor de `–`functie. `Plaat Fiets –Tafel` wordt: documenten die `Plaat` bevatten of documenten die `Fiets` bevatten of documenten die niet het woord `Tafel` bevatten.
 
 ## Pas op de spatie
 Een spatie kan ook een speciaal teken zijn. Soms kan een escape (dus `\`) voor de spatie nodig zijn.
@@ -43,6 +43,6 @@ Een spatie kan ook een speciaal teken zijn. Soms kan een escape (dus `\`) voor d
 | `kapitaaldeposito~2` |	4 treffers waarvan 2 maal kapitaaldeposito’s (2 tekens verschil) |
 | `kapit*`|			910 treffers |
 | `*kapit` |				There were no results to your query. |
-| `bank~1` | 			76241 treffers (vergelijk met bank hiervoor) | 
+| `bank~1` | 			76241 treffers (vergelijk met bank hiervoor) |
 | `"de bank is"` |  			24 treffers |
 | `"de bank is" ~1`|		32 treffers  |

@@ -9,37 +9,40 @@ import { findByName } from '../../utils/utils';
 import { faLink } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-    selector: 'search-history',
+    selector: 'ia-search-history',
     templateUrl: './search-history.component.html',
-    styleUrls: ['./search-history.component.scss']
+    styleUrls: ['./search-history.component.scss'],
 })
 export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: QueryDb[];
     public displayCorpora = false;
+    public linkIcon = faLink;
     constructor(
         corpusService: CorpusService,
         private queryService: QueryService,
-        private router: Router,
+        private router: Router
     ) {
         super(corpusService);
     }
 
-    linkIcon = faLink;
-
     async ngOnInit() {
         this.retrieveCorpora();
-        this.queryService.retrieveQueries().then(
-            searchHistory => {
-                const sortedQueries = this.sortByDate(searchHistory);
-                // not using _.sortedUniqBy as sorting and filtering takes place w/ different aspects
-                this.queries = _.uniqBy(sortedQueries, query => query.query_json).map(this.addQueryModel.bind(this));
-            });
+        this.queryService.retrieveQueries().then((searchHistory) => {
+            const sortedQueries = this.sortByDate(searchHistory);
+            // not using _.sortedUniqBy as sorting and filtering takes place w/ different aspects
+            this.queries = _.uniqBy(
+                sortedQueries,
+                (query) => query.query_json
+            ).map(this.addQueryModel.bind(this));
+        });
     }
 
     addQueryModel(query?: QueryDb) {
         const corpus = findByName(this.corpora, query.corpus);
-        query.queryModel = esQueryToQueryModel(query.query_json, corpus);
-        return query;
+        if (corpus) {
+            query.queryModel = esQueryToQueryModel(query.query_json, corpus);
+            return query;
+        }
     }
 
     routerLink(query: QueryDb): string[] {
