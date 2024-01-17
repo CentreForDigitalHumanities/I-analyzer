@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { EMPTY, interval, Observable, Subject } from 'rxjs';
-import { catchError, filter, switchMap, takeUntil } from 'rxjs/operators';
+import { interval, Observable, Subject } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
     AggregateResult,
@@ -119,15 +119,14 @@ export class ApiService {
 
     public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
-    public pollTasks<ExpectedResult>(ids: string[]): Observable<TasksOutcome<ExpectedResult[]>> {
+    public pollTasks<ExpectedResult>(ids: string[]): Observable<TasksOutcome<ExpectedResult>> {
         return interval(5000)
             .pipe(
                 takeUntil(this.stopPolling$),
                 switchMap((_) =>
-                    this.getTasksStatus<ExpectedResult[]>({ task_ids: ids })
+                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
                 filter(this.tasksDone)
-                // eslint-disable-next-line @typescript-eslint/no-shadow
             );
     }
 
