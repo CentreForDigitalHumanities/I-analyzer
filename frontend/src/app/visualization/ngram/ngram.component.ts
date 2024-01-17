@@ -146,8 +146,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     onDataLoaded(result: NgramResults) {
         this.apiService.stopPolling$.next();
-        this.currentResults = result;
-        this.tableData = this.makeTableData(result);
+        this.currentResults = result[0];
+        this.tableData = this.makeTableData(result[0]);
 
         this.isLoading.emit(false);
     }
