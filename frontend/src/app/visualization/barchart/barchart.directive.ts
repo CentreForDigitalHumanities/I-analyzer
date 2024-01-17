@@ -354,7 +354,7 @@ export abstract class BarchartDirective
      */
     requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
         const dataPromises = rawData.map(series => {
-            if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
+            if (series.queryText && series.data.length && series.data[0].match_count === undefined) {
                 // retrieve data if it was not already loaded
                 return this.getTermFrequencies(series, this.queryModel);
             } else {
@@ -374,17 +374,22 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
-            this.tasksToCancel = response.task_ids;
-            const poller$ = this.apiService.pollTasks<TermFrequencyResult>(this.tasksToCancel);
-            poller$.subscribe({
-                error: (error) => this.onFailure(error),
-                next: (result) => {
-                    this.apiService.stopPolling$.next();
-                    this.processSeriesTermFrequency(result['results'], series);
-                }
+        return new Promise((resolve, reject) => {
+            this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
+                this.tasksToCancel = response.task_ids;
+                const poller$ = this.apiService.pollTasks<TermFrequencyResult>(this.tasksToCancel);
+                poller$.subscribe({
+                    error: (error) => {
+                        this.onFailure(error);
+                        reject(error);
+                    },
+                    next: (result) => {
+                        this.apiService.stopPolling$.next();
+                        resolve(this.processSeriesTermFrequency(result['results'], series));
+                    }
+                });
             });
         });
     }
@@ -399,7 +404,13 @@ export abstract class BarchartDirective
 
     abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
 
-    abstract processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint>;
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint> {
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
+    };
 
 
     /** total document count for a data array */

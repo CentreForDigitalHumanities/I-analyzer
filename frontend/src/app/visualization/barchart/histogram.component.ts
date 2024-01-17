@@ -7,7 +7,8 @@ import { AggregateResult,
     HistogramDataPoint,
     TermFrequencyResult,
     MultipleChoiceFilterOptions,
-    RangeFilterOptions} from '../../models/index';
+    RangeFilterOptions,
+    BarchartSeries} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../../utils/select-color';
 
@@ -67,14 +68,6 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
             fieldValue: bin.key,
             size: this.documentLimitForCategory(bin, series)
         }));
-    }
-
-    processSeriesTermFrequency(results: TermFrequencyResult[], series: HistogramSeries) {
-        series.data = _.zip(series.data, results).map(pair => {
-            const [bin, res] = pair;
-            return this.addTermFrequencyToCategory(res, bin);
-        });
-        return series;
     }
 
     fullDataRequest() {
