@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { interval, Observable, Subject } from 'rxjs';
-import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
+import { filter, switchMap, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
     AggregateResult,
