@@ -10,7 +10,7 @@
                             <form (ngSubmit)="search()" *ngIf="corpus">
                                 <div class="field has-addons">
                                     <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
-                                        <button class="button" (click)="showQueryDocumentation()">
+                                        <button class="button" type="button" (click)="showQueryDocumentation()">
                                             <span class="icon">
                                                 <fa-icon [icon]="actionIcons.help" aria-label="help"></fa-icon>
                                             </span>
