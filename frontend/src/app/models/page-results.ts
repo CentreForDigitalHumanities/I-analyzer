@@ -5,7 +5,7 @@ import { SearchService } from '../services';
 import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';
-import { SortState, sortStateFromParams } from './sort';
+import { SortBy, SortDirection, SortState, sortStateFromParams } from './sort';
 import { ParamMap } from '@angular/router';
 
 export const RESULTS_PER_PAGE = 20;
@@ -45,7 +45,6 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         this.to$ = combineLatest([this.parameters$, this.result$]).pipe(
             map(this.highestDocumentIndex)
         );
-
     }
 
     get highlightDisabled(): boolean {
@@ -67,8 +66,22 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         );
     }
 
+    setSortBy(value: SortBy) {
+        this.setParameters({
+            sort: [value, 'desc']
+        });
+    }
+
+    setSortDirection(value: SortDirection) {
+        const [sortBy, _] = this.parameters$.value.sort;
+        this.setParameters({
+            sort: [sortBy, value]
+        });
+    }
+
     private highestDocumentIndex([parameters, result]: [PageResultsParameters, DocumentPage]): number {
         const limit = parameters.from + parameters.size;
         return Math.min(limit, result.total);
     }
+
 }
