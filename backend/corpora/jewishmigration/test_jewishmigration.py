@@ -182,7 +182,7 @@ def test_geofield(jm_client, jm_corpus):
           "coordinates": {
             "top_left": {
                 "lon": 41.0,
-                "lat": 5.0,
+                "lat": 5.0
             },
             "bottom_right": {
                 "lon": 43.0,
@@ -191,9 +191,10 @@ def test_geofield(jm_client, jm_corpus):
           }
         }
     }
+    # wait for the indexing operation to be finished
+    sleep(1)
     results = jm_client.search(index=jm_corpus.es_index, query=query)
-    # TO DO: this bounding box query should return a result but doesn't
-    assert results['hits']['total']['value'] == 0
+    assert results['hits']['total']['value'] == 1
 
 
 def test_data_from_request(jm_corpus, monkeypatch):
