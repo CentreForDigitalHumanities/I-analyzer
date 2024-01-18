@@ -1,7 +1,7 @@
 from datetime import datetime
-from langcodes import Language
 
 from django.conf import settings
+import langcodes
 import requests
 
 from addcorpus.corpus import JSONCorpusDefinition, FieldDefinition
@@ -12,12 +12,32 @@ from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
 
 def transform_language(language_array):
-    ''' transform the language to an iso code 
-    to do: include information about script?'''
-    if not len(language_array):
+    ''' transform the language to an iso code,
+    skip any languages which are not recognized by langcodes module
+    TODO: we may also express the script as part of the code'''
+    if not language_array:
         return None
-    lang = Language(language_array[0])
-    return lang.to_tag()
+    output = []
+    for lang in language_array:
+        try:
+            output.append(langcodes.find(lang).to_tag())
+        except:
+            continue
+    return output
+
+
+def transform_centuries(century_array):
+    ''' transform each item of the century array to integer
+    abort if values such as "unknown" appear in the array '''
+    if not century_array:
+        return None
+    output = []
+    for item in century_array:
+        try:
+            output.append(int(item))
+        except:
+            return None
+    return output
 
 class JewishMigration(PeacePortal, JSONCorpusDefinition):
     ''' Class for indexing Jewish Migration data '''
@@ -44,9 +64,10 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     
     def __init__(self):
         super().__init__()
+        self._id.extractor = extract.JSON(key='source')
         self.source_database.extractor = extract.JSON(key='source')
         self.language.extractor = extract.JSON(
-            key='languages', transform=lambda x: x[0] if len[x] else None)
+            key='languages')
         self.language_code.extractor = extract.JSON(
             key='languages', transform=transform_language)
         self.country.extractor = extract.JSON(key='area')
@@ -56,15 +77,16 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         self.sex.extractor = extract.JSON(key='sex_deceased')
         self.iconography.extractor = extract.JSON(key='symbol')
         self.comments.extractor = extract.JSON(key='comments')
-        self.transcription = extract.JSON(key='inscription')
-        self.transcription_english = extract.JSON(key='transcription')
+        self.transcription.extractor = extract.JSON(key='inscription')
+        self.transcription_english.extractor = extract.JSON(
+            key='transcription')
         extra_fields = [
             FieldDefinition(
                 name='script',
                 display_name='Script',
                 description='Which alphabet the source was written in',
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='script'),
+                extractor=extract.JSON(key='scripts'),
             ),
             FieldDefinition(
                 name='site_type',
@@ -88,11 +110,12 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 extractor=extract.JSON(key='period')
             ),
             FieldDefinition(
-                name='centuries',
-                display_name='Centuries',
-                description='Centuries in which the inscription was made',
-                es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='centuries')
+                name='estimated_centuries',
+                display_name='Estimated Centuries',
+                description='Estimate of centuries in which the inscription was made',
+                es_mapping=int_mapping(),
+                extractor=extract.JSON(
+                    key='estimated_centuries', transform=transform_centuries)
             ),
             FieldDefinition(
                 name='inscription_count',

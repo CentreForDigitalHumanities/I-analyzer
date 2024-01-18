@@ -292,7 +292,7 @@ class ParentCorpusDefinition(CorpusDefinition):
     def __init__(self):
         ''' Specify a list of fields which all subclasses share
             A subclass of ParentCorpusDefinition will provide extractors for the fields,
-            and potentially prune done the list of fields to those which have an extractor
+            and potentially prune down the list of fields to those which have an extractor
         '''
         self.fields = []
 
