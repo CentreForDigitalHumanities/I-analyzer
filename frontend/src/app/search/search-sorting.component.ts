@@ -25,17 +25,21 @@ export class SearchSortingComponent {
     constructor() {}
 
     get sortState(): SortState {
-        return this.pageResults.parameters$.value.sort;
+        return this.pageResults?.parameters$.value.sort;
     }
 
     get sortField(): CorpusField {
-        const sortBy = this.sortState[0];
-        return sortBy as CorpusField;
+        if (this.sortState) {
+            const sortBy = this.sortState[0];
+            return sortBy as CorpusField;
+        }
     }
 
     get ascending(): boolean {
-        const sortDirection = this.sortState[1];
-        return sortDirection === 'asc';
+        if (this.sortState) {
+            const sortDirection = this.sortState[1];
+            return sortDirection === 'asc';
+        }
     }
 
     public get sortType(): SortType {

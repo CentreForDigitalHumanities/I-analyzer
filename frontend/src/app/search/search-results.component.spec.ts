@@ -65,7 +65,7 @@ describe('Search Results Component', () => {
         const corpus = _.merge(mockCorpus, fields);
         const query = new QueryModel(corpus);
         query.setQueryText('wally');
-        query.setHighlight(10);
+        // query.setHighlight(10);
         component.queryModel = query;
         fixture.detectChanges();
         component.pageResults = new MockResults(undefined, component.queryModel);

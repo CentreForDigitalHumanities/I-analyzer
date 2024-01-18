@@ -1,7 +1,7 @@
 import { Params } from '@angular/router';
 import { Corpus, FoundDocument, QueryModel } from '../models';
 import { PageResultsParameters } from '../models/page-results';
-import { pageResultsParametersToParams } from './params';
+import { omitNullParameters, pageResultsParametersToParams } from './params';
 
 const documentContextQuery = (corpus: Corpus, document: FoundDocument): [QueryModel, PageResultsParameters] => {
     const queryModel = new QueryModel(corpus);
@@ -25,9 +25,10 @@ const documentContextQuery = (corpus: Corpus, document: FoundDocument): [QueryMo
 
 export const makeContextParams = (document: FoundDocument, corpus: Corpus): Params => {
     const [queryModel, pageResultsParams] = documentContextQuery(corpus, document);
-    return {
+    const params = {
         ...queryModel.toQueryParams(),
         ...pageResultsParametersToParams(pageResultsParams),
     };
+    return omitNullParameters(params);
 };
 

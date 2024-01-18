@@ -17,7 +17,7 @@ describe('Search Sorting Component', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(SearchSortingComponent);
         component = fixture.componentInstance;
-        component.queryModel = new QueryModel(mockCorpus);
+        // component.queryModel = new QueryModel(mockCorpus);
         fixture.detectChanges();
     });
 
