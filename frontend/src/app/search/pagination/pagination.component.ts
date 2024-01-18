@@ -12,7 +12,7 @@ export class PaginationComponent implements OnChanges {
     @Input() public fromIndex = 0;
 
     @Output()
-    public parameters = new EventEmitter<PageResultsParameters>();
+    public parameters = new EventEmitter<Partial<PageResultsParameters>>();
 
     public totalPages: number;
     public resultsPerPage = 20;

@@ -6,6 +6,7 @@ import {
     Corpus, QueryModel, SearchResults,
     AggregateQueryFeedback
 } from '../models/index';
+import { PageResults, PageResultsParameters } from '../models/page-results';
 
 
 @Injectable()
@@ -22,13 +23,11 @@ export class SearchService {
      */
     public async loadResults(
         queryModel: QueryModel,
-        from: number,
-        size: number
+        resultsParams: PageResultsParameters,
     ): Promise<SearchResults> {
         const results = await this.elasticSearchService.loadResults(
             queryModel,
-            from,
-            size
+            resultsParams,
         );
         return this.filterResultsFields(results, queryModel);
     }

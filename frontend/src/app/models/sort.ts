@@ -1,5 +1,5 @@
-import { ParamMap } from '@angular/router';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { ParamMap, Params } from '@angular/router';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { makeSortSpecification } from '../utils/es-query';
 import { sortSettingsToParams } from '../utils/params';
 import { Corpus, CorpusField } from './corpus';
@@ -9,11 +9,33 @@ import { findByName } from '../utils/utils';
 export type SortBy = CorpusField | undefined;
 export type SortDirection = 'asc'|'desc';
 
+export type SortState = [SortBy, SortDirection];
+
+export const sortStateFromParams = (corpus: Corpus, params?: Params): SortState => {
+    if (params && 'sort' in params) {
+        const [sortParam, ascParam] = params['sort'].split(',');
+
+        let sortBy: SortBy;
+
+        if ( sortParam === 'relevance' ) {
+            sortBy = undefined;
+        } else {
+            sortBy = findByName(corpus.fields, sortParam);
+        }
+
+        const sortDirection: SortDirection = ascParam;
+
+        return [sortBy, sortDirection];
+    } else {
+        return [undefined, 'desc'];
+    }
+};
+
 export class SortConfiguration {
     sortBy = new BehaviorSubject<SortBy>(undefined);
     sortDirection = new BehaviorSubject<SortDirection>('desc');
 
-    configuration$ = combineLatest([this.sortBy, this.sortDirection]);
+    configuration$: Observable<SortState> = combineLatest([this.sortBy, this.sortDirection]);
 
     private defaultSortBy: SortBy;
     private defaultSortDirection: SortDirection = 'desc';
@@ -24,6 +46,10 @@ export class SortConfiguration {
         if (params) {
             this.setFromParams(params);
         }
+    }
+
+    get state(): SortState {
+        return [this.sortBy.value, this.sortDirection.value];
     }
 
     /**
