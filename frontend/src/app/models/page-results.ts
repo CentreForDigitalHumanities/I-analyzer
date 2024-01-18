@@ -45,6 +45,11 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         this.to$ = combineLatest([this.parameters$, this.result$]).pipe(
             map(this.highestDocumentIndex)
         );
+
+    }
+
+    get highlightDisabled(): boolean {
+        return !this.query.queryText;
     }
 
     /** Parameters to re-assign when the query model is updated. */

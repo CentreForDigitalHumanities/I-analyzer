@@ -5,7 +5,7 @@
     <div class="column is-narrow">
         <div class="field has-addons">
             <div class="extended-selector">
-                <div *ngIf="highlight"  class="field has-addons">
+                <div *ngIf="highlight$ | async as highlight"  class="field has-addons">
                     <div class="control">
                         <button class="button is-light"
                             (click)="updateHighlightSize('more')"
@@ -25,10 +25,10 @@
                 </div>
             </div>
             <div class="control">
-                <button class="button highlight-toggle" [class.is-active]="highlight"
+                <button class="button highlight-toggle" [class.is-active]="highlight$ | async"
                     [disabled]="highlightDisabled"
                     (click)="updateHighlightSize(highlight ? 'off' : 'on')">
-                  {{ highlight ? 'ON' : 'OFF' }}
+                  {{ (highlight$ | async) ? 'ON' : 'OFF' }}
                 </button>
               </div>
         </div>
