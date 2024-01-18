@@ -1,11 +1,11 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
-import { Corpus, CorpusField, EsFilter, FilterInterface, SortBy, SortConfiguration, SortDirection, Tag, } from '../models/index';
+import { Corpus, CorpusField, EsFilter, FilterInterface, } from '../models/index';
 import { EsQuery } from '../models';
-import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
+import { combineSearchClauseAndFilters,  } from '../utils/es-query';
 import {
-    filtersFromParams, highlightFromParams, highlightToParams, omitNullParameters, queryFiltersToParams,
+    filtersFromParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
 import { isFieldFilter, SearchFilter } from './field-filter';
@@ -79,15 +79,12 @@ export class QueryModel {
 	queryText: string;
 	searchFields: CorpusField[];
     filters: FilterInterface[];
-    sort: SortConfiguration;
-    highlightSize: number;
 
 	update = new Subject<void>();
 
     constructor(corpus: Corpus, params?: ParamMap) {
 		this.corpus = corpus;
         this.filters = this.makeFilters();
-        this.sort = new SortConfiguration(this.corpus);
         if (params) {
             this.setFromParams(params);
         }
@@ -96,10 +93,6 @@ export class QueryModel {
 
     get activeFilters() {
         return this.filters.filter(f => f.active.value);
-    }
-
-    get highlightDisabled() {
-        return !this.queryText;
     }
 
     private get fieldFilters(): SearchFilter[] {
@@ -114,17 +107,6 @@ export class QueryModel {
     addFilter(filter: FilterInterface) {
         this.setFilter(filter);
 	}
-
-    setSortBy(value: SortBy) {
-        this.sort.setSortBy(value);
-        this.update.next();
-    }
-
-    setSortDirection(value: SortDirection) {
-        this.sort.setSortDirection(value);
-        this.update.next();
-    }
-
 
     removeFilter(filter: SearchFilter) {
         this.deactivateFiltersForField(filter.corpusField);
@@ -144,11 +126,6 @@ export class QueryModel {
         );
     }
 
-    setHighlight(size?: number) {
-        this.highlightSize = size || undefined;
-        this.update.next();
-    }
-
     /**
      * make a clone of the current query.
      */
@@ -166,16 +143,12 @@ export class QueryModel {
     toRouteParam(): {[param: string]: string|null} {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
-        const sortParams = this.sort.toRouteParam();
-        const highlightParams = highlightToParams(this);
         const filterParams = queryFiltersToParams(this);
 
         return {
             ...queryTextParams,
             ...searchFieldsParams,
             ...filterParams,
-            ...sortParams,
-            ...highlightParams,
         };
 	}
 
@@ -194,14 +167,7 @@ export class QueryModel {
         const filters = this.activeFilters
             .filter(isFieldFilter)
             .map(filter => filter.toEsFilter()) as EsFilter[];
-        const query = combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
-
-        const sort = this.sort.toEsQuerySort();
-        const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);
-
-        return {
-            ...query, ...sort, ...highlight,
-        };
+        return combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
     }
 
     toAPIQuery(): APIQuery {
@@ -226,8 +192,6 @@ export class QueryModel {
         this.searchFields = searchFieldsFromParams(params, this.corpus);
         filtersFromParams(params, this.corpus)
             .forEach(this.setFilter.bind(this));
-        this.sort = new SortConfiguration(this.corpus, params);
-        this.highlightSize = highlightFromParams(params);
     }
 
     private setFilter(newFilter: FilterInterface): void {

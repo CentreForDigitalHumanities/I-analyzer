@@ -46,7 +46,8 @@ export class DownloadComponent implements OnChanges {
         this.availableCsvFields = Object.values(this.corpus.fields).filter(
             (field) => field.downloadable
         );
-        const highlight = this.queryModel?.highlightSize;
+        // TODO: get highglight from page results
+        const highlight = undefined;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
         if (highlight !== undefined) {
             this.availableCsvFields.push({

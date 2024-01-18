@@ -31,76 +31,76 @@ export const sortStateFromParams = (corpus: Corpus, params?: Params): SortState 
     }
 };
 
-export class SortConfiguration {
-    sortBy = new BehaviorSubject<SortBy>(undefined);
-    sortDirection = new BehaviorSubject<SortDirection>('desc');
+// export class SortConfiguration {
+//     sortBy = new BehaviorSubject<SortBy>(undefined);
+//     sortDirection = new BehaviorSubject<SortDirection>('desc');
 
-    configuration$: Observable<SortState> = combineLatest([this.sortBy, this.sortDirection]);
+//     configuration$: Observable<SortState> = combineLatest([this.sortBy, this.sortDirection]);
 
-    private defaultSortBy: SortBy;
-    private defaultSortDirection: SortDirection = 'desc';
+//     private defaultSortBy: SortBy;
+//     private defaultSortDirection: SortDirection = 'desc';
 
-    constructor(private corpus: Corpus, params?: ParamMap) {
-        this.defaultSortBy = this.corpus.fields.find(field => field.primarySort);
-        this.sortBy.next(this.defaultSortBy);
-        if (params) {
-            this.setFromParams(params);
-        }
-    }
+//     constructor(private corpus: Corpus, params?: ParamMap) {
+//         this.defaultSortBy = this.corpus.fields.find(field => field.primarySort);
+//         this.sortBy.next(this.defaultSortBy);
+//         if (params) {
+//             this.setFromParams(params);
+//         }
+//     }
 
-    get state(): SortState {
-        return [this.sortBy.value, this.sortDirection.value];
-    }
+//     get state(): SortState {
+//         return [this.sortBy.value, this.sortDirection.value];
+//     }
 
-    /**
-     * Whether the current state is the default sorting state
-     */
-    get isDefault(): boolean {
-        return _.isEqual(this.sortBy.value, this.defaultSortBy) && this.sortDirection.value === this.defaultSortDirection;
-    }
+//     /**
+//      * Whether the current state is the default sorting state
+//      */
+//     get isDefault(): boolean {
+//         return _.isEqual(this.sortBy.value, this.defaultSortBy) && this.sortDirection.value === this.defaultSortDirection;
+//     }
 
-    setSortBy(value: SortBy) {
-        this.sortBy.next(value);
+//     setSortBy(value: SortBy) {
+//         this.sortBy.next(value);
 
-        // sorting by relevance is always descending
-        if (!value) {
-            this.sortDirection.next('desc');
-        }
-    }
+//         // sorting by relevance is always descending
+//         if (!value) {
+//             this.sortDirection.next('desc');
+//         }
+//     }
 
-    setSortDirection(value: SortDirection) {
-        this.sortDirection.next(value);
-    }
+//     setSortDirection(value: SortDirection) {
+//         this.sortDirection.next(value);
+//     }
 
-    reset() {
-        this.sortBy.next(this.defaultSortBy);
-        this.sortDirection.next(this.defaultSortDirection);
-    }
+//     reset() {
+//         this.sortBy.next(this.defaultSortBy);
+//         this.sortDirection.next(this.defaultSortDirection);
+//     }
 
-    toRouteParam(): {sort: string|null} {
-        if (this.isDefault) {
-            return {sort: null};
-        }
-        return sortSettingsToParams(this.sortBy.value, this.sortDirection.value);
-    }
+//     toRouteParam(): {sort: string|null} {
+//         if (this.isDefault) {
+//             return {sort: null};
+//         }
+//         return sortSettingsToParams(this.sortBy.value, this.sortDirection.value);
+//     }
 
-    /** convert this configuration to the 'sort' part of an elasticsearch query */
-    toEsQuerySort(): { sort?: any } {
-        return makeSortSpecification(this.sortBy.value, this.sortDirection.value);
-    }
+//     /** convert this configuration to the 'sort' part of an elasticsearch query */
+//     toEsQuerySort(): { sort?: any } {
+//         return makeSortSpecification(this.sortBy.value, this.sortDirection.value);
+//     }
 
-    private setFromParams(params: ParamMap) {
-        if (params.has('sort')) {
-            const [sortParam, ascParam] = params.get('sort').split(',');
-            if ( sortParam === 'relevance' ) {
-                this.sortBy.next(undefined);
-            } else {
-                const field = findByName(this.corpus.fields, sortParam);
-                this.sortBy.next(field);
-            }
-            this.setSortDirection(ascParam as 'asc'|'desc');
-        } else {
-            this.reset();
-        }
-    }
-}
+//     private setFromParams(params: ParamMap) {
+//         if (params.has('sort')) {
+//             const [sortParam, ascParam] = params.get('sort').split(',');
+//             if ( sortParam === 'relevance' ) {
+//                 this.sortBy.next(undefined);
+//             } else {
+//                 const field = findByName(this.corpus.fields, sortParam);
+//                 this.sortBy.next(field);
+//             }
+//             this.setSortDirection(ascParam as 'asc'|'desc');
+//         } else {
+//             this.reset();
+//         }
+//     }
+// }

@@ -25,20 +25,11 @@ export class SearchServiceMock {
 
     createQueryModel(
         corpus: Corpus,
-        queryText: string = '', fields: CorpusField[] | null = null, filters: SearchFilter[] = [],
-        sortField: CorpusField = null, sortAscending = false, highlight: number = null
-    ): QueryModel {
+        queryText: string = '', fields: CorpusField[] | null = null, filters: SearchFilter[] = []): QueryModel {
         const model = new QueryModel(corpus);
         model.setQueryText(queryText);
         model.searchFields = fields;
         filters.forEach(model.addFilter);
-
-        if (sortField) {
-            model.setSortBy(sortField);
-            model.setSortDirection(sortAscending ? 'asc' : 'desc');
-        }
-
-        model.highlightSize = highlight;
 
         return model;
     }

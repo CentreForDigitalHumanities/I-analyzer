@@ -1,8 +1,8 @@
-import { ParamMap } from '@angular/router';
+import { ParamMap, Params } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
-import { TagService } from '../services/tag.service';
 import { TagFilter } from '../models/tag-filter';
+import { PageResultsParameters } from '../models/page-results';
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
@@ -22,12 +22,12 @@ export const searchFieldsFromParams = (params: ParamMap, corpus: Corpus): Corpus
 
 // highlight
 
-export const highlightToParams = (queryModel: QueryModel): { highlight: string | null } => {
-    if (queryModel.highlightDisabled || !queryModel.highlightSize) {
+export const highlightToParams = (highlight?: number): { highlight: string | null } => {
+    if (_.isUndefined(highlight)) {
         return { highlight: null };
     }
 
-    return { highlight: queryModel.highlightSize.toString() };
+    return { highlight: highlight.toString() };
 };
 
 export const highlightFromParams = (params: ParamMap): number =>
@@ -85,4 +85,10 @@ export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) =
     return _.some( _.keys(currentParams), key =>
         newParams.get(key) !== currentParams[key]
     );
+};
+
+export const pageResultsParametersToParams = (state: PageResultsParameters): Params => {
+    const sort = sortSettingsToParams(...state.sort);
+    const highlight = highlightToParams(state.highlight);
+    return {...sort, ...highlight};
 };
