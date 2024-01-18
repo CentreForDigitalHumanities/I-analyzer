@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { actionIcons } from '../shared/icons';
 import { PageResults } from '../models/page-results';
 import { Observable } from 'rxjs';
+import * as _ from 'lodash';
 
 
 @Component({
@@ -23,10 +24,6 @@ export class HighlightSelectorComponent {
 
     get highlight(): number|undefined {
         return this.pageResults?.parameters$.value.highlight;
-    }
-
-    get highlightDisabled(): boolean {
-        return this.pageResults?.highlightDisabled;
     }
 
     updateHighlightSize(instruction?: string) {

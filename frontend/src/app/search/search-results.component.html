@@ -9,7 +9,7 @@
             -
             {{(pageResults.to$ | async)}}
         </h2>
-        <ia-highlight-selector *ngIf="!!queryModel.queryText" [pageResults]="pageResults"></ia-highlight-selector>
+        <ia-highlight-selector *ngIf="!pageResults.highlightDisabled" [pageResults]="pageResults"></ia-highlight-selector>
     </div>
 
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">

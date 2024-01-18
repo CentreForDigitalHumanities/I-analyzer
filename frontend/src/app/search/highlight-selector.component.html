@@ -9,14 +9,14 @@
                     <div class="control">
                         <button class="button is-light"
                             (click)="updateHighlightSize('more')"
-                            [disabled]="highlightDisabled || highlight>=800"
+                            [disabled]="highlight>=800"
                             iaBalloon="increase preview size"
                             aria-label="increase preview size">
                             <fa-icon [icon]="actionIcons.more" aria-hidden="true"></fa-icon>
                         </button>
                         <button class="button is-light"
                             (click)="updateHighlightSize('less')"
-                            [disabled]="highlightDisabled || highlight<=200"
+                            [disabled]="highlight<=200"
                             iaBalloon="decrease preview size"
                             aria-label="decrease preview size">
                             <fa-icon [icon]="actionIcons.less" aria-hidden="true"></fa-icon>
@@ -26,7 +26,6 @@
             </div>
             <div class="control">
                 <button class="button highlight-toggle" [class.is-active]="highlight$ | async"
-                    [disabled]="highlightDisabled"
                     (click)="updateHighlightSize(highlight ? 'off' : 'on')">
                   {{ (highlight$ | async) ? 'ON' : 'OFF' }}
                 </button>
