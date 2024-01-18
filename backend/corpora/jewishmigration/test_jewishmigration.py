@@ -178,7 +178,7 @@ def test_geofield(jm_client, jm_corpus):
     document = jm_client.get(index=jm_corpus.es_index, id=1)
     assert document['_source']['coordinates'] == geo_data
     query = {
-        "geo_bounding_box": { 
+        "geo_bounding_box": {
           "coordinates": {
             "top_left": {
                 "lon": 41.0,
