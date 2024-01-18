@@ -1,5 +1,5 @@
 import {
-    Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges
+    Component, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
 
 
@@ -37,6 +37,8 @@ const unitScale = (min: number, max: number): (frequency: number) => number => {
     styleUrls: ['./wordcloud.component.scss'],
 })
 export class WordcloudComponent implements OnChanges, OnDestroy {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     @Input() visualizedField: CorpusField;
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
@@ -45,7 +47,8 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     @Input() palette: string[];
 
     @Output() wordcloudError = new EventEmitter();
-    @Output() isLoading = new BehaviorSubject<boolean>(false);
+
+    isLoading$ = new BehaviorSubject<boolean>(false);
 
     tableHeaders: FreqTableHeaders = [
         { key: 'key', label: 'Term' },
@@ -58,6 +61,11 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     private batchSize = 1000;
 
     constructor(private visualizationService: VisualizationService) {}
+
+    @HostBinding('class.is-loading')
+    get isLoading() {
+        return this.isLoading$.value;
+    }
 
     get readyToLoad() {
         return (
@@ -88,7 +96,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
 
     loadData() {
         showLoading(
-            this.isLoading,
+            this.isLoading$,
             this.visualizationService
                 .getWordcloudData(
                     this.visualizedField.name,

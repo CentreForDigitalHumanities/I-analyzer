@@ -249,7 +249,7 @@ export class TimelineComponent
                 this.currentTimeCategory !== initialTimeCategory)
         ) {
             showLoading(
-                this.isLoading,
+                this.isLoading$,
                 this.loadZoomedInData(
                     chart,
                     min,

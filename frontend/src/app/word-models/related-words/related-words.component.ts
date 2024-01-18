@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
@@ -15,13 +15,16 @@ import { formIcons } from '../../shared/icons';
     styleUrls: ['./related-words.component.scss'],
 })
 export class RelatedWordsComponent extends ParamDirective implements OnChanges {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
     @Output() relatedWordsError = new EventEmitter();
-    @Output() isLoading = new BehaviorSubject<boolean>(false);
+
+    isLoading$ = new BehaviorSubject<boolean>(false);
 
     neighbours = 5;
 
@@ -42,6 +45,11 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
         super(route, router, paramService);
     }
 
+    @HostBinding('class.is-loading')
+    get isLoading() {
+        return this.isLoading$.value;
+    }
+
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus || changes.queryText) {
             this.getData();
@@ -58,7 +66,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
 
     getData(): void {
         this.setParams({ neighbours: this.neighbours });
-        showLoading(this.isLoading, this.getTotalData());
+        showLoading(this.isLoading$, this.getTotalData());
     }
 
     getTotalData(): Promise<void> {

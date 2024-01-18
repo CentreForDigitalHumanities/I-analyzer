@@ -23,7 +23,7 @@ import { visualizationIcons } from '../shared/icons';
 })
 export class VisualizationComponent
     extends ParamDirective
-    implements DoCheck, OnChanges
+    implements OnChanges
 {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
@@ -64,14 +64,11 @@ export class VisualizationComponent
     visualizationIcons = visualizationIcons;
 
     public visualExists = false;
-    public isLoading = false;
 
     public palette: string[];
     public params: Params = {};
 
     nullableParameters = ['visualize', 'visualizedField'];
-
-    private childComponentLoading = false;
 
     private reset$ = new Subject<void>();
     private destroy$ = new Subject<void>();
@@ -108,12 +105,6 @@ export class VisualizationComponent
     get imageFileName(): string {
         if (this.visualizationType && this.corpus && this.visualizedField) {
             return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
-        }
-    }
-
-    ngDoCheck() {
-        if (this.isLoading !== this.childComponentLoading) {
-            this.isLoading = this.childComponentLoading;
         }
     }
 
@@ -232,10 +223,6 @@ export class VisualizationComponent
         this.visualExists = false;
         this.foundNoVisualsMessage = this.noResults;
         this.errorMessage = message;
-    }
-
-    onIsLoading(event: boolean) {
-        this.childComponentLoading = event;
     }
 
     private includeVisualisationType(
