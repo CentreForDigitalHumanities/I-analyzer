@@ -6,7 +6,7 @@ import {
     Corpus, QueryModel, SearchResults,
     AggregateQueryFeedback
 } from '../models/index';
-import { PageResults, PageResultsParameters } from '../models/page-results';
+import { PageResultsParameters } from '../models/page-results';
 
 
 @Injectable()

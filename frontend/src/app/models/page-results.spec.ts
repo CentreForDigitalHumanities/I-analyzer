@@ -76,4 +76,5 @@ describe('PageResults', () => {
         expect(service.searched).toBe(1);
         service.searched = 0;
     });
+
 });

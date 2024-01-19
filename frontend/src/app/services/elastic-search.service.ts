@@ -9,7 +9,7 @@ import {
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
 import { APIQuery } from '../models/search-requests';
-import { PageResults, PageResultsParameters, RESULTS_PER_PAGE } from '../models/page-results';
+import { PageResultsParameters } from '../models/page-results';
 import { resultsParamsToAPIQuery } from '../utils/es-query';
 
 
@@ -89,12 +89,9 @@ export class ElasticSearchService {
      */
     public async loadResults(
         queryModel: QueryModel,
-        resultsParams: PageResultsParameters
+        params: PageResultsParameters,
     ): Promise<SearchResults> {
-        const body = {
-            ...queryModel.toAPIQuery(),
-            ...resultsParamsToAPIQuery(queryModel, resultsParams),
-        };
+        const body = resultsParamsToAPIQuery(queryModel, params);
 
         // Perform the search
         const response = await this.execute(queryModel.corpus, body);

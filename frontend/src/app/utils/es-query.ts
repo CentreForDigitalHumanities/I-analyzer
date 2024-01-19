@@ -11,6 +11,7 @@ import { SearchFilter } from '../models/field-filter';
 import { APIQuery } from '../models/search-requests';
 import { TagFilter } from '../models/tag-filter';
 import { PageResultsParameters } from '../models/page-results';
+import { DeepPartial } from 'chart.js/dist/types/utils';
 
 // conversion from query model -> elasticsearch query language
 
@@ -157,13 +158,20 @@ const esFilterToSearchFilter = (esFilter: EsFilter, corpus: Corpus): SearchFilte
     return filter;
 };
 
-export const resultsParamsToAPIQuery = (queryModel: QueryModel, params: PageResultsParameters): Partial<EsQuery> => {
+export const resultsParamsToAPIQuery = (queryModel: QueryModel, params: PageResultsParameters): APIQuery => {
+    const query = queryModel.toAPIQuery();
+
     const sort = makeSortSpecification(...params.sort);
     const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, params.highlight);
-    return {
-        ...sort,
-        ...highlight,
-        from: params.from,
-        size: params.size,
+    const addToQuery: DeepPartial<APIQuery> = {
+        es_query: {
+            ...sort,
+            ...highlight,
+            from: params.from,
+            size: params.size,
+        }
     };
+    _.merge(query, addToQuery);
+
+    return query;
 };
