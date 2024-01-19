@@ -66,6 +66,18 @@ describe('PageResults', () => {
         expect(results.parameters$.value.sort).toEqual([undefined, 'desc']);
     });
 
+    it('should reset the page when changing sorting', () => {
+        results.setParameters({from: 20});
+        expect(results.parameters$.value.from).toBe(20);
+
+        results.setSortBy(mockField);
+        expect(results.parameters$.value.from).toBe(0);
+
+        results.setParameters({from: 20});
+        results.setSortDirection('asc');
+        expect(results.parameters$.value.from).toBe(0);
+    });
+
     it('should not fetch results without an observer', () => {
         expect(service.searched).toBe(0);
     });

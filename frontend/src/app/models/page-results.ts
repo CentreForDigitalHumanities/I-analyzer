@@ -68,14 +68,16 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
 
     setSortBy(value: SortBy) {
         this.setParameters({
-            sort: [value, 'desc']
+            sort: [value, 'desc'],
+            from: 0,
         });
     }
 
     setSortDirection(value: SortDirection) {
         const [sortBy, _] = this.parameters$.value.sort;
         this.setParameters({
-            sort: [sortBy, value]
+            sort: [sortBy, value],
+            from: 0,
         });
     }
 
