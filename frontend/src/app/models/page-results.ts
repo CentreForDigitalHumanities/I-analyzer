@@ -53,9 +53,16 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
 
     /** Parameters to re-assign when the query model is updated. */
     assignOnQueryUpdate(): Partial<PageResultsParameters> {
-        return {
-            from: 0
-        };
+        if (this.highlightDisabled) {
+            return {
+                highlight: undefined,
+                from: 0
+            };
+        } else {
+            return {
+                from: 0
+            };
+        }
     }
 
     fetch(params: PageResultsParameters): Observable<DocumentPage> {

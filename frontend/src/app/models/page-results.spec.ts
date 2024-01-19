@@ -78,6 +78,18 @@ describe('PageResults', () => {
         expect(results.parameters$.value.from).toBe(0);
     });
 
+    it('should reset highlighting when there is no query text', () => {
+        queryModel.setQueryText('test');
+        results.setParameters({ highlight: 200 });
+        expect(results.parameters$.value.highlight).toBe(200);
+
+        queryModel.setQueryText('different test');
+        expect(results.parameters$.value.highlight).toBe(200);
+
+        queryModel.setQueryText('');
+        expect(results.parameters$.value.highlight).toBeUndefined();
+    });
+
     it('should not fetch results without an observer', () => {
         expect(service.searched).toBe(0);
     });
