@@ -8,7 +8,7 @@ const areDistinct = ([a, b]) => !_.isEqual(a, b);
 const mergeCurrentIntoPushing = ([current, pushing]) =>
     [current, _.extend(current, pushing)];
 
-export class QueryParamManager<State> {
+export class ModelParamManager<State> {
     constructor(
         /** signals when the model's state updates */
         private stateUpdate$: Observable<State>,
