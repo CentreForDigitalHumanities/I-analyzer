@@ -10,6 +10,7 @@ import { AuthService } from '../services/auth.service';
 import { paramsHaveChanged } from '../utils/params';
 import { filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
+import { ParamCoordinator } from '../services/param-coordinator';
 
 @Component({
     selector: 'ia-search',
@@ -69,7 +70,8 @@ export class SearchComponent extends ParamDirective {
         private dialogService: DialogService,
         paramService: ParamService,
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        private paramCoordinator: ParamCoordinator,
     ) {
         super(route, router, paramService);
     }
