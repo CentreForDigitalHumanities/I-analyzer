@@ -1,8 +1,9 @@
-import { ParamMap, Params } from '@angular/router';
+import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
+import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
 import { TagFilter } from '../models/tag-filter';
 import { PageResultsParameters } from '../models/page-results';
+import { findByName } from './utils';
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
@@ -30,12 +31,16 @@ export const highlightToParams = (highlight?: number): { highlight: string | nul
     return { highlight: highlight.toString() };
 };
 
-export const highlightFromParams = (params: ParamMap): number =>
-    Number(params.get('highlight'));
+export const highlightFromParams = (params: Params): number =>
+    Number(params['highlight']) || undefined;
 
 // sort
 
-export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): {sort: string|null} => {
+export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection, corpus: Corpus): {sort: string|null} => {
+    if (_.isEqual([sortBy, direction], corpus.defaultSort)) {
+        return { sort: null };
+    }
+
     let sortByName: string;
     if (!sortBy) {
         sortByName = 'relevance';
@@ -43,6 +48,25 @@ export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): 
         sortByName = sortBy.name;
     }
     return { sort: `${sortByName},${direction}` };
+};
+
+export const sortSettingsFromParams = (params: Params|undefined, corpus: Corpus): SortState => {
+    if (params && !params['sort']) {
+        return corpus.defaultSort;
+    } else {
+        const [sortParam, ascParam] = params['sort'].split(',');
+
+        let sortBy: SortBy;
+
+        if ( sortParam === 'relevance' ) {
+            sortBy = undefined;
+        } else {
+            sortBy = findByName(corpus.fields, sortParam);
+        }
+
+        const sortDirection: SortDirection = ascParam;
+        return [sortBy, sortDirection];
+    }
 };
 
 // filters
@@ -87,8 +111,13 @@ export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) =
     );
 };
 
-export const pageResultsParametersToParams = (state: PageResultsParameters): Params => {
-    const sort = sortSettingsToParams(...state.sort);
+export const pageResultsParametersToParams = (state: PageResultsParameters, corpus: Corpus): Params => {
+    const sort = sortSettingsToParams(...state.sort, corpus);
     const highlight = highlightToParams(state.highlight);
     return {...sort, ...highlight};
 };
+
+export const pageResultsParametersFromParams = (params: Params, corpus: Corpus): Partial<PageResultsParameters> => ({
+    sort: sortSettingsFromParams(params, corpus),
+    highlight: highlightFromParams(params),
+});

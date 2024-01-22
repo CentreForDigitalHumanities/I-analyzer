@@ -27,7 +27,7 @@ export const makeContextParams = (document: FoundDocument, corpus: Corpus): Para
     const [queryModel, pageResultsParams] = documentContextQuery(corpus, document);
     const params = {
         ...queryModel.toQueryParams(),
-        ...pageResultsParametersToParams(pageResultsParams),
+        ...pageResultsParametersToParams(pageResultsParams, corpus),
     };
     return omitNullParameters(params);
 };
