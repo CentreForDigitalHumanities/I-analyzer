@@ -16,6 +16,7 @@ export abstract class Stored<State extends object> {
     state$: BehaviorSubject<State>;
 
     private complete$ = new Subject<void>();
+    private isComplete = false;
 
     /** keys of the stored parameters that this model interacts with */
     protected abstract keysInStore: string[];
@@ -30,7 +31,10 @@ export abstract class Stored<State extends object> {
      * set the state of the model.
      */
     setParams(newValues: Partial<State>) {
-        // TODO: block attempts to set parameters after completion
+        if (this.isComplete) {
+            throw Error('attempted to set parameters on a model after completing it');
+        }
+
         const newState: State = {
             ...this.state$.value,
             ...newValues
@@ -52,6 +56,7 @@ export abstract class Stored<State extends object> {
      * It also resets the model's parameters in the store.
      */
     complete() {
+        this.isComplete = true;
         this.complete$.next();
         this.complete$.complete();
         this.state$.complete();
