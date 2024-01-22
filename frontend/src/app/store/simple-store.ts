@@ -10,4 +10,8 @@ import { Params } from '@angular/router';
 export class SimpleStore implements Store {
     paramUpdates$ = new BehaviorSubject<Params>({});
     params$ = this.paramUpdates$.pipe();
+
+    currentParams(): Params {
+        return this.paramUpdates$.value;
+    }
 };

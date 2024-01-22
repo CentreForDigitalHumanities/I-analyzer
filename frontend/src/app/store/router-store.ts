@@ -23,6 +23,10 @@ export class RouterStore implements Store {
         ).subscribe(this.navigate.bind(this));
     }
 
+    currentParams(): Params {
+        return this.router.routerState.snapshot.root.queryParams;
+    }
+
     private navigate(params: Params) {
         const route = this.router.routerState.root;
         this.router.navigate(
