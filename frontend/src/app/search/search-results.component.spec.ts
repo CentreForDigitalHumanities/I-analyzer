@@ -11,6 +11,7 @@ import { PageResults } from '../models/page-results';
 import { DocumentPage } from '../models/document-page';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+import { SimpleStore } from '../store/simple-store';
 
 const createField = (name: string): CorpusField => {
     const field = _.cloneDeep(mockField);
@@ -68,7 +69,8 @@ describe('Search Results Component', () => {
         // query.setHighlight(10);
         component.queryModel = query;
         fixture.detectChanges();
-        component.pageResults = new MockResults(undefined, component.queryModel);
+        const store = new SimpleStore();
+        component.pageResults = new MockResults(store, undefined, component.queryModel);
     });
 
 

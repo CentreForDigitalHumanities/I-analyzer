@@ -114,7 +114,7 @@ export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) =
 export const pageResultsParametersToParams = (state: PageResultsParameters, corpus: Corpus): Params => {
     const sort = sortSettingsToParams(...state.sort, corpus);
     const highlight = highlightToParams(state.highlight);
-    const from = state.from;
+    const from = state.from || null;
     return {...sort, ...highlight, from};
 };
 
