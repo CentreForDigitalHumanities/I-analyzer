@@ -25,7 +25,7 @@ export class SearchSortingComponent {
     constructor() {}
 
     get sortState(): SortState {
-        return this.pageResults?.parameters$.value.sort;
+        return this.pageResults?.state$.value.sort;
     }
 
     get sortField(): CorpusField {

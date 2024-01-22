@@ -23,6 +23,7 @@ import {
 } from '../models/index';
 import { PageResults, PageResultsParameters } from '../models/page-results';
 import { SearchService } from '../services';
+import { RouterStore } from '../store/router-store';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -65,12 +66,16 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
 
     private destroy$ = new Subject<void>();
 
-    constructor(private searchService: SearchService) {}
+    constructor(
+        private routerStore: RouterStore,
+        private searchService: SearchService,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
             this.pageResults?.complete();
             this.pageResults = new PageResults(
+                this.routerStore,
                 this.searchService,
                 this.queryModel
             );
@@ -95,7 +100,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     }
 
     setParameters(parameters: PageResultsParameters) {
-        this.pageResults?.setParameters(parameters);
+        this.pageResults?.setParams(parameters);
     }
 
     totalDisplayed(totalResults: number) {

@@ -5,6 +5,7 @@ import { QueryModel } from './query';
 import { mockCorpus, mockField } from '../../mock-data/corpus';
 import { SearchResults } from './search-results';
 import { FoundDocument } from './found-document';
+import { SimpleStore } from '../store/simple-store';
 
 class SearchServiceMock {
     searched = 0;
@@ -33,6 +34,7 @@ class SearchServiceMock {
 }
 
 describe('PageResults', () => {
+    let store: SimpleStore;
     let queryModel: QueryModel;
     let results: PageResults;
     let service: SearchServiceMock;
@@ -46,9 +48,10 @@ describe('PageResults', () => {
     });
 
     beforeEach(inject([SearchService], (searchService: SearchService) => {
+        store = new SimpleStore();
         queryModel = new QueryModel(mockCorpus);
         service = searchService as unknown as SearchServiceMock;
-        results = new PageResults(searchService, queryModel);
+        results = new PageResults(store, searchService, queryModel);
     }));
 
     it('should be created', () => {
@@ -57,37 +60,37 @@ describe('PageResults', () => {
 
     it('should set the sort state', () => {
         results.setSortBy(mockField);
-        expect(results.parameters$.value.sort).toEqual([mockField, 'desc']);
+        expect(results.state$.value.sort).toEqual([mockField, 'desc']);
 
         results.setSortDirection('asc');
-        expect(results.parameters$.value.sort).toEqual([mockField, 'asc']);
+        expect(results.state$.value.sort).toEqual([mockField, 'asc']);
 
         results.setSortBy(undefined);
-        expect(results.parameters$.value.sort).toEqual([undefined, 'desc']);
+        expect(results.state$.value.sort).toEqual([undefined, 'desc']);
     });
 
     it('should reset the page when changing sorting', () => {
-        results.setParameters({from: 20});
-        expect(results.parameters$.value.from).toBe(20);
+        results.setParams({from: 20});
+        expect(results.state$.value.from).toBe(20);
 
         results.setSortBy(mockField);
-        expect(results.parameters$.value.from).toBe(0);
+        expect(results.state$.value.from).toBe(0);
 
-        results.setParameters({from: 20});
+        results.setParams({from: 20});
         results.setSortDirection('asc');
-        expect(results.parameters$.value.from).toBe(0);
+        expect(results.state$.value.from).toBe(0);
     });
 
     it('should reset highlighting when there is no query text', () => {
         queryModel.setQueryText('test');
-        results.setParameters({ highlight: 200 });
-        expect(results.parameters$.value.highlight).toBe(200);
+        results.setParams({ highlight: 200 });
+        expect(results.state$.value.highlight).toBe(200);
 
         queryModel.setQueryText('different test');
-        expect(results.parameters$.value.highlight).toBe(200);
+        expect(results.state$.value.highlight).toBe(200);
 
         queryModel.setQueryText('');
-        expect(results.parameters$.value.highlight).toBeUndefined();
+        expect(results.state$.value.highlight).toBeUndefined();
     });
 
     it('should not fetch results without an observer', () => {

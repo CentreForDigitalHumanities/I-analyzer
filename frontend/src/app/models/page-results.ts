@@ -6,7 +6,9 @@ import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';
 import { SortBy, SortDirection, SortState, sortStateFromParams } from './sort';
-import { ParamMap } from '@angular/router';
+import { ParamMap, Params } from '@angular/router';
+import { Store } from '../store/types';
+import { pageResultsParametersFromParams, pageResultsParametersToParams } from '../utils/params';
 
 export const RESULTS_PER_PAGE = 20;
 
@@ -26,23 +28,22 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
     from$: Observable<number>;
     to$: Observable<number>;
 
+    size = RESULTS_PER_PAGE;
+
+    protected keysInStore = ['sort', 'highlight', 'from'];
+
     constructor(
+        store: Store,
         private searchService: SearchService,
         query: QueryModel,
-        params?: ParamMap
     ) {
-        super(query, {
-            sort: sortStateFromParams(query.corpus, params),
-            highlight: undefined,
-            from: 0,
-            size: RESULTS_PER_PAGE,
-        });
-        this.sort$ = this.parameters$.pipe(map(p => p.sort));
-        this.highlight$ = this.parameters$.pipe(map(p => p.highlight));
-        this.from$ = this.parameters$.pipe(
+        super(store, query);
+        this.sort$ = this.state$.pipe(map(p => p.sort));
+        this.highlight$ = this.state$.pipe(map(p => p.highlight));
+        this.from$ = this.state$.pipe(
             map(parameters => parameters.from + 1)
         );
-        this.to$ = combineLatest([this.parameters$, this.result$]).pipe(
+        this.to$ = combineLatest([this.state$, this.result$]).pipe(
             map(this.highestDocumentIndex)
         );
     }
@@ -74,18 +75,27 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
     }
 
     setSortBy(value: SortBy) {
-        this.setParameters({
+        this.setParams({
             sort: [value, 'desc'],
             from: 0,
         });
     }
 
     setSortDirection(value: SortDirection) {
-        const [sortBy, _] = this.parameters$.value.sort;
-        this.setParameters({
+        const [sortBy, _] = this.state$.value.sort;
+        this.setParams({
             sort: [sortBy, value],
             from: 0,
         });
+    }
+
+    protected stateToStore(state: PageResultsParameters): Params {
+        return pageResultsParametersToParams(state, this.query.corpus);
+    }
+
+    protected storeToState(params: Params): PageResultsParameters {
+        const stored = pageResultsParametersFromParams(params, this.query.corpus);
+        return {...stored } as PageResultsParameters;
     }
 
     private highestDocumentIndex([parameters, result]: [PageResultsParameters, DocumentPage]): number {

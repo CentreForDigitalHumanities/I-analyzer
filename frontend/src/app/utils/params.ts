@@ -114,10 +114,13 @@ export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) =
 export const pageResultsParametersToParams = (state: PageResultsParameters, corpus: Corpus): Params => {
     const sort = sortSettingsToParams(...state.sort, corpus);
     const highlight = highlightToParams(state.highlight);
-    return {...sort, ...highlight};
+    const from = state.from;
+    return {...sort, ...highlight, from};
 };
 
-export const pageResultsParametersFromParams = (params: Params, corpus: Corpus): Partial<PageResultsParameters> => ({
+export const pageResultsParametersFromParams = (params: Params, corpus: Corpus): PageResultsParameters => ({
     sort: sortSettingsFromParams(params, corpus),
     highlight: highlightFromParams(params),
+    from: params['from'] || 0,
+    size: 20,
 });

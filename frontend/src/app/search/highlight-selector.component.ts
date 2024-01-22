@@ -23,11 +23,11 @@ export class HighlightSelectorComponent {
     }
 
     get highlight(): number|undefined {
-        return this.pageResults?.parameters$.value.highlight;
+        return this.pageResults?.state$.value.highlight;
     }
 
     updateHighlightSize(instruction?: string) {
-        const currentValue = this.pageResults.parameters$.value.highlight || 200;
+        const currentValue = this.pageResults.state$.value.highlight || 200;
         let newValue: number|undefined;
         if (instruction === 'on') {
             newValue = 200;
@@ -38,7 +38,7 @@ export class HighlightSelectorComponent {
         } else if (instruction === 'off') {
             newValue = undefined;
         }
-        this.pageResults.setParameters({ highlight: newValue });
+        this.pageResults.setParams({ highlight: newValue });
     }
 
 }
