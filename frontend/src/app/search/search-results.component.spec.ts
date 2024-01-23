@@ -66,7 +66,6 @@ describe('Search Results Component', () => {
         const corpus = _.merge(mockCorpus, fields);
         const query = new QueryModel(corpus);
         query.setQueryText('wally');
-        // query.setHighlight(10);
         component.queryModel = query;
         fixture.detectChanges();
         const store = new SimpleStore();
@@ -97,6 +96,20 @@ describe('Search Results Component', () => {
         expect(docs.length).toBe(2);
 
         expect(element.nativeElement.innerHTML).toContain('Wally is here');
+    });
+
+    it('should only show the highlight selector with query text', async () => {
+        await fixture.whenStable();
+        fixture.detectChanges();
+        const element = fixture.debugElement;
+
+        const findHighlightSelector = () => element.query(By.css('ia-highlight-selector'));
+        expect(findHighlightSelector()).toBeTruthy();
+
+        component.queryModel.setQueryText(undefined);
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(findHighlightSelector()).toBeFalsy();
     });
 });
 
