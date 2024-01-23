@@ -166,24 +166,6 @@ describe('QueryModel', () => {
         expect(newQuery.activeFilters.length).toBe(1);
     });
 
-    // it('should reflect the highlight state in parameters', () => {
-    //     const highlightParam = () => _.get(query.toRouteParam(), 'highlight');
-
-    //     expect(highlightParam()).toBe(null);
-
-    //     query.setHighlight(200);
-    //     expect(highlightParam()).toBe(null);
-
-    //     query.setQueryText('test');
-    //     expect(highlightParam()).toBe('200');
-
-    //     query.setHighlight(400);
-    //     expect(highlightParam()).toBe('400');
-
-    //     query.setHighlight();
-    //     expect(highlightParam()).toBe(null);
-    // });
-
     it('should formulate a link', () => {
         query.setQueryText('test');
         filter.setToValue(someDate);
