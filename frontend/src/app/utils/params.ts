@@ -2,7 +2,7 @@ import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
 import { TagFilter } from '../models/tag-filter';
-import { PageResultsParameters } from '../models/page-results';
+import { PageParameters, PageResultsParameters, RESULTS_PER_PAGE } from '../models/page-results';
 import { findByName } from './utils';
 
 /** omit keys that mapp to null */
@@ -69,6 +69,34 @@ export const sortSettingsFromParams = (params: Params|undefined, corpus: Corpus)
     }
 };
 
+// pagination
+
+export const pageToParams = (state: PageParameters): Params => {
+    const page = 1 + _.floor(state.from / state.size);
+
+    if (page === 1) {
+        return {
+            page: null,
+        };
+    }
+
+    return {page};
+};
+
+export const pageFromParams = (params: Params|undefined): PageParameters => {
+    if (params && params['page']) {
+        const page = _.toInteger(params['page']);
+        const size = RESULTS_PER_PAGE;
+        const from = (page - 1) * size;
+        return {from, size};
+    } else {
+        return {
+            from: 0,
+            size: RESULTS_PER_PAGE,
+        };
+    }
+};
+
 // filters
 
 export const filtersFromParams = (params: ParamMap, corpus: Corpus): FilterInterface[] => {
@@ -103,6 +131,8 @@ export const queryFiltersToParams = (queryModel: QueryModel) => {
     );
 };
 
+// utilities
+
 export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) => {
     const currentParams = queryModel.toRouteParam();
 
@@ -111,16 +141,16 @@ export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) =
     );
 };
 
+
 export const pageResultsParametersToParams = (state: PageResultsParameters, corpus: Corpus): Params => {
     const sort = sortSettingsToParams(...state.sort, corpus);
     const highlight = highlightToParams(state.highlight);
-    const from = state.from || null;
-    return {...sort, ...highlight, from};
+    const page = pageToParams(state);
+    return {...sort, ...highlight, ...page};
 };
 
 export const pageResultsParametersFromParams = (params: Params, corpus: Corpus): PageResultsParameters => ({
     sort: sortSettingsFromParams(params, corpus),
     highlight: highlightFromParams(params),
-    from: params['from'] || 0,
-    size: 20,
+    ...pageFromParams(params)
 });

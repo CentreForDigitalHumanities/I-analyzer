@@ -1,11 +1,12 @@
 import { convertToParamMap } from '@angular/router';
 import {
-    highlightFromParams, omitNullParameters, paramsHaveChanged, searchFieldsFromParams,
+    highlightFromParams, omitNullParameters, pageFromParams, pageToParams, paramsHaveChanged, searchFieldsFromParams,
     sortSettingsFromParams, sortSettingsToParams
 } from './params';
 import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
 import { MultipleChoiceFilter, QueryModel, SortState } from '../models';
 import * as _ from 'lodash';
+import { PageParameters, PageResultsParameters } from '../models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
@@ -35,6 +36,8 @@ describe('sortSettingsFromParams', () => {
         const corpus = _.cloneDeep(mockCorpus);
         const empty = {};
 
+        expect(sortSettingsFromParams(empty, corpus)).toEqual([undefined, 'desc']);
+
         const field = corpus.fields[0];
         (corpus as any).defaultSort = [field, 'desc'];
         expect(sortSettingsFromParams(empty, corpus)).toEqual([field, 'desc']);
@@ -44,6 +47,30 @@ describe('sortSettingsFromParams', () => {
         const sort: SortState = [mockField, 'asc'];
         const params = sortSettingsToParams(...sort, mockCorpus);
         expect(sortSettingsFromParams(params, mockCorpus)).toEqual(sort);
+    });
+});
+
+describe('pageFromParams', () => {
+    it('should be the inverse of pageToParams', () => {
+        const state: PageParameters = {
+            from: 0,
+            size: 20,
+        };
+
+        expect(pageFromParams(pageToParams(state))).toEqual(state);
+
+        state.from = 40;
+        expect(pageFromParams(pageToParams(state))).toEqual(state);
+    });
+
+    it('should use blank parameters for the default state', () => {
+        const state: PageParameters = {
+            from: 0,
+            size: 20,
+        };
+
+        expect(pageToParams(state)).toEqual({ page: null });
+        expect(pageFromParams({})).toEqual(state);
     });
 });
 

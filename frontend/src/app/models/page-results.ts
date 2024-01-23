@@ -12,12 +12,15 @@ import { pageResultsParametersFromParams, pageResultsParametersToParams } from '
 
 export const RESULTS_PER_PAGE = 20;
 
-export interface PageResultsParameters {
-    sort: SortState;
-    highlight?: number;
+export interface PageParameters {
     from: number;
     size: number;
 }
+
+export type PageResultsParameters =  {
+    sort: SortState;
+    highlight?: number;
+} & PageParameters;
 
 const resultsToPage = (results: SearchResults): DocumentPage =>
     new DocumentPage(results.documents, results.total.value, results.fields);
@@ -30,7 +33,7 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
 
     size = RESULTS_PER_PAGE;
 
-    protected keysInStore = ['sort', 'highlight', 'from'];
+    protected keysInStore = ['sort', 'highlight', 'page'];
 
     constructor(
         store: Store,
