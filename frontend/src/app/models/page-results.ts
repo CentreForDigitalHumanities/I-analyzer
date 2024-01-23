@@ -5,8 +5,8 @@ import { SearchService } from '../services';
 import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';
-import { SortBy, SortDirection, SortState, sortStateFromParams } from './sort';
-import { ParamMap, Params } from '@angular/router';
+import { SortBy, SortDirection, SortState } from './sort';
+import { Params } from '@angular/router';
 import { Store } from '../store/types';
 import { pageResultsParametersFromParams, pageResultsParametersToParams } from '../utils/params';
 

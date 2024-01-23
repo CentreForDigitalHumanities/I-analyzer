@@ -87,7 +87,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
                         queryText: this.queryModel.queryText,
                         sort: this.pageResults.state$.value.sort,
                         highlight: this.pageResults.state$.value.highlight,
-                        resultsCount: result.total,
+                        resultsCount: result?.total,
                     });
                 });
         }
