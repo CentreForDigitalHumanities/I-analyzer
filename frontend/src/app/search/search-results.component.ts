@@ -80,6 +80,8 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
                 .subscribe((result) => {
                     this.searched.emit({
                         queryText: this.queryModel.queryText,
+                        sort: this.pageResults.state$.value.sort,
+                        highlight: this.pageResults.state$.value.highlight,
                         resultsCount: result.total,
                     });
                 });

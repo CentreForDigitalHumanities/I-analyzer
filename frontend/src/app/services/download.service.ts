@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { Corpus, CorpusField, DownloadOptions, QueryModel } from '../models/index';
+import { Corpus, CorpusField, DownloadOptions, QueryModel, SortState } from '../models/index';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -22,6 +22,7 @@ export class DownloadService {
         fields: CorpusField[],
         requestedResults: number,
         route: string,
+        sort: SortState,
         highlightFragmentSize: number,
         fileOptions: DownloadOptions
     ): Promise<string | void> {
@@ -64,6 +65,7 @@ export class DownloadService {
         fields:
         CorpusField[],
         route: string,
+        sort: SortState,
         highlightFragmentSize: number
     ) {
         const query = queryModel.toAPIQuery();

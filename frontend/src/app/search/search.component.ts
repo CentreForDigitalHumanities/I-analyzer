@@ -47,7 +47,7 @@ export class SearchComponent extends ParamDirective {
      */
     public queryText: string;
 
-    public resultsCount = 0;
+    resultOverview: ResultOverview;
 
     public filterFields: CorpusField[] = [];
 
@@ -115,7 +115,7 @@ export class SearchComponent extends ParamDirective {
     public onSearched(input: ResultOverview) {
         this.isSearching = false;
         this.hasSearched = true;
-        this.resultsCount = input.resultsCount;
+        this.resultOverview = input;
         this.hasLimitedResults =
             this.user.downloadLimit &&
             input.resultsCount > this.user.downloadLimit;

@@ -1,10 +1,9 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
-import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel } from '../models/index';
+import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel, ResultOverview } from '../models/index';
 import { actionIcons } from '../shared/icons';
-
-const highlightFragmentSize = 50;
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-download',
@@ -14,7 +13,7 @@ const highlightFragmentSize = 50;
 export class DownloadComponent implements OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
-    @Input() public resultsCount: number;
+    @Input() public resultOverview: ResultOverview;
     @Input() public hasLimitedResults: boolean;
     @Input() public downloadLimit: string;
     @Input() public route: string;
@@ -42,17 +41,18 @@ export class DownloadComponent implements OnChanges {
         private notificationService: NotificationService
     ) {}
 
+    get disableDownload(): boolean {
+        return !this.resultOverview || this.resultOverview.resultsCount === 0;
+    }
+
     ngOnChanges() {
-        this.availableCsvFields = Object.values(this.corpus.fields).filter(
-            (field) => field.downloadable
-        );
-        // TODO: get highglight from page results
-        const highlight = undefined;
+        this.availableCsvFields = _.filter(this.corpus.fields, 'downloadable');
+        const highlight = this.resultOverview?.highlight;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
         if (highlight !== undefined) {
             this.availableCsvFields.push({
                 name: 'context',
-                description: 'Query surrounded by 50 characters',
+                description: `Query surrounded by ${highlight} characters`,
                 displayName: 'Query in context',
                 displayType: 'text_content',
                 csvCore: true,
@@ -72,7 +72,7 @@ export class DownloadComponent implements OnChanges {
      * and an email is sent with download link from backend
      */
     public chooseDownloadMethod() {
-        if (this.resultsCount < this.resultsCutoff) {
+        if (this.resultOverview.resultsCount < this.resultsCutoff) {
             this.directDownload();
         } else {
             this.longDownload();
@@ -87,9 +87,10 @@ export class DownloadComponent implements OnChanges {
                 this.corpus,
                 this.queryModel,
                 this.getCsvFields(),
-                this.resultsCount,
+                this.resultOverview.resultsCount,
                 this.route,
-                highlightFragmentSize,
+                this.resultOverview.sort,
+                this.resultOverview.highlight,
                 options
             )
             .catch((error) => {
@@ -118,7 +119,8 @@ export class DownloadComponent implements OnChanges {
                 this.queryModel,
                 this.getCsvFields(),
                 this.route,
-                highlightFragmentSize
+                this.resultOverview.sort,
+                this.resultOverview.highlight,
             )
             .then((results) => {
                 this.notificationService.showMessage(
