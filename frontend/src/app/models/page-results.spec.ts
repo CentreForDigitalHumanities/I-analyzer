@@ -6,6 +6,7 @@ import { mockCorpus, mockField } from '../../mock-data/corpus';
 import { SearchResults } from './search-results';
 import { FoundDocument } from './found-document';
 import { SimpleStore } from '../store/simple-store';
+import { convertToParamMap } from '@angular/router';
 
 class SearchServiceMock {
     searched = 0;
@@ -56,6 +57,17 @@ describe('PageResults', () => {
 
     it('should be created', () => {
         expect(results).toBeTruthy();
+    });
+
+    it('should load from parameters', () => {
+        store.paramUpdates$.next({
+            query: 'test',
+            highlight: '200',
+        });
+        queryModel = new QueryModel(mockCorpus, convertToParamMap(store.currentParams()));
+        results = new PageResults(store, service as unknown as SearchService, queryModel);
+
+        expect(results.state$.value.highlight).toBe(200);
     });
 
     it('should set the sort state', () => {

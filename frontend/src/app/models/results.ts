@@ -30,6 +30,7 @@ export abstract class Results<Parameters extends object, Result> extends Stored<
     constructor(
         store: Store,
         public query: QueryModel,
+        protected keysInStore: string[],
     ) {
         super(store);
         this.connectToStore();
