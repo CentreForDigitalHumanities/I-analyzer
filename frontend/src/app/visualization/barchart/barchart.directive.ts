@@ -317,7 +317,7 @@ export abstract class BarchartDirective<
                     field.searchable && field.displayType === 'text_content'
             );
             const queryModelCopy = queryModel.clone();
-            queryModelCopy.searchFields = mainContentFields;
+            queryModelCopy.setParams({searchFields: mainContentFields});
             return queryModelCopy;
         }
     }
@@ -657,7 +657,7 @@ export abstract class BarchartDirective<
     /** return a copy of a query model with the query text set to the given value */
     setQueryText(query: QueryModel, queryText: string): QueryModel {
         const queryModelCopy = query.clone();
-        queryModelCopy.queryText = queryText;
+        queryModelCopy.setQueryText(queryText);
         return queryModelCopy;
     }
 

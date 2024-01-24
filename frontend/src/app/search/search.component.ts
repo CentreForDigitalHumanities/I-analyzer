@@ -7,9 +7,9 @@ import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models
 import { CorpusService, DialogService, ParamService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
-import { paramsHaveChanged } from '../utils/params';
 import { filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
+import { RouterStore } from '../store/router-store';
 
 @Component({
     selector: 'ia-search',
@@ -69,7 +69,8 @@ export class SearchComponent extends ParamDirective {
         private dialogService: DialogService,
         paramService: ParamService,
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        private store: RouterStore,
     ) {
         super(route, router, paramService);
     }
@@ -102,9 +103,6 @@ export class SearchComponent extends ParamDirective {
 
     setStateFromParams(params: ParamMap) {
         this.showVisualization = params.has('visualize') ? true : false;
-        if (paramsHaveChanged(this.queryModel, params)) {
-            this.setQueryModel(false);
-        }
     }
 
     /**
@@ -143,12 +141,8 @@ export class SearchComponent extends ParamDirective {
 
     private setQueryModel(reset: boolean) {
         const params = reset ? undefined : this.route.snapshot.queryParamMap;
-        const queryModel = new QueryModel(this.corpus, params);
+        const queryModel = new QueryModel(this.corpus, this.store);
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
-        this.queryModel.update.subscribe(() => {
-            this.queryText = this.queryModel.queryText;
-            this.setParams(this.queryModel.toRouteParam());
-        });
     }
 }

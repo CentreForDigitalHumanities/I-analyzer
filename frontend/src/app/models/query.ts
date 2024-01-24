@@ -1,11 +1,11 @@
-import { convertToParamMap, ParamMap } from '@angular/router';
+import { Params } from '@angular/router';
 import * as _ from 'lodash';
-import { Subject } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, FilterInterface, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters,  } from '../utils/es-query';
 import {
-    filtersFromParams, omitNullParameters, queryFiltersToParams,
+    omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
 import { isFieldFilter, SearchFilter } from './field-filter';
@@ -14,6 +14,8 @@ import { makeTagSpecification } from '../utils/api-query';
 import { APIQuery } from './search-requests';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
+import { Stored } from '../store/stored';
+import { debounceTime, map, takeUntil } from 'rxjs/operators';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -75,23 +77,34 @@ export interface SearchParameters {
     size: number;
 }
 
+interface QueryState {
+    queryText?: string;
+    searchFields?: CorpusField[];
+}
 
-export class QueryModel {
+
+export class QueryModel extends Stored<QueryState> {
     corpus: Corpus;
-	queryText: string;
-	searchFields: CorpusField[];
     filters: FilterInterface[];
 
-	update = new Subject<void>();
+	update = new Observable<void>();
 
-    constructor(corpus: Corpus, params?: ParamMap) {
-        const store = new SimpleStore();
+    protected keysInStore = ['query', 'fields'];
+
+    constructor(corpus: Corpus, store?: Store) {
+        super(store || new SimpleStore());
 		this.corpus = corpus;
-        this.filters = this.makeFilters(store);
-        if (params) {
-            this.setFromParams(params);
-        }
-        this.subscribeToFilterUpdates();
+        this.connectToStore();
+        this.filters = this.makeFilters(this.store);
+        this.update = this.collectUpdates$();
+    }
+
+    get queryText(): string {
+        return this.state$.value.queryText;
+    }
+
+    get searchFields(): CorpusField[] {
+        return this.state$.value.searchFields;
     }
 
     get activeFilters() {
@@ -103,8 +116,7 @@ export class QueryModel {
     }
 
 	setQueryText(text?: string) {
-		this.queryText = text || undefined;
-		this.update.next();
+        this.setParams({ queryText: text || undefined});
 	}
 
     addFilter(filter: FilterInterface) {
@@ -132,45 +144,33 @@ export class QueryModel {
     /**
      * make a clone of the current query.
      */
-	clone() {
-        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()));
+	clone(store?: Store) {
+        store = store || new SimpleStore();
+        store.paramUpdates$.next(this.toQueryParams());
+        return new QueryModel(this.corpus, store);
 	}
 
     /**
-     * convert the query to a parameter map
+     * convert the query to a a parameter map, for deep linking
      *
-     * All query-related params are explicity listed;
-     * empty parameters have value null.
-     *
+     * Unlike stateToStore(), this:
+     * - only includes explicited properties, it doesn't set null values
+     * - includes the parameters for filters
      */
-    toRouteParam(): {[param: string]: string|null} {
-        const queryTextParams =  { query: this.queryText || null };
-        const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
+    toQueryParams(): Params {
+        const queryParams = this.stateToStore(this.state$.value);
         const filterParams = queryFiltersToParams(this);
-
-        return {
-            ...queryTextParams,
-            ...searchFieldsParams,
-            ...filterParams,
-        };
-	}
-
-    /**
-     * convert the query to a a parameter map, only
-     * including properties that should actually be explicated
-     * in the route. Same as query.toRouteParam() but
-     * without null values.
-     */
-    toQueryParams(): {[param: string]: string} {
-        return omitNullParameters(this.toRouteParam());
+        const params = {...queryParams,...filterParams};
+        return omitNullParameters(params);
     }
 
     /** convert the query to an elasticsearch query */
 	toEsQuery(): EsQuery {
+        const state = this.state$.value;
         const filters = this.activeFilters
             .filter(isFieldFilter)
             .map(filter => filter.toEsFilter()) as EsFilter[];
-        return combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
+        return combineSearchClauseAndFilters(state.queryText, filters, state.searchFields);
     }
 
     toAPIQuery(): APIQuery {
@@ -183,18 +183,26 @@ export class QueryModel {
         };
     }
 
+    protected stateToStore(state: QueryState): Params {
+        const queryTextParams =  { query: state.queryText || null };
+        const searchFieldsParams = { fields: state.searchFields?.map(f => f.name).join(',') || null};
+
+        return {
+            ...queryTextParams,
+            ...searchFieldsParams,
+        };
+    }
+
+    protected storeToState(params: Params): QueryState {
+        const queryText = queryFromParams(params);
+        const searchFields = searchFieldsFromParams(params, this.corpus);
+        return { queryText, searchFields };
+    }
+
     private makeFilters(store: Store): FilterInterface[] {
         const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter(store));
         const tagFilter = new TagFilter(store);
         return [...fieldFilters, tagFilter];
-    }
-
-    /** set the query values from a parameter map */
-    private setFromParams(params: ParamMap) {
-        this.queryText = queryFromParams(params);
-        this.searchFields = searchFieldsFromParams(params, this.corpus);
-        filtersFromParams(params, this.corpus)
-            .forEach(this.setFilter.bind(this));
     }
 
     private setFilter(newFilter: FilterInterface): void {
@@ -207,9 +215,20 @@ export class QueryModel {
         currentFilter?.set(newFilter.currentData);
     }
 
-    private subscribeToFilterUpdates() {
-        this.filters.forEach(filter => {
-            filter.update.subscribe(() => this.update.next());
-        });
+    private collectUpdates$(): Observable<void> {
+        const internalUpdates = this.state$.pipe(
+            map(toVoid)
+        );
+        const filterUpdates = this.filters.map(filter => filter.update);
+
+        const allUpdates = combineLatest([internalUpdates, ...filterUpdates]);
+
+        return allUpdates.pipe(
+            takeUntil(this.complete$),
+            debounceTime(50),
+            map(toVoid),
+        );
     }
 }
+
+const toVoid = (): void => {};

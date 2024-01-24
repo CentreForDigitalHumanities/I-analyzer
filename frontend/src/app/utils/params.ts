@@ -12,12 +12,12 @@ export const omitNullParameters = (params: {[key: string]: any}): {[key: string]
     return _.omit(params, nullKeys);
 };
 
-export const queryFromParams = (params: ParamMap): string =>
-    params.get('query');
+export const queryFromParams = (params: Params): string =>
+    params['query'];
 
-export const searchFieldsFromParams = (params: ParamMap, corpus: Corpus): CorpusField[] => {
-    if (params.has('fields')) {
-        const fieldNames = params.get('fields').split(',');
+export const searchFieldsFromParams = (params: Params, corpus: Corpus): CorpusField[] => {
+    if (params['fields']) {
+        const fieldNames = params['fields'].split(',');
         return corpus.fields.filter(field => fieldNames.includes(field.name));
     }
 };
@@ -134,15 +134,6 @@ export const queryFiltersToParams = (queryModel: QueryModel) => {
 };
 
 // utilities
-
-export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) => {
-    const currentParams = queryModel.toRouteParam();
-
-    return _.some( _.keys(currentParams), key =>
-        newParams.get(key) !== currentParams[key]
-    );
-};
-
 
 export const pageResultsParametersToParams = (state: PageResultsParameters, corpus: Corpus): Params => {
     const sort = sortSettingsToParams(...state.sort, corpus);
