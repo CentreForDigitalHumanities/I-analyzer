@@ -117,7 +117,7 @@ export class ApiService {
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
         return this.http
-            .post<TaskSuccess>('/api/task_status', data)
+            .post<TaskSuccess>('/api/abort_tasks', data)
             .toPromise();
     }
 
@@ -125,12 +125,11 @@ export class ApiService {
         return response.status !== 'working';
     }
 
-    public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
-    public pollTasks<ExpectedResult>(ids: string[]): Observable<TasksOutcome<ExpectedResult>> {
+    public pollTasks<ExpectedResult>(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome<ExpectedResult>> {
         return interval(5000)
             .pipe(
-                takeUntil(this.stopPolling$),
+                takeUntil(stopPolling$),
                 switchMap((arg) =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),

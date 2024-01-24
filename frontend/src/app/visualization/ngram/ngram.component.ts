@@ -5,6 +5,7 @@ import { ApiService, NotificationService, ParamService, VisualizationService } f
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'ia-ngram',
@@ -24,6 +25,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     allDateFields: CorpusField[];
     dateField: CorpusField;
+
+    stopPolling$ = new Subject<void>();
 
     tableHeaders: FreqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true },
@@ -147,6 +150,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     initialize() {}
 
     teardown(): void {
+        this.stopPolling$.next();
         this.apiService.abortTasks({ task_ids: this.tasksToCancel });
     }
 
@@ -207,7 +211,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                 this.currentParameters).then(
                     response => {
                         this.tasksToCancel = response.task_ids;
-                        const poller$ = this.apiService.pollTasks<NgramResults>(this.tasksToCancel);
+                        const poller$ = this.apiService.pollTasks<NgramResults>(this.tasksToCancel, this.stopPolling$);
                         poller$.subscribe({
                             error: (error) => this.onFailure(error),
                             next: (result) => this.onDataLoaded(result['results'])
@@ -217,7 +221,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     onFailure(error: {message: string}) {
-        this.apiService.stopPolling$.next(true);
+        this.stopPolling$.next();
         console.error(error);
         this.currentResults = undefined;
         this.ngramError.emit(error.message);
@@ -225,7 +229,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     onDataLoaded(result: NgramResults) {
-        this.apiService.stopPolling$.next();
+        this.stopPolling$.next();
         this.currentResults = result[0];
         this.tableData = this.makeTableData(result[0]);
 
@@ -272,7 +276,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         }
 
         this.parametersChanged = true;
-        this.apiService.stopPolling$.next(true);
+        this.stopPolling$.next();
+        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
         this.isLoading.emit(false);
     }
 
