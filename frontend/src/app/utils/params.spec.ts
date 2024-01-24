@@ -119,7 +119,7 @@ describe('paramsHaveChanged', () => {
     it('should detect new filters', () => {
         const filter = mockField.makeSearchFilter() as MultipleChoiceFilter;
         filter.set(['test']);
-        const params = convertToParamMap(filter.toRouteParam());
+        const params = convertToParamMap(filter.stateToStore(filter.state$.value));
 
         expect(paramsHaveChanged(queryModel, params)).toBeTrue();
     });

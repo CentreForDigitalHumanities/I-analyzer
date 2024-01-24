@@ -7,11 +7,14 @@ import {
     RangeFilterOptions
 } from './field-filter-options';
 import { BaseFilter, FilterInterface } from './base-filter';
+import { Store } from '../store/types';
 
 
-abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FieldFilterOptions, FilterData> {
-    constructor(public corpusField: CorpusField) {
-        super(corpusField.filterOptions);
+abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter>
+    extends BaseFilter<FieldFilterOptions, FilterData> {
+
+    constructor(store: Store, public corpusField: CorpusField) {
+        super(store, corpusField.name, corpusField.filterOptions);
     }
 
     get filterType() {
@@ -35,10 +38,6 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
         }
     }
 
-    get routeParamName() {
-        return this.corpusField.name;
-    }
-
     /**
      * filter for one specific value (used to find documents from
      * the same day, page, publication, etc. as a specific document)
@@ -53,7 +52,7 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
      * returns undefined if the filter is inactive
      */
     toEsFilter(): EsFilterType {
-        if (this.active.value) {
+        if (this.state$.value.active) {
             return this.dataToEsFilter();
         }
     }

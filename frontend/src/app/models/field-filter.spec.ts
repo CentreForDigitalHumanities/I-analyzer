@@ -4,6 +4,8 @@ import { EsDateFilter, EsTermsFilter } from './elasticsearch';
 import { DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
 import { of } from 'rxjs';
 import { distinct } from 'rxjs/operators';
+import { SimpleStore } from '../store/simple-store';
+import { Store } from '../store/types';
 
 describe('SearchFilter', () => {
     // while these tests are ran on the DateFilter,
@@ -11,15 +13,17 @@ describe('SearchFilter', () => {
     // SearchFilter class
 
     const field = mockFieldDate;
+    let store: Store;
     let filter: DateFilter;
     const exampleData: DateFilterData = {
         min: new Date(Date.parse('Jan 01 1850')),
         max: new Date(Date.parse('Dec 31 1860'))
     };
-    const isActive = () => filter.active.value;
+    const isActive = () => filter.state$.value.active;
 
     beforeEach(() => {
-        filter = new DateFilter(field);
+        store = new SimpleStore();
+        filter = new DateFilter(store, field);
     });
 
     it('should toggle', () => {
@@ -71,17 +75,17 @@ describe('SearchFilter', () => {
     });
 
     it('should set from parameters', () => {
-        filter.setFromParams(convertToParamMap({
+        store.paramUpdates$.next({
             date: '1850-01-01:1860-01-01'
-        }));
+        });
 
-        expect(filter.active.value).toBeTrue();
+        expect(isActive()).toBeTrue();
 
-        filter.setFromParams(convertToParamMap({
-            query: 'test'
-        }));
+        store.paramUpdates$.next({
+            date: null,
+        });
 
-        expect(filter.active.value).toBeFalse();
+        expect(isActive()).toBeFalse();
     });
 
     it('should signal updates', () => {
@@ -109,7 +113,8 @@ describe('DateFilter', () => {
     };
 
     beforeEach(() => {
-        filter = new DateFilter(field);
+        const store = new SimpleStore();
+        filter = new DateFilter(store, field);
     });
 
     it('should create', () => {
@@ -163,7 +168,8 @@ describe('MultipleChoiceFilter', () => {
     const exampleData = ['test'];
 
     beforeEach(() => {
-        filter = new MultipleChoiceFilter(field);
+        const store = new SimpleStore();
+        filter = new MultipleChoiceFilter(store, field);
     });
 
     it('should create', () => {

@@ -12,6 +12,8 @@ import { isFieldFilter, SearchFilter } from './field-filter';
 import { isTagFilter, TagFilter } from './tag-filter';
 import { makeTagSpecification } from '../utils/api-query';
 import { APIQuery } from './search-requests';
+import { Store } from '../store/types';
+import { SimpleStore } from '../store/simple-store';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -83,8 +85,9 @@ export class QueryModel {
 	update = new Subject<void>();
 
     constructor(corpus: Corpus, params?: ParamMap) {
+        const store = new SimpleStore();
 		this.corpus = corpus;
-        this.filters = this.makeFilters();
+        this.filters = this.makeFilters(store);
         if (params) {
             this.setFromParams(params);
         }
@@ -92,7 +95,7 @@ export class QueryModel {
     }
 
     get activeFilters() {
-        return this.filters.filter(f => f.active.value);
+        return this.filters.filter(f => f.state$.value.active);
     }
 
     private get fieldFilters(): SearchFilter[] {
@@ -180,9 +183,9 @@ export class QueryModel {
         };
     }
 
-    private makeFilters(): FilterInterface[] {
-        const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter());
-        const tagFilter = new TagFilter();
+    private makeFilters(store: Store): FilterInterface[] {
+        const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter(store));
+        const tagFilter = new TagFilter(store);
         return [...fieldFilters, tagFilter];
     }
 

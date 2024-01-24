@@ -1,15 +1,21 @@
-import { ParamMap } from '@angular/router';
+import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map, pairwise } from 'rxjs/operators';
+import { Stored } from '../store/stored';
+import { Store } from '../store/types';
+
+export interface FilterState<FilterData> {
+    active: boolean;
+    data: FilterData;
+}
 
 /**
  * Describes shared attributes and properties for filters.
  */
 export interface FilterInterface<FilterData = any> {
-    update: Subject<void>;
-    active: BehaviorSubject<boolean>;
-    data: BehaviorSubject<FilterData>;
+    state$: BehaviorSubject<FilterState<FilterData>>;
+    update: Observable<void>;
     displayName: string;
     description: string;
     filterType: string;
@@ -20,41 +26,28 @@ export interface FilterInterface<FilterData = any> {
     activate: () => void;
     deactivate: () => void;
     toggle: () => void;
-    setFromParams: (params: ParamMap) => void;
-    toRouteParam: () => Record<string, any>;
+    storeToState: (params: Params) => FilterState<FilterData>;
+    stateToStore: (state: FilterState<FilterData>) => Record<string, any>;
     dataToString: (data: FilterData) => string;
 }
+
 
 /**
  * Abstract filter class
  *
  * Implements much of the logic to handle activity state.
  */
-export abstract class BaseFilter<InitialParameters, FilterData> implements FilterInterface<FilterData> {
+export abstract class BaseFilter<InitialParameters, FilterData>
+    extends Stored<FilterState<FilterData>>
+    implements FilterInterface<FilterData> {
     /**
-     * a subject that signals meaningful state updates on the filter
+     * an observable that signals meaningful state updates on the filter
      *
      * meaningful updates are ones that affect the truth condition of the filter;
      * this includes setting the filter active/inactive, or changes to the data
      * while the filter is active.
      */
-    update = new Subject<void>();
-
-    /**
-     * whether the filter is "active" - that is, its current state should impose
-     * a condition on any query it is used in.
-     *
-     * note: use `activate`/`deactivate`/`toggle` functions rather than updating this
-     * subject directly.
-     */
-    active: BehaviorSubject<boolean>;
-
-    /**
-     * the data that represents the filter selection. An implementation of a filter
-     * class should define the format of this data, and its conversion to a predicate
-     * in the query language.
-     */
-    data: BehaviorSubject<FilterData>;
+    update = new Observable<void>();
 
     /**
      * the default state of `data`, which should be interpreted as "no selection".
@@ -62,6 +55,9 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
      * if the filter data is set to this vaule, the filter will be set to "inactive".
      */
     defaultData: FilterData;
+
+    protected keysInStore: string[];
+
 
     /** user-friendly name */
     abstract displayName: string;
@@ -75,22 +71,21 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
      */
     abstract filterType: string;
 
-    /**
-     * the key of this filter in the query parameters of the route.
-     *
-     * e.g., setting this to `foo` means the filter will look for a
-     * parameter like `foo=bar` to read its state from a parameter map.
-     */
-    abstract routeParamName: string;
-
-    constructor(parameters: InitialParameters) {
+    constructor(store: Store, private keyInStore: string, parameters: InitialParameters) {
+        super(store);
+        this.keysInStore = [keyInStore];
         this.defaultData = this.makeDefaultData(parameters);
-        this.data = new BehaviorSubject<FilterData>(this.defaultData);
-        this.active = new BehaviorSubject<boolean>(false);
+        this.connectToStore();
+
+        this.update = this.state$.pipe(
+            pairwise(),
+            filter(this.meaningfulChange),
+            map(data => {})
+        );
     }
 
     get currentData(): FilterData {
-        return this.data?.value;
+        return this.state$.value.data;
     }
 
     /**
@@ -100,8 +95,8 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
      * indicates whether the filter is resettable.
      */
     get isDefault$(): Observable<boolean> {
-        return this.data.asObservable().pipe(
-            map(data => this.isDefault(data))
+        return this.state$.pipe(
+            map(state => this.isDefault(state.data))
         );
     }
 
@@ -113,19 +108,18 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
      */
     set(data: FilterData) {
         if (!_.isEqual(data, this.currentData)) {
-            this.data.next(data);
-
-            const active = this.active.value;
             const toDefault = this.isDefault(data);
-            const deactivate = active && toDefault;
-            const activate = !active;
 
-            if (activate) {
-                this.activate();
-            } else if (deactivate) {
-                this.deactivate();
-            } else if (active) {
-                this.update.next();
+            if (toDefault) {
+                this.setParams({
+                    active: false,
+                    data
+                });
+            } else {
+                this.setParams({
+                    active: true,
+                    data,
+                });
             }
         }
     }
@@ -141,26 +135,24 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
      * This only has an effect if the filter's state has non-default data.
      */
     activate() {
-        if (!this.active.value) {
+        if (!this.state$.value.active) {
             // ignore attempts to activate with default data
-            if (!this.isDefault(this.data.value)) {
-                this.active.next(true);
-                this.update.next();
+            if (!this.isDefault(this.state$.value.data)) {
+                this.setParams({active: true});
             }
         }
     }
 
     /** deactivate the filter; unlike `reset`, this does not reset the data. */
     deactivate() {
-        if (this.active.value) {
-            this.active.next(false);
-            this.update.next();
+        if (this.state$.value.active) {
+            this.setParams({active: false});
         }
     }
 
     /** activate/deactivate the filter */
     toggle() {
-        if (this.active.value) {
+        if (this.state$.value.active) {
             this.deactivate();
         } else {
             this.activate();
@@ -168,25 +160,36 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
     }
 
     /** set value based on route parameters */
-    setFromParams(params: ParamMap): void {
-        const value = params.get(this.routeParamName);
+    storeToState(params: Params): FilterState<FilterData> {
+        const value = params[this.keyInStore];
+        const currentData: FilterData = this.state$?.value.data || this.defaultData;
         if (value) {
-            this.set(this.dataFromString(value));
+            return {
+                active: true,
+                data: this.dataFromString(value)
+            };
         } else {
-            this.reset();
+            return {
+                active: false,
+                data: currentData,
+            };
         }
     }
 
     /** represent the filter state in a route parameter map */
-    toRouteParam(): { [param: string]: any } {
-        const value = this.active.value ? this.dataToString(this.currentData) : undefined;
+    stateToStore(state: FilterState<FilterData>): Params {
+        const value = state.active ? this.dataToString(state.data) : undefined;
         return {
-            [this.routeParamName]: value || null
+            [this.keyInStore]: value || null
         };
     }
 
     private isDefault(data: FilterData): boolean {
         return _.isEqual(data, this.defaultData);
+    }
+
+    private meaningfulChange([previous, current]: [FilterState<FilterData>, FilterState<FilterData>]): boolean {
+        return previous.active || current.active;
     }
 
     /** construct the default data object based on constructor parameters */
