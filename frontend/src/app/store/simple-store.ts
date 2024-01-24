@@ -1,6 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
 import { Store } from './types';
 import { Params } from '@angular/router';
+import * as _ from 'lodash';
+import { scan } from 'rxjs/operators';
 
 /** simple store that does not depend on services or routing
  *
@@ -9,9 +11,21 @@ import { Params } from '@angular/router';
  */
 export class SimpleStore implements Store {
     paramUpdates$ = new BehaviorSubject<Params>({});
-    params$ = this.paramUpdates$.pipe();
+    params$ = new BehaviorSubject<Params>({});
+
+    constructor() {
+        this.paramUpdates$.pipe(
+            scan(this.merge)
+        ).subscribe(params =>
+            this.params$.next(params)
+        );
+    }
 
     currentParams(): Params {
-        return this.paramUpdates$.value;
+        return this.params$.value;
+    }
+
+    private merge(current: Params, next: Params): Params {
+        return  _.assign(_.clone(current), next);
     }
 };
