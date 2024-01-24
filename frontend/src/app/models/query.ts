@@ -15,7 +15,8 @@ import { APIQuery } from './search-requests';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
 import { Stored } from '../store/stored';
-import { debounceTime, map, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinct, distinctUntilChanged, map, skip, takeUntil, tap } from 'rxjs/operators';
+import { to } from '../utils/utils';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -87,7 +88,7 @@ export class QueryModel extends Stored<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
 
-	update = new Observable<void>();
+	update: Observable<void>;
 
     protected keysInStore = ['query', 'fields'];
 
@@ -143,6 +144,9 @@ export class QueryModel extends Stored<QueryState> {
 
     /**
      * make a clone of the current query.
+     *
+     * optionally provide a store for the new model's state; if none is provided,
+     * a new SimpleStore will be created
      */
 	clone(store?: Store) {
         store = store || new SimpleStore();
@@ -216,19 +220,16 @@ export class QueryModel extends Stored<QueryState> {
     }
 
     private collectUpdates$(): Observable<void> {
-        const internalUpdates = this.state$.pipe(
-            map(toVoid)
-        );
-        const filterUpdates = this.filters.map(filter => filter.update);
+        const keys = _.flatten([
+            this.keysInStore,
+            this.filters.map(filter => filter.keyInStore)
+        ]);
 
-        const allUpdates = combineLatest([internalUpdates, ...filterUpdates]);
-
-        return allUpdates.pipe(
+        return this.store.params$.pipe(
             takeUntil(this.complete$),
-            debounceTime(50),
-            map(toVoid),
+            distinctUntilChanged(_.isEqual, params => _.pick(params, keys)),
+            skip(1),
+            map(to()),
         );
     }
 }
-
-const toVoid = (): void => {};

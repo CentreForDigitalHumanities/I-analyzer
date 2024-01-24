@@ -5,6 +5,7 @@ import { SearchFilter } from './field-filter';
 import * as _ from 'lodash';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
+import { fakeAsync, flush } from '@angular/core/testing';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -52,6 +53,8 @@ describe('QueryModel', () => {
         let updates = 0;
         query.update.subscribe(() => updates += 1);
 
+        expect(updates).toBe(0);
+
         query.setQueryText('test');
         expect(updates).toBe(1);
 
@@ -60,6 +63,16 @@ describe('QueryModel', () => {
 
         filter.deactivate();
         expect(updates).toBe(3);
+    });
+
+    it('should not signal irrelevant updates', () => {
+        let updates = 0;
+        query.update.subscribe(() => updates += 1);
+
+        expect(updates).toBe(0);
+
+        store.paramUpdates$.next({page: '3'});
+        expect(updates).toBe(0);
     });
 
     it('should remove filters', () => {

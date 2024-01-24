@@ -28,3 +28,9 @@ export const showLoading =<T>(isLoading: BehaviorSubject<boolean>, promise: Prom
         return result;
     });
 };
+
+/**
+ * returns a function that always returns `value`
+ */
+export const to = (value?: any) =>
+    () => value;
