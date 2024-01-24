@@ -2,6 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel } from '../models/index';
+import { actionIcons } from '../shared/icons';
 
 const highlightFragmentSize = 50;
 
@@ -26,6 +27,8 @@ export class DownloadComponent implements OnChanges {
     public isModalActiveError = false;
 
     public pendingDownload: PendingDownload;
+
+    actionIcons = actionIcons;
 
     private resultsCutoff = 1000;
 

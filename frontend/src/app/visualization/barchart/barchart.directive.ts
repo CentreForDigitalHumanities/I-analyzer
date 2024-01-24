@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Directive, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, Host, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -30,6 +30,8 @@ const barchartID = 'barchart';
 export abstract class BarchartDirective<
     DataPoint extends TimelineDataPoint | HistogramDataPoint
 > implements OnChanges, OnInit, OnDestroy {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     public showHint: boolean;
 
     // rawData: a list of series
@@ -77,7 +79,8 @@ export abstract class BarchartDirective<
         },
     };
 
-    @Output() isLoading = new BehaviorSubject<boolean>(false);
+    isLoading$ = new BehaviorSubject<boolean>(false);
+
     // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() error = new EventEmitter();
 
@@ -146,6 +149,11 @@ export abstract class BarchartDirective<
         chartDefault.elements.bar.hoverBackgroundColor = selectColor();
         chartDefault.plugins.tooltip.displayColors = false;
         chartDefault.plugins.tooltip.intersect = false;
+    }
+
+    @HostBinding('class.is-loading')
+    get isLoading() {
+        return this.isLoading$.value;
     }
 
     ngOnInit(): void {
@@ -250,7 +258,7 @@ export abstract class BarchartDirective<
      * This function should be called after (potential) changes to parameters.
      */
     prepareChart() {
-        showLoading(this.isLoading, this.loadData());
+        showLoading(this.isLoading$, this.loadData());
     }
 
     /** load data for the graph (if needed), update the graph and freqtable. */

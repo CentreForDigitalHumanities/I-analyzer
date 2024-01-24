@@ -7,15 +7,14 @@ import {
 } from '@angular/core';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services';
 import { findByName } from '../utils/utils';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-visualization',
@@ -24,7 +23,7 @@ import { findByName } from '../utils/utils';
 })
 export class VisualizationComponent
     extends ParamDirective
-    implements DoCheck, OnChanges
+    implements OnChanges
 {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
@@ -62,17 +61,14 @@ export class VisualizationComponent
         termfrequency: 'termfrequency',
     };
 
+    visualizationIcons = visualizationIcons;
+
     public visualExists = false;
-    public isLoading = false;
 
     public palette: string[];
     public params: Params = {};
 
-    public faQuestion = faCircleQuestion;
-
-    public nullableParameters = ['visualize', 'visualizedField'];
-
-    private childComponentLoading = false;
+    nullableParameters = ['visualize', 'visualizedField'];
 
     private reset$ = new Subject<void>();
     private destroy$ = new Subject<void>();
@@ -109,12 +105,6 @@ export class VisualizationComponent
     get imageFileName(): string {
         if (this.visualizationType && this.corpus && this.visualizedField) {
             return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
-        }
-    }
-
-    ngDoCheck() {
-        if (this.isLoading !== this.childComponentLoading) {
-            this.isLoading = this.childComponentLoading;
         }
     }
 
@@ -233,10 +223,6 @@ export class VisualizationComponent
         this.visualExists = false;
         this.foundNoVisualsMessage = this.noResults;
         this.errorMessage = message;
-    }
-
-    onIsLoading(event: boolean) {
-        this.childComponentLoading = event;
     }
 
     private includeVisualisationType(

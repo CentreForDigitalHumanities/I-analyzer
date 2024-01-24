@@ -12,14 +12,14 @@
                             [disabled]="highlightDisabled || highlight>=800"
                             iaBalloon="increase preview size"
                             aria-label="increase preview size">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            <fa-icon [icon]="actionIcons.more" aria-hidden="true"></fa-icon>
                         </button>
                         <button class="button is-light"
                             (click)="updateHighlightSize('less')"
                             [disabled]="highlightDisabled || highlight<=200"
                             iaBalloon="decrease preview size"
                             aria-label="decrease preview size">
-                            <i class="fa fa-minus" aria-hidden="true"></i>
+                            <fa-icon [icon]="actionIcons.less" aria-hidden="true"></fa-icon>
                         </button>
                     </div>
                 </div>

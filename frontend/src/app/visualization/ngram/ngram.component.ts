@@ -1,10 +1,10 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
 import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { formIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-ngram',
@@ -12,12 +12,15 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
     styleUrls: ['./ngram.component.scss'],
 })
 export class NgramComponent extends ParamDirective implements OnChanges {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
-    @Output() isLoading = new EventEmitter<boolean>();
+    @HostBinding('class.is-loading') isLoading = false;
+
     @Output() ngramError = new EventEmitter<string>();
 
     @ViewChild('chart-container') chartContainer: ElementRef;
@@ -71,8 +74,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     parametersChanged = false;
     ngramSettings: string[];
 
-    faCheck = faCheck;
-    faTimes = faTimes;
+    formIcons = formIcons;
 
     nullableParameters = ['ngramSettings'];
 
@@ -196,7 +198,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     loadGraph() {
-        this.isLoading.emit(true);
+        this.isLoading = true;
 
         this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
@@ -230,14 +232,14 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         console.log(error);
         this.currentResults = undefined;
         this.ngramError.emit(error.message);
-        this.isLoading.emit(false);
+        this.isLoading = false;
     }
 
     onDataLoaded(result: NgramResults) {
         this.currentResults = result;
         this.tableData = this.makeTableData(result);
 
-        this.isLoading.emit(false);
+        this.isLoading = false;
     }
 
     makeTableData(result: NgramResults): any[] {

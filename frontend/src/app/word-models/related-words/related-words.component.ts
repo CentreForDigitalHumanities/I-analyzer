@@ -1,13 +1,12 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-
 import { showLoading } from '../../utils/utils';
 import { Corpus, WordSimilarity } from '../../models';
 import { ParamService, WordmodelsService } from '../../services/index';
 import { ParamDirective } from '../../param/param-directive';
+import { formIcons } from '../../shared/icons';
 
 
 @Component({
@@ -16,13 +15,16 @@ import { ParamDirective } from '../../param/param-directive';
     styleUrls: ['./related-words.component.scss'],
 })
 export class RelatedWordsComponent extends ParamDirective implements OnChanges {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
     @Output() relatedWordsError = new EventEmitter();
-    @Output() isLoading = new BehaviorSubject<boolean>(false);
+
+    isLoading$ = new BehaviorSubject<boolean>(false);
 
     neighbours = 5;
 
@@ -30,7 +32,8 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
-    faCheck = faCheck;
+    formIcons = formIcons;
+
     nullableParameters = ['neighbours'];
 
     constructor(
@@ -40,6 +43,11 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
         private wordModelsService: WordmodelsService
     ) {
         super(route, router, paramService);
+    }
+
+    @HostBinding('class.is-loading')
+    get isLoading() {
+        return this.isLoading$.value;
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -58,7 +66,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
 
     getData(): void {
         this.setParams({ neighbours: this.neighbours });
-        showLoading(this.isLoading, this.getTotalData());
+        showLoading(this.isLoading$, this.getTotalData());
     }
 
     getTotalData(): Promise<void> {

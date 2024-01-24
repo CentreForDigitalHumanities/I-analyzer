@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
 import { Normalizer, ChartType, ChartParameters } from '../../models';
@@ -33,8 +32,6 @@ export class BarchartOptionsComponent
     public queries: string[] = [];
 
     showEdit = false;
-
-    faCheck = faCheck;
 
     nullableParameters = ['normalize'];
 

@@ -6,11 +6,11 @@
                 <div class="container is-login">
                     <h1 class="title">I-Analyzer sign-up</h1>
                     <div class="field">
-                        <label for="username">Username</label>
+                        <label class="label" for="username">Username</label>
                         <p class="control has-icons-left has-icons-right">
                             <input class="input" type="text" name="username" ngModel #username="ngModel" required>
-                            <span class="icon is-small is-left">
-                                <i class="fa fa-user"></i>
+                            <span class="icon is-left">
+                                <fa-icon [icon]="userIcons.user" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="username.errors?.required  && (username.dirty || username.touched)">
@@ -22,11 +22,11 @@
                     </div>
 
                     <div class="field">
-                        <label for="email">Email</label>
+                        <label class="label" for="email">Email</label>
                         <p class="control has-icons-left">
                             <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" />
-                            <span class="icon is-small is-left">
-                                <i class="fa fa-user"></i>
+                            <span class="icon is-left">
+                                <fa-icon [icon]="userIcons.email" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
@@ -41,12 +41,12 @@
                     </div>
 
                     <div class="field">
-                        <label for="email">Password</label>
+                        <label class="label" for="email">Password</label>
                         <p class="control has-icons-left">
                             <input class="input" type="password" name="password" ngModel #password="ngModel" required
                                 minlength="8" />
-                            <span class="icon is-small is-left">
-                                <i class="fa fa-user"></i>
+                            <span class="icon is-left">
+                                <fa-icon [icon]="userIcons.password" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="password.errors?.required && (password.dirty || password.touched)">
@@ -62,12 +62,12 @@
                     </div>
 
                     <div class="field">
-                        <label for="email">Confirm password</label>
+                        <label class="label" for="email">Confirm password</label>
                         <p class="control has-icons-left">
                             <input class="input" type="password" name="passwordconfirm" ngModel #passwordconfirm="ngModel"
                                 required />
-                            <span class="icon is-small is-left">
-                                <i class="fa fa-user"></i>
+                            <span class="icon is-left">
+                                <fa-icon [icon]="userIcons.password" aria-hidden="true"></fa-icon>
                             </span>
                         </p>
                         <div class="notification is-warning" *ngIf="passwordconfirm.errors?.required && (passwordconfirm.dirty || passwordconfirm.touched)">
