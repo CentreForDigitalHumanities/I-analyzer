@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run backend tests
-      run: mkdir data && sudo docker-compose --env-file .env-ci run backend pytest
+      run: sudo mkdir /data && sudo docker-compose --env-file .env-ci run backend pytest
   frontend-test:
     name: Test Frontend
     runs-on: ubuntu-latest
