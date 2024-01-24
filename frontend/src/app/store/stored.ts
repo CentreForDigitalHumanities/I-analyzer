@@ -1,7 +1,7 @@
 import { Params } from '@angular/router';
 import { Store } from './types';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { distinct, map, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 
@@ -73,9 +73,8 @@ export abstract class Stored<State extends object> {
     protected subscribeToStore() {
         this.store.params$.pipe(
             takeUntil(this.complete$),
-            map(params => this.filterStoredParams(params)),
-            distinct(),
-            map(params => this.storeToState(params))
+            distinctUntilChanged(_.isEqual, params => this.filterStoredParams(params)),
+            map(params => this.storeToState(params)),
         ).subscribe(params =>
             this.state$.next(params)
         );
