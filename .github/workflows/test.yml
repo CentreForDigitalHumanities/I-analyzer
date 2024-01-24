@@ -15,66 +15,18 @@ on:
       - 'release/**'
 
 jobs:
-  build:
-
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        python-version: [3.9]
-        node-version: [14.x]
-
-
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_DB: ianalyzer
-          POSTGRES_USER: ianalyzer
-          POSTGRES_PASSWORD: ianalyzer
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-
+  backend-test:
+    name: Test Backend
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - uses: actions/checkout@v3
+    - name: Run backend tests
       uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: Install Python dependencies
-      run: |
-        cd backend
-        python -m pip install --upgrade pip
-        yarn install-back
-    - name: Test with pytest
-      env:
-        # Provide PostgreSQL environment variables in order to default to TCP connection
-        PGDATABASE: ianalyzer
-        PGHOST: localhost
-        PGPORT: ${{ job.services.postgres.ports['5432'] }}
-        PGUSER: ianalyzer
-        PGPASSWORD: ianalyzer
-      run: |
-        cd backend
-        yarn django migrate
-        yarn install-back
-        pytest
-    - name: Test Angular
-      run: |
-        cd frontend
-        yarn install --frozen-lockfile
-        yarn build-git
-        yarn test:once
+      run: sudo docker-compose --env-file .env-ci run backend pytest
+  frontend-test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      name: Run frontend tests
+      run: sudo docker-compose --env-file .env-ci run frontend yarn test:once
