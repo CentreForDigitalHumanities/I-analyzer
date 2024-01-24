@@ -151,7 +151,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     teardown(): void {
         this.stopPolling$.next();
-        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
     }
 
     setStateFromParams(params: ParamMap) {
@@ -214,7 +213,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                         const poller$ = this.apiService.pollTasks<NgramResults>(this.tasksToCancel, this.stopPolling$);
                         poller$.subscribe({
                             error: (error) => this.onFailure(error),
-                            next: (result) => this.onDataLoaded(result['results'])
+                            next: (result) => this.onDataLoaded(result['results']),
+                            complete: () => this.apiService.abortTasks({ task_ids: this.tasksToCancel })
                     });
             });
         }
@@ -277,7 +277,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
         this.parametersChanged = true;
         this.stopPolling$.next();
-        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
         this.isLoading.emit(false);
     }
 

@@ -171,7 +171,6 @@ export abstract class BarchartDirective<
     ngOnDestroy(): void {
         this.stopPolling$.next();
         this.destroy$.next();
-        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
     }
 
     /** check whether input changes should force reloading the data */
@@ -381,7 +380,6 @@ export abstract class BarchartDirective<
      */
     requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
         // cancel and stop polling running tasks
-        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
         this.stopPolling$.next();
         const dataPromises = rawData.map(series => {
             if (series.queryText && series.data.length && series.data[0].match_count === undefined) {
@@ -424,12 +422,17 @@ export abstract class BarchartDirective<
                 const poller$ = this.apiService.pollTasks<TermFrequencyResult>(this.tasksToCancel, this.stopPolling$);
                 poller$.subscribe({
                     error: (error) => {
+                        this.stopPolling$.next();
                         this.onFailure(error);
                         reject(error);
                     },
                     next: (result) => {
-                        this.apiService.stopPolling$.next();
+                        this.stopPolling$.next();
                         resolve(this.processSeriesTermFrequency(result['results'], series));
+                    },
+                    complete: () => {
+                        // abort tasks if the Observable is completed via takeUntil
+                        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
                     }
                 });
             });
@@ -437,7 +440,6 @@ export abstract class BarchartDirective<
     }
 
     onFailure(error) {
-        this.apiService.stopPolling$.next(true);
         console.error(error);
         this.error.emit(`could not load results: ${error.message}`);
     }
