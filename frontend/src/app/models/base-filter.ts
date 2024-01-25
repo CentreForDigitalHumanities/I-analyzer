@@ -128,7 +128,17 @@ export abstract class BaseFilter<InitialParameters, FilterData>
 
     /** reset the filter state: set the data to default an deactivate */
     reset() {
-        this.set(this.defaultData);
+        if (this.state$.value.active) {
+            this.set(this.defaultData);
+        } else {
+            // you normally should not set the state directly, but in this case,
+            // all inactive filters are represented identically in the store.
+            // so this won't break the relationship between store and state.
+            this.state$.next({
+                active: false,
+                data: this.defaultData,
+            });
+        }
     }
 
     /**
