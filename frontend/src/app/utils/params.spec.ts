@@ -1,16 +1,15 @@
-import { convertToParamMap } from '@angular/router';
 import {
     highlightFromParams, omitNullParameters, pageFromParams, pageToParams, searchFieldsFromParams,
     sortSettingsFromParams, sortSettingsToParams
 } from './params';
 import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
-import { MultipleChoiceFilter, QueryModel, SortState } from '../models';
+import { SortState } from '../models';
 import * as _ from 'lodash';
 import { PageParameters, PageResultsParameters } from '../models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = convertToParamMap({fields: 'speech,great_field'});
+        const params = {fields: 'speech,great_field'};
         const corpus = mockCorpus3;
         const fields = searchFieldsFromParams(params, corpus);
         expect(fields.length).toEqual(2);
