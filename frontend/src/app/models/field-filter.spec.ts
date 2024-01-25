@@ -1,7 +1,7 @@
 import { convertToParamMap } from '@angular/router';
-import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
+import { mockFieldMultipleChoice, mockFieldDate, mockField } from '../../mock-data/corpus';
 import { EsDateFilter, EsTermsFilter } from './elasticsearch';
-import { DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
+import { BooleanFilter, DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
 import { of } from 'rxjs';
 import { distinct } from 'rxjs/operators';
 import { SimpleStore } from '../store/simple-store';
@@ -215,5 +215,28 @@ describe('MultipleChoiceFilter', () => {
         filter.set(exampleData);
         const esFilter = filter.toEsFilter();
         expect(filter.dataFromEsFilter(esFilter)).toEqual(filter.currentData);
+    });
+});
+
+describe('BooleanFilter', () => {
+    const field = mockField;
+    let store: SimpleStore;
+    let filter: BooleanFilter;
+
+    beforeEach(() => {
+        store = new SimpleStore();
+        filter = new BooleanFilter(store, field);
+    });
+
+    it('should set', () => {
+        const checkData = (data: boolean) => expect(filter.state$.value.data).toBe(data);
+
+        checkData(undefined);
+
+        filter.set(true);
+        checkData(true);
+
+        filter.set(false);
+        checkData(false);
     });
 });

@@ -134,7 +134,7 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
 export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
-        return false;
+        return undefined;
     }
 
     dataFromValue(value: any): boolean {
@@ -142,7 +142,11 @@ export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter>
     }
 
     dataFromString(value: string): boolean {
-        return value === 'true';
+        if (value === 'true') {
+            return true;
+        } else if (value === 'false') {
+            return false;
+        }
     }
 
     dataToString(data: boolean): string {
