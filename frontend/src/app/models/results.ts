@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, merge, of, timer } from 'rxjs';
 import { QueryModel } from './query';
 import { catchError, map, mergeMap, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
@@ -43,8 +43,11 @@ export abstract class Results<Parameters extends object, Result> extends Stored<
             this.setParams(params)
         );
 
-        this.result$ = this.state$.pipe(
+        const queryUpdate$ = merge(timer(0), this.query.update);
+
+        this.result$ = combineLatest([queryUpdate$, this.state$]).pipe(
             takeUntil(this.complete$),
+            map(_.last),
             tap(() => this.error$.next(undefined)),
             mergeMap(this.fetch.bind(this)),
             catchError(err => {

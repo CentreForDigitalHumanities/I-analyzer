@@ -12,6 +12,7 @@ import { DocumentPage } from '../models/document-page';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { SimpleStore } from '../store/simple-store';
+import { take } from 'rxjs/operators';
 
 const createField = (name: string): CorpusField => {
     const field = _.cloneDeep(mockField);
@@ -85,6 +86,7 @@ describe('Search Results Component', () => {
     });
 
     it('should render result', async () => {
+        await component.pageResults.result$.pipe(take(1)).toPromise();
         await fixture.whenStable();
         fixture.detectChanges();
 
@@ -99,6 +101,7 @@ describe('Search Results Component', () => {
     });
 
     it('should only show the highlight selector with query text', async () => {
+        await component.pageResults.result$.pipe(take(1)).toPromise();
         await fixture.whenStable();
         fixture.detectChanges();
         const element = fixture.debugElement;
