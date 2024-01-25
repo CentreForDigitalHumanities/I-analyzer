@@ -1,10 +1,9 @@
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable, Subject, combineLatest, of } from 'rxjs';
-import { filter, map, pairwise } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Stored } from '../store/stored';
 import { Store } from '../store/types';
-import { to } from '../utils/utils';
 
 export interface FilterState<FilterData> {
     active: boolean;
@@ -78,12 +77,6 @@ export abstract class BaseFilter<InitialParameters, FilterData>
         this.keysInStore = [keyInStore];
         this.defaultData = this.makeDefaultData(parameters);
         this.connectToStore();
-
-        this.update = this.state$.pipe(
-            pairwise(),
-            filter(this.meaningfulChange),
-            map(to())
-        );
     }
 
     get currentData(): FilterData {
@@ -198,10 +191,6 @@ export abstract class BaseFilter<InitialParameters, FilterData>
 
     private isDefault(data: FilterData): boolean {
         return _.isEqual(data, this.defaultData);
-    }
-
-    private meaningfulChange([previous, current]: [FilterState<FilterData>, FilterState<FilterData>]): boolean {
-        return previous.active || current.active;
     }
 
     /** construct the default data object based on constructor parameters */
