@@ -37,7 +37,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpusDefinition):
     max_date = datetime(year=1919, month=12, day=31)
     data_directory = settings.PP_SWEDEN_OLD_DATA
     es_index = getattr(settings, 'PP_SWEDEN_OLD_INDEX', 'parliament-sweden-old')
-
+    word_model_path = getattr(settings, 'PP_SWEDEN_WM', None)
 
     document_context = constants.document_context(
         context_fields=['chamber', 'date_earliest', 'date_latest']

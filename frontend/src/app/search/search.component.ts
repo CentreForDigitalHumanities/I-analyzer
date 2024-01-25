@@ -9,7 +9,7 @@ import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import { paramsHaveChanged } from '../utils/params';
 import { filter } from 'rxjs/operators';
-import { faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons, searchIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-search',
@@ -25,12 +25,6 @@ export class SearchComponent extends ParamDirective {
     public corpus: Corpus;
 
     /**
-     * This is a constant used to ensure that, when we are displayed in an iframe,
-     * the filters are displayed even if there are no results.
-     */
-    private minIframeHeight = 1300;
-
-    /**
      * The filters have been modified.
      */
     public isSearching: boolean;
@@ -42,14 +36,10 @@ export class SearchComponent extends ParamDirective {
 
     public user: User;
 
-    tabIcons = {
-        searchResults: faList,
-        visualizations: faChartColumn,
-    };
+    searchIcons = searchIcons;
+    actionIcons = actionIcons;
 
     activeTab: string;
-
-    protected corpusSubscription: Subscription;
 
     public queryModel: QueryModel;
     /**
@@ -63,7 +53,15 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
-    nullableParameters = [];
+    public nullableParameters = [];
+
+    protected corpusSubscription: Subscription;
+
+    /**
+     * This is a constant used to ensure that, when we are displayed in an iframe,
+     * the filters are displayed even if there are no results.
+     */
+    private minIframeHeight = 1300;
 
     constructor(
         private authService: AuthService,
@@ -74,6 +72,13 @@ export class SearchComponent extends ParamDirective {
         router: Router
     ) {
         super(route, router, paramService);
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown =
+            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     async initialize(): Promise<void> {
@@ -100,13 +105,6 @@ export class SearchComponent extends ParamDirective {
         if (paramsHaveChanged(this.queryModel, params)) {
             this.setQueryModel(false);
         }
-    }
-
-    @HostListener('window:scroll', [])
-    onWindowScroll() {
-        // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown =
-            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     /**
@@ -150,19 +148,7 @@ export class SearchComponent extends ParamDirective {
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {
             this.queryText = this.queryModel.queryText;
-            this.checkHighlight();
             this.setParams(this.queryModel.toRouteParam());
         });
-    }
-    /**
-     * This method checks whether the highlighter needs to be turned on or off
-     * If the user has disabled the highlighter, it will not turn on by default
-     */
-    public checkHighlight() {
-        if (!this.queryModel.queryText) {
-            this.queryModel.highlightSize = null;
-        } else if (!this.queryModel.highlightSize && !this.queryModel.highlightSwitchedOff) {
-            this.queryModel.highlightSize = 200;
-        }
     }
 }

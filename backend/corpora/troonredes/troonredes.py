@@ -26,14 +26,15 @@ from addcorpus.es_settings import es_settings
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
             'Wilhelmina', 'Juliana', 'Beatrix', 'Willem-Alexander']
 
-SPEECH_TYPES = ['openingsrede', 'troonrede', 'inhuldigingsrede']
+SPEECH_TYPES = ['openingsrede', 'troonrede',
+                'inhuldigingsrede', 'abdicatierede', 'other']
 
 
 class Troonredes(XMLCorpusDefinition):
     title = "Troonredes"
     description = "Speeches by Dutch monarchs"
     min_date = datetime(year=1814, month=1, day=1)
-    max_date = datetime(year=2018, month=12, day=31)
+    max_date = datetime(year=2023, month=12, day=31)
     data_directory = settings.TROONREDES_DATA
     es_index = getattr(settings, 'TROONREDES_ES_INDEX', 'troonredes')
     image = 'troon.jpg'
@@ -44,7 +45,7 @@ class Troonredes(XMLCorpusDefinition):
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
@@ -136,7 +137,7 @@ class Troonredes(XMLCorpusDefinition):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=main_content_mapping(True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'nl'),
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],

@@ -6,9 +6,9 @@ import { CorpusService } from '../services/index';
 import { showLoading } from '../utils/utils';
 
 @Component({
-    selector: 'home',
+    selector: 'ia-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
     public items: Corpus[];
@@ -22,9 +22,7 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         showLoading(
             this.isLoading,
-            this.corpusService.get(true)
-            .then((items) => this.items = items)
+            this.corpusService.get(true).then((items) => (this.items = items))
         );
     }
-
 }

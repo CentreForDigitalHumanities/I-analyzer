@@ -7,15 +7,15 @@ import {
     AggregateQueryFeedback, SearchHit, EsQuery, Aggregator
 } from '../models/index';
 import * as _ from 'lodash';
+import { TagService } from './tag.service';
 import { QueryParameters } from '../models/search-requests';
+import { RESULTS_PER_PAGE } from '../models/page-results';
 
 
 @Injectable()
 export class ElasticSearchService {
 
-    private resultsPerPage = 20;
-
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private tagService: TagService) {
     }
 
     getDocumentById(id: string, corpus: Corpus): Promise<FoundDocument> {
@@ -78,29 +78,17 @@ export class ElasticSearchService {
         };
     }
 
-
-
-    public async search(
-        queryModel: QueryModel,
-        size?: number,
-    ): Promise<SearchResults> {
-        const esQuery = queryModel.toEsQuery();
-
-        // Perform the search
-        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage);
-        return this.parseResponse(queryModel.corpus, response);
-    }
-
-
     /**
      * Load results for requested page
      */
     public async loadResults(
-        queryModel: QueryModel, from: number,
-        size: number): Promise<SearchResults> {
+        queryModel: QueryModel,
+        from: number,
+        size: number = RESULTS_PER_PAGE
+    ): Promise<SearchResults> {
         const esQuery = queryModel.toEsQuery();
         // Perform the search
-        const response = await this.execute(queryModel.corpus, esQuery, size || this.resultsPerPage, from);
+        const response = await this.execute(queryModel.corpus, esQuery, size, from);
         return this.parseResponse(queryModel.corpus, response);
     }
 
@@ -167,7 +155,7 @@ export class ElasticSearchService {
      * return the id, relevance and field values of a given document
      */
     private hitToDocument(corpus: Corpus, hit: SearchHit, maxScore: number): FoundDocument {
-        return new FoundDocument(corpus, hit, maxScore);
+        return new FoundDocument(this.tagService, corpus, hit, maxScore);
     }
 
 }

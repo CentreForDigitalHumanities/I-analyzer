@@ -39,7 +39,7 @@
     </div>
     <div *ngIf="canReset | async" class="block" style="text-align: right;">
         <button class="button" type="reset" (click)="reset()">
-            <span class="icon"><fa-icon [icon]="resetIcon"></fa-icon></span>
+            <span class="icon"><fa-icon [icon]="formIcons.reset"></fa-icon></span>
             <span>Reset</span>
         </button>
     </div>

@@ -26,25 +26,26 @@ from media.media_url import media_url
 class Ecco(XMLCorpusDefinition):
     title = "Eighteenth Century Collections Online"
     description = "Digital collection of books published in Great Britain during the 18th century."
+    description_page = 'ecco.md'
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
-
-    @property
-    def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
 
     data_directory = settings.ECCO_DATA
     es_index = getattr(settings, 'ECCO_ES_INDEX', 'ecco')
     image = 'ecco.jpg'
     scan_image_type = getattr(settings, 'ECCO_SCAN_IMAGE_TYPE', 'application/pdf')
     es_settings = None
-    languages = ['en', 'cy', 'ga', 'gd'] # according to gale's documentation
+    languages = ['en', 'fr', 'la', 'grc', 'de',  'it', 'cy', 'ga', 'gd']
     category = 'book'
 
     tag_toplevel = 'pageContent'
     tag_entry = 'page'
 
     meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
+
+    @property
+    def es_settings(self):
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     def sources(self, start=min_date, end=max_date):
         logging.basicConfig(filename='ecco.log', level=logging.INFO)
@@ -149,7 +150,7 @@ class Ecco(XMLCorpusDefinition):
                 name='content',
                 display_name='Content',
                 display_type='text_content',
-                es_mapping=main_content_mapping(True, True, True),
+                es_mapping=main_content_mapping(True, True, True, 'en'),
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
@@ -266,7 +267,8 @@ class Ecco(XMLCorpusDefinition):
          #the page corresponding to the document
         home_page = int(document['fieldValues']['page'])
         file_name = image_path.split('/')[-1] + '.pdf'
-        pdf_info = get_pdf_info(join(self.data_directory, image_path, file_name))
+        full_image_path = join(self.data_directory, image_path, file_name)
+        pdf_info = get_pdf_info(join(full_image_path))
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         pdf_info = {
             "pageNumbers": [p for p in pages], #change from 0-indexed to real page
@@ -276,7 +278,7 @@ class Ecco(XMLCorpusDefinition):
         }
         image_url = media_url(
             corpus_name,
-            image_path,
+            full_image_path,
             start_page=pages[0]-1,
             end_page=pages[-1],
         )

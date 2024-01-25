@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
@@ -10,6 +10,7 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    DocumentTagsResponse,
     Download,
     DownloadOptions,
     FieldCoverage,
@@ -18,6 +19,7 @@ import {
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
+    Tag,
     TaskResult,
     TaskSuccess,
     TasksOutcome,
@@ -26,6 +28,7 @@ import {
     WordcloudParameters,
 } from '../models/index';
 import { environment } from '../../environments/environment';
+import * as _ from 'lodash';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -36,7 +39,9 @@ interface SolisLoginResponse {
     queries: QueryDb[];
 }
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class ApiService {
     private apiUrl = environment.apiUrl;
 
@@ -44,6 +49,7 @@ export class ApiService {
     private visApiURL = 'visualization';
     private downloadApiURL = 'download';
     private corpusApiUrl = 'corpus';
+    private tagApiUrl = 'tag';
 
     private authApiRoute = (route: string): string =>
         `/${this.authApiUrl}/${route}/`;
@@ -53,9 +59,8 @@ export class ApiService {
 
     constructor(private http: HttpClient) {}
 
-    // General / misc
-    public saveQuery(options: QueryDb) {
-        return this.http.post('/api/search_history/', options).toPromise();
+    public deleteSearchHistory(): Observable<any> {
+        return this.http.post('/api/search_history/delete_all/', {});
     }
 
     public searchHistory() {
@@ -68,7 +73,7 @@ export class ApiService {
 
     // Media
     public getMedia(data: { args: string }): Promise<any> {
-        const url = `/api/download/${data.args}`;
+        const url = `/api/get_media${data.args}`;
         return this.http
             .get(url, { observe: 'response', responseType: 'arraybuffer' })
             .toPromise();
@@ -78,10 +83,18 @@ export class ApiService {
         corpus: string;
         document: FoundDocument;
     }): Promise<{ media: string[]; info?: ImageInfo }> {
+        const serializableDocument = _.pick(data.document, [
+            'id',
+            'fieldValues',
+        ]);
+        const requestData = {
+            corpus: data.corpus,
+            document: serializableDocument,
+        };
         return this.http
             .post<{ media: string[]; info?: ImageInfo }>(
                 '/api/request_media',
-                data
+                requestData
             )
             .toPromise();
     }
@@ -116,7 +129,7 @@ export class ApiService {
     public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
         return timer(0, 5000)
             .pipe(
-                switchMap((_) =>
+                switchMap(() =>
                     this.getTasksStatus<ExpectedResult>({ task_ids: ids })
                 ),
                 filter(this.tasksDone),
@@ -138,11 +151,6 @@ export class ApiService {
     public wordCloud(data: WordcloudParameters): Promise<AggregateResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
         return this.http.post<AggregateResult[]>(url, data).toPromise();
-    }
-
-    public wordcloudTasks(data: WordcloudParameters): Promise<TaskResult> {
-        const url = this.apiRoute(this.visApiURL, 'wordcloud_task');
-        return this.http.post<TaskResult>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
@@ -175,12 +183,17 @@ export class ApiService {
             | {
                   visualization: 'date_term_frequency';
                   parameters: DateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
               }
             | {
                   visualization: 'aggregate_term_frequency';
                   parameters: AggregateTermFrequencyParameters[];
-                  corpus: string;
+                  corpus_name: string;
+              }
+            | {
+                  visualization: 'ngram';
+                  parameters: NGramRequestParameters;
+                  corpus_name: string;
               }
     ): Promise<TaskResult> {
         const url = this.apiRoute(this.downloadApiURL, 'full_data');
@@ -231,6 +244,39 @@ export class ApiService {
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Tagging
+
+    public userTags(): Observable<Tag[]> {
+        const url = this.apiRoute(this.tagApiUrl, 'tags/');
+        return this.http.get<Tag[]>(url);
+    }
+
+    public createTag(name: string, description?: string): Observable<Tag> {
+        const url = this.apiRoute(this.tagApiUrl, 'tags/');
+        return this.http.post<Tag>(url, { name, description });
+    }
+
+    public documentTags(
+        document: FoundDocument
+    ): Observable<DocumentTagsResponse> {
+        const url = this.apiRoute(
+            this.tagApiUrl,
+            `document_tags/${document.corpus.name}/${document.id}`
+        );
+        return this.http.get<DocumentTagsResponse>(url);
+    }
+
+    public setDocumentTags(
+        document: FoundDocument,
+        tagIds: number[]
+    ): Observable<DocumentTagsResponse> {
+        const url = this.apiRoute(
+            this.tagApiUrl,
+            `document_tags/${document.corpus.name}/${document.id}`
+        );
+        return this.http.patch<DocumentTagsResponse>(url, { tags: tagIds });
     }
 
     // Authentication API
@@ -296,6 +342,16 @@ export class ApiService {
                 new_password1: newPassword1,
                 new_password2: newPassword2,
             }
+        );
+    }
+
+    /** send PATCH request to update settings for the user */
+    public updateUserSettings(
+        details: Partial<UserResponse>
+    ): Observable<UserResponse> {
+        return this.http.patch<UserResponse>(
+            this.authApiRoute('user'),
+            details
         );
     }
 

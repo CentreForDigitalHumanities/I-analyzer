@@ -35,12 +35,12 @@
                                     <!-- Buttons for switching between table and graphical representation -->
                                     <div class="control">
                                         <button class="button" [class.is-primary]="!asTable" (click)="asTable = false">
-                                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                            <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
                                         </button>
                                     </div>
                                     <div class="control">
                                         <button class="button" [class.is-primary]="asTable" (click)="asTable = true">
-                                            <i class="fa fa-table" aria-hidden="true"></i>
+                                            <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
                                         </button>
                                     </div>
                                 </div>
@@ -51,15 +51,13 @@
                             <ia-related-words *ngIf="tab === 'relatedwords'"
                                 [corpus]="corpus" [queryText]="activeQuery"
                                 [asTable]="asTable" [palette]="palette"
-                                (isLoading)="onIsLoading($event)"
-                                (error)="setErrorMessage($event)">
+                                (relatedWordsError)="setErrorMessage($event)">
                             </ia-related-words>
 
                             <ia-word-similarity *ngIf="tab === 'wordsimilarity'"
                                 [corpus]="corpus" [queryText]="activeQuery"
                                 [asTable]="asTable" [palette]="palette"
-                                (isLoading)="onIsLoading($event)"
-                                (error)="setErrorMessage($event)">
+                                (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>
                         </div>
 

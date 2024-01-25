@@ -36,11 +36,11 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
-    category = 'newspaper'
+    category = 'periodical'
 
     @property
     def es_settings(self):
-        return es_settings(self.languages[0], stopword_analyzer=True, stemming_analyzer=True)
+        return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
     tag_toplevel = 'text'
     tag_entry = 'p'
@@ -323,7 +323,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=main_content_mapping(True, True, True, True),
+            es_mapping=main_content_mapping(True, True, True, 'nl', True),
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,

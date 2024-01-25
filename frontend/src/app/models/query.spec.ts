@@ -1,8 +1,9 @@
 import { mockField2, mockFieldDate, mockFieldMultipleChoice } from '../../mock-data/corpus';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
-import { DateFilter, MultipleChoiceFilter, SearchFilter } from './search-filter';
+import { SearchFilter } from './field-filter';
 import { convertToParamMap } from '@angular/router';
+import * as _ from 'lodash';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -167,6 +168,24 @@ describe('QueryModel', () => {
         const newQuery = new QueryModel(corpus, params);
         expect(newQuery.queryText).toEqual('test');
         expect(newQuery.activeFilters.length).toBe(1);
+    });
+
+    it('should reflect the highlight state in parameters', () => {
+        const highlightParam = () => _.get(query.toRouteParam(), 'highlight');
+
+        expect(highlightParam()).toBe(null);
+
+        query.setHighlight(200);
+        expect(highlightParam()).toBe(null);
+
+        query.setQueryText('test');
+        expect(highlightParam()).toBe('200');
+
+        query.setHighlight(400);
+        expect(highlightParam()).toBe('400');
+
+        query.setHighlight();
+        expect(highlightParam()).toBe(null);
     });
 
     it('should formulate a link', () => {

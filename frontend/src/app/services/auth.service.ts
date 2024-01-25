@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -16,6 +17,8 @@ import { environment } from '../../environments/environment';
 import { User, UserResponse } from '../models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
+import * as _ from 'lodash';
+import { encodeUserData, parseUserData } from '../utils/user';
 
 @Injectable({
     providedIn: 'root',
@@ -77,7 +80,7 @@ export class AuthService implements OnDestroy {
             .getUser()
             .pipe(takeUntil(this.destroy$))
             .subscribe(
-                (result) => this.setAuth(this.transformUserResponse(result)),
+                (result) => this.setAuth(parseUserData(result)),
                 () => this.purgeAuth()
             );
     }
@@ -91,41 +94,6 @@ export class AuthService implements OnDestroy {
         return Promise.resolve(currentUser);
     }
 
-    /**
-     * Transforms backend user response to User object
-     *
-     * @param result User response data
-     * @returns User object
-     */
-    private transformUserResponse(
-        result: UserResponse
-    ): User {
-        return new User(
-            result.id,
-            result.username,
-            result.is_admin,
-            result.download_limit == null ? 0 : result.download_limit,
-            result.saml
-        );
-    }
-
-    /**
-     * Deserializes localStorage user
-     *
-     * @param serializedUser serialized currentUser
-     * @returns User object
-     */
-    private deserializeUser(serializedUser: string): User {
-        const parsed = JSON.parse(serializedUser);
-        return new User(
-            parsed['id'],
-            parsed['username'],
-            parsed['is_admin'],
-            parsed['download_limit'],
-            parsed['isSamlLogin']
-        );
-    }
-
     checkUser(): Observable<UserResponse> {
         return this.apiService.getUser();
     }
@@ -137,7 +105,7 @@ export class AuthService implements OnDestroy {
         const loginRequest$ = this.apiService.login(username, password);
         return loginRequest$.pipe(
             mergeMap(() => this.checkUser()),
-            tap((res) => this.setAuth(this.transformUserResponse(res))),
+            tap((res) => this.setAuth(parseUserData(res))),
             catchError((error) => {
                 console.error(error);
                 return throwError(error);
@@ -145,7 +113,8 @@ export class AuthService implements OnDestroy {
         );
     }
 
-    public logout(isSamlLogin: boolean = false, redirectToLogin: boolean = false) {
+    public logout(redirectToLogin: boolean = false) {
+        const isSamlLogin = this.currentUserSubject.value.isSamlLogin;
         this.purgeAuth();
         if (isSamlLogin) {
             window.location.href = environment.samlLogoutUrl;
@@ -200,4 +169,15 @@ export class AuthService implements OnDestroy {
             newPassword2
         );
     }
+
+    public updateSettings(update: Partial<User>) {
+        return this.apiService.updateUserSettings(encodeUserData(update)).pipe(
+            tap((res) => this.setAuth(parseUserData(res))),
+            catchError((error) => {
+                console.error(error);
+                return throwError(error);
+            })
+        );
+    }
+
 }

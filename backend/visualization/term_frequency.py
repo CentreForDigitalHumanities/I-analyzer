@@ -1,6 +1,5 @@
 import math
-
-from addcorpus.load_corpus import load_corpus
+from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
 from ianalyzer.elasticsearch import elasticsearch
@@ -39,12 +38,14 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     return data
 
 def extract_data_for_term_frequency(corpus, es_query):
-    corpus_class = load_corpus(corpus)
+    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus)
+
+    all_fields = corpus_conf.fields.all()
     search_fields = query.get_search_fields(es_query)
     if search_fields:
-        fields = list(filter(lambda field: field.name in search_fields, corpus_class.fields))
+        fields = list(filter(lambda field: field.name in search_fields, all_fields))
     else:
-        fields =list(filter(lambda field: field.es_mapping['type'] == 'text', corpus_class.fields))
+        fields =list(filter(lambda field: field.es_mapping['type'] == 'text', all_fields))
 
     fieldnames = [field.name for field in fields]
 
@@ -85,9 +86,9 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
     skipped_docs = total_results - len(found_hits)
     if not skipped_docs:
         return n_matches
-    
+
     mean_last_matches = sum(matches[-ESTIMATE_WINDOW:]) / ESTIMATE_WINDOW
-    # we estimate that skipped contain matches linearly decrease 
+    # we estimate that skipped contain matches linearly decrease
     # from average in ESTIMATE_WINDOW to 1
     estimate_skipped = int(math.ceil(mean_last_matches - 1) * skipped_docs / 2) + skipped_docs
     match_count = n_matches + estimate_skipped

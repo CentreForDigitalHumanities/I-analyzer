@@ -1,9 +1,5 @@
 The debates of the Irish houses of parliament (Oireachtas) from 1919-2020. Debates up to 2013 are from the Dáil, debates from 2014 are from the Dáil and Seanad.
 
-### Language
-
-Debates are in English or Irish.
-
 ### Metadata
 
 The data up to 2013 and from 2014 onwards were extracted from different source data. This means that some metadata fields are only available up to 2013, or only from 2014. Specifically:

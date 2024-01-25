@@ -30,12 +30,15 @@ export class ScanPdfComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         this.page = this.showPage + 1;
         if (changes.imagePaths) {
-            this.path = new URL(this.imagePaths[0]);
-            this.apiService.getMedia({args: this.path.search}).then( response => {
-            this.pdfNotFound = false;
-            this.formatPdfResponse(response);
-            this.afterLoadComplete();
-        }).catch( () => this.pdfNotFound = true );
+            this.path = new URL(this.imagePaths[0], window.location.href);
+            this.apiService
+                .getMedia({ args: this.path.search })
+                .then((response) => {
+                    this.pdfNotFound = false;
+                    this.formatPdfResponse(response);
+                    this.afterLoadComplete();
+                })
+                .catch(() => (this.pdfNotFound = true));
         }
     }
 

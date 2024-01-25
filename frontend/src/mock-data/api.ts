@@ -41,6 +41,7 @@ export class ApiServiceMock {
 
     public pollTasks(ids: string[]) {
         const fakeResults = {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             'ngram-task-id': fakeNgramResult,
         };
         const response = ids.map((id) => _.get(fakeResults, id, {}));
@@ -63,7 +64,15 @@ export class ApiServiceMock {
         return Promise.resolve({});
     }
 
-    requestMedia() {
+    saveQuery() {
+        return Promise.resolve();
+    }
+
+    requestMeQdia() {
         return Promise.resolve({});
+    }
+
+    userTags() {
+        return of([]);
     }
 }

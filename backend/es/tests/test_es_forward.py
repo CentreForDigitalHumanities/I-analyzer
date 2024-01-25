@@ -1,6 +1,5 @@
 import pytest
-import json
-
+from visualization.query import MATCH_ALL
 from es.search import hits
 
 FORWARD_CASES = {
@@ -85,3 +84,24 @@ def test_es_forwarding_views(scenario, es_forward_client, client, times_user):
 
     if response.status_code == 200:
         assert len(hits(response.data)) == n_hits
+
+def test_search_history_is_saved(mock_corpus, times_user, es_forward_client, client):
+    assert times_user.queries.count() == 0
+
+    client.force_login(times_user)
+
+    search = lambda: client.post(
+        '/api/es/times/_search',
+        {'es_query': MATCH_ALL},
+        content_type='application/json',
+    )
+
+    response = search()
+
+    assert response.status_code == 200
+    assert times_user.queries.count() == 1
+
+    response2 = search()
+
+    assert response2.status_code == 200
+    assert times_user.queries.count() == 1

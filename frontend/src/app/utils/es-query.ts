@@ -6,7 +6,7 @@ import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
     SimpleQueryString, SortBy, SortDirection } from '../models';
 import { EsQuery } from '../models';
 import { findByName } from './utils';
-import { SearchFilter } from '../models/search-filter';
+import { SearchFilter } from '../models/field-filter';
 
 // conversion from query model -> elasticsearch query language
 
@@ -86,13 +86,25 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
             pre_tags: ['<span class="highlight">'],
             post_tags: ['</span>'],
             order: 'score',
-            fields: highlightFields.map( function(field) {
-                return field.displayType == "text_content" && field.positionsOffsets && corpus.new_highlight ? // add matched_fields for stemmed highlighting                    ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
-                ({ [field.name]: {"type": "fvh", "matched_fields": [field.name, field.name+".stemmed"] }}):
-                ({ [field.name]: { }
-            })})
-        }
-    }
+            fields: highlightFields.map((field) =>
+                field.displayType === 'text_content' &&
+                field.positionsOffsets &&
+                // add matched_fields for stemmed highlighting
+                // ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
+                corpus.new_highlight
+                    ? {
+                          [field.name]: {
+                              type: 'fvh',
+                              matched_fields: [
+                                  field.name,
+                                  field.name + '.stemmed',
+                              ],
+                          },
+                      }
+                    : { [field.name]: {} }
+            ),
+        },
+    };
 };
 
 // conversion from elasticsearch query language -> query model

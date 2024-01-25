@@ -2,21 +2,17 @@ import { Injectable } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { QueryService } from './query.service';
 import {
     Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, QueryDb
+    AggregateQueryFeedback
 } from '../models/index';
-import { AuthService } from './auth.service';
 
 
 @Injectable()
 export class SearchService {
     constructor(
         private apiService: ApiService,
-        private authService: AuthService,
         private elasticSearchService: ElasticSearchService,
-        private queryService: QueryService,
     ) {
         window['apiService'] = this.apiService;
     }
@@ -34,28 +30,7 @@ export class SearchService {
             from,
             size
         );
-        results.fields = queryModel.corpus.fields.filter((field) => field.resultsOverview);
-        return results;
-    }
-
-    public async search(queryModel: QueryModel
-    ): Promise<SearchResults> {
-        const user = await this.authService.getCurrentUserPromise();
-        const esQuery = queryModel.toEsQuery();
-        const query = new QueryDb(esQuery, queryModel.corpus.name, user.id);
-        query.started = new Date(Date.now());
-        const results = await this.elasticSearchService.search(
-            queryModel
-        );
-        query.total_results = results.total.value;
-        query.completed = new Date(Date.now());
-        this.queryService.save(query);
-
-        return {
-            fields: queryModel.corpus.fields.filter((field) => field.resultsOverview),
-            total: results.total,
-            documents: results.documents,
-        } as SearchResults;
+        return this.filterResultsFields(results, queryModel);
     }
 
     public async aggregateSearch(
@@ -84,4 +59,12 @@ export class SearchService {
         );
     }
 
+    /** filter search results for fields included in resultsOverview of the corpus */
+    private filterResultsFields(results: SearchResults, queryModel: QueryModel): SearchResults {
+        return {
+            fields: queryModel.corpus.fields.filter((field) => field.resultsOverview),
+            total: results.total,
+            documents: results.documents,
+        } as SearchResults;
+    }
 }

@@ -1,19 +1,15 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 
-
-import {
-    Corpus,
-    CorpusField,
-    DocumentContext
-} from '../models/index';
+import { Corpus, CorpusField, DocumentContext } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class CorpusService {
     private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(
@@ -86,8 +82,8 @@ export class CorpusService {
             data.description,
             data.es_index,
             allFields,
-            this.parseDate(data.min_date),
-            this.parseDate(data.max_date),
+            new Date(data.min_date),
+            new Date(data.max_date),
             data.image,
             data.scan_image_type,
             data.allow_image_download,
@@ -101,17 +97,6 @@ export class CorpusService {
     };
 
     private parseField = (data: any): CorpusField => new CorpusField(data);
-
-    private parseDate(date: any): Date {
-        // months are zero-based!
-        return new Date(
-            date.year,
-            date.month - 1,
-            date.day,
-            date.hour,
-            date.minute
-        );
-    }
 
     private parseDocumentContext(
         data: {

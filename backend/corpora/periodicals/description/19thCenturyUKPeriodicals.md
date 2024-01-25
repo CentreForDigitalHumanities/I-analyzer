@@ -1,10 +1,26 @@
-### 19th Century UK Periodicals: new readerships
+The *Nineteenth Century UK Periodicals* series covers the events, lives, values, and themes that shaped the nineteenth century world.
 
-The 19th century was a time of revolutionary change and expansion. Britain was one of the
-world’s first industrial, urban superpowers and developed a press to feed the demands
-of its increasingly literate population: 19th Century UK Periodicals covers the events, lives,
-values and themes that shaped the nineteenth-century world.
+The collection is comprised of material published primarily in England, but also includes titles from Australia, Canada, India, South Africa, and many more.
 
+The collection was predominantly sourced from two major libraries – the British Library and the National Library of Scotland.
+
+### Subjects
+
+- Empire and Colonialism
+- Science and Industry
+- Cities and Society
+- Sport and Leisure
+- Politics
+- Daily Life
+- Feminism
+- Art and Culture
+- Philosophy
+- Literature
+- Parenting
+- Medicine
+- … and many more
+
+### Titles
 The corpus includes the following 91 titles:
 - Alexandra Magazine and Womans Social and Industrial Advocate
 - Atalanta
@@ -97,3 +113,13 @@ The corpus includes the following 91 titles:
 - Womans Advocate
 - Women and Work: A Weekly Industrial Educational and Household Register for Women
 - Womens Penny Paper.
+
+### Read more
+
+- [Access through publisher website (requires Utrecht University login)](https://go-gale-com.proxy.library.uu.nl/ps/start.do?p=NCUK&u=utrecht)
+- [About this archive (publisher website; requires Utrecht University login)](https://go-gale-com.proxy.library.uu.nl/ps/helpCenter?userGroupName=utrecht&inPS=true&nspage=true&prodId=NCUK&docId=DWSDAY911647535)
+- [Sample topics and searches (publisher website; requires Utrecht University login)](https://go-gale-com.proxy.library.uu.nl/ps/helpCenter?userGroupName=utrecht&inPS=true&nspage=true&prodId=NCUK&docId=KEECCH350737398&title=Sample%20Topics%20and%20Searches)
+
+### Availability
+
+This corpus is published by [Gale](https://en.wikipedia.org/wiki/Gale_(publisher)) and is only available to members of Utrecht University.

@@ -1,14 +1,16 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
-import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
+import { DocumentView } from '../models/document-page';
+import * as _ from 'lodash';
+import { documentIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
-export class DocumentViewComponent {
+export class DocumentViewComponent implements OnChanges {
 
     @Input()
     public document: FoundDocument;
@@ -20,13 +22,12 @@ export class DocumentViewComponent {
     public corpus: Corpus;
 
     @Input()
-    public documentTabIndex: number;
+    public view: DocumentView;
 
+    documentIcons = documentIcons;
 
-    tabIcons = {
-        text: faBook,
-        scan: faImage,
-    };
+    /** active tab on opening */
+    activeTab: string;
 
     public imgNotFound: boolean;
     public imgPath: string;
@@ -46,6 +47,24 @@ export class DocumentViewComponent {
 
     get showScanTab() {
         return !!this.corpus.scan_image_type;
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.view) {
+            this.activeTab = this.tabFromView(this.view);
+        }
+    }
+
+    /** get the tab from the view mode
+     *
+     * For "scan" view: select the scan tab if there is one
+     * For "content" view: select the first content field
+     */
+    tabFromView(view: DocumentView): string {
+        if (view === 'scan' && this.showScanTab) {
+            return 'scan';
+        }
+        return _.first(this.contentFields)['name'];
     }
 
     isUrlField(field: CorpusField) {
@@ -75,7 +94,7 @@ export class DocumentViewComponent {
         let highlighted = this.document.fieldValues[field.name];
         if (this.document.highlight && this.document.highlight.hasOwnProperty(field.name) &&
             this.selectedFieldsContain(field)) { // only apply highlights to selected search fields
-                for (let highlight of this.document.highlight[field.name]) {
+                for (const highlight of this.document.highlight[field.name]) {
                     const stripped_highlight = this.stripTags(highlight);
                     highlighted = highlighted.replace(stripped_highlight, highlight);
                 }

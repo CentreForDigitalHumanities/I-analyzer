@@ -22,7 +22,6 @@
                       "node_modules/primeicons/primeicons.css",
                       "node_modules/primeng/resources/primeng.min.css",
                       "src/styles.scss",
-                      "node_modules/font-awesome/css/font-awesome.min.css",
                       "src/imageviewer.scss"
                   ],
                   "scripts": [],
@@ -35,47 +34,53 @@
                   "namedChunks": true
               },
               "configurations": {
-                  "production": {
-                      "optimization": true,
-                      "outputHashing": "all",
-                      "sourceMap": false,
-                      "namedChunks": false,
-                      "aot": true,
-                      "extractLicenses": true,
-                      "vendorChunk": false,
-                      "buildOptimizer": true
-                  },
-                  "git": {
-                      "optimization": true,
-                      "outputHashing": "all",
-                      "sourceMap": false,
-                      "namedChunks": false,
-                      "aot": true,
-                      "extractLicenses": true,
-                      "vendorChunk": false,
-                      "buildOptimizer": true,
-                      "fileReplacements": [
-                          {
-                              "replace": "src/environments/environment.ts",
-                              "with": "src/environments/environment.git.ts"
-                          }
-                      ]
-                  }
-              },
+                "production": {
+                    "optimization": true,
+                    "outputHashing": "all",
+                    "sourceMap": false,
+                    "namedChunks": false,
+                    "aot": true,
+                    "extractLicenses": true,
+                    "vendorChunk": false,
+                    "buildOptimizer": true,
+                    "fileReplacements": [
+                        {
+                            "replace": "src/environments/environment.ts",
+                            "with": "src/environments/environment.prod.ts"
+                        }
+                    ]
+                },
+                "git": {
+                    "optimization": true,
+                    "outputHashing": "all",
+                    "sourceMap": false,
+                    "namedChunks": false,
+                    "aot": true,
+                    "extractLicenses": true,
+                    "vendorChunk": false,
+                    "buildOptimizer": true,
+                    "fileReplacements": [
+                        {
+                            "replace": "src/environments/environment.ts",
+                            "with": "src/environments/environment.git.ts"
+                        }
+                    ]
+                }
+            },
               "defaultConfiguration": ""
           },
           "serve": {
               "builder": "@angular-devkit/build-angular:dev-server",
-              "options": {},
+            "options": {},
               "configurations": {
-                  "production": {
-                      "browserTarget": "frontend:build:production"
-                  },
-                  "development": {
-                      "browserTarget": "frontend:build"
-                  }
-              },
-              "defaultConfiguration": "development"
+                "production": {
+                "browserTarget": "frontend:build:production"
+            },
+            "development": {
+                "browserTarget": "frontend:build"
+            }
+            },
+            "defaultConfiguration": "development"
           },
           "extract-i18n": {
               "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -94,8 +99,7 @@
                   "styles": [
                       "node_modules/primeicons/primeicons.css",
                       "node_modules/primeng/resources/primeng.css",
-                      "src/styles.scss",
-                      "node_modules/font-awesome/css/font-awesome.min.css"
+                      "src/styles.scss"
                   ],
                   "assets": ["src/assets"]
               }

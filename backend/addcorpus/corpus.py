@@ -3,10 +3,7 @@ Module contains the base classes from which corpora can derive;
 '''
 
 from . import extract
-from zipfile import ZipExtFile
 import itertools
-import inspect
-import json
 import bs4
 import csv
 import sys
@@ -15,13 +12,10 @@ from datetime import datetime
 from os.path import isdir
 
 from django.conf import settings
-from langcodes import Language, standardize_tag
-
-from addcorpus.constants import CATEGORIES
 
 import logging
-logger = logging.getLogger('indexing')
 
+logger = logging.getLogger('indexing')
 
 
 class CorpusDefinition(object):
@@ -37,38 +31,37 @@ class CorpusDefinition(object):
     @property
     def title(self):
         '''
-        Path to source data directory.
+        Title of the corpus
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing title')
 
     @property
     def description(self):
         '''
         Short description of the corpus
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing description')
 
     @property
     def data_directory(self):
         '''
         Path to source data directory.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing data_directory')
 
     @property
     def min_date(self):
         '''
         Minimum timestamp for data files.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing min_date')
 
     @property
     def max_date(self):
         '''
         Maximum timestamp for data files.
         '''
-        raise NotImplementedError()
-
+        raise NotImplementedError('CorpusDefinition missing max_date')
 
     '''
     Language(s) used in the corpus
@@ -85,14 +78,14 @@ class CorpusDefinition(object):
 
         See addcorpus.constants.CATEGORIES for options
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing category')
 
     @property
     def es_index(self):
         '''
         ElasticSearch index name.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition es_index')
 
     '''
     Elasticsearch alias. Defaults to None.
@@ -115,8 +108,7 @@ class CorpusDefinition(object):
         the `Field` class, containing information about each attribute.
         MUST include a field with `name='id'`.
         '''
-        raise NotImplementedError()
-
+        raise NotImplementedError('CorpusDefinition missing fields')
 
     '''
     A dictionary that specifies how documents can be grouped into a "context". For example,
@@ -143,7 +135,7 @@ class CorpusDefinition(object):
         Name of the corpus image. Should be relative path from a directory 'images'
         in the same directory as the corpus definition file.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing image')
 
     '''
     MIME type of scanned documents (images)
@@ -236,72 +228,6 @@ class CorpusDefinition(object):
             }
         }
 
-    def json(self):
-        '''
-        Corpora should be able to produce JSON, so that the fields they define
-        can be used by other codebases, while retaining the Python class as the
-        single source of truth.
-        '''
-        corpus_dict = self.serialize()
-        json_dict = json.dumps(corpus_dict)
-        return json_dict
-
-    def serialize(self):
-        """
-        Convert corpus object to a JSON-friendly dict format.
-        """
-        corpus_dict = {}
-
-        # gather attribute names
-        # exclude:
-        # - methods not implemented in Corpus class
-        # - hidden attributes
-        # - attributes listed in `exclude`
-        # - bound methods
-        exclude = ['data_directory', 'es_settings', 'word_model_path']
-        corpus_attribute_names = [
-            a for a in dir(self)
-            if a in dir(CorpusDefinition) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
-        ]
-
-        # collect values
-        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
-
-        for ca in corpus_attributes:
-            if ca[0] == 'fields':
-                field_list = []
-                for field in self.fields:
-                    field_list.append(field.serialize())
-                corpus_dict[ca[0]] = field_list
-            elif ca[0] == 'languages':
-                format = lambda tag: Language.make(standardize_tag(tag)).display_name() if tag else 'Unknown'
-                corpus_dict[ca[0]] = [
-                    format(tag)
-                    for tag in ca[1]
-                ]
-            elif ca[0] == 'category':
-                corpus_dict[ca[0]] =  self._format_option(ca[1], CATEGORIES)
-            elif type(ca[1]) == datetime:
-                timedict = {'year': ca[1].year,
-                            'month': ca[1].month,
-                            'day': ca[1].day,
-                            'hour': ca[1].hour,
-                            'minute': ca[1].minute}
-                corpus_dict[ca[0]] = timedict
-            else:
-                corpus_dict[ca[0]] = ca[1]
-        return corpus_dict
-
-    def _format_option(self, value, options):
-        '''
-        For serialisation: format language or category based on list of options
-        '''
-        return next(
-            nice_string
-            for code, nice_string in options
-            if value == code
-        )
-
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
@@ -311,7 +237,7 @@ class CorpusDefinition(object):
         empty or contains only a timestamp; but any data that is to be
         extracted without reading the file itself can be specified there.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing sources')
 
     def source2dicts(self, sources):
         '''
@@ -319,7 +245,7 @@ class CorpusDefinition(object):
 
         The dictionaries are created from this corpus' `Field`s.
         '''
-        raise NotImplementedError()
+        raise NotImplementedError('CorpusDefinition missing source2dicts')
 
     def documents(self, sources=None):
         '''
@@ -345,11 +271,36 @@ class CorpusDefinition(object):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
 
+
+class ParentCorpusDefinition(CorpusDefinition):
+    ''' A class from which other corpus definitions can inherit.
+    This class is in charge of setting fields, usually without defining an extractor.
+    The subclassed CorpusDefinitions will set extractors on the fields -
+    this way, CorpusDefinitions can share the same mappings and filters,
+    while the logic to collect sources and populate the fields can be different.
+    The ParentCorpusDefinition can also be used to allow cross-corpus search and filtering.
+    '''
+    # define fields property so it can be set in __init__
+    @property
+    def fields(self):
+        return self._fields
+
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
+
+    def __init__(self):
+        ''' Specify a list of fields which all subclasses share
+            A subclass of ParentCorpusDefinition will provide extractors for the fields,
+            and potentially prune done the list of fields to those which have an extractor
+        '''
+        self.fields = []
+
+
 class XMLCorpusDefinition(CorpusDefinition):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
-
 
     '''
     The top-level tag in the source documents.
@@ -379,7 +330,7 @@ class XMLCorpusDefinition(CorpusDefinition):
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
-        self._reject_extractors(extract.HTML, extract.CSV)
+        self._reject_extractors(extract.CSV)
 
         # extract information from external xml files first, if applicable
         metadata = {}
@@ -523,13 +474,14 @@ class XMLCorpusDefinition(CorpusDefinition):
         '''
         return bs4.BeautifulSoup(data, 'lxml-xml')
 
-    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None, metadata = {}):
+    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None, metadata={}):
         '''
         Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.get_tag_requirements(self.tag_toplevel, metadata)
+            toplevel_tag = self.get_tag_requirements(
+                self.tag_toplevel, metadata)
 
         if type(toplevel_tag) != str:
             return soup.find(**toplevel_tag) if toplevel_tag else soup
@@ -597,7 +549,7 @@ class HTMLCorpusDefinition(XMLCorpusDefinition):
         '''
         (filename, metadata) = source
 
-        self._reject_extractors(extract.XML, extract.CSV)
+        self._reject_extractors(extract.CSV)
 
         # Loading HTML
         logger.info('Reading HTML file {} ...'.format(filename))
@@ -672,7 +624,7 @@ class CSVCorpusDefinition(CorpusDefinition):
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
-        self._reject_extractors(extract.XML, extract.HTML)
+        self._reject_extractors(extract.XML, extract.FilterAttribute)
 
         if isinstance(source, str):
             filename = source
@@ -696,9 +648,9 @@ class CSVCorpusDefinition(CorpusDefinition):
             for row in reader:
                 is_new_document = True
 
-                if self.required_field and not row.get(self.required_field):  # skip row if required_field is empty
+                # skip row if required_field is empty
+                if self.required_field and not row.get(self.required_field):
                     continue
-
 
                 if self.field_entry:
                     identifier = row[self.field_entry]
@@ -721,13 +673,12 @@ class CSVCorpusDefinition(CorpusDefinition):
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows, metadata = metadata, index=row_index
+                rows=rows, metadata=metadata, index=row_index
             )
             for field in self.fields if field.indexed
         }
 
         return doc
-
 
 
 # Fields ######################################################################
@@ -762,15 +713,16 @@ class FieldDefinition(object):
                  name=None,
                  display_name=None,
                  display_type=None,
-                 description=None,
+                 description='',
                  indexed=True,
                  hidden=False,
                  results_overview=False,
                  csv_core=False,
                  search_field_core=False,
-                 visualizations=None,
+                 visualizations=[],
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
+                 language=None,
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
@@ -781,9 +733,11 @@ class FieldDefinition(object):
                  **kwargs
                  ):
 
+        mapping_type = es_mapping['type']
+
         self.name = name
-        self.display_name = display_name
-        self.display_type = display_type
+        self.display_name = display_name or name
+        self.display_type = display_type or mapping_type
         self.description = description
         self.search_filter = search_filter
         self.results_overview = results_overview
@@ -792,6 +746,7 @@ class FieldDefinition(object):
         self.visualizations = visualizations
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
+        self.language = language
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
@@ -799,7 +754,7 @@ class FieldDefinition(object):
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
-            es_mapping['type'] in ['integer', 'float', 'date']
+            mapping_type in ['integer', 'float', 'date']
 
         self.primary_sort = primary_sort
 
@@ -807,32 +762,13 @@ class FieldDefinition(object):
         # Keyword fields without a filter are also searchable.
         self.searchable = searchable if searchable != None else \
             not hidden and indexed and \
-            ((self.es_mapping['type'] == 'text') or
-             (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
+            ((mapping_type == 'text') or
+             (mapping_type == 'keyword' and self.search_filter == None))
         # Add back reference to field in filter
         self.downloadable = downloadable
 
         if self.search_filter:
             self.search_filter.field = self
-
-    def serialize(self):
-        """
-        Convert Field object to a JSON-friendly dict format.
-        """
-        field_dict = {}
-        for key, value in self.__dict__.items():
-            if key == 'search_filter' and value != None:
-                filter_name = str(type(value)).split(
-                    sep='.')[-1][:-2]
-                search_dict = {'name': filter_name}
-                for search_key, search_value in value.__dict__.items():
-                    if search_key == 'search_filter' or search_key != 'field':
-                        search_dict[search_key] = search_value
-                field_dict['search_filter'] = search_dict
-            elif key != 'extractor':
-                field_dict[key] = value
-
-        return field_dict
 
 
 # Helper functions ############################################################
@@ -888,3 +824,14 @@ def consolidate_start_end_years(start, end, min_date, max_date):
         start = min_date
     if end > max_date:
         end = max_date
+
+
+def transform_to_date_range(earliest, latest):
+    if not earliest:
+        earliest = '0001-01-01'
+    if not latest:
+        latest = datetime.today().isoformat()[:10]
+    return {
+        'gte': earliest,
+        'lte': latest
+    }

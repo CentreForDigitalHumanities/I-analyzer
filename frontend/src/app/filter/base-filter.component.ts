@@ -1,8 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 
-import { QueryModel, SearchFilter } from '../models/index';
+import { QueryModel } from '../models/index';
 import { Subscription } from 'rxjs';
+import { FilterInterface } from '../models/base-filter';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -11,7 +12,7 @@ import { Subscription } from 'rxjs';
 @Component({
     template: ''
 })
-export abstract class BaseFilterComponent<FilterData> implements OnChanges {
+export abstract class BaseFilterComponent<SearchFilter extends FilterInterface> implements OnChanges {
     @Input() filter: SearchFilter;
     @Input() queryModel: QueryModel;
 
@@ -20,7 +21,7 @@ export abstract class BaseFilterComponent<FilterData> implements OnChanges {
 
     constructor() { }
 
-    get data(): FilterData {
+    get data(): typeof this.filter.currentData {
         return this.filter?.currentData;
     }
 
@@ -50,7 +51,7 @@ export abstract class BaseFilterComponent<FilterData> implements OnChanges {
     /**
      * Trigger a change event.
      */
-    update(data: FilterData) {
+    update(data: typeof this.filter.currentData) {
         this.filter.set(data);
     }
 

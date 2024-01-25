@@ -1,33 +1,44 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 import { ParamDirective } from '../../../param/param-directive';
 import { ParamService } from '../../../services';
+import { formIcons } from '../../../shared/icons';
 
 @Component({
     selector: 'ia-term-comparison-editor',
     templateUrl: './term-comparison-editor.component.html',
-    styleUrls: ['./term-comparison-editor.component.scss']
+    styleUrls: ['./term-comparison-editor.component.scss'],
 })
-export class TermComparisonEditorComponent extends ParamDirective implements OnChanges {
+export class TermComparisonEditorComponent
+    extends ParamDirective
+    implements OnChanges {
     @Input() initialValue = []; // starting value
     @Input() termLimit = 10;
+
+    @Output() queriesChanged = new EventEmitter<string[]>();
+    @Output() clearQueries = new EventEmitter<void>();
 
     queries: string[] = [];
     public showReset = false;
     nullableParameters = ['compareTerm'];
 
-    @Output() queriesChanged = new EventEmitter<string[]>();
-    @Output() clearQueries = new EventEmitter<void>();
-
-    faCheck = faCheck;
+    formIcons = formIcons;
 
     constructor(
         route: ActivatedRoute,
         router: Router,
         paramService: ParamService
-    ) { super(route, router, paramService)}
+    ) {
+        super(route, router, paramService);
+    }
+
+    get disableConfirm(): boolean {
+        if (!this.queries || !this.queries.length) {
+            return false;
+        }
+        return this.queries.length >= this.termLimit;
+    }
 
     initialize() {}
 
@@ -58,13 +69,5 @@ export class TermComparisonEditorComponent extends ParamDirective implements OnC
         this.queries = this.initialValue;
         this.clearQueries.emit();
         this.showReset = false;
-    }
-
-
-    get disableConfirm(): boolean {
-        if (!this.queries || !this.queries.length) {
-            return false;
-        }
-        return this.queries.length >= this.termLimit;
     }
 }

@@ -5,7 +5,8 @@ import * as _ from 'lodash';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { SearchFilter, QueryModel } from '../models/index';
+import { FilterInterface, QueryModel } from '../models/index';
+import { filterIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -15,14 +16,16 @@ import { SearchFilter, QueryModel } from '../models/index';
 export class FilterManagerComponent {
     @Input() queryModel: QueryModel;
 
+    filterIcons = filterIcons;
+
     constructor() {
     }
 
-    get activeFilters(): SearchFilter[] {
+    get activeFilters(): FilterInterface[] {
         return this.queryModel?.activeFilters;
     }
 
-    get filters(): SearchFilter[] {
+    get filters(): FilterInterface[] {
         return this.queryModel?.filters;
     }
 
@@ -48,10 +51,7 @@ export class FilterManagerComponent {
         if (this.activeFilters.length) {
             this.filters.forEach(filter => filter.deactivate());
         } else {
-            // if we don't have active filters, set all filters to active which don't use default data
-            const filtersWithSettings = this.filters.filter(filter =>
-                !_.isEqual(filter.currentData, filter.defaultData));
-            filtersWithSettings.forEach(filter => filter.toggle());
+            this.filters.forEach(filter => filter.activate());
         }
     }
 

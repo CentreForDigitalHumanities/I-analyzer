@@ -4,9 +4,13 @@
     optionLabel="displayName"
     [displaySelectedLabel]="true"
     (onChange)="onUpdate()"
-    [ngModelOptions]="{standalone: true}"
-    dropdownIcon="fa fa-cog">
+    [ngModelOptions]="{standalone: true}">
+    <ng-template pTemplate="selectedItems">
+        <fa-icon [icon]="actionIcons.config" aria-label="select field"></fa-icon>
+    </ng-template>
     <p-footer *ngIf="optionFields">
-        <a class="button is-primary" (click)="toggleAllFields()">{{allVisible? 'Show default fields' : 'Show all fields'}}</a>
+        <button class="button is-primary" (click)="toggleAllFields()">
+            {{allVisible? 'Show default fields' : 'Show all fields'}}
+    </button>
     </p-footer>
 </p-multiSelect>

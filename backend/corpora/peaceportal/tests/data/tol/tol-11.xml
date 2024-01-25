@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.stoa.org/epidoc/schema/9.0/tei-epidoc.rng" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:space="preserve" xml:lang="en">
+ <teiHeader>
+  <fileDesc>
+   <titleStmt>
+    <title>epidat, tol-11</title>
+    <respStmt>
+     <resp>edited by</resp>
+     <persName ref="https://orcid.org/0000-0002-2701-4256" role="author">Elíshabá Mata</persName>
+    </respStmt>
+   </titleStmt>
+    <editionStmt>
+    <edition/>
+   </editionStmt>
+   <extent/>
+   <publicationStmt>
+    <publisher>
+     <orgName ref="http://d-nb.info/gnd/212562-6">
+      Salomon Ludwig Steinheim-Institut 
+      <address>
+       <addrLine>Edmund-Körner-Platz 2</addrLine>
+       <addrLine>D-45127 Essen</addrLine>
+      </address>
+     </orgName>
+    </publisher>
+    <idno>tol-11</idno>
+    <idno type="url">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-11</idno>
+    <availability xml:lang="en" status="free">
+     <licence>
+      <ref target="http://creativecommons.org/licenses/by/4.0/">Distributed under a Creative Commons licence Attribution-BY 4.0</ref>
+      <p>
+       All reuse or distribution of this work must contain somewhere a link back to the URL 
+       <ref>http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-11</ref>
+      </p>
+     </licence>
+    </availability>
+   </publicationStmt>
+    <notesStmt>
+    <note/>
+   </notesStmt>
+   <sourceDesc>
+    <bibl>born digital</bibl>
+    <msDesc>
+     <msIdentifier>
+      <repository>epidat</repository>
+      <idno>tol-11</idno>
+      <altIdentifier>
+       <idno type="html">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-11</idno>
+       <note/>
+      </altIdentifier>
+      <altIdentifier>
+       <idno type="xml">http://www.steinheim-institut.de:80/cgi-bin/epidat?id=tol-11-t</idno>
+       <note/>
+      </altIdentifier>
+     </msIdentifier>
+     <physDesc>
+      <objectDesc>
+       <supportDesc>
+        <support>
+         <p>
+          <material>stone (material not specified)</material>
+          <objectType ref="http://vocab.getty.edu/page/aat/300005909">sepulchral monument</objectType>
+         </p>
+        </support>
+       </supportDesc>
+        <layoutDesc>
+        <layout/>
+       </layoutDesc>
+      </objectDesc>
+     </physDesc>
+     <history>
+       <origin>
+       <!-- dateEntry not valid -->
+       <origPlace>
+        <country type="ISO_3166" key="XA-ES">Spain</country>
+        <settlement type='city' key='tgn:7008719' ref='http://vocab.getty.edu/tgn/7008719'>
+         Toledo 
+         <geogName ref="http://d-nb.info/gnd/4331943-9">
+          Jewish Cemetery
+          <geo decls="#WGS">39.871036 -4.022968</geo>
+         </geogName>
+        </settlement>
+       </origPlace>
+      </origin>
+     </history>
+    </msDesc>
+   </sourceDesc>
+  </fileDesc>
+  <profileDesc>
+   <particDesc>
+    <person xml:id="tol-11-1" sex="1">
+      
+     <persName>
+      Israel
+      <kov>Moshe</kov>
+      <env>Israel</env>
+     </persName>
+     <death when="1308-04-02">Hypothetical date</death>
+     <desc>Other transcription: YIŚRA#[2019]EL BEN MOŠEH BEN YIŚRA#[2019]EL #[000D]#[000A]Young murdered person</desc>
+    </person>
+   </particDesc>
+    <langUsage>
+    <!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
+    <language ident='he' usage='100'>Hebrew</language>
+   </langUsage>
+  </profileDesc>
+   <revisionDesc>
+   <change/>
+  </revisionDesc>
+ </teiHeader>
+ <text>
+  <body>
+   <div type='edition'>
+    <head>Edition</head>
+    <div type='textpart' subtype='recto'>
+      <ab>
+      <lb n='1'/>
+      ‎‏מִקְנֶה הַשַׂ#[05בּצּ]דֶה וְהַמְּעָרָה אֲשֶׁר בּוֹ לְאֲחֻזַת קֶבֶר‏‎
+      <lb n='2'/>
+      ‎‏לָאִישׁ מְצָאהוּ שׁוֹד וָשֶׁבֶר‏‎
+      <lb n='3'/>
+      ‎‏עַל מוֹת לַבֵּן בָּחוּר וָטוֹב‏‎
+      <lb n='4'/>
+      ‎‏כְּגַן רָטוֹב‏‎
+      <lb n='5'/>
+      ‎‏קָם עָלָיו כַּזְּדוֹנִים‏‎
+      <lb n='6'/>
+      ‎‏גּוֹי עַז פָּנִים‏‎
+      <lb n='7'/>
+      ‎‏הִשְׁקֵהוּ מֵי רוֹשׁ‏‎
+      <lb n='8'/>
+      ‎‏בָּא עַד הָרֹאשׁ‏‎
+      <lb n='9'/>
+      ‎‏וַיַּכֵּהוּ בִצְדִיָּה‏‎
+      <lb n='10'/>
+      ‎‏מַכָּה טְרִיָּה‏‎
+      <lb n='11'/>
+      ‎‏לָאָרֶץ חַיְתוֹ דִכָּה‏‎
+      <lb n='12'/>
+      ‎‏וַיִּצֶק דַּם הַמַּכָּה‏‎
+      <lb n='13'/>
+      ‎‏נַתַּנְהוּ בְדַמּוֹ מִתְגָּאֵל‏‎
+      <lb n='14'/>
+      ‎‏נַעַר יִשְׂרָאֵל‏‎
+      <lb n='15'/>
+      ‎‏הוּא ר׳ יִשְׂרָאֵל בר׳ מֹשֶה‏‎
+      <lb n='16'/>
+      ‎‏בֶּן יִשְׂרָאֵל, דַמּוֹ יְחַשֵּׁב כְּדַם קָרְבָּן אִשֶׁ#[05בּצּ]ה‏‎
+      <lb n='17'/>
+      ‎‏הַצְּבִי יִשְׂרָאֵל חָלָל‏‎
+      <lb n='18'/>
+      ‎‏בִּשְׁנַת עַל בָּמוֹתֶיךָ חֻלָל‏‎
+      <lb n='19'/>
+      ‎‏אֹי נִיסָן [נֵס לָקַחְהוּ חֲבָל ?]‏‎
+      <lb n='20'/>
+      ‎‏וְרֹאשׁ לֹא נִשָּׂא מִיּוֹם נְפַלוֹ‏‎
+      <lb n='21'/>
+      ‎‏עַד בָּא הַמַּשְׁחִית אֶל בֵּיתוֹ‏‎
+      <lb n='22'/>
+      ‎‏בְּפֶסַח וַיָּמֶת אוֹתוֹ‏‎
+      <lb n='23'/>
+      ‎‏תְּהִי מִיתָתוֹ כַפָּרָה לְנִשְׁמָתוֹ‏‎
+      <lb n='24'/>
+      ‎‏וַיֵּאָסֵף אֶל עַמּוֹ‏‎
+      <lb n='25'/>
+      ‎‏תִּהְיֶה נַפְשׁוֹ בְסוֹד נְקִיִּים‏‎
+      <lb n='26'/>
+      ‎‏צְרוּרָה בִּצְרוֹר הַחַיִּים‏‎
+      <lb n='27'/>
+      ‎‏יִפְרוֹשׁ כְּנָפָיו עָלָיו הָאֵל‏‎
+      <lb n='28'/>
+      ‎‏אֱלֹהֵי יִשְׂרָאֵל‏‎
+      <lb n='29'/>
+     </ab>
+    </div>
+   </div>
+   <div type='translation'>
+    <head>Übersetzung</head>
+    <div type='textpart' subtype='recto'>
+      <ab>
+      <lb n='29'/>
+      <!--IsraelMoshe-->
+     </ab>
+    </div>
+   </div>
+   <div type="commentary" subtype="Prosopographie">
+    <head>Prosopographie</head>
+   </div>
+   <div type="bibliography">
+    <head>Bibliographie</head>
+     <bibl>
+     <ptr target="tol-info-t#Luzatto1841"/>
+     <citedRange unit="page">61-62</citedRange>
+     <idno rend="Nr.">62</idno>
+     <note></note>
+    </bibl>
+     <bibl>
+     <ptr target="tol-info-t#Schwab1910"/>
+     <citedRange unit="page">174-175</citedRange>
+     <idno rend="Nr.">17</idno>
+     <note></note>
+    </bibl>
+     <bibl>
+     <ptr target="tol-info-t#C/M"/>
+     <citedRange unit="page">83-84</citedRange>
+     <idno rend="Nr.">41</idno>
+     <note></note>
+    </bibl>
+   </div>
+  </body>
+ </text>
+</TEI>

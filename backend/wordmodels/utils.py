@@ -5,14 +5,14 @@ from string import punctuation
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import corpus_dir, load_corpus
+from addcorpus.load_corpus import corpus_dir, load_corpus_definition
 
 from glob import glob
 
 
 def load_word_models(corpus):
     if type(corpus)==str:
-        corpus = load_corpus(corpus)
+        corpus = load_corpus_definition(corpus)
     wv_list = glob('{}/*.wv'.format(corpus.word_model_path))
     wv_list.sort()
     wm = [
@@ -46,7 +46,7 @@ def word_in_models(query_term, corpus, max_distance=2):
 
 
 def load_wm_documentation(corpus_string):
-    corpus = load_corpus(corpus_string)
+    corpus = load_corpus_definition(corpus_string)
     description_file = join(corpus_dir(corpus_string), 'wm', 'documentation.md')
     if exists(description_file):
         with open(description_file) as f:

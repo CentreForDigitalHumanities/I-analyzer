@@ -1,31 +1,16 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
-import * as _ from 'lodash';
-import { combineLatest, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
-    filtersFromParams, highlightFromParams, omitNullParameters, queryFiltersToParams,
+    filtersFromParams, highlightFromParams, highlightToParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
-import { SearchFilter } from './search-filter';
+import { SearchFilter } from './field-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
-    constructor(
-        esQuery: EsQuery,
-        /**
-         * Name of the corpus for which the query was performed.
-         */
-        public corpus: string,
-
-        /**
-         * User that performed this query.
-         */
-        public user: number) {
-        this.query_json = esQuery;
-    }
-
     /**
      * The query id, when `undefined` it will automatically assign one on save.
      */
@@ -35,7 +20,7 @@ export class QueryDb {
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
     public query_json: EsQuery;
-    queryModel?: QueryModel;
+    public queryModel?: QueryModel;
 
     /**
      * Time the first document was sent.
@@ -61,6 +46,21 @@ export class QueryDb {
      * Number of total results available for the query.
      */
     public total_results: number;
+
+    constructor(
+        esQuery: EsQuery,
+        /**
+         * Name of the corpus for which the query was performed.
+         */
+        public corpus: string,
+
+        /**
+         * User that performed this query.
+         */
+        public user: number
+    ) {
+        this.query_json = esQuery;
+    }
 }
 
 /** These are the from / size parameters emitted by the pagination component */
@@ -77,7 +77,6 @@ export class QueryModel {
 	filters: SearchFilter[];
     sort: SortConfiguration;
     highlightSize: number;
-    highlightSwitchedOff: boolean;
 
 	update = new Subject<void>();
 
@@ -93,6 +92,10 @@ export class QueryModel {
 
     get activeFilters() {
         return this.filters.filter(f => f.active.value);
+    }
+
+    get highlightDisabled() {
+        return !this.queryText;
     }
 
 	setQueryText(text?: string) {
@@ -134,11 +137,8 @@ export class QueryModel {
         );
     }
 
-    setHighlight(size?: number, switchedOff?: boolean) {
-        this.highlightSize = size;
-        if (switchedOff) {
-            this.highlightSwitchedOff = true;
-        }
+    setHighlight(size?: number) {
+        this.highlightSize = size || undefined;
         this.update.next();
     }
 
@@ -160,7 +160,7 @@ export class QueryModel {
         const queryTextParams =  { query: this.queryText || null };
         const searchFieldsParams = { fields: this.searchFields?.map(f => f.name).join(',') || null};
         const sortParams = this.sort.toRouteParam();
-        const highlightParams = { highlight: this.highlightSize || null };
+        const highlightParams = highlightToParams(this);
         const filterParams = queryFiltersToParams(this);
 
         return {
