@@ -23,6 +23,7 @@ describe('PageResults', () => {
 
     beforeEach(inject([SearchService], (searchService: SearchService) => {
         store = new SimpleStore();
+        service = searchService;
         queryModel = new QueryModel(mockCorpus, store);
         service = searchService;
         results = new PageResults(store, searchService, queryModel);
