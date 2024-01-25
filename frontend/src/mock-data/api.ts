@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
-import { Subject, of } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { mockUserResponse } from './user';
+import { TasksOutcome } from '../app/models';
 
-const fakeNgramResult = {
+const fakeNgramResult = [{
     words: [
         {
             label: 'the test',
@@ -10,7 +11,7 @@ const fakeNgramResult = {
         }
     ],
     time_points: ['1900-1910', '1910-1920']
-};
+}];
 
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
@@ -40,12 +41,15 @@ export class ApiServiceMock {
         return this.get('get_wordcloud_data');
     }
 
-    public pollTasks(ids: string[]) {
+    public pollTasks(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome> {
         const fakeResults = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'ngram-task-id': fakeNgramResult,
         };
-        const response = ids.map((id) => _.get(fakeResults, id, {}));
+        const response: TasksOutcome = {
+            status: 'done',
+            results: ids.map((id) => fakeResults[id])
+        };
         return of(response);
     }
 

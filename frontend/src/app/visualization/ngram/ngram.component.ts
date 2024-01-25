@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
-import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
+import { Corpus, FreqTableHeaders, QueryModel,
+    CorpusField, NgramResults, NgramParameters, SuccessfulTask } from '../../models';
 import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
@@ -210,10 +211,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                 this.currentParameters).then(
                     response => {
                         this.tasksToCancel = response.task_ids;
-                        const poller$ = this.apiService.pollTasks<NgramResults>(this.tasksToCancel, this.stopPolling$);
+                        // tasksToCancel contains ids of the parent task and its subtasks
+                        // we are only interested in the outcome of the parent task (first in array)
+                        const poller$ = this.apiService.pollTasks([this.tasksToCancel[0]], this.stopPolling$);
                         poller$.subscribe({
                             error: (error) => this.onFailure(error),
-                            next: (result) => this.onDataLoaded(result['results']),
+                            next: (result: SuccessfulTask<NgramResults[]>) => this.onDataLoaded((result).results[0]),
                             complete: () => this.apiService.abortTasks({ task_ids: this.tasksToCancel })
                     });
             });
@@ -230,8 +233,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     onDataLoaded(result: NgramResults) {
         this.stopPolling$.next();
-        this.currentResults = result[0];
-        this.tableData = this.makeTableData(result[0]);
+        this.currentResults = result;
+        this.tableData = this.makeTableData(result);
 
         this.isLoading.emit(false);
     }

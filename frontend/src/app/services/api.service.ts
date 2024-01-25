@@ -19,6 +19,7 @@ import {
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
+    SuccessfulTask,
     Tag,
     TaskResult,
     TaskSuccess,
@@ -108,11 +109,11 @@ export class ApiService {
     }
 
     // Tasks
-    public getTasksStatus<ExpectedResult>(
+    public getTasksStatus(
         tasks: TaskResult
-    ): Observable<TasksOutcome<ExpectedResult>> {
+    ): Observable<TasksOutcome> {
         return this.http
-            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks);
+            .post<TasksOutcome>('/api/task_status', tasks);
     }
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
@@ -121,17 +122,17 @@ export class ApiService {
             .toPromise();
     }
 
-    private tasksDone<ExpectedResult>(response: TasksOutcome<ExpectedResult>) {
-        return response.status !== 'working';
+    private tasksDone(response: TasksOutcome) {
+        return response.status === 'done';
     }
 
 
-    public pollTasks<ExpectedResult>(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome<ExpectedResult>> {
+    public pollTasks(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome> {
         return interval(5000)
             .pipe(
                 takeUntil(stopPolling$),
                 switchMap((arg) =>
-                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
+                    this.getTasksStatus({ task_ids: ids })
                 ),
                 filter(this.tasksDone)
             );

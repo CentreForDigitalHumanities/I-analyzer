@@ -1,6 +1,6 @@
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
+import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, TermFrequencyResult } from './visualization';
 import { QueryParameters } from './search-requests';
 
 export interface SearchResults {
@@ -87,10 +87,20 @@ export interface TaskSuccess {
     success: true;
 }
 
-export type TasksOutcome<ExpectedResult> =
-    | { status: 'failed' }
-    | { status: 'working' }
-    | { status: 'done'; done: true; results: ExpectedResult[] };
+export interface FailedTask {
+    status: 'failed';
+};
+
+interface WorkingTask {
+    status: 'working';
+}
+
+export interface SuccessfulTask<T> {
+    status: 'done';
+    results: T;
+}
+
+export type TasksOutcome = FailedTask | WorkingTask | SuccessfulTask<NgramResults[] | TermFrequencyResult[]>;
 
 export type ResultsDownloadParameters = {
     corpus: string;

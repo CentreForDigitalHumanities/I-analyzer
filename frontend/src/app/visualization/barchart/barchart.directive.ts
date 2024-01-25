@@ -419,7 +419,7 @@ export abstract class BarchartDirective<
         return new Promise((resolve, reject) => {
             this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
                 this.tasksToCancel = response.task_ids;
-                const poller$ = this.apiService.pollTasks<TermFrequencyResult>(this.tasksToCancel, this.stopPolling$);
+                const poller$ = this.apiService.pollTasks(this.tasksToCancel, this.stopPolling$);
                 poller$.subscribe({
                     error: (error) => {
                         this.stopPolling$.next();
