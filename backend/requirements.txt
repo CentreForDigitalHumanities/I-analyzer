@@ -15,7 +15,7 @@ attrs==23.1.0
     #   outcome
     #   seleniumbase
     #   trio
-backports-zoneinfo[tzdata]==0.2.1
+backports-zoneinfo[tzdata]==0.2.1;python_version<"3.9"
     # via
     #   celery
     #   django
