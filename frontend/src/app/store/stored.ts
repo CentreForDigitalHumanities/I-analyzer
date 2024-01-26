@@ -15,7 +15,7 @@ export abstract class Stored<State extends object> {
      */
     state$: BehaviorSubject<State>;
 
-    private complete$ = new Subject<void>();
+    protected complete$ = new Subject<void>();
     private isComplete = false;
 
     /** keys of the stored parameters that this model interacts with */
@@ -99,9 +99,9 @@ export abstract class Stored<State extends object> {
     }
 
     /** convert the internal state to the format used in the store */
-    abstract stateToStore(state: State): Params;
+    protected abstract stateToStore(state: State): Params;
 
     /** convert stored parameters to the internal format of the model */
-    abstract storeToState(params: Params): State;
+    protected abstract storeToState(params: Params): State;
 
 };
