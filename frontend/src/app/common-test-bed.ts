@@ -22,6 +22,8 @@ import { VisualizationService } from './services/visualization.service';
 import { visualizationServiceMock } from '../mock-data/visualization';
 import { TagService } from './services/tag.service';
 import { TagServiceMock } from '../mock-data/tag';
+import { RouterStore } from './store/router-store';
+import { SimpleStore } from './store/simple-store';
 
 export const commonTestBed = () => {
     const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
@@ -65,6 +67,10 @@ export const commonTestBed = () => {
         {
             provide: TagService,
             useValue: new TagServiceMock(),
+        },
+        {
+            provide: RouterStore,
+            useValue: new SimpleStore()
         }
     );
 
