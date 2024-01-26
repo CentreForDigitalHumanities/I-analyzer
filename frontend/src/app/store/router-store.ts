@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { Store } from './types';
 import { Observable, Subject } from 'rxjs';
-import { debounce, debounceTime } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 
 /**
  * Synchronises stored parameters with the route query parameters
@@ -30,7 +30,7 @@ export class RouterStore implements Store {
     private navigate(params: Params) {
         const route = this.router.routerState.root;
         this.router.navigate(
-            ['.'],
+            [],
             {
                 queryParams: params,
                 queryParamsHandling: 'merge',
