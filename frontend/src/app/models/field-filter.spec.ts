@@ -64,6 +64,23 @@ describe('SearchFilter', () => {
         expect(isActive()).toBeFalse();
     });
 
+    it('should be resettable when activated', () => {
+        filter.set(exampleData);
+
+        expect(filter.state$.value).toEqual({
+            active: true,
+            data: exampleData
+        });
+
+        filter.reset();
+
+        expect(filter.state$.value).toEqual({
+            active: false,
+            data: filter.defaultData
+        });
+
+    });
+
     it('should be resettable when deactivated', () => {
         filter.set(exampleData);
         filter.deactivate();

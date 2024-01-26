@@ -64,6 +64,13 @@ export abstract class BaseFilter<InitialParameters, FilterData>
 
     protected keysInStore: string[];
 
+    /**
+     * the last value that the filter data was set to
+     *
+     * this is used to "remember" the data of inactive filters, which are not
+     * distinguished in the store
+     */
+    private latestDataPush$: BehaviorSubject<FilterData>;
 
     /** user-friendly name */
     abstract displayName: string;
@@ -81,6 +88,7 @@ export abstract class BaseFilter<InitialParameters, FilterData>
         super(store);
         this.keysInStore = [keyInStore];
         this.defaultData = this.makeDefaultData(parameters);
+        this.latestDataPush$ = new BehaviorSubject<FilterData>(this.defaultData);
         this.connectToStore();
     }
 
@@ -107,6 +115,7 @@ export abstract class BaseFilter<InitialParameters, FilterData>
      * already. Setting the filter to default data will deactivate it.
      */
     set(data: FilterData) {
+        this.latestDataPush$.next(data);
         if (!_.isEqual(data, this.currentData)) {
             const toDefault = this.isDefault(data);
 
@@ -129,6 +138,7 @@ export abstract class BaseFilter<InitialParameters, FilterData>
         if (this.state$.value.active) {
             this.set(this.defaultData);
         } else {
+            this.latestDataPush$.next(this.defaultData);
             // you normally should not set the state directly, but in this case,
             // all inactive filters are represented identically in the store.
             // so this won't break the relationship between store and state.
@@ -172,7 +182,6 @@ export abstract class BaseFilter<InitialParameters, FilterData>
     /** set value based on route parameters */
     storeToState(params: Params): FilterState<FilterData> {
         const value = params[this.keyInStore];
-        const currentData: FilterData = this.state$?.value.data || this.defaultData;
         if (value) {
             return {
                 active: true,
@@ -181,7 +190,7 @@ export abstract class BaseFilter<InitialParameters, FilterData>
         } else {
             return {
                 active: false,
-                data: currentData,
+                data: this.latestDataPush$.value,
             };
         }
     }
