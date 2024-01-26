@@ -18,11 +18,13 @@ logger = logging.getLogger(__name__)
 def get_query_parameters(request):
         'get query params from a request'
 
+        IGNORE_KEYS = ['tags']
+
         # extract each query_param with .get, otherwise they return as lists
         return {
             key: request.query_params.get(key)
             for key in request.query_params
-            if key != 'tags'
+            if key not in IGNORE_KEYS
         }
 
 class ForwardSearchView(APIView):
