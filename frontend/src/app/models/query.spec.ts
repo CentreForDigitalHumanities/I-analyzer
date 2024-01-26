@@ -35,7 +35,7 @@ describe('QueryModel', () => {
     const someSelection = ['hooray!'];
 
     beforeEach(() => {
-        query = new QueryModel(corpus);
+        query = new QueryModel(corpus, undefined);
 
         filter = query.filterForField(mockFieldDate);
         filter2 = query.filterForField(mockFieldMultipleChoice);
@@ -118,7 +118,8 @@ describe('QueryModel', () => {
             date: null,
             greater_field: null,
             sort: null,
-            highlight: null
+            highlight: null,
+            tags: null,
         });
 
         query.setQueryText('test');
@@ -131,6 +132,7 @@ describe('QueryModel', () => {
             greater_field: null,
             sort: null,
             highlight: null,
+            tags: null,
         });
 
         filter.setToValue(someDate);
@@ -143,6 +145,7 @@ describe('QueryModel', () => {
             greater_field: null,
             sort: null,
             highlight: null,
+            tags: null,
         });
 
         query.setQueryText('');
@@ -155,7 +158,8 @@ describe('QueryModel', () => {
             date: null,
             greater_field: null,
             sort: null,
-            highlight: null
+            highlight: null,
+            tags: null,
         });
     });
 
@@ -207,5 +211,10 @@ describe('QueryModel', () => {
         filter.setToValue(new Date('Jan 2 1850'));
         expect(query.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 2 1850'));
         expect(clone.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 1 1850'));
+    });
+
+    it('should create without a tag service', () => {
+        const taglessQuery = new QueryModel(corpus);
+        expect(taglessQuery).toBeTruthy();
     });
 });

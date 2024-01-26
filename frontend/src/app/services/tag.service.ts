@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FoundDocument } from '../models';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Tag } from '../models';
 import { map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
@@ -11,7 +11,7 @@ import { ApiService } from './api.service';
 })
 export class TagService {
     /** all tags from the user */
-    tags$: Observable<Tag[]>;
+    tags$ = new BehaviorSubject<Tag[]>(undefined);
 
     constructor(private apiService: ApiService) {
         this.fetch();
@@ -36,7 +36,9 @@ export class TagService {
             .pipe(map((response) => response.tags));
     }
 
-    private fetch() {
-        this.tags$ = this.apiService.userTags();
+    private fetch(): void {
+        this.apiService.userTags().subscribe(tags =>
+            this.tags$.next(tags)
+        );
     }
 }

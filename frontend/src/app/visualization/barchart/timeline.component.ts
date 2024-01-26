@@ -36,10 +36,8 @@ export class TimelineComponent
 
     /** get min/max date for the entire graph and set domain and time category */
     setTimeDomain() {
-        const filter =
-            this.queryModel.filters.find(
-                (f) => f.corpusField.name === this.visualizedField.name
-            ) || this.visualizedField.makeSearchFilter();
+        const filter = this.queryModel.filterForField(this.visualizedField)
+            || this.visualizedField.makeSearchFilter();
         const currentDomain = filter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);

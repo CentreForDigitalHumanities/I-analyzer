@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import * as _ from 'lodash';
-import { esQueryToQueryModel } from '../../utils/es-query';
+import { apiQueryToQueryModel, esQueryToQueryModel } from '../../utils/es-query';
 import { QueryDb } from '../../models/index';
 import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
@@ -42,7 +42,7 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     addQueryModel(query?: QueryDb) {
         const corpus = findByName(this.corpora, query.corpus);
         if (corpus) {
-            query.queryModel = esQueryToQueryModel(query.query_json, corpus);
+            query.queryModel = apiQueryToQueryModel(query.query_json, corpus);
             return query;
         }
     }

@@ -12,7 +12,7 @@ import json
 from django.conf import settings
 import warnings
 from allauth.account.models import EmailAddress
-from api.query_model_to_es_query import query_model_to_es_query
+from api.migration_utils.query_model_to_es_query import query_model_to_es_query
 
 
 def adapt_password_encoding(flask_encoded):

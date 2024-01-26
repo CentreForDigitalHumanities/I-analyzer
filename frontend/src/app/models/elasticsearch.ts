@@ -34,6 +34,7 @@ export interface EsRangeFilter {
     };
 }
 
+
 export type EsFilter = EsDateFilter | EsTermFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 // QUERIES
@@ -80,7 +81,7 @@ export interface EsQuery {
     query: EsSearchClause | BooleanQuery | EsFilter;
     highlight?: unknown;
     transferred?: number;
-}
+};
 
 export interface Aggregator {
     name: string;
