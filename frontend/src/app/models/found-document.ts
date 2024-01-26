@@ -3,9 +3,9 @@ import { makeContextParams } from '../utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 import { Tag } from './tag';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject, merge, timer } from 'rxjs';
 import { TagService } from '../services/tag.service';
-import { tap } from 'rxjs/operators';
+import { map, mergeMap, shareReplay, take, tap } from 'rxjs/operators';
 
 export class FoundDocument {
     id: string;
@@ -25,7 +25,9 @@ export class FoundDocument {
     highlight: HighlightResult;
 
     /** tags created on the document */
-    tags$ = new BehaviorSubject<Tag[]>(undefined);
+    tags$: Observable<Tag[]>;
+
+    private tagsChanged$ = new Subject<void>();
 
     constructor(
         private tagService: TagService,
@@ -37,7 +39,13 @@ export class FoundDocument {
         this.relevance = hit._score / maxScore;
         this.fieldValues = Object.assign({ id: hit._id }, hit._source);
         this.highlight = hit.highlight;
-        this.fetchTags();
+
+        const created$ = timer();
+
+        this.tags$ = merge(created$, this.tagsChanged$).pipe(
+            mergeMap(() => this.fetchTags()),
+            shareReplay(1),
+        );
     }
 
     /**
@@ -74,24 +82,28 @@ export class FoundDocument {
     }
 
     addTag(tag: Tag): void {
-        const newTags = this.tags$.value.concat([tag]);
-        this.setTags(newTags);
+        this.tags$.pipe(
+            take(1),
+            map(tags => tags.concat([tag])),
+            mergeMap(tags => this.setTags(tags)),
+            tap(() => this.tagsChanged$.next()),
+        ).subscribe();
     }
 
     removeTag(tag: Tag): void {
-        const newTags = _.without(this.tags$.value, tag);
-        this.setTags(newTags);
+        this.tags$.pipe(
+            take(1),
+            map(tags => _.without(tags, tag)),
+            mergeMap(tags => this.setTags(tags)),
+            tap(() => this.tagsChanged$.next()),
+        ).subscribe();
     }
 
-    setTags(tags: Tag[]): void {
-        this.tagService
-            .setDocumentTags(this, tags)
-            .subscribe((value) => this.tags$.next(value));
+    private setTags(tags: Tag[]): Observable<Tag[]> {
+        return this.tagService.setDocumentTags(this, tags);
     }
 
-    private fetchTags(): void {
-        this.tagService
-            .getDocumentTags(this)
-            .subscribe((value) => this.tags$.next(value));
+    private fetchTags(): Observable<Tag[]> {
+        return this.tagService.getDocumentTags(this);
     }
 }
