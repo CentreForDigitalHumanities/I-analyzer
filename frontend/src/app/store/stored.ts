@@ -21,11 +21,7 @@ export abstract class Stored<State extends object> {
     /** keys of the stored parameters that this model interacts with */
     protected abstract keysInStore: string[];
 
-    constructor(private store: Store) {
-        const state = this.storeToState(store.currentParams());
-        this.state$ = new BehaviorSubject(state);
-        this.subscribeToStore();
-    }
+    constructor(protected store: Store) { }
 
     /**
      * set the state of the model.
@@ -64,8 +60,20 @@ export abstract class Stored<State extends object> {
         this.store.paramUpdates$.next(this.storeOnComplete());
     }
 
+    /**
+     * fetch the initial state from the store and subscribe to further updates
+     * from the store.
+     *
+     * should probably called in the constructor of the child class. (Not called in
+     * the parent constructor because you may want access to the child class data)
+     * */
+    protected connectToStore() {
+        this.state$ = new BehaviorSubject(this.storeToState(this.store.currentParams()));
+        this.subscribeToStore();
+    }
+
     /** called on initialisation: subscribes to the store until the model is completed */
-    private subscribeToStore() {
+    protected subscribeToStore() {
         this.store.params$.pipe(
             takeUntil(this.complete$),
             map(params => this.filterStoredParams(params)),
@@ -77,7 +85,7 @@ export abstract class Stored<State extends object> {
     }
 
     /** filters the stored parameters and only includes the ones relevant for this model */
-    private filterStoredParams(params: Params): Params {
+    protected filterStoredParams(params: Params): Params {
         return _.pick(params, this.keysInStore);
     }
 
@@ -85,7 +93,7 @@ export abstract class Stored<State extends object> {
      *
      * (i.e. reset this model's keys to null)
      */
-    private storeOnComplete(): Params {
+    protected storeOnComplete(): Params {
         const toNull = Object.assign({}, ...this.keysInStore.map(f => ({[f]: null})));
         return toNull;
     }
