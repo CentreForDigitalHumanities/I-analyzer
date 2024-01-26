@@ -31,10 +31,7 @@ export abstract class Stored<State extends object> {
             throw Error('attempted to set parameters on a model after completing it');
         }
 
-        const newState: State = {
-            ...this.state$.value,
-            ...newValues
-        };
+        const newState: State = _.assign(_.clone(this.state$.value), newValues);
 
         if (!_.isEqual(this.state$.value, newState)) {
             const newParams = this.stateToStore(newState);
