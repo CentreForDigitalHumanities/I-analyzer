@@ -37,6 +37,11 @@ export interface FilterInterface<FilterData = any> {
  * Abstract filter class
  *
  * Implements much of the logic to handle activity state.
+ *
+ * Filters are a Stored model, but have some wackiness because their internal state is
+ * not isomorphic to the stored state. In the UI, we distinguish between the default state
+ * (inactive, default data), and an inactive filter with non-default data. But this
+ * distinction is irrelevant for querying so it's not stored.
  */
 export abstract class BaseFilter<InitialParameters, FilterData>
     extends Stored<FilterState<FilterData>>
