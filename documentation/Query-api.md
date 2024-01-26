@@ -1,6 +1,8 @@
 # Query API
 
-For the most part, searching works as follows. The user interacts with the frontend interface, and the frontend constructs a query JSON in the [elasticsearch query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html). The frontend then makes a request to the backend with the query in the payload and the backend returns the result.
+For the most part, searching works as follows.
+- The user interacts with the frontend interface, and the frontend constructs a query JSON in the [elasticsearch query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
+- The frontend makes a request to the backend with the query in the payload and the backend returns the result.
 
 So as a minimal example, the frontend can send a POST request to `/api/es/example_corpus/_search` with the following payload.
 
