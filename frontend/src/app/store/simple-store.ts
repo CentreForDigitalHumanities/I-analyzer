@@ -2,7 +2,8 @@ import { BehaviorSubject } from 'rxjs';
 import { Store } from './types';
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
-import { scan } from 'rxjs/operators';
+import { map, scan } from 'rxjs/operators';
+import { omitNullParameters } from '../utils/params';
 
 /** simple store that does not depend on services or routing
  *
@@ -15,7 +16,8 @@ export class SimpleStore implements Store {
 
     constructor() {
         this.paramUpdates$.pipe(
-            scan(this.merge)
+            scan(this.merge),
+            map(omitNullParameters)
         ).subscribe(params =>
             this.params$.next(params)
         );
