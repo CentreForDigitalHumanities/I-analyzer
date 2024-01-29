@@ -92,34 +92,3 @@ describe('omitNullParameters', () => {
         );
     });
 });
-
-// describe('paramsHaveChanged', () => {
-//     const corpus = mockCorpus;
-//     let queryModel: QueryModel;
-
-//     beforeEach(() => {
-//         queryModel = new QueryModel(corpus);
-//     });
-
-//     it('should detect changes in parameters', () => {
-//         const params1 = convertToParamMap({});
-//         const params2 = convertToParamMap({query: 'test'});
-
-//         expect(paramsHaveChanged(queryModel, params1)).toBeFalse();
-//         expect(paramsHaveChanged(queryModel, params2)).toBeTrue();
-
-//         queryModel = new QueryModel(corpus, params2);
-
-//         expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
-//         expect(paramsHaveChanged(queryModel, params1)).toBeTrue();
-
-//     });
-
-//     it('should detect new filters', () => {
-//         const filter = mockField.makeSearchFilter() as MultipleChoiceFilter;
-//         filter.set(['test']);
-//         const params = convertToParamMap(filter.stateToStore(filter.state$.value));
-
-//         expect(paramsHaveChanged(queryModel, params)).toBeTrue();
-//     });
-// });
