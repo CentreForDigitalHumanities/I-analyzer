@@ -21,6 +21,7 @@ This directory contains documentation for developers.
 - [Celery](./Celery.md) (used for downloads and visualisations)
 - [Email](./Email.md) (used for downloads and authentication)
 - [Adding word models](./Adding-word-models.md)
+- [Query API](./Query-api.md)
 
 ## Authentication
 

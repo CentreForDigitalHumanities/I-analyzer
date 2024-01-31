@@ -10,6 +10,7 @@ export interface FilterInterface<FilterData = any> {
     update: Subject<void>;
     active: BehaviorSubject<boolean>;
     data: BehaviorSubject<FilterData>;
+    displayName: string;
     description: string;
     filterType: string;
     currentData: FilterData;
@@ -21,6 +22,7 @@ export interface FilterInterface<FilterData = any> {
     toggle: () => void;
     setFromParams: (params: ParamMap) => void;
     toRouteParam: () => Record<string, any>;
+    dataToString: (data: FilterData) => string;
 }
 
 /**
@@ -60,6 +62,9 @@ export abstract class BaseFilter<InitialParameters, FilterData> implements Filte
      * if the filter data is set to this vaule, the filter will be set to "inactive".
      */
     defaultData: FilterData;
+
+    /** user-friendly name */
+    abstract displayName: string;
 
     /** explanatory text for the user */
     abstract description: string;

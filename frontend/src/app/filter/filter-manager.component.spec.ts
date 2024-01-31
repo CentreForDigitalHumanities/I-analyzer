@@ -24,18 +24,18 @@ describe('FilterManagerComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-        expect(component.filters.length).toEqual(2);
+        expect(component.filters.length).toEqual(3);
     });
 
     it('resets filters when corpus changes', () => {
         component.queryModel = new QueryModel(mockCorpus2);
         fixture.detectChanges();
-        expect(component.filters.length).toEqual(1);
+        expect(component.filters.length).toEqual(2);
         expect(component.filters[0]['adHoc']).toBeTrue();
 
         component.queryModel = new QueryModel(mockCorpus);
         fixture.detectChanges();
-        expect(component.filters.length).toEqual(2);
+        expect(component.filters.length).toEqual(3);
         expect(component.filters[0]['adHoc']).toBeFalse();
 
     });
