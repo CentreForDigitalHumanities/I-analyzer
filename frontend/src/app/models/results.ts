@@ -2,7 +2,7 @@ import { BehaviorSubject, Observable, combineLatest, merge, of, timer } from 'rx
 import { QueryModel } from './query';
 import { catchError, map, mergeMap, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { Stored } from '../store/stored';
+import { StoreSync } from '../store/store-sync';
 import { Store } from '../store/types';
 
 /**
@@ -12,7 +12,7 @@ import { Store } from '../store/types';
  * for fetching results. Results will be loaded when the query model
  * or the parameters update
  */
-export abstract class Results<Parameters extends object, Result> extends Stored<Parameters> {
+export abstract class Results<Parameters extends object, Result> extends StoreSync<Parameters> {
     /** additional parameters besides the query model */
     state$: BehaviorSubject<Parameters>;
 

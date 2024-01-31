@@ -23,7 +23,7 @@ import {
 } from '../models/index';
 import { PageResults, PageResultsParameters } from '../models/page-results';
 import { SearchService } from '../services';
-import { RouterStore } from '../store/router-store';
+import { RouterStoreService } from '../store/router-store.service';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -67,7 +67,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     private destroy$ = new Subject<void>();
 
     constructor(
-        private routerStore: RouterStore,
+        private routerStoreService: RouterStoreService,
         private searchService: SearchService,
     ) {}
 
@@ -75,7 +75,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
         if (changes.queryModel) {
             this.pageResults?.complete();
             this.pageResults = new PageResults(
-                this.routerStore,
+                this.routerStoreService,
                 this.searchService,
                 this.queryModel
             );
