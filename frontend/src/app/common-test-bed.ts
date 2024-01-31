@@ -22,7 +22,7 @@ import { VisualizationService } from './services/visualization.service';
 import { visualizationServiceMock } from '../mock-data/visualization';
 import { TagService } from './services/tag.service';
 import { TagServiceMock } from '../mock-data/tag';
-import { RouterStore } from './store/router-store';
+import { RouterStoreService } from './store/router-store.service';
 import { SimpleStore } from './store/simple-store';
 
 export const commonTestBed = () => {
@@ -69,7 +69,7 @@ export const commonTestBed = () => {
             useValue: new TagServiceMock(),
         },
         {
-            provide: RouterStore,
+            provide: RouterStoreService,
             useValue: new SimpleStore()
         }
     );

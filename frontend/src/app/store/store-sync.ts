@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 
 
-export abstract class Stored<State extends object> {
+export abstract class StoreSync<State extends object> {
     /**
      * The stored state to of the model.
      *

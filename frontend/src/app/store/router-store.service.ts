@@ -10,7 +10,7 @@ import { debounceTime } from 'rxjs/operators';
 @Injectable({
     providedIn: 'root'
 })
-export class RouterStore implements Store {
+export class RouterStoreService implements Store {
     params$: Observable<Params>;
     paramUpdates$ = new Subject<Params>();
 

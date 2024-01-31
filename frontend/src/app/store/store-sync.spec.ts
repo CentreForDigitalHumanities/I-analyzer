@@ -1,17 +1,17 @@
 import { Params } from '@angular/router';
-import { Stored } from './stored';
+import { StoreSync } from './store-sync';
 import * as _ from 'lodash';
 import { SimpleStore } from './simple-store';
 import { Store } from './types';
 
 
-describe('Stored', () => {
+describe('StoreSync', () => {
     interface State {
         foo: string;
         bar: string;
     };
 
-    class TestModel extends Stored<State> {
+    class TestModel extends StoreSync<State> {
         protected keysInStore = ['foobar'];
 
         constructor(_store: Store) {
