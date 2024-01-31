@@ -40,8 +40,10 @@ export class FoundDocument {
         this.fieldValues = Object.assign({ id: hit._id }, hit._source);
         this.highlight = hit.highlight;
 
-        const created$ = timer();
+        const created$ = timer(); // observable of the moment of construction (i.e. now)
 
+        // tags need to refreshed when the document is created, and
+        // after each update
         this.tags$ = merge(created$, this.tagsChanged$).pipe(
             mergeMap(() => this.fetchTags()),
             shareReplay(1),
@@ -86,8 +88,9 @@ export class FoundDocument {
             take(1),
             map(tags => tags.concat([tag])),
             mergeMap(tags => this.setTags(tags)),
-            tap(() => this.tagsChanged$.next()),
-        ).subscribe();
+        ).subscribe(() =>
+            this.tagsChanged$.next()
+        );
     }
 
     removeTag(tag: Tag): void {
@@ -95,8 +98,9 @@ export class FoundDocument {
             take(1),
             map(tags => _.without(tags, tag)),
             mergeMap(tags => this.setTags(tags)),
-            tap(() => this.tagsChanged$.next()),
-        ).subscribe();
+        ).subscribe(() =>
+            this.tagsChanged$.next()
+        );
     }
 
     private setTags(tags: Tag[]): Observable<Tag[]> {
