@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
-import { concatMap, takeUntil, tap } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 import {
     Download,
     DownloadOptions,
@@ -16,6 +15,7 @@ import {
     DownloadService,
     NotificationService,
 } from '../../services';
+import { actionIcons } from '../../shared/icons';
 import { esQueryToQueryModel } from '../../utils/es-query';
 import { findByName } from '../../utils/utils';
 import { HistoryDirective } from '../history.directive';
@@ -28,8 +28,7 @@ import { HistoryDirective } from '../history.directive';
 export class DownloadHistoryComponent extends HistoryDirective implements OnDestroy, OnInit {
     downloads: Download[];
 
-    faDownload = faDownload;
-    faTrash = faTrash;
+    actionIcons = actionIcons;
 
     itemToDownload: Download;
 

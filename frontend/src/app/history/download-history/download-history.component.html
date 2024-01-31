@@ -50,7 +50,7 @@
                     <a *ngIf="download.status === 'done'" role="button" tabindex="0" (click)="itemToDownload = download"
                         (keydown.enter)="itemToDownload = download">
                         <span class="icon">
-                            <fa-icon [icon]="faDownload"></fa-icon>
+                            <fa-icon [icon]="actionIcons.download"></fa-icon>
                         </span>
                         <span>download file</span>
                     </a>

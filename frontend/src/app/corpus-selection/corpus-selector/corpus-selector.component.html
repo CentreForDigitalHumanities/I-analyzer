@@ -13,8 +13,11 @@
                 <button class="moreInfoLink"
                 role="link"
                 iaBalloon="More information" iaBalloonPosition="down-left"
-                [routerLink]="['/info', corpus.name]">
-                <i class=" fa fa-info-circle info-icon" aria-hidden="true"></i>
+                [routerLink]="['/info', corpus.name]"
+                aria-label="more information">
+                <span class="icon">
+                    <fa-icon [icon]="corpusIcons.infoAlt" aria-hidden="true"></fa-icon>
+                </span>
             </button>
 
             </div>
@@ -37,7 +40,7 @@
             <div class="column is-narrow explore-column">
                 <a class="button corpus-action is-medium" [routerLink]="['/search', corpus.name]">
                     <span class="icon" aria-hidden="true">
-                        <fa-icon [icon]="searchIcon"></fa-icon>
+                        <fa-icon [icon]="corpusIcons.search"></fa-icon>
                     </span>
                     <span>Explore</span>
                 </a>

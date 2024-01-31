@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { showLoading } from '../../utils/utils';
@@ -11,13 +11,16 @@ import { WordmodelsService } from '../../services';
     styleUrls: ['./word-similarity.component.scss'],
 })
 export class WordSimilarityComponent implements OnChanges {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
     @Output() wordSimilarityError = new EventEmitter();
-    @Output() isLoading = new BehaviorSubject<boolean>(false);
+
+    isLoading$ = new BehaviorSubject<boolean>(false);
 
     comparisonTermLimit = Infinity;
     comparisonTerms: string[] = [];
@@ -28,6 +31,11 @@ export class WordSimilarityComponent implements OnChanges {
     data: WordSimilarity[];
 
     constructor(private wordModelsService: WordmodelsService) {}
+
+    @HostBinding('class.is-loading')
+    get isLoading() {
+        return this.isLoading$.value;
+    }
 
     get tableFileName(): string {
         return `word similarity - ${this.queryText} - ${this.corpus?.title}`;
@@ -53,7 +61,7 @@ export class WordSimilarityComponent implements OnChanges {
 
     getData(): void {
         showLoading(
-            this.isLoading,
+            this.isLoading$,
             Promise.all(
                 this.comparisonTerms.map((term) =>
                     this.wordModelsService.getWordSimilarity(

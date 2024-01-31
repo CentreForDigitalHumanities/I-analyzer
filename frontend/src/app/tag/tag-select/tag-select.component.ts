@@ -7,12 +7,12 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { faCheck, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { Tag } from '../../models';
 import { TagService } from '../../services/tag.service';
 import { takeUntil } from 'rxjs/operators';
+import { actionIcons, formIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-tag-select',
@@ -29,9 +29,8 @@ export class TagSelectComponent implements OnDestroy {
     tags$: Observable<Tag[]>;
     destroy$ = new Subject();
 
-    faCheck = faCheck;
-    faTimes = faTimes;
-    faPlus = faPlus;
+    formIcons = formIcons;
+    actionIcons = actionIcons;
 
     selectedTag: Tag;
 
