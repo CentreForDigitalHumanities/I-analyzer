@@ -64,9 +64,9 @@ However, we don't currently apply this anywhere.
 
 ## Storing model states
 
-To unify the state management of models, models should extend the `Stored` class. This class means the model connects to a `Store` that will keep track of the model's parameters.
+To unify the state management of models, models should extend the [`Stored` class](/frontend/src/app/store/stored.ts). Objects in this class connect to a `Store` that will keep track of their parameters.
 
-Stores are discussed in more detail below, but for now, you just need to know that a store keeps track of data that is updated over time. You can connect multiple models to the same store. (Usually from different classes.)
+Stores keep track of data that is updated over time, and are explained in more detail below. You can connect multiple models to the same store. (Usually from different classes.)
 
 A minimal implementation of a stored model would look something like this:
 
@@ -85,13 +85,13 @@ class MyModel extends Stored<MyState> {
 
     storeToState(params): MyState {
         return {
-            foo: params['foo']
+            foo: params['foo'] || ''
         };
     }
 
     stateToStore(state: MyState) {
         return {
-            foo: state.foo
+            foo: state.foo || null
         };
     }
 }
@@ -102,19 +102,64 @@ The `Stored` class provides the main ways in which you can interact with the mod
 - a method `setParams()` which updates some or all of the properties in the model's state by sending an update to the store.
 - a method `complete()`: the model will stop observing the store and reject any further updates. It will also send an update to the store to reset its own state.
 
+See [stored.ts](/frontend/src/app/store/stored.ts) for the exact specification. In practice, the methods can be used like this:
+
+```typescript
+const store = new SimpleStore();
+const myModel = newModel(store);
+
+console.log(myModel.state$.value);
+// { 'foo': '' }
+
+myModel.setParams({foo: 'example'});
+
+console.log(myModel.state$.value);
+// { 'foo': 'example' }
+
+myModel.complete();
+```
+
 Notes:
 
-The methods `storeToState` and `stateToStore` have to implemented, and translate between stored strings and whatever is more convenient as an internal state. This is trivial in the example above, but often comes in handy. These functions must be each other's inverse. There should be unit tests to confirm this.
+The methods `storeToState` and `stateToStore` have to implemented on the model class. They translate between stored strings and whatever is more convenient as an internal state. This is trivial in the example above, but often comes in handy. These functions must be each other's inverse. There should be unit tests to confirm this.
 
-Note that the constructor of `Mymodel` calls the method `connectToStore`. This initialises the `state$` observable based on the current state of the store, and creates a subscription to the store. You should call this method in the constructor. It's not called in the constructor of `Stored` because you may want to set some properties specific to your model before your call it (`connectToStore` uses `storeToState` to set the initial state).
+Note that the constructor of `MyModel` calls the method `connectToStore`. This initialises the `state$` observable based on the current state of the store, and creates a subscription to the store. You should call this method in the constructor. It's not called in the constructor of `Stored` because you may want to set some properties specific to your model before your call it (`connectToStore` uses `storeToState` to set the initial state).
 
 `keysInStore` specifies the specific keys in the store's state that the model interacts with. The model will only listen to changes in those keys, and will reset them when it is completed.
+
+### Using Stored as a base class for components or directives
+
+It is technically possible to use `Stored` as a parent class for a component or directive, rather than a data model. That will look something like this:
+
+```typescript
+type Data = { foo: string };
+
+@Component{
+    selector: 'my-component',
+    templateUrl: './my-component.component.html',
+}
+class MyComponent extends Stored<Data> implements OnDestroy  {
+
+    constructor(
+        routerStore: RouterStore,
+    ) {
+        super(routerStore);
+        this.connectToStore();
+    }
+
+    ngOnDestroy() {
+        this.complete();
+    }
+}
+```
+
+This isn't recommended, as it suggests your component is handling significant state management that would be more maintainable if were outfactored to a model (for the reasons describe in the first section).
 
 ## Stores
 
 A store keeps track the states of one or more models. There are two store classes:
-- The `RouterStore` synchronises its state with the query parameters in the route.
-- The `SimpleStore` just stores the data internally and doesn't use any backend.
+- The [`RouterStore`](/frontend/src/app/store/router-store.ts) synchronises its state with the query parameters in the route.
+- The [`SimpleStore`](/frontend/src/app/store/simple-store.ts) just stores the data internally and doesn't use any backend.
 
 Crucially, `Stored` models don't care which store class you use: they implement the same API. This API consists of three endpoints:
 
