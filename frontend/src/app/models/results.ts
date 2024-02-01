@@ -47,8 +47,8 @@ export abstract class Results<Parameters extends object, Result> extends StoreSy
 
         this.result$ = combineLatest([queryUpdate$, this.state$]).pipe(
             takeUntil(this.complete$),
-            map(_.last),
-            tap(() => this.error$.next(undefined)),
+            map(_.last), // map to the value of this.state$
+            tap(() => this.error$.next(undefined)), // clear errors
             mergeMap(this.fetch.bind(this)),
             catchError(err => {
                 this.error$.next(err);

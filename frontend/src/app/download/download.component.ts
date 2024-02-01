@@ -41,7 +41,7 @@ export class DownloadComponent implements OnChanges {
         private notificationService: NotificationService
     ) {}
 
-    get disableDownload(): boolean {
+    get downloadDisabled(): boolean {
         return !this.resultOverview || this.resultOverview.resultsCount === 0;
     }
 

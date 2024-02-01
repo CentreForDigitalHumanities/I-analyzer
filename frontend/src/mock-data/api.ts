@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { Subject, Observable, of } from 'rxjs';
 import { mockUserResponse } from './user';
-import { LimitedResultsDownloadParameters } from '../app/models';
+import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 
 const fakeNgramResult = {
     words: [

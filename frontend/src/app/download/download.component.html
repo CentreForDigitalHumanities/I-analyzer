@@ -3,7 +3,7 @@
         <p class="control" iaBalloon="Only the first {{downloadLimit}} results will be in the file!"
             [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
             <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
-                (click)="chooseDownloadMethod()" [disabled]="disableDownload">
+                (click)="chooseDownloadMethod()" [disabled]="downloadDisabled">
                 <span class="icon">
                     <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon>
                 </span>
