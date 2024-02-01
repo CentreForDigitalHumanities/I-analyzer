@@ -2,6 +2,7 @@ import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, TermFrequencyResult } from './visualization';
 import { QueryParameters } from './search-requests';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -87,10 +88,6 @@ export interface TaskSuccess {
     success: true;
 }
 
-export interface FailedTask {
-    status: 'failed';
-};
-
 interface WorkingTask {
     status: 'working';
 }
@@ -100,7 +97,7 @@ export interface SuccessfulTask<T> {
     results: T;
 }
 
-export type TasksOutcome = FailedTask | WorkingTask | SuccessfulTask<NgramResults[] | TermFrequencyResult[]>;
+export type TasksOutcome = HttpErrorResponse | WorkingTask | SuccessfulTask<NgramResults[] | TermFrequencyResult[]>;
 
 export type ResultsDownloadParameters = {
     corpus: string;
