@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { interval, Observable, Subject } from 'rxjs';
+import { interval, Observable } from 'rxjs';
 import { filter, switchMap, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
@@ -19,7 +19,6 @@ import {
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
-    SuccessfulTask,
     Tag,
     TaskResult,
     TaskSuccess,
@@ -127,7 +126,7 @@ export class ApiService {
     }
 
 
-    public pollTasks(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome> {
+    public pollTasks(ids: string[], stopPolling$: Observable<void>): Observable<TasksOutcome> {
         return interval(5000)
             .pipe(
                 takeUntil(stopPolling$),

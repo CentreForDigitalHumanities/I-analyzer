@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, Subject, from, of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
-import { TasksOutcome } from '../app/models';
+import { TaskResult, TasksOutcome } from '../app/models';
 
-const fakeNgramResult = [{
+export const fakeNgramResult = {
     words: [
         {
             label: 'the test',
@@ -11,7 +12,7 @@ const fakeNgramResult = [{
         }
     ],
     time_points: ['1900-1910', '1910-1920']
-}];
+};
 
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
@@ -20,7 +21,7 @@ export class ApiServiceMock {
 
     constructor(public fakeResult: { [path: string]: any } = {}) {}
 
-    public abortTasks() {
+    public abortTasks(data: TaskResult) {
         return { success: true };
     }
 
@@ -50,7 +51,7 @@ export class ApiServiceMock {
             status: 'done',
             results: ids.map((id) => fakeResults[id])
         };
-        return of(response);
+        return from([response, response]).pipe(takeUntil(stopPolling$));
     }
 
     public downloads() {
