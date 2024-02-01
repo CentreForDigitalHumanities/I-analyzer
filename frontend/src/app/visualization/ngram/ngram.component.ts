@@ -74,6 +74,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     lastParameters: NgramParameters;
     parametersChanged = false;
     ngramSettings: string[];
+    dataHasLoaded: boolean;
 
     faCheck = faCheck;
     faTimes = faTimes;
@@ -200,6 +201,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     loadGraph() {
+        this.dataHasLoaded = false;
         this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
 
@@ -217,7 +219,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                         poller$.subscribe({
                             error: (error) => this.onFailure(error),
                             next: (result: SuccessfulTask<NgramResults[]>) => this.onDataLoaded((result).results[0]),
-                            complete: () => this.apiService.abortTasks({ task_ids: this.tasksToCancel })
+                            complete: () => {
+                                if (!this.dataHasLoaded) {
+                                    this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                                    this.tasksToCancel = null;
+                                }
+                            }
                     });
             });
         }
@@ -233,10 +240,9 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     onDataLoaded(result: NgramResults) {
         this.stopPolling$.next();
+        this.dataHasLoaded = true;
         this.currentResults = result;
         this.tableData = this.makeTableData(result);
-
-        this.isLoading.emit(false);
     }
 
     makeTableData(result: NgramResults): typeof this.tableData {
@@ -290,7 +296,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     confirmChanges() {
-        // this.isLoading.emit(true);
         this.parametersChanged = false;
         this.setParams({
             ngramSettings: this.currentParameters.toRouteParam(),

@@ -86,6 +86,8 @@ export abstract class BarchartDirective<
 
     tasksToCancel: string[];
 
+    dataHasLoaded: boolean;
+
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
             x: {
@@ -415,6 +417,7 @@ export abstract class BarchartDirective<
         series: BarchartSeries<DataPoint>,
         queryModel: QueryModel
     ): Promise<BarchartSeries<DataPoint>> {
+        this.dataHasLoaded = false;
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
         return new Promise((resolve, reject) => {
             this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
@@ -432,7 +435,9 @@ export abstract class BarchartDirective<
                     },
                     complete: () => {
                         // abort tasks if the Observable is completed via takeUntil
-                        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                        if (!this.dataHasLoaded) {
+                            this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                        }
                     }
                 });
             });
@@ -449,6 +454,7 @@ export abstract class BarchartDirective<
     abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
 
     processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint> {
+        this.dataHasLoaded = true;
         series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
             return this.addTermFrequencyToCategory(res, bin);
