@@ -28,4 +28,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run frontend tests
-      run: sudo docker-compose --env-file .env-ci run frontend yarn test:once
+      run: sudo docker-compose --env-file .env-ci run frontend yarn test
