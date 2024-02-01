@@ -103,8 +103,6 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
 
-
-
 def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, add, clear, prod, rollover):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
