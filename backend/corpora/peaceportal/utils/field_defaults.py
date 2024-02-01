@@ -1,6 +1,6 @@
 from addcorpus.corpus import FieldDefinition
-from addcorpus.es_mappings import geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
-from addcorpus.filters import MultipleChoiceFilter, RangeFilter
+from addcorpus.es_mappings import date_estimate_mapping, geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
+from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 
 
 def id():
@@ -53,6 +53,21 @@ def year(min_year, max_year):
         visualization_sort='key',
         results_overview=True
     )
+
+
+def date(min_date, max_date):
+    return FieldDefinition(
+        name='date',
+        display_name='Estimated date range',
+        description='The estimated date of the description range',
+        es_mapping=date_estimate_mapping(),
+        search_filter=DateFilter(
+            description='Restrict the dates from which search results will be returned.',
+            lower=min_date,
+            upper=max_date,
+        )
+    )
+
 
 
 def not_before():

@@ -6,6 +6,7 @@ from langdetect.lang_detect_exception import LangDetectException
 from django.conf import settings
 
 from addcorpus.corpus import ParentCorpusDefinition
+from addcorpus.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
@@ -73,6 +74,7 @@ class PeacePortal(ParentCorpusDefinition):
         self.year = field_defaults.year(self.min_year, self.max_date.year)
         self.not_before = field_defaults.not_before()
         self.not_after = field_defaults.not_after()
+        self.date = field_defaults.date(self.min_date, self.max_date)
         self.transcription = field_defaults.transcription()
         self.transcription_german = field_defaults.transcription_german()
         self.transcription_english = field_defaults.transcription_english()
