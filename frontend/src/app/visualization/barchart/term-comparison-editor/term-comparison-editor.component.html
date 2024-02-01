@@ -8,7 +8,7 @@
                 <div class="control">
                     <button class="button is-primary" (click)="confirmQueries()" [disabled]="disableConfirm">
                         <span class="icon">
-                            <fa-icon [icon]="faCheck"></fa-icon>
+                            <fa-icon [icon]="formIcons.confirm" aria-hidden="true"></fa-icon>
                         </span>
                         <span>Confirm</span>
                     </button>
@@ -18,7 +18,7 @@
         <div *ngIf="showReset" class="control">
             <button class="button" (click)="signalClearQueries()">
                 <span class="icon">
-                    <i class="fa fa-times"></i>
+                    <fa-icon [icon]="formIcons.reset" aria-hidden="true"></fa-icon>
                 </span>
                 <span>Reset</span>
             </button>

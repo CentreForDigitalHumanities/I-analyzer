@@ -2,6 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel } from '../models/index';
+import { actionIcons } from '../shared/icons';
 
 const highlightFragmentSize = 50;
 
@@ -27,6 +28,8 @@ export class DownloadComponent implements OnChanges {
 
     public pendingDownload: PendingDownload;
 
+    actionIcons = actionIcons;
+
     private resultsCutoff = 1000;
 
     private downloadsPageLink = {
@@ -43,7 +46,7 @@ export class DownloadComponent implements OnChanges {
         this.availableCsvFields = Object.values(this.corpus.fields).filter(
             (field) => field.downloadable
         );
-        const highlight = this.queryModel.highlightSize;
+        const highlight = this.queryModel?.highlightSize;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
         if (highlight !== undefined) {
             this.availableCsvFields.push({

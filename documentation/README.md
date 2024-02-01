@@ -18,9 +18,16 @@ This directory contains documentation for developers.
 
 ## Feature development
 
+### Backend and API
+
 - [Celery](./Celery.md) (used for downloads and visualisations)
 - [Email](./Email.md) (used for downloads and authentication)
 - [Adding word models](./Adding-word-models.md)
+- [Query API](./Query-api.md)
+
+### Frontend
+
+- [Deep routing and state management](./Frontend-deep-routing-and-state-management.md)
 
 ## Authentication
 

@@ -131,6 +131,7 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.TEXT.value, 'text'),
     (MappingType.KEYWORD.value, 'keyword'),
     (MappingType.DATE.value, 'date'),
+    (MappingType.DATE_RANGE.value, 'date_range'),
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),

@@ -1,6 +1,8 @@
 import { ParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
+import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
+import { TagService } from '../services/tag.service';
+import { TagFilter } from '../models/tag-filter';
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
@@ -45,28 +47,31 @@ export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): 
 
 // filters
 
-export const filtersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[] => {
+export const filtersFromParams = (params: ParamMap, corpus: Corpus): FilterInterface[] => {
+    const fieldFilters = fieldFiltersFromParams(params, corpus);
+    const tagFilter = tagFilterFromParams(params);
+    return [...fieldFilters, tagFilter];
+};
+
+const fieldFiltersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[] => {
     const specifiedFields = corpus.fields.filter(field => params.has(field.name));
     return specifiedFields.map(field => {
         const filter = field.makeSearchFilter();
-        const data = filter.dataFromString(params.get(field.name));
-        filter.set(data);
+        filter.setFromParams(params);
         return filter;
     });
 };
 
-const filterParamForField = (queryModel: QueryModel, field: CorpusField) => {
-    const filter = queryModel.filterForField(field);
-    if (filter) {
-        return filter.toRouteParam();
-    } else {
-        return { [field.name]: null };
-    }
+const tagFilterFromParams = (params: ParamMap): TagFilter => {
+    const filter = new TagFilter();
+    filter.setFromParams(params);
+    return filter;
 };
 
 export const queryFiltersToParams = (queryModel: QueryModel) => {
-    const filterParamsPerField = queryModel.corpus.fields.map(
-        field => filterParamForField(queryModel, field));
+    const filterParamsPerField = queryModel.filters.map(filter =>
+        filter.toRouteParam()
+    );
     return _.reduce(
         filterParamsPerField,
         _.merge,

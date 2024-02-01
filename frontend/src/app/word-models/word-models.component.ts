@@ -1,17 +1,18 @@
-import { Component, DoCheck, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'lodash';
 
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-word-models',
     templateUrl: './word-models.component.html',
     styleUrls: ['./word-models.component.scss'],
 })
-export class WordModelsComponent extends ParamDirective implements DoCheck {
+export class WordModelsComponent extends ParamDirective {
     @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -41,8 +42,8 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         },
     };
 
-    childComponentLoading: boolean;
-    isLoading: boolean;
+    visualizationIcons = visualizationIcons;
+
     errorMessage: string;
 
     queryFeedback: QueryFeedback;
@@ -73,12 +74,6 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown =
             this.searchSection.nativeElement.getBoundingClientRect().y === 0;
-    }
-
-    ngDoCheck() {
-        if (this.isLoading !== this.childComponentLoading) {
-            this.isLoading = this.childComponentLoading;
-        }
     }
 
     async initialize(): Promise<void> {
@@ -140,10 +135,6 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
                 similarTerms: result.similar_keys,
             };
         }
-    }
-
-    onIsLoading(isLoading: boolean): void {
-        this.childComponentLoading = isLoading;
     }
 
     setErrorMessage(event: { message: string }): void {

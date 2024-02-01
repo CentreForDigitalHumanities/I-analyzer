@@ -1,9 +1,9 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
-import { faBook, faImage } from '@fortawesome/free-solid-svg-icons';
 import { DocumentView } from '../models/document-page';
 import * as _ from 'lodash';
+import { documentIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-document-view',
@@ -24,11 +24,7 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public view: DocumentView;
 
-
-    tabIcons = {
-        text: faBook,
-        scan: faImage,
-    };
+    documentIcons = documentIcons;
 
     /** active tab on opening */
     activeTab: string;

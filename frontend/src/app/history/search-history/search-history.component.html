@@ -43,7 +43,7 @@
                 <td>{{corpusTitle(query.corpus)}}</td>
                 <td><a *ngIf="query.queryModel" [routerLink]="routerLink(query)" [queryParams]="queryParams(query)">
                     <span class="icon" aria-label="open this query">
-                        <fa-icon [icon]="linkIcon"></fa-icon>
+                        <fa-icon [icon]="actionIcons.link"></fa-icon>
                     </span>
                     </a>
                 </td>

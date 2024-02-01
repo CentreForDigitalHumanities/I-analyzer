@@ -88,6 +88,7 @@ class Backup(Extractor):
     '''
     Try all given extractors in order and return the first result that evaluates as true
     '''
+
     def __init__(self, *nargs, **kwargs):
         self.extractors = list(nargs)
         super().__init__(**kwargs)
@@ -125,6 +126,7 @@ class Metadata(Extractor):
     def _apply(self, metadata, *nargs, **kwargs):
         return metadata.get(self.key)
 
+
 class Pass(Extractor):
     '''
     An extractor that just passes the value of another extractor.
@@ -138,6 +140,7 @@ class Pass(Extractor):
 
     def _apply(self, *nargs, **kwargs):
         return self.extractor.apply(*nargs, **kwargs)
+
 
 class Order(Extractor):
     def _apply(self, index=None, *nargs, **kwargs):
@@ -185,7 +188,7 @@ class XML(Extractor):
                  transform_soup_func=None,
                  # a function to extract a value directly from the soup object, instead of using the content string
                  # or giving an attribute
-                # Keep in mind that the soup passed could be None.
+                 # Keep in mind that the soup passed could be None.
                  extract_soup_func=None,
                  *nargs,
                  **kwargs
@@ -321,7 +324,7 @@ class XML(Extractor):
             return soup.attrs.get(self.attribute)
         else:
             if self.attribute == 'name':
-                return [ node.name for node in soup]
+                return [node.name for node in soup]
             return [
                 node.attrs.get(self.attribute)
                 for node in soup if node.attrs.get(self.attribute) is not None
@@ -371,7 +374,8 @@ class FilterAttribute(XML):
         if self.multiple:
             return soup.find_all(tag, recursive=self.recursive)
         else:
-            return(soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
+            return (soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
+
 
 class CSV(Extractor):
     '''
@@ -383,11 +387,12 @@ class CSV(Extractor):
     from the first row is extracted.
     - convert_to_none: optional, default is `['']`. Listed values are converted to `None`. If `None`/`False`, nothing is converted.
     '''
+
     def __init__(self,
-            field,
-            multiple=False,
-            convert_to_none = [''],
-            *nargs, **kwargs):
+                 field,
+                 multiple=False,
+                 convert_to_none=[''],
+                 *nargs, **kwargs):
         self.field = field
         self.multiple = multiple
         self.convert_to_none = convert_to_none or []
@@ -404,6 +409,7 @@ class CSV(Extractor):
     def format(self, value):
         if value and value not in self.convert_to_none:
             return value
+
 
 class ExternalFile(Extractor):
 

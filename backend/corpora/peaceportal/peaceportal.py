@@ -1,5 +1,5 @@
 from glob import glob
-from datetime import datetime
+import datetime
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
 
@@ -24,13 +24,13 @@ class PeacePortal(ParentCorpusDefinition):
     description = "A collection of inscriptions on Jewish burial sites"
     # store min_year as int, since datetime does not support BCE dates
     min_year = -530
-    max_date = datetime(year=1950, month=12, day=31)
+    max_date = datetime.datetime(year=1950, month=12, day=31)
     visualize = []
     es_index = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     es_alias = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
-    min_date = datetime(year=746, month=1, day=1)
+    min_date = datetime.datetime(year=746, month=1, day=1)
     image = 'bogus.jpg'
     category = 'inscription'
     data_directory = 'bogus'
@@ -43,17 +43,20 @@ class PeacePortal(ParentCorpusDefinition):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
-    languages = ['en', 'de', 'nl', 'he', 'la', 'el'] # el stands for modern Greek (1500-)
+    # el stands for modern Greek (1500-)
+    languages = ['en', 'de', 'nl', 'he', 'la', 'el']
 
     @property
     def es_settings(self):
-        return es_settings(self.languages, stopword_analysis=True, stemming_analysis=True)
+        return es_settings(self.languages, stopword_analysis=True,
+                           stemming_analysis=True)
 
     def sources(self, start, end):
-        for filename in sorted(glob('{}/**/*.xml'.format(self.data_directory), recursive=True)):
+        for filename in sorted(glob('{}/**/*.xml'.format(self.data_directory),
+                                    recursive=True)):
             metadata = self.add_metadata(filename)
             yield filename, metadata
-    
+
     def add_metadata(self, filename):
         return {}
 
@@ -61,7 +64,7 @@ class PeacePortal(ParentCorpusDefinition):
         images = document['fieldValues']['images']
         if not images:
             images = []
-        return { 'media': images }
+        return {'media': images}
 
     def __init__(self):
         self.source_database = field_defaults.source_database()
@@ -101,6 +104,7 @@ class PeacePortal(ParentCorpusDefinition):
             self.year,
             self.not_before,
             self.not_after,
+            self.date,
             self.source_database,
             self.transcription,
             self.names,
@@ -134,7 +138,8 @@ def clean_newline_characters(text):
     Remove all spaces surrounding newlines in `text`.
     Also removes multiple newline characters in a row.
     '''
-    if not text: return
+    if not text:
+        return
     parts = text.split('\n')
     cleaned = []
     for part in parts:
@@ -152,6 +157,7 @@ def clean_commentary(commentary):
     '''
     return ' '.join(commentary.split())
 
+
 def join_commentaries(commentaries):
     '''
     Helper function to join the result of a Combined extractor
@@ -163,20 +169,22 @@ def join_commentaries(commentaries):
             results.append(comm)
     return "\n".join(results)
 
+
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
     The Epidat corpus in particular has mainly descriptions of the material.
     Returns a list of categories, i.e. those that appear in `text`.
     '''
-    if not text: return ['Unknown']
+    if not text:
+        return ['Unknown']
 
     categories = ['Sandstein', 'Kalkstein', 'Stein', 'Granit', 'Kunststein',
                   'Lavatuff', 'Marmor', 'Kalk', 'Syenit', 'Labrador', 'Basalt', 'Beton',
                   'Glas', 'Rosenquarz', 'Gabbro', 'Diorit', 'Bronze',
                   # below from FIJI and IIS
                   'Limestone', 'Stone', 'Clay', 'Plaster', 'Glass', 'Kurkar', 'Granite',
-                  'Marble', 'Metal', 'Bone', 'Lead' ]
+                  'Marble', 'Metal', 'Bone', 'Lead']
     result = []
     ltext = text.lower()
 
@@ -193,6 +201,7 @@ def categorize_material(text):
             result.append(text)
 
     return result
+
 
 def translate_category(category):
     '''
@@ -241,7 +250,8 @@ def get_text_in_language(_input):
     language_code = _input[1]
 
     for line in lines:
-        if not line: continue
+        if not line:
+            continue
         detected_code = None
         try:
             # note that Aramaic is detected as Hebrew
@@ -253,3 +263,60 @@ def get_text_in_language(_input):
         if detected_code and detected_code == language_code:
             results.append(line)
     return ' '.join(results)
+
+
+def transform_to_date(input, margin):
+    try:
+        datetime.date.fromisoformat(input)
+        return input
+    except:
+        if not input:
+            return None
+        if int(input) < 1:
+            raise Exception(
+                'Years smaller than 1 cannot be transformed to dates')
+        if len(input) < 4:
+            input = zero_pad_year(input)
+        if margin == 'upper':
+            return '{}-12-31'.format(input)
+        elif margin == 'lower':
+            return '{}-01-01'.format(input)
+        else:
+            raise Exception("margin argument must be 'upper' or 'lower'")
+
+
+def zero_pad_year(input):
+    return ('0' * (4 - len(str(input)))) + str(input)
+
+
+def transform_to_date_range(earliest, latest):
+    if not earliest:
+        earliest = PeacePortal.min_date
+    if not latest:
+        latest = PeacePortal.max_date
+    return {
+        'gte': earliest,
+        'lte': latest
+    }
+
+
+def not_after_extractor(transform=True):
+    ''' extractor for standard epidat format '''
+    return XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+             'history', 'origin', 'origDate', 'date'],
+        toplevel=False,
+        attribute='notAfter',
+        transform=lambda x: transform_to_date(x, 'upper') if transform else x
+    )
+
+
+def not_before_extractor(transform=True):
+    ''' extractor for standard epidat format '''
+    return XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+             'history', 'origin', 'origDate', 'date'],
+        toplevel=False,
+        attribute='notBefore',
+        transform=lambda x: transform_to_date(x, 'lower') if transform else x
+    )

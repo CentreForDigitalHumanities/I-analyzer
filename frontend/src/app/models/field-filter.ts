@@ -6,7 +6,7 @@ import {
     BooleanFilterOptions, DateFilterOptions, FieldFilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions
 } from './field-filter-options';
-import { BaseFilter } from './base-filter';
+import { BaseFilter, FilterInterface } from './base-filter';
 
 
 abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FieldFilterOptions, FilterData> {
@@ -21,6 +21,10 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
     /** a filter is "ad hoc" if the field does not have a predefined filter */
     get adHoc() {
         return !(this.corpusField.filterOptions);
+    }
+
+    get displayName() {
+        return this.corpusField.displayName;
     }
 
     get description() {
@@ -105,7 +109,8 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
                 [this.corpusField.name]: {
                     gte: this.formatDate(this.currentData.min),
                     lte: this.formatDate(this.currentData.max),
-                    format: 'yyyy-MM-dd'
+                    format: 'yyyy-MM-dd',
+                    relation: 'within'
                 }
             }
         };
@@ -283,3 +288,6 @@ const parseMinMax = (value: string[]): [string, string] => {
 };
 
 export type SearchFilter = DateFilter | MultipleChoiceFilter | RangeFilter | BooleanFilter | AdHocFilter;
+
+export const isFieldFilter = (filter: FilterInterface): filter is SearchFilter =>
+    'corpusField' in filter;

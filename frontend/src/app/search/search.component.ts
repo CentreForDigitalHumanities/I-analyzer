@@ -9,7 +9,7 @@ import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import { paramsHaveChanged } from '../utils/params';
 import { filter } from 'rxjs/operators';
-import { faChartColumn, faList } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons, searchIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-search',
@@ -36,10 +36,8 @@ export class SearchComponent extends ParamDirective {
 
     public user: User;
 
-    tabIcons = {
-        searchResults: faList,
-        visualizations: faChartColumn,
-    };
+    searchIcons = searchIcons;
+    actionIcons = actionIcons;
 
     activeTab: string;
 

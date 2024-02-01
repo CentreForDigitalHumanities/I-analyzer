@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import * as _ from 'lodash';
-import { esQueryToQueryModel } from '../../utils/es-query';
+import { apiQueryToQueryModel, esQueryToQueryModel } from '../../utils/es-query';
 import { QueryDb } from '../../models/index';
 import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
 import { findByName } from '../../utils/utils';
-import { faLink } from '@fortawesome/free-solid-svg-icons';
+import { actionIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-search-history',
@@ -16,7 +16,9 @@ import { faLink } from '@fortawesome/free-solid-svg-icons';
 export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: QueryDb[];
     public displayCorpora = false;
-    public linkIcon = faLink;
+
+    actionIcons = actionIcons;
+
     constructor(
         corpusService: CorpusService,
         private queryService: QueryService,
@@ -40,7 +42,7 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     addQueryModel(query?: QueryDb) {
         const corpus = findByName(this.corpora, query.corpus);
         if (corpus) {
-            query.queryModel = esQueryToQueryModel(query.query_json, corpus);
+            query.queryModel = apiQueryToQueryModel(query.query_json, corpus);
             return query;
         }
     }

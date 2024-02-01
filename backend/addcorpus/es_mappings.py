@@ -76,6 +76,12 @@ def date_mapping(format='yyyy-MM-dd'):
         'format': format
     }
 
+def date_estimate_mapping(format='yyyy-MM-dd'):
+    return {
+        'type': 'date_range',
+        'format': format
+    }
+
 def int_mapping():
     return {
         'type': 'integer'

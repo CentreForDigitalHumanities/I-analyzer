@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as _ from 'lodash';
-import { BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, MatchAll,
+import {
+    BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, FilterInterface, MatchAll,
     QueryModel,
     SimpleQueryString, SortBy, SortDirection } from '../models';
 import { EsQuery } from '../models';
 import { findByName } from './utils';
 import { SearchFilter } from '../models/field-filter';
+import { APIQuery } from '../models/search-requests';
+import { TagFilter } from '../models/tag-filter';
 
 // conversion from query model -> elasticsearch query language
 
@@ -108,6 +111,17 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
 };
 
 // conversion from elasticsearch query language -> query model
+
+export const apiQueryToQueryModel = (query: APIQuery, corpus: Corpus): QueryModel => {
+    const esQuery = 'es_query' in query ? query.es_query : query; // fix for legacy queries
+    const model = esQueryToQueryModel(esQuery, corpus);
+    if (query.tags) {
+        const tagFilter = new TagFilter();
+        tagFilter.set(query.tags);
+        model.addFilter(tagFilter);
+    }
+    return model;
+};
 
 export const esQueryToQueryModel = (query: EsQuery, corpus: Corpus): QueryModel => {
     const model = new QueryModel(corpus);

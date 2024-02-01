@@ -12,7 +12,7 @@
                         iaBalloon="view previous document" iaBalloonPosition="right"
                         (click)="page.focusPrevious(document)" (keydown.enter)="page.focusPrevious(document)"
                         role="button" tabindex="0">
-                        <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
+                        <span class="icon"><fa-icon [icon]="actionIcons.prev">previous</fa-icon></span>
                     </a>
                 </div>
                 <div class="column" style="text-align:center">
@@ -20,7 +20,7 @@
                         iaBalloon="view this document on its own page" autofocus
                         tabindex="0">
                         <span class="icon">
-                            <fa-icon [icon]="linkIcon"></fa-icon>
+                            <fa-icon [icon]="actionIcons.link"></fa-icon>
                         </span>
                         <span>Link</span>
                     </a>
@@ -30,7 +30,7 @@
                         iaBalloon="view all documents from this {{contextDisplayName}}"
                         tabindex="0">
                         <span class="icon">
-                            <fa-icon [icon]="contextIcon"></fa-icon>
+                            <fa-icon [icon]="documentIcons.context"></fa-icon>
                         </span>
                         <span>View {{contextDisplayName}}</span>
                     </a>
@@ -40,7 +40,7 @@
                         iaBalloon="view next document" iaBalloonPosition="left"
                         (click)="page.focusNext(document)" (keydown.enter)="page.focusNext(document)"
                         role="button" tabindex="0">
-                        <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
+                        <span class="icon"><fa-icon [icon]="actionIcons.next">next</fa-icon></span>
                     </a>
                 </div>
             </div>
