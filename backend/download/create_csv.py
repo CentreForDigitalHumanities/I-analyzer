@@ -1,12 +1,13 @@
 import csv
-from datetime import datetime
-from bs4 import BeautifulSoup
 import os
+from typing import Iterable, List
 
+from bs4 import BeautifulSoup
 from django.conf import settings
-
-from visualization.query import get_query_text
 from visualization.term_frequency import parse_datestring
+
+QUERY_CONTEXT_INFIX = '_qic_'
+
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
     if not os.path.isdir(settings.CSV_FILES_PATH):
@@ -24,6 +25,20 @@ def write_file(filename, fieldnames, rows, dialect = 'excel'):
 
 def create_filename(download_id):
     return f'{download_id}.csv'
+
+
+def is_context_fieldname(fn: str) -> bool:
+    return QUERY_CONTEXT_INFIX in fn
+
+
+def sort_fieldnames(fns: Iterable[str]) -> List[str]:
+    '''Sorts fieldnames.
+    Retains input order, but puts all query context fields at the end (sorted)
+    '''
+    context_fieldnames = [fn for fn in fns if is_context_fieldname(fn)]
+    reg_fieldnames = [fn for fn in fns if not is_context_fieldname(fn)]
+    return reg_fieldnames + sorted(context_fieldnames)
+
 
 def search_results_csv(results, fields, query, download_id):
     entries = []
@@ -43,7 +58,8 @@ def search_results_csv(results, fields, query, download_id):
             hi_fields = highlights.keys()
             for hf in hi_fields:
                 for index, hi in enumerate(highlights[hf]):
-                    highlight_field_name = '{}_qic_{}'.format(hf, index+1)
+                    highlight_field_name = '{}{}{}'.format(
+                        hf, QUERY_CONTEXT_INFIX, index+1)
                     field_set.update([highlight_field_name])
                     soup = BeautifulSoup(hi, 'html.parser')
                     entry.update({highlight_field_name: soup.get_text()})
@@ -51,8 +67,9 @@ def search_results_csv(results, fields, query, download_id):
 
     filename = create_filename(download_id)
     field_set.discard('context')
-    fieldnames = sorted(field_set)
-    filepath = write_file(filename, fieldnames, entries, dialect = 'resultsDialect')
+    fieldnames = sort_fieldnames(field_set)
+    filepath = write_file(filename, fieldnames, entries,
+                          dialect='resultsDialect')
     return filepath
 
 
@@ -100,8 +117,8 @@ def format_field_value(value, unit):
             'week': '%Y-%m-%d',
             'day': '%Y-%m-%d'
         }
-        return date.strftime(formats[unit]) 
-    
+        return date.strftime(formats[unit])
+
 def ngram_csv(results, log_id):
     rows = ngram_table(results)
     fieldnames = ['date', 'N-gram', 'Frequency']
