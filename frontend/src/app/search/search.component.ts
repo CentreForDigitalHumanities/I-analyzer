@@ -9,7 +9,7 @@ import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
 import { filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
-import { RouterStore } from '../store/router-store';
+import { RouterStoreService } from '../store/router-store.service';
 
 @Component({
     selector: 'ia-search',
@@ -70,7 +70,7 @@ export class SearchComponent extends ParamDirective {
         paramService: ParamService,
         route: ActivatedRoute,
         router: Router,
-        private store: RouterStore,
+        private routerStoreService: RouterStoreService,
     ) {
         super(route, router, paramService);
     }
@@ -141,7 +141,7 @@ export class SearchComponent extends ParamDirective {
 
     private setQueryModel(reset: boolean) {
         const params = reset ? undefined : this.route.snapshot.queryParamMap;
-        const queryModel = new QueryModel(this.corpus, this.store);
+        const queryModel = new QueryModel(this.corpus, this.routerStoreService);
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
     }

@@ -1,6 +1,6 @@
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, FilterInterface, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters,  } from '../utils/es-query';
@@ -14,8 +14,8 @@ import { makeTagSpecification } from '../utils/api-query';
 import { APIQuery } from './search-requests';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
-import { Stored } from '../store/stored';
-import { debounceTime, distinct, distinctUntilChanged, map, skip, takeUntil, tap } from 'rxjs/operators';
+import { StoreSync } from '../store/store-sync';
+import { distinctUntilChanged, map, skip, takeUntil } from 'rxjs/operators';
 import { to } from '../utils/utils';
 
 /** This is the query object as it is saved in the database.*/
@@ -84,7 +84,7 @@ interface QueryState {
 }
 
 
-export class QueryModel extends Stored<QueryState> {
+export class QueryModel extends StoreSync<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
 

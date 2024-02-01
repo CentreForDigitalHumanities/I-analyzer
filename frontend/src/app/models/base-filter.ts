@@ -2,7 +2,7 @@ import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Stored } from '../store/stored';
+import { StoreSync } from '../store/store-sync';
 import { Store } from '../store/types';
 
 export interface FilterState<FilterData> {
@@ -38,13 +38,13 @@ export interface FilterInterface<FilterData = any> {
  *
  * Implements much of the logic to handle activity state.
  *
- * Filters are a Stored model, but have some wackiness because their internal state is
+ * Filters are a StoreSync model, but have some wackiness because their internal state is
  * not isomorphic to the stored state. In the UI, we distinguish between the default state
  * (inactive, default data), and an inactive filter with non-default data. But this
  * distinction is irrelevant for querying so it's not stored.
  */
 export abstract class BaseFilter<InitialParameters, FilterData>
-    extends Stored<FilterState<FilterData>>
+    extends StoreSync<FilterState<FilterData>>
     implements FilterInterface<FilterData> {
     /**
      * an observable that signals meaningful state updates on the filter
