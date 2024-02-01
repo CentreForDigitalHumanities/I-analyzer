@@ -25,9 +25,9 @@ export class VisualizationService {
 
     public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
         Promise<AggregateResult[]> {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return this.apiService.wordCloud({
-            es_query: esQuery,
+            ...query,
             corpus: corpus.name,
             field: fieldName,
             size,
@@ -37,10 +37,10 @@ export class VisualizationService {
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],
     ): AggregateTermFrequencyParameters {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return {
             corpus_name: corpus.name,
-            es_query: esQuery,
+            ...query,
             field_name: fieldName,
             bins: bins.map(bin => ({field_value: bin.fieldValue, size: bin.size})),
         };
@@ -57,10 +57,10 @@ export class VisualizationService {
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number; start_date: Date; end_date?: Date}[],
         unit: TimeCategory,
     ): DateTermFrequencyParameters {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return {
             corpus_name: corpus.name,
-            es_query: esQuery,
+            ...query,
             field_name: fieldName,
             bins: bins.map(bin => ({
                 start_date: bin.start_date.toISOString().slice(0, 10),
@@ -77,9 +77,9 @@ export class VisualizationService {
         field: string,
         params: NgramParameters
     ): NGramRequestParameters {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return {
-            es_query: esQuery,
+            ...query,
             corpus_name: corpus.name,
             field,
             ngram_size: params.size,

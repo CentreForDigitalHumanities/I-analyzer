@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash';
-import { esQueryToQueryModel } from '../../utils/es-query';
 import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
 import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
 import { findByName } from '../../utils/utils';
 import { actionIcons } from '../../shared/icons';
+import { downloadQueryModel, downloadQueryModels } from '../../utils/download-history';
 
 @Component({
     selector: 'ia-download-history',
@@ -53,16 +53,13 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
     }
 
     getAllQueryModels(download: Download): QueryModel[] {
-        const esQueries =  'es_query' in download.parameters ?
-            [download.parameters.es_query] : download.parameters.map(p => p.es_query);
         const corpus = findByName(this.corpora, download.corpus);
-        return esQueries.map(esQuery => esQueryToQueryModel(esQuery, corpus));
+        return downloadQueryModels(download, corpus);
     }
 
-
     getQueryModel(download: Download): QueryModel {
-        const queryModels = this.getAllQueryModels(download);
-        return queryModels[0];
+        const corpus = findByName(this.corpora, download.corpus);
+        return downloadQueryModel(download, corpus);
     }
 
     getFields(download: Download): string {
