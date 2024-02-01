@@ -678,6 +678,8 @@ class JSONCorpusDefinition(CorpusDefinition):
     '''
 
     def source2dicts(self, source, *nargs, **kwargs):
+        self._reject_extractors(extract.XML, extract.CSV)
+
         field_dict = {
            field.name: field.extractor.apply(source, *nargs, **kwargs) 
             for field in self.fields
