@@ -25,6 +25,7 @@ class MappingType(Enum):
     INTEGER  = 'integer'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
+    GEO_POINT = 'geo_point'
 
 
 class VisualizationType(Enum):
