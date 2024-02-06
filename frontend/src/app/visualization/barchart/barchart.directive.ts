@@ -507,7 +507,7 @@ export abstract class BarchartDirective<
         queryModel: QueryModel
     ) {
         return this.selectSearchFields(
-            this.removeSort(this.setQueryText(queryModel, series.queryText))
+            this.setQueryText(queryModel, series.queryText)
         );
     }
 
@@ -658,13 +658,6 @@ export abstract class BarchartDirective<
     setQueryText(query: QueryModel, queryText: string): QueryModel {
         const queryModelCopy = query.clone();
         queryModelCopy.queryText = queryText;
-        return queryModelCopy;
-    }
-
-    /** return a copy of a query model with removed sort parameter (=> relevance sorting) */
-    removeSort(query: QueryModel): QueryModel {
-        const queryModelCopy = query.clone();
-        queryModelCopy.sort.reset();
         return queryModelCopy;
     }
 

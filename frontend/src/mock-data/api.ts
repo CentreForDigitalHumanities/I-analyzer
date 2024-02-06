@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Subject, Observable, of } from 'rxjs';
 import { mockUserResponse } from './user';
+import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 
 const fakeNgramResult = {
     words: [
@@ -29,6 +30,10 @@ export class ApiServiceMock {
     public corpus() {
         // return this.get('corpus');
         return of(this.get('corpus'));
+    }
+
+    download(data: LimitedResultsDownloadParameters): Promise<any> {
+        return Promise.resolve({});
     }
 
     public searchHistory() {

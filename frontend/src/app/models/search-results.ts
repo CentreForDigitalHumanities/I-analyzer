@@ -2,6 +2,7 @@ import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, NGramRequestParameters } from './visualization';
 import { APIQuery } from './search-requests';
+import { SortState } from './sort';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -14,6 +15,8 @@ export interface SearchResults {
 
 export interface ResultOverview {
     queryText: string;
+    highlight?: number;
+    sort: SortState;
     resultsCount: number;
 };
 

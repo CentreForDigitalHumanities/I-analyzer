@@ -1,4 +1,4 @@
-import { EsQuery, EsQuerySorted } from './elasticsearch';
+import { EsQuery } from './elasticsearch';
 
 
 // TAGS
@@ -11,5 +11,5 @@ export interface APITagFilter {
 // API query format
 
 export type APIQuery = {
-    es_query: EsQuery | EsQuerySorted;
+    es_query: EsQuery;
 } & APITagFilter;

@@ -10,6 +10,8 @@ import { findByName } from './utils';
 import { SearchFilter } from '../models/field-filter';
 import { APIQuery } from '../models/search-requests';
 import { TagFilter } from '../models/tag-filter';
+import { PageResultsParameters } from '../models/page-results';
+import { DeepPartial } from 'chart.js/dist/types/utils';
 
 // conversion from query model -> elasticsearch query language
 
@@ -154,4 +156,22 @@ const esFilterToSearchFilter = (esFilter: EsFilter, corpus: Corpus): SearchFilte
     const filter = field.makeSearchFilter();
     filter.data.next(filter.dataFromEsFilter(esFilter as any)); // we know that the esFilter is of the correct type
     return filter;
+};
+
+export const resultsParamsToAPIQuery = (queryModel: QueryModel, params: PageResultsParameters): APIQuery => {
+    const query = queryModel.toAPIQuery();
+
+    const sort = makeSortSpecification(...params.sort);
+    const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, params.highlight);
+    const addToQuery: DeepPartial<APIQuery> = {
+        es_query: {
+            ...sort,
+            ...highlight,
+            from: params.from,
+            size: params.size,
+        }
+    };
+    _.merge(query, addToQuery);
+
+    return query;
 };

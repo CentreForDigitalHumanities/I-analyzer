@@ -134,11 +134,11 @@ Notes:
 
 The methods `storeToState` and `stateToStore` have to be implemented on the model class. They translate between stored strings and whatever is more convenient as an internal state. This is trivial in the example above, but often comes in handy. These functions must be each other's inverse. There should be unit tests to confirm this.
 
-Note that the constructor of `MyModel` calls the method `connectToStore`. This initialises the `state$` observable based on the current state of the store, and creates a subscription to the store. You should call this method in the constructor. It's not called in the constructor of `Stored` because you may want to set some properties specific to your model before your call it (`connectToStore` uses `storeToState` to set the initial state).
+Note that the constructor of `MyModel` calls the method `connectToStore`. This initialises the `state$` observable based on the current state of the store, and creates a subscription to the store. You should call this method in the constructor. It's not called in the constructor of `StoreSync` because you may want to set some properties specific to your model before your call it (`connectToStore` uses `storeToState` to set the initial state).
 
 `keysInStore` specifies the specific keys in the store's state that the model interacts with. The model will only listen to changes in those keys, and will reset them when it is completed.
 
-### Using Stored as a base class for components or directives
+### Using StoreSync as a base class for components or directives
 
 It is technically possible to use `StoreSync` as a parent class for a component or directive, rather than a data model. That will look something like this:
 

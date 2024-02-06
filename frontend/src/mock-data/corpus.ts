@@ -149,7 +149,8 @@ export const mockCorpus: Corpus = {
     word_models_present: false,
     fields: [mockField, mockField2],
     languages: ['English'],
-    category: 'Tests'
+    category: 'Tests',
+    defaultSort: [undefined, 'desc']
 } as Corpus;
 
 export const mockCorpus2 = {
@@ -166,7 +167,8 @@ export const mockCorpus2 = {
     word_models_present: false,
     fields: [mockField2],
     languages: ['English', 'French'],
-    category: 'Different tests'
+    category: 'Different tests',
+    defaultSort: [undefined, 'desc']
 } as Corpus;
 
 export const mockCorpus3: Corpus = {
@@ -189,7 +191,8 @@ export const mockCorpus3: Corpus = {
         displayName: 'day',
         sortField: mockField3,
         sortDirection: 'asc'
-    }
+    },
+    defaultSort: [undefined, 'desc'],
 } as Corpus;
 
 export class CorpusServiceMock {

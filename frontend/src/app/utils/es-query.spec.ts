@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as _ from 'lodash';
-import { mockField, mockField2, mockCorpus3 } from '../../mock-data/corpus';
-import { makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification } from './es-query';
+import { mockField, mockField2, mockCorpus3, mockCorpus } from '../../mock-data/corpus';
+import {
+    makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification,
+    resultsParamsToAPIQuery
+} from './es-query';
+import { QueryModel } from '../models';
+import { PageResultsParameters } from '../models/page-results';
+import { APIQuery } from '../models/search-requests';
+import { isTagFilter } from '../models/tag-filter';
 
 describe('es-query utils', () => {
     it('should make a simple query string clause', () => {
@@ -48,5 +55,43 @@ describe('es-query utils', () => {
                 fields: [{speech: {}}]
             }
         });
+    });
+
+    it('should create an API query for paged results', () => {
+        const queryModel = new QueryModel(mockCorpus);
+        const tagFilter = queryModel.filters.find(isTagFilter);
+        tagFilter.set([1]);
+        queryModel.setQueryText('test');
+
+        const resultsParams: PageResultsParameters = {
+            sort: [mockField, 'desc'],
+            from: 0,
+            size: 20,
+        };
+
+        const expected: APIQuery = {
+            es_query: {
+                query: {
+                    bool: {
+                        must: {
+                            simple_query_string: {
+                                query: 'test',
+                                lenient: true,
+                                default_operator: 'or',
+                            }
+                        },
+                        filter: [],
+                    }
+                },
+                size: 20,
+                from: 0,
+                sort: [
+                    { great_field: 'desc'}
+                ],
+            },
+            tags: [1],
+        };
+
+        expect(resultsParamsToAPIQuery(queryModel, resultsParams)).toEqual(expected);
     });
 });
