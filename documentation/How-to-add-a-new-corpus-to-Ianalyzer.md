@@ -58,6 +58,11 @@ In addition to the properties above, CSV corpora have the following optional pro
 - `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.
 - `delimiter`: the delimiter for the CSV reader (`,` by default)
 
+### JSON corpora
+If your source files are in JSON format, your corpus definition should subclass `JSONCorpus`.
+
+The JSON ingested via `source2dicts` is expected to contain a list of dictionaries, for which field data can be extracted with a given key.
+
 ## Settings file
 The django settings can be used to configure variables that may be depend on the environment. Please use the following naming convention.
 

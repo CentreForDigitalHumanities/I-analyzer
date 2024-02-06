@@ -55,7 +55,7 @@ export class DownloadComponent implements OnChanges {
                 description: `Query surrounded by ${highlight} characters`,
                 displayName: 'Query in context',
                 displayType: 'text_content',
-                csvCore: true,
+                csvCore: false,
                 hidden: false,
                 sortable: false,
                 primarySort: false,
