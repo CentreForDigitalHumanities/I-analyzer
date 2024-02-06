@@ -7,7 +7,7 @@ import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models
 import { CorpusService, DialogService, ParamService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
-import { filter } from 'rxjs/operators';
+import { distinct, filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
 
@@ -85,7 +85,10 @@ export class SearchComponent extends ParamDirective {
     async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusSubscription = this.corpusService.currentCorpus
-            .pipe(filter((corpus) => !!corpus))
+            .pipe(
+                filter((corpus) => !!corpus),
+                distinct(corpus => corpus.name),
+            )
             .subscribe((corpus) => {
                 this.setCorpus(corpus);
             });
@@ -99,6 +102,7 @@ export class SearchComponent extends ParamDirective {
     teardown() {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
+        this.queryModel.complete();
     }
 
     setStateFromParams(params: ParamMap) {
@@ -127,22 +131,16 @@ export class SearchComponent extends ParamDirective {
         this.queryModel.setQueryText(this.queryText);
     }
 
-    /**
-     * Escape field names these so they won't interfere with any other parameter (e.g. query)
-     */
-
     private setCorpus(corpus: Corpus) {
-        if (!this.corpus || this.corpus.name !== corpus.name) {
-            const reset = !_.isUndefined(this.corpus);
-            this.corpus = corpus;
-            this.setQueryModel(reset);
-        }
+        this.corpus = corpus;
+        this.setQueryModel();
     }
 
-    private setQueryModel(reset: boolean) {
-        const params = reset ? undefined : this.route.snapshot.queryParamMap;
-        const queryModel = new QueryModel(this.corpus, this.routerStoreService);
-        this.queryModel = queryModel;
-        this.queryText = queryModel.queryText;
+    private setQueryModel() {
+        if (this.queryModel) {
+            this.queryModel.complete();
+        }
+        this.queryModel = new QueryModel(this.corpus, this.routerStoreService);
+        this.queryText = this.queryModel.queryText;
     }
 }
