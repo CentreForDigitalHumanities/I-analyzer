@@ -67,6 +67,7 @@ export abstract class StoreSync<State extends object> {
     protected connectToStore() {
         this.state$ = new BehaviorSubject(this.storeToState(this.store.currentParams()));
         this.subscribeToStore();
+        this.store.paramUpdates$.next(this.stateToStore(this.state$.value));
     }
 
     /** called on initialisation: subscribes to the store until the model is completed */

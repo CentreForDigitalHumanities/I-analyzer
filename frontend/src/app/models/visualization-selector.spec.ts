@@ -33,6 +33,14 @@ describe('VisualizationSelector', () => {
         });
     });
 
+    it('should update the store on init', () => {
+        selector = new VisualizationSelector(store, query);
+        expect(store.currentParams()).toEqual({
+            visualize: 'resultscount',
+            visualizedField: 'great_field',
+        });
+    });
+
     it('should intialise from parameters', () => {
         store.paramUpdates$.next({
             visualize: 'wordcloud',
