@@ -28,13 +28,13 @@
             <div class="relevance-score">
                 <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
             </div>
-            <search-relevance [value]="document.relevance"></search-relevance>
+            <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
         </ng-container>
         <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted"
             iaBalloon="View Scan" aria-label="view scan"
             (click)="goToScan(page, document, $event)">
-            <span class="icon">
-                <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
+            <span class="icon is-large">
+                <fa-icon [icon]="documentIcons.scanAlt" size="3x" aria-hidden="true"></fa-icon>
             </span>
         </button>
     </div>

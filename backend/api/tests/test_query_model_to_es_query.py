@@ -1,6 +1,6 @@
 import pytest
-from api.query_model_to_es_query import query_model_to_es_query
-from api.es_query_to_query_model import es_query_to_query_model
+from api.migration_utils.query_model_to_es_query import query_model_to_es_query
+from api.migration_utils.es_query_to_query_model import es_query_to_query_model
 from copy import deepcopy
 
 cases = [

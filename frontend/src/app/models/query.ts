@@ -1,30 +1,20 @@
 import { convertToParamMap, ParamMap } from '@angular/router';
+import * as _ from 'lodash';
 import { Subject } from 'rxjs';
-import { Corpus, CorpusField, EsFilter, SortBy, SortConfiguration, SortDirection, } from '../models/index';
+import { Corpus, CorpusField, EsFilter, FilterInterface, SortBy, SortConfiguration, SortDirection, Tag, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters, makeHighlightSpecification } from '../utils/es-query';
 import {
     filtersFromParams, highlightFromParams, highlightToParams, omitNullParameters, queryFiltersToParams,
     queryFromParams, searchFieldsFromParams
 } from '../utils/params';
-import { SearchFilter } from './field-filter';
+import { isFieldFilter, SearchFilter } from './field-filter';
+import { isTagFilter, TagFilter } from './tag-filter';
+import { makeTagSpecification } from '../utils/api-query';
+import { APIQuery } from './search-requests';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
-    constructor(
-        esQuery: EsQuery,
-        /**
-         * Name of the corpus for which the query was performed.
-         */
-        public corpus: string,
-
-        /**
-         * User that performed this query.
-         */
-        public user: number) {
-        this.query_json = esQuery;
-    }
-
     /**
      * The query id, when `undefined` it will automatically assign one on save.
      */
@@ -33,8 +23,8 @@ export class QueryDb {
     /**
      * JSON string representing the query model (i.e., query text and filters, see below).
      */
-    public query_json: EsQuery;
-    queryModel?: QueryModel;
+    public query_json: APIQuery;
+    public queryModel?: QueryModel;
 
     /**
      * Time the first document was sent.
@@ -60,6 +50,21 @@ export class QueryDb {
      * Number of total results available for the query.
      */
     public total_results: number;
+
+    constructor(
+        apiQuery: APIQuery,
+        /**
+         * Name of the corpus for which the query was performed.
+         */
+        public corpus: string,
+
+        /**
+         * User that performed this query.
+         */
+        public user: number
+    ) {
+        this.query_json = apiQuery;
+    }
 }
 
 /** These are the from / size parameters emitted by the pagination component */
@@ -73,7 +78,7 @@ export class QueryModel {
     corpus: Corpus;
 	queryText: string;
 	searchFields: CorpusField[];
-	filters: SearchFilter[];
+    filters: FilterInterface[];
     sort: SortConfiguration;
     highlightSize: number;
 
@@ -81,7 +86,7 @@ export class QueryModel {
 
     constructor(corpus: Corpus, params?: ParamMap) {
 		this.corpus = corpus;
-        this.filters = this.corpus.fields.map(field => field.makeSearchFilter());
+        this.filters = this.makeFilters();
         this.sort = new SortConfiguration(this.corpus);
         if (params) {
             this.setFromParams(params);
@@ -97,15 +102,18 @@ export class QueryModel {
         return !this.queryText;
     }
 
+    private get fieldFilters(): SearchFilter[] {
+        return this.filters.filter(isFieldFilter);
+    }
+
 	setQueryText(text?: string) {
 		this.queryText = text || undefined;
 		this.update.next();
 	}
 
-	addFilter(filter: SearchFilter) {
-        this.filterForField(filter.corpusField).set(filter.currentData);
+    addFilter(filter: FilterInterface) {
+        this.setFilter(filter);
 	}
-
 
     setSortBy(value: SortBy) {
         this.sort.setSortBy(value);
@@ -124,12 +132,12 @@ export class QueryModel {
 
     /** get an active search filter on this query for the field (undefined if none exists) */
     filterForField(field: CorpusField): SearchFilter {
-        return this.filters.find(filter => filter.corpusField.name === field.name);
+        return this.fieldFilters.find(filter => filter.corpusField.name === field.name);
     }
 
     /** remove all filters that apply to a corpus field */
     deactivateFiltersForField(field: CorpusField) {
-        this.filters.filter(filter =>
+        this.fieldFilters.filter(filter =>
             filter.corpusField.name === field.name
         ).forEach(filter =>
             filter.deactivate()
@@ -183,26 +191,53 @@ export class QueryModel {
 
     /** convert the query to an elasticsearch query */
 	toEsQuery(): EsQuery {
-        const filters = this.activeFilters.map(filter => filter.toEsFilter()) as EsFilter[];
+        const filters = this.activeFilters
+            .filter(isFieldFilter)
+            .map(filter => filter.toEsFilter()) as EsFilter[];
         const query = combineSearchClauseAndFilters(this.queryText, filters, this.searchFields);
 
         const sort = this.sort.toEsQuerySort();
         const highlight = makeHighlightSpecification(this.corpus, this.queryText, this.highlightSize);
 
         return {
-            ...query, ...sort, ...highlight
+            ...query, ...sort, ...highlight,
         };
-	}
+    }
+
+    toAPIQuery(): APIQuery {
+        const esQuery = this.toEsQuery();
+        const tags = makeTagSpecification(this.filters);
+        return {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            es_query: esQuery,
+            ...tags,
+        };
+    }
+
+    private makeFilters(): FilterInterface[] {
+        const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter());
+        const tagFilter = new TagFilter();
+        return [...fieldFilters, tagFilter];
+    }
 
     /** set the query values from a parameter map */
     private setFromParams(params: ParamMap) {
         this.queryText = queryFromParams(params);
         this.searchFields = searchFieldsFromParams(params, this.corpus);
-        filtersFromParams(params, this.corpus).forEach(filter => {
-            this.filterForField(filter.corpusField).set(filter.data.value);
-        });
+        filtersFromParams(params, this.corpus)
+            .forEach(this.setFilter.bind(this));
         this.sort = new SortConfiguration(this.corpus, params);
         this.highlightSize = highlightFromParams(params);
+    }
+
+    private setFilter(newFilter: FilterInterface): void {
+        let currentFilter: FilterInterface;
+        if (isTagFilter(newFilter)) {
+            currentFilter = this.filters.find(isTagFilter);
+        } else if (isFieldFilter(newFilter)) {
+            currentFilter = this.filterForField(newFilter.corpusField);
+        }
+        currentFilter?.set(newFilter.currentData);
     }
 
     private subscribeToFilterUpdates() {

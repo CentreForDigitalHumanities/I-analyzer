@@ -4,6 +4,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
 import { DialogService } from './../services/index';
+import { navIcons } from '../shared/icons';
 
 @Component({
   selector: 'ia-dialog',
@@ -17,6 +18,8 @@ export class DialogComponent implements OnDestroy, OnInit {
     public footerRouterLink: string[];
     public showDialog = false;
     public isLoading = false;
+
+    navIcons = navIcons;
 
     private dialogEventSubscription: Subscription;
 

@@ -12,7 +12,7 @@ from api.save_query import recent_queries, same_query
 def saved_query(auth_user, db):
     corpus = Corpus.objects.get(name='small-mock-corpus')
     return Query.objects.create(
-        query_json=MATCH_ALL,
+        query_json={'es_query': MATCH_ALL},
         user=auth_user,
         corpus=corpus,
         completed=timezone.now(),
@@ -31,15 +31,27 @@ def test_recent_queries(auth_user, saved_query):
     assert saved_query not in recent_queries(auth_user)
 
 def test_same_query():
-    assert same_query(MATCH_ALL, MATCH_ALL)
+    q = {
+        'es_query': MATCH_ALL
+    }
 
-    q1 = deepcopy(MATCH_ALL)
-    q1.update({
+    assert same_query(q, q)
+
+    q1 = deepcopy(q)
+    q1['es_query'].update({
         'size': 20,
         'from': 21,
     })
 
-    assert same_query(q1, MATCH_ALL)
+    assert same_query(q1, q)
 
-    q2 = set_query_text(MATCH_ALL, 'test')
-    assert not same_query(q2, MATCH_ALL)
+    q2 = deepcopy(q)
+    q2['es_query'] = set_query_text(q2['es_query'], 'test')
+    assert not same_query(q2, q)
+
+    q3 = deepcopy(q)
+    q3.update({
+        'tags': [1]
+    })
+
+    assert not same_query(q3, q)

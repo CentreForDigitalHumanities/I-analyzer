@@ -8,7 +8,7 @@
         <button class="button tag" [attr.aria-label]="'remove tag ' + tag.name"
             iaBalloon="remove this tag" iaBalloonPosition="up"
             (click)="removeTag(tag)">
-            <span class="icon"><fa-icon [icon]="faTimes" aria-hidden="true"></fa-icon></span>
+            <span class="icon"><fa-icon [icon]="actionIcons.remove" aria-hidden="true"></fa-icon></span>
         </button>
     </div>
 
@@ -21,7 +21,7 @@
             <button class="button tag" aria-label="add a tag"
                 iaBalloon="add a tag" iaBalloonPosition="up"
                 (click)="showAddNew = true">
-                <span class="icon"><fa-icon [icon]="faPlus" aria-hidden="true"></fa-icon></span>
+                <span class="icon"><fa-icon [icon]="actionIcons.add" aria-hidden="true"></fa-icon></span>
             </button>
         </ng-template>
     </div>

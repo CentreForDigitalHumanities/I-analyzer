@@ -4,14 +4,14 @@
             [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
             <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
                 (click)="chooseDownloadMethod()" [disabled]="resultsCount===0">
-                <span class="icon is-small">
-                    <i class="fa fa-download"></i>
+                <span class="icon">
+                    <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon>
                 </span>
                 <span>Download csv</span>
             </button>
         </p>
         <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
-            <ia-select-field [corpusFields]="corpus.fields" filterCriterion="downloadable"
+            <ia-select-field [corpusFields]="availableCsvFields" filterCriterion="downloadable"
                 (selection)="selectCsvFields($event)">
             </ia-select-field>
         </p>

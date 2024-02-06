@@ -2,9 +2,9 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { Corpus } from '../../models';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import * as _ from 'lodash';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs-compat';
+import { formIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-corpus-filter',
@@ -27,7 +27,7 @@ export class CorpusFilterComponent implements OnInit {
         map(values => _.some(values, value => !_.isUndefined(value)))
     );
 
-    resetIcon = faTimes;
+    formIcons = formIcons;
 
     constructor() { }
 

@@ -5,10 +5,14 @@
     width: 300px;
 }
 
+::ng-deep .button.p-multiselect .p-multiselect-label {
+    color: $primary;
+}
+
 ::ng-deep .button.p-multiselect.p-component {
     border: 1px solid $primary;
-    width: 80%;
 }
+
 
 
 .select-count {

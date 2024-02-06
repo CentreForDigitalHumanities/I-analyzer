@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Directive, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, Host, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -27,13 +27,15 @@ const barchartID = 'barchart';
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export abstract class BarchartDirective
-    <DataPoint extends TimelineDataPoint|HistogramDataPoint>
-    implements OnChanges, OnInit, OnDestroy {
+export abstract class BarchartDirective<
+    DataPoint extends TimelineDataPoint | HistogramDataPoint
+> implements OnChanges, OnInit, OnDestroy {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     public showHint: boolean;
 
     // rawData: a list of series
-    rawData: (BarchartSeries<DataPoint>)[];
+    rawData: BarchartSeries<DataPoint>[];
 
     // chart object
     chart: Chart;
@@ -44,8 +46,8 @@ export abstract class BarchartDirective
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
+    @Input() frequencyMeasure: 'documents' | 'tokens' = 'documents';
+    normalizer: 'raw' | 'percent' | 'documents' | 'terms' = 'raw';
 
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
 
@@ -74,32 +76,36 @@ export abstract class BarchartDirective
         documents: {
             raw: 'doc_count',
             percent: 'relative_doc_count',
-        }
+        },
     };
 
-    @Output() isLoading = new BehaviorSubject<boolean>(false);
+    isLoading$ = new BehaviorSubject<boolean>(false);
+
+    // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() error = new EventEmitter();
 
     destroy$ = new Subject<void>();
 
-    basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
+    basicChartOptions: ChartOptions = {
+        // chart options not suitable for Chart.defaults.global
         scales: {
             x: {
                 title: { display: true },
                 border: { display: true },
-                grid: { drawOnChartArea: false }
+                grid: { drawOnChartArea: false },
             },
             y: {
                 type: 'linear',
                 beginAtZero: true,
                 title: { display: true, text: 'Frequency' },
                 border: { display: true },
-                grid: { drawOnChartArea: false, },
+                grid: { drawOnChartArea: false },
                 ticks: {
-                    callback: (value, index, values) => this.formatValue(this.normalizer)(value as number),
+                    callback: (value, index, values) =>
+                        this.formatValue(this.normalizer)(value as number),
                 },
                 min: 0,
-            }
+            },
         },
         interaction: {
             axis: 'x',
@@ -121,22 +127,22 @@ export abstract class BarchartDirective
                     wheel: {
                         enabled: false,
                     },
-                    onZoom: ({chart}) => this.onZoomIn(chart),
-                }
+                    onZoom: ({ chart }) => this.onZoomIn(chart),
+                },
             },
             title: {
                 display: true,
                 text: `placeholder`,
                 align: 'center',
             },
-        }
+        },
     };
 
     constructor(
         public searchService: SearchService,
         public visualizationService: VisualizationService,
         public apiService: ApiService,
-        private notificationService: NotificationService,
+        private notificationService: NotificationService
     ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
@@ -145,15 +151,20 @@ export abstract class BarchartDirective
         chartDefault.plugins.tooltip.intersect = false;
     }
 
+    @HostBinding('class.is-loading')
+    get isLoading() {
+        return this.isLoading$.value;
+    }
+
     ngOnInit(): void {
-      this.setupZoomHint();
+        this.setupZoomHint();
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
-            this.queryModel.update.pipe(
-                takeUntil(this.destroy$)
-            ).subscribe(this.refreshChart.bind(this));
+            this.queryModel.update
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(this.refreshChart.bind(this));
         }
         // new doc counts should be requested if query has changed
         if (this.changesRequireRefresh(changes)) {
@@ -169,10 +180,17 @@ export abstract class BarchartDirective
 
     /** check whether input changes should force reloading the data */
     changesRequireRefresh(changes: SimpleChanges): boolean {
-        const relevantChanges = [changes.corpus, changes.queryModel, changes.visualizedField, changes.frequencyMeasure]
-            .filter(change => !_.isUndefined(change));
+        const relevantChanges = [
+            changes.corpus,
+            changes.queryModel,
+            changes.visualizedField,
+            changes.frequencyMeasure,
+        ].filter((change) => !_.isUndefined(change));
 
-        return _.some(relevantChanges, change => !_.isEqual(change.currentValue, change.previousValue));
+        return _.some(
+            relevantChanges,
+            (change) => !_.isEqual(change.currentValue, change.previousValue)
+        );
     }
 
     /** update graph after changes to the chart settings (i.e. normalizer and chart type) */
@@ -187,16 +205,14 @@ export abstract class BarchartDirective
     /**
      * clear data and update chart
      */
-     refreshChart(): void {
+    refreshChart(): void {
         this.initQueries();
         this.clearCanvas();
         this.prepareChart();
     }
 
     initQueries(): void {
-        this.rawData = [
-            this.newSeries(this.queryText)
-        ];
+        this.rawData = [this.newSeries(this.queryText)];
         this.queries = [this.queryText];
     }
 
@@ -211,8 +227,10 @@ export abstract class BarchartDirective
 
     /** update the queries in the graph to the input array. Preserve results if possible, and kick off loading the rest. */
     updateQueries(queries: string[]) {
-        this.rawData = queries.map(queryText => {
-            const existingSeries = this.rawData.find(series => series.queryText === queryText);
+        this.rawData = queries.map((queryText) => {
+            const existingSeries = this.rawData.find(
+                (series) => series.queryText === queryText
+            );
             return existingSeries || this.newSeries(queryText);
         });
         this.prepareChart();
@@ -240,58 +258,64 @@ export abstract class BarchartDirective
      * This function should be called after (potential) changes to parameters.
      */
     prepareChart() {
-        showLoading(
-            this.isLoading,
-            this.loadData()
-        );
+        showLoading(this.isLoading$, this.loadData());
     }
 
     /** load data for the graph (if needed), update the graph and freqtable. */
     loadData(): Promise<void> {
         // load data if needed
-        return this.requestDocumentData().then(
-            this.frequencyMeasure === 'tokens' ? this.requestTermFrequencyData.bind(this) : _.identity
-        ).then(rawData => {
-            this.rawData = rawData;
+        return this.requestDocumentData()
+            .then(
+                this.frequencyMeasure === 'tokens'
+                    ? this.requestTermFrequencyData.bind(this)
+                    : _.identity
+            )
+            .then((rawData) => {
+                this.rawData = rawData;
 
-            if (!this.rawData.length) {
-                this.error.emit({message: 'No results'});
-            }
+                if (!this.rawData.length) {
+                    this.error.emit({ message: 'No results' });
+                }
 
-            // initialise or update chart
-            this.setChart();
+                // initialise or update chart
+                this.setChart();
 
-            // update freqtable
-            this.setTableHeaders();
-            this.setTableData();
+                // update freqtable
+                this.setTableHeaders();
+                this.setTableData();
 
-            // load zoomed-in data if needed
-            if (this.isZoomedIn) {
-                this.onZoomIn(this.chart, true);
-            }
-        });
+                // load zoomed-in data if needed
+                if (this.isZoomedIn) {
+                    this.onZoomIn(this.chart, true);
+                }
+            });
     }
 
     /** Retrieve all document frequencies and store in `rawData`.
      * Document frequencies are only loaded if they are not already in the data. */
     requestDocumentData(): Promise<typeof this.rawData> {
-        const dataPromises = this.rawData.map(series => {
-            if (!series.data.length) { // retrieve data if it was not already loaded
+        const dataPromises = this.rawData.map((series) => {
+            if (!series.data.length) {
+                // retrieve data if it was not already loaded
                 return this.getSeriesDocumentData(series);
             } else {
                 return series;
             }
         });
 
-        return Promise.all(dataPromises).then(this.checkDocumentLimitExceeded.bind(this));
+        return Promise.all(dataPromises).then(
+            this.checkDocumentLimitExceeded.bind(this)
+        );
     }
 
     selectSearchFields(queryModel: QueryModel) {
         if (this.frequencyMeasure === 'documents') {
             return queryModel;
         } else {
-            const mainContentFields = this.corpus.fields.filter(field =>
-                field.searchable && (field.displayType === 'text_content'));
+            const mainContentFields = this.corpus.fields.filter(
+                (field) =>
+                    field.searchable && field.displayType === 'text_content'
+            );
             const queryModelCopy = queryModel.clone();
             queryModelCopy.searchFields = mainContentFields;
             return queryModelCopy;
@@ -310,11 +334,18 @@ export abstract class BarchartDirective
      * may be set to `false` when loading a portion of the series during zoom.
      * @returns a copy of the series with the document counts included.
      */
-    docCountResultIntoSeries(result, series: BarchartSeries<DataPoint>, setSearchRatio = true): BarchartSeries<DataPoint> {
-        let data = result.aggregations[this.visualizedField.name]
-            .map(this.aggregateResultToDataPoint);
+    docCountResultIntoSeries(
+        result,
+        series: BarchartSeries<DataPoint>,
+        setSearchRatio = true
+    ): BarchartSeries<DataPoint> {
+        let data = result.aggregations[this.visualizedField.name].map(
+            this.aggregateResultToDataPoint
+        );
         const total_doc_count = this.totalDocCount(data);
-        const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
+        const searchRatio = setSearchRatio
+            ? this.documentLimit / total_doc_count
+            : series.searchRatio;
         data = this.includeRelativeDocCount(data, total_doc_count);
         return {
             data,
@@ -330,7 +361,7 @@ export abstract class BarchartDirective
     /** fill in the `relative_doc_count` property for an array of datapoints.
      */
     includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
-        return data.map(item => {
+        return data.map((item) => {
             const result = _.clone(item);
             result.relative_doc_count = result.doc_count / total;
             return result;
@@ -341,18 +372,26 @@ export abstract class BarchartDirective
      * Check whether any series found more documents than the document limit.
      * This means that not all documents will be read when counting term frequency.
      */
-     checkDocumentLimitExceeded(rawData: typeof this.rawData): typeof this.rawData {
-        this.documentLimitExceeded = rawData.find(series => series.searchRatio < 1) !== undefined;
+    checkDocumentLimitExceeded(
+        rawData: typeof this.rawData
+    ): typeof this.rawData {
+        this.documentLimitExceeded =
+            rawData.find((series) => series.searchRatio < 1) !== undefined;
         return rawData;
     }
-
 
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
-        const dataPromises = rawData.map(series => {
-            if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
+    requestTermFrequencyData(
+        rawData: typeof this.rawData
+    ): Promise<BarchartSeries<DataPoint>[]> {
+        const dataPromises = rawData.map((series) => {
+            if (
+                series.queryText &&
+                series.data.length &&
+                series.data[0].match_count === undefined
+            ) {
                 // retrieve data if it was not already loaded
                 return this.getTermFrequencies(series, this.queryModel);
             } else {
@@ -360,51 +399,74 @@ export abstract class BarchartDirective
             }
         });
 
-        return Promise.all(dataPromises).then(this.checkTotalTokenCount.bind(this));
+        return Promise.all(dataPromises).then(
+            this.checkTotalTokenCount.bind(this)
+        );
     }
 
     checkTotalTokenCount(rawData: typeof this.rawData): typeof this.rawData {
-        const totalTokenCountAvailable = rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
-        if (this.frequencyMeasure === 'tokens' && totalTokenCountAvailable && !this.totalTokenCountAvailable) {
+        const totalTokenCountAvailable =
+            rawData.find((series) =>
+                series.data.find((cat) => cat.token_count)
+            ) !== undefined;
+        if (
+            this.frequencyMeasure === 'tokens' &&
+            totalTokenCountAvailable &&
+            !this.totalTokenCountAvailable
+        ) {
             this.normalizer = 'terms';
         }
         this.totalTokenCountAvailable = totalTokenCountAvailable;
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<BarchartSeries<DataPoint>> {
+    getTermFrequencies(
+        series: BarchartSeries<DataPoint>,
+        queryModel: QueryModel
+    ): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result =>
-            this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
-        ).then(res =>
-            this.processSeriesTermFrequency(res, series)
-        ).catch(error => {
-            console.error(error);
-            this.error.emit(`could not load results: ${error.message}`);
-            return series;
-        });
+        return this.requestSeriesTermFrequency(series, queryModelCopy)
+            .then((result) =>
+                this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
+            )
+            .then((res) => this.processSeriesTermFrequency(res, series))
+            .catch((error) => {
+                console.error(error);
+                this.error.emit(`could not load results: ${error.message}`);
+                return series;
+            });
     }
 
-    abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
+    abstract requestSeriesTermFrequency(
+        series: BarchartSeries<DataPoint>,
+        queryModel: QueryModel
+    ): Promise<TaskResult>;
 
     abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
 
-    abstract processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint>;
-
+    abstract processSeriesTermFrequency(
+        results: TermFrequencyResult[],
+        series: BarchartSeries<DataPoint>
+    ): BarchartSeries<DataPoint>;
 
     /** total document count for a data array */
     totalDocCount(data: AggregateResult[]) {
-        return _.sumBy(data, item => item.doc_count);
+        return _.sumBy(data, (item) => item.doc_count);
     }
 
     /**
      * calculate the maximum number of documents to read through in a bin
      * when determining term frequency.
      */
-     documentLimitForCategory(cat: DataPoint, series: BarchartSeries<DataPoint>): number {
-        return _.min([this.documentLimit, _.ceil(cat.doc_count * series.searchRatio)]);
+    documentLimitForCategory(
+        cat: DataPoint,
+        series: BarchartSeries<DataPoint>
+    ): number {
+        return _.min([
+            this.documentLimit,
+            _.ceil(cat.doc_count * series.searchRatio),
+        ]);
     }
-
 
     /**
      * add term frequency data to a DataPoint object
@@ -412,47 +474,67 @@ export abstract class BarchartDirective
      * @param result output from request for term frequencies
      * @param cat DataPoint object where the data should be added
      */
-    addTermFrequencyToCategory(data: TermFrequencyResult, cat: DataPoint): DataPoint {
+    addTermFrequencyToCategory(
+        data: TermFrequencyResult,
+        cat: DataPoint
+    ): DataPoint {
         cat.match_count = data.match_count;
         cat.total_doc_count = data.total_doc_count;
         cat.token_count = data.token_count;
         cat.matches_by_doc_count = data.match_count / data.total_doc_count;
-        cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
+        cat.matches_by_token_count = data.token_count
+            ? data.match_count / data.token_count
+            : undefined;
         return cat;
     }
 
     /** Request and fill in doc counts for a series */
     getSeriesDocumentData(
-        series: BarchartSeries<DataPoint>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
+        series: BarchartSeries<DataPoint>,
+        queryModel: QueryModel = this.queryModel,
+        setSearchRatio = true
     ): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
 
-        return this.requestSeriesDocCounts(queryModelCopy).then(result =>
-            this.docCountResultIntoSeries(result, series, setSearchRatio));
+        return this.requestSeriesDocCounts(queryModelCopy).then((result) =>
+            this.docCountResultIntoSeries(result, series, setSearchRatio)
+        );
     }
 
     /** adapt query model to fit series: use correct search fields and query text */
-    queryModelForSeries(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
-        return this.selectSearchFields(this.removeSort(this.setQueryText(queryModel, series.queryText)));
+    queryModelForSeries(
+        series: BarchartSeries<DataPoint>,
+        queryModel: QueryModel
+    ) {
+        return this.selectSearchFields(
+            this.removeSort(this.setQueryText(queryModel, series.queryText))
+        );
     }
 
     /** Request doc counts for a series */
-    abstract requestSeriesDocCounts(queryModel: QueryModel): Promise<AggregateQueryFeedback>;
+    abstract requestSeriesDocCounts(
+        queryModel: QueryModel
+    ): Promise<AggregateQueryFeedback>;
 
     requestFullData() {
-        this.fullDataRequest().then(() =>
-            this.notificationService.showMessage(
-                'Full data requested! You will receive an email when your download is ready.',
-                'success',
-                {
-                    text: 'view downloads',
-                    route: ['/download-history']
-                }
+        this.fullDataRequest()
+            .then(() =>
+                this.notificationService.showMessage(
+                    'Full data requested! You will receive an email when your download is ready.',
+                    'success',
+                    {
+                        text: 'view downloads',
+                        route: ['/download-history'],
+                    }
+                )
             )
-        ).catch(error => {
-            console.error(error);
-            this.notificationService.showMessage('Could not set up data generation.', 'danger');
-        });
+            .catch((error) => {
+                console.error(error);
+                this.notificationService.showMessage(
+                    'Could not set up data generation.',
+                    'danger'
+                );
+            });
     }
 
     abstract fullDataRequest(): Promise<TaskResult>;
@@ -468,7 +550,7 @@ export abstract class BarchartDirective
     /** select the columns/headers for the frequency table */
     abstract setTableHeaders(): void;
     /** code to be executed when zooming in, or when parameters are updated while zoomed in */
-    onZoomIn(chart, triggeredByDataUpdate = false) { }
+    onZoomIn(chart, triggeredByDataUpdate = false) {}
     /** options for the chart.
      *
      * @param datasets array of dataset objects for the chart
@@ -481,17 +563,15 @@ export abstract class BarchartDirective
         const datasets = this.getDatasets();
         const options = this.chartOptions(datasets);
 
-        this.chart = new Chart(barchartID,
-            {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets
-                },
-                plugins: [ Zoom ],
-                options
-            }
-        );
+        this.chart = new Chart(barchartID, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets,
+            },
+            plugins: [Zoom],
+            options,
+        });
 
         this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
@@ -522,12 +602,11 @@ export abstract class BarchartDirective
     /** return chartJS dataset objects based on rawData */
     abstract getDatasets(): any[];
 
-
     /**
      * Show the zooming hint once per session, hide automatically with a delay
      * when the user moves the mouse.
      */
-     setupZoomHint() {
+    setupZoomHint() {
         if (!sessionStorage.getItem(hintSeenSessionStorageKey)) {
             sessionStorage.setItem(hintSeenSessionStorageKey, 'true');
             this.showHint = true;
@@ -541,7 +620,7 @@ export abstract class BarchartDirective
         }
     }
 
-    formatValue(normalizer: string): (value?: number) => string|undefined {
+    formatValue(normalizer: string): (value?: number) => string | undefined {
         if (normalizer === 'percent') {
             return (value?: number) => {
                 if (value !== undefined && value !== null) {
@@ -589,12 +668,11 @@ export abstract class BarchartDirective
         return queryModelCopy;
     }
 
-
     /** assemble the array of table data */
     setTableData() {
         if (this.rawData && this.rawData.length) {
-            this.tableData = _.flatMap(this.rawData, series =>
-                series.data.map(item => {
+            this.tableData = _.flatMap(this.rawData, (series) =>
+                series.data.map((item) => {
                     const result = _.cloneDeep(item) as any;
                     result.queryText = series.queryText;
                     return result;
@@ -614,7 +692,10 @@ export abstract class BarchartDirective
      */
     get percentageDocumentsSearched() {
         if (this.rawData) {
-            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)), 1);
+            return _.round(
+                100 * _.min(this.rawData.map((series) => series.searchRatio)),
+                1
+            );
         }
     }
 
@@ -626,12 +707,13 @@ export abstract class BarchartDirective
         return false;
     }
 
-
     get searchFields(): string {
         if (this.corpus && this.queryModel) {
-            const searchFields = this.selectSearchFields(this.queryModel).searchFields;
+            const searchFields = this.selectSearchFields(
+                this.queryModel
+            ).searchFields;
 
-            const displayNames = searchFields.map(field => field.displayName);
+            const displayNames = searchFields.map((field) => field.displayName);
 
             return displayNames.join(', ');
         }
@@ -640,20 +722,24 @@ export abstract class BarchartDirective
     }
 
     chartTitle() {
-        const queryTexts = this.rawData.map(series => series.queryText);
-        if (this.queryText == null && this.rawData.length == 1) {
+        const queryTexts = this.rawData.map((series) => series.queryText);
+        if (this.queryText == null && this.rawData.length === 1) {
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
-            const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
-            return `Frequency of '${queryTexts.join(', ')}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
-            }
+            const normalizationText = ['raw', 'percent'].includes(
+                this.normalizer
+            )
+                ? ''
+                : `, normalized by ${this.normalizer}`;
+            return `Frequency of '${queryTexts.join(', ')}' by ${
+                this.visualizedField.displayName
+            } (n of ${this.frequencyMeasure}${normalizationText})`;
+        }
     }
-
 
     get queryText(): string {
         if (this.queryModel) {
             return this.queryModel.queryText;
         }
     }
-
 }

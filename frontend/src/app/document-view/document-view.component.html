@@ -6,7 +6,7 @@
                     <tr *ngIf="document.relevance">
                         <th>Relevance</th>
                         <td>
-                            <search-relevance [value]="document.relevance"></search-relevance>
+                            <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
                         </td>
                     </tr>
                     <tr>
@@ -32,10 +32,10 @@
     <div class="column is-7">
         <div class="box">
             <ia-tabs [activeTab]="activeTab">
-                <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="tabIcons.text">
+                <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
                     <div class="content" [innerHtml]="highlightedInnerHtml(field)"></div>
                 </ng-template>
-                <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="tabIcons.scan">
+                <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="documentIcons.scan">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
                 </ng-template>
             </ia-tabs>

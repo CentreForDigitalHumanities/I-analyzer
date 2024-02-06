@@ -13,7 +13,7 @@ import { FreqTableHeaders, WordSimilarity } from '../../models';
 @Component({
     selector: 'ia-similarity-chart',
     templateUrl: './similarity-chart.component.html',
-    styleUrls: ['./similarity-chart.component.scss']
+    styleUrls: ['./similarity-chart.component.scss'],
 })
 export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() timeIntervals: string[];
@@ -34,11 +34,11 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     averages: number[];
 
-    graphStyle = new BehaviorSubject<'line'|'bar'>('line');
+    graphStyle = new BehaviorSubject<'line' | 'bar'>('line');
 
     currentTimeIndex = undefined;
 
-    constructor() { }
+    constructor() {}
 
     ngOnInit(): void {
         this.graphStyle.subscribe(this.updateChart.bind(this));
@@ -51,7 +51,11 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.totalData || (changes.zoomedInData && this.graphStyle.value === 'bar') || changes.palette) {
+        if (
+            changes.totalData ||
+            (changes.zoomedInData && this.graphStyle.value === 'bar') ||
+            changes.palette
+        ) {
             this.updateChart(this.graphStyle.value);
             this.updateTable();
         }
@@ -72,22 +76,31 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     setTerms(): void {
         if (this.totalData) {
-            this.terms = _.uniq(this.totalData.map(item => item.key));
+            this.terms = _.uniq(this.totalData.map((item) => item.key));
         }
-
     }
 
     setTableHeaders(): void {
         if (this.terms.length > 1) {
             this.tableHeaders = [
-                { key: 'key', label: 'Term', isSecondaryFactor: true, },
-                { key: 'time', label: 'Time interval', isMainFactor: true, },
-                { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
+                { key: 'key', label: 'Term', isSecondaryFactor: true },
+                { key: 'time', label: 'Time interval', isMainFactor: true },
+                {
+                    key: 'similarity',
+                    label: 'Similarity',
+                    format: this.formatValue,
+                    formatDownload: this.formatDownloadValue,
+                },
             ];
         } else {
             this.tableHeaders = [
-                { key: 'time', label: 'Time interval',},
-                { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
+                { key: 'time', label: 'Time interval' },
+                {
+                    key: 'similarity',
+                    label: 'Similarity',
+                    format: this.formatValue,
+                    formatDownload: this.formatDownloadValue,
+                },
             ];
         }
     }
@@ -114,7 +127,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getAverageTime(time: string): number {
-        const times = time.split('-').map(t => parseInt(t));
+        const times = time.split('-').map((t) => parseInt(t, 10));
         const avg = Math.round(_.mean(times));
         return avg;
     }
@@ -128,12 +141,14 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /** convert array of word similarities to a chartData object */
-    makeChartData(data: WordSimilarity[], style: 'line'|'bar'): ChartData {
-        this.averages = this.timeIntervals.map(t => this.getAverageTime(t));
-        const allSeries = _.groupBy(data, point => point.key);
+    makeChartData(data: WordSimilarity[], style: 'line' | 'bar'): ChartData {
+        this.averages = this.timeIntervals.map((t) => this.getAverageTime(t));
+        const allSeries = _.groupBy(data, (point) => point.key);
         const datasets = _.values(allSeries).map((series, datasetIndex) => {
             const label = series[0].key;
-            const similarities = series.map((point) => this.formatDataPoint(point, style));
+            const similarities = series.map((point) =>
+                this.formatDataPoint(point, style)
+            );
             const colour = selectColor(this.palette, datasetIndex);
             return {
                 label,
@@ -143,7 +158,10 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             };
         });
 
-        const labels = (style === 'line') ? this.timeIntervals : [this.timeIntervals[this.currentTimeIndex]];
+        const labels =
+            style === 'line'
+                ? this.timeIntervals
+                : [this.timeIntervals[this.currentTimeIndex]];
 
         return {
             labels,
@@ -151,11 +169,14 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         };
     }
 
-    filterTimeInterval(data: WordSimilarity[], interval: string): WordSimilarity[] {
-        return data.filter(point => point.time === interval);
+    filterTimeInterval(
+        data: WordSimilarity[],
+        interval: string
+    ): WordSimilarity[] {
+        return data.filter((point) => point.time === interval);
     }
 
-    updateChart(style: 'line'|'bar'): void {
+    updateChart(style: 'line' | 'bar'): void {
         let data: WordSimilarity[];
         if (style !== 'bar') {
             this.currentTimeIndex = undefined;
@@ -174,10 +195,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.chartData = this.makeChartData(data, style);
         this.makeChart(this.chartData, style);
-
     }
 
-    makeChart(data: ChartData, style: 'line'|'bar'): void {
+    makeChart(data: ChartData, style: 'line' | 'bar'): void {
         const options: ChartOptions = {
             elements: {
                 line: {
@@ -193,22 +213,24 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                     ticks: {
                         stepSize: 1,
                         autoSkip: true,
-                        callback: (value: number): string | undefined => this.averages.includes(
-                            value) ? this.formatLabel(value) : undefined,
-                        minRotation: 30
-                    }
+                        callback: (value: number): string | undefined =>
+                            this.averages.includes(value)
+                                ? this.formatLabel(value)
+                                : undefined,
+                        minRotation: 30,
+                    },
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Cosine similarity'
-                    }
+                        text: 'Cosine similarity',
+                    },
                 },
             },
             plugins: {
                 legend: {
                     display: true,
-                    labels: {}
+                    labels: {},
                 },
                 tooltip: {
                     displayColors: true,
@@ -221,7 +243,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                                 backgroundColor: color,
                             };
                         },
-                    }
+                    },
                 },
                 zoom: {
                     zoom: {
@@ -229,9 +251,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                         drag: { enabled: false },
                         pinch: { enabled: false },
                         wheel: { enabled: false },
-                    }
-                }
-            }
+                    },
+                },
+            },
         };
 
         if (style === 'line') {
@@ -248,11 +270,11 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (style === 'bar') {
             // hide grid lines as we only have one data point on x axis
-            data.datasets.forEach(dataset => dataset.type = 'bar');
+            data.datasets.forEach((dataset) => (dataset.type = 'bar'));
             options.scales.x = {
                 grid: {
-                    display: false
-                }
+                    display: false,
+                },
             };
         }
 
@@ -265,7 +287,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 type: 'line',
                 data,
                 options,
-                plugins: [Filler, Zoom]
+                plugins: [Filler, Zoom],
             });
             this.chart.canvas.ondblclick = (event) => this.chart.resetZoom();
         }

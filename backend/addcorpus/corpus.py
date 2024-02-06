@@ -62,7 +62,6 @@ class CorpusDefinition(object):
         '''
         raise NotImplementedError('CorpusDefinition missing max_date')
 
-
     '''
     Language(s) used in the corpus
 
@@ -109,7 +108,6 @@ class CorpusDefinition(object):
         MUST include a field with `name='id'`.
         '''
         raise NotImplementedError('CorpusDefinition missing fields')
-
 
     '''
     A dictionary that specifies how documents can be grouped into a "context". For example,
@@ -272,6 +270,7 @@ class CorpusDefinition(object):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with this type of data")
 
+
 class ParentCorpusDefinition(CorpusDefinition):
     ''' A class from which other corpus definitions can inherit.
     This class is in charge of setting fields, usually without defining an extractor.
@@ -280,7 +279,7 @@ class ParentCorpusDefinition(CorpusDefinition):
     while the logic to collect sources and populate the fields can be different.
     The ParentCorpusDefinition can also be used to allow cross-corpus search and filtering.
     '''
-    #define fields property so it can be set in __init__
+    # define fields property so it can be set in __init__
     @property
     def fields(self):
         return self._fields
@@ -292,7 +291,7 @@ class ParentCorpusDefinition(CorpusDefinition):
     def __init__(self):
         ''' Specify a list of fields which all subclasses share
             A subclass of ParentCorpusDefinition will provide extractors for the fields,
-            and potentially prune done the list of fields to those which have an extractor
+            and potentially prune down the list of fields to those which have an extractor
         '''
         self.fields = []
 
@@ -301,7 +300,6 @@ class XMLCorpusDefinition(CorpusDefinition):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
-
 
     '''
     The top-level tag in the source documents.
@@ -470,13 +468,14 @@ class XMLCorpusDefinition(CorpusDefinition):
         '''
         return bs4.BeautifulSoup(data, 'lxml-xml')
 
-    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None, metadata = {}):
+    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None, metadata={}):
         '''
         Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.get_tag_requirements(self.tag_toplevel, metadata)
+            toplevel_tag = self.get_tag_requirements(
+                self.tag_toplevel, metadata)
 
         return soup.find(**toplevel_tag) if toplevel_tag else soup
 
@@ -640,9 +639,9 @@ class CSVCorpusDefinition(CorpusDefinition):
             for row in reader:
                 is_new_document = True
 
-                if self.required_field and not row.get(self.required_field):  # skip row if required_field is empty
+                # skip row if required_field is empty
+                if self.required_field and not row.get(self.required_field):
                     continue
-
 
                 if self.field_entry:
                     identifier = row[self.field_entry]
@@ -665,14 +664,27 @@ class CSVCorpusDefinition(CorpusDefinition):
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows, metadata = metadata, index=row_index
+                rows=rows, metadata=metadata, index=row_index
             )
             for field in self.fields if field.indexed
         }
 
         return doc
 
+class JSONCorpusDefinition(CorpusDefinition):
+    '''
+    Corpus definition for json encoded data.
+    '''
 
+    def source2dicts(self, source, *nargs, **kwargs):
+        self._reject_extractors(extract.XML, extract.CSV)
+
+        field_dict = {
+           field.name: field.extractor.apply(source, *nargs, **kwargs) 
+            for field in self.fields
+        }
+               
+        yield field_dict
 
 # Fields ######################################################################
 
@@ -817,3 +829,14 @@ def consolidate_start_end_years(start, end, min_date, max_date):
         start = min_date
     if end > max_date:
         end = max_date
+
+
+def transform_to_date_range(earliest, latest):
+    if not earliest:
+        earliest = '0001-01-01'
+    if not latest:
+        latest = datetime.today().isoformat()[:10]
+    return {
+        'gte': earliest,
+        'lte': latest
+    }

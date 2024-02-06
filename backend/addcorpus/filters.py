@@ -35,7 +35,7 @@ class DateFilter(Filter):
     Filter for datetime values: produces two datepickers for min and max date.
     '''
 
-    mapping_types = (MappingType.DATE,)
+    mapping_types = (MappingType.DATE, MappingType.DATE_RANGE,)
 
     def __init__(self, lower, upper, *nargs, **kwargs):
         self.lower = lower

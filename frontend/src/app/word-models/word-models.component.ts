@@ -1,17 +1,18 @@
-import { Component, DoCheck, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import * as _ from 'lodash';
 
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
+import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-word-models',
     templateUrl: './word-models.component.html',
     styleUrls: ['./word-models.component.scss'],
 })
-export class WordModelsComponent extends ParamDirective implements DoCheck {
+export class WordModelsComponent extends ParamDirective {
     @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -38,11 +39,11 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
             title: 'Compare similarity',
             manual: 'comparesimilarity',
             chartID: 'chart',
-        }
+        },
     };
 
-    childComponentLoading: boolean;
-    isLoading: boolean;
+    visualizationIcons = visualizationIcons;
+
     errorMessage: string;
 
     queryFeedback: QueryFeedback;
@@ -53,15 +54,26 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         paramService: ParamService,
         private corpusService: CorpusService,
         private authService: AuthService,
-        private wordModelsService: WordmodelsService,
+        private wordModelsService: WordmodelsService
     ) {
         super(route, router, paramService);
     }
 
-    ngDoCheck() {
-        if (this.isLoading !== this.childComponentLoading) {
-            this.isLoading = this.childComponentLoading;
+    get imageFileName(): string {
+        if (this.currentTab && this.corpus) {
+            return `${this.currentTab}_${this.corpus.name}.png`;
         }
+    }
+
+    get tabNames() {
+        return Object.keys(this.tabs);
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown =
+            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     async initialize(): Promise<void> {
@@ -125,29 +137,8 @@ export class WordModelsComponent extends ParamDirective implements DoCheck {
         }
     }
 
-    onIsLoading(isLoading: boolean): void {
-        this.childComponentLoading = isLoading;
-    }
-
     setErrorMessage(event: { message: string }): void {
         this.errorMessage = event.message;
-    }
-
-    get imageFileName(): string {
-        if (this.currentTab && this.corpus) {
-            return `${this.currentTab}_${this.corpus.name}.png`;
-        }
-    }
-
-    @HostListener('window:scroll', [])
-    onWindowScroll() {
-        // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown =
-            this.searchSection.nativeElement.getBoundingClientRect().y === 0;
-    }
-
-    get tabNames() {
-        return Object.keys(this.tabs);
     }
 
     onTabChange(tab: 'relatedwords' | 'wordsimilarity'): void {

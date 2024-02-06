@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
+import { userIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-request-reset',
@@ -16,6 +17,8 @@ export class RequestResetComponent implements OnInit {
     public success: boolean;
     public showMessage: boolean;
     public message: string;
+
+    userIcons = userIcons;
 
     constructor(private authService: AuthService, private router: Router) {}
 

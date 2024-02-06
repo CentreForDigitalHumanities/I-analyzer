@@ -2,9 +2,9 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/
 import { DocumentFocus, DocumentPage, DocumentView } from '../../models/document-page';
 import { filter, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { faArrowLeft, faArrowRight, faBookOpen, faLink } from '@fortawesome/free-solid-svg-icons';
 import { FoundDocument, QueryModel } from '../../models';
 import { Subject } from 'rxjs';
+import { documentIcons, actionIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-document-popup',
@@ -20,10 +20,8 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
 
     visible = true;
 
-    faArrowLeft = faArrowLeft;
-    faArrowRight = faArrowRight;
-    linkIcon = faLink;
-    contextIcon = faBookOpen;
+    actionIcons = actionIcons;
+    documentIcons = documentIcons;
 
     private refresh$ = new Subject<void>();
 

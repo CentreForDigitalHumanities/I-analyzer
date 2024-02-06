@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FoundDocument, Tag } from '../../models';
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
+import { formIcons, actionIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-document-tags',
@@ -11,8 +11,8 @@ import * as _ from 'lodash';
 export class DocumentTagsComponent implements OnChanges {
     @Input() document: FoundDocument;
 
-    faTimes = faTimes;
-    faPlus = faPlus;
+    formIcons = formIcons;
+    actionIcons = actionIcons;
 
     showAddNew = false;
 

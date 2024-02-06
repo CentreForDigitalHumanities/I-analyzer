@@ -24,14 +24,8 @@
 //Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted.
 ::ng-deep ia-select-field {
 
-    .p-multiselect-label-container {
-    display: none;
-    }
-
     .p-multiselect .p-multiselect-trigger {
-        padding: 0px 0px;
-        position: inherit;
-        color: $primary;
+        display: none;
     }
 
     .button.p-widget {

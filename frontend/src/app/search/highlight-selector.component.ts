@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { QueryModel } from '../models';
+import { actionIcons } from '../shared/icons';
 
 
 @Component({
@@ -9,6 +10,8 @@ import { QueryModel } from '../models';
 })
 export class HighlightSelectorComponent implements OnDestroy {
     @Input() queryModel: QueryModel;
+
+    actionIcons = actionIcons;
 
     constructor() {
     }
