@@ -6,7 +6,7 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 Various classes are defined in `backend/addcorpus/extract.py`.
 
-- The extractors `XML`, `HTML` and `CSV` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
+- The extractors `XML`, `HTML`, `CSV` and `JSON` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
 - The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
 - The `Constant` extractor can be used to define a constant value.
 - The `Order` extractor gives you the index of that document within the file.
@@ -26,8 +26,8 @@ Elasticsearch supports specifying a `fields` parameter to a field to define subf
 
 The one way in which multifields _are_ used is to allow different analyzers on the same text field. Text fields typically use the default analyzer, which performs basic tokenisation and converts text to lowercase. For more extensive analysis, subfields can be added. I-analyzer uses the following naming convention:
 
-- `*.clean`: uses a language-specific analyzer to filter stopwords.
-- `*.stemmed`: uses a language-specific analyzer to filter stopwords and stem words.
+- `*.clean_{language_string}`: uses a language-specific analyzer to filter stopwords. It has a suffix indicating the language this analyzer is for, e.g., `*.clean_en` for English.
+- `*.stemmed_{language_string}`: uses a language-specific analyzer to filter stopwords and stem words. It has a suffix indicating the language this analyzer is for, e.g., `*.stemmed_en` for English.
 - `*.length`: specifies the token count of the text, which is useful for aggregations.
 - `*.text`: a field with text mapping. Can be added to a keyword field to support full-text search in the field.
 
