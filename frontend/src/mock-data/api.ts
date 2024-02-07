@@ -3,6 +3,7 @@ import { Observable, Subject, from, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
 import { TaskResult, TasksOutcome } from '../app/models';
+import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 
 export const fakeNgramResult = {
     words: [
@@ -32,6 +33,10 @@ export class ApiServiceMock {
     public corpus() {
         // return this.get('corpus');
         return of(this.get('corpus'));
+    }
+
+    download(data: LimitedResultsDownloadParameters): Promise<any> {
+        return Promise.resolve({});
     }
 
     public searchHistory() {

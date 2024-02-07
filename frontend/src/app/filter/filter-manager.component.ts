@@ -6,6 +6,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { FilterInterface, QueryModel } from '../models/index';
+import { filterIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -14,6 +15,8 @@ import { FilterInterface, QueryModel } from '../models/index';
 })
 export class FilterManagerComponent {
     @Input() queryModel: QueryModel;
+
+    filterIcons = filterIcons;
 
     constructor() {
     }

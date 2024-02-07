@@ -1,6 +1,9 @@
-import { ParamMap } from '@angular/router';
+import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, QueryModel, SearchFilter, SortBy, SortDirection } from '../models';
+import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
+import { TagFilter } from '../models/tag-filter';
+import { PageParameters, PageResultsParameters, RESULTS_PER_PAGE } from '../models/page-results';
+import { findByName } from './utils';
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
@@ -20,20 +23,24 @@ export const searchFieldsFromParams = (params: ParamMap, corpus: Corpus): Corpus
 
 // highlight
 
-export const highlightToParams = (queryModel: QueryModel): { highlight: string | null } => {
-    if (queryModel.highlightDisabled || !queryModel.highlightSize) {
+export const highlightToParams = (highlight?: number): { highlight: string | null } => {
+    if (_.isUndefined(highlight)) {
         return { highlight: null };
     }
 
-    return { highlight: queryModel.highlightSize.toString() };
+    return { highlight: highlight.toString() };
 };
 
-export const highlightFromParams = (params: ParamMap): number =>
-    Number(params.get('highlight'));
+export const highlightFromParams = (params: Params): number =>
+    Number(params['highlight']) || undefined;
 
 // sort
 
-export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): {sort: string|null} => {
+export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection, corpus: Corpus): {sort: string|null} => {
+    if (_.isEqual([sortBy, direction], corpus.defaultSort)) {
+        return { sort: null };
+    }
+
     let sortByName: string;
     if (!sortBy) {
         sortByName = 'relevance';
@@ -43,36 +50,88 @@ export const sortSettingsToParams = (sortBy: SortBy, direction: SortDirection): 
     return { sort: `${sortByName},${direction}` };
 };
 
+export const sortSettingsFromParams = (params: Params|undefined, corpus: Corpus): SortState => {
+    if (params && !params['sort']) {
+        return corpus.defaultSort;
+    } else {
+        const [sortParam, ascParam] = params['sort'].split(',');
+
+        let sortBy: SortBy;
+
+        if ( sortParam === 'relevance' ) {
+            sortBy = undefined;
+        } else {
+            sortBy = findByName(corpus.fields, sortParam);
+        }
+
+        const sortDirection: SortDirection = ascParam;
+        return [sortBy, sortDirection];
+    }
+};
+
+// pagination
+
+export const pageToParams = (state: PageParameters): Params => {
+    const page = 1 + _.floor(state.from / state.size);
+
+    if (page === 1) {
+        return {
+            page: null,
+        };
+    }
+
+    return {page};
+};
+
+export const pageFromParams = (params: Params|undefined): PageParameters => {
+    if (params && params['page']) {
+        const page = _.toInteger(params['page']);
+        const size = RESULTS_PER_PAGE;
+        const from = (page - 1) * size;
+        return {from, size};
+    } else {
+        return {
+            from: 0,
+            size: RESULTS_PER_PAGE,
+        };
+    }
+};
+
 // filters
 
-export const filtersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[] => {
+export const filtersFromParams = (params: ParamMap, corpus: Corpus): FilterInterface[] => {
+    const fieldFilters = fieldFiltersFromParams(params, corpus);
+    const tagFilter = tagFilterFromParams(params);
+    return [...fieldFilters, tagFilter];
+};
+
+const fieldFiltersFromParams = (params: ParamMap, corpus: Corpus): SearchFilter[] => {
     const specifiedFields = corpus.fields.filter(field => params.has(field.name));
     return specifiedFields.map(field => {
         const filter = field.makeSearchFilter();
-        const data = filter.dataFromString(params.get(field.name));
-        filter.set(data);
+        filter.setFromParams(params);
         return filter;
     });
 };
 
-const filterParamForField = (queryModel: QueryModel, field: CorpusField) => {
-    const filter = queryModel.filterForField(field);
-    if (filter) {
-        return filter.toRouteParam();
-    } else {
-        return { [field.name]: null };
-    }
+const tagFilterFromParams = (params: ParamMap): TagFilter => {
+    const filter = new TagFilter();
+    filter.setFromParams(params);
+    return filter;
 };
 
 export const queryFiltersToParams = (queryModel: QueryModel) => {
-    const filterParamsPerField = queryModel.corpus.fields.map(
-        field => filterParamForField(queryModel, field));
+    const filterParamsPerField = queryModel.filters.map(filter =>
+        filter.toRouteParam()
+    );
     return _.reduce(
         filterParamsPerField,
         _.merge,
         {}
     );
 };
+
+// utilities
 
 export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) => {
     const currentParams = queryModel.toRouteParam();
@@ -81,3 +140,17 @@ export const paramsHaveChanged = (queryModel: QueryModel, newParams: ParamMap) =
         newParams.get(key) !== currentParams[key]
     );
 };
+
+
+export const pageResultsParametersToParams = (state: PageResultsParameters, corpus: Corpus): Params => {
+    const sort = sortSettingsToParams(...state.sort, corpus);
+    const highlight = highlightToParams(state.highlight);
+    const page = pageToParams(state);
+    return {...sort, ...highlight, ...page};
+};
+
+export const pageResultsParametersFromParams = (params: Params, corpus: Corpus): PageResultsParameters => ({
+    sort: sortSettingsFromParams(params, corpus),
+    highlight: highlightFromParams(params),
+    ...pageFromParams(params)
+});

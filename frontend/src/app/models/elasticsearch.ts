@@ -34,6 +34,7 @@ export interface EsRangeFilter {
     };
 }
 
+
 export type EsFilter = EsDateFilter | EsTermFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 // QUERIES
@@ -70,16 +71,12 @@ export interface SearchHit {
     highlight?: HighlightResult;
 }
 
-export type EsQuerySorted = EsQuery & {
-    sort: { [fieldName: string]: 'desc' | 'asc' }[];
-};
-
 export interface EsQuery {
-    aborted?: boolean;
-    completed?: Date;
     query: EsSearchClause | BooleanQuery | EsFilter;
     highlight?: unknown;
-    transferred?: number;
+    sort?: { [fieldName: string]: 'desc' | 'asc' }[];
+    from?: number;
+    size?: number;
 }
 
 export interface Aggregator {

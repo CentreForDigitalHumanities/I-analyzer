@@ -1,5 +1,8 @@
-import { Component, Input, OnDestroy } from '@angular/core';
-import { QueryModel } from '../models';
+import { Component, Input } from '@angular/core';
+import { actionIcons } from '../shared/icons';
+import { PageResults } from '../models/page-results';
+import { Observable } from 'rxjs';
+import * as _ from 'lodash';
 
 
 @Component({
@@ -7,34 +10,35 @@ import { QueryModel } from '../models';
   templateUrl: './highlight-selector.component.html',
   styleUrls: ['./highlight-selector.component.scss']
 })
-export class HighlightSelectorComponent implements OnDestroy {
-    @Input() queryModel: QueryModel;
+export class HighlightSelectorComponent {
+    @Input() pageResults: PageResults;
+
+    actionIcons = actionIcons;
 
     constructor() {
     }
 
-    get highlight(): number {
-        return this.queryModel?.highlightSize;
+    get highlight$(): Observable<number|undefined> {
+        return this.pageResults?.highlight$;
     }
 
-    get highlightDisabled(): boolean {
-        return this.queryModel?.highlightDisabled;
-    }
-
-    ngOnDestroy(): void {
-        this.queryModel.setHighlight();
+    get highlight(): number|undefined {
+        return this.pageResults?.state$.value.highlight;
     }
 
     updateHighlightSize(instruction?: string) {
-        if (instruction === 'on' && !this.queryModel.highlightSize) {
-            this.queryModel.setHighlight(200);
-        } else if (instruction === 'more' && this.queryModel.highlightSize < 800) {
-            this.queryModel.setHighlight(this.queryModel.highlightSize + 200);
-        } else if (instruction === 'less' && this.queryModel.highlightSize > 200) {
-            this.queryModel.setHighlight(this.queryModel.highlightSize - 200);
+        const currentValue = this.pageResults.state$.value.highlight || 200;
+        let newValue: number|undefined;
+        if (instruction === 'on') {
+            newValue = 200;
+        } else if (instruction === 'more' && currentValue < 800) {
+            newValue = currentValue + 200;
+        } else if (instruction === 'less' && currentValue > 200) {
+            newValue = currentValue - 200;
         } else if (instruction === 'off') {
-            this.queryModel.setHighlight();
+            newValue = undefined;
         }
+        this.pageResults.setParams({ highlight: newValue });
     }
 
 }

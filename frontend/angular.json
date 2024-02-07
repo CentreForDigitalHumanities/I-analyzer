@@ -22,7 +22,6 @@
                       "node_modules/primeicons/primeicons.css",
                       "node_modules/primeng/resources/primeng.min.css",
                       "src/styles.scss",
-                      "node_modules/font-awesome/css/font-awesome.min.css",
                       "src/imageviewer.scss"
                   ],
                   "scripts": [],
@@ -100,8 +99,7 @@
                   "styles": [
                       "node_modules/primeicons/primeicons.css",
                       "node_modules/primeng/resources/primeng.css",
-                      "src/styles.scss",
-                      "node_modules/font-awesome/css/font-awesome.min.css"
+                      "src/styles.scss"
                   ],
                   "assets": ["src/assets"]
               }

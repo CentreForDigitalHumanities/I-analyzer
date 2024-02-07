@@ -6,6 +6,8 @@ import {
     ManualPageMetaData,
     HighlightService,
 } from '../services';
+import { actionIcons, navIcons } from '../shared/icons';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -13,6 +15,9 @@ import {
     styleUrls: ['./manual-navigation.component.scss'],
 })
 export class ManualNavigationComponent implements OnInit {
+    navIcons = navIcons;
+    actionIcons = actionIcons;
+
     /**
      * The text to use for highlighting the search results. This differs from the filter text, because additional wildcards are added
      */
@@ -25,8 +30,11 @@ export class ManualNavigationComponent implements OnInit {
     public filtered = combineLatest([
         this.manifest,
         this.filterTextSubject,
-        (manifest, filterText) => Array.from(this.filter(manifest, filterText)),
-    ]);
+    ]).pipe(
+        map(([manifest, filterText]) =>
+            Array.from(this.filter(manifest, filterText)),
+        )
+    );
 
     constructor(
         private highlightService: HighlightService,

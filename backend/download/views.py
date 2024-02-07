@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from api.utils import check_json_keys
-from tag.filter import handle_tags_in_request
+from api.api_query import api_query_to_es_query
 
 logger = logging.getLogger()
 
@@ -49,9 +49,9 @@ class ResultsDownloadView(APIView):
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
-            handle_tags_in_request(request)
+            es_query = api_query_to_es_query(request.data, corpus_name)
             search_results = es_download.normal_search(
-                corpus_name, request.data['es_query'], request.data['size'])
+                corpus_name, es_query, request.data['size'])
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
             csv_path = tasks.make_csv(search_results, request.data, download.id)
@@ -80,7 +80,6 @@ class ResultsDownloadTaskView(APIView):
 
         # Celery task
         try:
-            handle_tags_in_request(request)
             task_chain = tasks.download_search_results(request.data, request.user)
             result = task_chain.apply_async()
             return Response({'task_ids': [result.id, result.parent.id]})
@@ -106,7 +105,6 @@ class FullDataDownloadTaskView(APIView):
             raise ParseError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
         try:
-            handle_tags_in_request(request, 'parameters')
             task_chain = tasks.download_full_data(request.data, request.user)
             result = task_chain.apply_async()
             return Response({'task_ids': [result.id]})

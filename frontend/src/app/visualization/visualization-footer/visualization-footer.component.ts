@@ -2,8 +2,8 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { DialogService, NotificationService } from '../../services';
 import * as htmlToImage from 'html-to-image';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { PALETTES } from '../../utils/select-color';
+import { actionIcons } from '../../shared/icons';
 
 @Component({
   selector: 'ia-visualization-footer',
@@ -18,7 +18,8 @@ export class VisualizationFooterComponent implements OnInit {
 
     @Output() palette = new BehaviorSubject<string[]>(PALETTES[0]);
 
-    faQuestion = faQuestionCircle;
+    actionIcons = actionIcons;
+
 
     constructor(
       private dialogService: DialogService,

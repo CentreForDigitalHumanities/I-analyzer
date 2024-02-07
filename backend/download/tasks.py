@@ -10,6 +10,7 @@ from addcorpus.models import Corpus
 from visualization.tasks import histogram_term_frequency_tasks, timeline_term_frequency_tasks, ngram_data_tasks
 from visualization import query
 from download.mail import send_csv_email
+from api.api_query import api_query_to_es_query
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,9 @@ def complete_failed_download(request, exc, traceback, log_id):
 
 @shared_task()
 def download_scroll(request_json, download_size=10000):
-    results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    corpus_name = request_json['corpus']
+    es_query = api_query_to_es_query(request_json, corpus_name)
+    results, _ = es_download.scroll(corpus_name, es_query, download_size)
     return results
 
 @shared_task()

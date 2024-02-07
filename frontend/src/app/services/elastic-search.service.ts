@@ -8,8 +8,9 @@ import {
 } from '../models/index';
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
-import { QueryParameters } from '../models/search-requests';
-import { RESULTS_PER_PAGE } from '../models/page-results';
+import { APIQuery } from '../models/search-requests';
+import { PageResultsParameters } from '../models/page-results';
+import { resultsParamsToAPIQuery } from '../utils/es-query';
 
 
 @Injectable()
@@ -24,9 +25,11 @@ export class ElasticSearchService {
                 term: {
                     _id: id,
                 }
-            }
+            },
+            size: 1,
         };
-        return this.execute(corpus, esQuery, 1,)
+        const body: APIQuery = { es_query: esQuery };
+        return this.execute(corpus, body)
             .then(this.parseResponse.bind(this, corpus))
             .then(this.firstDocumentFromResults.bind(this));
     }
@@ -34,14 +37,16 @@ export class ElasticSearchService {
     public async aggregateSearch(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
-        aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
+        aggregators: Aggregator[]
+    ): Promise<AggregateQueryFeedback> {
         const aggregations = {};
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
-        const esQuery = queryModel.toEsQuery();
-        const aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
-        const result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        const query = queryModel.toAPIQuery();
+        const withAggregation = _.set(query, 'es_query.aggs', aggregations);
+        const withSize0 = _.set(withAggregation, 'es_query.size', 0);
+        const result = await this.execute(corpusDefinition, withSize0);
         const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {
             aggregateData[fieldName] = result.aggregations[fieldName].buckets;
@@ -65,9 +70,10 @@ export class ElasticSearchService {
                 }
             }
         };
-        const esQuery = queryModel.toEsQuery();
-        const aggregationModel = Object.assign({ aggs: agg }, esQuery);
-        const result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        const query = queryModel.toAPIQuery();
+        const withAggregation = _.set(query, 'es_query.aggs', agg);
+        const withSize0 = _.set(withAggregation, 'es_query.size', 0);
+        const result = await this.execute(corpusDefinition, withSize0);
         const aggregateData = {};
         Object.keys(result.aggregations).forEach(field => {
             aggregateData[field] = result.aggregations[field].buckets;
@@ -83,33 +89,21 @@ export class ElasticSearchService {
      */
     public async loadResults(
         queryModel: QueryModel,
-        from: number,
-        size: number = RESULTS_PER_PAGE
+        params: PageResultsParameters,
     ): Promise<SearchResults> {
-        const esQuery = queryModel.toEsQuery();
+        const body = resultsParamsToAPIQuery(queryModel, params);
+
         // Perform the search
-        const response = await this.execute(queryModel.corpus, esQuery, size, from);
+        const response = await this.execute(queryModel.corpus, body);
         return this.parseResponse(queryModel.corpus, response);
     }
 
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private async execute(corpus: Corpus, esQuery: EsQuery, size: number, from?: number) {
+    private async execute(corpus: Corpus, body: APIQuery) {
         const url = `/api/es/${corpus.name}/_search`;
-        const optionDict = {
-            size: size.toString()
-        };
-        if (from) {
-            optionDict['from'] = from.toString();
-        }
-        const options = {
-            params: new HttpParams({ fromObject: optionDict })
-        };
-        const body: QueryParameters = {
-            es_query: esQuery
-        };
-        return this.http.post<SearchResponse>(url, body, options).toPromise();
+        return this.http.post<SearchResponse>(url, body).toPromise();
     }
 
     /**
@@ -125,10 +119,6 @@ export class ElasticSearchService {
             }
         };
         return aggregation;
-    }
-
-    private executeAggregate(corpus: Corpus, aggregationModel) {
-        return this.execute(corpus, aggregationModel, 0);
     }
 
     /**

@@ -1,8 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, TermFrequencyResult } from './visualization';
-import { QueryParameters } from './search-requests';
-import { HttpErrorResponse } from '@angular/common/http';
+import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, NGramRequestParameters, TermFrequencyResult } from './visualization';
+import { APIQuery } from './search-requests';
+import { SortState } from './sort';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -15,6 +17,8 @@ export interface SearchResults {
 
 export interface ResultOverview {
     queryText: string;
+    highlight?: number;
+    sort: SortState;
     resultsCount: number;
 };
 
@@ -103,7 +107,7 @@ export type ResultsDownloadParameters = {
     corpus: string;
     fields: string[];
     route: string;
-} & QueryParameters;
+} & APIQuery;
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
 
@@ -111,7 +115,7 @@ export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { siz
 
 export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency' | 'ngram';
 export type DownloadStatus = 'done' | 'working' | 'error';
-export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters;
+export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters | NGramRequestParameters;
 
 export interface PendingDownload {
     download_type: DownloadType;

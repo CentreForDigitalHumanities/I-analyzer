@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { userIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-login',
@@ -23,6 +24,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     public hasError: boolean;
 
     public showSolis: boolean;
+
+    userIcons = userIcons;
 
     private returnUrl: string;
 

@@ -1,6 +1,6 @@
 {
   "name": "i-analyzer",
-  "version": "5.4.1",
+  "version": "5.4.0",
   "license": "MIT",
   "scripts": {
     "postinstall": "yarn install-back && yarn install-front",
@@ -13,13 +13,13 @@
     "preinstall": "pip install pip-tools",
     "django": "yarn back python manage.py",
     "startapp": "yarn back django-admin startapp --settings ianalyzer.settings --pythonpath .",
-    "test-front": "yarn front yarn test-once",
+    "test-front": "yarn front yarn test",
     "test-back": "yarn back pytest",
     "test": "yarn test-back && yarn test-front",
     "start-front": "yarn fyarn stop && yarn front yarn serve",
     "start-back": "yarn django loadcorpora && cd backend && python manage.py runserver --settings glue --pythonpath ..",
     "livereload-back": "yarn django loadcorpora && cd backend && python manage.py livereload --settings glue --pythonpath ..",
-    "watch-test-front": "yarn front yarn test",
+    "watch-test-front": "yarn front yarn test:debug",
     "watch-test-back": "yarn test-back --looponfail",
     "watch-back": "yarn livereload-back & yarn watch-test-back",
     "start": "yarn start-front & yarn start-back & yarn watch-back",

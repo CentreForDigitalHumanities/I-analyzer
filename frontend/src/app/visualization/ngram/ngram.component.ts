@@ -1,12 +1,13 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import * as _ from 'lodash';
+import { Subject } from 'rxjs';
+
+import { formIcons } from '../../shared/icons';
 import { Corpus, FreqTableHeaders, QueryModel,
     CorpusField, NgramResults, NgramParameters, SuccessfulTask } from '../../models';
 import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
-import { Subject } from 'rxjs';
 
 @Component({
     selector: 'ia-ngram',
@@ -14,12 +15,15 @@ import { Subject } from 'rxjs';
     styleUrls: ['./ngram.component.scss'],
 })
 export class NgramComponent extends ParamDirective implements OnChanges {
+    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
+
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
-    @Output() isLoading = new EventEmitter<boolean>();
+    @HostBinding('class.is-loading') isLoading = false;
+
     @Output() ngramError = new EventEmitter<string>();
 
     @ViewChild('chart-container') chartContainer: ElementRef;
@@ -76,8 +80,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     ngramSettings: string[];
     dataHasLoaded: boolean;
 
-    faCheck = faCheck;
-    faTimes = faTimes;
+    formIcons = formIcons;
 
     nullableParameters = ['ngramSettings'];
 
@@ -234,13 +237,14 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         console.error(error);
         this.currentResults = undefined;
         this.ngramError.emit(error.message);
-        this.isLoading.emit(false);
+        this.isLoading = false;
     }
 
     onDataLoaded(result: NgramResults) {
         this.dataHasLoaded = true;
         this.currentResults = result;
         this.tableData = this.makeTableData(result);
+        this.isLoading = false;
     }
 
     makeTableData(result: NgramResults): typeof this.tableData {
@@ -284,7 +288,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
         this.parametersChanged = true;
         this.stopPolling$.next();
-        this.isLoading.emit(false);
     }
 
     cancelChanges() {

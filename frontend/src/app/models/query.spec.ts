@@ -35,7 +35,7 @@ describe('QueryModel', () => {
     const someSelection = ['hooray!'];
 
     beforeEach(() => {
-        query = new QueryModel(corpus);
+        query = new QueryModel(corpus, undefined);
 
         filter = query.filterForField(mockFieldDate);
         filter2 = query.filterForField(mockFieldMultipleChoice);
@@ -117,8 +117,7 @@ describe('QueryModel', () => {
             speech: null,
             date: null,
             greater_field: null,
-            sort: null,
-            highlight: null
+            tags: null,
         });
 
         query.setQueryText('test');
@@ -129,8 +128,7 @@ describe('QueryModel', () => {
             speech: null,
             date: null,
             greater_field: null,
-            sort: null,
-            highlight: null,
+            tags: null,
         });
 
         filter.setToValue(someDate);
@@ -141,8 +139,7 @@ describe('QueryModel', () => {
             speech: null,
             date: '1850-01-01:1850-01-01',
             greater_field: null,
-            sort: null,
-            highlight: null,
+            tags: null,
         });
 
         query.setQueryText('');
@@ -154,8 +151,7 @@ describe('QueryModel', () => {
             speech: null,
             date: null,
             greater_field: null,
-            sort: null,
-            highlight: null
+            tags: null,
         });
     });
 
@@ -168,24 +164,6 @@ describe('QueryModel', () => {
         const newQuery = new QueryModel(corpus, params);
         expect(newQuery.queryText).toEqual('test');
         expect(newQuery.activeFilters.length).toBe(1);
-    });
-
-    it('should reflect the highlight state in parameters', () => {
-        const highlightParam = () => _.get(query.toRouteParam(), 'highlight');
-
-        expect(highlightParam()).toBe(null);
-
-        query.setHighlight(200);
-        expect(highlightParam()).toBe(null);
-
-        query.setQueryText('test');
-        expect(highlightParam()).toBe('200');
-
-        query.setHighlight(400);
-        expect(highlightParam()).toBe('400');
-
-        query.setHighlight();
-        expect(highlightParam()).toBe(null);
     });
 
     it('should formulate a link', () => {
@@ -207,5 +185,10 @@ describe('QueryModel', () => {
         filter.setToValue(new Date('Jan 2 1850'));
         expect(query.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 2 1850'));
         expect(clone.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 1 1850'));
+    });
+
+    it('should create without a tag service', () => {
+        const taglessQuery = new QueryModel(corpus);
+        expect(taglessQuery).toBeTruthy();
     });
 });

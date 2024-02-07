@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ApiService, NotificationService } from '../../../services';
 import { tap } from 'rxjs/operators';
+import { actionIcons } from '../../../shared/icons';
 
 @Component({
     selector: 'ia-delete-search-history',
@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
     styleUrls: ['./delete-search-history.component.scss']
 })
 export class DeleteSearchHistoryComponent {
-    faTrash = faTrash;
+    actionIcons = actionIcons;
 
     showConfirm = false;
 
