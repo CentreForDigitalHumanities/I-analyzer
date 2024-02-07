@@ -231,7 +231,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     onFailure(error: {message: string}) {
-        this.stopPolling$.next();
         console.error(error);
         this.currentResults = undefined;
         this.ngramError.emit(error.message);
@@ -239,7 +238,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     onDataLoaded(result: NgramResults) {
-        this.stopPolling$.next();
         this.dataHasLoaded = true;
         this.currentResults = result;
         this.tableData = this.makeTableData(result);

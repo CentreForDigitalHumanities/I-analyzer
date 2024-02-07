@@ -425,12 +425,10 @@ export abstract class BarchartDirective<
                 const poller$ = this.apiService.pollTasks(this.tasksToCancel, this.stopPolling$);
                 poller$.subscribe({
                     error: (error) => {
-                        this.stopPolling$.next();
                         this.onFailure(error);
                         reject(error);
                     },
                     next: (result) => {
-                        this.stopPolling$.next();
                         resolve(this.processSeriesTermFrequency(result['results'], series));
                     },
                     complete: () => {
