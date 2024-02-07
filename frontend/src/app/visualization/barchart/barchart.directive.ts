@@ -155,7 +155,6 @@ export abstract class BarchartDirective<
         chartDefault.plugins.tooltip.intersect = false;
     }
 
-    @HostBinding('class.is-loading')
     get isLoading() {
         return this.isLoading$.value;
     }
