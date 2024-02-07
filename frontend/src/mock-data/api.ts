@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
-import { Subject, Observable, of } from 'rxjs';
+import { Observable, Subject, from, of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
+import { TaskResult, TasksOutcome } from '../app/models';
 import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 
-const fakeNgramResult = {
+export const fakeNgramResult = {
     words: [
         {
             label: 'the test',
@@ -16,10 +18,11 @@ const fakeNgramResult = {
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
     public SessionExpired = this.SessionExpiredSubject.asObservable();
+    public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
     constructor(public fakeResult: { [path: string]: any } = {}) {}
 
-    public abortTasks() {
+    public abortTasks(data: TaskResult) {
         return { success: true };
     }
 
@@ -44,13 +47,16 @@ export class ApiServiceMock {
         return this.get('get_wordcloud_data');
     }
 
-    public pollTasks(ids: string[]) {
+    public pollTasks(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome> {
         const fakeResults = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'ngram-task-id': fakeNgramResult,
         };
-        const response = ids.map((id) => _.get(fakeResults, id, {}));
-        return Promise.resolve(response);
+        const response: TasksOutcome = {
+            status: 'done',
+            results: ids.map((id) => fakeResults[id])
+        };
+        return from([response, response]).pipe(takeUntil(stopPolling$));
     }
 
     public downloads() {

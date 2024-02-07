@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { Observable, timer } from 'rxjs';
-import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { interval, Observable } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
     AggregateResult,
@@ -108,42 +108,33 @@ export class ApiService {
     }
 
     // Tasks
-    public getTasksStatus<ExpectedResult>(
+    public getTasksStatus(
         tasks: TaskResult
-    ): Promise<TasksOutcome<ExpectedResult>> {
+    ): Observable<TasksOutcome> {
         return this.http
-            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
-            .toPromise();
+            .post<TasksOutcome>('/api/task_status', tasks);
     }
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
         return this.http
-            .post<TaskSuccess>('/api/task_status', data)
+            .post<TaskSuccess>('/api/abort_tasks', data)
             .toPromise();
     }
 
-    private tasksDone<ExpectedResult>(response: TasksOutcome<ExpectedResult>) {
-        return response.status !== 'working';
+    private tasksDone(response: TasksOutcome) {
+        return response.status === 'done';
     }
 
-    public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
-        return timer(0, 5000)
+
+    public pollTasks(ids: string[], stopPolling$: Observable<void>): Observable<TasksOutcome> {
+        return interval(5000)
             .pipe(
-                switchMap(() =>
-                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
+                takeUntil(stopPolling$),
+                switchMap((arg) =>
+                    this.getTasksStatus({ task_ids: ids })
                 ),
                 filter(this.tasksDone),
                 take(1)
-                // eslint-disable-next-line @typescript-eslint/no-shadow
-            )
-            .toPromise()
-            .then(
-                (result) =>
-                    new Promise((resolve, reject) =>
-                        result.status === 'done'
-                            ? resolve(result.results)
-                            : reject()
-                    )
             );
     }
 
