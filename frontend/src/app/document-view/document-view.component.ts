@@ -72,6 +72,10 @@ export class DocumentViewComponent implements OnChanges {
         return field.name === 'url' || field.name.startsWith('url_');
     }
 
+    isGeoPointField(field: CorpusField) {
+        return field.name === 'coordinates';
+    }
+
     /**
      * Checks if user has selected fields in the queryModel and whether current field is among them
      * Used to check which fields need to be highlighted
