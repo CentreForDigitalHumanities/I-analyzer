@@ -38,10 +38,14 @@ export interface FilterInterface<FilterData = any> {
  *
  * Implements much of the logic to handle activity state.
  *
- * Filters are a StoreSync model, but have some wackiness because their internal state is
- * not isomorphic to the stored state. In the UI, we distinguish between the default state
- * (inactive, default data), and an inactive filter with non-default data. But this
- * distinction is irrelevant for querying so it's not stored.
+ * Filters are a StoreSync model, but have some unique internal logic because their
+ * internal state is not isomorphic to the stored state. In the UI, we distinguish
+ * between the default state (inactive, default data), and an inactive filter with
+ * non-default data. This allows for quick toggling.
+ *
+ * However, these states are equivalent for querying, in that their distinction does
+ * not affect the truth conditions of the query and therefore never affects the
+ * search results, the distinction is not reflected in the store.
  */
 export abstract class BaseFilter<InitialParameters, FilterData>
     extends StoreSync<FilterState<FilterData>>
@@ -117,9 +121,7 @@ export abstract class BaseFilter<InitialParameters, FilterData>
     set(data: FilterData) {
         this.latestDataPush$.next(data);
         if (!_.isEqual(data, this.currentData)) {
-            const toDefault = this.isDefault(data);
-
-            if (toDefault) {
+            if (this.isDefault(data)) {
                 this.setParams({
                     active: false,
                     data
@@ -133,7 +135,12 @@ export abstract class BaseFilter<InitialParameters, FilterData>
         }
     }
 
-    /** reset the filter state: set the data to default an deactivate */
+    /** reset the filter state
+     *
+     * effects:
+     * - sets the data to the default state
+     * - if the filter is active, it will be deactivated
+     */
     reset() {
         if (this.state$.value.active) {
             this.set(this.defaultData);

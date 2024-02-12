@@ -16,7 +16,6 @@ import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
 import { StoreSync } from '../store/store-sync';
 import { distinctUntilChanged, map, skip, takeUntil } from 'rxjs/operators';
-import { to } from '../utils/utils';
 
 /** This is the query object as it is saved in the database.*/
 export class QueryDb {
@@ -88,7 +87,7 @@ export class QueryModel extends StoreSync<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
 
-	update: Observable<void>;
+    update: Observable<void>;
 
     protected keysInStore = ['query', 'fields'];
 
@@ -148,7 +147,7 @@ export class QueryModel extends StoreSync<QueryState> {
      * optionally provide a store for the new model's state; if none is provided,
      * a new SimpleStore will be created
      */
-	clone(store?: Store) {
+    clone(store?: Store) {
         store = store || new SimpleStore();
         store.paramUpdates$.next(this.toQueryParams());
         return new QueryModel(this.corpus, store);
@@ -158,7 +157,7 @@ export class QueryModel extends StoreSync<QueryState> {
      * convert the query to a a parameter map, for deep linking
      *
      * Unlike stateToStore(), this:
-     * - only includes explicited properties, it doesn't set null values
+     * - only includes explicit properties, it doesn't list null values
      * - includes the parameters for filters
      */
     toQueryParams(): Params {
@@ -219,17 +218,33 @@ export class QueryModel extends StoreSync<QueryState> {
         currentFilter?.set(newFilter.currentData);
     }
 
+    /**
+     * Returns an observable of each moment when the subset of requested documents
+     * changes during the lifetime of this QueryModel instance. This does not include the
+     * initialisation or completion of the instance.
+     *
+     * The observable does not include a payload, but it can be observed by other models
+     * to know when they need to fetch results
+     */
     private collectUpdates$(): Observable<void> {
+        // all keys in the store that determine the query, i.e. the subset of
+        // documents in the corpus that it defines. These are the queryModel's
+        // own stored keys and the keys stored its attached filters
         const keys = _.flatten([
             this.keysInStore,
             this.filters.map(filter => filter.keyInStore)
         ]);
 
+        // pipe changes to the store...
         return this.store.params$.pipe(
             takeUntil(this.complete$),
+            // only include outputs where the parameters have actually changed;
+            // pick relevant keys and use _.isEqual for deep comparison
             distinctUntilChanged(_.isEqual, params => _.pick(params, keys)),
+            // ignore the first update (which happens on initialisation)
             skip(1),
-            map(to()),
+            // map to void (to match expected output type)
+            map(() => undefined),
         );
     }
 }
