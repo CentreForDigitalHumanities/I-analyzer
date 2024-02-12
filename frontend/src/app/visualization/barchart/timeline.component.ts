@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 
 import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
     TimeCategory,
-    DateFilterData} from '../../models/index';
+    DateFilterData,
+    BarchartSeries} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
@@ -94,17 +95,6 @@ export class TimelineComponent
                 size: this.documentLimitForCategory(bin, series),
             };
         });
-    }
-
-    processSeriesTermFrequency(
-        results: TermFrequencyResult[],
-        series: TimelineSeries
-    ) {
-        series.data = _.zip(series.data, results).map((pair) => {
-            const [bin, res] = pair;
-            return this.addTermFrequencyToCategory(res, bin);
-        });
-        return series;
     }
 
     /** time domain for a bin */

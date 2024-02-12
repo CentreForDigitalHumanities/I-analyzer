@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { mockCorpus3, mockField } from '../../../mock-data/corpus';
 
 import { commonTestBed } from '../../common-test-bed';

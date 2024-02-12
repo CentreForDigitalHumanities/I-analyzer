@@ -85,9 +85,13 @@ export abstract class BarchartDirective<
     @Output() error = new EventEmitter();
 
     destroy$ = new Subject<void>();
+    stopPolling$ = new Subject<void>();
 
-    basicChartOptions: ChartOptions = {
-        // chart options not suitable for Chart.defaults.global
+    tasksToCancel: string[];
+
+    dataHasLoaded: boolean;
+
+    basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
             x: {
                 title: { display: true },
@@ -175,6 +179,7 @@ export abstract class BarchartDirective<
     }
 
     ngOnDestroy(): void {
+        this.stopPolling$.next();
         this.destroy$.next();
     }
 
@@ -383,15 +388,11 @@ export abstract class BarchartDirective<
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData(
-        rawData: typeof this.rawData
-    ): Promise<BarchartSeries<DataPoint>[]> {
-        const dataPromises = rawData.map((series) => {
-            if (
-                series.queryText &&
-                series.data.length &&
-                series.data[0].match_count === undefined
-            ) {
+    requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
+        // cancel and stop polling running tasks
+        this.stopPolling$.next();
+        const dataPromises = rawData.map(series => {
+            if (series.queryText && series.data.length && series.data[0].match_count === undefined) {
                 // retrieve data if it was not already loaded
                 return this.getTermFrequencies(series, this.queryModel);
             } else {
@@ -424,30 +425,49 @@ export abstract class BarchartDirective<
         series: BarchartSeries<DataPoint>,
         queryModel: QueryModel
     ): Promise<BarchartSeries<DataPoint>> {
+        this.dataHasLoaded = false;
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy)
-            .then((result) =>
-                this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
-            )
-            .then((res) => this.processSeriesTermFrequency(res, series))
-            .catch((error) => {
-                console.error(error);
-                this.error.emit(`could not load results: ${error.message}`);
-                return series;
+        return new Promise((resolve, reject) => {
+            this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
+                this.tasksToCancel = response.task_ids;
+                const poller$ = this.apiService.pollTasks(this.tasksToCancel, this.stopPolling$);
+                poller$.subscribe({
+                    error: (error) => {
+                        this.onFailure(error);
+                        reject(error);
+                    },
+                    next: (result) => {
+                        resolve(this.processSeriesTermFrequency(result['results'], series));
+                    },
+                    complete: () => {
+                        // abort tasks if the Observable is completed via takeUntil
+                        if (!this.dataHasLoaded) {
+                            this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                        }
+                    }
+                });
             });
+        });
     }
 
-    abstract requestSeriesTermFrequency(
-        series: BarchartSeries<DataPoint>,
-        queryModel: QueryModel
-    ): Promise<TaskResult>;
+    onFailure(error) {
+        console.error(error);
+        this.error.emit(`could not load results: ${error.message}`);
+    }
+
+    abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
 
     abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
 
-    abstract processSeriesTermFrequency(
-        results: TermFrequencyResult[],
-        series: BarchartSeries<DataPoint>
-    ): BarchartSeries<DataPoint>;
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint> {
+        this.dataHasLoaded = true;
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
+    };
+
 
     /** total document count for a data array */
     totalDocCount(data: AggregateResult[]) {
