@@ -18,7 +18,7 @@
         </p>
     </div>
     <ng-container *ngFor="let filter of filters">
-        <div class="block" *ngIf="!filter.adHoc || filter.active.value">
+        <div class="block" *ngIf="!filter.adHoc || filter.state$.value.active">
             <ia-filter-box [filter]="filter" [queryModel]="queryModel"></ia-filter-box>
         </div>
     </ng-container>
