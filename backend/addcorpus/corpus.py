@@ -213,7 +213,7 @@ class CorpusDefinition(Reader):
             'properties': {
                 field.name: field.es_mapping
                 for field in self.fields
-                if field.es_mapping and field.indexed
+                if field.es_mapping and not field.skip
             }
         }
 
