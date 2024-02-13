@@ -15,7 +15,7 @@ attrs==23.1.0
     #   outcome
     #   seleniumbase
     #   trio
-backports-zoneinfo[tzdata]==0.2.1;python_version<"3.9"
+backports-zoneinfo[tzdata]==0.2.1
     # via
     #   celery
     #   django
@@ -76,7 +76,7 @@ defusedxml==0.7.1
     #   python3-openid
 dj-rest-auth[with-social,with_social]==4.0.1
     # via -r requirements.in
-django==4.2.7
+django==4.2.10
     # via
     #   -r requirements.in
     #   dj-rest-auth
