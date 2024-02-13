@@ -1,7 +1,9 @@
-import { BehaviorSubject, Observable, Subject, merge, of } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, merge, of, timer } from 'rxjs';
 import { QueryModel } from './query';
-import { catchError, map, mergeMap, share, shareReplay, takeUntil, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { StoreSync } from '../store/store-sync';
+import { Store } from '../store/types';
 
 /**
  * Abstract class for any kind of results based on a query model
@@ -10,9 +12,9 @@ import * as _ from 'lodash';
  * for fetching results. Results will be loaded when the query model
  * or the parameters update
  */
-export abstract class Results<Parameters, Result> {
+export abstract class Results<Parameters extends object, Result> extends StoreSync<Parameters> {
     /** additional parameters besides the query model */
-    parameters$: BehaviorSubject<Parameters>;
+    state$: BehaviorSubject<Parameters>;
 
     /** retrieved results */
     result$: Observable<Result>;
@@ -25,24 +27,28 @@ export abstract class Results<Parameters, Result> {
      */
     loading$: Observable<boolean>;
 
-    private complete$ = new Subject<void>();
-
     constructor(
+        store: Store,
         public query: QueryModel,
-        initialParameters: Parameters,
+        protected keysInStore: string[],
     ) {
+        super(store);
+        this.connectToStore();
         this.error$ = new BehaviorSubject(undefined);
-        this.parameters$ = new BehaviorSubject(initialParameters);
 
         this.query.update.pipe(
             takeUntil(this.complete$),
             map(this.assignOnQueryUpdate.bind(this)),
         ).subscribe((params: Partial<Parameters>) =>
-            this.setParameters(params)
+            this.setParams(params)
         );
 
-        this.result$ = this.parameters$.pipe(
+        const queryUpdate$ = merge(timer(0), this.query.update);
+
+        this.result$ = combineLatest([queryUpdate$, this.state$]).pipe(
             takeUntil(this.complete$),
+            map(_.last), // map to the value of this.state$
+            tap(() => this.error$.next(undefined)), // clear errors
             mergeMap(this.fetch.bind(this)),
             catchError(err => {
                 this.error$.next(err);
@@ -59,32 +65,19 @@ export abstract class Results<Parameters, Result> {
         return {};
     }
 
-    /** Set parameters.
-     *
-     * The new value can be partial; it will be merged with the current parameters.
-     * Updating parameters will trigger new results being fetched.
-     */
-    setParameters(newValues: Partial<Parameters>) {
-        this.error$.next(undefined);
-        const params: Parameters = _.assign(this.parameters$.value, newValues);
-        this.parameters$.next(params);
-    }
-
     /**
      * stops the results object from listening to the query model,
      * and completes observables
      */
     complete() {
-        this.complete$.next();
-        this.parameters$.complete();
+        super.complete();
         this.error$.complete();
-        this.complete$.complete();
     }
 
     /** set up the loading$ observable */
     private makeLoadingObservable(): Observable<boolean> {
         const onQueryUpdate$ = this.query.update.pipe(map(() => true));
-        const onParameterChange$ = this.parameters$.pipe(map(() => true));
+        const onParameterChange$ = this.state$.pipe(map(() => true));
         const onResult$ = this.result$.pipe(map(() => false));
         const onError$ = this.error$.pipe(map(() => false));
         return merge(onQueryUpdate$, onParameterChange$, onResult$, onError$);

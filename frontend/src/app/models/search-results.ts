@@ -1,7 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, NGramRequestParameters } from './visualization';
+import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, NGramRequestParameters, TermFrequencyResult } from './visualization';
 import { APIQuery } from './search-requests';
+import { SortState } from './sort';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -14,6 +17,8 @@ export interface SearchResults {
 
 export interface ResultOverview {
     queryText: string;
+    highlight?: number;
+    sort: SortState;
     resultsCount: number;
 };
 
@@ -87,10 +92,16 @@ export interface TaskSuccess {
     success: true;
 }
 
-export type TasksOutcome<ExpectedResult> =
-    | { status: 'failed' }
-    | { status: 'working' }
-    | { status: 'done'; done: true; results: ExpectedResult[] };
+interface WorkingTask {
+    status: 'working';
+}
+
+export interface SuccessfulTask<T> {
+    status: 'done';
+    results: T;
+}
+
+export type TasksOutcome = HttpErrorResponse | WorkingTask | SuccessfulTask<NgramResults[] | TermFrequencyResult[]>;
 
 export type ResultsDownloadParameters = {
     corpus: string;

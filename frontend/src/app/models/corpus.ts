@@ -1,6 +1,9 @@
 import * as _ from 'lodash';
 import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './field-filter';
 import { FieldFilterOptions } from './field-filter-options';
+import { SortBy, SortState } from './sort';
+import { Store } from '../store/types';
+import { SimpleStore } from '../store/simple-store';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
@@ -43,6 +46,11 @@ export class Corpus implements ElasticSearchIndex {
 
     get displayLanguages(): string {
         return this.languages.join(', '); // may have to truncate long lists?
+    }
+
+    get defaultSort(): SortState {
+        const sortBy: SortBy = this.fields.find(field => field.primarySort);
+        return [sortBy, 'desc'];
     }
 }
 
@@ -131,7 +139,7 @@ export class CorpusField {
     }
 
     /** make a SearchFilter for this field */
-    makeSearchFilter(): SearchFilter {
+    makeSearchFilter(store?: Store): SearchFilter {
 		const filterClasses = {
 			DateFilter,
 			MultipleChoiceFilter,
@@ -143,6 +151,7 @@ export class CorpusField {
 			this.filterOptions?.name,
 			AdHocFilter
 		);
-		return new Filter(this);
+        store = store || new SimpleStore();
+		return new Filter(store, this);
 	}
 }

@@ -73,7 +73,7 @@ export abstract class StoreSync<State extends object> {
     protected subscribeToStore() {
         this.store.params$.pipe(
             takeUntil(this.complete$),
-            distinctUntilChanged(_.isEqual, params => this.filterStoredParams(params)),
+            distinctUntilChanged(_.isEqual, params => this.filterStoreSyncParams(params)),
             map(params => this.storeToState(params)),
         ).subscribe(params =>
             this.state$.next(params)
@@ -81,7 +81,7 @@ export abstract class StoreSync<State extends object> {
     }
 
     /** filters the stored parameters and only includes the ones relevant for this model */
-    protected filterStoredParams(params: Params): Params {
+    protected filterStoreSyncParams(params: Params): Params {
         return _.pick(params, this.keysInStore);
     }
 

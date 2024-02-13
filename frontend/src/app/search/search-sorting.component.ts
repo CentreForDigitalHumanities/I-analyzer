@@ -2,12 +2,10 @@ import {
     Component,
     HostBinding,
     Input,
-    OnChanges,
-    OnDestroy,
-    SimpleChanges,
 } from '@angular/core';
-import { CorpusField, QueryModel, SortConfiguration } from '../models';
+import { CorpusField, SortState } from '../models';
 import { sortIcons } from '../shared/icons';
+import { PageResults } from '../models/page-results';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -15,23 +13,33 @@ const defaultValueType = 'alpha';
     templateUrl: './search-sorting.component.html',
     styleUrls: ['./search-sorting.component.scss'],
 })
-export class SearchSortingComponent implements OnChanges, OnDestroy {
+export class SearchSortingComponent {
     @HostBinding('class') classes = 'field has-addons';
-    @Input() queryModel: QueryModel;
-
-    public ascending = true;
-    public sortField: CorpusField;
+    @Input() pageResults: PageResults;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
-    public sortableFields: CorpusField[];
     public showFields = false;
 
     sortIcons = sortIcons;
 
     constructor() {}
 
-    get sortConfiguration(): SortConfiguration {
-        return this.queryModel.sort;
+    get sortState(): SortState {
+        return this.pageResults?.state$.value.sort;
+    }
+
+    get sortField(): CorpusField {
+        if (this.sortState) {
+            const sortBy = this.sortState[0];
+            return sortBy as CorpusField;
+        }
+    }
+
+    get ascending(): boolean {
+        if (this.sortState) {
+            const sortDirection = this.sortState[1];
+            return sortDirection === 'asc';
+        }
     }
 
     public get sortType(): SortType {
@@ -40,34 +48,15 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
         }` as SortType;
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel) {
-            this.setSortableFields();
-            this.queryModel.update.subscribe(
-                this.setStateFromQueryModel.bind(this)
-            );
-        }
-    }
-
-    ngOnDestroy(): void {
-        this.sortConfiguration.reset();
-    }
-
-    setSortableFields() {
-        this.sortableFields = this.queryModel.corpus.fields.filter(
-            (field) => field.sortable
+    get sortableFields(): CorpusField[] {
+        return this.pageResults?.query.corpus.fields.filter((field) =>
+            field.sortable
         );
-        this.setStateFromQueryModel();
-    }
-
-    setStateFromQueryModel() {
-        this.sortField = this.sortConfiguration.sortBy.value;
-        this.ascending = this.sortConfiguration.sortDirection.value === 'asc';
     }
 
     public toggleSortType() {
         const direction = this.ascending ? 'desc' : 'asc';
-        this.queryModel.setSortDirection(direction);
+        this.pageResults.setSortDirection(direction);
     }
 
     public toggleShowFields() {
@@ -83,7 +72,7 @@ export class SearchSortingComponent implements OnChanges, OnDestroy {
                     ? 'numeric'
                     : 'alpha';
         }
-        this.queryModel.setSortBy(field || undefined);
+        this.pageResults.setSortBy(field || undefined);
     }
 }
 

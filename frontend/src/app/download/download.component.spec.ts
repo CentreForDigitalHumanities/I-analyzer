@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { commonTestBed } from '../common-test-bed';
-import { CorpusField } from '../models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
+import { commonTestBed } from '../common-test-bed';
+import { QueryModel } from '../models';
 
 import { DownloadComponent } from './download.component';
 
@@ -18,6 +18,8 @@ describe('DownloadComponent', () => {
         fixture = TestBed.createComponent(DownloadComponent);
         component = fixture.componentInstance;
         component.corpus = mockCorpus;
+        component.queryModel = new QueryModel(mockCorpus);
+        component.ngOnChanges();
         fixture.detectChanges();
     });
 

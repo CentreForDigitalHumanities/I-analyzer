@@ -31,9 +31,9 @@ export class FilterManagerComponent {
 
     get anyActiveFilters$(): Observable<boolean> {
         if (this.filters) {
-            const statuses = this.filters.map(filter => filter.active);
+            const statuses = this.filters.map(filter => filter.state$);
             return combineLatest(statuses).pipe(
-                map(values => _.some(values)),
+                map(values => _.some(values, state => state.active)),
             );
         }
     }

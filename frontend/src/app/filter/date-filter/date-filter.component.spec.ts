@@ -5,6 +5,7 @@ import { commonTestBed } from '../../common-test-bed';
 import { DateFilter, DateFilterData, QueryModel } from '../../models';
 
 import { DateFilterComponent } from './date-filter.component';
+import { SimpleStore } from '../../store/simple-store';
 
 describe('DateFilterComponent', () => {
     let component: DateFilterComponent;
@@ -46,7 +47,7 @@ describe('DateFilterComponent', () => {
     });
 
     it('should create a new update when onFilterSet is called', () => {
-        const newFilter = new DateFilter(mockFieldDate);
+        const newFilter = new DateFilter(new SimpleStore(), mockFieldDate);
         newFilter.set(exampleData1);
         component.onFilterSet(newFilter);
         expect(component.selectedMinDate.value).toEqual(exampleData1.min);

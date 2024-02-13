@@ -1,10 +1,13 @@
 import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
+import { Subject } from 'rxjs';
+
+import { formIcons } from '../../shared/icons';
+import { Corpus, FreqTableHeaders, QueryModel,
+    CorpusField, NgramResults, NgramParameters, SuccessfulTask } from '../../models';
 import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
 import { ParamDirective } from '../../param/param-directive';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
-import { formIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-ngram',
@@ -27,6 +30,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     allDateFields: CorpusField[];
     dateField: CorpusField;
+
+    stopPolling$ = new Subject<void>();
 
     tableHeaders: FreqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true },
@@ -73,6 +78,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     lastParameters: NgramParameters;
     parametersChanged = false;
     ngramSettings: string[];
+    dataHasLoaded: boolean;
 
     formIcons = formIcons;
 
@@ -149,7 +155,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     initialize() {}
 
     teardown(): void {
-        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+        this.stopPolling$.next();
     }
 
     setStateFromParams(params: ParamMap) {
@@ -198,51 +204,50 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     loadGraph() {
-        this.isLoading = true;
-
+        this.dataHasLoaded = false;
         this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
 
         if (cachedResult) {
             this.onDataLoaded(cachedResult);
         } else {
-            this.visualizationService
-                .getNgramTasks(
-                    this.queryModel,
-                    this.corpus,
-                    this.visualizedField.name,
-                    this.currentParameters
-                )
-                .then((response) => {
-                    this.tasksToCancel = response.task_ids;
-                    return this.apiService.pollTasks<NgramResults>(
-                        response.task_ids
-                    );
-                })
-                .then(([result]) => {
-                    this.tasksToCancel = undefined;
-                    this.cacheResult(result, this.currentParameters);
-                    this.onDataLoaded(result);
-                })
-                .catch(this.onFailure.bind(this));
+            this.visualizationService.getNgramTasks(
+                this.queryModel, this.corpus, this.visualizedField.name,
+                this.currentParameters).then(
+                    response => {
+                        this.tasksToCancel = response.task_ids;
+                        // tasksToCancel contains ids of the parent task and its subtasks
+                        // we are only interested in the outcome of the parent task (first in array)
+                        const poller$ = this.apiService.pollTasks([this.tasksToCancel[0]], this.stopPolling$);
+                        poller$.subscribe({
+                            error: (error) => this.onFailure(error),
+                            next: (result: SuccessfulTask<NgramResults[]>) => this.onDataLoaded((result).results[0]),
+                            complete: () => {
+                                if (!this.dataHasLoaded) {
+                                    this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                                    this.tasksToCancel = null;
+                                }
+                            }
+                    });
+            });
         }
     }
 
-    onFailure(error: { message: string }) {
-        console.log(error);
+    onFailure(error: {message: string}) {
+        console.error(error);
         this.currentResults = undefined;
         this.ngramError.emit(error.message);
         this.isLoading = false;
     }
 
     onDataLoaded(result: NgramResults) {
+        this.dataHasLoaded = true;
         this.currentResults = result;
         this.tableData = this.makeTableData(result);
-
         this.isLoading = false;
     }
 
-    makeTableData(result: NgramResults): any[] {
+    makeTableData(result: NgramResults): typeof this.tableData {
         return _.flatMap(
             result.time_points.map((date, index) =>
                 result.words.map((dataset) => ({
@@ -282,6 +287,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         }
 
         this.parametersChanged = true;
+        this.stopPolling$.next();
     }
 
     cancelChanges() {
