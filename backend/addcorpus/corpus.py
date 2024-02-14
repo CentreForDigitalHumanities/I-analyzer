@@ -2,11 +2,7 @@
 Module contains the base classes from which corpora can derive;
 '''
 
-from ianalyzer_readers.extractors import extract
-import itertools
-import bs4
-import csv
-import sys
+from ianalyzer_readers import extract
 from datetime import datetime
 from os.path import isdir
 
