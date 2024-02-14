@@ -4,7 +4,7 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes are defined in `ianalyzer_readers.extractors.extract`
+Various classes are defined in `ianalyzer_readers.extract`
 
 - The extractors `XML`, `HTML`, `CSV` and `JSON` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpusDefinition`, et cetera. All other extractors are available for all corpora.
 - The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
