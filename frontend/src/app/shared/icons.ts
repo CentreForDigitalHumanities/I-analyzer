@@ -1,16 +1,61 @@
 import {
     IconDefinition as SolidIconDefinition,
-    faAngleDown, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
-    faCheck, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
-    faDownload, faEnvelope, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
-    faMinus, faPalette, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
-    faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc, faSquare,
-    faTable, faTimes, faTrashCan, faUndo, faUser
+    faAngleDown,
+    faArrowLeft,
+    faArrowRight,
+    faAt,
+    faBook,
+    faBookOpen,
+    faChartColumn,
+    faCheck,
+    faChevronDown,
+    faChevronLeft,
+    faChevronRight,
+    faCog,
+    faCogs,
+    faDatabase,
+    faDiagramProject,
+    faDownload,
+    faEdit,
+    faEnvelope,
+    faFilter,
+    faHistory,
+    faImage,
+    faInfo,
+    faInfoCircle,
+    faLink,
+    faList,
+    faLock,
+    faMinus,
+    faPalette,
+    faPlus,
+    faQuestionCircle,
+    faSearch,
+    faSearchMinus,
+    faSearchPlus,
+    faSignOut,
+    faSortAlphaAsc,
+    faSortAlphaDesc,
+    faSortNumericAsc,
+    faSortNumericDesc,
+    faSquare,
+    faTable,
+    faTag,
+    faTags,
+    faTimes,
+    faTrashCan,
+    faUndo,
+    faUser,
 } from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition as RegularIconDefinition, faNewspaper } from '@fortawesome/free-regular-svg-icons';
+import {
+    IconDefinition as RegularIconDefinition,
+    faNewspaper,
+} from '@fortawesome/free-regular-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
-export interface Icons { [alias: string]: IconDefinition }
+export interface Icons {
+    [alias: string]: IconDefinition;
+}
 
 export const userIcons: Icons = {
     user: faUser,
@@ -27,6 +72,7 @@ export const navIcons: Icons = {
     settings: faCog,
     admin: faCogs,
     downloads: faDownload,
+    tags: faTags,
 };
 
 export const actionIcons: Icons = {
@@ -45,6 +91,7 @@ export const actionIcons: Icons = {
     add: faPlus,
     remove: faTimes,
     delete: faTrashCan,
+    edit: faEdit,
 };
 
 export const formIcons: Icons = {
@@ -91,6 +138,7 @@ export const scanIcons: Icons = {
     zoomReset: faUndo,
     prev: faChevronRight,
     next: faChevronLeft,
+    down: faChevronDown,
 };
 
 export const documentIcons: Icons = {

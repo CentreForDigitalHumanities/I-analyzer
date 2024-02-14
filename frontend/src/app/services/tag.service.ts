@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { FoundDocument } from '../models';
+import { pick } from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Tag } from '../models';
 import { map, tap } from 'rxjs/operators';
+import { FoundDocument, Tag } from '../models';
 import { ApiService } from './api.service';
-
 
 @Injectable({
     providedIn: 'root',
@@ -23,6 +22,17 @@ export class TagService {
             .pipe(tap(() => this.fetch()));
     }
 
+    deleteTag(tag: Tag) {
+        return this.apiService.deleteTag(tag).pipe(tap(() => this.fetch()));
+    }
+
+    updateTag(updatedTag: Tag) {
+        const updateFields = pick(updatedTag, ['name', 'description']);
+        return this.apiService
+            .patchTag(updatedTag.id, updateFields)
+            .pipe(tap(() => this.fetch()));
+    }
+
     getDocumentTags(document: FoundDocument): Observable<Tag[]> {
         return this.apiService
             .documentTags(document)
@@ -37,8 +47,9 @@ export class TagService {
     }
 
     private fetch(): void {
-        this.apiService.userTags().subscribe(tags =>
-            this.tags$.next(tags)
-        );
+        this.apiService
+            .userTags()
+            .pipe(tap((t) => console.log(t)))
+            .subscribe((tags) => this.tags$.next(tags));
     }
 }

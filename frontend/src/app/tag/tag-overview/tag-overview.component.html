@@ -1,0 +1,148 @@
+<section class="section">
+    <h1 class="title">Your tags</h1>
+    <ng-container *ngIf="tags$ | async as tags">
+        <p-table [value]="tags" [paginator]="true" [rows]="10" dataKey="name">
+            <ng-template pTemplate="caption">
+                <div>
+                    Manage your tags
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 5rem"></th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Count</th>
+                    <th>
+                        <button class="button is-primary" tabindex="0" role="button" aria-label="create tag" (click)="startCreate()"
+                            (keydown.enter)="startCreate()">
+                            <span class="icon">
+                                <fa-icon [icon]="actionIcons.more" aria-hidden="true"></fa-icon>
+                            </span>
+                            <span>New</span>
+                        </button>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-tag let-expanded="expanded">
+                <tr>
+                    <td>
+                        <button class="button is-rounded" [pRowToggler]="tag">
+                            <span class="icon">
+                                <fa-icon [icon]="expanded ? scanIcons.down : scanIcons.prev" aria-hidden="true"></fa-icon>
+                            </span>
+                            </button>
+                    </td>
+                    <td>{{tag.name}}</td>
+                    <td>{{tag.description}}</td>
+                    <td>{{tag.count}}</td>
+                    <td>
+                        <div class="field has-addons">
+                            <p class="control">
+                                <button class="button is-primary" tabindex="0" role="button" aria-label="edit tag" (click)="startEdit(tag)"
+                                    (keydown.enter)="startEdit(tag)">
+                                    <span class="icon">
+                                        <fa-icon [icon]="actionIcons.edit" aria-hidden="true"></fa-icon>
+                                    </span>
+                                    <span>Edit</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button is-danger" tabindex="0" role="button" aria-label="delete tag" (click)="delete(tag)"
+                                    (keydown.enter)="delete(tag)">
+                                    <span class="icon">
+                                        <fa-icon [icon]="actionIcons.delete" aria-hidden="true"></fa-icon>
+                                    </span>
+                                    <span>Delete</span>
+                                </button>
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-tag>
+                <tr>
+                    <td colspan="7">
+                        <div class="p-3">
+
+                            <p-table [value]="tag.corpus_counts" dataKey="name" styleClass="p-datatable-sm">
+                                <ng-template pTemplate="header">
+                <tr>
+                    <th>Corpus</th>
+                    <th>Count</th>
+                    <th>View documents</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-entry>
+                <tr>
+                    <td>{{entry.corpus}}</td>
+                    <td>
+                        {{entry.count}}
+                    </td>
+                    <td>
+                        <a [routerLink]="['/search', entry.corpus]" [queryParams]="makeQueryParams(entry.corpus, tag)">
+                            <span class="icon"><fa-icon [icon]="documentIcons.context"></fa-icon></span>
+                        </a>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6">No corpora for this tag.</td>
+                </tr>
+            </ng-template>
+</p-table>
+</div>
+</td>
+</tr>
+
+</ng-template>
+
+        </p-table>
+    </ng-container>
+</section>
+
+<div class="modal" [class.is-active]="showEditModal" *ngIf="editedTag">
+    <div class="modal-background" (click)="cancelEdit()"></div>
+    <div class=" modal-content modal-card">
+        <header class="modal-card-head">
+            <h2 class="modal-card-title">{{modalType==='edit' ? 'Edit tag' : 'Create tag'}}</h2>
+            <button class="delete" aria-label="close" (click)="cancelEdit()"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="content">
+                <form>
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control">
+                            <input class="input" type="text" [(ngModel)]="editedTag.name" name="name">
+                            <p *ngIf="!tagValid()" class="help is-danger">
+                                This field is required
+                            </p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <div class="control">
+                            <input class="input" type="text" [(ngModel)]="editedTag.description" name="description">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <div class="buttons is-right">
+                <button class="button is-primary" (click)="modalType === 'edit' ?  finishEdit() : finishCreate()"
+                    [disabled]="!tagValid()">
+                    <span class="icon"><fa-icon [icon]="formIcons.confirm"></fa-icon></span>
+                    <span>Save</span>
+                </button>
+                <button class="button" (click)="cancelEdit()">
+                    <span class="icon"><fa-icon [icon]="formIcons.reset"></fa-icon></span>
+                    <span>Cancel</span></button>
+            </div>
+        </footer>
+    </div>
+</div>
