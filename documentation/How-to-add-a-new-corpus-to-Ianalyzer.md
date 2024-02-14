@@ -15,7 +15,18 @@ The steps of adding a new corpus are usually the following:
 ## Corpus definition
 Adding a new corpus starts by adding a new corpus description `corpusname.py` to the `backend/corpora` directory. The corpus description imports global variables from `backend/ianalyzer/settings.py`. The definition file should be listed under `CORPORA` in the settings. In a development environment, this should happen in `backend/ianalyzer/settings_local.py`. More on the use of settings below.
 
-The corpus definition is a python class definition, subclassing `CorpusDefinition` class, found in `addcorpus/corpus.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+The corpus definition is a python class definition, subclassing the `CorpusDefinition` class (found in `addcorpus/corpus.py`). You will normally use a datatype-specific subclass of `CorpusDefinition`, like this:
+
+```python
+from addcorpus.corpus import CSVCorpusDefinition
+
+class MyCorpus(CSVCorpusDefinition):
+    pass
+```
+
+The `CorpusDefinition` classes inherit functionality from the package `ianalyzer_readers`, which defines more general `Reader` classes to read data from source files.
+
+This provides the basis for an I-analyzer corpus that will define how to read the source data, index it to elasticsearch, and present a search interface in the frontend. However, most properties still need to be filled in.
 
 The corpus class should define the following properties:
 
@@ -41,7 +52,7 @@ The corpus class should also define a function `sources(self, start, end)` which
 
 ### XML / HTML corpora
 
-If your source files are XML or HTML files, your corpus definition should respectively subclass `XMLCorpus` or `HTMLCorpus`.
+If your source files are XML or HTML files, your corpus definition should respectively subclass `XMLCorpusDefinition` or `HTMLCorpusDefinition`.
 
 In addition to the properties above, the corpus class must define:
 - `tag_toplevel`: The highest-level tag in the source file.
@@ -50,7 +61,8 @@ In addition to the properties above, the corpus class must define:
 These tags can be strings or functions that map a metadata dict to a string. Your corpus will have one document for each `tag_entry`.
 
 ### CSV corpora
-If your source files are CSV files, your corpus definition should subclass `CSVCorpus`.
+
+If your source files are CSV files, your corpus definition should subclass `CSVCorpusDefinition`.
 
 The CSV files will be read row by row. You can write the definition so each document is based on a single row, or so that each document is based on a group of adjacent rows.
 
@@ -58,12 +70,21 @@ In addition to the properties above, CSV corpora have the following optional pro
 - `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.
 - `delimiter`: the delimiter for the CSV reader (`,` by default)
 
+### Spreadsheet corpora
+
+If your source files are XLSX files, your corpus definition should subclass `XLSXCorpusDefinition`.
+
+This reader is quite rudimentary. It will read data with a "CSV-like" structure on the first sheet.
+
+The reader works like the CSV reader and also uses the `CSV` extractor. However, it does not have a `delimiter` parameter.
+
 ### JSON corpora
-If your source files are in JSON format, your corpus definition should subclass `JSONCorpus`.
+If your source files are in JSON format, your corpus definition should subclass `JSONCorpusDefinition`.
 
 The JSON ingested via `source2dicts` is expected to contain a list of dictionaries, for which field data can be extracted with a given key.
 
 ## Settings file
+
 The django settings can be used to configure variables that may be depend on the environment. Please use the following naming convention.
 
 ```python
@@ -82,7 +103,7 @@ class Times(XMLCorpus):
     description = "Newspaper archive, 1785-2010"
     min_date = datetime(year=1785, month=1, day=1)
     max_date = datetime(year=2010, month=12, day=31)
-    data_directory = current_app.config['TIMES_DATA']
+    data_directory = settings.TIMES_DATA
     es_index = getattr(settings, 'TIMES_ES_INDEX', 'times')
     ...
 ```
