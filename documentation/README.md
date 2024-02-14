@@ -35,6 +35,7 @@ This directory contains documentation for developers.
 - [Email](./Email.md) (used for downloads and authentication)
 - [SAML](./SAML.md)
 
-## Other
+## Making releases
 
+- [Versioning](./Versioning.md)
 - [Making a release](./Making-a-release.md)
