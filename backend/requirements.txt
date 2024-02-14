@@ -125,7 +125,7 @@ h11==0.14.0
     # via
     #   seleniumbase
     #   wsproto
-ianalyzer_readers @ git+https://github.com/UUDigitalHumanitieslab/ianalyzer-readers.git
+ianalyzer-readers==0.0.0
     # via -r requirements.in
 idna==3.4
     # via

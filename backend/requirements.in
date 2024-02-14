@@ -29,4 +29,4 @@ seleniumbase>3
 tqdm
 langcodes
 language_data
-git+https://github.com/UUDigitalHumanitieslab/ianalyzer-readers.git
+ianalyzer_readers
