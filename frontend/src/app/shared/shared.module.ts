@@ -19,10 +19,12 @@ import {
 import { RouterModule } from '@angular/router';
 import { TabsComponent } from './tabs/tabs.component';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
+import { DropdownItemDirective } from '../dropdown/dropdown-item.directive';
 
 @NgModule({
     declarations: [
         DropdownComponent,
+        DropdownItemDirective,
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
@@ -34,6 +36,7 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
     exports: [
         // shared components
         DropdownComponent,
+        DropdownItemDirective,
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,

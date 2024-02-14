@@ -3,17 +3,37 @@
         <div class="column field">
             <label class="label">Language</label>
             <div class="control">
-                <ia-dropdown name="language" [options]="languages" [canDeselect]="true" placeholder="Any"
+                <ia-dropdown name="language">
+                    <span label>{{selectedLanguage.value || 'Any'}}</span>
+                    <ng-container menu>
+                        <a *ngFor="let language of languages"
+                            iaDropdownItem [value]="language">
+                            {{language}}
+                        </a>
+                    </ng-container>
+                </ia-dropdown>
+
+                <!-- <ia-dropdown name="language" [options]="languages" [canDeselect]="true" placeholder="Any"
                     [value]="selectedLanguage.value"
-                    (onChange)="selectedLanguage.next($event)"></ia-dropdown>
+                    (onChange)="selectedLanguage.next($event)"></ia-dropdown> -->
             </div>
         </div>
         <div class="column field">
             <label class="label">Type of data</label>
             <div class="control">
-                <ia-dropdown name="category" [options]="categories" [canDeselect]="true" placeholder="Any"
+                <ia-dropdown name="category">
+                    <span label>{{selectedCategory.value || 'Any'}}</span>
+                    <ng-container menu>
+                        <a *ngFor="let category of categories"
+                            iaDropdownItem [value]="category">
+                            {{category}}
+                        </a>
+                    </ng-container>
+                </ia-dropdown>
+
+                <!-- <ia-dropdown name="category" [options]="categories" [canDeselect]="true" placeholder="Any"
                 [value]="selectedCategory.value"
-                (onChange)="selectedCategory.next($event)"></ia-dropdown>
+                (onChange)="selectedCategory.next($event)"></ia-dropdown> -->
             </div>
         </div>
         <div class="column field">
