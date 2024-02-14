@@ -4,9 +4,9 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes are defined in `backend/addcorpus/extract.py`.
+Various classes are defined in `ianalyzer_readers.extractors.extract`
 
-- The extractors `XML`, `HTML`, `CSV` and `JSON` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
+- The extractors `XML`, `HTML`, `CSV` and `JSON` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpusDefinition`, et cetera. All other extractors are available for all corpora.
 - The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
 - The `Constant` extractor can be used to define a constant value.
 - The `Order` extractor gives you the index of that document within the file.
@@ -18,7 +18,7 @@ A field can have the property `required = True`, which means the document will n
 
 Each field should specify its `es_mapping`, a dict that is passed on to elasticsearch to specify how it is indexed. See the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html). For common mappings, use the functions defined in [es_mappings.py](../backend/addcorpus/es_mappings.py)
 
-The property `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
+The property `indexed` determines whether the field should be skipped during source extraction.
 
 ### Multifields
 
