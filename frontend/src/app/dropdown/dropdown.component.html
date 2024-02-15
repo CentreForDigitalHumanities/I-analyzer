@@ -2,7 +2,7 @@
     <div class="dropdown-trigger" (click)="toggleDropdown()">
         <button class="button" aria-haspopup="true"
             [disabled]="disabled" [class]="styleClass">
-            <ng-content select="[label]"></ng-content>
+            <ng-content select="[iaDropdownLabel]"></ng-content>
 
             <!-- <span class="icon" *ngIf="icon">
                 <fa-icon [icon]="icon"></fa-icon>
@@ -17,7 +17,7 @@
     </div>
     <div class="dropdown-menu" role="menu" *ngIf="showDropdown">
         <div class="dropdown-content">
-            <ng-content select="[menu]"></ng-content>
+            <ng-content select="[iaDropdownMenu]"></ng-content>
             <!-- <a class="dropdown-item" [ngClass]="{'is-active': value === undefined}" (click)="select(undefined)" *ngIf="canDeselect">
                 {{placeholder}}
             </a>

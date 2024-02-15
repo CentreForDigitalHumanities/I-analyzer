@@ -4,13 +4,13 @@
             <label class="label">Language</label>
             <div class="control">
                 <ia-dropdown name="language">
-                    <span label>{{selectedLanguage.value || 'Any'}}</span>
-                    <ng-container menu>
+                    <span iaDropdownLabel>{{selectedLanguage.value || 'Any'}}</span>
+                    <div iaDropdownMenu>
                         <a *ngFor="let language of languages"
                             iaDropdownItem [value]="language">
                             {{language}}
                         </a>
-                    </ng-container>
+                    </div>
                 </ia-dropdown>
 
                 <!-- <ia-dropdown name="language" [options]="languages" [canDeselect]="true" placeholder="Any"
@@ -22,13 +22,13 @@
             <label class="label">Type of data</label>
             <div class="control">
                 <ia-dropdown name="category">
-                    <span label>{{selectedCategory.value || 'Any'}}</span>
-                    <ng-container menu>
+                    <span iaDropdownLabel>{{selectedCategory.value || 'Any'}}</span>
+                    <div iaDropdownMenu>
                         <a *ngFor="let category of categories"
                             iaDropdownItem [value]="category">
                             {{category}}
                         </a>
-                    </ng-container>
+                    </div>
                 </ia-dropdown>
 
                 <!-- <ia-dropdown name="category" [options]="categories" [canDeselect]="true" placeholder="Any"

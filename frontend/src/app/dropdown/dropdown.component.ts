@@ -7,15 +7,14 @@ import {
     Output,
     OnDestroy,
     HostBinding,
-    QueryList,
     AfterContentInit,
-    ContentChildren,
+    ContentChild,
 } from '@angular/core';
-import { Observable, Subject, Subscription, combineLatest, merge } from 'rxjs';
-import { debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { actionIcons } from '../shared/icons';
-import { DropdownItemDirective } from './dropdown-item.directive';
+import { DropdownMenuDirective } from './dropdown-menu.directive';
 
 @Component({
     selector: 'ia-dropdown',
@@ -47,7 +46,7 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
 
     @Input() icon: any;
 
-    @ContentChildren(DropdownItemDirective) items: QueryList<DropdownItemDirective>;
+    @ContentChild(DropdownMenuDirective) items: DropdownMenuDirective;
 
     @Output()
     public onChange = new EventEmitter<T>();
@@ -103,14 +102,6 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
     }
 
     ngAfterContentInit(): void {
-        this.items.changes.pipe(
-            map(data => data._results as DropdownItemDirective[]),
-            map(items => items.map(item => item.selected)),
-            switchMap(events => merge(...events)),
-        ).subscribe(data =>
-            console.log(data)
-        );
-
     }
 
     ngOnDestroy() {
