@@ -11,19 +11,25 @@ export class DropdownItemDirective {
     @Input() value;
 
     @Output() selected = new Subject<any>();
+    @Output() navigate = new Subject<-1|1>();
 
     constructor() { }
 
     @HostListener('click')
     @HostListener('keydown.enter')
     @HostListener('keydown.space')
-    onSelect() {
+    select() {
         this.selected.next(this.value);
         return false;
     }
 
-    // @HostListener('focus')
-    // onFocus() {
-    //     this.selected.next(this.value);
-    // }
+    @HostListener('keydown.ArrowDown')
+    navigateNext() {
+        this.navigate.next(1);
+    }
+
+    @HostListener('keydown.ArrowUp')
+    navigatePrev() {
+        this.navigate.next(-1);
+    }
 }
