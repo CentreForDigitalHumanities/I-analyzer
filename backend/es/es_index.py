@@ -15,6 +15,8 @@ from ianalyzer.elasticsearch import elasticsearch
 from .es_alias import alias, get_new_version_number
 
 import logging
+import tracemalloc
+from .dbg import iter_snap
 logger = logging.getLogger('indexing')
 
 
@@ -68,7 +70,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
-
+    tracemalloc.start()
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
@@ -90,6 +92,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
             '_source': doc
         } for doc in docs
     )
+    actions = iter_snap(actions)
 
     corpus_server = settings.SERVERS[
         settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
