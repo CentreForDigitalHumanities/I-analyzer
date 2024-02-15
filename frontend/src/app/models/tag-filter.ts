@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { BaseFilter, FilterInterface } from './base-filter';
 import { APITagFilter } from './search-requests';
+import { Store } from '../store/types';
 
 export const TAG_FILTER = 'TagFilter';
 
@@ -12,8 +13,8 @@ export class TagFilter extends BaseFilter<void, number[]> {
     filterType = TAG_FILTER;
     routeParamName = 'tags';
 
-    constructor() {
-        super();
+    constructor(store: Store) {
+        super(store, 'tags');
     }
 
     makeDefaultData(): number[] {
@@ -31,7 +32,7 @@ export class TagFilter extends BaseFilter<void, number[]> {
     }
 
     dataToAPI(): APITagFilter {
-        if (this.active.value) {
+        if (this.state$.value.active) {
             return { tags: this.currentData };
         } else {
             return {};

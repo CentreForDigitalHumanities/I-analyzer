@@ -6,7 +6,6 @@ import { mockCorpus, mockField } from '../../mock-data/corpus';
 import { SimpleStore } from '../store/simple-store';
 import { take } from 'rxjs/operators';
 import { SearchServiceMock } from '../../mock-data/search';
-import { convertToParamMap } from '@angular/router';
 
 describe('PageResults', () => {
     let store: SimpleStore;
@@ -24,7 +23,8 @@ describe('PageResults', () => {
 
     beforeEach(inject([SearchService], (searchService: SearchService) => {
         store = new SimpleStore();
-        queryModel = new QueryModel(mockCorpus);
+        service = searchService;
+        queryModel = new QueryModel(mockCorpus, store);
         service = searchService;
         results = new PageResults(store, searchService, queryModel);
     }));
@@ -38,7 +38,7 @@ describe('PageResults', () => {
             query: 'test',
             highlight: '200',
         });
-        queryModel = new QueryModel(mockCorpus, convertToParamMap(store.currentParams()));
+        queryModel = new QueryModel(mockCorpus, store);
         results = new PageResults(store, service, queryModel);
         expect(results.state$.value.highlight).toBe(200);
     });

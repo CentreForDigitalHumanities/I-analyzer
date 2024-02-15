@@ -104,8 +104,9 @@ export class SelectFieldComponent implements OnChanges {
     public onUpdate() {
         this.selection.emit(this.selectedFields);
         if (this.queryModel) {
-            this.queryModel.searchFields = this.selectedFields;
-            this.queryModel.update.next();
+            this.queryModel.setParams({
+                searchFields: this.selectedFields
+            });
         }
     }
 

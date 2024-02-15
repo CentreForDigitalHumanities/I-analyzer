@@ -1,6 +1,6 @@
 # Making a release
 
-This is a quick checklist for developers.
+This is a quick checklist for developers publishing new releases. For more information about when to make releases and what to label them, see [Versioning](./Versioning.md).
 
 It's recommended that you use [git-flow to make releases](https://danielkummer.github.io/git-flow-cheatsheet/#release), but it's not technically required.
 
@@ -14,7 +14,7 @@ Check if anything ought to be included with the new release:
 
 ## Make a release branch
 
-Determine if your release is a major, minor, or patch release to figure out the version number.
+Determine if your release is a major, minor, or patch release to figure out the version number (see [Versioning](./Versioning.md)).
 
 Start a new branch for your releases. Use `git flow release start x.x.x` or `git flow hotfix start x.x.x`.
 
