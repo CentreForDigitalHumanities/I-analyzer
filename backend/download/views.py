@@ -51,7 +51,7 @@ class ResultsDownloadView(APIView):
             corpus = Corpus.objects.get(name=corpus_name)
             es_query = api_query_to_es_query(request.data, corpus_name)
             search_results = es_download.normal_search(
-                corpus_name, es_query, request.data['size'])
+                corpus_name, es_query)
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
             csv_path = tasks.make_csv(search_results, request.data, download.id)

@@ -39,10 +39,9 @@ def scroll(corpus, query_model, download_size=None, client=None, **kwargs):
     return output, total
 
 
-def normal_search(corpus, query_model, size):
+def normal_search(corpus, query_model):
     result = search(
-        corpus = corpus,
-        query_model=query_model,
-        size=size,
+        corpus=corpus,
+        query_model=query_model
     )
     return hits(result)

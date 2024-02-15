@@ -56,25 +56,22 @@ describe('DownloadService', () => {
                                 query: 'test',
                                 lenient: true,
                                 default_operator: 'or',
-                            }
+                            },
                         },
                         filter: [],
-                    }
+                    },
                 },
-                sort: [
-                    { great_field: 'desc' },
-                ],
+                sort: [{ great_field: 'desc' }],
                 highlight: {
                     fragment_size: highlight,
                     pre_tags: ['<span class="highlight">'],
                     post_tags: ['</span>'],
                     order: 'score',
-                    fields: [ { speech: {} } ]
+                    fields: [{ speech: {} }],
                 },
                 from: 0,
                 size,
             },
-            size,
             encoding: 'utf-8',
         };
         expect(apiService.download).toHaveBeenCalledWith(expectedBody);
