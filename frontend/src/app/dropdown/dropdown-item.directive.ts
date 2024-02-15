@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 })
 export class DropdownItemDirective {
     @HostBinding('class') class = 'dropdown-item';
-    @HostBinding('attr.tabIndex') tabIndex = -1;
+    @HostBinding('attr.tabIndex') tabIndex = 0;
 
     @Input() value;
 
@@ -15,12 +15,15 @@ export class DropdownItemDirective {
     constructor() { }
 
     @HostListener('click')
-    onClick() {
+    @HostListener('keydown.enter')
+    @HostListener('keydown.space')
+    onSelect() {
         this.selected.next(this.value);
+        return false;
     }
 
-    @HostListener('focus')
-    onFocus() {
-        this.selected.next(this.value);
-    }
+    // @HostListener('focus')
+    // onFocus() {
+    //     this.selected.next(this.value);
+    // }
 }
