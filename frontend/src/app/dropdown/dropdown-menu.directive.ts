@@ -7,17 +7,12 @@ import * as _ from 'lodash';
 @Directive({
     selector: '[iaDropdownMenu]'
 })
-export class DropdownMenuDirective implements OnInit, AfterContentInit {
+export class DropdownMenuDirective implements AfterContentInit {
     @ContentChildren(DropdownItemDirective) items: QueryList<DropdownItemDirective>;
 
     selection$: Observable<any>;
-    done$ = new Subject<void>();
 
     constructor(private elementRef: ElementRef) { }
-
-    ngOnInit() {
-        this.triggerCloseDropdown();
-    }
 
     ngAfterContentInit(): void {
         this.selection$ = this.items.changes.pipe(
@@ -26,15 +21,10 @@ export class DropdownMenuDirective implements OnInit, AfterContentInit {
             switchMap(events => merge(...events)),
         );
 
-        // this.items.changes.pipe(
-        //     map(data => data.first),
-        //     tap(data => console.log(data))
-        // ).subscribe();
-
     }
 
     /** close user dropdown when the user clicks or focuses elsewhere */
-    private triggerCloseDropdown() {
+    private observeFocusLost(): Observable<Event> {
         // observable of the next click
         // timer(0) is used to avoid the opening click event being registered
         const clicks$ = timer(0).pipe(
@@ -55,9 +45,9 @@ export class DropdownMenuDirective implements OnInit, AfterContentInit {
         );
 
         // when either of these happens, close the dropdown
-        merge(clicks$, focusOut$).pipe(
+        return merge(clicks$, focusOut$).pipe(
             take(1)
-        ).subscribe(() => this.done$.next());
+        );
     }
 
 }
