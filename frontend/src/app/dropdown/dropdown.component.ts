@@ -11,6 +11,8 @@ import {
     ContentChild,
     ContentChildren,
     QueryList,
+    OnChanges,
+    SimpleChanges,
 } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -26,10 +28,12 @@ import { DropdownService } from './dropdown.service';
     styleUrls: ['./dropdown.component.scss'],
     providers: [DropdownService]
 })
-export class DropdownComponent<T> implements OnDestroy  {
+export class DropdownComponent<T> implements OnChanges, OnDestroy  {
     @HostBinding('class') classes = 'dropdown';
 
     @ContentChild(DropdownMenuDirective) menu: DropdownMenuDirective;
+
+    @Input() value: any;
 
     @Output()
     public onChange = new EventEmitter<T>();
@@ -59,7 +63,13 @@ export class DropdownComponent<T> implements OnDestroy  {
         }
     }
 
-    ngOnDestroy() {
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.value) {
+            this.dropdownService.selection$.next(this.value);
+        }
+    }
+
+    ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
     }
