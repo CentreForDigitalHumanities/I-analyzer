@@ -3,7 +3,7 @@
         <div class="column field">
             <label class="label">Language</label>
             <div class="control">
-                <ia-dropdown name="language">
+                <ia-dropdown name="language" (onChange)="selectedLanguage.next($event)">
                     <span iaDropdownLabel>{{selectedLanguage.value || 'Any'}}</span>
                     <div iaDropdownMenu>
                         <a *ngFor="let language of languages"
@@ -21,7 +21,7 @@
         <div class="column field">
             <label class="label">Type of data</label>
             <div class="control">
-                <ia-dropdown name="category">
+                <ia-dropdown name="category" (onChange)="selectedCategory.next($event)">
                     <span iaDropdownLabel>{{selectedCategory.value || 'Any'}}</span>
                     <div iaDropdownMenu>
                         <a *ngFor="let category of categories"

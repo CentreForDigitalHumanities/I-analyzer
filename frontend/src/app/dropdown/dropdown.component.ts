@@ -9,12 +9,15 @@ import {
     HostBinding,
     AfterContentInit,
     ContentChild,
+    ContentChildren,
+    QueryList,
 } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { actionIcons } from '../shared/icons';
 import { DropdownMenuDirective } from './dropdown-menu.directive';
+import { DropdownItemDirective } from './dropdown-item.directive';
 
 @Component({
     selector: 'ia-dropdown',
@@ -46,10 +49,12 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
 
     @Input() icon: any;
 
-    @ContentChild(DropdownMenuDirective) items: DropdownMenuDirective;
+    @ContentChild(DropdownMenuDirective) menu: DropdownMenuDirective;
 
     @Output()
     public onChange = new EventEmitter<T>();
+
+    @Output() selection = new Subject<any>();
 
     public showDropdown = false;
 
@@ -102,6 +107,7 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
     }
 
     ngAfterContentInit(): void {
+        this.menu.selection$.subscribe(data => this.onChange.next(data));
     }
 
     ngOnDestroy() {
