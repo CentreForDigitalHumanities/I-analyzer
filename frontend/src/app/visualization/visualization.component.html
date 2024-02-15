@@ -9,8 +9,16 @@
                 What do you want to visualise?
             </label>
             <div class="control">
-                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visualizationTypeDropdownValue"
-                    (onChange)="changeVisualizationType($event.value)"></ia-dropdown>
+                <ia-dropdown [value]="visualizationTypeDropdownValue"
+                    (onChange)="changeVisualizationType($event.value)">
+                    <span iaDropdownLabel>{{visualizationTypeDropdownValue?.label}}</span>
+                    <div iaDropdownMenu>
+                        <a *ngFor="let option of visDropdown"
+                            iaDropdownItem [value]="option">
+                            {{option.label}}
+                        </a>
+                    </div>
+                </ia-dropdown>
             </div>
         </div>
     </div>
@@ -26,8 +34,16 @@
                 </span>
             </label>
             <div class="control">
-                <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="visualizedFieldDropdownValue"
-                    (onChange)="changeVisualizedField($event.value)"></ia-dropdown>
+                <ia-dropdown *ngIf="fieldDropdown.length > 1" [value]="visualizedFieldDropdownValue"
+                    (onChange)="changeVisualizedField($event.value)">
+                    <span iaDropdownLabel>{{visualizedFieldDropdownValue?.label}}</span>
+                    <div iaDropdownMenu>
+                        <a *ngFor="let option of fieldDropdown"
+                            iaDropdownItem [value]="option">
+                            {{option.label}}
+                        </a>
+                    </div>
+                </ia-dropdown>
                 <input *ngIf="fieldDropdown.length === 1" class="input is-static" type="text" [value]="visualizedFieldDropdownValue.label">
             </div>
         </label>

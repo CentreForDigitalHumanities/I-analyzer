@@ -1,22 +1,18 @@
 <form class="field has-addons">
     <div class="control" *ngIf="!createMode">
         <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
-            <ia-dropdown
-                [options]="filteredTags"
-                optionLabel="name"
-                (onChange)="selectedTag = $event"
-                placeholder="Assign a tag"
-                styleClass="tag-button"
-                >
-                <footer>
-                    <a role="button" class="dropdown-item"
-                        tabindex="0"
-                        (click)="toggleCreate()"
-                        (keydown.enter)="toggleCreate()">
+            <ia-dropdown (onChange)="selectedTag = $event" [class]="tag-button">
+                <span iaDropdownLabel>{{selectedTag?.name || 'Assign a tag'}}</span>
+                <div iaDropdownMenu>
+                    <a *ngFor="let tag of filteredTags"
+                        iaDropdownItem [value]="tag">
+                        {{tag.name}}
+                    </a>
+                    <a iaDropdownItem (selected)="toggleCreate()">
                         <span class="icon"><fa-icon [icon]="actionIcons.add"></fa-icon></span>
                         <span>Create a new tag</span>
                     </a>
-                </footer>
+                </div>
             </ia-dropdown>
         </ng-container>
     </div>
