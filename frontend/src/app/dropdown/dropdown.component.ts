@@ -28,6 +28,7 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     @HostBinding('class') classes = 'dropdown';
 
     @Input() value: any;
+    @Input() disabled: boolean;
 
     @Output()
     public onChange = new EventEmitter<T>();

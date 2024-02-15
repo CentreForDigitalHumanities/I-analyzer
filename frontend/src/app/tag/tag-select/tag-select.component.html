@@ -1,7 +1,7 @@
 <form class="field has-addons">
     <div class="control" *ngIf="!createMode">
         <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
-            <ia-dropdown (onChange)="selectedTag = $event" [class]="tag-button">
+            <ia-dropdown (onChange)="selectedTag = $event" class="tag-dropdown">
                 <span iaDropdownLabel>{{selectedTag?.name || 'Assign a tag'}}</span>
                 <div iaDropdownMenu>
                     <a *ngFor="let tag of filteredTags"
