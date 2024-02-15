@@ -6,6 +6,7 @@
                 <ia-dropdown name="language" (onChange)="selectedLanguage.next($event)">
                     <span iaDropdownLabel>{{selectedLanguage.value || 'Any'}}</span>
                     <div iaDropdownMenu>
+                        <a iaDropdownItem [value]="undefined">Any</a>
                         <a *ngFor="let language of languages"
                             iaDropdownItem [value]="language">
                             {{language}}
@@ -24,6 +25,7 @@
                 <ia-dropdown name="category" (onChange)="selectedCategory.next($event)">
                     <span iaDropdownLabel>{{selectedCategory.value || 'Any'}}</span>
                     <div iaDropdownMenu>
+                        <a iaDropdownItem [value]="undefined">Any</a>
                         <a *ngFor="let category of categories"
                             iaDropdownItem [value]="category">
                             {{category}}
