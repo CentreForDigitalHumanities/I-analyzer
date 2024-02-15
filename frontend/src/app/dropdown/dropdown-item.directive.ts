@@ -1,5 +1,5 @@
 import { Directive, ElementRef, HostBinding, HostListener, Input, Output } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { DropdownService } from './dropdown.service';
 import * as _ from 'lodash';
 

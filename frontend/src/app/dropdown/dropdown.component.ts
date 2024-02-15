@@ -7,19 +7,13 @@ import {
     Output,
     OnDestroy,
     HostBinding,
-    AfterContentInit,
-    ContentChild,
-    ContentChildren,
-    QueryList,
     OnChanges,
     SimpleChanges,
 } from '@angular/core';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { actionIcons } from '../shared/icons';
-import { DropdownMenuDirective } from './dropdown-menu.directive';
-import { DropdownItemDirective } from './dropdown-item.directive';
 import { DropdownService } from './dropdown.service';
 
 @Component({
@@ -30,8 +24,6 @@ import { DropdownService } from './dropdown.service';
 })
 export class DropdownComponent<T> implements OnChanges, OnDestroy  {
     @HostBinding('class') classes = 'dropdown';
-
-    @ContentChild(DropdownMenuDirective) menu: DropdownMenuDirective;
 
     @Input() value: any;
 
@@ -47,7 +39,8 @@ export class DropdownComponent<T> implements OnChanges, OnDestroy  {
         // for example using the keyboard arrows
         this.dropdownService.selection$.pipe(
             takeUntil(this.destroy$),
-            debounceTime(100)
+            debounceTime(100),
+            distinctUntilChanged(_.isEqual),
         ).subscribe((value) => this.onChange.next(value));
     }
 
@@ -59,6 +52,15 @@ export class DropdownComponent<T> implements OnChanges, OnDestroy  {
     @HostListener('document:click', ['$event'])
     onClickOut(event) {
         if (!this.elementRef.nativeElement.contains(event.target)) {
+            this.dropdownService.open$.next(false);
+        }
+    }
+
+    @HostListener('focusout', ['$event'])
+    onFocusOut(event: FocusEvent) {
+        if (_.isNull(event.relatedTarget) ||
+            !this.elementRef.nativeElement.contains(event.relatedTarget)
+        ) {
             this.dropdownService.open$.next(false);
         }
     }
