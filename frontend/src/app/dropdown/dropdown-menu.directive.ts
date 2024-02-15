@@ -16,13 +16,13 @@ export class DropdownMenuDirective implements AfterContentInit, OnDestroy {
     constructor(private elementRef: ElementRef, private dropdownService: DropdownService) { }
 
     ngAfterContentInit(): void {
+        // handle arrow navigation between items
         const items$ = this.items.changes.pipe(
+            takeUntil(this.destroy$),
             map(data => data._results as DropdownItemDirective[])
         );
 
-        // handle arrow navigation between items
         items$.pipe(
-            takeUntil(this.destroy$),
             map(items => items.map(item => item.navigate)),
             switchMap(events => merge(...events)),
         ).subscribe(shift => this.shiftFocus(shift));
@@ -38,33 +38,6 @@ export class DropdownMenuDirective implements AfterContentInit, OnDestroy {
         const index = _.findIndex(items, item => item.focused.value);
         const newIndex = (index + shift) % items.length;
         items[newIndex].focus();
-    }
-
-    /** close user dropdown when the user clicks or focuses elsewhere */
-    private observeFocusLost(): Observable<Event> {
-        // observable of the next click
-        // timer(0) is used to avoid the opening click event being registered
-        const clicks$ = timer(0).pipe(
-            switchMap(() => fromEvent(document, 'click')),
-        );
-
-        // observable of the dropdown losing focus
-
-        const focusOutOfDropdown = (event: FocusEvent) =>
-            _.isNull(event.relatedTarget) ||
-            (event.relatedTarget as Element).parentElement.id !== 'userDropdown';
-
-        const focusOut$ = fromEvent<FocusEvent>(
-            this.elementRef.nativeElement,
-            'focusout'
-        ).pipe(
-            filter(focusOutOfDropdown),
-        );
-
-        // when either of these happens, close the dropdown
-        return merge(clicks$, focusOut$).pipe(
-            take(1)
-        );
     }
 
 }

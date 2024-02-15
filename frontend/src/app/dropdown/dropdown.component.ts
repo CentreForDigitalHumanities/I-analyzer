@@ -27,36 +27,12 @@ import { DropdownService } from './dropdown.service';
     providers: [DropdownService]
 })
 export class DropdownComponent<T> implements OnDestroy  {
-    @HostBinding('class') classes = 'control';
-    @Input()
-    public canDeselect = false;
-
-    @Input()
-    public value: T | undefined = undefined;
-
-    @Input()
-    public disabled = false;
-
-    @Input()
-    public styleClass: string;
-
-    @Input()
-    public options: T[] = [];
-
-    @Input()
-    public placeholder = '';
-
-    @Input()
-    public optionLabel: keyof T | undefined = undefined;
-
-    @Input() icon: any;
+    @HostBinding('class') classes = 'dropdown';
 
     @ContentChild(DropdownMenuDirective) menu: DropdownMenuDirective;
 
     @Output()
     public onChange = new EventEmitter<T>();
-
-    public showDropdown = false;
 
     actionIcons = actionIcons;
 
@@ -71,10 +47,15 @@ export class DropdownComponent<T> implements OnDestroy  {
         ).subscribe((value) => this.onChange.next(value));
     }
 
+    @HostBinding('class.is-active')
+    get isActive(): boolean {
+        return this.dropdownService.open$.value;
+    }
+
     @HostListener('document:click', ['$event'])
     onClickOut(event) {
         if (!this.elementRef.nativeElement.contains(event.target)) {
-            this.showDropdown = false;
+            this.dropdownService.open$.next(false);
         }
     }
 
@@ -85,7 +66,6 @@ export class DropdownComponent<T> implements OnDestroy  {
 
     public toggleDropdown() {
         this.dropdownService.open$.next(!this.dropdownService.open$.value);
-        this.showDropdown = !this.showDropdown;
     }
 
 }
