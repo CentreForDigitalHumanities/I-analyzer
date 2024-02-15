@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from addcorpus.load_corpus import corpus_dir
 import os
 from django.http.response import FileResponse
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
 from addcorpus.models import Corpus
@@ -14,7 +14,7 @@ class CorpusView(APIView):
     List all available corpora
     '''
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
         corpora = Corpus.objects.filter(configuration__isnull=False)
@@ -43,7 +43,7 @@ class CorpusImageView(APIView):
     Return the image for a corpus.
     '''
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
         return send_corpus_file(subdir='images', **kwargs)
@@ -53,7 +53,7 @@ class CorpusDocumentationView(APIView):
     Return the documentation for a corpus
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
 
     def get(self, request, *args, **kwargs):
         return send_corpus_file(subdir='description', **kwargs)
@@ -63,7 +63,7 @@ class CorpusDocumentView(APIView):
     Return a document for a corpus - e.g. extra metadata.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
 
     def get(self, request, *args, **kwargs):
         return send_corpus_file(subdir='documents', **kwargs)
