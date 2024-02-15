@@ -1,20 +1,24 @@
-import { AfterContentInit, ContentChildren, Directive, HostListener, QueryList } from '@angular/core';
+import { AfterContentInit, ContentChildren, Directive, ElementRef, HostListener, OnInit, Output, QueryList } from '@angular/core';
 import { DropdownItemDirective } from './dropdown-item.directive';
-import { map, switchMap, tap } from 'rxjs/operators';
-import { merge } from 'rxjs';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { Subject, fromEvent, merge, timer } from 'rxjs';
+import * as _ from 'lodash';
 
 @Directive({
     selector: '[iaDropdownMenu]'
 })
-export class DropdownMenuDirective implements AfterContentInit {
+export class DropdownMenuDirective implements OnInit, AfterContentInit {
     @ContentChildren(DropdownItemDirective) items: QueryList<DropdownItemDirective>;
 
-    constructor() { }
+    @Output() done = new Subject<void>();
 
-    @HostListener('focusout')
-    onFocusOut(event) {
-        console.log(event);
+    constructor(private elementRef: ElementRef) { }
+
+    ngOnInit() {
+        this.triggerCloseDropdown();
+        this.done.subscribe(() => console.log('done!'));
     }
+
 
     ngAfterContentInit(): void {
         // this.items.changes.pipe(
@@ -29,6 +33,33 @@ export class DropdownMenuDirective implements AfterContentInit {
         // ).subscribe(data =>
         //     console.log(data)
         // );
+    }
+
+    /** close user dropdown when the user clicks or focuses elsewhere */
+    private triggerCloseDropdown() {
+        // observable of the next click
+        // timer(0) is used to avoid the opening click event being registered
+        const clicks$ = timer(0).pipe(
+            switchMap(() => fromEvent(document, 'click')),
+        );
+
+        // observable of the dropdown losing focus
+
+        const focusOutOfDropdown = (event: FocusEvent) =>
+            _.isNull(event.relatedTarget) ||
+            (event.relatedTarget as Element).parentElement.id !== 'userDropdown';
+
+        const focusOut$ = fromEvent<FocusEvent>(
+            this.elementRef.nativeElement,
+            'focusout'
+        ).pipe(
+            filter(focusOutOfDropdown),
+        );
+
+        // when either of these happens, close the dropdown
+        merge(clicks$, focusOut$).pipe(
+            take(1)
+        ).subscribe(() => this.done.next());
     }
 
 }
