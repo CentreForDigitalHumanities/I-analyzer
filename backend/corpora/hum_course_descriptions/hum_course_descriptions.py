@@ -5,8 +5,7 @@ import re
 from django.utils.html import strip_tags
 from langdetect import detect
 
-from addcorpus.corpus import FieldDefinition
-from addcorpus.xlsx import XLSXCorpusDefinition
+from addcorpus.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
 from addcorpus.extract import CSV, Combined, Pass, Constant, Metadata
 from addcorpus.filters import MultipleChoiceFilter

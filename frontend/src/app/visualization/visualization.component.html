@@ -51,7 +51,7 @@
 </div>
 
 <ng-container *ngIf="visualExists; else noVisualsMessage">
-    <div class="block" [ngClass]="{'is-loading':isLoading}">
+    <div class="block">
         <ng-container [ngSwitch]="visualizationType">
             <ng-container *ngSwitchCase="'resultscount'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"

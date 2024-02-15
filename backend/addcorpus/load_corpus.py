@@ -1,6 +1,3 @@
-from addcorpus.models import Corpus, Field
-from addcorpus.corpus import CorpusDefinition, FieldDefinition
-from django.contrib.auth.models import Group
 from django.conf import settings
 import re
 from os.path import abspath, dirname

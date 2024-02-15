@@ -19,6 +19,7 @@ beautifulsoup4==4.12.2
     # via
     #   -r requirements.in
     #   django-livereload-server
+    #   ianalyzer-readers
     #   seleniumbase
 behave==1.2.6
     # via seleniumbase
@@ -72,7 +73,7 @@ defusedxml==0.7.1
     #   python3-openid
 dj-rest-auth[with_social]==4.0.1
     # via -r requirements.in
-django==4.2.7
+django==4.2.10
     # via
     #   -r requirements.in
     #   dj-rest-auth
@@ -129,6 +130,8 @@ h11==0.14.0
     #   wsproto
 humanize==4.9.0
     # via flower
+ianalyzer-readers==0.0.0
+    # via -r requirements.in
 idna==3.4
     # via
     #   requests
@@ -151,7 +154,9 @@ langdetect==1.0.9
 language-data==1.1
     # via -r requirements.in
 lxml==4.9.3
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ianalyzer-readers
 marisa-trie==0.7.8
     # via language-data
 markdown-it-py==3.0.0
@@ -180,7 +185,9 @@ numpy==1.24.4
 oauthlib==3.2.2
     # via requests-oauthlib
 openpyxl==3.1.2
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ianalyzer-readers
 outcome==1.2.0
     # via
     #   seleniumbase
