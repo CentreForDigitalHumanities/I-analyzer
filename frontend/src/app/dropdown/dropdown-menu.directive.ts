@@ -1,7 +1,7 @@
-import { AfterContentInit, ContentChildren, Directive, ElementRef, OnDestroy, QueryList } from '@angular/core';
+import { AfterContentInit, ContentChildren, Directive, ElementRef, HostListener, OnDestroy, QueryList } from '@angular/core';
 import { DropdownItemDirective } from './dropdown-item.directive';
-import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
-import { Observable,Subject,fromEvent, merge, timer } from 'rxjs';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { Subject, merge } from 'rxjs';
 import * as _ from 'lodash';
 import { DropdownService } from './dropdown.service';
 
@@ -14,6 +14,15 @@ export class DropdownMenuDirective implements AfterContentInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
     constructor(private elementRef: ElementRef, private dropdownService: DropdownService) { }
+
+    @HostListener('focusout', ['$event'])
+    onFocusOut(event: FocusEvent) {
+        if (_.isNull(event.relatedTarget) ||
+            !this.elementRef.nativeElement.contains(event.relatedTarget)
+        ) {
+            this.dropdownService.open$.next(false);
+        }
+    }
 
     ngAfterContentInit(): void {
         // handle arrow navigation between items
