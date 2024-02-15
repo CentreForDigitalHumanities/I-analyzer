@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import Group
+from django.contrib import admin
 from django.core.exceptions import ValidationError
 import warnings
 
@@ -27,6 +28,7 @@ class Corpus(models.Model):
         help_text='groups that have access to this corpus',
     )
 
+    @admin.display()
     @property
     def active(self):
         try:
