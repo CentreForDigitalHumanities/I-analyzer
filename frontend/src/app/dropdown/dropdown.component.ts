@@ -54,8 +54,6 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
     @Output()
     public onChange = new EventEmitter<T>();
 
-    @Output() selection = new Subject<any>();
-
     public showDropdown = false;
 
     actionIcons = actionIcons;
@@ -80,32 +78,6 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
         }
     }
 
-    @HostListener('window:keydown', ['$event'])
-    keyEvent(event: KeyboardEvent) {
-        if (this.elementRef.nativeElement.contains(event.target)) {
-            let index = this.options.indexOf(this.value);
-
-            if (event.keyCode === KeyCode.Up) {
-                event.preventDefault();
-                index--;
-                if (index < 0) {
-                    // default
-                    this.select(undefined, false);
-                } else {
-                    this.select(this.options[index], false);
-                }
-            }
-
-            if (event.keyCode === KeyCode.Down) {
-                event.preventDefault();
-                index++;
-                if (index !== this.options.length) {
-                    this.select(this.options[index], false);
-                }
-            }
-        }
-    }
-
     ngAfterContentInit(): void {
         this.menu.selection$.subscribe(data => this.onChange.next(data));
     }
@@ -118,13 +90,6 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
         this.showDropdown = !this.showDropdown;
     }
 
-    public select(option: T | undefined, hide = true) {
-        this.value = option;
-        if (hide) {
-            this.showDropdown = false;
-        }
-        this.changeSubject.next(option);
-    }
 }
 
 enum KeyCode {

@@ -1,16 +1,18 @@
-import { AfterContentInit, ContentChildren, Directive, ElementRef, HostListener, OnInit, Output, QueryList } from '@angular/core';
+import { AfterContentInit, ContentChildren, Directive, ElementRef, OnDestroy, QueryList } from '@angular/core';
 import { DropdownItemDirective } from './dropdown-item.directive';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { Observable, Subject, fromEvent, merge, timer } from 'rxjs';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { Observable,Subject,fromEvent, merge, timer } from 'rxjs';
 import * as _ from 'lodash';
 
 @Directive({
     selector: '[iaDropdownMenu]'
 })
-export class DropdownMenuDirective implements AfterContentInit {
+export class DropdownMenuDirective implements AfterContentInit, OnDestroy {
     @ContentChildren(DropdownItemDirective) items: QueryList<DropdownItemDirective>;
 
     selection$: Observable<any>;
+
+    private destroy$ = new Subject<void>();
 
     constructor(private elementRef: ElementRef) { }
 
@@ -19,18 +21,26 @@ export class DropdownMenuDirective implements AfterContentInit {
             map(data => data._results as DropdownItemDirective[])
         );
 
+        // merge 'selected' events from items
         this.selection$ = items$.pipe(
+            takeUntil(this.destroy$),
             map(items => items.map(item => item.selected)),
             switchMap(events => merge(...events)),
         );
 
+        // handle arrow navigation between items
         items$.pipe(
+            takeUntil(this.destroy$),
             map(items => items.map(item => item.navigate)),
             switchMap(events => merge(...events)),
         ).subscribe(shift => this.shiftFocus(shift));
     }
 
-    /** shift the focus in the dropdown item children */
+    ngOnDestroy(): void {
+        this.destroy$.next();
+    }
+
+    /** shift the focus in the dropdownItem children */
     shiftFocus(shift: number) {
         const items = this.items.toArray();
         const index = _.findIndex(items, item => item.focused.value);
