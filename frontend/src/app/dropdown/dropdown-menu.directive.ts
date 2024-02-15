@@ -15,12 +15,27 @@ export class DropdownMenuDirective implements AfterContentInit {
     constructor(private elementRef: ElementRef) { }
 
     ngAfterContentInit(): void {
-        this.selection$ = this.items.changes.pipe(
-            map(data => data._results as DropdownItemDirective[]),
+        const items$ = this.items.changes.pipe(
+            map(data => data._results as DropdownItemDirective[])
+        );
+
+        this.selection$ = items$.pipe(
             map(items => items.map(item => item.selected)),
             switchMap(events => merge(...events)),
         );
 
+        items$.pipe(
+            map(items => items.map(item => item.navigate)),
+            switchMap(events => merge(...events)),
+        ).subscribe(shift => this.shiftFocus(shift));
+    }
+
+    /** shift the focus in the dropdown item children */
+    shiftFocus(shift: number) {
+        const items = this.items.toArray();
+        const index = _.findIndex(items, item => item.focused.value);
+        const newIndex = (index + shift) % items.length;
+        items[newIndex].focus();
     }
 
     /** close user dropdown when the user clicks or focuses elsewhere */
