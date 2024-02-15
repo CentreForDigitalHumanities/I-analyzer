@@ -31,7 +31,8 @@ class StatusFilter(admin.SimpleListFilter):
 
 class DownloadAdmin(admin.ModelAdmin):
     readonly_fields = ['parameters', 'status']
-    list_display = ['id', 'download_type', 'corpus', 'started', 'status']
+    list_display = ['id', 'download_type',
+                    'user', 'corpus', 'started', 'status']
     list_filter = [StatusFilter, 'started']
 
 admin.site.register(Download, DownloadAdmin)
