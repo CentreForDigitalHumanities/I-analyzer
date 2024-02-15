@@ -1,5 +1,5 @@
 import { Directive, ElementRef, HostBinding, HostListener, Input, Output } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Directive({
     selector: '[iaDropdownItem]'
@@ -16,6 +16,11 @@ export class DropdownItemDirective {
     focused = new BehaviorSubject<boolean>(false);
 
     constructor(private elementRef: ElementRef) { }
+
+    @HostBinding('class.is-active')
+    get isActive() {
+        return false;
+    }
 
     @HostListener('focus')
     onFocus() {
