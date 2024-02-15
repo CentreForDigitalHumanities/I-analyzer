@@ -1,5 +1,7 @@
 import { Directive, ElementRef, HostBinding, HostListener, Input, Output } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { DropdownService } from './dropdown.service';
+import * as _ from 'lodash';
 
 @Directive({
     selector: '[iaDropdownItem]'
@@ -15,11 +17,11 @@ export class DropdownItemDirective {
     navigate = new Subject<-1|1>();
     focused = new BehaviorSubject<boolean>(false);
 
-    constructor(private elementRef: ElementRef) { }
+    constructor(private elementRef: ElementRef, private dropdownService: DropdownService) { }
 
     @HostBinding('class.is-active')
-    get isActive() {
-        return false;
+    get isActive(): boolean {
+        return _.isEqual(this.dropdownService.selection$.value, this.value);
     }
 
     @HostListener('focus')
@@ -37,6 +39,7 @@ export class DropdownItemDirective {
     @HostListener('keydown.space')
     select() {
         this.selected.next(this.value);
+        this.dropdownService.selection$.next(this.value);
         return false;
     }
 
@@ -50,10 +53,6 @@ export class DropdownItemDirective {
     navigatePrev() {
         this.navigate.next(-1);
         return false;
-    }
-
-    blur() {
-        this.elementRef.nativeElement.blur();
     }
 
     focus() {

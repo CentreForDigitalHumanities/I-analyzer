@@ -3,6 +3,7 @@ import { DropdownItemDirective } from './dropdown-item.directive';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Observable,Subject,fromEvent, merge, timer } from 'rxjs';
 import * as _ from 'lodash';
+import { DropdownService } from './dropdown.service';
 
 @Directive({
     selector: '[iaDropdownMenu]'
@@ -10,22 +11,13 @@ import * as _ from 'lodash';
 export class DropdownMenuDirective implements AfterContentInit, OnDestroy {
     @ContentChildren(DropdownItemDirective) items: QueryList<DropdownItemDirective>;
 
-    selection$: Observable<any>;
-
     private destroy$ = new Subject<void>();
 
-    constructor(private elementRef: ElementRef) { }
+    constructor(private elementRef: ElementRef, private dropdownService: DropdownService) { }
 
     ngAfterContentInit(): void {
         const items$ = this.items.changes.pipe(
             map(data => data._results as DropdownItemDirective[])
-        );
-
-        // merge 'selected' events from items
-        this.selection$ = items$.pipe(
-            takeUntil(this.destroy$),
-            map(items => items.map(item => item.selected)),
-            switchMap(events => merge(...events)),
         );
 
         // handle arrow navigation between items

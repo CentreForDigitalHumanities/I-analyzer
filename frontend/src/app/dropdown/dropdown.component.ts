@@ -13,18 +13,20 @@ import {
     QueryList,
 } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { actionIcons } from '../shared/icons';
 import { DropdownMenuDirective } from './dropdown-menu.directive';
 import { DropdownItemDirective } from './dropdown-item.directive';
+import { DropdownService } from './dropdown.service';
 
 @Component({
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
     styleUrls: ['./dropdown.component.scss'],
+    providers: [DropdownService]
 })
-export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
+export class DropdownComponent<T> implements OnDestroy  {
     @HostBinding('class') classes = 'control';
     @Input()
     public canDeselect = false;
@@ -58,17 +60,15 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
 
     actionIcons = actionIcons;
 
-    private changeSubject = new Subject<T | undefined>();
-    private changeSubscription: Subscription;
+    private destroy$ = new Subject<void>();
 
-    private lodash = _;
-
-    constructor(private elementRef: ElementRef) {
+    constructor(private elementRef: ElementRef, private dropdownService: DropdownService) {
         // don't trigger a lot of events when a user is quickly looping through the options
         // for example using the keyboard arrows
-        this.changeSubscription = this.changeSubject
-            .pipe(debounceTime(100))
-            .subscribe((value) => this.onChange.next(value));
+        this.dropdownService.selection$.pipe(
+            takeUntil(this.destroy$),
+            debounceTime(100)
+        ).subscribe((value) => this.onChange.next(value));
     }
 
     @HostListener('document:click', ['$event'])
@@ -78,21 +78,14 @@ export class DropdownComponent<T> implements AfterContentInit, OnDestroy  {
         }
     }
 
-    ngAfterContentInit(): void {
-        this.menu.selection$.subscribe(data => this.onChange.next(data));
-    }
-
     ngOnDestroy() {
-        this.changeSubscription.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     public toggleDropdown() {
+        this.dropdownService.open$.next(!this.dropdownService.open$.value);
         this.showDropdown = !this.showDropdown;
     }
 
-}
-
-enum KeyCode {
-    Up = 38,
-    Down = 40,
 }
