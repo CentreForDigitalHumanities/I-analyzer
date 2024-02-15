@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 })
 export class DropdownItemDirective {
     @HostBinding('class') class = 'dropdown-item';
+    @HostBinding('role') role = 'menuitem';
     @HostBinding('attr.tabIndex') tabIndex = 0;
 
     @Input() value;
@@ -43,16 +44,22 @@ export class DropdownItemDirective {
         return false;
     }
 
-    @HostListener('keydown.ArrowDown')
+    @HostListener('keydown.arrowdown')
     navigateNext() {
         this.navigate.next(1);
         return false;
     }
 
-    @HostListener('keydown.ArrowUp')
+    @HostListener('keydown.arrowup')
     navigatePrev() {
         this.navigate.next(-1);
         return false;
+    }
+
+    @HostListener('keydown.escape')
+    close() {
+        this.dropdownService.menuEscaped$.next();
+        this.dropdownService.open$.next(false);
     }
 
     focus() {

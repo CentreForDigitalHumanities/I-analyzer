@@ -9,6 +9,8 @@ import {
     HostBinding,
     OnChanges,
     SimpleChanges,
+    ViewChild,
+    AfterViewInit,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -22,13 +24,15 @@ import { DropdownService } from './dropdown.service';
     styleUrls: ['./dropdown.component.scss'],
     providers: [DropdownService]
 })
-export class DropdownComponent<T> implements OnChanges, OnDestroy  {
+export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy  {
     @HostBinding('class') classes = 'dropdown';
 
     @Input() value: any;
 
     @Output()
     public onChange = new EventEmitter<T>();
+
+    @ViewChild('dropdownTrigger') trigger: ElementRef<HTMLButtonElement>;
 
     actionIcons = actionIcons;
 
@@ -69,6 +73,14 @@ export class DropdownComponent<T> implements OnChanges, OnDestroy  {
         if (changes.value) {
             this.dropdownService.selection$.next(this.value);
         }
+    }
+
+    ngAfterViewInit(): void {
+        this.dropdownService.menuEscaped$.pipe(
+            takeUntil(this.destroy$)
+        ).subscribe(() => {
+            this.trigger.nativeElement.focus();
+        });
     }
 
     ngOnDestroy(): void {
