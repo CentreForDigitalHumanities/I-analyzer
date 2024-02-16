@@ -39,7 +39,6 @@ export class DownloadService {
                 ...query,
                 corpus: corpus.name,
                 fields: fields.map((field) => field.name),
-                size: requestedResults,
                 route,
             },
             fileOptions
