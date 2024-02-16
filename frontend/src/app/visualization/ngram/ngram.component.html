@@ -102,7 +102,7 @@
 </div>
 
 
-<div [ngClass]="{ 'is-hidden': asTable }">
+<div [ngClass]="{ 'is-hidden': asTable, 'is-loading':isLoading}">
     <div class="block">
         <ia-joyplot [data]="currentResults" [formatValue]="formatValue" [palette]="palette" quantity="frequency"
             [comparedByQuantity]="dateField?.displayName">
