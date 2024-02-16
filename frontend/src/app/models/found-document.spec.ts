@@ -4,7 +4,6 @@ import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { FoundDocument } from './found-document';
 import { TagService } from '../services/tag.service';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
-import { Tag } from './tag';
 import * as _ from 'lodash';
 
 const maxScore = 2.9113607;

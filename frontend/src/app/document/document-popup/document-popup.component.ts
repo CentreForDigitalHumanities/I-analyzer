@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { DocumentFocus, DocumentPage, DocumentView } from '../../models/document-page';
-import { filter, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { FoundDocument, QueryModel } from '../../models';
 import { Subject } from 'rxjs';

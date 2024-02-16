@@ -3,9 +3,8 @@ import { makeContextParams } from '../utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 import { Tag } from './tag';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { TagService } from '../services/tag.service';
-import { tap } from 'rxjs/operators';
 
 export class FoundDocument {
     id: string;
