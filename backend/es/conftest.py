@@ -2,13 +2,16 @@ import pytest
 from time import sleep
 from django.contrib.auth.models import Group
 
+from addcorpus.conftest import basic_corpus
 from addcorpus.load_corpus import load_corpus_definition
-from es import es_index
 from addcorpus.models import Corpus
+from es import es_index
+
 
 @pytest.fixture(scope='session')
 def mock_corpus():
     return 'times'
+
 
 @pytest.fixture()
 def corpus_definition(mock_corpus):
@@ -35,6 +38,14 @@ def es_forward_client(es_client, mock_corpus):
     yield es_client
     # delete index when done
     es_client.indices.delete(index='times-test')
+
+
+@pytest.fixture()
+def basic_corpus_index(es_client, basic_corpus):
+    corpus = load_corpus_definition(basic_corpus)
+    es_index.create(es_client, corpus, False, True, False)
+    yield es_client
+    es_client.indices.delete(index=corpus.es_index)
 
 @pytest.fixture()
 def es_index_client(es_client, mock_corpus):

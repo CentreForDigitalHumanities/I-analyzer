@@ -1,4 +1,4 @@
-from users.models import CustomUser
+from users.models import CustomUser, CustomAnonymousUser
 
 def test_access_through_group(db, mock_corpus, group_with_access):
     user = CustomUser.objects.create(username='nice-user', password='secret')
@@ -12,6 +12,13 @@ def test_superuser_access(mock_corpus, admin_user):
 def test_no_corpus_access(db, mock_corpus):
     user = CustomUser.objects.create(username='bad-user', password='secret')
     assert not user.has_access(mock_corpus)
+
+
+def test_basic_corpus_access(db, basic_corpus):
+    user = CustomUser.objects.create(username='new-user', password='secret')
+    assert user.has_access(basic_corpus)
+    anon = CustomAnonymousUser()
+    assert anon.has_access(basic_corpus)
 
 def test_api_access(db, mock_corpus, group_with_access, auth_client, auth_user):
     # default: no access
