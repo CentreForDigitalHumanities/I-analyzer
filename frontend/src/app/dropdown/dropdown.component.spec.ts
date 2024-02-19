@@ -1,18 +1,45 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { commonTestBed } from '../common-test-bed';
+import { ComponentFixture, TestBed, fakeAsync, flush, tick } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { DropdownModule } from './dropdown.module';
+import { CommonModule } from '@angular/common';
+import { By } from '@angular/platform-browser';
 
-import { DropdownComponent } from './dropdown.component';
+@Component({
+    template: `
+    <ia-dropdown [value]="selected" (onChange)="selected = $event">
+        <span iaDropdownLabel>{{selected?.label || 'Select option'}}</span>
+        <div iaDropdownMenu>
+            <a *ngFor="let option of options"
+                iaDropdownItem [value]="option">
+                {{option.label}}
+            </a>
+        </div>
+    </ia-dropdown>
+    `,
+})
+class DropdownTestComponent {
+    options = [
+        { name: 'item1', label: 'Item 1' },
+        { name: 'item2', label: 'Item 2' },
+        { name: 'item3', label: 'Item 3' }
+    ];
+
+    selected: any;
+}
 
 describe('DropdownComponent', () => {
-    let component: DropdownComponent<TestItem>;
-    let fixture: ComponentFixture<DropdownComponent<TestItem>>;
-
-    beforeEach(waitForAsync(() => {
-        commonTestBed().testingModule.compileComponents();
-    }));
+    let component: DropdownTestComponent;
+    let fixture: ComponentFixture<DropdownTestComponent>;
 
     beforeEach(() => {
-        fixture = TestBed.createComponent<DropdownComponent<TestItem>>(DropdownComponent);
+        TestBed.configureTestingModule({
+            imports: [DropdownModule, CommonModule],
+            declarations: [DropdownTestComponent],
+        });
+    });
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent<DropdownTestComponent>(DropdownTestComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -21,34 +48,36 @@ describe('DropdownComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should render options', async () => {
-        component.options = [
-            { name: 'item1', label: 'Item 1' },
-            { name: 'item2', label: 'Item 2' },
-            { name: 'item3', label: 'Item 3' }];
-        component.optionLabel = 'label';
-        component.value = component.options[1];
-        fixture.detectChanges();
+    it('should render the label', async () => {
         await fixture.whenStable();
 
-        const compiled = fixture.debugElement.nativeElement;
-        expect(compiled.innerHTML).toContain('Item 2');
-        expect(compiled.innerHTML).not.toContain('Item 1');
-        expect(compiled.innerHTML).not.toContain('item2');
+        const trigger = fixture.debugElement.query(By.css('#dropdownTrigger')).nativeElement;
+
+        expect(trigger.innerHTML).toContain('Select option');
 
         // allow switching value
-        component.value = undefined;
-        component.placeholder = 'Hello world!';
+        component.selected = component.options[1];
         fixture.detectChanges();
         await fixture.whenStable();
 
-        expect(compiled.innerHTML).toContain('Hello world!');
-        expect(compiled.innerHTML).not.toContain('Item 2');
-        expect(compiled.innerHTML).not.toContain('item3');
+        expect(trigger.innerHTML).not.toContain('Select option');
+        expect(trigger.innerHTML).toContain('Item 2');
     });
-});
 
-interface TestItem {
-    name: string;
-    label: string;
-};
+    it('should open when clicked', fakeAsync(() => {
+        tick();
+
+        const dropdown = fixture.debugElement.query(By.css('.dropdown'));
+
+        expect(dropdown.classes['is-active']).toBeFalsy();
+
+        const trigger = dropdown.query(By.css('#dropdownTrigger'));
+        trigger.triggerEventHandler('click', undefined);
+
+        tick();
+        fixture.detectChanges();
+
+        expect(dropdown.classes['is-active']).toBeTruthy();
+    }));
+
+});

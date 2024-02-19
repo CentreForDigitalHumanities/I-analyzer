@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DropdownComponent } from '../dropdown/dropdown.component';
+import { DropdownModule } from '../dropdown/dropdown.module';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { ErrorComponent } from '../error/error.component';
 import { CalendarModule } from 'primeng/calendar';
@@ -19,14 +19,9 @@ import {
 import { RouterModule } from '@angular/router';
 import { TabsComponent } from './tabs/tabs.component';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
-import { DropdownItemDirective } from '../dropdown/dropdown-item.directive';
-import { DropdownMenuDirective } from '../dropdown/dropdown-menu.directive';
 
 @NgModule({
     declarations: [
-        DropdownComponent,
-        DropdownItemDirective,
-        DropdownMenuDirective,
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
@@ -37,9 +32,6 @@ import { DropdownMenuDirective } from '../dropdown/dropdown-menu.directive';
     ],
     exports: [
         // shared components
-        DropdownComponent,
-        DropdownItemDirective,
-        DropdownMenuDirective,
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,
@@ -50,6 +42,7 @@ import { DropdownMenuDirective } from '../dropdown/dropdown-menu.directive';
         BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
+        DropdownModule,
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
@@ -64,6 +57,7 @@ import { DropdownMenuDirective } from '../dropdown/dropdown-menu.directive';
         CommonModule,
         FormsModule,
         CalendarModule,
+        DropdownModule,
         FontAwesomeModule,
         HttpClientModule,
         HttpClientXsrfModule.withOptions({
@@ -71,6 +65,7 @@ import { DropdownMenuDirective } from '../dropdown/dropdown-menu.directive';
             headerName: 'X-CSRFToken',
         }),
         RouterModule,
+
     ],
 })
 export class SharedModule {}
