@@ -46,7 +46,7 @@ export class DropdownItemDirective {
 
     @HostListener('keydown.arrowdown')
     navigateNext() {
-        this.dropdownService.focusShift$.next(-1);
+        this.dropdownService.focusShift$.next(1);
         return false;
     }
 
