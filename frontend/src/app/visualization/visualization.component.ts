@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
-import { visualizationIcons } from '../shared/icons';
+import { actionIcons, visualizationIcons } from '../shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
 import { VisualizationOption, VisualizationSelector } from '../models/visualization-selector';
 import { Observable, Subject, merge } from 'rxjs';
@@ -34,6 +34,7 @@ export class VisualizationComponent implements OnChanges, OnDestroy {
         termfrequency: 'termfrequency',
     };
 
+    actionIcons = actionIcons;
     visualizationIcons = visualizationIcons;
 
     public palette: string[];

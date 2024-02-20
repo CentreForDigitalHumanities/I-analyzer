@@ -15,6 +15,11 @@
                                     [disabled]="option.disabled$ | async"
                                     (onSelect)="setVisualizationType($event)">
                                     {{option.label}}
+
+                                    <span *ngIf="option.disabled$ | async"
+                                        class="icon" iaBalloon="this visualisation requires a search term">
+                                        <fa-icon [icon]="actionIcons.help"></fa-icon>
+                                    </span>
                                 </a>
                             </div>
                         </ia-dropdown>
