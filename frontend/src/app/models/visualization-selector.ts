@@ -6,7 +6,7 @@ import { QueryModel } from './query';
 import { findByName } from '../utils/utils';
 import * as _ from 'lodash';
 import { Observable, merge, of, timer } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 export interface VisualizationSelection {
     name: string;
@@ -43,11 +43,15 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
     ) {
         super(store);
         this.options = this.getVisualizationOptions(this.query);
-        this.defaultState = this.getDefaultOption(this.options);
+        this.defaultState = this.getDefaultOption(this.options, this.query);
         this.connectToStore();
         this.activeOption$ = this.state$.pipe(
-            map(state => findByName(this.options, state.name))
+            map(this.activeOption.bind(this))
         );
+
+        this.query.update.pipe(
+            takeUntil(this.complete$)
+        ).subscribe(() => this.checkActiveOption());
     }
 
     setVisualizationType(name: string) {
@@ -112,19 +116,41 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
     }
 
     private disabled$(name: string, query: QueryModel): Observable<boolean> {
+        const now = timer();
+        const updates = merge(now, query.update);
+        return updates.pipe(
+            map(() => this.disabled(name, query)),
+        );
+    }
+
+    private disabled(name: string, query: QueryModel): boolean {
         if (REQUIRE_SEARCH_TERM.includes(name)) {
-            const now = timer();
-            const updates = merge(now, query.update);
-            return updates.pipe(
-                map(() => _.isEmpty(query.queryText)),
-            );
+            return _.isEmpty(query.queryText);
         } else {
-            return of(false);
+            return false;
         }
     }
 
-    private getDefaultOption(options: VisualizationOption[]): VisualizationSelection {
-        const selected = _.first(options);
+    private getDefaultOption(
+        options: VisualizationOption[], query: QueryModel
+    ): VisualizationSelection {
+        const enabled = _.filter(options, option => !this.disabled(option.name, query));
+        const selected = _.first(enabled);
         return { name: selected.name, field: _.first(selected.fields) };
+    }
+
+    private activeOption(state: VisualizationSelection): VisualizationOption {
+        return findByName(this.options, state.name);
+    }
+
+    /** check that the currently active visualisation is not disabled
+     * in the current query state. If it is, resets the visualisation
+     * to the default.
+     */
+    private checkActiveOption() {
+        const active = this.activeOption(this.state$.value);
+        if (this.disabled(active.name, this.query)) {
+            this.setParams(this.getDefaultOption(this.options, this.query));
+        }
     }
 }
