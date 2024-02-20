@@ -54,6 +54,12 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         ).subscribe(() => this.checkActiveOption());
     }
 
+    /**
+     * set the visualisation type.
+     *
+     * preserves the visualisation field, unless it is not available for the
+     * given visualisation.
+     */
     setVisualizationType(name: string) {
         const selection = findByName(this.options, name);
         const currentField = this.state$.value.field;
@@ -64,6 +70,11 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         }
     }
 
+    /** set the visualised corpus field.
+     *
+     * preserves the visualisation type, unless it is not available for the
+     * given field.
+     */
     setVisualizedField(field: CorpusField) {
         const currentVisualisation = this.state$.value.name;
 
@@ -94,6 +105,9 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         }
     }
 
+    /**
+     * generates a list of options for visualisation types.
+     */
     private getVisualizationOptions(query: QueryModel): VisualizationOption[] {
         const hasVisualizations = (field: CorpusField) => field.visualizations?.length;
 
@@ -115,6 +129,10 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         });
     }
 
+    /**
+     * observable of when the given visualisation type should be disabled
+     * based on the query state.
+     */
     private disabled$(name: string, query: QueryModel): Observable<boolean> {
         const now = timer();
         const updates = merge(now, query.update);
@@ -123,6 +141,9 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         );
     }
 
+    /** whether the given visualisation type should be disabled based on the
+     * _current_ query state.
+     */
     private disabled(name: string, query: QueryModel): boolean {
         if (REQUIRE_SEARCH_TERM.includes(name)) {
             return _.isEmpty(query.queryText);
@@ -131,6 +152,11 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         }
     }
 
+    /** returns the default state for the visualisation selector.
+     *
+     * filters the pre-generated list of options based on the query state,
+     * and picks the first enabled option.
+     */
     private getDefaultOption(
         options: VisualizationOption[], query: QueryModel
     ): VisualizationSelection {
@@ -139,6 +165,9 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         return { name: selected.name, field: _.first(selected.fields) };
     }
 
+    /**
+     * synchronous function to check the currently active visualisation option.
+     */
     private activeOption(state: VisualizationSelection): VisualizationOption {
         return findByName(this.options, state.name);
     }
