@@ -4,6 +4,7 @@ import {  takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import * as _ from 'lodash';
 import { DropdownService } from './dropdown.service';
+import { modulo } from '../utils/utils';
 
 @Directive({
     selector: '[iaDropdownMenu]'
@@ -29,7 +30,7 @@ export class DropdownMenuDirective implements OnInit, OnDestroy {
     shiftFocus(shift: number) {
         const items = this.items.toArray();
         const index = _.findIndex(items, item => item.focused.value);
-        const newIndex = (items.length + index + shift) % items.length;
+        const newIndex = modulo(index + shift, items.length);
         items[newIndex].focus();
     }
 

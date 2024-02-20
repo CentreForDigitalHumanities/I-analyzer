@@ -28,3 +28,5 @@ export const showLoading =<T>(isLoading: BehaviorSubject<boolean>, promise: Prom
         return result;
     });
 };
+
+export const modulo = (n: number, d: number): number => ((n % d) + d) % d;
