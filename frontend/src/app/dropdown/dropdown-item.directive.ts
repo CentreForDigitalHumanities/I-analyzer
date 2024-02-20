@@ -13,9 +13,8 @@ export class DropdownItemDirective {
 
     @Input() value;
 
-    @Output() selected = new Subject<any>();
+    @Output() onSelect = new Subject<any>();
 
-    navigate = new Subject<-1|1>();
     focused = new BehaviorSubject<boolean>(false);
 
     constructor(private elementRef: ElementRef, private dropdownService: DropdownService) { }
@@ -39,7 +38,7 @@ export class DropdownItemDirective {
     @HostListener('keydown.enter')
     @HostListener('keydown.space')
     select() {
-        this.selected.next(this.value);
+        this.onSelect.next(this.value);
         this.dropdownService.selection$.next(this.value);
         return false;
     }

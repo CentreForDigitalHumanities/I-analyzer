@@ -8,7 +8,7 @@
                         iaDropdownItem [value]="tag">
                         {{tag.name}}
                     </a>
-                    <a iaDropdownItem (selected)="toggleCreate()">
+                    <a iaDropdownItem (onSelect)="toggleCreate()">
                         <span class="icon"><fa-icon [icon]="actionIcons.add"></fa-icon></span>
                         <span>Create a new tag</span>
                     </a>

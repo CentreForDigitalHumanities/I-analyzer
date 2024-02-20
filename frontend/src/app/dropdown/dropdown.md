@@ -45,11 +45,11 @@ See the [bulma dropdown documentation](https://bulma.io/documentation/components
 Dropdown items support:
 
 - `[value]` input: the value that the item represents.
-- `(selected)` output: emits the _value_ of the item when it is selected through user interaction (e.g. by clicking it).
+- `(onSelect)` output: emits the _value_ of the item when it is selected through user interaction (e.g. by clicking it).
 
 The dropdown component supports:
 
 - `[value]` input: this sets the selected value in the menu - use this to set the value from the parent component.
 - `[disabled]` input: if `true`, this disables the entire menu.
-- `(onChanges)` output: emits all changes to the selected value, including when it is set through input. If you only want to listen to UI events, use `(selected)` on the individual items instead.
+- `(onChanges)` output: emits all changes to the selected value, including when it is set through input. If you only want to listen to UI events, use `(onSelect)` on the individual items instead.
 
