@@ -46,13 +46,13 @@ export class DropdownItemDirective {
 
     @HostListener('keydown.arrowdown')
     navigateNext() {
-        this.navigate.next(1);
+        this.dropdownService.focusShift$.next(-1);
         return false;
     }
 
     @HostListener('keydown.arrowup')
     navigatePrev() {
-        this.navigate.next(-1);
+        this.dropdownService.focusShift$.next(-1);
         return false;
     }
 

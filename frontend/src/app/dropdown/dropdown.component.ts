@@ -93,4 +93,11 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
         this.dropdownService.open$.next(!this.dropdownService.open$.value);
     }
 
+    focusOnFirstItem(event: KeyboardEvent) {
+        event.preventDefault();
+        if (this.dropdownService.open$.value) {
+            this.dropdownService.focusShift$.next(1);
+        }
+    }
+
 }

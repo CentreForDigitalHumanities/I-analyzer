@@ -11,4 +11,7 @@ export class DropdownService {
 
     /** events where the user has closed the menu with the escape key */
     menuEscaped$ = new Subject<void>();
+
+    /** events where the user shifts focus through arrow navigation */
+    focusShift$ = new Subject<number>();
 };

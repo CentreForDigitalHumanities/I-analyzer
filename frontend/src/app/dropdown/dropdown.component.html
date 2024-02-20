@@ -2,7 +2,10 @@
     <button class="button" aria-haspopup="true"
         aria-controls="dropdownMenu" id="dropdownTrigger"
         [disabled]="disabled"
-        (click)="toggleDropdown()" #dropdownTrigger>
+        (click)="toggleDropdown()"
+        (keydown.arrowdown)="focusOnFirstItem($event)"
+        (keydown.arrowup)="focusOnFirstItem($event)"
+        #dropdownTrigger>
         <ng-content select="[iaDropdownLabel]"></ng-content>
         <span class="icon">
             <fa-icon [icon]="actionIcons.dropdown" aria-hidden="true"></fa-icon>
