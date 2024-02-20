@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DropdownModule } from '../dropdown/dropdown.module';
+import { DropdownModule } from './dropdown/dropdown.module';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { ErrorComponent } from '../error/error.component';
 import { CalendarModule } from 'primeng/calendar';

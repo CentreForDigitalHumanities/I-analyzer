@@ -15,7 +15,7 @@ import {
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { actionIcons } from '../shared/icons';
+import { actionIcons } from '../icons';
 import { DropdownService } from './dropdown.service';
 
 @Component({
