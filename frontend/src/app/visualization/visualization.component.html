@@ -12,6 +12,7 @@
                             <div iaDropdownMenu>
                                 <a *ngFor="let option of selector.options"
                                     iaDropdownItem [value]="option"
+                                    [disabled]="option.disabled$ | async"
                                     (onSelect)="setVisualizationType($event)">
                                     {{option.label}}
                                 </a>

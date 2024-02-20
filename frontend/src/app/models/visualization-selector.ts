@@ -5,7 +5,7 @@ import { Store } from '../store/types';
 import { QueryModel } from './query';
 import { findByName } from '../utils/utils';
 import * as _ from 'lodash';
-import { Observable, of } from 'rxjs';
+import { Observable, merge, of, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface VisualizationSelection {
@@ -113,11 +113,13 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
 
     private disabled$(name: string, query: QueryModel): Observable<boolean> {
         if (REQUIRE_SEARCH_TERM.includes(name)) {
-            return query.update.pipe(
-                map(() => !!query.queryText)
+            const now = timer();
+            const updates = merge(now, query.update);
+            return updates.pipe(
+                map(() => _.isEmpty(query.queryText)),
             );
         } else {
-            return of(true);
+            return of(false);
         }
     }
 
