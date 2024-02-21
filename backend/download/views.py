@@ -49,19 +49,17 @@ class ResultsDownloadView(APIView):
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
-            es_query = api_query_to_es_query(request.data, corpus_name)
-            search_results = es_download.normal_search(
-                corpus_name, es_query)
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
-            csv_path = tasks.make_csv(search_results, request.data, download.id)
+            csv_path = tasks.make_download(request.data, download.id, size)
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
             return send_csv_file(download, directory, request.data['encoding'])
         except Exception as e:
             logger.error(e)
-            raise APIException(detail = 'Download failed: could not generate csv file')
+            raise APIException(
+                detail='Download failed: could not generate csv file')
 
 
 class ResultsDownloadTaskView(APIView):

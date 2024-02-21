@@ -39,9 +39,13 @@ def download_scroll(request_json, download_size=10000):
     return results
 
 @shared_task()
-def make_csv(results, request_json, log_id):
-    query = create_query(request_json)
-    filepath = create_csv.search_results_csv(results, request_json['fields'], query, log_id)
+def make_download(request_json, download_id, download_size=None):
+    corpus_name = request_json['corpus']
+    es_query = api_query_to_es_query(request_json, corpus_name)
+    results, _total = es_download.scroll(
+        corpus_name, es_query, download_size)
+    filepath = create_csv.search_results_csv(
+        results, request_json['fields'], query, download_id)
     return filepath
 
 
@@ -83,8 +87,7 @@ def download_search_results(request_json, user):
     download = Download.objects.create(download_type='search_results', corpus=corpus, parameters=request_json, user=user)
 
     make_chain = lambda: chain(
-        download_scroll.s(request_json, download_limit),
-        make_csv.s(request_json, download.id),
+        make_download.s(request_json, download.id, download_limit),
         complete_download.s(download.id),
         csv_data_email.s(user.email, user.username),
     ).on_error(complete_failed_download.s(download.id))
