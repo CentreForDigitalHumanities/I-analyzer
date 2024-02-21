@@ -22,7 +22,7 @@ def scroll_chunks(corpus, query_model, download_size=None, client=None, **kwargs
     scroll_page_size = settings.SERVERS[server]['scroll_page_size']
     size = min(download_size,
                scroll_page_size) if download_size else scroll_page_size
-    total = get_total(client, index, query_model, **kwargs)
+    total = get_total_hits(client, index, query_model, **kwargs)
     chunks = make_chunks(client, index, size,
                          scroll_timeout, query_model, total, download_size, **kwargs)
     return chunks, total
