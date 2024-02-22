@@ -21,6 +21,8 @@ export class FrequentWordsResults extends Results<FrequentWordsParameters, Aggre
         private visualizationService: VisualizationService
     ) {
         super(store, query, ['visualizedField']);
+        this.connectToStore();
+        this.getResults();
     }
 
     fetch(): Observable<AggregateResult[]> {
