@@ -65,6 +65,8 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
                 this.routerStoreService, this.queryModel, this.visualizationService
             );
 
+            // result$ and error$ are completed when the results model is completed
+            // so these subscriptions are closed then
             this.results.result$.subscribe(data => this.makeChart(data));
             this.results.error$.subscribe(error => this.emitError(error));
         } else if (changes.palette) {
@@ -129,8 +131,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
     }
 
     private datasetColor(palette: string[]): (context: ScriptableContext<'wordCloud'>) => string {
-        return (context: ScriptableContext<'wordCloud'>) =>
-            selectColor(palette, context.dataIndex);
+        return (context) => selectColor(palette, context.dataIndex);
     }
 
     private chartOptions(data: AggregateResult[]): ChartOptions<'wordCloud'> {

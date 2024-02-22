@@ -12,6 +12,7 @@ interface FrequentWordsParameters {
     field: CorpusField;
 };
 
+/** collects a the most frequent words in a text field (based on a query) */
 export class FrequentWordsResults extends Results<FrequentWordsParameters, AggregateResult[]> {
     private batchSize = 1000;
 
