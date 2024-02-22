@@ -105,8 +105,8 @@
                         (error)="setErrorMessage($event)"
                         (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
                 </ng-container>
-                <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                    [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
+                <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [queryModel]="queryModel"
+                    [asTable]="freqtable" [palette]="palette"
                     (wordcloudError)="setErrorMessage($event)"></ia-wordcloud>
                 <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                     [asTable]="freqtable" [palette]="palette"
