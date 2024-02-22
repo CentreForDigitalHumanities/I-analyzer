@@ -1,4 +1,4 @@
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { Results } from './results';
 import { AggregateResult } from './search-results';
 import { Params } from '@angular/router';
@@ -25,6 +25,7 @@ export class FrequentWordsResults extends Results<FrequentWordsParameters, Aggre
 
     fetch(): Observable<AggregateResult[]> {
         const field = this.state$.value.field;
+        if (!field) { return of(undefined); }
         const promise = this.visualizationService.getWordcloudData(
             field.name,
             this.query,
@@ -35,15 +36,17 @@ export class FrequentWordsResults extends Results<FrequentWordsParameters, Aggre
     }
 
     protected stateToStore(state: FrequentWordsParameters): Params {
-        return {
-            visualizedField: state.field.name
-        };
+        return {};
     }
 
     protected storeToState(params: Params): FrequentWordsParameters {
         const fieldName = params['visualizedField'];
         const field = findByName(this.query.corpus.fields, fieldName);
         return { field };
+    }
+
+    protected storeOnComplete(): Params {
+        return {};
     }
 }
 
