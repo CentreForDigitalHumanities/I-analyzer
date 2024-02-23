@@ -29,13 +29,9 @@ export class FrequentWordsResults extends Results<FrequentWordsParameters, Aggre
     fetch(): Observable<AggregateResult[]> {
         const field = this.state$.value.field;
         if (!field) { return of(undefined); }
-        const promise = this.visualizationService.getWordcloudData(
-            field.name,
-            this.query,
-            this.query.corpus,
-            this.batchSize
+        return this.visualizationService.getWordcloudData(
+            field.name, this.query, this.query.corpus, this.batchSize
         );
-        return from(promise);
     }
 
     protected stateToStore(state: FrequentWordsParameters): Params {

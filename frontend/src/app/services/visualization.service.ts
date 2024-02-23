@@ -11,6 +11,7 @@ import {
     TimeCategory,
 } from '../models';
 import { ApiService } from './api.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,8 @@ export class VisualizationService {
     }
 
 
-    public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
-        Promise<AggregateResult[]> {
+    public getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+        Observable<AggregateResult[]> {
         const query = queryModel.toAPIQuery();
         return this.apiService.wordCloud({
             ...query,
