@@ -63,11 +63,17 @@ export abstract class StoreSync<State extends object> {
      *
      * should probably called in the constructor of the child class. (Not called in
      * the parent constructor because you may want access to the child class data)
-     * */
-    protected connectToStore() {
+     *
+     * @param signalStoreUpdate if true, the model will immediately signal the output
+     * of `stateToStore` to the store after connecting. This is useful if the model should
+     * always explicitly store its value, rather than having an empty "default".
+     */
+    protected connectToStore(signalStoreUpdate=false) {
         this.state$ = new BehaviorSubject(this.storeToState(this.store.currentParams()));
         this.subscribeToStore();
-        this.store.paramUpdates$.next(this.stateToStore(this.state$.value));
+        if (signalStoreUpdate) {
+            this.store.paramUpdates$.next(this.stateToStore(this.state$.value));
+        }
     }
 
     /** called on initialisation: subscribes to the store until the model is completed */

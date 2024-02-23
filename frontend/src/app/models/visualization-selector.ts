@@ -44,7 +44,7 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
         super(store);
         this.options = this.getVisualizationOptions(this.query);
         this.defaultState = this.getDefaultOption(this.options, this.query);
-        this.connectToStore();
+        this.connectToStore(true);
         this.activeOption$ = this.state$.pipe(
             map(this.activeOption.bind(this))
         );
