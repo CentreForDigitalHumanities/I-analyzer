@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { Store } from './types';
 import { Observable, Subject } from 'rxjs';
-import { bufferTime, debounceTime, map } from 'rxjs/operators';
+import { bufferTime, debounceTime, filter, map } from 'rxjs/operators';
 import { mergeAllParams } from '../utils/params';
+import * as _ from 'lodash';
 
 /**
  * Synchronises stored parameters with the route query parameters
@@ -21,6 +22,7 @@ export class RouterStoreService implements Store {
         this.params$ = this.router.routerState.root.queryParams;
         this.paramUpdates$.pipe(
             bufferTime(100),
+            filter(_.negate(_.isEmpty)),
             map(mergeAllParams),
         ).subscribe(this.navigate.bind(this));
     }
