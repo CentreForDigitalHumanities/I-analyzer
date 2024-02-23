@@ -1,4 +1,4 @@
-import { Observable, from, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Results } from './results';
 import { AggregateResult } from './search-results';
 import { Params } from '@angular/router';
@@ -12,13 +12,12 @@ interface FrequentWordsParameters {
     field: CorpusField;
 };
 
+const BATCH_SIZE = 1000;
+
 /** collects a the most frequent words in a text field (based on a query) */
 export class FrequentWordsResults extends Results<FrequentWordsParameters, AggregateResult[]> {
-    private batchSize = 1000;
-
     constructor(
-        store: Store,
-        query: QueryModel,
+        store: Store, query: QueryModel,
         private visualizationService: VisualizationService
     ) {
         super(store, query, ['visualizedField']);
@@ -30,12 +29,12 @@ export class FrequentWordsResults extends Results<FrequentWordsParameters, Aggre
         const field = this.state$.value.field;
         if (!field) { return of(undefined); }
         return this.visualizationService.getWordcloudData(
-            field.name, this.query, this.query.corpus, this.batchSize
+            field.name, this.query, this.query.corpus, BATCH_SIZE
         );
     }
 
     protected stateToStore(state: FrequentWordsParameters): Params {
-        return {};
+        return { visualizedField: state.field?.name || null };
     }
 
     protected storeToState(params: Params): FrequentWordsParameters {

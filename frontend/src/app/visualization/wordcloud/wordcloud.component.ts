@@ -65,8 +65,8 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
                 this.routerStoreService, this.queryModel, this.visualizationService
             );
 
-            // result$ and error$ are completed when the results model is completed
-            // so these subscriptions are closed then
+            // result$ and error$ are completed when this.results.complete() is called
+            // so these subscriptions are closed at that point
             this.results.result$.subscribe(data => this.makeChart(data));
             this.results.error$.subscribe(error => this.emitError(error));
         } else if (changes.palette) {
