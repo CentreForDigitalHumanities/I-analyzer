@@ -343,7 +343,6 @@ class XMLCorpusDefinition(CorpusDefinition):
             filename = soup.find('RecordID')
         else:
             filename = source[0]
-            soup = self.soup_from_xml(filename)
             metadata = source[1] or None
             soup = self.soup_from_xml(filename)
         if metadata and 'external_file' in metadata:
