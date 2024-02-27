@@ -5,14 +5,12 @@
                 <th [iaBalloon]="field.description" iaBalloonPosition="left" iaBalloonLength="medium">
                     {{field.displayName}}:
                 </th>
-                <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
-                    <td>
-                        <ng-container *ngFor="let highlight of document.highlight[field.name]">
-                            <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
-                            <hr *ngIf="highlight !== document.highlight[field.name][document.highlight[field.name].length-1]">
-                        </ng-container>
-                    </td>
-                </ng-container>
+                <td *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
+                    <ng-container *ngFor="let highlight of document.highlight[field.name]">
+                        <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
+                        <hr *ngIf="highlight !== document.highlight[field.name][document.highlight[field.name].length-1]">
+                    </ng-container>
+                </td>
                 <ng-template #unhighlightedRow>
                     <td style="word-break:break-word" [innerHtml]="document.fieldValue(field) | highlight:query:true"></td>
                 </ng-template>
@@ -22,12 +20,8 @@
 
 
     <div class="columns is-vcentered">
-        <div class="column is-narrow">
-            <ng-container *ngIf="document.relevance">
-                <div class="relevance-score heading">
-                    <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
-                </div>
-            </ng-container>
+        <div class="column is-narrow heading" *ngIf="document.relevance">
+            Relevance: {{document.relevance * 100 | number:'1.0-0' }}%
         </div>
         <div class="column" role="presentation"></div>
         <div class="column field is-grouped is-narrow">
