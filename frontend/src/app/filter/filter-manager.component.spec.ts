@@ -18,7 +18,7 @@ describe('FilterManagerComponent', () => {
         commonTestBed().testingModule.compileComponents();
     }));
 
-    describe('it works for an authenticated user', () => {
+    describe('it works for an authenticated user:', () => {
         beforeEach(() => {
             fixture = TestBed.createComponent(FilterManagerComponent);
             component = fixture.componentInstance;
@@ -53,7 +53,7 @@ describe('FilterManagerComponent', () => {
             expect(component.activeFilters.length).toBe(1);
         });
 
-        it('shows tag filter for logged in user', async () => {
+        it('shows tag filter', async () => {
             component.queryModel = new QueryModel(mockCorpus);
             await fixture.whenStable();
             const compiled = fixture.debugElement;
@@ -62,16 +62,17 @@ describe('FilterManagerComponent', () => {
         });
     });
 
-    describe('it behaves differently for unauthenticated user', () => {
+    describe('it behaves differently for unauthenticated user:', () => {
         beforeEach(() => {
             TestBed.overrideProvider(AuthService, {useValue: new UnauthenticatedMock()});
             fixture = TestBed.createComponent(FilterManagerComponent);
             component = fixture.componentInstance;
-            component.queryModel = new QueryModel(mockCorpus, false);
+            component.queryModel = new QueryModel(mockCorpus);
+            component.queryModel.setAuthenticated(false);
             fixture.detectChanges();
         });
 
-        it('does not show tag filter for unauthenticated user', async () => {
+        it('does not show tag filter', async () => {
             await fixture.whenStable();
             const compiled = fixture.debugElement;
             const tagFilter = compiled.query(By.css('ia-tag-filter'));

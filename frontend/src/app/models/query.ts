@@ -86,8 +86,8 @@ interface QueryState {
 export class QueryModel extends StoreSync<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
-
     update: Observable<void>;
+    authenticated = true;
 
     protected keysInStore = ['query', 'fields'];
 
@@ -113,6 +113,10 @@ export class QueryModel extends StoreSync<QueryState> {
 
     private get fieldFilters(): SearchFilter[] {
         return this.filters.filter(isFieldFilter);
+    }
+
+    setAuthenticated(authenticated: boolean) {
+        this.authenticated = authenticated;
     }
 
 	setQueryText(text?: string) {
@@ -150,7 +154,7 @@ export class QueryModel extends StoreSync<QueryState> {
     clone(store?: Store) {
         store = store || new SimpleStore();
         store.paramUpdates$.next(this.toQueryParams());
-        return new QueryModel(this.corpus, this.authenticated, store);
+        return new QueryModel(this.corpus, store);
 	}
 
     /**
