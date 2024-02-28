@@ -204,3 +204,8 @@ def language_name(code):
         codes
     ))
     return ', '.join(names)
+
+def insert_ref(node):
+    reference = node['n']
+    node.insert(0, f'[{reference}] ')
+    return node

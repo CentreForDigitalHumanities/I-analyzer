@@ -365,6 +365,25 @@ class DBNL(XMLCorpusDefinition):
         visualizations=['wordcloud'],
     )
 
+    notes = FieldDefinition(
+        name='notes',
+        display_name='Notes',
+        description='Notes (e.g. footnotes) added to the content',
+        display_type='text_content',
+        results_overview=False,
+        search_field_core=True,
+        csv_core=True,
+        extractor=XML(
+            tag='note',
+            recursive=True,
+            multiple=True,
+            flatten=True,
+            transform_soup_func=lambda node: utils.insert_ref(utils.pad_content(node)) if node else None,
+        ),
+        es_mapping=main_content_mapping(token_counts=True),
+        visualizations=['wordcloud'],
+    )
+
     has_content = FieldDefinition(
         name='has_content',
         display_name='Content available',
@@ -414,6 +433,7 @@ class DBNL(XMLCorpusDefinition):
         chapter_title,
         chapter_index,
         content,
+        notes,
         has_content,
         is_primary,
     ]
