@@ -82,8 +82,11 @@ export class QueryModel {
 
 	update = new Subject<void>();
 
-    constructor(corpus: Corpus, params?: ParamMap) {
+    authenticated: boolean;
+
+    constructor(corpus: Corpus, authenticated: boolean=true, params?: ParamMap) {
 		this.corpus = corpus;
+        this.authenticated = authenticated;
         this.filters = this.makeFilters();
         if (params) {
             this.setFromParams(params);
@@ -130,7 +133,7 @@ export class QueryModel {
      * make a clone of the current query.
      */
 	clone() {
-        return new QueryModel(this.corpus, convertToParamMap(this.toQueryParams()));
+        return new QueryModel(this.corpus, this.authenticated, convertToParamMap(this.toQueryParams()));
 	}
 
     /**
@@ -172,7 +175,7 @@ export class QueryModel {
 
     toAPIQuery(): APIQuery {
         const esQuery = this.toEsQuery();
-        const tags = makeTagSpecification(this.filters);
+        const tags = this.authenticated? makeTagSpecification(this.filters) : {};
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             es_query: esQuery,
@@ -182,8 +185,11 @@ export class QueryModel {
 
     private makeFilters(): FilterInterface[] {
         const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter());
-        const tagFilter = new TagFilter();
-        return [...fieldFilters, tagFilter];
+        if (this.authenticated) {
+            const tagFilter = new TagFilter();
+            return [...fieldFilters, tagFilter];
+        }
+        return fieldFilters;
     }
 
     /** set the query values from a parameter map */

@@ -143,7 +143,7 @@ export class SearchComponent extends ParamDirective {
 
     private setQueryModel(reset: boolean) {
         const params = reset ? undefined : this.route.snapshot.queryParamMap;
-        const queryModel = new QueryModel(this.corpus, params);
+        const queryModel = new QueryModel(this.corpus, this.user !== null, params);
         this.queryModel = queryModel;
         this.queryText = queryModel.queryText;
         this.queryModel.update.subscribe(() => {

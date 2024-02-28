@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import * as _ from 'lodash';
-import { apiQueryToQueryModel, esQueryToQueryModel } from '../../utils/es-query';
+import { apiQueryToQueryModel } from '../../utils/es-query';
 import { QueryDb } from '../../models/index';
 import { CorpusService, QueryService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';

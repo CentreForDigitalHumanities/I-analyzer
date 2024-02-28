@@ -38,7 +38,7 @@ describe('PageResults', () => {
             query: 'test',
             highlight: '200',
         });
-        queryModel = new QueryModel(mockCorpus, convertToParamMap(store.currentParams()));
+        queryModel = new QueryModel(mockCorpus, true, convertToParamMap(store.currentParams()));
         results = new PageResults(store, service, queryModel);
         expect(results.state$.value.highlight).toBe(200);
     });

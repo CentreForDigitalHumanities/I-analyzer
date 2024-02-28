@@ -114,9 +114,9 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
 
 // conversion from elasticsearch query language -> query model
 
-export const apiQueryToQueryModel = (query: APIQuery, corpus: Corpus): QueryModel => {
+export const apiQueryToQueryModel = (query: APIQuery, corpus: Corpus, authenticated: boolean=false): QueryModel => {
     const esQuery = 'es_query' in query ? query.es_query : query; // fix for legacy queries
-    const model = esQueryToQueryModel(esQuery, corpus);
+    const model = esQueryToQueryModel(esQuery, corpus, authenticated);
     if (query.tags) {
         const tagFilter = new TagFilter();
         tagFilter.set(query.tags);
@@ -125,8 +125,8 @@ export const apiQueryToQueryModel = (query: APIQuery, corpus: Corpus): QueryMode
     return model;
 };
 
-export const esQueryToQueryModel = (query: EsQuery, corpus: Corpus): QueryModel => {
-    const model = new QueryModel(corpus);
+export const esQueryToQueryModel = (query: EsQuery, corpus: Corpus, authenticated: boolean): QueryModel => {
+    const model = new QueryModel(corpus, authenticated);
     model.setQueryText(queryTextFromEsSearchClause(query.query));
     const filters = filtersFromEsQuery(query, corpus);
     filters.forEach(filter => model.addFilter(filter));

@@ -4,6 +4,7 @@ import { QueryModel } from './query';
 import { SearchFilter } from './field-filter';
 import { convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
+import { TAG_FILTER } from './tag-filter';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -35,7 +36,7 @@ describe('QueryModel', () => {
     const someSelection = ['hooray!'];
 
     beforeEach(() => {
-        query = new QueryModel(corpus, undefined);
+        query = new QueryModel(corpus, true);
 
         filter = query.filterForField(mockFieldDate);
         filter2 = query.filterForField(mockFieldMultipleChoice);
@@ -161,7 +162,7 @@ describe('QueryModel', () => {
             date: '1850-01-01:1850-01-01',
         });
 
-        const newQuery = new QueryModel(corpus, params);
+        const newQuery = new QueryModel(corpus, true, params);
         expect(newQuery.queryText).toEqual('test');
         expect(newQuery.activeFilters.length).toBe(1);
     });
@@ -190,5 +191,15 @@ describe('QueryModel', () => {
     it('should create without a tag service', () => {
         const taglessQuery = new QueryModel(corpus);
         expect(taglessQuery).toBeTruthy();
+    });
+
+    it('should create tag filters for authenticated user', () => {
+        const authenticatedQuery = new QueryModel(corpus, true);
+        expect(authenticatedQuery.filters.map(f => f.filterType)).toContain(TAG_FILTER);
+    });
+
+    it('should not create tag filters for unauthenticated user', () => {
+        const unauthenticatedQuery = new QueryModel(corpus, false);
+        expect(unauthenticatedQuery.filters.map(f => f.filterType)).not.toContain(TAG_FILTER);
     });
 });
