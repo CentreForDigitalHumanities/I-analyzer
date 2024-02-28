@@ -207,10 +207,8 @@ def language_name(code):
     return ', '.join(names)
 
 def get_ref(node):
-    if 'n' in node.attrs:
-        return node['n']
-    else:
-        return '*'
+    prev = node.find_all_previous('note')
+    return len(prev) + 1
 
 def insert_ref(node):
     ref = get_ref(node)
@@ -218,10 +216,11 @@ def insert_ref(node):
     return node
 
 def replace_notes_with_ref(node):
-    node = copy(node)
+    new_node = copy(node)
+    tags = zip(node.find_all('note'), new_node.find_all('note'))
 
-    for note_tag in node.find_all('note'):
-        ref = get_ref(note_tag)
-        note_tag.replace_with(f'[{ref}]')
+    for old_tag, to_replace in tags:
+        ref = get_ref(old_tag)
+        to_replace.replace_with(f'[{ref}]')
 
-    return node
+    return new_node
