@@ -1,16 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { isUndefined } from 'lodash';
 import { Corpus, QueryModel, Tag } from '../../models';
-import { TagService } from '../../services/tag.service';
-import {
-    actionIcons,
-    documentIcons,
-    formIcons,
-    scanIcons,
-} from '../../shared/icons';
-import { CorpusService } from '../../services';
-import { findByName } from '../../utils/utils';
 import { isTagFilter } from '../../models/tag-filter';
+import { CorpusService } from '../../services';
+import { TagService } from '../../services/tag.service';
+import { actionIcons, formIcons } from '../../shared/icons';
+import { findByName } from '../../utils/utils';
 
 @Component({
     selector: 'ia-tag-overview',
@@ -22,12 +17,9 @@ export class TagOverviewComponent implements OnInit {
 
     actionIcons = actionIcons;
     formIcons = formIcons;
-    scanIcons = scanIcons;
-    documentIcons = documentIcons;
 
     corpora: Corpus[];
 
-    showEditModal = false;
     modalType: 'edit' | 'create';
 
     editedTag: Partial<Tag>;
@@ -39,6 +31,7 @@ export class TagOverviewComponent implements OnInit {
 
     async ngOnInit(): Promise<void> {
         this.corpora = await this.corpusService.get(false);
+        this.tagService.fetch();
     }
 
     delete(tag: Tag) {
@@ -48,19 +41,16 @@ export class TagOverviewComponent implements OnInit {
     startEdit(tag: Tag) {
         this.editedTag = tag;
         this.modalType = 'edit';
-        this.showEditModal = true;
     }
 
     startCreate() {
         this.editedTag = { name: undefined, description: undefined };
         this.modalType = 'create';
-        this.showEditModal = true;
     }
 
     cancelEdit() {
         this.editedTag = undefined;
         this.modalType = undefined;
-        this.showEditModal = false;
     }
 
     finishEdit() {

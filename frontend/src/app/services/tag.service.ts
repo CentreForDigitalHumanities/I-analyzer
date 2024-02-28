@@ -46,10 +46,7 @@ export class TagService {
             .pipe(map((response) => response.tags));
     }
 
-    private fetch(): void {
-        this.apiService
-            .userTags()
-            .pipe(tap((t) => console.log(t)))
-            .subscribe((tags) => this.tags$.next(tags));
+    fetch(): void {
+        this.apiService.userTags().subscribe((tags) => this.tags$.next(tags));
     }
 }

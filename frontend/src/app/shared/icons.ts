@@ -1,6 +1,7 @@
 import {
     IconDefinition as SolidIconDefinition,
     faAngleDown,
+    faAngleUp,
     faArrowLeft,
     faArrowRight,
     faAt,
@@ -88,6 +89,7 @@ export const actionIcons: Icons = {
     next: faArrowRight,
     link: faLink,
     dropdown: faAngleDown,
+    dropup: faAngleUp,
     add: faPlus,
     remove: faTimes,
     delete: faTrashCan,
