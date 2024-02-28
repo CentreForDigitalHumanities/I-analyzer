@@ -1,3 +1,5 @@
+import { buildTime, version, sourceUrl } from './version';
+
 export const environment = {
     production: true,
     appName: 'Something completely different',
@@ -7,5 +9,8 @@ export const environment = {
     samlLogoutUrl: '/users/saml2/logout/',
     logos: [],
     showSolis: true,
-    runInIFrame: false
+    runInIFrame: false,
+    buildTime,
+    version,
+    sourceUrl,
 };

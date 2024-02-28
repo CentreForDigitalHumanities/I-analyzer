@@ -23,7 +23,9 @@
         </div>
         </div>
         <div class="block">
-            <a href="https://github.com/UUDigitalHumanitieslab/I-analyzer">Source code</a> (MIT license)
+            <p>
+                <em><ng-container i18n>Version: </ng-container><span [title]="environment.buildTime">{{"{{environment.version}}"}}</span>&nbsp;<a [href]="environment.sourceUrl" target="_blank" i18n>(source)</a></em>
+            </p>
         </div>
     </div>
 </footer>
