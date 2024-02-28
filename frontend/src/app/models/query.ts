@@ -86,8 +86,8 @@ interface QueryState {
 export class QueryModel extends StoreSync<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
+
     update: Observable<void>;
-    authenticated = true;
 
     protected keysInStore = ['query', 'fields'];
 
@@ -113,10 +113,6 @@ export class QueryModel extends StoreSync<QueryState> {
 
     private get fieldFilters(): SearchFilter[] {
         return this.filters.filter(isFieldFilter);
-    }
-
-    setAuthenticated(authenticated: boolean) {
-        this.authenticated = authenticated;
     }
 
 	setQueryText(text?: string) {
@@ -182,7 +178,7 @@ export class QueryModel extends StoreSync<QueryState> {
 
     toAPIQuery(): APIQuery {
         const esQuery = this.toEsQuery();
-        const tags = this.authenticated? makeTagSpecification(this.filters) : {};
+        const tags = makeTagSpecification(this.filters);
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             es_query: esQuery,

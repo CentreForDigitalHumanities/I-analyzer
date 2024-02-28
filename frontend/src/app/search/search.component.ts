@@ -141,7 +141,6 @@ export class SearchComponent extends ParamDirective {
             this.queryModel.complete();
         }
         this.queryModel = new QueryModel(this.corpus, this.routerStoreService);
-        this.queryModel.setAuthenticated(this.user !== null);
         this.queryText = this.queryModel.queryText;
     }
 }

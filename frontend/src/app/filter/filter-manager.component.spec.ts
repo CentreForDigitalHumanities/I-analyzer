@@ -68,7 +68,6 @@ describe('FilterManagerComponent', () => {
             fixture = TestBed.createComponent(FilterManagerComponent);
             component = fixture.componentInstance;
             component.queryModel = new QueryModel(mockCorpus);
-            component.queryModel.setAuthenticated(false);
             fixture.detectChanges();
         });
 
