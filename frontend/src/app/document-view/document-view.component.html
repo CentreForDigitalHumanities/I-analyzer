@@ -21,7 +21,7 @@
                             <td *ngIf="!isUrlField(field)"
                                 data-test-field-value
                                 [attr.lang]="language(field)"
-                                [innerHtml]="highlightedInnerHtml(field)">
+                                [innerHtml]="formatInnerHtml(field)">
                             </td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
