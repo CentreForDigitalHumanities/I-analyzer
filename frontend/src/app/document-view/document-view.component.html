@@ -33,7 +33,7 @@
         <div class="box">
             <ia-tabs [activeTab]="activeTab">
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
-                    <div class="content" [innerHtml]="highlightedInnerHtml(field)"></div>
+                    <div class="content" [innerHtml]="formatInnerHtml(field)"></div>
                 </ng-template>
                 <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="documentIcons.scan">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
