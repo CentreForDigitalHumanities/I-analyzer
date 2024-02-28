@@ -1,4 +1,4 @@
-<div class="box filter-container" *ngIf="filter" [ngClass]="{'on': filter.active.value}">
+<div class="box filter-container" *ngIf="filter" [ngClass]="{'on': filter.state$.value.active}">
     <div class="field has-addons">
         <div class="control is-expanded" iaBalloon="{{ filter.description }}"
             iaBalloonPosition="up-left" iaBalloonLength="fit">
@@ -14,8 +14,8 @@
             </button>
             <button *ngIf="(filter.isDefault$ | async) === false"
                 class="button icon filter-icon is-primary is-inverted is-round"
-                [ngClass]="{'is-primary': filter.active.value}"
-                (click)="filter.toggle()" iaBalloon="{{filter.active.value ? 'Disable this filter' : 'Enable this filter'}}"
+                [ngClass]="{'is-primary': filter.state$.value.active}"
+                (click)="filter.toggle()"iaBalloon="{{filter.state$.value.active ? 'Disable this filter' : 'Enable this filter'}}"
                 iaBalloonPosition="down-left">
                 <fa-icon [icon]="filterIcons.toggle" aria-hidden="true"></fa-icon>
             </button>

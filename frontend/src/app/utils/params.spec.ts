@@ -1,16 +1,15 @@
-import { convertToParamMap } from '@angular/router';
 import {
-    highlightFromParams, omitNullParameters, pageFromParams, pageToParams, paramsHaveChanged, searchFieldsFromParams,
+    highlightFromParams, omitNullParameters, pageFromParams, pageToParams, searchFieldsFromParams,
     sortSettingsFromParams, sortSettingsToParams
 } from './params';
 import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
-import { MultipleChoiceFilter, QueryModel, SortState } from '../models';
+import { SortState } from '../models';
 import * as _ from 'lodash';
 import { PageParameters, PageResultsParameters } from '../models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = convertToParamMap({fields: 'speech,great_field'});
+        const params = {fields: 'speech,great_field'};
         const corpus = mockCorpus3;
         const fields = searchFieldsFromParams(params, corpus);
         expect(fields.length).toEqual(2);
@@ -91,36 +90,5 @@ describe('omitNullParameters', () => {
         expect(omitNullParameters(p)).toEqual(
             { b: '1', c: 'test' }
         );
-    });
-});
-
-describe('paramsHaveChanged', () => {
-    const corpus = mockCorpus;
-    let queryModel: QueryModel;
-
-    beforeEach(() => {
-        queryModel = new QueryModel(corpus);
-    });
-
-    it('should detect changes in parameters', () => {
-        const params1 = convertToParamMap({});
-        const params2 = convertToParamMap({query: 'test'});
-
-        expect(paramsHaveChanged(queryModel, params1)).toBeFalse();
-        expect(paramsHaveChanged(queryModel, params2)).toBeTrue();
-
-        queryModel = new QueryModel(corpus, true, params2);
-
-        expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
-        expect(paramsHaveChanged(queryModel, params1)).toBeTrue();
-
-    });
-
-    it('should detect new filters', () => {
-        const filter = mockField.makeSearchFilter() as MultipleChoiceFilter;
-        filter.set(['test']);
-        const params = convertToParamMap(filter.toRouteParam());
-
-        expect(paramsHaveChanged(queryModel, params)).toBeTrue();
     });
 });

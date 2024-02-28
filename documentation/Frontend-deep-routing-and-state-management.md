@@ -152,9 +152,9 @@ type Data = { foo: string };
 class MyComponent extends StoreSync<Data> implements OnDestroy  {
 
     constructor(
-        routerStore: RouterStore,
+        routerStoreService: RouterStoreService,
     ) {
-        super(routerStore);
+        super(routerStoreService);
         this.connectToStore();
     }
 

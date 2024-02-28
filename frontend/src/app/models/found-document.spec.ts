@@ -1,10 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { makeDocument } from '../../mock-data/constructor-helpers';
 import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { FoundDocument } from './found-document';
 import { TagService } from '../services/tag.service';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
 import * as _ from 'lodash';
+import { reduce, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 const maxScore = 2.9113607;
 const mockResponse = {
@@ -62,13 +64,29 @@ describe('FoundDocument', () => {
         expect(shouldHaveContext.hasContext).toBeTrue();
     });
 
-    it('should set tags', () => {
+    it('should set tags', waitForAsync(() => {
         const doc = makeDocument({ great_field: 'test' });
-        expect(doc.tags$.value).toEqual(mockTags);
-        const tag = _.first(mockTags);
-        doc.removeTag(tag);
-        expect(doc.tags$.value.length).toBe(1);
-        doc.addTag(tag);
-        expect(doc.tags$.value.length).toBe(2);
-    });
+
+        const tags$: Observable<Tag[][]> = doc.tags$.pipe(
+            take(3),
+            reduce(
+                (accumulated, current) => [...accumulated, current],
+                [],
+            ),
+        );
+
+        const tag1 = _.first(mockTags);
+        const tag2 = _.last(mockTags);
+
+        doc.removeTag(tag1);
+        doc.addTag(tag1);
+
+        tags$.subscribe(allTags => {
+            expect(allTags).toEqual([
+                [tag1, tag2],
+                [tag2],
+                [tag1, tag2]
+            ]);
+        });
+    }));
 });

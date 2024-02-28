@@ -33,8 +33,10 @@ describe('HistogramCompoment', () => {
         query1.setQueryText('test');
 
         const query2 = new QueryModel(mockCorpus3);
-        query2.setQueryText('test');
-        query2.searchFields = [mockField, mockField2];
+        query2.setParams({
+            queryText: 'test',
+            searchFields: [mockField, mockField2]
+        });
 
         const cases = [
             {

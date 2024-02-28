@@ -95,8 +95,7 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
     }
 
     protected storeToState(params: Params): PageResultsParameters {
-        const stored = pageResultsParametersFromParams(params, this.query.corpus);
-        return {...stored } as PageResultsParameters;
+        return pageResultsParametersFromParams(params, this.query.corpus);
     }
 
     private highestDocumentIndex([parameters, result]: [PageResultsParameters, DocumentPage]): number {

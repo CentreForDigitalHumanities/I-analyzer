@@ -31,8 +31,10 @@ export class SearchServiceMock {
         corpus: Corpus,
         queryText: string = '', fields: CorpusField[] | null = null, filters: SearchFilter[] = []): QueryModel {
         const model = new QueryModel(corpus);
-        model.setQueryText(queryText);
-        model.searchFields = fields;
+        model.setParams({
+            queryText,
+            searchFields: fields
+        });
         filters.forEach(model.addFilter);
 
         return model;

@@ -2,9 +2,9 @@ import { mockField2, mockFieldDate, mockFieldMultipleChoice } from '../../mock-d
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
 import { SearchFilter } from './field-filter';
-import { convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { TAG_FILTER } from './tag-filter';
+import { Store } from '../store/types';
+import { SimpleStore } from '../store/simple-store';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -28,6 +28,7 @@ const corpus: Corpus = {
 } as Corpus;
 
 describe('QueryModel', () => {
+    let store: Store;
     let query: QueryModel;
     let filter: SearchFilter;
     let filter2: SearchFilter;
@@ -36,7 +37,8 @@ describe('QueryModel', () => {
     const someSelection = ['hooray!'];
 
     beforeEach(() => {
-        query = new QueryModel(corpus, true);
+        store = new SimpleStore();
+        query = new QueryModel(corpus, store);
 
         filter = query.filterForField(mockFieldDate);
         filter2 = query.filterForField(mockFieldMultipleChoice);
@@ -50,6 +52,8 @@ describe('QueryModel', () => {
         let updates = 0;
         query.update.subscribe(() => updates += 1);
 
+        expect(updates).toBe(0);
+
         query.setQueryText('test');
         expect(updates).toBe(1);
 
@@ -58,6 +62,16 @@ describe('QueryModel', () => {
 
         filter.deactivate();
         expect(updates).toBe(3);
+    });
+
+    it('should not signal irrelevant updates', () => {
+        let updates = 0;
+        query.update.subscribe(() => updates += 1);
+
+        expect(updates).toBe(0);
+
+        store.paramUpdates$.next({page: '3'});
+        expect(updates).toBe(0);
     });
 
     it('should remove filters', () => {
@@ -112,57 +126,34 @@ describe('QueryModel', () => {
     });
 
     it('should formulate parameters', () => {
-        expect(query.toRouteParam()).toEqual({
-            query: null,
-            fields: null,
-            speech: null,
-            date: null,
-            greater_field: null,
-            tags: null,
-        });
+        expect(query.toQueryParams()).toEqual({});
 
         query.setQueryText('test');
 
-        expect(query.toRouteParam()).toEqual({
+        expect(query.toQueryParams()).toEqual({
             query: 'test',
-            fields: null,
-            speech: null,
-            date: null,
-            greater_field: null,
-            tags: null,
         });
 
         filter.setToValue(someDate);
 
-        expect(query.toRouteParam()).toEqual({
+        expect(query.toQueryParams()).toEqual({
             query: 'test',
-            fields: null,
-            speech: null,
             date: '1850-01-01:1850-01-01',
-            greater_field: null,
-            tags: null,
         });
 
         query.setQueryText('');
         filter.deactivate();
 
-        expect(query.toRouteParam()).toEqual({
-            query: null,
-            fields: null,
-            speech: null,
-            date: null,
-            greater_field: null,
-            tags: null,
-        });
+        expect(query.toQueryParams()).toEqual({});
     });
 
     it('should set from parameters', () => {
-        const params = convertToParamMap({
+        store.paramUpdates$.next({
             query: 'test',
             date: '1850-01-01:1850-01-01',
         });
 
-        const newQuery = new QueryModel(corpus, true, params);
+        const newQuery = new QueryModel(corpus, store);
         expect(newQuery.queryText).toEqual('test');
         expect(newQuery.activeFilters.length).toBe(1);
     });
@@ -186,20 +177,5 @@ describe('QueryModel', () => {
         filter.setToValue(new Date('Jan 2 1850'));
         expect(query.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 2 1850'));
         expect(clone.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 1 1850'));
-    });
-
-    it('should create without a tag service', () => {
-        const taglessQuery = new QueryModel(corpus);
-        expect(taglessQuery).toBeTruthy();
-    });
-
-    it('should create tag filters for authenticated user', () => {
-        const authenticatedQuery = new QueryModel(corpus, true);
-        expect(authenticatedQuery.filters.map(f => f.filterType)).toContain(TAG_FILTER);
-    });
-
-    it('should not create tag filters for unauthenticated user', () => {
-        const unauthenticatedQuery = new QueryModel(corpus, false);
-        expect(unauthenticatedQuery.filters.map(f => f.filterType)).not.toContain(TAG_FILTER);
     });
 });

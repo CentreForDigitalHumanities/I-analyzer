@@ -22,7 +22,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
-    @HostBinding('class.is-loading') isLoading = false;
 
     @Output() ngramError = new EventEmitter<string>();
 
@@ -79,6 +78,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     parametersChanged = false;
     ngramSettings: string[];
     dataHasLoaded: boolean;
+    isLoading = false;
 
     formIcons = formIcons;
 
@@ -204,6 +204,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     loadGraph() {
+        this.isLoading = true;
         this.dataHasLoaded = false;
         this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
@@ -297,6 +298,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     confirmChanges() {
+        this.isLoading = true;
         this.parametersChanged = false;
         this.setParams({
             ngramSettings: this.currentParameters.toRouteParam(),

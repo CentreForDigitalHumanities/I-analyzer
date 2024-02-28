@@ -12,9 +12,12 @@ def show_warning_message(request):
         'Corpus configurations are based on python classes; any changes here will be reset on server startup'
     )
 
+
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', 'configuration']
-    fields = ['name', 'groups', 'configuration']
+    readonly_fields = ['name', 'configuration', 'active']
+    fields = ['name', 'groups', 'configuration', 'active']
+    list_display = ['name', 'active']
+    list_filter = ['groups']
 
 class InlineFieldAdmin(admin.StackedInline):
     model = Field
@@ -83,6 +86,7 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
 
 class FieldAdmin(admin.ModelAdmin):
     readonly_fields = ['corpus_configuration']
+    list_filter = ['corpus_configuration']
 
     fieldsets = [
         (
