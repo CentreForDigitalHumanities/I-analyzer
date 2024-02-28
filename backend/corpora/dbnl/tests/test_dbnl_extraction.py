@@ -206,9 +206,7 @@ section_with_footnote = '''
 </div>
 '''
 
-expected_content = '''
-geen zekerlijk in de twee bedoelde taalen zeer in elkaâr loopt. Althans in de Constructie geloof ik niet dat de reden kan gezocht worden[a]. Voor 't overige kan ieder Hollander, die er nog een paar der gewoonste Europaesche taalen bij bezit, het Zweedsch, even als het Deensch, zich zelve leeren. In de Poësie evenwel ontbreekt het niet aan eene meenigte woorden, die men vruchteloos uit de Analogie zou willen verklaaren, en die het leezen der Dichters zeer vermoeiëlijken.[b]
-'''
+expected_content = '''geen zekerlijk in de twee bedoelde taalen zeer in elkaâr loopt. Althans in de Constructie geloof ik niet dat de reden kan gezocht worden[a]. Voor 't overige kan ieder Hollander, die er nog een paar der gewoonste Europaesche taalen bij bezit, het Zweedsch, even als het Deensch, zich zelve leeren. In de Poësie evenwel ontbreekt het niet aan eene meenigte woorden, die men vruchteloos uit de Analogie zou willen verklaaren, en die het leezen der Dichters zeer vermoeiëlijken.[b]'''
 
 expected_notes = '''[a] Eenigsints belagchelijk wordt het, wanneer men zich te Stockholm geduurig, tot bewijs der overëenkomst tusschen Zweedsch en Engelsch, de zelfde drie of vier woorden hoort voorzeggen, zonder dat men, om meerdere voorbeelden vraagende, zoo ligtelijk antwoord ontvangt.
 [b] Van een Hoogduitsch - Zweedsch, en Zweedsch - Hoogduitsch Woordenboek van möller bezit ik nog maar de twee eerste deelen in 40., welke het Hoogduitsch gedeelte bevatten; ik weet niet of het overige reeds gevolgd is, of nog volgen zal. Het is reeds van 1785. Eene kleine Grammatica van abr. Sahlstedt is in 1796 in 't Hoogduitsch overgezet. Over het Lapsch en Finsch, twee van het Zweedsch geheel onderscheidene taalen, welke ook in dit Koninkrijk gesproken worden, zal het voegsaamer zijn op eene andere plaats te handelen.'''
@@ -217,6 +215,8 @@ def test_footnotes_extraction(dbnl_corpus):
     corpus = load_corpus_definition(dbnl_corpus)
     soup = BeautifulSoup(section_with_footnote, 'lxml-xml')
 
+    content = corpus.content.extractor.apply(None, soup)
+    assert content == expected_content
+
     notes = corpus.notes.extractor.apply(None, soup)
     assert notes == expected_notes
-

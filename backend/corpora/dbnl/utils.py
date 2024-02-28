@@ -4,6 +4,7 @@ import os
 from langcodes import standardize_tag, Language
 
 from addcorpus.extract import Pass, Combined, CSV
+from copy import copy
 
 # === METADATA EXTRACTION ===
 
@@ -205,7 +206,22 @@ def language_name(code):
     ))
     return ', '.join(names)
 
+def get_ref(node):
+    if 'n' in node.attrs:
+        return node['n']
+    else:
+        return '*'
+
 def insert_ref(node):
-    reference = node['n']
-    node.insert(0, f'[{reference}] ')
+    ref = get_ref(node)
+    node.insert(0, f'[{ref}] ')
+    return node
+
+def replace_notes_with_ref(node):
+    node = copy(node)
+
+    for note_tag in node.find_all('note'):
+        ref = get_ref(note_tag)
+        note_tag.replace_with(f'[{ref}]')
+
     return node

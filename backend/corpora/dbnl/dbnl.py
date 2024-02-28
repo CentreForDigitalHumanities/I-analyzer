@@ -359,7 +359,7 @@ class DBNL(XMLCorpusDefinition):
             recursive=True,
             multiple=True,
             flatten=True,
-            transform_soup_func=utils.pad_content,
+            transform_soup_func=lambda node: utils.replace_notes_with_ref(utils.pad_content(node)) if node else None,
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud'],
