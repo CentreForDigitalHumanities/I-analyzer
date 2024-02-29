@@ -48,15 +48,14 @@ class MapView(APIView):
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'es_query', 'field', 'size'])
-        wordcloud_limit = settings.WORDCLOUD_LIMIT
-        if request.data['size'] > wordcloud_limit:
+        data_limit = settings.WORDCLOUD_LIMIT
+        if request.data['size'] > data_limit:
             raise ParseError(
-                detail=f'size exceeds {wordcloud_limit} documents')
-
+                detail=f'size exceeds {data_limit} documents')
         try:
             # no need to run async: we will use the result directly
-            word_counts = tasks.get_geo_data(request.data)
-            return Response(word_counts)
+            documents = tasks.get_geo_data(request.data)
+            return Response(documents)
         except Exception as e:
             logger.error(e)
             raise APIException(detail='could not generate geo data')

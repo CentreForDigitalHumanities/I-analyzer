@@ -1,6 +1,9 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
 import { Corpus, CorpusField, QueryModel } from '../../models';
-import { VisualizationService } from 'src/app/services';
+import { VisualizationService } from '../../services';
+import { showLoading } from '../../utils/utils';
 
 @Component({
   selector: 'ia-map',
@@ -15,7 +18,17 @@ export class MapComponent implements OnChanges {
   @Input() resultsCount: number;
   @Input() asTable: boolean;
 
+  isLoading$ = new BehaviorSubject<boolean>(false);
+
   constructor(private visualizationService: VisualizationService) { }
+
+  get readyToLoad() {
+    return (
+        this.corpus &&
+        this.visualizedField &&
+        this.queryModel
+    );
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -32,7 +45,7 @@ export class MapComponent implements OnChanges {
 }
 
 loadData() {
-  showLoading(
+    showLoading(
       this.isLoading$,
       this.visualizationService
           .getGeoData(
@@ -41,11 +54,15 @@ loadData() {
               this.corpus,
               this.resultsCount
           )
-          .then(this.onDataLoaded.bind(this))
+          .then(this.makeChart.bind(this))
           .catch(this.emitError.bind(this))
   );
 }
 
 makeChart() {}
 
+emitError(error: { message: string }) {}
+
 }
+
+
