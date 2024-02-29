@@ -18,6 +18,7 @@ import { TableModule } from 'primeng/table';
 import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
 import { ChartModule } from 'primeng/chart';
+import { MapComponent } from './map/map.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { ChartModule } from 'primeng/chart';
         FreqtableComponent,
         VisualizationComponent,
         PaletteSelectComponent,
+        MapComponent,
     ],
     imports: [
         ChartModule,

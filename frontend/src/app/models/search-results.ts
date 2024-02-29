@@ -39,6 +39,13 @@ export interface AggregateResult {
     key_as_string?: string;
 };
 
+export interface GeoDocument {
+    id: string;
+    coordinates: {
+        lat: number;
+        lon: number;
+    };
+}
 
 export interface DateFrequencyPair {
     date: Date;

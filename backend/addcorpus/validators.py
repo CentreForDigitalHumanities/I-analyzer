@@ -72,6 +72,10 @@ def validate_visualizations_with_mapping(es_mapping, visualizations):
     validate that the specified visualisations are compatible with the field mapping
     '''
 
+    if VisualizationType.MAP.value in visualizations:
+        if not is_geo_field(es_mapping):
+            raise ValidationError(f'map visualizations requires a geo mapping')
+
     if not supports_full_text_search(es_mapping):
         if VisualizationType.NGRAM.value in visualizations:
             raise ValidationError(f'ngram visualisation requires a text mapping')

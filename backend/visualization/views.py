@@ -39,6 +39,30 @@ class WordcloudView(APIView):
             raise APIException(detail='could not generate word cloud data')
 
 
+class MapView(APIView):
+    '''
+    Most frequent terms for a small batch of results
+    '''
+
+    permission_classes = [IsAuthenticated,
+                          CorpusAccessPermission, CanSearchTags]
+
+    def post(self, request, *args, **kwargs):
+        check_json_keys(request, ['corpus', 'es_query', 'field', 'size'])
+        wordcloud_limit = settings.WORDCLOUD_LIMIT
+        if request.data['size'] > wordcloud_limit:
+            raise ParseError(
+                detail=f'size exceeds {wordcloud_limit} documents')
+
+        try:
+            # no need to run async: we will use the result directly
+            word_counts = tasks.get_geo_data(request.data)
+            return Response(word_counts)
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='could not generate geo data')
+
+
 class NgramView(APIView):
     '''
     Schedule a task to retrieve ngrams containing the search term
