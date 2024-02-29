@@ -41,7 +41,7 @@ class ResultsDownloadView(APIView):
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
         max_size = 1000
-        size = request.data.get('size', max_size)
+        size = request.data.get('es_query').pop('size', max_size)
 
         if size > max_size:
             raise ParseError(detail='Download failed: too many documents requested')
