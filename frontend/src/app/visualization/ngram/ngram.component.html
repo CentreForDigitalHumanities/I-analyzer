@@ -8,8 +8,16 @@
                     Length of n-gram
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="sizeOptions" [value]="currentSizeOption" optionLabel="label"
-                        (onChange)="onParameterChange('size', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentSizeOption"
+                        (onChange)="onParameterChange('size', $event.value)">
+                        <span iaDropdownLabel>{{currentSizeOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of sizeOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -20,8 +28,16 @@
                     Position of search term
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="positionsOptions" [value]="currentPositionsOption" optionLabel="label"
-                        (onChange)="onParameterChange('positions', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentPositionsOption"
+                        (onChange)="onParameterChange('positions', $event.value)">
+                        <span iaDropdownLabel>{{currentPositionsOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of positionsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -32,8 +48,16 @@
                     Compensate for frequency
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="freqCompensationOptions" [value]="currentFreqCompensationOption" optionLabel="label"
-                        (onChange)="onParameterChange('freqCompensation', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentFreqCompensationOption"
+                        (onChange)="onParameterChange('freqCompensation', $event.value)">
+                        <span iaDropdownLabel>{{currentFreqCompensationOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of positionsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -44,8 +68,16 @@
                     Language processing
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="analysisOptions" [value]="currentAnalysisOption" optionLabel="label"
-                        (onChange)="onParameterChange('analysis', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentAnalysisOption"
+                        (onChange)="onParameterChange('analysis', $event.value)">
+                        <span iaDropdownLabel>{{currentAnalysisOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of analysisOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -54,8 +86,16 @@
                 <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
                 iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
                 <div class="control">
-                    <ia-dropdown [options]="maxDocumentsOptions" [value]="currentMaxDocumentsOption" optionLabel="label"
-                    (onChange)="onParameterChange('maxDocuments', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentMaxDocumentsOption"
+                        (onChange)="onParameterChange('maxDocuments', $event.value)">
+                        <span iaDropdownLabel>{{currentMaxDocumentsOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of maxDocumentsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -64,8 +104,16 @@
                 <label class="label" iaBalloon="the number of n-grams displayed in the results"
                 iaBalloonPosition="up-left" iaBalloonLength="fit">Number of n-grams</label>
                 <div class="control">
-                    <ia-dropdown [options]="numberOfNgramsOptions" [value]="currentNumberOfNgramsOption" optionLabel="label"
-                    (onChange)="onParameterChange('numberOfNgrams', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentNumberOfNgramsOption"
+                        (onChange)="onParameterChange('numberOfNgrams', $event.value)">
+                        <span iaDropdownLabel>{{currentNumberOfNgramsOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of numberOfNgramsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -76,8 +124,16 @@
                 <label class="label" iaBalloon="field to use on the x-axis">
                     Compare frequencies by:
                 </label>
-                <ia-dropdown [options]="allDateFields" optionLabel="displayName" [value]="dateField"
-                (onChange)="onParameterChange('dateField', $event.name)"></ia-dropdown>
+                <ia-dropdown [value]="dateField"
+                    (onChange)="onParameterChange('dateField', $event)">
+                    <span iaDropdownLabel>{{dateField?.displayName}}</span>
+                    <div iaDropdownMenu>
+                        <a *ngFor="let field of allDateFields"
+                            iaDropdownItem [value]="field.name">
+                            {{field.displayName}}
+                        </a>
+                    </div>
+                </ia-dropdown>
             </div>
         </div>
 

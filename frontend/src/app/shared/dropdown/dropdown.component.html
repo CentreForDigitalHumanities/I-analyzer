@@ -1,0 +1,20 @@
+<div class="dropdown-trigger">
+    <button class="button" aria-haspopup="true"
+        aria-controls="dropdownMenu" id="dropdownTrigger"
+        [disabled]="disabled"
+        (click)="toggleDropdown()"
+        (keydown.arrowdown)="focusOnFirstItem($event)"
+        (keydown.arrowup)="focusOnFirstItem($event)"
+        #dropdownTrigger>
+        <ng-content select="[iaDropdownLabel]"></ng-content>
+        <span class="icon">
+            <fa-icon [icon]="actionIcons.dropdown" aria-hidden="true"></fa-icon>
+        </span>
+    </button>
+</div>
+<div class="dropdown-menu" role="menu"
+    id="dropdownTrigger" aria-labelledby="dropdownMenu">
+    <div class="dropdown-content">
+        <ng-content select="[iaDropdownMenu]"></ng-content>
+    </div>
+</div>

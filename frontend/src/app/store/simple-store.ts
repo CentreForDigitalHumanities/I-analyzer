@@ -3,7 +3,7 @@ import { Store } from './types';
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { map, scan } from 'rxjs/operators';
-import { omitNullParameters } from '../utils/params';
+import { mergeParams, omitNullParameters } from '../utils/params';
 
 /** simple store that does not depend on services or routing
  *
@@ -16,7 +16,7 @@ export class SimpleStore implements Store {
 
     constructor() {
         this.paramUpdates$.pipe(
-            scan(this.merge),
+            scan(mergeParams),
             map(omitNullParameters),
             map(obj => _.mapValues(obj, _.toString))
         ).subscribe(params =>
@@ -26,9 +26,5 @@ export class SimpleStore implements Store {
 
     currentParams(): Params {
         return this.params$.value;
-    }
-
-    private merge(current: Params, next: Params): Params {
-        return  _.assign(_.clone(current), next);
     }
 };

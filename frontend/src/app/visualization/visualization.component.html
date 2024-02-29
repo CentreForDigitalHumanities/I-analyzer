@@ -1,101 +1,132 @@
-<div *ngIf="noVisualizations">
-    <b> This corpus has no fields with associated visualizations. </b>
-</div>
+<ng-container *ngIf="selector; else loading">
+    <ng-container *ngIf="selector.options; else noVisualizations">
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label">
+                        What do you want to visualise?
+                    </label>
+                    <div class="control">
+                        <ia-dropdown [value]="selector.activeOption$ | async">
+                            <span iaDropdownLabel>{{(selector.activeOption$ | async).label}}</span>
+                            <div iaDropdownMenu>
+                                <a *ngFor="let option of selector.options"
+                                    iaDropdownItem [value]="option"
+                                    [disabled]="option.disabled$ | async"
+                                    (onSelect)="setVisualizationType($event)">
+                                    {{option.label}}
 
-<div class="columns" *ngIf="!noVisualizations" #viscontrol>
-    <div class="column">
-        <div class="field" *ngIf="visDropdown">
-            <label class="label">
-                What do you want to visualise?
-            </label>
-            <div class="control">
-                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visualizationTypeDropdownValue"
-                    (onChange)="changeVisualizationType($event.value)"></ia-dropdown>
+                                    <span *ngIf="option.disabled$ | async"
+                                        class="icon" iaBalloon="this visualisation requires a search term">
+                                        <fa-icon [icon]="actionIcons.help"></fa-icon>
+                                    </span>
+                                </a>
+                            </div>
+                        </ia-dropdown>
+                    </div>
+                </div>
+            </div>
+            <div class="column" *ngIf="(selector.activeOption$ | async).fields as fields">
+                <div class="field">
+                    <label class="label" *ngIf="selector.state$ | async as state">
+                        <span *ngIf="state.name === 'resultscount' || state.name === 'termfrequency'">
+                            Compare frequency by:
+                        </span>
+                        <span *ngIf="state.name === 'wordcloud' || state.name === 'ngram'">
+                            Count frequencies in:
+                        </span>
+                    </label>
+                    <div class="control">
+                        <ia-dropdown *ngIf="fields.length > 1"
+                            [value]="(selector.state$ | async).field">
+                            <span iaDropdownLabel>{{(selector.state$ | async).field?.displayName}}</span>
+                            <div iaDropdownMenu>
+                                <a *ngFor="let field of fields"
+                                    iaDropdownItem [value]="field"
+                                    (onSelect)="setVisualizedField($event)">
+                                    {{field.displayName}}
+                                </a>
+                            </div>
+                        </ia-dropdown>
+
+                        <input *ngIf="fields.length === 1" class="input is-static" type="text" [value]="fields[0].displayName">
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-narrow">
+                <div class="field has-addons">
+                    <!-- Buttons for switching between table and graphical representation -->
+                    <div class="control">
+                        <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
+                            <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
+                            <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="column">
-        <label class="field" *ngIf="fieldDropdown">
-            <label class="label">
-                <span *ngIf="visualizationType === 'resultscount' || visualizationType === 'termfrequency'">
-                    Compare frequency by:
-                </span>
-                <span *ngIf="visualizationType === 'wordcloud' || visualizationType === 'ngram'">
-                    Count frequencies in:
-                </span>
-            </label>
-            <div class="control">
-                <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="visualizedFieldDropdownValue"
-                    (onChange)="changeVisualizedField($event.value)"></ia-dropdown>
-                <input *ngIf="fieldDropdown.length === 1" class="input is-static" type="text" [value]="visualizedFieldDropdownValue.label">
+        <div class="message is-danger" *ngIf="error$ | async as error">
+            <div class="message-header">
+                Something went wrong
             </div>
-        </label>
-    </div>
-
-    <div class="column is-narrow">
-        <div class="field has-addons">
-            <!-- Buttons for switching between table and graphical representation -->
-            <div class="control">
-                <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
-                    <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
-                </button>
-            </div>
-            <div class="control">
-                <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
-                    <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
-                </button>
+            <div class="message-body">
+                {{error}}
             </div>
         </div>
-    </div>
-</div>
 
-<ng-container *ngIf="visualExists; else noVisualsMessage">
-    <div class="block">
-        <ng-container [ngSwitch]="visualizationType">
-            <ng-container *ngSwitchCase="'resultscount'">
-                <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                [visualizedField]="visualizedField" [frequencyMeasure]="'documents'"
-                [asTable]="freqtable" [palette]="palette"
-                (error)="setErrorMessage($event)"
-                (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
-            <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [asTable]="freqtable" [palette]="palette"
-                (error)="setErrorMessage($event)"
-                (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
-            </ng-container>
-            <ng-container *ngSwitchCase="'termfrequency'">
-                <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                    [visualizedField]="visualizedField" [frequencyMeasure]="'tokens'"
+        <div class="block">
+            <ng-container [ngSwitch]="visualizationType">
+                <ng-container *ngSwitchCase="'resultscount'">
+                    <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
+                    [visualizedField]="visualizedField" [frequencyMeasure]="'documents'"
                     [asTable]="freqtable" [palette]="palette"
                     (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
                 <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                    [frequencyMeasure]="'tokens'"
                     [asTable]="freqtable" [palette]="palette"
                     (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
+                </ng-container>
+                <ng-container *ngSwitchCase="'termfrequency'">
+                    <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
+                        [visualizedField]="visualizedField" [frequencyMeasure]="'tokens'"
+                        [asTable]="freqtable" [palette]="palette"
+                        (error)="setErrorMessage($event)"
+                        (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
+                    <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                        [frequencyMeasure]="'tokens'"
+                        [asTable]="freqtable" [palette]="palette"
+                        (error)="setErrorMessage($event)"
+                        (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
+                </ng-container>
+                <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                    [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
+                    (wordcloudError)="setErrorMessage($event)"></ia-wordcloud>
+                <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                    [asTable]="freqtable" [palette]="palette"
+                    (ngramError)="setErrorMessage($event)"></ia-ngram>
             </ng-container>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
-                (wordcloudError)="setErrorMessage($event['message'])"></ia-wordcloud>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [asTable]="freqtable" [palette]="palette"
-                (ngramError)="setErrorMessage($event)"></ia-ngram>
-        </ng-container>
-    </div>
+        </div>
+
+        <ia-visualization-footer [tableView]="freqtable" [manualPage]="manualPage"
+            [chartElementID]="chartElementId" [imageFileName]="imageFileName"
+            (palette)="palette = $event">
+        </ia-visualization-footer>
+    </ng-container>
 </ng-container>
 
-<ia-visualization-footer [tableView]="freqtable" [manualPage]="manualPage"
-    [chartElementID]="chartElementId" [imageFileName]="imageFileName"
-    (palette)="palette = $event">
-</ia-visualization-footer>
+<ng-template #loading>
+    <div class="is-loading" aria-label="loading results"></div>
+</ng-template>
 
-<ng-template #noVisualsMessage>
-    <b> {{foundNoVisualsMessage}} </b>
-    <div class="container" *ngIf="errorMessage && errorMessage.length > 0">
-        <div class="notification is-warning">
-            {{errorMessage}}
-        </div>
+<ng-template #noVisualizations>
+    <div class="block message">
+        This corpus has no fields with associated visualizations.
     </div>
 </ng-template>

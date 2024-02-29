@@ -5,6 +5,7 @@ import {
 import * as _ from 'lodash';
 import { TabPanelDirective } from './tab-panel.directive';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { modulo } from '../../utils/utils';
 
 interface Tab {
     label: string; // display name
@@ -55,7 +56,6 @@ export class TabsComponent implements AfterContentInit {
         };
 
         const shift = keyBindings[event.key];
-        const modulo = (n: number, d: number): number => ((n % d) + d) % d;
         const newIndex = modulo(tabIndex + shift, this.tabs.length);
         const newTab = this.tabs[newIndex];
         this.setTabLinkFocus(newTab.id);
