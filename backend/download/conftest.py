@@ -63,9 +63,8 @@ def all_results_request_json(mock_corpus, mock_corpus_specs):
 
 def save_all_results_csv(mock_corpus, mock_corpus_specs):
     request_json = all_results_request_json(mock_corpus, mock_corpus_specs)
-    results = tasks.download_scroll(request_json)
     fake_id = mock_corpus + '_all_results'
-    filename = tasks.make_csv(results, request_json, fake_id)
+    filename = tasks.make_download(request_json, fake_id)
 
     return filename
 
