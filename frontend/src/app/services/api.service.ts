@@ -145,7 +145,7 @@ export class ApiService {
         return this.http.post<AggregateResult[]>(url, data).toPromise();
     }
 
-    public geoData(data: WordcloudParameters): Promise<AggregateResult[]> {
+    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
         const url = this.apiRoute(this.visApiURL, 'geo');
         return this.http.post<GeoDocument[]>(url, data).toPromise();
     }
