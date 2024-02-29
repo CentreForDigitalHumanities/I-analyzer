@@ -4,6 +4,7 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    GeoDocument,
     NGramRequestParameters,
     NgramParameters,
     QueryModel,
