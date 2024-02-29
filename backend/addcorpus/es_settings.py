@@ -23,9 +23,12 @@ def get_language_key(language_code):
 
     return Language.make(language_code).display_name().lower()
 
+
 def get_nltk_stopwords(language_code):
-    nltk.download('stopwords', settings.NLTK_DATA_PATH)
     stopwords_dir = os.path.join(settings.NLTK_DATA_PATH, 'corpora', 'stopwords')
+    if not os.path.exists(stopwords_dir):
+        nltk.download('stopwords', settings.NLTK_DATA_PATH)
+
     languages = os.listdir(stopwords_dir)
     language = get_language_key(language_code)
 
