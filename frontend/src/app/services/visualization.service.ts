@@ -35,6 +35,28 @@ export class VisualizationService {
         });
     }
 
+    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+        Promise<GeoDocument[]> {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.geoData({
+            ...query,
+            corpus: corpus.name,
+            field: fieldName,
+            size,
+        });
+    }
+
+    public async getMapData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+        Promise<AggregateResult[]> {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.getGeoData({
+            ...query,
+            corpus: corpus.name,
+            field: fieldName,
+            size,
+        });
+    }
+
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],
     ): AggregateTermFrequencyParameters {

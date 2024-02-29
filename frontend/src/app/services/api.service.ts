@@ -15,6 +15,7 @@ import {
     DownloadOptions,
     FieldCoverage,
     FoundDocument,
+    GeoDocument,
     LimitedResultsDownloadParameters,
     NGramRequestParameters,
     QueryDb,
@@ -138,6 +139,11 @@ export class ApiService {
     public wordCloud(data: WordcloudParameters): Observable<AggregateResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
         return this.http.post<AggregateResult[]>(url, data);
+    }
+
+    public geoData(data: WordcloudParameters): Promise<AggregateResult[]> {
+        const url = this.apiRoute(this.visApiURL, 'geo');
+        return this.http.post<GeoDocument[]>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
