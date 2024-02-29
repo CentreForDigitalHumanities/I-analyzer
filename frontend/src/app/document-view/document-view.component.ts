@@ -90,6 +90,18 @@ export class DocumentViewComponent implements OnChanges {
         return parseHTML.body.textContent || '';
       }
 
+    formatInnerHtml(field: CorpusField) {
+        const fieldValue = this.document.fieldValues[field.name];
+
+        if (_.isEmpty(fieldValue)) {
+            return;
+        }
+
+        const highlighted = this.highlightedInnerHtml(field);
+        return this.addParagraphTags(highlighted);
+    }
+
+
     highlightedInnerHtml(field: CorpusField) {
         let highlighted = this.document.fieldValues[field.name];
         if (this.document.highlight && this.document.highlight.hasOwnProperty(field.name) &&
@@ -103,4 +115,9 @@ export class DocumentViewComponent implements OnChanges {
                 return this.document.fieldValues[field.name];
             }
         }
+
+    addParagraphTags(content: string) {
+        const paragraphs = content.split('\n');
+        return paragraphs.map(p => `<p>${p}</p>`).join(' ');
+    }
 }
