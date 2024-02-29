@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
-import { ElasticSearchService } from './elastic-search.service';
-import { Corpus, CorpusField, DownloadOptions, QueryModel } from '../models/index';
+import { Corpus, CorpusField, DownloadOptions, LimitedResultsDownloadParameters, QueryModel, SortState } from '../models/index';
 import * as _ from 'lodash';
+import { resultsParamsToAPIQuery } from '../utils/es-query';
+import { PageResultsParameters } from '../models/page-results';
 
 @Injectable()
 export class DownloadService {
     constructor(
         private apiService: ApiService,
-        private elasticSearchService: ElasticSearchService
     ) {}
 
     /**
@@ -22,16 +22,23 @@ export class DownloadService {
         fields: CorpusField[],
         requestedResults: number,
         route: string,
-        highlightFragmentSize: number,
+        sort: SortState,
+        highlightFragmentSize: number|undefined,
         fileOptions: DownloadOptions
     ): Promise<string | void> {
-        const query = queryModel.toAPIQuery();
-        const parameters = _.merge(
+        const resultsParameters: PageResultsParameters = {
+            sort,
+            highlight: highlightFragmentSize,
+            from: 0,
+            size: requestedResults,
+        };
+        const query = resultsParamsToAPIQuery(queryModel, resultsParameters);
+
+        const parameters: LimitedResultsDownloadParameters = _.merge(
             {
                 ...query,
                 corpus: corpus.name,
                 fields: fields.map((field) => field.name),
-                size: requestedResults,
                 route,
             },
             fileOptions
@@ -64,6 +71,7 @@ export class DownloadService {
         fields:
         CorpusField[],
         route: string,
+        sort: SortState,
         highlightFragmentSize: number
     ) {
         const query = queryModel.toAPIQuery();

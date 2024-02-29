@@ -10,6 +10,9 @@ import { findByName } from './utils';
 import { SearchFilter } from '../models/field-filter';
 import { APIQuery } from '../models/search-requests';
 import { TagFilter } from '../models/tag-filter';
+import { PageResultsParameters } from '../models/page-results';
+import { DeepPartial } from 'chart.js/dist/types/utils';
+import { SimpleStore } from '../store/simple-store';
 
 // conversion from query model -> elasticsearch query language
 
@@ -116,7 +119,8 @@ export const apiQueryToQueryModel = (query: APIQuery, corpus: Corpus): QueryMode
     const esQuery = 'es_query' in query ? query.es_query : query; // fix for legacy queries
     const model = esQueryToQueryModel(esQuery, corpus);
     if (query.tags) {
-        const tagFilter = new TagFilter();
+        const store = new SimpleStore();
+        const tagFilter = new TagFilter(store);
         tagFilter.set(query.tags);
         model.addFilter(tagFilter);
     }
@@ -152,6 +156,24 @@ const esFilterToSearchFilter = (esFilter: EsFilter, corpus: Corpus): SearchFilte
     const fieldName = _.first(_.keys(esFilter[filterType]));
     const field = findByName(corpus.fields, fieldName);
     const filter = field.makeSearchFilter();
-    filter.data.next(filter.dataFromEsFilter(esFilter as any)); // we know that the esFilter is of the correct type
+    filter.set(filter.dataFromEsFilter(esFilter as any)); // we know that the esFilter is of the correct type
     return filter;
+};
+
+export const resultsParamsToAPIQuery = (queryModel: QueryModel, params: PageResultsParameters): APIQuery => {
+    const query = queryModel.toAPIQuery();
+
+    const sort = makeSortSpecification(...params.sort);
+    const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, params.highlight);
+    const addToQuery: DeepPartial<APIQuery> = {
+        es_query: {
+            ...sort,
+            ...highlight,
+            from: params.from,
+            size: params.size,
+        }
+    };
+    _.merge(query, addToQuery);
+
+    return query;
 };

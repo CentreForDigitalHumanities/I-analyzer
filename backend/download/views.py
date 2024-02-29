@@ -41,7 +41,7 @@ class ResultsDownloadView(APIView):
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
         max_size = 1000
-        size = request.data.get('size', max_size)
+        size = request.data.get('es_query').pop('size', max_size)
 
         if size > max_size:
             raise ParseError(detail='Download failed: too many documents requested')
@@ -49,19 +49,17 @@ class ResultsDownloadView(APIView):
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
-            es_query = api_query_to_es_query(request.data, corpus_name)
-            search_results = es_download.normal_search(
-                corpus_name, es_query, request.data['size'])
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
-            csv_path = tasks.make_csv(search_results, request.data, download.id)
+            csv_path = tasks.make_download(request.data, download.id, size)
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
             return send_csv_file(download, directory, request.data['encoding'])
         except Exception as e:
             logger.error(e)
-            raise APIException(detail = 'Download failed: could not generate csv file')
+            raise APIException(
+                detail='Download failed: could not generate csv file')
 
 
 class ResultsDownloadTaskView(APIView):

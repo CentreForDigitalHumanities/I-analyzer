@@ -51,7 +51,8 @@ def admin_user(django_user_model, admin_credentials):
     user = django_user_model.objects.create_superuser(
         username=admin_credentials['username'],
         password=admin_credentials['password'],
-        email=admin_credentials['email'])
+        email=admin_credentials['email'],
+        download_limit=1000000)
     return user
 
 
@@ -72,7 +73,7 @@ def connected_to_internet():
         requests.get("https://1.1.1.1")
     except:
         pytest.skip('Cannot connect to internet')
-    
+
 
 # elasticsearch
 @pytest.fixture(scope='session')

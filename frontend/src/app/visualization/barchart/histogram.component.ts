@@ -7,9 +7,7 @@ import {
     HistogramSeries,
     MultipleChoiceFilterOptions,
     QueryModel,
-    RangeFilterOptions,
-    TermFrequencyResult,
-} from '../../models/index';
+    RangeFilterOptions} from '../../models/index';
 import { selectColor } from '../../utils/select-color';
 import { BarchartDirective } from './barchart.directive';
 
@@ -88,17 +86,6 @@ export class HistogramComponent
             fieldValue: bin.key,
             size: this.documentLimitForCategory(bin, series),
         }));
-    }
-
-    processSeriesTermFrequency(
-        results: TermFrequencyResult[],
-        series: HistogramSeries
-    ) {
-        series.data = _.zip(series.data, results).map((pair) => {
-            const [bin, res] = pair;
-            return this.addTermFrequencyToCategory(res, bin);
-        });
-        return series;
     }
 
     fullDataRequest() {

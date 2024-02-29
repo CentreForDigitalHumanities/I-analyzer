@@ -73,6 +73,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         client=es_client,
         source=[]
     )
+    found_hits = list(found_hits)
 
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)

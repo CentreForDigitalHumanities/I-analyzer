@@ -95,8 +95,12 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
         { 'tags': [auth_user_tag.id] }
     )
 
+
     assert status.is_success(response.status_code)
     assert len(response.data['tags']) == auth_user_tag.count == 1
+
+    doc = TaggedDocument.objects.get(doc_id=new_doc)
+    assert doc.tags.count() == 1
 
     response = patch_request({
         'tags': []
@@ -104,6 +108,7 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
 
     assert status.is_success(response.status_code)
     assert auth_user_tag.count == 0
+
 
 def test_assign_multiple_tags_at_once(auth_client, multiple_tags, mock_corpus, auth_user_corpus_acces):
     doc = 'test'
@@ -135,7 +140,6 @@ def test_assign_multiple_tags_one_by_one(auth_client, multiple_tags, mock_corpus
 
         assert status.is_success(response.status_code)
         doc = TaggedDocument.objects.get(doc_id=doc)
-        n_tags = doc.tags.count()
         assert doc.tags.count() == i + 1
 
 def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, mock_corpus, mock_corpus_obj, auth_user_corpus_acces):

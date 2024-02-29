@@ -79,9 +79,9 @@ describe('ElasticSearchService', () => {
     it('should make a search request', async () => {
         const queryModel = new QueryModel(mockCorpus);
         const size = 2;
-        const response = service.loadResults(queryModel, 0, size);
+        const response = service.loadResults(queryModel, {from: 0, size, sort: [undefined, 'desc']});
 
-        const searchUrl = `/api/es/${mockCorpus.name}/_search?size=${size}`;
+        const searchUrl = `/api/es/${mockCorpus.name}/_search`;
         httpTestingController.expectOne(searchUrl).flush(mockResponse);
         httpTestingController.verify();
 
@@ -93,7 +93,7 @@ describe('ElasticSearchService', () => {
     it('should request a document by ID', async () => {
         const response = service.getDocumentById('doc1', mockCorpus);
 
-        const searchUrl = `/api/es/${mockCorpus.name}/_search?size=1`;
+        const searchUrl = `/api/es/${mockCorpus.name}/_search`;
         httpTestingController.expectOne(searchUrl).flush(mockResponse);
         httpTestingController.verify();
 
@@ -113,7 +113,7 @@ describe('ElasticSearchService', () => {
             [aggregator]
         );
 
-        const searchUrl = `/api/es/${mockCorpus.name}/_search?size=0`;
+        const searchUrl = `/api/es/${mockCorpus.name}/_search`;
         httpTestingController.expectOne(searchUrl).flush(mockAggregationResponse);
         httpTestingController.verify();
 
