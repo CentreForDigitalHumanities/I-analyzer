@@ -2,12 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters,
-    DateTermFrequencyParameters,
-    NGramRequestParameters,
-    TermFrequencyResult } from './visualization';
 import { APIQuery } from './search-requests';
 import { SortState } from './sort';
+import {
+    AggregateTermFrequencyParameters,
+    DateTermFrequencyParameters,
+    NGramRequestParameters,
+    TermFrequencyResult,
+} from './visualization';
 
 export interface SearchResults {
     fields?: CorpusField[];
