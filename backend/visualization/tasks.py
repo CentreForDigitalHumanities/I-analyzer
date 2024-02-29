@@ -12,6 +12,17 @@ def get_wordcloud_data(request_json):
     word_counts = wordcloud.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
     return word_counts
 
+
+@shared_task()
+def get_geo_data(request_json):
+    corpus_name = request_json['corpus']
+    size = request_json['size']
+    geo_field = request_json['field']
+    es_query = api_query_to_es_query(request_json, corpus_name)
+    list_of_documents, _ = es_download.scroll(
+        corpus_name, es_query, size, source_includes=['id', geo_field])
+    return list_of_documents
+
 @shared_task
 def get_ngram_data_bin(**kwargs):
     return ngram.tokens_by_time_interval(**kwargs)
