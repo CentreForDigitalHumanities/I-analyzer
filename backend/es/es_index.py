@@ -1,3 +1,4 @@
+import gc
 #!/usr/bin/env python3
 
 '''
@@ -103,6 +104,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         chunk_size=corpus_server['chunk_size'],
         max_chunk_bytes=corpus_server['max_chunk_bytes'],
     ):
+        gc.collect()
         if not success:
             logger.error(f"FAILED INDEX: {info}")
 
