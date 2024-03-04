@@ -139,9 +139,9 @@ export class ApiService {
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Promise<AggregateResult[]> {
+    public wordCloud(data: WordcloudParameters): Observable<AggregateResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
-        return this.http.post<AggregateResult[]>(url, data).toPromise();
+        return this.http.post<AggregateResult[]>(url, data);
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {

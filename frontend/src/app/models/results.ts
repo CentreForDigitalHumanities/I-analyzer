@@ -33,7 +33,15 @@ export abstract class Results<Parameters extends object, Result> extends StoreSy
         protected keysInStore: string[],
     ) {
         super(store);
-        this.connectToStore();
+    }
+
+    /**
+     * defines the observable result, error en loading states.
+     *
+     * this only creates an observable for the result; the result
+     * won't be fetched until it is observed.
+     */
+    getResults(): void {
         this.error$ = new BehaviorSubject(undefined);
 
         this.query.update.pipe(
