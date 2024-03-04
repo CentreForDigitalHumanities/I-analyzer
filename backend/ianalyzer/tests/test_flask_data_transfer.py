@@ -102,7 +102,7 @@ def test_save_corpora(db):
 
     corpus = Corpus.objects.get(id='13')
     assert corpus.name == 'parliament-ireland'
-    assert list(corpus.groups.all()) == list(Group.objects.all())
+    assert set(corpus.groups.all()) == set(Group.objects.all())
 
 
 def dates_match(datetime1, datetime2):
