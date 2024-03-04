@@ -37,7 +37,7 @@ class Rechtspraak(XMLCorpusDefinition):
     max_date = datetime(year=2022, month=12, day=6)
     data_directory = settings.RECHTSPRAAK_DATA
     es_index = getattr(settings, 'RECHTSPRAAK_ES_INDEX', 'rechtspraak')
-    image = 'rechtszaal.jpeg'
+    image = 'rechtspraak.jpg' #CC-0, from https://commons.wikimedia.org/wiki/File:Courtroom_One_Gavel_-_Flickr_-_Joe_Gratz.jpg
     description_page = 'rechtspraak.md'
     toplevel_zip_file = 'OpenDataUitspraken.zip'
     languages = ['nl']
