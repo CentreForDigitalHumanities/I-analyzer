@@ -46,8 +46,15 @@
 
             <ng-template iaTabPanel *ngIf="corpus?.citationPage"
                 id="citation" title="Citation">
-                <div class="content" [class.is-loading]="!citation"
-                    [innerHTML]="citation"></div>
+
+                <div class="content">
+                    <p>
+                        If you cite this corpus in a publication, we recommend the following format.
+                    </p>
+
+                    <div [class.is-loading]="!citation"
+                        [innerHTML]="citation"></div>
+                </div>
             </ng-template>
         </ia-tabs>
     </div>
