@@ -1,10 +1,19 @@
 const path = require('path');
 const colors = require('colors/safe');
 const fs = require('fs');
-const appVersion = require('../../package.json').version;
 const { exec } = require('child_process');
 
 console.log(colors.cyan('\nRunning pre-build tasks'));
+
+var appVersion;
+
+try {
+    appVersion = require('../../package.json').version;
+} catch {
+    console.warn('Could not import package.json.')
+    appVersion = undefined;
+}
+
 
 async function getHash() {
     return new Promise((resolve, reject) => {
@@ -57,13 +66,15 @@ Promise.all([getHash(), getRemoteUrl()]).then(([hash, remoteUrl]) => {
     writeVersion(hash, remoteUrl);
 }).catch((error) => {
     console.log(`${colors.red('Could not update version: ')} ${error}`);
+    writeVersion(undefined, undefined);
 });
 
 function writeVersion(hash, remoteUrl) {
     const versionFilePath = path.join(__dirname + '/../src/environments/version.ts');
+    const sourceUrl = (hash && remoteUrl) ? `${remoteUrl}/tree/${hash}` : undefined;
     const src = `export const version = '${appVersion}';
 export const buildTime = '${new Date()}';
-export const sourceUrl = '${remoteUrl}/tree/${hash}';
+export const sourceUrl = '${sourceUrl}';
 `;
 
     // ensure version module pulls value from package.json
