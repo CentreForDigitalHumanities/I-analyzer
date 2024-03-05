@@ -1,5 +1,14 @@
 <div class="control">
-    <ia-dropdown placeholder="Relevance" canDeselect="true" [value]="sortField" [options]="sortableFields" optionLabel="displayName" (onChange)="changeField($event)"></ia-dropdown>
+    <ia-dropdown (onChange)="changeField($event)" [value]="sortField">
+        <span iaDropdownLabel>{{ sortField?.displayName || 'Relevance' }}</span>
+        <div iaDropdownMenu>
+            <a iaDropdownItem [value]="undefined">Relevance</a>
+            <a *ngFor="let field of sortableFields"
+                iaDropdownItem [value]="field">
+                {{field.displayName}}
+            </a>
+        </div>
+    </ia-dropdown>
 </div>
 <div class="control">
     <button class="button" (click)="toggleSortType()" [ngClass]="{ 'is-static': !sortField }">

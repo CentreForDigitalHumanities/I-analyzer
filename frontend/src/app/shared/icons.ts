@@ -2,7 +2,7 @@ import {
     IconDefinition as SolidIconDefinition,
     faAngleDown, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
     faCheck, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
-    faDownload, faEnvelope, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
+    faDownload, faEnvelope, faEye, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
     faMinus, faPalette, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
     faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc, faSquare,
     faTable, faTimes, faTrashCan, faUndo, faUser
@@ -45,6 +45,7 @@ export const actionIcons: Icons = {
     add: faPlus,
     remove: faTimes,
     delete: faTrashCan,
+    view: faEye,
 };
 
 export const formIcons: Icons = {

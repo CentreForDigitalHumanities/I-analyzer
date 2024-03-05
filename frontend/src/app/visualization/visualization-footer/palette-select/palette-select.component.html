@@ -1,12 +1,13 @@
-<p-dropdown *ngIf="palettes" [options]="palettes" [(ngModel)]="palette" >
-    <ng-template pTemplate="selectedItem">
-        <span class="icon">
-            <fa-icon [icon]="visualizationIcons.palette"></fa-icon>
-        </span>
-    </ng-template>
-    <ng-template let-palette pTemplate="item">
-        <span class="icon" *ngFor="let color of palette" [style.color]="color">
-            <fa-icon [icon]="visualizationIcons.swatch"></fa-icon>
-        </span>
-    </ng-template>
-</p-dropdown>
+<ia-dropdown *ngIf="palettes" [value]="palette" (onChange)="palette = $event">
+    <span iaDropdownLabel class="icon">
+        <fa-icon [icon]="visualizationIcons.palette"></fa-icon>
+    </span>
+    <div iaDropdownMenu>
+        <a *ngFor="let palette of palettes"
+            iaDropdownItem [value]="palette">
+            <span class="icon" *ngFor="let color of palette" [style.color]="color">
+                <fa-icon [icon]="visualizationIcons.swatch"></fa-icon>
+            </span>
+        </a>
+    </div>
+</ia-dropdown>
