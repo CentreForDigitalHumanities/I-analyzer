@@ -43,6 +43,12 @@
                 <div class="content" [class.is-loading]="!wordModelDocumentation"
                     [innerHTML]="wordModelDocumentation"></div>
             </ng-template>
+
+            <ng-template iaTabPanel *ngIf="corpus?.citationPage"
+                id="citation" title="Citation">
+                <div class="content" [class.is-loading]="!citation"
+                    [innerHTML]="citation"></div>
+            </ng-template>
         </ia-tabs>
     </div>
 </section>

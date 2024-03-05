@@ -91,6 +91,7 @@ export class CorpusService {
             data.languages,
             data.category,
             data.description_page,
+            data.citation_page,
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight
         );

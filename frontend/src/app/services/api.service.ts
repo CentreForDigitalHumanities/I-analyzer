@@ -233,6 +233,13 @@ export class ApiService {
             .toPromise();
     }
 
+    public corpusCitation(corpusName: string): Promise<string> {
+        const url = this.apiRoute(this.corpusApiUrl, `citation/${corpusName}`);
+        return this.http
+            .get<string>(url, { responseType: 'text' as 'json' })
+            .toPromise();
+    }
+
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
     }
