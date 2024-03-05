@@ -9,7 +9,6 @@ import { environment } from '../../environments/environment';
 })
 export class FooterComponent {
     environment = environment;
-    logos: {url: string; path: string; alt: string}[] = environment.logos;
 
     constructor() { }
 

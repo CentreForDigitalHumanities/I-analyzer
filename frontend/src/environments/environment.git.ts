@@ -1,4 +1,4 @@
-import { buildTime, version, sourceUrl } from './version';
+import { version } from './version';
 
 export const environment = {
     production: true,
@@ -7,10 +7,8 @@ export const environment = {
     apiUrl: '/api',
     adminUrl: '/admin',
     samlLogoutUrl: '/users/saml2/logout/',
-    logos: [],
     showSolis: true,
     runInIFrame: false,
-    buildTime,
     version,
-    sourceUrl,
+    sourceUrl: 'https://github.com/UUDigitalHumanitieslab/I-analyzer/',
 };

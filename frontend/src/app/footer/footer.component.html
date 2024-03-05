@@ -9,12 +9,12 @@
                     <img src="assets/UU-CDH_logo_EN_def_UU_CDH_logo_EN_yellowwhite.jpg" alt="Centre for Digital Humanities, Utrecht University" width="400">
                 </a>
             </div>
-        <div *ngIf="logos.length" class="column">
+        <div *ngIf="environment.logos?.length" class="column">
             <p>
                 <strong> With support from </strong>
             </p>
             <div class="columns">
-                <div *ngFor="let logo of logos" class="column">
+                <div *ngFor="let logo of environment.logos" class="column">
                     <a [href]="logo.url" target="_blank">
                         <img [src]="logo.path" [alt]="logo.alt" [width]="logo.width">
                     </a>
@@ -24,11 +24,7 @@
         </div>
         <div class="block">
             <p>
-                Version:
-                <span [iaBalloon]="environment.buildTime" iaBalloonPosition="up-left">
-                    {{environment.version}}
-                </span>
-                &nbsp;
+                Version: {{environment.version}}
                 <a [href]="environment.sourceUrl" target="_blank" i18n>(source code)</a>
             </p>
         </div>
