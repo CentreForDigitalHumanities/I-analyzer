@@ -4,6 +4,4 @@
 
 ## MLA
 
-> Centre for Digital Humanities, Utrecht University. *Example corpus*, {{ frontend_url }}. Accessed January 2024.
-
-Make sure to fill in the correct date at which you accessed the data.
+> Centre for Digital Humanities, Utrecht University. *Example corpus*, {{ frontend_url }}. Accessed {{ date.day }} {{ date.month }} {{ date.year }}.
