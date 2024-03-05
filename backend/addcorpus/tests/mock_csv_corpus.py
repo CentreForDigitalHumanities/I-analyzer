@@ -15,6 +15,8 @@ class MockCSVCorpus(CSVCorpusDefinition):
     max_date = datetime.datetime(year=2022, month=12, day=31)
     image = 'nothing.jpeg'
     data_directory = os.path.join(here, 'csv_example')
+    citation = 'citation.md'
+
     field_entry = 'character'
 
     languages = ['en']
