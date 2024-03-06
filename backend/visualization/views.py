@@ -15,13 +15,12 @@ from api.utils import check_json_keys
 logger = logging.getLogger()
 
 
-
 class WordcloudView(APIView):
     '''
     Most frequent terms for a small batch of results
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'es_query', 'field', 'size'])
@@ -44,7 +43,7 @@ class NgramView(APIView):
     Schedule a task to retrieve ngrams containing the search term
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, [
@@ -68,7 +67,7 @@ class DateTermFrequencyView(APIView):
     compared by a date field
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(
@@ -96,7 +95,7 @@ class AggregateTermFrequencyView(APIView):
     compared by a keyword field
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(
