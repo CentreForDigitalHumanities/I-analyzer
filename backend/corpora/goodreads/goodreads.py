@@ -167,7 +167,7 @@ class GoodReads(CSVCorpusDefinition):
         ),
         FieldDefinition(
             name='url',
-            display_name='URL (Goodreads)',
+            display_name='Source URL',
             description='Link to the the review on Goodreads',
             extractor=CSV(
                 field='url',

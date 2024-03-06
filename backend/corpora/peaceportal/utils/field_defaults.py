@@ -29,7 +29,7 @@ def source_database():
 def url():
     return FieldDefinition(
         name='url',
-        display_name='URL',
+        display_name='Source URL',
         description='URL of the inscription entry.',
         es_mapping=keyword_mapping(),
         search_field_core=True
