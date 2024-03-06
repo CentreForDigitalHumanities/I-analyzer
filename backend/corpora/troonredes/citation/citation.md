@@ -4,7 +4,7 @@ To cite the entire corpus, follow citation guidelines for databases.
 
 ### APA style
 
-> Centre for Digital Humanities, Utrecht University (2024). *Troonredes* [data set]. I-analyzer. URL: {{ frontend_url }}/search/troonredes
+> Redactieteam troonredes.nl (2024). *Troonredes* [data set]. I-analyzer. URL: {{ frontend_url }}/search/troonredes
 
 See also [database information in references (APA)](https://apastyle.apa.org/style-grammar-guidelines/references/database-information).
 
@@ -12,7 +12,7 @@ See also [database information in references (APA)](https://apastyle.apa.org/sty
 
 [MLA guidelines](https://style.mla.org/) recommend against citing a database, and recommend [citing each individual work you use](https://style.mla.org/separate-entries-database-works/). If you want to cite the entire corpus nonetheless, we recommend the following format:
 
-> Centre for Digital Humanities, Utrecht University. "Troonredes". *I-analyzer*, {{ frontend_url }}/search/troonredes
+> Redactieteam troonredes.nl. "Troonredes". *I-analyzer*, 2024, {{ frontend_url }}/search/troonredes
 
 ## Referencing a single speech
 
