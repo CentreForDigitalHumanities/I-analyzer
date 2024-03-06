@@ -2,6 +2,10 @@
 
 To cite the entire corpus, follow citation guidelines for databases.
 
+We recommend that the collection of transcripts and metadata is attributed to [troonredes.nl](http://troonredes.nl). However, you citation should include that you consulted the version published on I-analyzer.
+
+Note that this references does *not* cover the word models trained on the corpus. See below for recommendations on how to cite the models.
+
 ### APA style
 
 > Redactieteam troonredes.nl (2024). *Troonredes* [data set]. I-analyzer. URL: {{ frontend_url }}/search/troonredes
@@ -33,3 +37,17 @@ See also: [citing a copy of a speech (MLA)](https://style.mla.org/citing-a-copy-
 ### Other citation styles
 
 Some style guides recommend that a citation of a speech should include both the date and location. The location was not always the same, and is not listed on I-analyzer. You can look it up on [history of Prinsjesdag (website of the Dutch senate)](https://www.eerstekamer.nl/historische_gebeurtenis/geschiedenis_prinsjesdag).
+
+## Referencing word models
+
+While the text dataset of the troonredes is taken from [troonredes.nl](http://troonredes.nl), the word models were trained by the Centre for Digital Humanities at Utrecht University.
+
+If you are the word models interface of this corpus in your research, you can cite it by citing the webpage.
+
+### APA style
+
+> Centre for Digital Humanities, Utrecht University (2018). *Word models of "Troonredes"*. I-analyzer. URL: {{ frontend_url }}/word-models/troonredes
+
+### MLA style
+
+> Centre for Digital Humanities, Utrecht University. "Word models of "Troonredes"." *I-analyzer*, 2018, {{ frontend_url }}/word-models/troonredes.
