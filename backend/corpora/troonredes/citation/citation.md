@@ -20,7 +20,9 @@ To cite a specific speech, follow citation guidelines for orations, and clarify 
 
 ### APA style
 
-> Oranje-Nassau, W.F. van (1815). *Troonrede van 16 oktober 1815* [oration]. URL: {{ frontend_url }}/document/troonredes/1815_troonrede
+> Oranje-Nassau, W.F. van (1815). *Troonrede van 16 oktober 1815* [speech transcript]. I-analyzer. URL: {{ frontend_url }}/document/troonredes/1815_troonrede
+
+See also: [citing a speech transcript](https://apastyle.apa.org/style-grammar-guidelines/references/examples/transcript-audiovisual-work-references#1)
 
 ## MLA style
 
