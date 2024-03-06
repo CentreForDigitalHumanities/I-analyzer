@@ -18,5 +18,5 @@
     </div>
 </div>
 
-<ia-download-options [download]="pendingDownload" (cancel)="pendingDownload = undefined"
+<ia-download-options [download]="pendingDownload" [isDownloading]="isDownloading" (cancel)="pendingDownload = undefined"
     (confirm)="confirmDirectDownload($event)"></ia-download-options>

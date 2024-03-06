@@ -25,7 +25,7 @@ def test_admin_serializer(admin_client, admin_credentials):
         'id': ANY,
         'username': admin_credentials['username'],
         'email': admin_credentials['email'],
-        'download_limit': 10000,
+        'download_limit': 1000000,
         'is_admin': True,
         'saml': False,
         'profile': {

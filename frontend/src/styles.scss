@@ -15,9 +15,9 @@
 .search-section {
     background: rgba(255, 255, 255, 1);
     position: sticky;
-    z-index: 1000;
     top: 0;
     transition: box-shadow 0.2s;
+    z-index: 500;
 
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)

@@ -2,9 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters, DateTermFrequencyParameters, NGramRequestParameters, TermFrequencyResult } from './visualization';
 import { APIQuery } from './search-requests';
 import { SortState } from './sort';
+import {
+    AggregateTermFrequencyParameters,
+    DateTermFrequencyParameters,
+    NGramRequestParameters,
+    TermFrequencyResult,
+} from './visualization';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -111,7 +116,8 @@ export type ResultsDownloadParameters = {
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
 
-export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
+export type LimitedResultsDownloadParameters = ResultsDownloadParameters &
+    DownloadOptions;
 
 export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency' | 'ngram';
 export type DownloadStatus = 'done' | 'working' | 'error';

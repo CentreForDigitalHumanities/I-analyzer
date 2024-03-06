@@ -1,57 +1,16 @@
 import {
-    IconDefinition as SolidIconDefinition,
-    faAngleDown,
-    faAngleUp,
-    faArrowLeft,
-    faArrowRight,
-    faAt,
-    faBook,
-    faBookOpen,
-    faChartColumn,
-    faCheck,
-    faChevronDown,
-    faChevronLeft,
-    faChevronRight,
-    faCog,
-    faCogs,
-    faDatabase,
-    faDiagramProject,
-    faDownload,
-    faEdit,
-    faEnvelope,
-    faFilter,
-    faHistory,
-    faImage,
-    faInfo,
-    faInfoCircle,
-    faLink,
-    faList,
-    faLock,
-    faMinus,
-    faPalette,
-    faPlus,
-    faQuestionCircle,
-    faSearch,
-    faSearchMinus,
-    faSearchPlus,
-    faSignOut,
-    faSortAlphaAsc,
-    faSortAlphaDesc,
-    faSortNumericAsc,
-    faSortNumericDesc,
-    faSquare,
-    faTable,
-    faTag,
-    faTags,
-    faTimes,
-    faTrashCan,
-    faUndo,
-    faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import {
     IconDefinition as RegularIconDefinition,
     faNewspaper,
 } from '@fortawesome/free-regular-svg-icons';
+import {
+    IconDefinition as SolidIconDefinition,
+    faAngleDown, faAngleUp, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
+    faCheck, faChevronDown, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
+    faDownload, faEdit, faEnvelope, faEye, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
+    faMinus, faPalette, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
+    faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc, faSquare,
+    faTable, faTags, faTimes, faTrashCan, faUndo, faUser
+} from '@fortawesome/free-solid-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
 export interface Icons {
@@ -94,6 +53,7 @@ export const actionIcons: Icons = {
     remove: faTimes,
     delete: faTrashCan,
     edit: faEdit,
+    view: faEye,
 };
 
 export const formIcons: Icons = {
