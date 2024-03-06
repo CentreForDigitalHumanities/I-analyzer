@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DropdownComponent } from '../dropdown/dropdown.component';
+import { DropdownModule } from './dropdown/dropdown.module';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { ErrorComponent } from '../error/error.component';
 import { CalendarModule } from 'primeng/calendar';
@@ -22,7 +22,6 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
 
 @NgModule({
     declarations: [
-        DropdownComponent,
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
@@ -33,7 +32,6 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
     ],
     exports: [
         // shared components
-        DropdownComponent,
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,
@@ -44,6 +42,7 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
         BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
+        DropdownModule,
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
@@ -58,6 +57,7 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
         CommonModule,
         FormsModule,
         CalendarModule,
+        DropdownModule,
         FontAwesomeModule,
         HttpClientModule,
         HttpClientXsrfModule.withOptions({
@@ -65,6 +65,7 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
             headerName: 'X-CSRFToken',
         }),
         RouterModule,
+
     ],
 })
 export class SharedModule {}

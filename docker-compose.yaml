@@ -19,6 +19,7 @@ services:
       - db
       - celery
       - redis
+      - elasticsearch
     environment:
       SQL_DATABASE: $SQL_DATABASE
       SQL_USER: $SQL_USER

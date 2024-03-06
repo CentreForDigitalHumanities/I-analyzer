@@ -1,16 +1,16 @@
 import {
-    Component, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges
+    Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges
 } from '@angular/core';
 
 
-import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
-import { BehaviorSubject } from 'rxjs';
+import { AggregateResult, QueryModel, FreqTableHeaders } from '../../models/index';
 import { VisualizationService } from '../../services/visualization.service';
-import { showLoading } from '../../utils/utils';
 import { Chart, ChartData, ChartDataset, ChartOptions, ScriptableContext, TooltipItem } from 'chart.js';
 import { WordCloudChart } from 'chartjs-chart-wordcloud';
 import * as _ from 'lodash';
 import { selectColor } from '../../utils/select-color';
+import { FrequentWordsResults } from '../../models/frequent-words';
+import { RouterStoreService } from '../../store/router-store.service';
 
 // maximum font size in px
 const MIN_FONT_SIZE = 10;
@@ -37,91 +37,56 @@ const unitScale = (min: number, max: number): (frequency: number) => number => {
     styleUrls: ['./wordcloud.component.scss'],
 })
 export class WordcloudComponent implements OnChanges, OnDestroy {
-    @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
-
-    @Input() visualizedField: CorpusField;
     @Input() queryModel: QueryModel;
-    @Input() corpus: Corpus;
-    @Input() resultsCount: number;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
     @Output() wordcloudError = new EventEmitter();
 
-    isLoading$ = new BehaviorSubject<boolean>(false);
+    results: FrequentWordsResults;
 
     tableHeaders: FreqTableHeaders = [
         { key: 'key', label: 'Term' },
         { key: 'doc_count', label: 'Frequency' },
     ];
 
-    public significantText: AggregateResult[];
-
     private chart: Chart;
-    private batchSize = 1000;
 
-    constructor(private visualizationService: VisualizationService) {}
-
-    @HostBinding('class.is-loading')
-    get isLoading() {
-        return this.isLoading$.value;
-    }
-
-    get readyToLoad() {
-        return (
-            this.corpus &&
-            this.visualizedField &&
-            this.queryModel &&
-            this.palette
-        );
-    }
+    constructor(
+        private routerStoreService: RouterStoreService,
+        private visualizationService: VisualizationService
+    ) {}
 
     ngOnChanges(changes: SimpleChanges) {
-        if (
-            this.readyToLoad &&
-            (changes.corpus || changes.visualizedField || changes.queryModel)
-        ) {
-            if (changes.queryModel) {
-                this.queryModel.update.subscribe(this.loadData.bind(this));
-            }
-            this.loadData();
-        } else {
-            this.makeChart();
+        if (changes.queryModel) {
+            this.results?.complete();
+
+            this.results = new FrequentWordsResults(
+                this.routerStoreService, this.queryModel, this.visualizationService
+            );
+
+            // result$ and error$ are completed when this.results.complete() is called
+            // so these subscriptions are closed at that point
+            this.results.result$.subscribe(data => this.makeChart(data));
+            this.results.error$.subscribe(error => this.emitError(error));
+        } else if (changes.palette) {
+            this.updatePalette();
         }
     }
 
     ngOnDestroy(): void {
+        this.results?.complete();
         this.chart?.destroy();
     }
 
-    loadData() {
-        showLoading(
-            this.isLoading$,
-            this.visualizationService
-                .getWordcloudData(
-                    this.visualizedField.name,
-                    this.queryModel,
-                    this.corpus,
-                    this.batchSize
-                )
-                .then(this.onDataLoaded.bind(this))
-                .catch(this.emitError.bind(this))
-        );
+    emitError(error?: { message: string }) {
+        this.wordcloudError.emit(error?.message);
     }
 
-    emitError(error: { message: string }) {
-        this.wordcloudError.emit(error.message);
-    }
-
-    onDataLoaded(result: AggregateResult[]) {
-        this.significantText = result;
-        this.makeChart();
-    }
-
-    makeChart() {
+    makeChart(result: AggregateResult[]) {
         if (!this.asTable) {
-            const data = this.chartData();
-            const options = this.chartOptions();
+            const data = this.chartData(result);
+            const options = this.chartOptions(result);
 
             if (this.chart) {
                 this.chart.data = data;
@@ -132,14 +97,11 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
         }
     }
 
-    private chartData(): ChartData<'wordCloud'> {
-        if (this.significantText) {
-            const labels = this.chartLabels(this.significantText);
-            const datasets = [this.chartDataset(this.significantText)];
-            return {
-                labels,
-                datasets,
-            };
+    private chartData(result: AggregateResult[]): ChartData<'wordCloud'> {
+        if (result) {
+            const labels = this.chartLabels(result);
+            const datasets = [this.chartDataset(result)];
+            return { labels, datasets };
         }
         return { labels: [], datasets: [] };
     }
@@ -153,18 +115,26 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
         const scale = sizeScale(_.min(frequencies), _.max(frequencies));
         const sizes = frequencies.map(scale);
 
-        const color = (dataIndex: number) =>
-            selectColor(this.palette, dataIndex);
-
         return {
             label: 'Frequency',
             data: sizes,
-            color: (context: ScriptableContext<'wordCloud'>) =>
-                color(context.dataIndex),
+            color: this.datasetColor(this.palette),
         };
     }
 
-    private chartOptions(): ChartOptions<'wordCloud'> {
+    private updatePalette() {
+        const dataset = _.first(this.chart?.data?.datasets) as ChartDataset<'wordCloud'>;
+        if (dataset) {
+            dataset.color = this.datasetColor(this.palette);
+            this.chart.update();
+        }
+    }
+
+    private datasetColor(palette: string[]): (context: ScriptableContext<'wordCloud'>) => string {
+        return (context) => selectColor(palette, context.dataIndex);
+    }
+
+    private chartOptions(data: AggregateResult[]): ChartOptions<'wordCloud'> {
         return {
             plugins: {
                 legend: {
@@ -174,7 +144,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
                     displayColors: false,
                     callbacks: {
                         label: (item: TooltipItem<'wordCloud'>) =>
-                            this.significantText[
+                            data[
                                 item.dataIndex
                             ].doc_count.toString(),
                     },
