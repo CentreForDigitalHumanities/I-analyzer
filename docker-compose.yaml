@@ -9,7 +9,7 @@ services:
       - PGPORT=${SQL_PORT}
       - PGUSER=${SQL_USER}
       - PGDATABASE=${SQL_DATABASE}
-      - PGPASSWORD=${SQL_PASSWORD}    
+      - PGPASSWORD=${SQL_PASSWORD}
     volumes:
       - ianalyzer-db:/var/lib/postgresql/data/
   backend:
@@ -47,6 +47,9 @@ services:
       - type: bind
         source: ./frontend/src
         target: /frontend/src
+      - type: bind
+        source: ./frontend/build
+        target: /frontend/build
     command: sh -c "yarn start-docker"
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
