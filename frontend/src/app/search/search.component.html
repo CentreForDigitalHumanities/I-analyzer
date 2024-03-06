@@ -36,7 +36,7 @@
                                 </div>
                             </form>
                         </div>
-                        <ia-download [corpus]="corpus" [queryModel]="queryModel" [resultOverview]="resultOverview" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user?.downloadLimit: 1000" [route]="this.router.url"></ia-download>
+                        <ia-download [corpus]="corpus" [queryModel]="queryModel" [resultOverview]="resultOverview" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user? user.downloadLimit: 1000" [route]="this.router.url"></ia-download>
                     </div>
                 </nav>
             </div>

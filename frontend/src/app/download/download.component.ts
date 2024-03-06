@@ -15,7 +15,7 @@ export class DownloadComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public resultOverview: ResultOverview;
     @Input() public hasLimitedResults: boolean;
-    @Input() public downloadLimit: string;
+    @Input() public downloadLimit: number;
     @Input() public route: string;
 
     public selectedCsvFields: CorpusField[];
@@ -72,7 +72,7 @@ export class DownloadComponent implements OnChanges {
      * and an email is sent with download link from backend
      */
     public chooseDownloadMethod() {
-        if (this.resultOverview.resultsCount < this.resultsCutoff) {
+        if (this.resultOverview.resultsCount < this.resultsCutoff || this.downloadLimit <= this.resultsCutoff) {
             this.directDownload();
         } else {
             this.longDownload();
@@ -81,13 +81,14 @@ export class DownloadComponent implements OnChanges {
 
     /** download short file directly */
     public confirmDirectDownload(options: DownloadOptions) {
+        const nDocuments = Math.min(this.resultOverview.resultsCount, this.resultsCutoff);
         this.isDownloading = true;
         this.downloadService
             .download(
                 this.corpus,
                 this.queryModel,
                 this.getCsvFields(),
-                this.resultOverview.resultsCount,
+                nDocuments,
                 this.route,
                 this.resultOverview.sort,
                 this.resultOverview.highlight,
