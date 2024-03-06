@@ -298,7 +298,7 @@ class Rechtspraak(XMLCorpusDefinition):
         ),
         FieldDefinition(
             name='url',
-            display_name='URL',
+            display_name='URL (rechtspraak.nl)',
             es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')
