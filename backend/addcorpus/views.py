@@ -66,7 +66,7 @@ class CorpusCitationView(APIView):
     Return the documentation for a corpus
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
 
     def get(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)
