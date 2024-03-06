@@ -33,6 +33,15 @@ def test_no_corpus_access(db, client, mock_corpus):
     response = client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
     assert response.status_code == 403
 
+
+def test_corpus_documentation_unauthenticated(db, client, basic_corpus, mock_corpus):
+    response = client.get(
+        f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
+    assert response.status_code == 401
+    response = client.get(
+        f'/api/corpus/documentation/{basic_corpus}/mock-csv-corpus.md')
+    assert response.status_code == 200
+
 def test_corpus_serialization(admin_client, mock_corpus):
     response = admin_client.get('/api/corpus/')
     corpus = next(c for c in response.data if c['name'] == mock_corpus)

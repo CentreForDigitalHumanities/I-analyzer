@@ -1,3 +1,5 @@
+import { version } from './version';
+
 export const environment = {
     production: true,
     appName: 'Something completely different',
@@ -5,7 +7,8 @@ export const environment = {
     apiUrl: '/api',
     adminUrl: '/admin',
     samlLogoutUrl: '/users/saml2/logout/',
-    logos: [],
     showSolis: true,
-    runInIFrame: false
+    runInIFrame: false,
+    version,
+    sourceUrl: 'https://github.com/UUDigitalHumanitieslab/I-analyzer/',
 };
