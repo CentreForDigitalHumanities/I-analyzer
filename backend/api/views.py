@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers import QuerySerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import APIException
 from rest_framework.decorators import action
 import logging
@@ -35,8 +35,6 @@ class TaskStatusView(APIView):
     and the results if they are complete
     '''
 
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, *args, **kwargs):
         # this a POST request because a list of requested IDs can make
         # the url too long
@@ -67,8 +65,6 @@ class AbortTasksView(APIView):
     '''
     Cancel backend tasks
     '''
-
-    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['task_ids'])

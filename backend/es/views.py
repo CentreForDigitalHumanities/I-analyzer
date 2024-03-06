@@ -44,7 +44,7 @@ class ForwardSearchView(APIView):
     the query parameter will be used.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')

@@ -10,16 +10,15 @@ import { CalendarModule } from 'primeng/calendar';
 import { TableModule } from 'primeng/table';
 import { BalloonDirective } from '../balloon.directive';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
-import { DropdownComponent } from '../dropdown/dropdown.component';
 import { ErrorComponent } from '../error/error.component';
 import { ScrollToDirective } from '../scroll-to.directive';
 import { HighlightPipe } from '../search';
+import { DropdownModule } from './dropdown/dropdown.module';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
 import { TabsComponent } from './tabs/tabs.component';
 
 @NgModule({
     declarations: [
-        DropdownComponent,
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
@@ -30,7 +29,6 @@ import { TabsComponent } from './tabs/tabs.component';
     ],
     exports: [
         // shared components
-        DropdownComponent,
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,
@@ -41,6 +39,7 @@ import { TabsComponent } from './tabs/tabs.component';
         BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
+        DropdownModule,
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
@@ -57,6 +56,7 @@ import { TabsComponent } from './tabs/tabs.component';
         FormsModule,
         CalendarModule,
         TableModule,
+        DropdownModule,
         FontAwesomeModule,
         HttpClientModule,
         HttpClientXsrfModule.withOptions({
@@ -64,6 +64,7 @@ import { TabsComponent } from './tabs/tabs.component';
             headerName: 'X-CSRFToken',
         }),
         RouterModule,
+
     ],
 })
 export class SharedModule {}

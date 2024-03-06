@@ -39,6 +39,8 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         query: QueryModel,
     ) {
         super(store, query, ['sort', 'highlight', 'page']);
+        this.connectToStore();
+        this.getResults();
         this.sort$ = this.state$.pipe(map(p => p.sort));
         this.highlight$ = this.state$.pipe(map(p => p.highlight));
         this.from$ = this.state$.pipe(
