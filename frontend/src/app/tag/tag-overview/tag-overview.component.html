@@ -1,107 +1,66 @@
 <section class="section">
     <h1 class="title">Your tags</h1>
-    <ng-container *ngIf="tags$ | async as tags">
-        <p-table [value]="tags" [paginator]="true" [rows]="10" dataKey="name">
-            <ng-template pTemplate="caption">
-                <div>
-                    Manage your tags
+    <div class="block">
+        <button class="button is-primary" aria-label="create tag" (click)="startCreate()">
+            <span class="icon">
+                <fa-icon [icon]="actionIcons.add" aria-hidden="true"></fa-icon>
+            </span>
+            <span>New</span>
+        </button>
+    </div>
+
+    <div class="columns is-multiline">
+        <div class="column is-one-third" *ngFor="let tag of tags$ | async">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        {{tag.name}}
+                    </p>
+                </header>
+                
+                <div class="card-content">
+                    <div class="content">
+                        {{tag.description || "(no description)"}}
+                    </div>
+                    <div class="content" *ngIf="tag.count !== undefined && tag.count !== 0; else noTagCount">
+                        <details>
+                            <summary>
+                                Tag used {{tag.count}} times across {{tag.corpus_counts?.length}} corpora.
+                            </summary>
+                            <table class="table">
+                                <tr *ngFor="let entry of tag.corpus_counts">
+                                    <td>{{entry.corpus}}</td>
+                                    <td>
+                                        {{entry.count}}
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/search', entry.corpus]" [queryParams]="makeQueryParams(entry.corpus, tag)"
+                                            aria-label="Open search results for this tag" iaBalloon="open search results for this tag">
+                                            <span class="icon"><fa-icon [icon]="actionIcons.search"></fa-icon></span>
+                                        </a>
+                                        </td>
+                                        </tr>
+                            </table>
+                            </details>
+                            
+                            </div>
+                            <ng-template #noTagCount>
+                                <div class="content">
+                                    <strong>Tag not used in any corpora.</strong>
+                                </div>
+                    </ng-template>
                 </div>
-            </ng-template>
+                <footer class="card-footer">
+                    <a class="card-footer-item" (click)="startEdit(tag)" (keydown.enter)="startEdit(tag)" role="button" tabindex="0"
+                        aria-label="edit tag">Edit</a>
+                    <a class="card-footer-item" (click)="delete(tag)" (keydown.enter)="delete(tag)" role="button" tabindex="0"
+                        aria-label="delete tag">Delete</a>
+                </footer>
+                </div>
 
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width: 5rem"></th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Count</th>
-                    <th>
-                        <button class="button is-primary" aria-label="create tag" (click)="startCreate()">
-                            <span class="icon">
-                                <fa-icon [icon]="actionIcons.add" aria-hidden="true"></fa-icon>
-                            </span>
-                            <span>New</span>
-                        </button>
-                    </th>
-                </tr>
-            </ng-template>
+        </div>
 
-            <ng-template pTemplate="body" let-tag let-expanded="expanded">
-                <tr>
-                    <td>
-                        <button class="button is-rounded" [pRowToggler]="tag">
-                            <span class="icon">
-                                <fa-icon [icon]="expanded ? actionIcons.dropup : actionIcons.dropdown" aria-hidden="true"></fa-icon>
-                            </span>
-                            </button>
-                    </td>
-                    <td>{{tag.name}}</td>
-                    <td>{{tag.description}}</td>
-                    <td>{{tag.count}}</td>
-                    <td>
-                        <div class="field has-addons">
-                            <p class="control">
-                                <button class="button is-primary" tabindex="0" role="button" aria-label="edit tag" (click)="startEdit(tag)"
-                                    (keydown.enter)="startEdit(tag)">
-                                    <span class="icon">
-                                        <fa-icon [icon]="actionIcons.edit" aria-hidden="true"></fa-icon>
-                                    </span>
-                                    <span>Edit</span>
-                                </button>
-                            </p>
-                            <p class="control">
-                                <button class="button is-danger" tabindex="0" role="button" aria-label="delete tag" (click)="delete(tag)"
-                                    (keydown.enter)="delete(tag)">
-                                    <span class="icon">
-                                        <fa-icon [icon]="actionIcons.delete" aria-hidden="true"></fa-icon>
-                                    </span>
-                                    <span>Delete</span>
-                                </button>
-                            </p>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="rowexpansion" let-tag>
-                <tr>
-                    <td colspan="7">
-                        <div class="p-3">
-
-                            <p-table [value]="tag.corpus_counts" dataKey="name" styleClass="p-datatable-sm">
-                                <ng-template pTemplate="header">
-                <tr>
-                    <th>Corpus</th>
-                    <th>Count</th>
-                    <th>View documents</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-entry>
-                <tr>
-                    <td>{{entry.corpus}}</td>
-                    <td>
-                        {{entry.count}}
-                    </td>
-                    <td>
-                        <a [routerLink]="['/search', entry.corpus]" [queryParams]="makeQueryParams(entry.corpus, tag)"
-                            aria-label="Open search results for this tag">
-                            <span class="icon"><fa-icon [icon]="actionIcons.search"></fa-icon></span>
-                        </a>
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="6">No corpora for this tag.</td>
-                </tr>
-            </ng-template>
-</p-table>
-</div>
-</td>
-</tr>
-
-</ng-template>
-
-        </p-table>
-    </ng-container>
+    </div>
 </section>
 
 <div class="modal" [class.is-active]="!!modalType" *ngIf="editedTag">
