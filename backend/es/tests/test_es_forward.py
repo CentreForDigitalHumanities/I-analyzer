@@ -1,9 +1,12 @@
 import pytest
-from visualization.query import MATCH_ALL
+
+from addcorpus.conftest import basic_corpus
+from api.models import Query
 from es.search import hits
+from visualization.query import MATCH_ALL
 
 FORWARD_CASES = {
-    'search_unauthenticated': (
+    'search_restricted_corpus': (
         False,
         '/api/es/times/_search?size=20&scroll=3m',
         { 'es_query': {'query': {'bool': {
@@ -105,3 +108,14 @@ def test_search_history_is_saved(mock_corpus, times_user, es_forward_client, cli
 
     assert response2.status_code == 200
     assert times_user.queries.count() == 1
+
+
+def test_unauthenticated_search(client, basic_corpus, basic_corpus_index):
+    queries_before_search = Query.objects.count()
+    response = client.post(
+        f'/api/es/{basic_corpus}/_search',
+        {'es_query': MATCH_ALL},
+        content_type='application/json',
+    )
+    assert response.status_code == 200
+    assert Query.objects.count() == queries_before_search

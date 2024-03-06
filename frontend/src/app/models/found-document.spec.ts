@@ -4,10 +4,10 @@ import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { FoundDocument } from './found-document';
 import { TagService } from '../services/tag.service';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
-import { Tag } from './tag';
 import * as _ from 'lodash';
 import { reduce, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { Tag } from './tag';
 
 const maxScore = 2.9113607;
 const mockResponse = {

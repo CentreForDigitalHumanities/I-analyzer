@@ -5,7 +5,6 @@ import { SearchFilter } from './field-filter';
 import * as _ from 'lodash';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
-import { fakeAsync, flush } from '@angular/core/testing';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
