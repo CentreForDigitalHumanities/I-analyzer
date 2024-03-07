@@ -2,7 +2,6 @@ import pytest
 from time import sleep
 from django.contrib.auth.models import Group
 
-from addcorpus.conftest import basic_corpus
 from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.models import Corpus
 from es import es_index

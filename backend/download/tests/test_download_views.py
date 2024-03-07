@@ -1,11 +1,13 @@
-from rest_framework import status
 import pytest
-import os
 import csv
+import io
+import os
+
+from rest_framework import status
+
 from download.models import Download
 from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
-import io
 from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
@@ -218,3 +220,22 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     reader = csv.DictReader(stream, delimiter=';')
     rows = [row for row in reader]
     assert len(rows) == 1
+
+
+def test_unauthenticated_download(db, client, basic_corpus, basic_corpus_index):
+    download_request_json = {
+        'corpus': basic_corpus,
+        'es_query': query.MATCH_ALL,
+        'fields': ['date', 'content'],
+        'size': 3,
+        'route': f"/search/{basic_corpus}",
+        'encoding': 'utf-8'
+    }
+    response = client.post('/api/download/search_results',
+                           download_request_json,
+                           content_type='application/json'
+                           )
+    assert status.is_success(response.status_code)
+    download_objects = Download.objects.all()
+    assert download_objects.count() == 1
+    assert download_objects.first().user == None
