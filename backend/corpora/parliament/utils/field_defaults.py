@@ -539,7 +539,7 @@ def url():
     """url of the source file"""
     return FieldDefinition(
         name='url',
-        display_name='Source url',
+        display_name='Source URL',
         description='URL to source file of this speech',
         es_mapping=keyword_mapping(),
         searchable=False,
