@@ -1,0 +1,151 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/backend/addcorpus/schemas/corpus.schema.json",
+    "title": "Corpus",
+    "description": "A corpus on I-analyzer",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Internal name. Used in the URL and the database."
+        },
+        "meta": {
+            "type": "object",
+            "description": "Metadata about the corpus",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "Human-friendly name"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Longer description"
+                },
+                "languages": {
+                    "type": "array",
+                    "description": "IETF tags of languages used in the content",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true,
+                    "minItems": 1
+                },
+                "category": {
+                    "type": "string",
+                    "description": "nature of the content",
+                    "enum": [
+                        "parliament",
+                        "periodical",
+                        "finance",
+                        "ruling",
+                        "review",
+                        "inscription",
+                        "oration",
+                        "book",
+                        "informative"
+                    ]
+                },
+                "date_range": {
+                    "type": "object",
+                    "description": "the date range of the content",
+                    "properties": {
+                        "min": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "max": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                },
+                "required": [
+                    "title",
+                    "description",
+                    "languages",
+                    "category",
+                    "date_range"
+                ]
+            }
+        },
+        "source_data": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "data type of the source files",
+                    "enum": ["csv"]
+                },
+                "options": {
+                    "type": "object",
+                    "description": "additional options for source files",
+                    "properties": {
+                        "delimiter": {
+                            "type": "string",
+                            "description": "delimiter between values in the source files",
+                            "enum": [",", ";", "\t"]
+                        }
+                    }
+                }
+            }
+        },
+        "fields": {
+            "type": "array",
+            "description": "list of fields",
+            "items": {
+                "$ref": "https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/backend/addcorpus/schemas/field.schema.json"
+            }
+        },
+        "options": {
+            "type": "object",
+            "properties": {
+                "default_sort": {
+                    "type": "object",
+                    "description": "default sort settings for search results",
+                    "properties": {
+                        "field": {
+                            "type": "string"
+                        },
+                        "ascending": {
+                            "type": "bool"
+                        },
+                        "required": ["field", "ascending"]
+                    }
+                },
+                "language_field": {
+                    "type": "string",
+                    "description": "name of the field that contains the IETF tag of the document's content"
+                },
+                "document_context": {
+                    "type": "object",
+                    "description": "description of how documents can be grouped",
+                    "properties": {
+                        "context_field": {
+                            "type": "string",
+                            "description": "name of the field to group by"
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "description": "display name of a group, ,e.g. 'book'"
+                        },
+                        "sort": {
+                            "type": "object",
+                            "description": "when showing document context, sort them like this",
+                            "properties": {
+                                "field": {
+                                    "type": "string"
+                                },
+                                "ascending": {
+                                    "type": "bool"
+                                },
+                                "required": ["field", "ascending"]
+                            }
+                        },
+                        "required": ["context_field", "display_name"]
+                    }
+                }
+            }
+        },
+        "required": ["name", "meta", "source_data", "fields"]
+    }
+  }
