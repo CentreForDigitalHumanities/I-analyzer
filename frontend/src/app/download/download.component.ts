@@ -46,7 +46,7 @@ export class DownloadComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        this.availableCsvFields = _.filter(this.corpus.fields, 'downloadable');
+        this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
         const highlight = this.resultOverview?.highlight;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
         if (highlight !== undefined) {
