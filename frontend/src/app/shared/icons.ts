@@ -98,9 +98,8 @@ export const scanIcons: Icons = {
     zoomIn: faSearchPlus,
     zoomOut: faSearchMinus,
     zoomReset: faUndo,
-    prev: faChevronRight,
-    next: faChevronLeft,
-    down: faChevronDown,
+    prev: faChevronLeft,
+    next: faChevronRight,
 };
 
 export const documentIcons: Icons = {
