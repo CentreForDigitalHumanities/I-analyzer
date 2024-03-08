@@ -100,17 +100,8 @@
             "type": "object",
             "properties": {
                 "default_sort": {
-                    "type": "object",
                     "description": "default sort settings for search results",
-                    "properties": {
-                        "field": {
-                            "type": "string"
-                        },
-                        "ascending": {
-                            "type": "boolean"
-                        }
-                    },
-                    "required": ["field", "ascending"]
+                    "$ref": "#sortSetting"
                 },
                 "language_field": {
                     "type": "string",
@@ -129,17 +120,8 @@
                             "description": "display name of a group, ,e.g. 'book'"
                         },
                         "sort": {
-                            "type": "object",
                             "description": "when showing document context, sort them like this",
-                            "properties": {
-                                "field": {
-                                    "type": "string"
-                                },
-                                "ascending": {
-                                    "type": "boolean"
-                                }
-                            },
-                            "required": ["field", "ascending"]
+                            "$ref": "#sortSetting"
                         }
                     },
                     "required": ["context_field", "display_name"]
@@ -147,5 +129,22 @@
             }
         }
     },
-    "required": ["name", "meta", "source_data", "fields"]
+    "required": ["name", "meta", "source_data", "fields"],
+    "$defs": {
+        "sortSetting": {
+            "$anchor": "sortSetting",
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string",
+                    "description": "name of on which to sort"
+                },
+                "ascending": {
+                    "type": "boolean",
+                    "description": "whether the sort direction is ascending or descending"
+                }
+            },
+            "required": ["field", "ascending"]
+        }
+    }
   }
