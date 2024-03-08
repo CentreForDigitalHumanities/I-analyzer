@@ -117,7 +117,7 @@
                             "integer",
                             "float",
                             "date",
-                            "bool",
+                            "boolean",
                             "geo_json"
                         ]
                     },
@@ -125,7 +125,7 @@
                         "type": "object",
                         "properties": {
                             "search": {
-                                "type": "bool",
+                                "type": "boolean",
                                 "description": "whether the field supports full-text search"
                             },
                             "filter": {
@@ -134,23 +134,23 @@
                                 "enum": ["show", "hide", "none"]
                             },
                             "preview": {
-                                "type": "bool",
+                                "type": "boolean",
                                 "description": "whether the field is included in the preview of a document"
                             },
                             "visualize": {
-                                "type": "bool",
+                                "type": "boolean",
                                 "description": "whether the field is visualised"
                             },
                             "sort": {
-                                "type": "bool",
+                                "type": "boolean",
                                 "description": "whether search results can be sorted on this field"
                             },
                             "hidden": {
-                                "type": "bool",
+                                "type": "boolean",
                                 "description": "whether the field is hidden from the interface"
-                            },
-                            "required": ["search", "filter", "preview", "visualize", "sort", "hidden"]
-                        }
+                            }
+                        },
+                        "required": ["search", "filter", "preview", "visualize", "sort", "hidden"]
                     },
                     "language": {
                         "type": "string",
@@ -167,7 +167,8 @@
                         },
                         "required": ["column"]
                     }
-                }
+                },
+                "required": ["name", "display_name", "type", "options", "extract"]
             }
         },
         "options": {
