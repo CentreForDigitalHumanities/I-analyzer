@@ -24,8 +24,7 @@ jobs:
     - uses: docker/setup-buildx-action@v3
     - uses: docker/build-push-action@v5
       with:
-        context: .
-        file: backend/Dockerfile
+        context: ./backend
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Run backend tests
@@ -38,8 +37,7 @@ jobs:
     - uses: docker/setup-buildx-action@v3
     - uses: docker/build-push-action@v5
       with:
-        context: .
-        file: frontend/Dockerfile
+        context: ./frontend
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Run frontend tests
