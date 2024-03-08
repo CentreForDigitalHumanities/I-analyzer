@@ -73,7 +73,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     isGeoPointField(field: CorpusField) {
-        return field.name === 'coordinates';
+        return field.mappingType === 'geo_point';
     }
 
     /**
