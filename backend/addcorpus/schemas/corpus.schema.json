@@ -93,7 +93,81 @@
             "type": "array",
             "description": "list of fields",
             "items": {
-                "$ref": "https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/backend/addcorpus/schemas/field.schema.json"
+                "type": "object",
+                "description": "A field in a corpus",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "internal name"
+                    },
+                    "display_name": {
+                        "type": "string",
+                        "description": "human-friendly name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "longer description for users"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "text_content",
+                            "text_metadata",
+                            "url",
+                            "integer",
+                            "float",
+                            "date",
+                            "bool",
+                            "geo_json"
+                        ]
+                    },
+                    "options": {
+                        "type": "object",
+                        "properties": {
+                            "search": {
+                                "type": "bool",
+                                "description": "whether the field supports full-text search"
+                            },
+                            "filter": {
+                                "type": "string",
+                                "description": "search filter for the field",
+                                "enum": ["show", "hide", "none"]
+                            },
+                            "preview": {
+                                "type": "bool",
+                                "description": "whether the field is included in the preview of a document"
+                            },
+                            "visualize": {
+                                "type": "bool",
+                                "description": "whether the field is visualised"
+                            },
+                            "sort": {
+                                "type": "bool",
+                                "description": "whether search results can be sorted on this field"
+                            },
+                            "hidden": {
+                                "type": "bool",
+                                "description": "whether the field is hidden from the interface"
+                            },
+                            "required": ["search", "filter", "preview", "visualize", "sort", "hidden"]
+                        }
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "language of the field's content. Either an IETF tag, or \"dynamic\"."
+                    },
+                    "extract": {
+                        "type": "object",
+                        "description": "how to extract this field's value from source files",
+                        "properties": {
+                            "column": {
+                                "type": "string",
+                                "description": "name of the column in the CSV file"
+                            }
+                        },
+                        "required": ["column"]
+                    }
+                }
             }
         },
         "options": {
@@ -134,6 +208,7 @@
         "sortSetting": {
             "$anchor": "sortSetting",
             "type": "object",
+            "description": "Describes how to sort search results",
             "properties": {
                 "field": {
                     "type": "string",

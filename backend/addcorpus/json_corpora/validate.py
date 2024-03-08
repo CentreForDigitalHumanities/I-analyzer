@@ -10,11 +10,6 @@ def corpus_schema():
     with open(path) as f:
         return json.load(f)
 
-def field_schema():
-    path = os.path.join(schemas_dir, 'field.schema.json')
-    with open(path) as f:
-        return json.load(f)
-
 def validate(instance):
     '''
     Validate a JSON corpus instance
