@@ -20,6 +20,7 @@ class DBNL(XMLCorpusDefinition):
     es_index = getattr(settings, 'DBNL_ES_INDEX', 'dbnl')
     image = 'dbnl.png'
     description_page = 'dbnl.md'
+    citation_page = 'citation.md'
 
     languages = ['nl', 'dum', 'fr', 'la', 'fy', 'lat', 'en', 'nds', 'de', 'af']
     category = 'book'
@@ -229,7 +230,7 @@ class DBNL(XMLCorpusDefinition):
 
     url = FieldDefinition(
         name='url',
-        display_name='View on DBNL',
+        display_name='Source URL',
         description='Link to the book\'s page in DBNL',
         extractor=Metadata('url'),
         es_mapping=keyword_mapping(),
