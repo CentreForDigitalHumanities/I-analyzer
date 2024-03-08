@@ -58,15 +58,15 @@
                             "format": "date"
                         }
                     }
-                },
-                "required": [
-                    "title",
-                    "description",
-                    "languages",
-                    "category",
-                    "date_range"
-                ]
-            }
+                }
+            },
+            "required": [
+                "title",
+                "description",
+                "languages",
+                "category",
+                "date_range"
+            ]
         },
         "source_data": {
             "type": "object",
@@ -107,10 +107,10 @@
                             "type": "string"
                         },
                         "ascending": {
-                            "type": "bool"
-                        },
-                        "required": ["field", "ascending"]
-                    }
+                            "type": "boolean"
+                        }
+                    },
+                    "required": ["field", "ascending"]
                 },
                 "language_field": {
                     "type": "string",
@@ -136,16 +136,16 @@
                                     "type": "string"
                                 },
                                 "ascending": {
-                                    "type": "bool"
-                                },
-                                "required": ["field", "ascending"]
-                            }
-                        },
-                        "required": ["context_field", "display_name"]
-                    }
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": ["field", "ascending"]
+                        }
+                    },
+                    "required": ["context_field", "display_name"]
                 }
             }
-        },
-        "required": ["name", "meta", "source_data", "fields"]
-    }
+        }
+    },
+    "required": ["name", "meta", "source_data", "fields"]
   }
