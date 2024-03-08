@@ -73,6 +73,12 @@ class CorpusConfiguration(models.Model):
         validators=[validate_markdown_filename_extension],
         help_text='filename of the markdown documentation file for this corpus',
     )
+    citation_page = models.CharField(
+        max_length=128,
+        blank=True,
+        validators=[validate_markdown_filename_extension],
+        help_text='filename of the citation specification (in markdown) for this corpus',
+    )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
