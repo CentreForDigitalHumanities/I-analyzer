@@ -13,6 +13,8 @@ export class CorpusInfoComponent implements OnInit {
     corpus: Corpus;
 
     description: string;
+    citation: string;
+
     wordModelDocumentation: string;
     fieldCoverage: FieldCoverage;
 
@@ -29,6 +31,11 @@ export class CorpusInfoComponent implements OnInit {
             this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name})
             .then(marked.parse)
                 .then(doc => this.description = doc);
+        }
+        if (corpus.citationPage) {
+            this.apiService.corpusCitation(corpus.name)
+                .then(marked.parse)
+                .then(doc => this.citation = doc);
         }
         this.apiService.fieldCoverage(corpus.name).then(
             result => this.fieldCoverage = result
