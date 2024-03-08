@@ -29,20 +29,20 @@
                 <a class="navbar-item" *ngIf="user$ | async"
                     [routerLinkActive]="'is-active'" [routerLink]="['/home']">
                     <span class="icon" aria-hidden="true">
-                        <fa-icon [icon]="icons.corpora"></fa-icon>
+                        <fa-icon [icon]="navIcons.corpora"></fa-icon>
                     </span>
                     Corpora
                 </a>
                 <a class="navbar-item" *ngIf="user$ | async"
                     [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
                     <span class="icon" aria-hidden="true">
-                        <fa-icon [icon]="icons.manual"></fa-icon>
+                        <fa-icon [icon]="navIcons.manual"></fa-icon>
                     </span>
                     Manual
                 </a>
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/about']">
                     <span class="icon" aria-hidden="true">
-                        <fa-icon [icon]="icons.about"></fa-icon>
+                        <fa-icon [icon]="navIcons.about"></fa-icon>
                     </span>
                     About
                 </a>
@@ -58,7 +58,7 @@
                         [attr.aria-expanded]="dropdownOpen$ | async"
                         data-target="userDropdown">
                         <span class="icon" aria-hidden="true">
-                            <fa-icon [icon]="icons.user"></fa-icon>
+                            <fa-icon [icon]="userIcons.user"></fa-icon>
                         </span>
                         {{user.name}}
                         <!-- drop down menu to log out, or see previous queries-->
@@ -69,7 +69,7 @@
                             [routerLink]="['/search-history']"
                             [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="icons.searchHistory"></fa-icon>
+                                <fa-icon [icon]="navIcons.searchHistory"></fa-icon>
                             </span>
                             Search history
                         </a>
@@ -77,15 +77,23 @@
                             [routerLink]="['/download-history']"
                             [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="icons.downloads"></fa-icon>
+                                <fa-icon [icon]="navIcons.downloads"></fa-icon>
                             </span>
                             Downloads
+                        </a>
+                        <a class="navbar-item"
+                            [routerLink]="['/tags']"
+                            [routerLinkActive]="'is-active'">
+                            <span class="icon" aria-hidden="true">
+                                <fa-icon [icon]="navIcons.tags"></fa-icon>
+                            </span>
+                            Tags
                         </a>
                         <a class="navbar-item"
                             [routerLink]="['/settings']"
                             [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="icons.settings"></fa-icon>
+                                <fa-icon [icon]="navIcons.settings"></fa-icon>
                             </span>
                             Settings
                         </a>
@@ -93,7 +101,7 @@
                             *ngIf="isAdmin$ | async"
                             href="{{adminUrl}}">
                             <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="icons.admin"></fa-icon>
+                                <fa-icon [icon]="navIcons.admin"></fa-icon>
                             </span>
                             Administration
                         </a>
@@ -103,7 +111,7 @@
                             (click)="logout()"
                             (keydown.enter)="logout()">
                             <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="icons.logout"></fa-icon>
+                                <fa-icon [icon]="userIcons.logout"></fa-icon>
                             </span>
                             Sign out
                         </a>

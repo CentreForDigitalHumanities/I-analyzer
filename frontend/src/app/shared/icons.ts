@@ -1,16 +1,21 @@
 import {
+    IconDefinition as RegularIconDefinition,
+    faNewspaper,
+} from '@fortawesome/free-regular-svg-icons';
+import {
     IconDefinition as SolidIconDefinition,
-    faAngleDown, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
-    faCheck, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
-    faDownload, faEnvelope, faEye, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
+    faAngleDown, faAngleUp, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
+    faCheck, faChevronDown, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
+    faDownload, faEdit, faEnvelope, faEye, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
     faMinus, faPalette, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
     faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc, faSquare,
-    faTable, faTimes, faTrashCan, faUndo, faUser
+    faTable, faTags, faTimes, faTrashCan, faUndo, faUser
 } from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition as RegularIconDefinition, faNewspaper } from '@fortawesome/free-regular-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
-export interface Icons { [alias: string]: IconDefinition }
+export interface Icons {
+    [alias: string]: IconDefinition;
+}
 
 export const userIcons: Icons = {
     user: faUser,
@@ -27,6 +32,7 @@ export const navIcons: Icons = {
     settings: faCog,
     admin: faCogs,
     downloads: faDownload,
+    tags: faTags,
 };
 
 export const actionIcons: Icons = {
@@ -42,9 +48,11 @@ export const actionIcons: Icons = {
     next: faArrowRight,
     link: faLink,
     dropdown: faAngleDown,
+    dropup: faAngleUp,
     add: faPlus,
     remove: faTimes,
     delete: faTrashCan,
+    edit: faEdit,
     view: faEye,
 };
 
@@ -90,8 +98,8 @@ export const scanIcons: Icons = {
     zoomIn: faSearchPlus,
     zoomOut: faSearchMinus,
     zoomReset: faUndo,
-    prev: faChevronRight,
-    next: faChevronLeft,
+    prev: faChevronLeft,
+    next: faChevronRight,
 };
 
 export const documentIcons: Icons = {

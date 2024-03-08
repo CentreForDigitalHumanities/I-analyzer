@@ -49,6 +49,7 @@ import { SearchModule } from './search/search.module';
 import { SharedModule } from './shared/shared.module';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 
 export const appRoutes: Routes = [
     {
@@ -124,6 +125,11 @@ export const appRoutes: Routes = [
     {
         path: 'settings',
         component: SettingsComponent,
+        canActivate: [LoggedOnGuard],
+    },
+    {
+        path: 'tags',
+        component: TagOverviewComponent,
         canActivate: [LoggedOnGuard],
     },
     {

@@ -108,11 +108,8 @@ export class ApiService {
     }
 
     // Tasks
-    public getTasksStatus(
-        tasks: TaskResult
-    ): Observable<TasksOutcome> {
-        return this.http
-            .post<TasksOutcome>('/api/task_status', tasks);
+    public getTasksStatus(tasks: TaskResult): Observable<TasksOutcome> {
+        return this.http.post<TasksOutcome>('/api/task_status', tasks);
     }
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
@@ -125,17 +122,16 @@ export class ApiService {
         return response.status === 'done';
     }
 
-
-    public pollTasks(ids: string[], stopPolling$: Observable<void>): Observable<TasksOutcome> {
-        return interval(5000)
-            .pipe(
-                takeUntil(stopPolling$),
-                switchMap((arg) =>
-                    this.getTasksStatus({ task_ids: ids })
-                ),
-                filter(this.tasksDone),
-                take(1)
-            );
+    public pollTasks(
+        ids: string[],
+        stopPolling$: Observable<void>
+    ): Observable<TasksOutcome> {
+        return interval(5000).pipe(
+            takeUntil(stopPolling$),
+            switchMap((arg) => this.getTasksStatus({ task_ids: ids })),
+            filter(this.tasksDone),
+            take(1)
+        );
     }
 
     // Visualization
@@ -254,6 +250,16 @@ export class ApiService {
     public createTag(name: string, description?: string): Observable<Tag> {
         const url = this.apiRoute(this.tagApiUrl, 'tags/');
         return this.http.post<Tag>(url, { name, description });
+    }
+
+    public deleteTag(tag: Tag): Observable<null> {
+        const url = this.apiRoute(this.tagApiUrl, `tags/${tag.id}/`);
+        return this.http.delete<null>(url);
+    }
+
+    public patchTag(tagId: number, fields: Partial<Tag>): Observable<Tag> {
+        const url = this.apiRoute(this.tagApiUrl, `tags/${tagId}/`);
+        return this.http.patch<Tag>(url, fields);
     }
 
     public documentTags(

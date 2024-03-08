@@ -18,6 +18,7 @@ class ParliamentCanada(Parliament, CSVCorpusDefinition):
     min_date = datetime(year=1901, month=1, day=1)
     data_directory = settings.PP_CANADA_DATA
     es_index = getattr(settings, 'PP_CANADA_INDEX', 'parliament-canada')
+    word_model_path = getattr(settings, 'PP_CANADA_WM', None)
     image = 'canada.jpeg'
     languages = ['en']
     description_page = 'canada.md'
