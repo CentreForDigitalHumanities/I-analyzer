@@ -205,6 +205,9 @@
                 "visualize": false,
                 "sort": false,
                 "hidden": false
+            },
+            "extract": {
+                "column": "date"
             }
         }, {
             "name": "rating_text",
@@ -288,9 +291,5 @@
             }
         }
     ],
-    "options": {
-        "default_sort": null,
-        "language_field": "review_language",
-        "document_context": null
-    }
+    "options": {}
 }
