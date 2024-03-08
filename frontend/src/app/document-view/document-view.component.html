@@ -23,9 +23,7 @@
                                 [attr.lang]="document.language(field)"
                                 [innerHtml]="formatInnerHtml(field)">
                             </td>
-                            <td *ngIf="isGeoPointField(field)">
-                                Lat: {{document.fieldValue(field).coordinates[1]}}, Lon: {{document.fieldValue(field).coordinates[0]}}
-                            </td>
+                            <td *ngIf="isGeoPointField(field)">{{displayGeoPointField(field)}}</td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
                             </td>
