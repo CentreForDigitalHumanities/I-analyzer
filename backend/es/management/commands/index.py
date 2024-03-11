@@ -3,6 +3,9 @@ from datetime import datetime
 from django.core.management import BaseCommand
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
+from addcorpus.models import Corpus
+from addcorpus.validation.indexing import validate_ready_to_index
 from es.es_index import perform_indexing
 from es.es_update import update_index, update_by_query
 
@@ -71,6 +74,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, corpus, start = None, end = None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
+        self._validate(corpus)
+
         this_corpus = load_corpus_definition(corpus)
 
         try:
@@ -113,3 +118,8 @@ class Command(BaseCommand):
                 raise
         else:
             perform_indexing(corpus, this_corpus, start_index, end_index, mappings_only, add, delete, prod, rollover)
+
+    def _validate(self, corpus_name):
+        load_all_corpus_definitions()
+        obj = Corpus.objects.get(name=corpus_name)
+        validate_ready_to_index(obj)
