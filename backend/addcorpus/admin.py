@@ -53,6 +53,7 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                     'min_date',
                     'max_date',
                     'document_context',
+                    'default_sort',
                 ]
             }
         ), (
@@ -120,7 +121,6 @@ class FieldAdmin(admin.ModelAdmin):
                     'searchable',
                     'search_field_core',
                     'sortable',
-                    'primary_sort',
                 ]
             }
         ), (
