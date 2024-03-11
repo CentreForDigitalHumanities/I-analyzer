@@ -35,12 +35,22 @@ def validate_fields(fields):
     if not len(fields):
         raise CorpusNotIndexableError('Corpus has no fields')
 
-    _check_id_field(fields)
+    _raise_if_no_content_field(fields)
+    _raise_if_no_metadata_field(fields)
+    _warn_if_no_id_field(fields)
 
-def _check_id_field(fields):
-    'Warns if the corpus has no ID field'
+def _raise_if_no_content_field(fields):
+    if not any(field.is_main_content for field in fields):
+        raise CorpusNotIndexableError('Corpus has no main content field')
+
+def _raise_if_no_metadata_field(fields):
+    if all(field.is_main_content for field in fields):
+        raise CorpusNotIndexableError('Corpus has no metadata fields')
+
+def _warn_if_no_id_field(fields):
     if not any(field.name == 'id' for field in fields):
         warnings.warn(
             "Corpus has no 'id' field. Document IDs will be unstable between index "
             "versions."
         )
+

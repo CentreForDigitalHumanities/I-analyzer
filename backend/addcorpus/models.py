@@ -11,13 +11,22 @@ from addcorpus.validation.creation import validate_language_code, \
     validate_es_mapping, validate_mimetype, validate_search_filter, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
     validate_searchable_field_has_full_text_search, \
-    validate_visualizations_with_mapping, validate_implication, any_date_fields, \
-    visualisations_require_date_field, validate_sort_configuration
+    validate_visualizations_with_mapping, validate_implication, \
+    validate_sort_configuration
 from addcorpus.validation.indexing import validate_ready_to_index
+from addcorpus.validation.publishing import validate_ready_to_publish
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
+
+def _validation_passes(validation_func, *args):
+    try:
+        validation_func(*args)
+        return True
+    except:
+        return False
+
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -56,18 +65,14 @@ class Corpus(models.Model):
 
         If you want to see validation error messages, use the validation function directly.
         '''
-        try:
-            validate_ready_to_index(self)
-            return True
-        except:
-            return False
+        return _validation_passes(validate_ready_to_index, self)
 
     @admin.display()
     def ready_to_publish(self) -> bool:
         '''
         Checks whether the corpus is ready to be made public.
         '''
-        return self.ready_to_index()
+        return _validation_passes(validate_ready_to_publish, self)
 
 
 class CorpusConfiguration(models.Model):
@@ -288,6 +293,10 @@ class Field(models.Model):
                                 name='unique_name_for_corpus')
         ]
 
+    @property
+    def is_main_content(self) -> bool:
+        return self.display_type == 'text_content'
+
     def __str__(self) -> str:
         return f'{self.name} ({self.corpus_configuration.corpus.name})'
 
@@ -308,9 +317,3 @@ class Field(models.Model):
             validate_implication(self.search_field_core, self.searchable, "Core search fields must be searchable")
         except ValidationError as e:
             warnings.warn(e.message)
-
-        validate_implication(
-            self.visualizations, self.corpus_configuration.fields.all(),
-            'The ngram visualisation requires a date field on the corpus',
-            visualisations_require_date_field, any_date_fields,
-        )
