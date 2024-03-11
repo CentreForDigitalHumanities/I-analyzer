@@ -39,22 +39,20 @@ class Corpus(models.Model):
         except:
             return False
 
-    @admin.display()
-    def active(self):
-        return self.has_configuration
-
     class Meta:
         verbose_name_plural = 'corpora'
 
     def __str__(self):
         return self.name
 
+    @admin.display()
     def ready_to_index(self):
         '''
         Checks whether the corpus is ready for indexing.
         '''
         return self.has_configuration
 
+    @admin.display()
     def ready_to_publish(self):
         '''
         Checks whether the corpus is ready to be made public.

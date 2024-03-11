@@ -39,7 +39,7 @@ If you want to remove a corpus from your environment, remove it from the Django 
 Removing a corpus from the settings will not delete the `Corpus` object. It has the following effect:
 
 - The `CorpusConfiguration` object (and its fields) will be removed
-- The `active` property of the corpus will be set to false.
+- The methods `corpus.ready_to_index()` and `corpus.read_to_publish()` will return `False`.
 - The corpus will be hidden from the API and interface
 - The python definition will no longer be imported during startup
 

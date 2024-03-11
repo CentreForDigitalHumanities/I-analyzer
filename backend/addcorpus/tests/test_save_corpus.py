@@ -17,8 +17,7 @@ def test_saved_corpora(db):
     for corpus_name in configured:
         assert Corpus.objects.filter(name=corpus_name).exists()
         corpus = Corpus.objects.get(name=corpus_name)
-        assert corpus.configuration
-        assert corpus.active
+        assert corpus.has_configuration
 
     assert len(Corpus.objects.all()) == len(configured)
     assert len(CorpusConfiguration.objects.all()) == len(configured)
@@ -45,23 +44,25 @@ def test_saving_broken_corpus(db, mock_corpus):
     _save_or_skip_corpus(mock_corpus, corpus_def)
 
     corpus.refresh_from_db()
-    # expect the corpus to be inactive now
-    assert corpus.active == False
+    # expect the corpus configuration to be missing now
+    assert corpus.has_configuration == False
+    assert corpus.ready_to_index() == False
+    assert corpus.ready_to_publish() == False
     assert not CorpusConfiguration.objects.filter(corpus=corpus).exists()
 
 def test_remove_corpus_from_settings(db, settings, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
-    assert corpus.active == True
+    assert corpus.has_configuration
 
     path = settings.CORPORA.pop(mock_corpus)
     load_and_save_all_corpora()
     corpus.refresh_from_db()
-    assert corpus.active == False
+    assert not corpus.has_configuration
 
     settings.CORPORA[mock_corpus] = path
     load_and_save_all_corpora()
     corpus.refresh_from_db()
-    assert corpus.active == True
+    assert corpus.has_configuration
 
 def test_save_field_definition(db, mock_corpus):
     corpus_conf = Corpus.objects.get(name=mock_corpus).configuration

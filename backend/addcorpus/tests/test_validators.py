@@ -1,7 +1,7 @@
 import pytest
 from addcorpus.models import Field
 from addcorpus.es_mappings import int_mapping, text_mapping, keyword_mapping, main_content_mapping, date_mapping
-from addcorpus.validators import *
+from addcorpus.validation.creation import *
 
 def test_validate_mimetype():
     validate_mimetype('image/jpeg')

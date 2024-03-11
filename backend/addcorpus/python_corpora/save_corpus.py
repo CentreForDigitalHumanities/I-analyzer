@@ -87,16 +87,16 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     field.full_clean()
     return field
 
-def _set_corpus_inactive(corpus_name):
+def _clear_configuration(corpus_name):
     '''
-    Set a corpus to inactive status, if it exists in the database
+    Remove the configuration attached to a corpus, if it exists in the database.
     '''
 
     exists = Corpus.objects.filter(name=corpus_name).exists()
 
     if exists:
         corpus = Corpus.objects.get(name=corpus_name)
-        if corpus.active:
+        if corpus.has_configuration:
             corpus.configuration.delete()
 
 def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=sys.stdout, stderr=sys.stderr):
@@ -133,4 +133,4 @@ def load_and_save_all_corpora(verbose=False, stdout=sys.stdout, stderr=sys.stder
 
     not_included = Corpus.objects.exclude(name__in=corpus_definitions.keys())
     for corpus in not_included:
-        _set_corpus_inactive(corpus.name)
+        _clear_configuration(corpus.name)

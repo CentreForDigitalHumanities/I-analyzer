@@ -48,7 +48,7 @@ class CorpusAccessPermission(permissions.BasePermission):
         # check if the corpus exists
         try:
             corpus = Corpus.objects.get(name=corpus_name)
-            assert corpus.active
+            assert corpus.ready_to_publish()
         except:
             raise NotFound('Corpus does not exist')
 
