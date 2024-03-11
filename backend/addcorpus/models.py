@@ -13,6 +13,7 @@ from addcorpus.validation.creation import validate_language_code, \
     validate_searchable_field_has_full_text_search, \
     validate_visualizations_with_mapping, validate_implication, any_date_fields, \
     visualisations_require_date_field, validate_sort_configuration
+from addcorpus.validation.indexing import validate_ready_to_index
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -49,8 +50,17 @@ class Corpus(models.Model):
     def ready_to_index(self) -> bool:
         '''
         Checks whether the corpus is ready for indexing.
+
+        Runs a try/except around `validate_ready_to_index()` and returns a
+        boolean; `True` means the validation completed without errors.
+
+        If you want to see validation error messages, use the validation function directly.
         '''
-        return self.has_configuration
+        try:
+            validate_ready_to_index(self)
+            return True
+        except:
+            return False
 
     @admin.display()
     def ready_to_publish(self) -> bool:
