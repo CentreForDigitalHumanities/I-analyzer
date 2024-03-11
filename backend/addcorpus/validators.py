@@ -159,3 +159,20 @@ def any_date_fields(fields):
 
 def visualisations_require_date_field(visualisations):
     return visualisations and 'ngram' in visualisations
+
+def validate_sort_configuration(sort_config):
+    '''
+    Validates that the object is a sort configuration
+    '''
+
+    if not sort_config:
+        return
+
+    field = sort_config.get('field', None)
+    ascending = sort_config.get('ascending', None)
+
+    if type(field) is not str:
+        raise ValidationError(f'Sort configuration has invalid "field" property: {field}')
+
+    if type(ascending) is not bool:
+        raise ValidationError(f'Sort configuration has invalid "ascending" property: {ascending}')
