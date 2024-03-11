@@ -7,7 +7,7 @@ from langdetect import detect
 
 from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
-from addcorpus.extract import CSV, Combined, Pass, Constant, Metadata
+from addcorpus.python_corpora.extract import CSV, Combined, Pass, Constant, Metadata
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from addcorpus.serializers import LanguageField
 

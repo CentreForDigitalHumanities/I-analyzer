@@ -2,7 +2,7 @@ import os
 import datetime
 
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
-from addcorpus.extract import CSV
+from addcorpus.python_corpora.extract import CSV
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 here = os.path.abspath(os.path.dirname(__file__))

@@ -1,5 +1,5 @@
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
-from addcorpus.extract import CSV
+from addcorpus.python_corpora.extract import CSV
 import os
 import datetime
 

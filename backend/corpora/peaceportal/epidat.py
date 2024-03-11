@@ -5,7 +5,7 @@ from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.es_mappings import date_mapping
-from addcorpus.extract import XML, Constant, Combined, FilterAttribute
+from addcorpus.python_corpora.extract import XML, Constant, Combined, FilterAttribute
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
     clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
     not_before_extractor

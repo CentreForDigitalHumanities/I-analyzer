@@ -8,7 +8,7 @@ import json
 import csv
 
 from addcorpus.python_corpora.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
-from addcorpus.extract import Constant, CSV, XML, Metadata, Combined, Backup
+from addcorpus.python_corpora.extract import Constant, CSV, XML, Metadata, Combined, Backup
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting

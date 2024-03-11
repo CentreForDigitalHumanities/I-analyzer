@@ -8,7 +8,7 @@ from zipfile import ZipFile, BadZipFile
 
 from django.conf import settings
 
-from addcorpus import extract
+from addcorpus.python_corpora import extract
 from addcorpus.python_corpora.corpus import FieldDefinition, XMLCorpusDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings

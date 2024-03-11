@@ -15,7 +15,7 @@ from io import BytesIO
 from django.conf import settings
 
 from es.es_update import update_document
-from addcorpus import extract
+from addcorpus.python_corpora import extract
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
 from media.image_processing import sizeof_fmt

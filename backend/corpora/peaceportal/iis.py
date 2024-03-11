@@ -4,7 +4,7 @@ from os.path import join, split
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.extract import Combined, Constant, ExternalFile, FilterAttribute, XML
+from addcorpus.python_corpora.extract import Combined, Constant, ExternalFile, FilterAttribute, XML
 from addcorpus.serializers import LanguageField
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, \
     clean_commentary, join_commentaries, get_text_in_language, \

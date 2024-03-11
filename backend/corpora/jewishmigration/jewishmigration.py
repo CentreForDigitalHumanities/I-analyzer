@@ -6,7 +6,7 @@ import requests
 
 from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
-import addcorpus.extract as extract
+import addcorpus.python_corpora.extract as extract
 from corpora.peaceportal.peaceportal import PeacePortal
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 

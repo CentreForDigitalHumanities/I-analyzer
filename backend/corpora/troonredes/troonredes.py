@@ -11,7 +11,7 @@ from datetime import datetime
 
 from django.conf import settings
 
-from addcorpus import extract
+from addcorpus.python_corpora import extract
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 

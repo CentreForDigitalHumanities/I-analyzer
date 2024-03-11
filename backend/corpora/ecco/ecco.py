@@ -10,7 +10,7 @@ import re
 
 from django.conf import settings
 
-from addcorpus.extract import Combined, Metadata, XML
+from addcorpus.python_corpora.extract import Combined, Metadata, XML
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
