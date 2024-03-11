@@ -1,7 +1,6 @@
 from rest_framework import status
 from users.models import CustomUser
-from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 
 def test_no_corpora(db, settings, admin_client):
     settings.CORPORA = {}
