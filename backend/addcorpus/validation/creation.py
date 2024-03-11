@@ -1,3 +1,7 @@
+'''
+This module defines functions to check if a corpus can be saved to the database
+'''
+
 from django.core.exceptions import ValidationError
 from langcodes import tag_is_valid
 import mimetypes

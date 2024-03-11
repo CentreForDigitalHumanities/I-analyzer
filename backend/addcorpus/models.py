@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validators import validate_language_code, \
+from addcorpus.validation.creation import validate_language_code, \
     validate_image_filename_extension, validate_markdown_filename_extension, \
     validate_es_mapping, validate_mimetype, validate_search_filter, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
@@ -31,14 +31,17 @@ class Corpus(models.Model):
         help_text='groups that have access to this corpus',
     )
 
-    @admin.display()
     @property
-    def active(self):
+    def has_configuration(self):
         try:
             self.configuration
             return True
         except:
             return False
+
+    @admin.display()
+    def active(self):
+        return self.has_configuration
 
     class Meta:
         verbose_name_plural = 'corpora'
@@ -50,13 +53,13 @@ class Corpus(models.Model):
         '''
         Checks whether the corpus is ready for indexing.
         '''
-        return True
+        return self.has_configuration
 
     def ready_to_publish(self):
         '''
         Checks whether the corpus is ready to be made public.
         '''
-        return True
+        return self.ready_to_index()
 
 
 class CorpusConfiguration(models.Model):
