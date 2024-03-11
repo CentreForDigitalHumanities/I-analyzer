@@ -1,6 +1,5 @@
 from ianalyzer.elasticsearch import elasticsearch
 from es.search import total_hits, search
-from addcorpus.load_corpus import load_corpus_definition
 from addcorpus.models import Corpus, CorpusConfiguration
 from visualization.query import MATCH_ALL
 

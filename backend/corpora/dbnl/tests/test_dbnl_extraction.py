@@ -2,7 +2,7 @@ import pytest
 import os
 from bs4 import BeautifulSoup
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.extract import XML
 from corpora.dbnl.utils import append_to_tag, index_by_id, which_unique, language_name
 

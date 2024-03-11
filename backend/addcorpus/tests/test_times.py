@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from addcorpus import load_corpus
+from addcorpus.python_corpora import load_corpus
 
 
 @pytest.fixture()

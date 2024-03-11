@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.save_corpus import load_and_save_all_corpora
 from addcorpus.models import Corpus
 

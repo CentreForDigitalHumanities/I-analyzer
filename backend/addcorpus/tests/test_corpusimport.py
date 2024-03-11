@@ -1,6 +1,6 @@
 import os
 import pytest
-from addcorpus import load_corpus
+from addcorpus.python_corpora import load_corpus
 from addcorpus.models import Corpus
 
 def test_key_error(db, settings):
