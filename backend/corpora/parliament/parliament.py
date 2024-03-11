@@ -5,7 +5,7 @@ import os.path as op
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import CorpusDefinition
-from addcorpus.filters import MultipleChoiceFilter
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from addcorpus.es_settings import es_settings
 

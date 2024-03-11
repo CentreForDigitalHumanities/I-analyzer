@@ -11,7 +11,7 @@ import os
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
-from addcorpus import filters
+from addcorpus.python_corpora import filters
 from addcorpus.extract import Metadata, XML
 from addcorpus.python_corpora.load_corpus import corpus_dir
 

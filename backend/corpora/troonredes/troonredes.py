@@ -12,7 +12,7 @@ from datetime import datetime
 from django.conf import settings
 
 from addcorpus import extract
-from addcorpus import filters
+from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
