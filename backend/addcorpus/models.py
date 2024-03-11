@@ -270,7 +270,6 @@ class Field(models.Model):
         if self.visualizations:
             validate_visualizations_with_mapping(self.es_mapping, self.visualizations)
 
-        validate_implication(self.primary_sort, self.sortable, "The primary sorting field must be sortable")
         validate_implication(self.csv_core, self.downloadable, "Core download fields must be downloadable")
 
         # core search fields must searchable

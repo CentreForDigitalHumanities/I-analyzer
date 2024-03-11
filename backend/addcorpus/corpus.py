@@ -114,6 +114,21 @@ class CorpusDefinition(Reader):
         'context_display_name': None
     }
 
+    '''
+    Specifies a default configuration for sorting search results.
+
+    The value should be a dictionary that specifies `'field'` and `'ascending'`, e.g.:
+
+    `{'field': 'date', 'ascending': True }`
+
+    The field must be the `name` of a sortable field in the corpus.
+
+    This configuration is used when sorting search results when the query context is
+    empty, i.e. the user has not entered query text. Results from a query are always
+    sorted on relevance by default.
+    '''
+    default_sort = {}
+
     @property
     def image(self):
         '''
@@ -328,7 +343,6 @@ class FieldDefinition(Field):
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
-                 primary_sort=False,
                  searchable=None,
                  downloadable=True,
                  required=False,
@@ -361,7 +375,6 @@ class FieldDefinition(Field):
             not hidden and indexed and \
             mapping_type in ['integer', 'float', 'date']
 
-        self.primary_sort = primary_sort
 
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.
         # Keyword fields without a filter are also searchable.
