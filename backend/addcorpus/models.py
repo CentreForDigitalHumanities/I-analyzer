@@ -46,6 +46,19 @@ class Corpus(models.Model):
     def __str__(self):
         return self.name
 
+    def ready_to_index(self):
+        '''
+        Checks whether the corpus is ready for indexing.
+        '''
+        return True
+
+    def ready_to_publish(self):
+        '''
+        Checks whether the corpus is ready to be made public.
+        '''
+        return True
+
+
 class CorpusConfiguration(models.Model):
     '''
     The configuration of the corpus as set by the definition file.
