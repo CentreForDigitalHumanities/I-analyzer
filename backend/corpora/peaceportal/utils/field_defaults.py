@@ -1,4 +1,4 @@
-from addcorpus.corpus import FieldDefinition
+from addcorpus.python_corpora.corpus import FieldDefinition
 from addcorpus.es_mappings import date_estimate_mapping, geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from addcorpus.extract import CSV, Combined, Constant
 from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament

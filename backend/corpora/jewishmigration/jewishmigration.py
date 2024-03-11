@@ -4,7 +4,7 @@ from django.conf import settings
 import langcodes
 import requests
 
-from addcorpus.corpus import JSONCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
 import addcorpus.extract as extract
 from corpora.peaceportal.peaceportal import PeacePortal
@@ -61,7 +61,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         for source in list_of_sources:
             yield source
 
-    
+
     def __init__(self):
         super().__init__()
         self._id.extractor = extract.JSON(key='source')

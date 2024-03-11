@@ -1,7 +1,7 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from addcorpus.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
 import corpora.utils.formatting as formatting

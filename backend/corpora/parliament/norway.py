@@ -5,7 +5,7 @@ from django.conf import settings
 import os
 
 from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults

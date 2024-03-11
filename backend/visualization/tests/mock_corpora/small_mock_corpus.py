@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
+from addcorpus.python_corpora.corpus import FieldDefinition, CSVCorpusDefinition
 from addcorpus.extract import CSV
 from addcorpus.es_mappings import date_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings

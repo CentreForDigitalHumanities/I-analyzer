@@ -12,7 +12,7 @@ import os.path
 from datetime import datetime, timedelta
 
 from addcorpus import extract, filters
-from addcorpus.corpus import (FieldDefinition, XMLCorpusDefinition, after,
+from addcorpus.python_corpora.corpus import (FieldDefinition, XMLCorpusDefinition, after,
                               consolidate_start_end_years, string_contains,
                               until)
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping

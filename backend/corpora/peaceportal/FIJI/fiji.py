@@ -5,7 +5,7 @@ import logging
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Constant, Combined
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, join_commentaries, get_text_in_language
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
@@ -184,7 +184,7 @@ def transform_age_integer(age):
         return int(age)
     except:
         return None
-        
+
 
 def normalize_language(languages):
     results = []

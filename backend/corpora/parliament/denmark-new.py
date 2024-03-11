@@ -6,7 +6,7 @@ import re
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV, Metadata, Combined
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
 import corpora.utils.constants as constants

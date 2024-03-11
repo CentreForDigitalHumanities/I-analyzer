@@ -1,5 +1,5 @@
 from django.db import transaction
-from addcorpus.corpus import CorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions
 import sys

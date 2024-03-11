@@ -1,7 +1,7 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.extract import XML, Combined, Constant, Metadata
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults

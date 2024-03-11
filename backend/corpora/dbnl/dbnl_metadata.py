@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.extract import CSV, Combined, Pass
 import corpora.dbnl.utils as utils
 

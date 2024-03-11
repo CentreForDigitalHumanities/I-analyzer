@@ -3,7 +3,7 @@ from copy import copy
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.es_mappings import date_mapping
 from addcorpus.extract import XML, Constant, Combined, FilterAttribute
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \

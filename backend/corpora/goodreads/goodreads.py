@@ -10,7 +10,7 @@ import openpyxl
 
 from addcorpus.extract import CSV, Metadata
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import main_content_mapping
 

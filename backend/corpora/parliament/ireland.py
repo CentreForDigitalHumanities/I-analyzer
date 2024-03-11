@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import json
 import csv
 
-from addcorpus.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
+from addcorpus.python_corpora.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
 from addcorpus.extract import Constant, CSV, XML, Metadata, Combined, Backup
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
