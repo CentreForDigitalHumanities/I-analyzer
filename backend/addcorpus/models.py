@@ -46,14 +46,14 @@ class Corpus(models.Model):
         return self.name
 
     @admin.display()
-    def ready_to_index(self):
+    def ready_to_index(self) -> bool:
         '''
         Checks whether the corpus is ready for indexing.
         '''
         return self.has_configuration
 
     @admin.display()
-    def ready_to_publish(self):
+    def ready_to_publish(self) -> bool:
         '''
         Checks whether the corpus is ready to be made public.
         '''
