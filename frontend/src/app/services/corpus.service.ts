@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { Corpus, CorpusField, DocumentContext } from '../models/index';
+import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
@@ -92,7 +92,8 @@ export class CorpusService {
             data.category,
             data.description_page,
             this.parseDocumentContext(data.document_context, allFields),
-            data.new_highlight
+            data.new_highlight,
+            this.parseDefaultSort(data.default_sort, allFields),
         );
     };
 
@@ -131,5 +132,18 @@ export class CorpusService {
             displayName,
             sortDirection,
         };
+    }
+
+    private parseDefaultSort(
+        data: { field: string; ascending: boolean},
+        allFields: CorpusField[]
+    ): SortState {
+        if (data) {
+            const field = findByName(allFields, data.field);
+            const direction: SortDirection = data.ascending ? 'asc' : 'desc';
+            return [field, direction];
+        } else {
+            return [undefined, 'desc'];
+        }
     }
 }

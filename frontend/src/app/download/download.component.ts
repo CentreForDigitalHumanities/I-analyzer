@@ -58,7 +58,6 @@ export class DownloadComponent implements OnChanges {
                 csvCore: false,
                 hidden: false,
                 sortable: false,
-                primarySort: false,
                 searchable: false,
                 downloadable: true,
                 filterOptions: null,
