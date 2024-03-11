@@ -36,6 +36,7 @@ class MockCSVCorpus(CSVCorpusDefinition):
         ),
         FieldDefinition(
             name = 'lines',
+            display_type = 'text_content',
             extractor = CSV(
                 field = 'line',
                 multiple = True,
