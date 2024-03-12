@@ -11,27 +11,24 @@ class CorpusNotIndexableError(Exception):
 
     pass
 
-
-def validate_ready_to_index(corpus) -> None:
-    '''
-    Validation to check if the corpus is ready for indexing.
-
-    Returns nothing, but raises exceptions when validation fails.
-    '''
-
-    validate_has_configuration(corpus)
-
-    config = corpus.configuration
-    fields = config.fields.all()
-
-    validate_fields(fields)
-
-
 def validate_has_configuration(corpus):
     if not corpus.has_configuration:
         raise CorpusNotIndexableError('Corpus has no attached configuration')
 
-def validate_fields(fields):
+def validate_essential_fields(fields):
+    '''
+    Validates that the corpus is not missing essential fields.
+
+    Raises CorpusNotIndexableError if:
+
+    - the corpus has no content field(s)
+    - the corpus has no metadata field(s)
+
+    Warns if:
+
+    - the corpus has no ID field
+    '''
+
     if not len(fields):
         raise CorpusNotIndexableError('Corpus has no fields')
 

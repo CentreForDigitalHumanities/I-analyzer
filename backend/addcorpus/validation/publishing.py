@@ -3,7 +3,6 @@ This module defines functions to check if a corpus is ready to be published.
 '''
 
 from addcorpus.validation.creation import primary_mapping_type
-from addcorpus.validation.indexing import validate_ready_to_index
 
 class CorpusNotPublishableError(Exception):
     '''
@@ -11,13 +10,8 @@ class CorpusNotPublishableError(Exception):
     '''
     pass
 
-def validate_ready_to_publish(corpus):
-    validate_ready_to_index(corpus)
 
-    _raise_if_ngram_without_date_field(corpus)
-    _validate_default_sort(corpus)
-
-def _raise_if_ngram_without_date_field(corpus):
+def validate_ngram_has_date_field(corpus):
     fields = corpus.configuration.fields.all()
     has_ngram = any(
         _visualisations_require_date_field(field.visualizations) for field in fields
@@ -35,7 +29,7 @@ def _any_date_fields(fields):
 def _visualisations_require_date_field(visualizations):
     return visualizations and 'ngram' in visualizations
 
-def _validate_default_sort(corpus):
+def validate_default_sort(corpus):
     config = corpus.configuration
     if not config.default_sort:
         return
