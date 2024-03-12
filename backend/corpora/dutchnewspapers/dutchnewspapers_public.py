@@ -173,7 +173,8 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             ),
             extractor=Metadata('date')
         ),
-        # OCRConfidencelevel is not available in the new data of the KB
+        # # OCRConfidencelevel is not available in the new data of the KB:
+        # # For now, this is turned off until a new harvest is done with the OCR data present
         # FieldDefinition(
         #     name='ocr',
         #     display_name='OCR confidence',
