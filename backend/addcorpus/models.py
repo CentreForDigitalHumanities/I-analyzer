@@ -41,6 +41,10 @@ class Corpus(models.Model):
         blank=True,
         help_text='groups that have access to this corpus',
     )
+    active = models.BooleanField(
+        default=False,
+        help_text='an inactive corpus is hidden from the search interface',
+    )
 
     @property
     def has_configuration(self):

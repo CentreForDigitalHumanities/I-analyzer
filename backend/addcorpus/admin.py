@@ -15,9 +15,9 @@ def show_warning_message(request):
 
 class CorpusAdmin(admin.ModelAdmin):
     readonly_fields = ['name', 'configuration', 'ready_to_index', 'ready_to_publish']
-    fields = ['name', 'groups', 'configuration', 'ready_to_index', 'ready_to_publish']
-    list_display = ['name', 'ready_to_index', 'ready_to_publish']
-    list_filter = ['groups']
+    fields = ['name', 'groups', 'configuration', 'ready_to_index', 'ready_to_publish', 'active']
+    list_display = ['name', 'active']
+    list_filter = ['groups', 'active']
 
 class InlineFieldAdmin(admin.StackedInline):
     model = Field
