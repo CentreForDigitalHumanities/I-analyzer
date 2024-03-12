@@ -70,6 +70,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'allow_image_download',
             'category',
             'description_page',
+            'citation_page',
             'description',
             'document_context',
             'es_alias',

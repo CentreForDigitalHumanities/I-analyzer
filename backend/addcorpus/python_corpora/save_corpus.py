@@ -36,6 +36,7 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'allow_image_download',
         'category',
         'description_page',
+        'citation_page',
         'document_context',
         'es_alias',
         'es_index',

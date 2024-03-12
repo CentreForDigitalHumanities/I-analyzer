@@ -15,6 +15,11 @@ def test_corpus_documentation_view(admin_client, mock_corpus):
     response = admin_client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
     assert response.status_code == 200
 
+def test_corpus_citation_view(admin_client, mock_corpus):
+    response = admin_client.get(f'/api/corpus/citation/{mock_corpus}')
+    assert response.status_code == 200
+
+
 def test_nonexistent_corpus(admin_client):
     response = admin_client.get(f'/api/corpus/documentation/unknown-corpus/mock-csv-corpus.md')
     assert response.status_code == 404
