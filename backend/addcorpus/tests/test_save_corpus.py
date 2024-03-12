@@ -1,4 +1,5 @@
 import sys
+import pytest
 from django.conf import settings
 from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
 from addcorpus.models import Corpus, CorpusConfiguration
@@ -64,8 +65,20 @@ def test_remove_corpus_from_settings(db, settings, mock_corpus):
     corpus.refresh_from_db()
     assert corpus.has_configuration
 
-def test_save_field_definition(db, mock_corpus):
-    corpus_conf = Corpus.objects.get(name=mock_corpus).configuration
+@pytest.fixture()
+def deactivated_corpus(mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus.active = False
+    corpus.save()
+
+    yield corpus
+
+    corpus.active = True
+    corpus.save()
+
+def test_save_field_definition(db, mock_corpus, deactivated_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus_conf = corpus.configuration
     corpus_def = MockCSVCorpus()
 
     corpus_conf.fields.all().delete()
