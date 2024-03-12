@@ -20,6 +20,7 @@ class DBNL(XMLCorpusDefinition):
     es_index = getattr(settings, 'DBNL_ES_INDEX', 'dbnl')
     image = 'dbnl.png'
     description_page = 'dbnl.md'
+    citation_page = 'citation.md'
 
     languages = ['nl', 'dum', 'fr', 'la', 'fy', 'lat', 'en', 'nds', 'de', 'af']
     category = 'book'

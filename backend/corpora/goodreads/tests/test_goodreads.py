@@ -5,7 +5,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 def test_goodreads(settings, db, admin_client):
     settings.CORPORA = {
-        'goodreads': os.path.join(here, 'goodreads.py')
+        'goodreads': os.path.join(here, '..', 'goodreads.py')
     }
     settings.GOODREADS_DATA = ''
 

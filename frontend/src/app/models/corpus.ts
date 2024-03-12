@@ -32,6 +32,7 @@ export class Corpus implements ElasticSearchIndex {
         public languages: string[],
         public category: string,
         public descriptionpage?: string,
+        public citationPage?: string,
         public documentContext?: DocumentContext,
         public new_highlight?: boolean,
         public defaultSort?: SortState,
