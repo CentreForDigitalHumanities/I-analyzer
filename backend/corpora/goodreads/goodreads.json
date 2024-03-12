@@ -1,0 +1,295 @@
+{
+    "name": "goodreads",
+    "meta": {
+        "title": "DIOPTRA-L",
+        "description": "Goodreads reviews of translated literary texts",
+        "languages": ["en", "es", "it", "pt", "fr",  "nl", "de", "ar", "af", "sv", ""],
+        "category": "review",
+        "date_range": {
+            "min": "2007-01-01",
+            "max": "2022-12-31"
+        }
+    },
+    "source_data": {
+        "type": "csv",
+        "options": {
+            "delimiter": ";"
+        }
+    },
+    "fields": [
+        {
+            "name": "year",
+            "display_name": "Year",
+            "description": "Year in which the review was published",
+            "type": "integer",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": false,
+                "visualize": true,
+                "sort": true,
+                "hidden": false
+            },
+            "extract": {
+                "column": "date"
+            }
+        }, {
+            "name": "id",
+            "display_name": "ID",
+            "description": "Unique identifier of the review",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "hide",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "id"
+            }
+        }, {
+            "name": "book_title",
+            "display_name": "Book title",
+            "description": "The title of the reviewed book. Encompasses all editions.",
+            "type": "text_metadata",
+            "options": {
+                "search": true,
+                "filter": "show",
+                "preview": true,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "book_title"
+            }
+        }, {
+            "name": "original_language",
+            "display_name": "Original language",
+            "description": "The original language in which the reviewed book was written",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": false,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "original_language"
+            }
+        }, {
+            "name": "edition_id",
+            "display_name": "Edition ID",
+            "description": "Unique identifier of the reviewed book",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "hide",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "edition_id"
+            }
+        }, {
+            "name": "edition_language",
+            "display_name": "Edition language",
+            "description": "The language of the reviewed edition of the book",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": true,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "edition_language"
+            }
+        }, {
+            "name": "book_genre",
+            "display_name": "Genre",
+            "description": "The genre of the reviewed book",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": false,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "book_genre"
+            }
+        }, {
+            "name": "age_category",
+            "display_name": "Age category",
+            "description": "The age category of the target audience of the reviewed book",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": false,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "age_category"
+            }
+        }, {
+            "name": "url",
+            "display_name": "Source URL",
+            "description": "Link to the review on Goodreads",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "none",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "url"
+            }
+        }, {
+            "name": "text",
+            "display_name": "Text",
+            "description": "Text content of the review",
+            "type": "text_content",
+            "options": {
+                "search": true,
+                "filter": "none",
+                "preview": true,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "text"
+            }
+        }, {
+            "name": "language",
+            "display_name": "Review language",
+            "description": "The language in which the review is written",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": true,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "language"
+            }
+        }, {
+            "name": "date",
+            "display_name": "Date",
+            "description": "Date on which the review was published",
+            "type": "date",
+            "options": {
+                "search": false,
+                "filter": "hide",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "date"
+            }
+        }, {
+            "name": "rating_text",
+            "display_name": "Goodreads rating",
+            "description": "Goodreads label for the rating, e.g. 'really liked it'",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "hide",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "rating"
+            }
+        }, {
+            "name": "rating_no",
+            "display_name": "Rating",
+            "description": "Rating as a number (1-5)",
+            "type": "integer",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": true,
+                "visualize": true,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "rating_no"
+            }
+        }, {
+            "name": "word_count",
+            "display_name": "Word count",
+            "description": "Number of words (whitespace-delimited) in the review text",
+            "type": "integer",
+            "options": {
+                "search": false,
+                "filter": "show",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "word_count"
+            }
+        }, {
+            "name": "edition_publisher",
+            "display_name": "Edition publisher",
+            "description": "Publisher of the reviewed edition of the book",
+            "type": "text_metadata",
+            "options": {
+                "search": false,
+                "filter": "hide",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "edition_publisher"
+            }
+        }, {
+            "name": "edition_publishing_year",
+            "display_name": "Edition publication year",
+            "description": "Year in which the reviewed edition was published",
+            "type": "integer",
+            "options": {
+                "search": false,
+                "filter": "hide",
+                "preview": false,
+                "visualize": false,
+                "sort": false,
+                "hidden": false
+            },
+            "extract": {
+                "column": "edition_publishing_year"
+            }
+        }
+    ],
+    "options": {}
+}
