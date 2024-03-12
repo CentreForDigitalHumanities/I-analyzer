@@ -42,6 +42,10 @@ class ParliamentSwedenOld(Parliament, CSVCorpusDefinition):
     document_context = constants.document_context(
         context_fields=['chamber', 'date_earliest', 'date_latest']
     )
+    default_sort = {
+        'field': 'date_latest',
+        'ascending': False,
+    }
 
     def sources(self, start, end):
         for csv_file in sorted(glob('{}/**/*.csv'.format(self.data_directory), recursive=True)):

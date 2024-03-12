@@ -83,7 +83,6 @@ def date():
             description='Search only within this time range.'
         ),
         visualizations=['resultscount', 'termfrequency'],
-        primary_sort=True,
         csv_core=True,
     )
 

@@ -47,6 +47,7 @@ The following properties are optional:
 - `allow_image_download`
 - `desription_page`: filename of markdown document with a comprehensive description, located in a subdirectory `description` of the corpus definition directory.
 - `document_context`: specifies fields that define the natural grouping of documents.
+- `default_sort`: specifies the default method to sort search result.
 
 The corpus class should also define a function `sources(self, start, end)` which iterates source files (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 

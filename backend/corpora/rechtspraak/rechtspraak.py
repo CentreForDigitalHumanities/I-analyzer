@@ -42,6 +42,7 @@ class Rechtspraak(XMLCorpusDefinition):
     toplevel_zip_file = 'OpenDataUitspraken.zip'
     languages = ['nl']
     category = 'ruling'
+    default_sort = {'field': 'date', 'ascending': False}
 
     @property
     def es_settings(self):
@@ -177,7 +178,6 @@ class Rechtspraak(XMLCorpusDefinition):
             extractor=rdf_description_extractor('dcterms:date'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
-            primary_sort=True,
             csv_core=True,
             search_filter=filters.DateFilter(
                 min_date,

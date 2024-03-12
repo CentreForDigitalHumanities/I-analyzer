@@ -44,6 +44,8 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
         'sort_direction': 'asc',
     }
 
+    default_sort = {'field': 'date_latest', 'ascending': False}
+
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
 
@@ -83,7 +85,6 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
         field='year',
         transform= lambda value: formatting.get_date_from_year(value, 'latest')
     )
-    date_latest.primary_sort = True
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 

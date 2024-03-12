@@ -101,3 +101,17 @@ def test_validate_ngram_has_date_field():
             visualisations_require_date_field,
             any_date_fields
         )
+
+def test_validate_sort_configuration():
+    validate_sort_configuration({})
+
+    validate_sort_configuration({
+        'field': 'date',
+        'ascending': False
+    })
+
+    with pytest.raises(ValidationError):
+        validate_sort_configuration({
+            'field': 'date',
+            'ascending': None
+        })

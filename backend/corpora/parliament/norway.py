@@ -33,6 +33,10 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
         context_fields=['book_id'],
         context_display_name='book',
     )
+    default_sort = {
+        'field': 'date_latest',
+        'ascending': False,
+    }
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):

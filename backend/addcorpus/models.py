@@ -6,10 +6,13 @@ from django.core.exceptions import ValidationError
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validators import validate_language_code, validate_image_filename_extension, \
-    validate_markdown_filename_extension, validate_es_mapping, validate_mimetype, validate_search_filter, \
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, validate_searchable_field_has_full_text_search, \
-    validate_visualizations_with_mapping, validate_implication, any_date_fields, visualisations_require_date_field
+from addcorpus.validators import validate_language_code, \
+    validate_image_filename_extension, validate_markdown_filename_extension, \
+    validate_es_mapping, validate_mimetype, validate_search_filter, \
+    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
+    validate_searchable_field_has_full_text_search, \
+    validate_visualizations_with_mapping, validate_implication, any_date_fields, \
+    visualisations_require_date_field, validate_sort_configuration
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -130,6 +133,13 @@ class CorpusConfiguration(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
+    default_sort = models.JSONField(
+        blank=True,
+        validators=[validate_sort_configuration],
+        default=dict,
+        help_text='default sort for search results without query text; '
+            'if blank, results are presented in the order in which they are stored',
+    )
 
     def __str__(self):
         return f'Configuration of <{self.corpus.name}>'
@@ -239,10 +249,6 @@ class Field(models.Model):
         default=False,
         help_text='whether search results can be sorted on this field',
     )
-    primary_sort = models.BooleanField(
-        default=False,
-        help_text='if sortable: whether this is the default method of sorting search results',
-    )
     searchable = models.BooleanField(
         default=False,
         help_text='whether this field is listed when selecting search fields',
@@ -270,7 +276,6 @@ class Field(models.Model):
         if self.visualizations:
             validate_visualizations_with_mapping(self.es_mapping, self.visualizations)
 
-        validate_implication(self.primary_sort, self.sortable, "The primary sorting field must be sortable")
         validate_implication(self.csv_core, self.downloadable, "Core download fields must be downloadable")
 
         # core search fields must searchable

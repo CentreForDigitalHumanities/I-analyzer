@@ -36,6 +36,8 @@ class Parliament(CorpusDefinition):
 
     category = 'parliament'
 
+    default_sort = {'field': 'date', 'ascending': False}
+
     @property
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
