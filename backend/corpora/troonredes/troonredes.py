@@ -42,6 +42,7 @@ class Troonredes(XMLCorpusDefinition):
     languages = ['nl']
     category = 'oration'
     description_page = 'troonredes.md'
+    citation_page = 'citation.md'
 
     @property
     def es_settings(self):
