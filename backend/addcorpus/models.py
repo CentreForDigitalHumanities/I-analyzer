@@ -110,6 +110,15 @@ class Corpus(models.Model):
         validate_ngram_has_date_field(self)
         validate_default_sort(self)
 
+    def clean(self):
+        if self.active:
+            try:
+                self.validate_ready_to_publish()
+            except Exception as e:
+                raise ValidationError([
+                    'Corpus is set to "active" but does not meet requirements for publication.',
+                    e
+                ])
 
 class CorpusConfiguration(models.Model):
     '''
@@ -208,6 +217,18 @@ class CorpusConfiguration(models.Model):
 
     def __str__(self):
         return f'Configuration of <{self.corpus.name}>'
+
+    def clean(self):
+        if self.corpus.active:
+            try:
+                self.corpus.validate_ready_to_publish()
+            except Exception as e:
+                raise ValidationError([
+                    'Corpus configuration is not valid for an active corpus. Deactivate '
+                    'the corpus or correct the following errors.',
+                    e
+                ])
+
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
@@ -353,3 +374,13 @@ class Field(models.Model):
             validate_implication(self.search_field_core, self.searchable, "Core search fields must be searchable")
         except ValidationError as e:
             warnings.warn(e.message)
+
+        if self.corpus_configuration.corpus.active:
+            try:
+                self.corpus_configuration.corpus.validate_ready_to_publish()
+            except Exception as e:
+                raise ValidationError([
+                    'Field configuration is not valid in an active corpus. Deactivate '
+                    'the corpus or correct the following errors.',
+                    e
+                ])
