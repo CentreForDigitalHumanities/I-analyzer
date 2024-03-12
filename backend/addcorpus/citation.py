@@ -5,7 +5,7 @@ from datetime import date
 from django.conf import settings
 
 from addcorpus.models import CorpusConfiguration
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.python_corpora.load_corpus import corpus_dir
 
 
 def render_citation(corpus_name):
