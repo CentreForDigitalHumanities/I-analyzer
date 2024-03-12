@@ -5,21 +5,19 @@ separate xml-files, zipped.
 
 import logging
 logger = logging.getLogger(__name__)
-import glob
 import re
 from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
 from os.path import join, getsize
-from os import getcwd
-from datetime import date, datetime
+from datetime import datetime
 from zipfile import ZipFile
 from io import BytesIO
 
 from django.conf import settings
 
 from es.es_update import update_document
-from addcorpus import extract
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
+from addcorpus.python_corpora import extract
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
 from media.image_processing import sizeof_fmt
 from media.media_url import media_url
 

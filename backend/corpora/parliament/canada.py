@@ -7,8 +7,8 @@ from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from corpora.utils.constants import document_context
-from addcorpus.extract import Constant,CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant,CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
 

@@ -4,8 +4,8 @@ from datetime import datetime
 
 from django.conf import settings
 
-from addcorpus.extract import Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context

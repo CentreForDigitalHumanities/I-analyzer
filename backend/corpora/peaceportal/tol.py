@@ -3,8 +3,8 @@ from copy import copy
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Constant, Combined, FilterAttribute
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.extract import XML, Constant, Combined, FilterAttribute
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
     clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
     transform_to_date_range, not_before_extractor, not_after_extractor

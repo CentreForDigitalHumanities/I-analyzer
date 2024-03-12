@@ -1,5 +1,4 @@
-from addcorpus.extract import XML, Combined, Constant, Metadata
-from bs4 import BeautifulSoup
+from addcorpus.python_corpora.extract import XML, Combined, Metadata
 from bs4.element import NavigableString
 
 def clean_value(value):

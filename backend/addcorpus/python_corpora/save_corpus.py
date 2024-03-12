@@ -1,7 +1,7 @@
 from django.db import transaction
-from addcorpus.corpus import CorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field
-from addcorpus.load_corpus import load_all_corpus_definitions
+from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions
 import sys
 
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):

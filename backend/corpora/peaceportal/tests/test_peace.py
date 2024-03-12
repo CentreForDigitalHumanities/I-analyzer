@@ -1,8 +1,8 @@
 import os
 import pytest
 
-from addcorpus.load_corpus import load_corpus_definition
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from addcorpus.models import Corpus
 
 from corpora.peaceportal.peaceportal import transform_to_date_range, zero_pad_year

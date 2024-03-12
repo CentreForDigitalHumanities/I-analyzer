@@ -1,9 +1,9 @@
 import sys
 from django.conf import settings
-from datetime import datetime, date
 from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
 from addcorpus.models import Corpus, CorpusConfiguration
-from addcorpus.save_corpus import _save_field_in_database, load_and_save_all_corpora, _save_or_skip_corpus
+from addcorpus.python_corpora.save_corpus import _save_field_in_database, \
+    load_and_save_all_corpora, _save_or_skip_corpus
 
 
 def test_saved_corpora(db):

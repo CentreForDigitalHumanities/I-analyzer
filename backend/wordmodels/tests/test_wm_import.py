@@ -2,7 +2,7 @@ import numpy as np
 
 import pytest
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from wordmodels.utils import load_word_models, word_in_models, transform_query
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
 from wordmodels.utils import load_wm_documentation

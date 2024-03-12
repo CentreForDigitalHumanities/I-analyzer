@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from addcorpus.corpus import FieldDefinition
-from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+from addcorpus.python_corpora.corpus import FieldDefinition
+from addcorpus.python_corpora.filters import DateFilter, MultipleChoiceFilter
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping, main_content_mapping
 

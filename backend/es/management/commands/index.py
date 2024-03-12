@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from django.core.management import BaseCommand
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from es.es_index import perform_indexing
 from es.es_update import update_index, update_by_query
 

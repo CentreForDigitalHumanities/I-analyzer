@@ -2,8 +2,8 @@ from glob import glob
 from datetime import datetime
 from django.conf import settings
 
-from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Combined, Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting

@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from addcorpus.serializers import CorpusSerializer
 from rest_framework.response import Response
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.python_corpora.load_corpus import corpus_dir
 import os
 import io
 from django.http.response import FileResponse, StreamingHttpResponse

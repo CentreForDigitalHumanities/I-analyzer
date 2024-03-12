@@ -5,7 +5,7 @@ import warnings
 import os
 
 from addcorpus.constants import MappingType, VisualizationType, FORBIDDEN_FIELD_NAMES
-from addcorpus.filters import VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
+from addcorpus.python_corpora.filters import VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
 
 def primary_mapping_type(es_mapping):
     return es_mapping.get('type', None)

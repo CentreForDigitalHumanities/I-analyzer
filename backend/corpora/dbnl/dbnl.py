@@ -4,11 +4,11 @@ import re
 from tqdm import tqdm
 
 from django.conf import settings
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
-from addcorpus.extract import Metadata, XML, Pass, Order, Backup, Combined
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
-from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
+from addcorpus.python_corpora.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
 from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
 class DBNL(XMLCorpusDefinition):

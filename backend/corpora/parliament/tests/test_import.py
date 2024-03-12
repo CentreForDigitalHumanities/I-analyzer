@@ -3,7 +3,7 @@ import warnings
 import pytest
 from datetime import datetime
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 
 CORPUS_TEST_DATA = [
     {

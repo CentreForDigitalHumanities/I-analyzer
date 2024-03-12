@@ -5,8 +5,8 @@ from langdetect.lang_detect_exception import LangDetectException
 
 from django.conf import settings
 
-from addcorpus.corpus import ParentCorpusDefinition
-from addcorpus.extract import XML
+from addcorpus.python_corpora.corpus import ParentCorpusDefinition
+from addcorpus.python_corpora.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
