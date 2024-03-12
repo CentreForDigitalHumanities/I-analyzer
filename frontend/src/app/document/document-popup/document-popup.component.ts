@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { DocumentFocus, DocumentPage, DocumentView } from '../../models/document-page';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { FoundDocument, QueryModel } from '../../models';
 import { Subject } from 'rxjs';
@@ -40,6 +40,7 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.page) {
             this.refresh$.next();
+            this.focusUpdate();
 
             this.page.focus$.pipe(
                 takeUntil(this.refresh$),
