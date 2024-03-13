@@ -21,13 +21,6 @@ MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
 
-def _validation_passes(validation_func, *args):
-    try:
-        validation_func(*args)
-        return True
-    except:
-        return False
-
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -71,7 +64,11 @@ class Corpus(models.Model):
         If you want to see validation error messages, use the validation method
         directly.
         '''
-        return _validation_passes(self.validate_ready_to_index)
+        try:
+            self.validate_ready_to_index()
+            return True
+        except:
+            return False
 
     def validate_ready_to_index(self) -> None:
         '''
@@ -95,7 +92,11 @@ class Corpus(models.Model):
         '''
         Checks whether the corpus is ready to be made public.
         '''
-        return _validation_passes(self.validate_ready_to_publish)
+        try:
+            self.validate_ready_to_publish()
+            return True
+        except:
+            return False
 
     def validate_ready_to_publish(self) -> None:
         '''

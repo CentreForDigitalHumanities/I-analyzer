@@ -91,7 +91,7 @@ def _deactivate(corpus):
     corpus.active = False
     corpus.save()
 
-def _set_active(corpus):
+def _activate_if_ready(corpus):
     '''
     Check if the corpus passes ready_to_publish() check and set active property
     accordingly.
@@ -124,7 +124,7 @@ def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=s
         with transaction.atomic():
             _deactivate(corpus)
             _save_corpus_configuration(corpus, corpus_definition)
-            _set_active(corpus)
+            _activate_if_ready(corpus)
         if verbose:
             print(f'Saved corpus: {corpus_name}',  file=stdout)
     except Exception as e:
