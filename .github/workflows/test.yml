@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: docker/setup-buildx-action@v3
-    - uses: docker/build-push-action@v5
+    - name: Build backend
+      uses: docker/bake-action@v4
       with:
-        context: ./backend
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        push: false
+        source: ./backend
         load: true
+      set: |
+        web.cache-from=type=gha
+        web.cache-to=type=gha
     - name: Run backend tests
       run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
   frontend-test:
@@ -37,12 +37,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: docker/setup-buildx-action@v3
-    - uses: docker/build-push-action@v5
-      with:
-        context: ./frontend
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        push: false
-        load: true
+    - name: Build frontend
+        uses: docker/bake-action@master
+        with:
+          context: ./frontend
+          push: false
+          load: true
+        set: |
+              web.cache-from=type=gha
+              web.cache-to=type=gha
     - name: Run frontend tests
       run: sudo docker-compose --env-file .env-ci run frontend yarn test
