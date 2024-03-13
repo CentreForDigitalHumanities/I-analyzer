@@ -78,6 +78,8 @@ class CorpusConfiguration(models.Model):
         blank=True,
         help_text='short description of the corpus',
     )
+    direct_download_limit = models.IntegerField(
+        default=1000, help_text='limit of how many documents can be downloaded without a Celery task')
     document_context = models.JSONField(
         null=True,
         help_text='specification of how documents are grouped into collections',

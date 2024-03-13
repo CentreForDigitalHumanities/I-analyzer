@@ -76,6 +76,11 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
             {
                 'fields': ['word_models_present']
             }
+        ), (
+            'Download options',
+            {
+                'fields': ['direct_download_limit']
+            }
         )
     ]
 

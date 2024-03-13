@@ -71,6 +71,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'category',
             'description_page',
             'description',
+            'direct_download_limit',
             'document_context',
             'es_alias',
             'es_index',

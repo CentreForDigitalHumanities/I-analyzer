@@ -29,8 +29,6 @@ export class DownloadComponent implements OnChanges {
 
     actionIcons = actionIcons;
 
-    private resultsCutoff = 1000;
-
     private downloadsPageLink = {
         text: 'view downloads',
         route: ['/download-history'],
@@ -72,7 +70,7 @@ export class DownloadComponent implements OnChanges {
      * and an email is sent with download link from backend
      */
     public chooseDownloadMethod() {
-        if (this.resultOverview.resultsCount < this.resultsCutoff || this.downloadLimit <= this.resultsCutoff) {
+        if (this.resultOverview.resultsCount < this.corpus.directDownloadLimit || this.downloadLimit <= this.corpus.directDownloadLimit) {
             this.directDownload();
         } else {
             this.longDownload();
@@ -81,7 +79,7 @@ export class DownloadComponent implements OnChanges {
 
     /** download short file directly */
     public confirmDirectDownload(options: DownloadOptions) {
-        const nDocuments = Math.min(this.resultOverview.resultsCount, this.resultsCutoff);
+        const nDocuments = Math.min(this.resultOverview.resultsCount, this.corpus.directDownloadLimit);
         this.isDownloading = true;
         this.downloadService
             .download(

@@ -40,15 +40,15 @@ class ResultsDownloadView(APIView):
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
-        max_size = 1000
-        size = request.data.get('es_query').pop('size', max_size)
-
-        if size > max_size:
-            raise ParseError(detail='Download failed: too many documents requested')
-
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
+            max_size = corpus.direct_download_limit
+            size = request.data.get('es_query').pop('size', max_size)
+            if size > max_size:
+                raise ParseError(
+                    detail='Download failed: too many documents requested')
+
             user = request.user if request.user.is_authenticated else None
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=user)

@@ -31,6 +31,7 @@ export class Corpus implements ElasticSearchIndex {
         public word_models_present: boolean,
         public languages: string[],
         public category: string,
+        public directDownloadLimit: number,
         public descriptionpage?: string,
         public documentContext?: DocumentContext,
         public new_highlight?: boolean,
