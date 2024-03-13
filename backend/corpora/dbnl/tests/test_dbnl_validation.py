@@ -13,4 +13,4 @@ def test_dbnl_validation(settings):
     load_and_save_all_corpora()
 
     assert Corpus.objects.filter(name='dbnl').exists()
-    assert Corpus.objects.get(name='dbnl').active == True
+    assert Corpus.objects.get(name='dbnl').ready_to_publish()

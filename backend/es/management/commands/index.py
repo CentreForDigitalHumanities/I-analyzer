@@ -3,6 +3,8 @@ from datetime import datetime
 from django.core.management import BaseCommand
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
+from addcorpus.models import Corpus
 from es.es_index import perform_indexing
 from es.es_update import update_index, update_by_query
 
@@ -71,18 +73,21 @@ class Command(BaseCommand):
         )
 
     def handle(self, corpus, start = None, end = None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
-        this_corpus = load_corpus_definition(corpus)
+        corpus_object = self._corpus_object(corpus)
+        self._validate(corpus_object)
+
+        corpus_definition = load_corpus_definition(corpus)
 
         try:
             if start:
                 start_index = datetime.strptime(start, '%Y-%m-%d')
             else:
-                start_index = this_corpus.min_date
+                start_index = corpus_definition.min_date
 
             if end:
                 end_index = datetime.strptime(end, '%Y-%m-%d')
             else:
-                end_index = this_corpus.max_date
+                end_index = corpus_definition.max_date
 
         except Exception:
             logging.critical(
@@ -93,17 +98,17 @@ class Command(BaseCommand):
 
         if update:
             try:
-                if this_corpus.update_body():
+                if corpus_definition.update_body():
                     update_index(
                         corpus,
-                        this_corpus,
-                        this_corpus.update_query(
+                        corpus_definition,
+                        corpus_definition.update_query(
                             min_date=start_index.strftime('%Y-%m-%d'),
                             max_date=end_index.strftime('%Y-%m-%d')
                     ))
-                elif this_corpus.update_script():
+                elif corpus_definition.update_script():
                     update_by_query(
-                        corpus, this_corpus, this_corpus.update_script()
+                        corpus, corpus_definition, corpus_definition.update_script()
                     )
                 else:
                     logging.critical("Cannot update without update_body or update_script")
@@ -112,4 +117,11 @@ class Command(BaseCommand):
                 logging.critical(e)
                 raise
         else:
-            perform_indexing(corpus, this_corpus, start_index, end_index, mappings_only, add, delete, prod, rollover)
+            perform_indexing(corpus, corpus_definition, start_index, end_index, mappings_only, add, delete, prod, rollover)
+
+    def _corpus_object(self, corpus_name):
+        load_all_corpus_definitions()
+        return Corpus.objects.get(name=corpus_name)
+
+    def _validate(self, corpus_obj):
+        corpus_obj.validate_ready_to_index()

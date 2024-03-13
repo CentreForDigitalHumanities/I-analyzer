@@ -17,6 +17,11 @@ class WordmodelsMockCorpus(CorpusDefinition):
     fields = [
         FieldDefinition(
             name = 'content',
+            display_type='text_content'
+        ),
+        FieldDefinition(
+            name='date',
+            display_type='date'
         )
     ]
     languages = ['en']

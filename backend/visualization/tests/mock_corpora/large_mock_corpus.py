@@ -55,6 +55,7 @@ class LargeMockCorpus(CorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
+        display_type='text_content',
         es_mapping = text_mapping()
     )
 
