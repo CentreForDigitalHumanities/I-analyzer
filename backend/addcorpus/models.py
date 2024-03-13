@@ -14,8 +14,9 @@ from addcorpus.validation.creation import validate_language_code, \
     validate_visualizations_with_mapping, validate_implication, \
     validate_sort_configuration, validate_field_language
 from addcorpus.validation.indexing import validate_has_configuration, \
-    validate_essential_fields
-from addcorpus.validation.publishing import validate_ngram_has_date_field, validate_default_sort
+    validate_essential_fields, validate_language_field
+from addcorpus.validation.publishing import validate_ngram_has_date_field,  \
+    validate_default_sort
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -85,6 +86,7 @@ class Corpus(models.Model):
         fields = config.fields.all()
 
         validate_essential_fields(fields)
+        validate_language_field(self)
 
 
     @admin.display()
