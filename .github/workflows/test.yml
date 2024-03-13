@@ -25,12 +25,12 @@ jobs:
       uses: docker/bake-action@v4
       with:
         load: true
-        files: .env.hcl
+        files: docker-compose-ci.yaml
         set: |
           web.cache-from=type=gha
           web.cache-to=type=gha
     - name: Run backend tests
-      run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env.hcl run backend pytest
+      run: sudo mkdir -p /ci-data && sudo docker-compose -f docker-compose-ci.yaml run --rm backend pytest
   frontend-test:
     name: Test Frontend
     runs-on: ubuntu-latest
@@ -41,9 +41,9 @@ jobs:
       uses: docker/bake-action@v4
       with:
         load: true
-        files: .env.hcl
+        files: docker-compose-ci.yaml
         set: |
               web.cache-from=type=gha
               web.cache-to=type=gha
     - name: Run frontend tests
-      run: sudo docker-compose --env-file .env.hcl run frontend yarn test
+      run: sudo docker-compose -f docker-compose-ci.yaml run --rm frontend yarn test
