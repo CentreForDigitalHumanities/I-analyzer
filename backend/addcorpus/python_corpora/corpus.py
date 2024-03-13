@@ -129,6 +129,14 @@ class CorpusDefinition(Reader):
     '''
     default_sort = {}
 
+    '''
+    Name of the field that contains the language of documents.
+
+    Fields with `language='dynamic'` will use the content of this field to determine the
+    language of the content.
+    '''
+    language_field = None
+
     @property
     def image(self):
         '''
