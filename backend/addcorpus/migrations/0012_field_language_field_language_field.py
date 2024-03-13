@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('addcorpus', '0010_remove_field_primary_sort_and_more'),
+        ('addcorpus', '0011_corpus_active'),
     ]
 
     operations = [
