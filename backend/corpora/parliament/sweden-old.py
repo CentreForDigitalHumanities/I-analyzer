@@ -91,6 +91,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field='text')
+    speech.language = 'sv'
 
     page = field_defaults.page()
     page.extractor = CSV(field='page_number')

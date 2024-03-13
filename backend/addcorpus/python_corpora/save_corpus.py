@@ -48,6 +48,7 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'title',
         'word_models_present',
         'default_sort',
+        'language_field',
     ]
 
     try:
@@ -70,7 +71,8 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
         'visualizations', 'visualization_sort',
         'es_mapping', 'indexed', 'hidden',
         'required', 'sortable',
-        'searchable', 'downloadable'
+        'searchable', 'downloadable',
+        'language',
     ]
 
     copy_attributes = get_defined_attributes(field_definition, attributes_to_copy)

@@ -192,8 +192,8 @@ class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
         convert_to_none = EMPTY_VALUES,
     )
 
-    language_field = field_defaults.language()
-    language_field.extractor = CSV(
+    language = field_defaults.language()
+    language.extractor = CSV(
         field = 'language',
         transform = format_language
     )
@@ -204,7 +204,7 @@ class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
             self.country,
             self.date,
             self.debate_title, self.debate_id, self.debate_type,
-            self.language_field,
+            self.language,
             self.legislature,
             self.party,
             self.party_id,self.party_role,

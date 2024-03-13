@@ -12,10 +12,11 @@ from addcorpus.validation.creation import validate_language_code, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
     validate_searchable_field_has_full_text_search, \
     validate_visualizations_with_mapping, validate_implication, \
-    validate_sort_configuration
+    validate_sort_configuration, validate_field_language
 from addcorpus.validation.indexing import validate_has_configuration, \
-    validate_essential_fields
-from addcorpus.validation.publishing import validate_ngram_has_date_field, validate_default_sort
+    validate_essential_fields, validate_language_field
+from addcorpus.validation.publishing import validate_ngram_has_date_field,  \
+    validate_default_sort
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -85,6 +86,7 @@ class Corpus(models.Model):
         fields = config.fields.all()
 
         validate_essential_fields(fields)
+        validate_language_field(self)
 
 
     @admin.display()
@@ -215,6 +217,11 @@ class CorpusConfiguration(models.Model):
         help_text='default sort for search results without query text; '
             'if blank, results are presented in the order in which they are stored',
     )
+    language_field = models.CharField(
+        blank=True,
+        help_text='name of the field that specifies the language of documents (if any);'
+            'required to use "dynamic" language on fields',
+    )
 
     def __str__(self):
         return f'Configuration of <{self.corpus.name}>'
@@ -343,6 +350,15 @@ class Field(models.Model):
     downloadable = models.BooleanField(
         default=True,
         help_text='whether this field can be included in search results downloads',
+    )
+    language = models.CharField(
+        max_length=64,
+        blank=True,
+        null=False,
+        validators=[validate_field_language],
+        help_text='specification for the language of this field; can be blank, an IETF '
+            'tag, or "dynamic"; "dynamic" means the language is determined by the '
+            'language_field of the corpus configuration',
     )
 
     class Meta:

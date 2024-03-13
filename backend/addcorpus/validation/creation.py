@@ -30,6 +30,12 @@ def validate_language_code(value):
     if not tag_is_valid(value) or value == '':
         raise ValidationError(f'{value} is not a valid ISO-639 language tag')
 
+def validate_field_language(value):
+    if value == 'dynamic':
+        return
+    else:
+        validate_language_code(value)
+
 def validate_mimetype(value):
     '''
     verify that a value is a valid MIME type

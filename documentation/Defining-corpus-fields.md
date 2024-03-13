@@ -56,3 +56,14 @@ If a field includes the `'resultscount'` and/or `'termfrequency'` visualisations
 `csv_core` determines if a field is included in the CSV download of search results by default.
 
 `sortable` determines whether a field should appear as a sort option.
+
+### Language
+
+For text and keyword fields, you can set the language of the field as follows:
+
+`language` specifies the language of the fields contents. Acceptable values are:
+- `None`; use this if the langauge is unknown or not applicable (e.g. for numbers or dates)
+- an [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag); use this if the language is a constant
+- `'dynamic'`; use this if the language is not always the same, and the IETF tag is stored in the `language_field` of the corpus.
+
+This language metadata is used to set the `lang` property of the DOM element in the interface. Because I-analyzer is an application for text analysis, it may have other uses in the future.

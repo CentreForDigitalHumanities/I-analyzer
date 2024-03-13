@@ -45,6 +45,7 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
         field='chamber',
         transform=underscore_to_space
     )
+    chamber.language = 'fr'
 
     country = field_defaults.country()
     country.extractor = Constant(
@@ -113,6 +114,7 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     speech.extractor = CSV(
         field='page_text'
     )
+    speech.language = 'fr'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
