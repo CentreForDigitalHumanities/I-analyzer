@@ -30,7 +30,7 @@ jobs:
           web.cache-from=type=gha
           web.cache-to=type=gha
     - name: Run backend tests
-      run: sudo mkdir -p /ci-data && sudo docker-compose -f docker-compose-ci.yaml run --rm backend pytest
+      run: sudo docker-compose -f docker-compose-ci.yaml run --rm backend pytest
   frontend-test:
     name: Test Frontend
     runs-on: ubuntu-latest

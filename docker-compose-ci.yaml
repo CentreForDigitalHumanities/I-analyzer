@@ -10,8 +10,6 @@ services:
       - PGUSER=ianalyzer-test
       - PGDATABASE=ianalyzer-test
       - PGPASSWORD=ianalyzer-test
-    volumes:
-      - ianalyzer-db:/var/lib/postgresql/data/
   backend:
     build:
       context: ./backend
