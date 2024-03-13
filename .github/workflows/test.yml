@@ -24,7 +24,6 @@ jobs:
     - name: Build backend
       uses: docker/bake-action@v4
       with:
-        workdir: ./backend
         load: true
         set: |
           web.cache-from=type=gha
@@ -40,7 +39,6 @@ jobs:
     - name: Build frontend
       uses: docker/bake-action@v4
       with:
-        workdir: ./frontend
         load: true
         set: |
               web.cache-from=type=gha
