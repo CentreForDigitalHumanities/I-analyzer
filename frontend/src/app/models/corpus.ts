@@ -4,6 +4,7 @@ import { FieldFilterOptions } from './field-filter-options';
 import { SortState } from './sort';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
+import { FoundDocument } from './found-document';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
@@ -36,6 +37,7 @@ export class Corpus implements ElasticSearchIndex {
         public documentContext?: DocumentContext,
         public new_highlight?: boolean,
         public defaultSort?: SortState,
+        public languageField?: CorpusField,
     ) { }
 
     get minYear(): number {
@@ -87,7 +89,6 @@ export interface ApiCorpusField {
     searchable: boolean;
     downloadable: boolean;
     language: string;
-    language_field: string;
 }
 
 export class CorpusField {
@@ -113,7 +114,6 @@ export class CorpusField {
     filterOptions: FieldFilterOptions;
     mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
     language: string;
-    languageField: string;
 
     constructor(data: ApiCorpusField) {
         this.description = data.description;
@@ -136,7 +136,6 @@ export class CorpusField {
         this.filterOptions = data['search_filter'];
         this.mappingType = data.es_mapping?.type;
         this.language = data.language || undefined;
-        this.languageField = data.language_field || undefined;
     }
 
     /** make a SearchFilter for this field */

@@ -20,7 +20,7 @@
                             <th [iaBalloon]="field.description" iaBalloonPosition="up" iaBalloonLength="medium">{{field.displayName}}</th>
                             <td *ngIf="!isUrlField(field)"
                                 data-test-field-value
-                                [attr.lang]="language(field)"
+                                [attr.lang]="document.language(field)"
                                 [innerHtml]="formatInnerHtml(field)">
                             </td>
                             <td *ngIf="isUrlField(field)">
@@ -38,7 +38,7 @@
             <ia-tabs [activeTab]="activeTab">
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
                     <div class="content"
-                        [attr.lang]="language(field)"
+                        [attr.lang]="document.language(field)"
                         [innerHtml]="formatInnerHtml(field)">
                     </div>
                 </ng-template>

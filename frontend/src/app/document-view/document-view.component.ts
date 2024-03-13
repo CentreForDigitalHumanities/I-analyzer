@@ -72,12 +72,6 @@ export class DocumentViewComponent implements OnChanges {
         return field.name === 'url' || field.name.startsWith('url_');
     }
 
-    language(field: CorpusField): string {
-        const languageField = findByName(this.corpus.fields, field.languageField);
-        const dynamicValue = languageField ? this.document.fieldValue(languageField) : undefined;
-        return dynamicValue || field.language;
-    }
-
     /**
      * Checks if user has selected fields in the queryModel and whether current field is among them
      * Used to check which fields need to be highlighted
