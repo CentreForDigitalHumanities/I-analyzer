@@ -27,8 +27,8 @@ jobs:
         load: true
         files: docker-compose-ci.yaml
         set: |
-          web.cache-from=type=gha
-          web.cache-to=type=gha
+          backend.cache-from=type=gha
+          backend.cache-to=type=gha
     - name: Run backend tests
       run: sudo docker-compose -f docker-compose-ci.yaml run --rm backend pytest
   frontend-test:
@@ -43,7 +43,7 @@ jobs:
         load: true
         files: docker-compose-ci.yaml
         set: |
-              web.cache-from=type=gha
-              web.cache-to=type=gha
+              frontend.cache-from=type=gha
+              frontend.cache-to=type=gha
     - name: Run frontend tests
       run: sudo docker-compose -f docker-compose-ci.yaml run --rm frontend yarn test
