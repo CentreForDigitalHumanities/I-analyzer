@@ -30,7 +30,7 @@ jobs:
         push: false
         load: true
     - name: Run backend tests
-      run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci exec backend-test pytest
+      run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
   frontend-test:
     name: Test Frontend
     runs-on: ubuntu-latest
@@ -45,4 +45,4 @@ jobs:
         push: false
         load: true
     - name: Run frontend tests
-      run: sudo docker-compose --env-file .env-ci exec frontend-test yarn test
+      run: sudo docker-compose --env-file .env-ci run frontend yarn test
