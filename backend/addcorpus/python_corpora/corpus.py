@@ -302,28 +302,30 @@ class JSONCorpusDefinition(CorpusDefinition):
 
 class FieldDefinition(Field):
     '''
-    Fields may hold the following data:
-    - a short hand name (name)
-    - the name shown shown to the user (display name)
-    - what kind of data they contain, e.g. text, keywords... (display type)
-    - an explanation of the field (description)
-    - whether they are added to the Elasticsearch index (indexed)
-    - whether they are hidden from the frontend (hidden)
-    - whether they appear in the overview of results (results_overview)
-    - whether they appear in the preselection of csv fields (csv_core)
-    - whether they appear in the preselection of search fields (search_field_core)
-    - whether they are associated with a visualization type (visualizations)
-        options: resultscount, termfrequency, wordcloud, ngram
-    - how the visualization's x-axis should be sorted (visualization_sort)
-    - the mapping of the field in Elasticsearch (es_mapping)
-    - definitions for if the field is also used as search filter (search_filter)
-    - how to extract data from the source documents (extractor)
-    - whether you can sort by this field (sortable)
-    - whether you can search this field (searchable)
-    - whether this field is required
+    Definition for a single field in a corpus.
 
-    In short, this is how all things related to the informational structure of
-    each particular corpus is stored.
+    Parameters:
+        name: a short hand name
+        display_name: the name shown to the user
+        display_type: how the field should be displayed in the client
+        description: an explanation of the field for users
+        indexed: whether the field is skipped during indexing
+        hidden: whether the field is hidden in the frontend
+        results_overview: whether the field appears in the preview of a document
+        csv_core: whether the field is pre-selected for CSV downloads
+        search_field_core: whether the field is immediately shown in field selection.
+            If `False`, the field is only shown when the user selects "show all fields".
+        visualizations: visualisations that are available for this field. Options:
+            resultscount, termfrequency, wordcloud, ngram.
+        es_mapping: the mapping of the field in Elasticsearch
+        language: the language of the field's content. Can be `None`, an IETF tag, or
+            `"dynamic"`.
+        search_filter: configuration of the search filter used for the field.
+        extractor: configuration to extract the field's data from source documents
+        sortable: whether this field is shown as an option to sort search results.
+        searchable: whether this field is shown in the selection for search fields.
+        downloadable: whether this field may be included when downloading results.
+        required: whether this field is required during source extraction.
     '''
 
     def __init__(self,
@@ -340,7 +342,6 @@ class FieldDefinition(Field):
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  language=None,
-                 language_field='',
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
@@ -370,7 +371,6 @@ class FieldDefinition(Field):
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
         self.language = language
-        self.language_field = language_field
         self.hidden = not indexed or hidden
 
         self.sortable = sortable if sortable != None else \
