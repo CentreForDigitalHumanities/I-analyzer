@@ -26,9 +26,9 @@ jobs:
       with:
         source: ./backend
         load: true
-      set: |
-        web.cache-from=type=gha
-        web.cache-to=type=gha
+        set: |
+          web.cache-from=type=gha
+          web.cache-to=type=gha
     - name: Run backend tests
       run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
   frontend-test:
@@ -41,10 +41,9 @@ jobs:
       uses: docker/bake-action@v4
       with:
         context: ./frontend
-        push: false
         load: true
-      set: |
-            web.cache-from=type=gha
-            web.cache-to=type=gha
+        set: |
+              web.cache-from=type=gha
+              web.cache-to=type=gha
     - name: Run frontend tests
       run: sudo docker-compose --env-file .env-ci run frontend yarn test
