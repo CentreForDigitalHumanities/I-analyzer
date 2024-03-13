@@ -22,13 +22,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: docker/setup-buildx-action@v3
-    - name: Run backend tests
-      uses: docker/build-push-action@v5
+    - uses: docker/build-push-action@v5
       with:
         context: ./backend
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        tags: backend-test
+        push: false
+        load: true
+    - name: Run backend tests
       run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci exec backend-test pytest
   frontend-test:
     name: Test Frontend
@@ -36,11 +37,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: docker/setup-buildx-action@v3
-    - name: Run frontend tests
-      uses: docker/build-push-action@v5
+    - uses: docker/build-push-action@v5
       with:
         context: ./frontend
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        tags: frontend-test
+        push: false
+        load: true
+    - name: Run frontend tests
       run: sudo docker-compose --env-file .env-ci exec frontend-test yarn test
