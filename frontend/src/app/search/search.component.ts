@@ -140,7 +140,7 @@ export class SearchComponent extends ParamDirective {
         if (this.queryModel) {
             this.queryModel.complete();
         }
-        this.queryModel = new QueryModel(this.corpus, this.routerStoreService);
+        this.queryModel = new QueryModel(this.corpus, this.routerStoreService, this.user);
         this.queryText = this.queryModel.queryText;
     }
 }

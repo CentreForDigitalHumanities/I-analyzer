@@ -1,7 +1,7 @@
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-import { Corpus, CorpusField, EsFilter, FilterInterface, } from '../models/index';
+import { Corpus, CorpusField, EsFilter, FilterInterface, User, } from '../models/index';
 import { EsQuery } from '../models';
 import { combineSearchClauseAndFilters,  } from '../utils/es-query';
 import {
@@ -86,14 +86,16 @@ interface QueryState {
 export class QueryModel extends StoreSync<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
+    currentUser: User;
 
     update: Observable<void>;
 
     protected keysInStore = ['query', 'fields'];
 
-    constructor(corpus: Corpus, store?: Store) {
+    constructor(corpus: Corpus, store?: Store, currentUser?: User) {
         super(store || new SimpleStore());
 		this.corpus = corpus;
+        this.currentUser = currentUser;
         this.connectToStore();
         this.filters = this.makeFilters(this.store);
         this.update = this.collectUpdates$();
@@ -202,10 +204,18 @@ export class QueryModel extends StoreSync<QueryState> {
         return { queryText, searchFields };
     }
 
+    /**
+     * @param store: Store
+     * @returns fieldFilters: FilterInterface[]
+     * if user is logged in, these include a TagFilter
+     */
     private makeFilters(store: Store): FilterInterface[] {
         const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter(store));
-        const tagFilter = new TagFilter(store);
+        if (this.currentUser) {
+            const tagFilter = new TagFilter(store);
         return [...fieldFilters, tagFilter];
+        }
+        return fieldFilters;
     }
 
     private setFilter(newFilter: FilterInterface): void {
