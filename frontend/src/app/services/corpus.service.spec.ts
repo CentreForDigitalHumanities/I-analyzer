@@ -53,6 +53,7 @@ describe('CorpusService', () => {
                 min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
                 scan_image_type: 'png',
                 allow_image_download: false,
+                direct_download_limit: 500,
                 word_models_present: false,
             },
             {
@@ -72,11 +73,13 @@ describe('CorpusService', () => {
                 min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
                 scan_image_type: 'jpg',
                 allow_image_download: true,
+                direct_download_limit: 1000,
                 word_models_present: true,
             },
         ];
         const items = await service.get();
         expect(items.map((item) => item.name)).toEqual(['test1', 'test2']);
+        expect(items[0].directDownloadLimit).toEqual(500);
     });
 
     it('should parse fields', () => {

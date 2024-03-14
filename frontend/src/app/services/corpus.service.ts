@@ -90,7 +90,7 @@ export class CorpusService {
             data.word_models_present,
             data.languages,
             data.category,
-            data.directt_download_limit,
+            data.direct_download_limit,
             data.description_page,
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight
