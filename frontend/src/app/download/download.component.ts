@@ -15,6 +15,7 @@ export class DownloadComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public resultOverview: ResultOverview;
     @Input() public hasLimitedResults: boolean;
+    // download limit is either the user's download limit, or (for unauthenticated users) the corpus' direct download limit
     @Input() public downloadLimit: number;
     @Input() public route: string;
 
