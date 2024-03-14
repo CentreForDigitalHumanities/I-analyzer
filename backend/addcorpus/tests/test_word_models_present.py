@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from addcorpus.corpus import CorpusDefinition
+from addcorpus.python_corpora.corpus import CorpusDefinition
 
 here = os.path.abspath(os.path.dirname(__file__))
 

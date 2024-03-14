@@ -4,8 +4,8 @@ from datetime import datetime
 
 from django.conf import settings
 
-from addcorpus.extract import Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context
@@ -72,6 +72,7 @@ class ParliamentUK(Parliament, CSVCorpusDefinition):
         field='debate',
         transform=format_debate_title
     )
+    debate_title.language = 'en'
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
@@ -84,6 +85,7 @@ class ParliamentUK(Parliament, CSVCorpusDefinition):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
+    speech.language = 'en'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
@@ -110,11 +112,13 @@ class ParliamentUK(Parliament, CSVCorpusDefinition):
     topic.extractor = CSV(
         field='heading_major',
     )
+    topic.language = 'en'
 
     subtopic = field_defaults.subtopic()
     subtopic.extractor = CSV(
         field='heading_minor',
     )
+    subtopic.language = 'en'
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(

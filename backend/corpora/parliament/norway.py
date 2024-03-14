@@ -4,8 +4,8 @@ import re
 from django.conf import settings
 import os
 
-from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Combined, Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -33,6 +33,10 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
         context_fields=['book_id'],
         context_display_name='book',
     )
+    default_sort = {
+        'field': 'date_latest',
+        'ascending': False,
+    }
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
@@ -89,6 +93,7 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field = 'text')
+    speech.language = 'no'
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(field = 'page')

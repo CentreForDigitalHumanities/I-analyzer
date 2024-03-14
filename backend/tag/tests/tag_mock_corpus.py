@@ -1,8 +1,8 @@
 import os
 import datetime
 
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
-from addcorpus.extract import CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import CSV
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -33,6 +33,7 @@ class TaggingMockCorpus(CSVCorpusDefinition):
         ),
         FieldDefinition(
             name='content',
+            display_type='text_content',
             extractor=CSV('content'),
             es_mapping=main_content_mapping(),
         )

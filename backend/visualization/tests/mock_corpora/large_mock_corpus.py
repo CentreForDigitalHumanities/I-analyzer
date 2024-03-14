@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 
-from addcorpus.corpus import CorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import date_mapping, text_mapping
 
 TOTAL_DOCUMENTS = 11000
@@ -55,6 +55,7 @@ class LargeMockCorpus(CorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
+        display_type='text_content',
         es_mapping = text_mapping()
     )
 

@@ -1,8 +1,8 @@
 import os
 import pytest
 
-from addcorpus.load_corpus import load_corpus_definition
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from addcorpus.models import Corpus
 
 from corpora.peaceportal.peaceportal import transform_to_date_range, zero_pad_year
@@ -286,7 +286,7 @@ def test_peaceportal_validation(db, peace_test_settings):
     corpus_names = [case['name'] for case in CORPUS_TEST_DATA]
     for corpus_name in corpus_names:
         corpus = Corpus.objects.get(name=corpus_name)
-        assert corpus.active
+        assert corpus.ready_to_publish()
 
 
 def test_zero_pad_year():

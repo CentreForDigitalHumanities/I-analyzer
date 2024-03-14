@@ -5,8 +5,8 @@ from datetime import datetime
 from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, Combined, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant, Combined, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -49,6 +49,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     )
     chamber.search_filter = None
     chamber.visualizations = []
+    chamber.language = 'de'
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
@@ -60,11 +61,13 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     party.extractor = CSV(
         field='party_abbreviation'
     )
+    party.language = 'de'
 
     party_full = field_defaults.party_full()
     party_full.extractor = CSV(
         field='party_full_name'
     )
+    party_full.language = 'de'
 
     party_id = field_defaults.party_id()
     party_id.extractor = CSV(
@@ -75,6 +78,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     role.extractor = CSV(
         field='position_short'
     )
+    role.language = 'en'
+
     role_long = field_defaults.role_long()
     role_long.extractor = CSV(
         field='position-long'
@@ -106,11 +111,13 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     speaker_birth_country.extractor = CSV(
         field='speaker_birth_country'
     )
+    speaker_birth_country.language = 'de'
 
     speaker_birthplace = field_defaults.speaker_birthplace()
     speaker_birthplace.extractor = CSV(
         field='speaker_birth_place'
     )
+    speaker_birthplace.language = 'de'
 
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = CSV(
@@ -128,11 +135,13 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     speaker_gender.extractor = CSV(
         field='speaker_gender'
     )
+    speaker_gender.language = 'en'
 
     speaker_profession = field_defaults.speaker_profession()
     speaker_profession.extractor = CSV(
         field='speaker_profession'
     )
+    speaker_profession.language = 'de'
 
     speech = field_defaults.speech()
     speech.extractor = CSV(
@@ -140,6 +149,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
+    speech.language = 'de'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(

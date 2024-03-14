@@ -19,7 +19,6 @@ export const mockField = new CorpusField({
     es_mapping: {type: 'keyword'},
     hidden: false,
     sortable: false,
-    primary_sort: false,
     searchable: false,
     downloadable: false,
     search_filter: mockFilterOptions,
@@ -30,6 +29,7 @@ export const mockField = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
 });
 
 /* a keyword field with a multiple choice filter */
@@ -41,7 +41,6 @@ export const mockFieldMultipleChoice = new CorpusField({
     es_mapping: {type: 'keyword'},
     hidden: false,
     sortable: false,
-    primary_sort: false,
     searchable: false,
     downloadable: false,
     search_filter: {
@@ -56,6 +55,7 @@ export const mockFieldMultipleChoice = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
 });
 
 /** a text content field */
@@ -67,7 +67,6 @@ export const mockField2 = new CorpusField({
     es_mapping: {type: 'text'},
     hidden: false,
     sortable: false,
-    primary_sort: false,
     searchable: true,
     downloadable: true,
     search_filter: null,
@@ -78,6 +77,7 @@ export const mockField2 = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
 });
 
 /** a keyword field with sorting option */
@@ -89,7 +89,6 @@ export const mockField3 = new CorpusField({
     es_mapping: {type: 'keyword'},
     hidden: false,
     sortable: true,
-    primary_sort: false,
     searchable: false,
     downloadable: true,
     results_overview: true,
@@ -105,6 +104,7 @@ export const mockField3 = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
 });
 
 /** a date field */
@@ -115,7 +115,6 @@ export const mockFieldDate = new CorpusField({
     display_type: 'date',
     hidden: false,
     sortable: true,
-    primary_sort: false,
     searchable: false,
     downloadable: true,
     search_filter: {
@@ -132,6 +131,7 @@ export const mockFieldDate = new CorpusField({
     visualization_sort: null,
     indexed: true,
     required: false,
+    language: '',
 });
 
 
@@ -151,7 +151,8 @@ export const mockCorpus: Corpus = {
     fields: [mockField, mockField2],
     languages: ['English'],
     category: 'Tests',
-    defaultSort: [undefined, 'desc']
+    defaultSort: [undefined, 'desc'],
+    languageField: undefined,
 } as Corpus;
 
 export const mockCorpus2 = {
@@ -170,7 +171,8 @@ export const mockCorpus2 = {
     fields: [mockField2],
     languages: ['English', 'French'],
     category: 'Different tests',
-    defaultSort: [undefined, 'desc']
+    defaultSort: [undefined, 'desc'],
+    languageField: undefined,
 } as Corpus;
 
 export const mockCorpus3: Corpus = {
@@ -196,6 +198,7 @@ export const mockCorpus3: Corpus = {
         sortDirection: 'asc'
     },
     defaultSort: [undefined, 'desc'],
+    languageField: undefined,
 } as Corpus;
 
 export class CorpusServiceMock {

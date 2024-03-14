@@ -6,8 +6,8 @@ from os.path import join
 from django.conf import settings
 
 import bs4
-from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Constant, Combined, Choice
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
 from corpora.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
@@ -206,6 +206,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             transform=format_house_recent
         )
     )
+    chamber.language = 'nl'
 
     debate_title = field_defaults.debate_title()
     debate_title.extractor = Choice(
@@ -221,6 +222,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             transform=lambda titles: titles[-2] if len(titles) else titles
         )
     )
+    debate_title.language = 'nl'
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = Choice(
@@ -249,6 +251,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             recursive=True
         )
     )
+    topic.language = 'nl'
 
     speech = field_defaults.speech()
     speech.extractor = Choice(
@@ -264,6 +267,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             flatten=True,
         )
     )
+    speech.language = 'nl'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = Choice(
@@ -330,6 +334,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
         ),
         party_attribute_extractor('name')
     )
+    party.language = 'nl'
 
 
     party_id = field_defaults.party_id()
@@ -350,6 +355,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
         ),
         party_attribute_extractor('full_name')
     )
+    party_full.language = 'nl'
 
     page = field_defaults.page()
     page.extractor = Choice(

@@ -7,8 +7,8 @@ from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
 from corpora.utils.constants import document_context
-from addcorpus.extract import Constant,CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant,CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
 
@@ -18,6 +18,7 @@ class ParliamentCanada(Parliament, CSVCorpusDefinition):
     min_date = datetime(year=1901, month=1, day=1)
     data_directory = settings.PP_CANADA_DATA
     es_index = getattr(settings, 'PP_CANADA_INDEX', 'parliament-canada')
+    word_model_path = getattr(settings, 'PP_CANADA_WM', None)
     image = 'canada.jpeg'
     languages = ['en']
     description_page = 'canada.md'

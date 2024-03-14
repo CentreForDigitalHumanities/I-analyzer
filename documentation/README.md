@@ -15,6 +15,7 @@ This directory contains documentation for developers.
 - [Defining corpus fields](./Defining-corpus-fields.md)
 - [Indexing corpora](./Indexing-corpora.md)
 - [Indexing in deployment](./Indexing-on-server.md)
+- [Corpus validation](./Corpus-validation.md)
 
 ## Feature development
 

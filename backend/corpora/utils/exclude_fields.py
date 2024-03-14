@@ -1,4 +1,4 @@
-from addcorpus import extract
+from addcorpus.python_corpora import extract
 
 def has_extractor(field):
     if type(field.extractor) != extract.Constant:

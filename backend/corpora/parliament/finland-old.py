@@ -1,9 +1,9 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import CSVCorpusDefinition
-from addcorpus.extract import CSV, Combined, Constant
-from addcorpus.filters import MultipleChoiceFilter
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import CSV, Combined, Constant
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context
@@ -29,13 +29,16 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     document_context = document_context()
 
+    default_sort = {'field': 'date_latest', 'ascending': False}
+
+
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(field='estate')
     chamber.search_filter = MultipleChoiceFilter(
         description='Search only in debates from the selected chamber(s)',
         option_count=4
     )
-    
+
     country = field_defaults.country()
     country.extractor = Constant('Finland')
 
@@ -52,7 +55,6 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
         field='year_end',
         transform=lambda value: formatting.get_date_from_year(value, 'latest')
     )
-    date_latest.primary_sort = True
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 

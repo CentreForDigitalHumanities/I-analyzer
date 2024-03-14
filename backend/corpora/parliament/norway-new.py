@@ -2,8 +2,8 @@ from glob import glob
 from datetime import datetime
 from django.conf import settings
 
-from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Combined, Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
@@ -52,6 +52,7 @@ class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
     max_date = datetime(year=2016, month=12, day=31)
     data_directory = settings.PP_NORWAY_NEW_DATA
     es_index = getattr(settings, 'PP_NORWAY_NEW_INDEX', 'parliament-norway-new')
+    word_model_path = getattr(settings, 'PP_NORWAY_WM', None)
     image = 'norway.JPG'
     languages = ['no']
     description_page = 'norway-new.md'
@@ -191,8 +192,8 @@ class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
         convert_to_none = EMPTY_VALUES,
     )
 
-    language_field = field_defaults.language()
-    language_field.extractor = CSV(
+    language = field_defaults.language()
+    language.extractor = CSV(
         field = 'language',
         transform = format_language
     )
@@ -203,7 +204,7 @@ class ParliamentNorwayNew(Parliament, CSVCorpusDefinition):
             self.country,
             self.date,
             self.debate_title, self.debate_id, self.debate_type,
-            self.language_field,
+            self.language,
             self.legislature,
             self.party,
             self.party_id,self.party_role,

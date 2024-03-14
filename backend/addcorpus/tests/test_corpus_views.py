@@ -1,7 +1,7 @@
 from rest_framework import status
 from users.models import CustomUser
-from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.models import Corpus
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 
 def test_no_corpora(db, settings, admin_client):
     settings.CORPORA = {}
@@ -15,6 +15,11 @@ def test_no_corpora(db, settings, admin_client):
 def test_corpus_documentation_view(admin_client, mock_corpus):
     response = admin_client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
     assert response.status_code == 200
+
+def test_corpus_citation_view(admin_client, mock_corpus):
+    response = admin_client.get(f'/api/corpus/citation/{mock_corpus}')
+    assert response.status_code == 200
+
 
 def test_nonexistent_corpus(admin_client):
     response = admin_client.get(f'/api/corpus/documentation/unknown-corpus/mock-csv-corpus.md')
@@ -50,3 +55,11 @@ def test_corpus_serialization(admin_client, mock_corpus):
     for property in secrets:
         assert property not in corpus
 
+def test_corpus_not_publication_ready(admin_client, mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    content_field = corpus.configuration.fields.get(name='lines')
+    content_field.display_type = 'text'
+    content_field.save()
+
+    response = admin_client.get('/api/corpus/')
+    corpus = not any(c['name'] == mock_corpus for c in response.data)

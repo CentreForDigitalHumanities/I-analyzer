@@ -8,9 +8,9 @@ from datetime import datetime
 from django.conf import settings
 import openpyxl
 
-from addcorpus.extract import CSV, Metadata
-from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import CSV, Metadata
+from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import main_content_mapping
 
@@ -167,8 +167,8 @@ class GoodReads(CSVCorpusDefinition):
         ),
         FieldDefinition(
             name='url',
-            display_name='URL',
-            description='URL of the review.',
+            display_name='Source URL',
+            description='Link to the the review on Goodreads',
             extractor=CSV(
                 field='url',
             ),

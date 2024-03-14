@@ -92,6 +92,10 @@ describe('CorpusService', () => {
                 es_index: 'times',
                 languages: ['English'],
                 category: 'Tests',
+                default_sort: {
+                    field: 'year',
+                    ascending: false
+                },
                 fields: [
                     {
                         description:
@@ -99,7 +103,6 @@ describe('CorpusService', () => {
                         es_mapping: { type: 'keyword' },
                         hidden: true,
                         sortable: false,
-                        primary_sort: false,
                         searchable: true,
                         downloadable: false,
                         name: 'bank',
@@ -122,7 +125,6 @@ describe('CorpusService', () => {
                         es_mapping: { type: 'integer' },
                         hidden: false,
                         sortable: true,
-                        primary_sort: true,
                         searchable: false,
                         downloadable: true,
                         name: 'year',
@@ -171,7 +173,6 @@ describe('CorpusService', () => {
                         hidden: false,
                         indexed: true,
                         sortable: false,
-                        primary_sort: false,
                         searchable: true,
                         downloadable: true,
                         name: 'speech',
@@ -217,7 +218,6 @@ describe('CorpusService', () => {
                     multiFields: undefined,
                     hidden: true,
                     sortable: false,
-                    primarySort: false,
                     searchable: true,
                     downloadable: false,
                     name: 'bank',
@@ -232,7 +232,6 @@ describe('CorpusService', () => {
                     description: 'Year of the financial report.',
                     hidden: false,
                     sortable: true,
-                    primarySort: true,
                     searchable: false,
                     downloadable: true,
                     name: 'year',
@@ -258,7 +257,6 @@ describe('CorpusService', () => {
                     description: 'The transcribed speech',
                     hidden: false,
                     sortable: false,
-                    primarySort: false,
                     searchable: true,
                     downloadable: true,
                     name: 'speech',

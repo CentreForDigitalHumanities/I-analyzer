@@ -1,5 +1,5 @@
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
-from addcorpus.extract import CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import CSV
 import os
 import datetime
 
@@ -15,6 +15,8 @@ class MockCSVCorpus(CSVCorpusDefinition):
     max_date = datetime.datetime(year=2022, month=12, day=31)
     image = 'nothing.jpeg'
     data_directory = os.path.join(here, 'csv_example')
+    citation_page = 'citation.md'
+
     field_entry = 'character'
 
     languages = ['en']
@@ -34,6 +36,7 @@ class MockCSVCorpus(CSVCorpusDefinition):
         ),
         FieldDefinition(
             name = 'lines',
+            display_type = 'text_content',
             extractor = CSV(
                 field = 'line',
                 multiple = True,

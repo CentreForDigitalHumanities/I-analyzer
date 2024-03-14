@@ -5,8 +5,8 @@ import os
 import re
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, CSV, Metadata, Combined
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant, CSV, Metadata, Combined
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
 import corpora.utils.constants as constants
@@ -39,6 +39,7 @@ class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
     max_date = datetime(year=2016, month=12, day=31)
     data_directory = settings.PP_DENMARK_NEW_DATA
     es_index = getattr(settings, 'PP_DENMARK_NEW_INDEX', 'parliament-denmark-new')
+    word_model_path = getattr(settings, 'PP_DENMARK_WM', None)
     image = 'denmark.jpg'
     description_page = 'denmark-new.md'
     languages = ['da']
@@ -71,9 +72,11 @@ class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
         Metadata('parties'),
         transform = get_party_name
     )
+    party.language = 'da'
 
     role = field_defaults.parliamentary_role()
     role.extractor = CSV(field = 'Role')
+    role.language = 'da'
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(field = 'Name')
@@ -89,12 +92,14 @@ class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field = 'Text')
+    speech.language = 'da'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(field = 'ID')
 
     subject = field_defaults.subject()
     subject.extractor = CSV(field = 'Subject 1')
+    subject.language = 'en'
 
     topic = field_defaults.topic()
     topic.extractor = CSV(field = 'Agenda title')

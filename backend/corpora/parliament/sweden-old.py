@@ -1,8 +1,8 @@
 from glob import glob
 from datetime import datetime
 
-from addcorpus.corpus import CSVCorpusDefinition
-from addcorpus.extract import CSV, Constant
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.constants as constants
@@ -42,6 +42,10 @@ class ParliamentSwedenOld(Parliament, CSVCorpusDefinition):
     document_context = constants.document_context(
         context_fields=['chamber', 'date_earliest', 'date_latest']
     )
+    default_sort = {
+        'field': 'date_latest',
+        'ascending': False,
+    }
 
     def sources(self, start, end):
         for csv_file in sorted(glob('{}/**/*.csv'.format(self.data_directory), recursive=True)):
@@ -87,6 +91,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field='text')
+    speech.language = 'sv'
 
     page = field_defaults.page()
     page.extractor = CSV(field='page_number')

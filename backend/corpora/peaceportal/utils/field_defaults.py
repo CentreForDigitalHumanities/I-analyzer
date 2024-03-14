@@ -1,6 +1,6 @@
-from addcorpus.corpus import FieldDefinition
+from addcorpus.python_corpora.corpus import FieldDefinition
 from addcorpus.es_mappings import date_estimate_mapping, geo_mapping, int_mapping, keyword_mapping, main_content_mapping, text_mapping
-from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+from addcorpus.python_corpora.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 
 
 def id():
@@ -29,8 +29,8 @@ def source_database():
 def url():
     return FieldDefinition(
         name='url',
-        display_name='URL',
-        description='URL of the inscription entry.',
+        display_name='Source URL',
+        description='URL of the inscription entry in the source database.',
         es_mapping=keyword_mapping(),
         search_field_core=True
     )

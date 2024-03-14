@@ -4,8 +4,8 @@ import logging
 from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
 
@@ -43,6 +43,8 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
         'context_display_name': 'book',
         'sort_direction': 'asc',
     }
+
+    default_sort = {'field': 'date_latest', 'ascending': False}
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
@@ -83,7 +85,6 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
         field='year',
         transform= lambda value: formatting.get_date_from_year(value, 'latest')
     )
-    date_latest.primary_sort = True
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 

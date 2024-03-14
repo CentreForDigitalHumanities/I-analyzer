@@ -5,8 +5,8 @@ import requests
 from allauth.account.models import EmailAddress
 
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.load_corpus import load_corpus_definition
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 
 # user credentials and logged-in api clients
