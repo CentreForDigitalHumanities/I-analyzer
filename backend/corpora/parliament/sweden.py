@@ -62,7 +62,7 @@ class ParliamentSweden(Parliament, CSVCorpusDefinition):
 
     date = field_defaults.date()
     date.extractor = CSV(
-        field = 'date',
+        'date',
         transform = complete_partial_dates
     )
     date.search_filter.lower = min_date
@@ -70,59 +70,59 @@ class ParliamentSweden(Parliament, CSVCorpusDefinition):
     date_is_estimate = field_defaults.date_is_estimate()
     date_is_estimate.description = 'Indicates if the recorded month and day are estimates'
     date_is_estimate.extractor = CSV(
-        field = 'date',
+        'date',
         transform = date_is_partial
     )
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(
-        field = 'chamber',
+        'chamber',
         transform = format_chamber
     )
     chamber.search_filter.option_count = 3
 
     speech = field_defaults.speech()
-    speech.extractor = CSV(field = 'speech_text')
+    speech.extractor = CSV('speech_text')
     speech.language = 'sv'
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(field = 'speech_id')
+    speech_id.extractor = CSV('speech_id')
 
     speaker = field_defaults.speaker()
-    speaker.extractor = CSV(field = 'person_name')
+    speaker.extractor = CSV('person_name')
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = CSV(field = 'person_id')
+    speaker_id.extractor = CSV('person_id')
 
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = CSV(
-        field = 'person_born',
+        'person_born',
         transform = formatting.extract_year
     )
 
     speaker_death_year = field_defaults.speaker_death_year()
     speaker_death_year.extractor = CSV(
-        field = 'person_dead',
+        'person_dead',
         transform = formatting.extract_year
     )
 
     speaker_constituency = field_defaults.speaker_constituency()
-    speaker_constituency.extractor = CSV(field = 'mp_district')
+    speaker_constituency.extractor = CSV('mp_district')
 
     speaker_gender = field_defaults.speaker_gender()
-    speaker_gender.extractor = CSV(field = 'person_gender')
+    speaker_gender.extractor = CSV('person_gender')
 
     party = field_defaults.party()
-    party.extractor = CSV(field = 'mp_party')
+    party.extractor = CSV('mp_party')
 
     parliamentary_role = field_defaults.parliamentary_role()
-    parliamentary_role.extractor = CSV(field = 'speaker_role')
+    parliamentary_role.extractor = CSV('speaker_role')
 
     ministerial_role = field_defaults.ministerial_role()
-    ministerial_role.extractor = CSV(field = 'minister_role')
+    ministerial_role.extractor = CSV('minister_role')
 
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(field = 'speech_order')
+    sequence.extractor = CSV('speech_order')
 
     def __init__(self):
         self.fields = [

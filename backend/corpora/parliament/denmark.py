@@ -55,11 +55,11 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
 
 
     book_label = field_defaults.book_label()
-    book_label.extractor = CSV(field='title')
+    book_label.extractor = CSV('title')
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(
-        field='id',
+        'id',
         transform = get_book_id
     )
 
@@ -68,13 +68,13 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(
-        field='chamber',
+        'chamber',
         transform = format_chamber,
     )
 
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
-        field='year',
+        'year',
         transform= lambda value: formatting.get_date_from_year(value, 'earliest')
     )
     date_earliest.search_filter.lower = min_date
@@ -82,24 +82,24 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
 
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
-        field='year',
+        'year',
         transform= lambda value: formatting.get_date_from_year(value, 'latest')
     )
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 
     page = field_defaults.page()
-    page.extractor = CSV(field='page')
+    page.extractor = CSV('page')
 
     speech = field_defaults.speech()
-    speech.extractor = CSV(field='text')
+    speech.extractor = CSV('text')
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(field='id')
+    speech_id.extractor = CSV('id')
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(
-        field='page',
+        'page',
         transform = formatting.extract_integer_value,
     )
 
