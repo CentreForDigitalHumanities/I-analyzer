@@ -43,7 +43,7 @@ class ResultsDownloadView(APIView):
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
-            max_size = corpus.direct_download_limit
+            max_size = corpus.configuration.direct_download_limit
             size = request.data.get('es_query').pop('size', max_size)
             if size > max_size:
                 raise ParseError(

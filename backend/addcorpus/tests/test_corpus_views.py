@@ -43,6 +43,7 @@ def test_corpus_serialization(admin_client, mock_corpus):
     assert corpus
     assert corpus['languages'] == ['English']
     assert corpus['category'] == 'Books'
+    assert corpus['direct_download_limit'] == 1000
     assert len(corpus['fields']) == 2
 
     secrets = ['data_directory', 'word_model_path', 'es_settings']
