@@ -180,7 +180,10 @@ export class QueryModel extends StoreSync<QueryState> {
 
     toAPIQuery(): APIQuery {
         const esQuery = this.toEsQuery();
-        const tags = makeTagSpecification(this.filters);
+        let tags = {};
+        if (this.filters.find(isTagFilter)) {
+            tags = makeTagSpecification(this.filters);
+        }
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             es_query: esQuery,
