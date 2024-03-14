@@ -130,8 +130,8 @@ export class DocumentViewComponent implements OnChanges {
             }
         }
 
-    addParagraphTags(content: string) {
-        const paragraphs = content.split('\n');
+    addParagraphTags(content: string | string[]) {
+        const paragraphs = typeof content === 'string' ? content.split('\n') : content;
         return paragraphs.map(p => `<p>${p}</p>`).join(' ');
     }
 }
