@@ -38,7 +38,7 @@ describe('QueryModel', () => {
 
     beforeEach(() => {
         store = new SimpleStore();
-        query = new QueryModel(corpus, store);
+        query = new QueryModel(corpus, true, store);
 
         filter = query.filterForField(mockFieldDate);
         filter2 = query.filterForField(mockFieldMultipleChoice);
@@ -153,7 +153,7 @@ describe('QueryModel', () => {
             date: '1850-01-01:1850-01-01',
         });
 
-        const newQuery = new QueryModel(corpus, store);
+        const newQuery = new QueryModel(corpus, true, store);
         expect(newQuery.queryText).toEqual('test');
         expect(newQuery.activeFilters.length).toBe(1);
     });

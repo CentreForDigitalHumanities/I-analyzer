@@ -86,16 +86,16 @@ interface QueryState {
 export class QueryModel extends StoreSync<QueryState> {
     corpus: Corpus;
     filters: FilterInterface[];
-    currentUser: User;
+    isAuthenticated: boolean;
 
     update: Observable<void>;
 
     protected keysInStore = ['query', 'fields'];
 
-    constructor(corpus: Corpus, store?: Store, currentUser?: User) {
+    constructor(corpus: Corpus, isAuthenticated?: boolean, store?: Store) {
         super(store || new SimpleStore());
 		this.corpus = corpus;
-        this.currentUser = currentUser;
+        this.isAuthenticated = isAuthenticated;
         this.connectToStore();
         this.filters = this.makeFilters(this.store);
         this.update = this.collectUpdates$();
@@ -152,7 +152,7 @@ export class QueryModel extends StoreSync<QueryState> {
     clone(store?: Store) {
         store = store || new SimpleStore();
         store.paramUpdates$.next(this.toQueryParams());
-        return new QueryModel(this.corpus, store);
+        return new QueryModel(this.corpus, this.filters.find(isTagFilter) !== undefined, store);
 	}
 
     /**
@@ -214,7 +214,7 @@ export class QueryModel extends StoreSync<QueryState> {
      */
     private makeFilters(store: Store): FilterInterface[] {
         const fieldFilters: FilterInterface[] = this.corpus.fields.map(field => field.makeSearchFilter(store));
-        if (this.currentUser) {
+        if (this.isAuthenticated) {
             const tagFilter = new TagFilter(store);
         return [...fieldFilters, tagFilter];
         }

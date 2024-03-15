@@ -5,6 +5,8 @@ import { Aggregator, QueryModel } from '../models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
 import { TagService } from './tag.service';
 import { TagServiceMock } from '../../mock-data/tag';
+import { AuthServiceMock } from '../../mock-data/auth';
+import { AuthService } from './auth.service';
 
 const mockResponse: SearchResponse = {
     took: 4,
@@ -64,7 +66,8 @@ describe('ElasticSearchService', () => {
         TestBed.configureTestingModule({
             providers: [
                 ElasticSearchService,
-                { provide: TagService, useValue: new TagServiceMock() }
+                { provide: TagService, useValue: new TagServiceMock() },
+                { provide: AuthService, useValue: new AuthServiceMock()}
             ],
             imports: [ HttpClientTestingModule ]
         });
