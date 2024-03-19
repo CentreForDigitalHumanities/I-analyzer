@@ -32,6 +32,13 @@ class UBlad(HTMLCorpusDefinition):
     scan_image_type = getattr(settings, 'UBLAD_SCAN_IMAGE_TYPE', 'image/jpeg')
     allow_image_download = getattr(settings, 'UBLAD_ALLOW_IMAGE_DOWNLOAD', True)
 
+    document_context = {
+        'context_fields': ['volume_id'],
+        'sort_field': 'sequence',
+        'sort_direction': 'asc',
+        'context_display_name': 'volume'
+    }
+
     languages = ['nl']
     category = 'periodical'
 
