@@ -4,6 +4,11 @@ import addcorpus.validation.creation
 from django.db import migrations, models
 
 
+def validate_image_filename_extension(filename):
+    allowed = ['.jpeg', '.jpg', '.png', '.JPG']
+    addcorpus.validation.creation.validate_filename_extension(filename, allowed)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -19,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='corpusconfiguration',
             name='image',
-            field=models.CharField(help_text='filename of the corpus image', max_length=126, validators=[addcorpus.validation.creation.validate_image_filename_extension]),
+            field=models.CharField(help_text='filename of the corpus image', max_length=126, validators=[validate_image_filename_extension]),
         ),
         migrations.AlterField(
             model_name='corpusconfiguration',
