@@ -48,3 +48,4 @@ corpora/*/wm/*
 !corpora/*/wm/documentation.md
 
 
+test_data/
