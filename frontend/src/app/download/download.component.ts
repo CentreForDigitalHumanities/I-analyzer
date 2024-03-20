@@ -1,9 +1,10 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import * as _ from 'lodash';
 
+import { environment } from '../../environments/environment';
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel, ResultOverview } from '../models/index';
 import { actionIcons } from '../shared/icons';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-download',
@@ -29,6 +30,8 @@ export class DownloadComponent implements OnChanges {
     public pendingDownload: PendingDownload;
 
     actionIcons = actionIcons;
+
+    private directDownloadLimit = environment.directDownloadLimit;
 
     private downloadsPageLink = {
         text: 'view downloads',
@@ -70,7 +73,7 @@ export class DownloadComponent implements OnChanges {
      * and an email is sent with download link from backend
      */
     public chooseDownloadMethod() {
-        if (this.resultOverview.resultsCount < this.corpus.directDownloadLimit || this.downloadLimit <= this.corpus.directDownloadLimit) {
+        if (this.resultOverview.resultsCount < this.directDownloadLimit || this.downloadLimit === undefined) {
             this.directDownload();
         } else {
             this.longDownload();
@@ -79,7 +82,7 @@ export class DownloadComponent implements OnChanges {
 
     /** download short file directly */
     public confirmDirectDownload(options: DownloadOptions) {
-        const nDocuments = Math.min(this.resultOverview.resultsCount, this.corpus.directDownloadLimit);
+        const nDocuments = Math.min(this.resultOverview.resultsCount, this.directDownloadLimit);
         this.isDownloading = true;
         this.downloadService
             .download(

@@ -114,9 +114,6 @@ class CorpusDefinition(Reader):
         'context_display_name': None
     }
 
-    ''' An integer that defines how many documents can be downloaded without a Celery task. Defaults to 1000. '''
-    direct_download_limit = 1000
-    
     '''
     Specifies a default configuration for sorting search results.
 

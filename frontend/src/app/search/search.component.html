@@ -36,7 +36,7 @@
                                 </div>
                             </form>
                         </div>
-                        <ia-download *ngIf="corpus" [corpus]="corpus" [queryModel]="queryModel" [resultOverview]="resultOverview" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user? user.downloadLimit: corpus.directDownloadLimit" [route]="this.router.url"></ia-download>
+                        <ia-download *ngIf="corpus" [corpus]="corpus" [queryModel]="queryModel" [resultOverview]="resultOverview" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user? user.downloadLimit : undefined" [route]="this.router.url"></ia-download>
                     </div>
                 </nav>
             </div>

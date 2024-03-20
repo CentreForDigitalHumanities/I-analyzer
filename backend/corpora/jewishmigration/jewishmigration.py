@@ -50,7 +50,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
-    direct_download_limit = 5000
     description_page = 'jewish_migration.md'
     languages = ['en']
 

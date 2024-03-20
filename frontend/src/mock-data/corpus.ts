@@ -153,7 +153,7 @@ export const mockCorpus: Corpus = {
     category: 'Tests',
     defaultSort: [undefined, 'desc'],
     languageField: undefined,
-} as Corpus;
+} as unknown as Corpus;
 
 export const mockCorpus2 = {
     name: 'test2',
@@ -173,7 +173,7 @@ export const mockCorpus2 = {
     category: 'Different tests',
     defaultSort: [undefined, 'desc'],
     languageField: undefined,
-} as Corpus;
+} as unknown as Corpus;
 
 export const mockCorpus3: Corpus = {
     name: 'test3',
@@ -199,7 +199,7 @@ export const mockCorpus3: Corpus = {
     },
     defaultSort: [undefined, 'desc'],
     languageField: undefined,
-} as Corpus;
+} as unknown as Corpus;
 
 export class CorpusServiceMock {
     private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);

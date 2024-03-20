@@ -32,7 +32,6 @@ class PeacePortal(ParentCorpusDefinition):
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime.datetime(year=746, month=1, day=1)
-    direct_download_limit = 10000
     image = 'bogus.jpg'
     category = 'inscription'
     data_directory = 'bogus'
