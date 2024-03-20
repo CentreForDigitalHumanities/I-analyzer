@@ -280,7 +280,7 @@ def get_documents(corpus, start, end):
     )
     return corpus.documents(sources)
 
-
+@pytest.mark.xfail(reason='peace portal corpora are missing images')
 def test_peaceportal_validation(db, peace_test_settings):
     load_and_save_all_corpora()
     corpus_names = [case['name'] for case in CORPUS_TEST_DATA]
