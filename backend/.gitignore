@@ -47,5 +47,6 @@ download/csv_files/
 corpora/*/wm/*
 !corpora/*/wm/documentation.md
 
-
+# file storage
 test_data/
+data/
