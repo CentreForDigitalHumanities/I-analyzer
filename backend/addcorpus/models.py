@@ -182,10 +182,11 @@ class CorpusConfiguration(models.Model):
         max_length=MAX_LENGTH_NAME,
         help_text='name of the corpus index in elasticsearch'
     )
-    image = models.CharField(
-        max_length=126,
-        validators=[validate_image_filename_extension],
-        help_text='filename of the corpus image',
+    image = models.ImageField(
+        upload_to='corpus_images',
+        blank=True,
+        null=True,
+        help_text='image that can be used for the corpus in the interface'
     )
     languages = ArrayField(
         models.CharField(
