@@ -114,8 +114,8 @@
                 <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                     [asTable]="freqtable" [palette]="palette"
                     (ngramError)="setErrorMessage($event)"></ia-ngram>
-                <ia-map *ngSwitchCase=" 'map' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                    [asTable]="false"
+                <ia-map *ngSwitchCase=" 'map' " [corpus]="corpus" [queryModel]="queryModel"
+                    [visualizedField]="visualizedField" [asTable]="freqtable"
                     (mapError)="setErrorMessage($event)"></ia-map>
             </ng-container>
         </div>

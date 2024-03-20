@@ -47,11 +47,7 @@ class MapView(APIView):
                           CorpusAccessPermission, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
-        check_json_keys(request, ['corpus', 'es_query', 'field', 'size'])
-        data_limit = settings.WORDCLOUD_LIMIT
-        if request.data['size'] > data_limit:
-            raise ParseError(
-                detail=f'size exceeds {data_limit} documents')
+        check_json_keys(request, ['corpus', 'es_query', 'field'])
         try:
             # no need to run async: we will use the result directly
             documents = tasks.get_geo_data(request.data)

@@ -15,12 +15,14 @@ def get_wordcloud_data(request_json):
 
 @shared_task()
 def get_geo_data(request_json):
+    ''' Fetch all documents regardless of number of search results.
+    This should be fast enough for this operation.
+    '''
     corpus_name = request_json['corpus']
-    size = request_json['size']
     geo_field = request_json['field']
     es_query = api_query_to_es_query(request_json, corpus_name)
     list_of_documents, _ = es_download.scroll(
-        corpus_name, es_query, size, source_includes=['id', geo_field])
+        corpus_name, es_query, source_includes=['id', geo_field])
     return list_of_documents
 
 @shared_task

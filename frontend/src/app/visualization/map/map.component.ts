@@ -57,7 +57,6 @@ export class MapComponent implements OnChanges {
           this.visualizedField.name,
           this.queryModel,
           this.corpus,
-          this.resultsCount
         )
         .then(geoData => {
           this.results = geoData;

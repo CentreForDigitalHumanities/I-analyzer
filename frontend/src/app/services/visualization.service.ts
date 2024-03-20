@@ -36,14 +36,13 @@ export class VisualizationService {
         });
     }
 
-    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
         Promise<GeoDocument[]> {
         const query = queryModel.toAPIQuery();
         return this.apiService.geoData({
             ...query,
             corpus: corpus.name,
             field: fieldName,
-            size,
         });
     }
 
