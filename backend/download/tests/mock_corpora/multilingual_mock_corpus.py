@@ -16,7 +16,7 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
     min_date = datetime(year=2000, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
     es_index = 'ianalyzer-mixed-language-mock-corpus'
-    image = 'test.jpeg'
+    image = 'corpus.jpg'
     data_directory = 'bogus'
     languages = ['sv', 'de']
     category = 'book'
