@@ -25,6 +25,8 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     configuration, regardless of what is currently saved in the database.
     '''
 
+    _clear_corpus_image(corpus)
+
     # create a clean CorpusConfiguration object, but use the existing PK if possible
     configuration = CorpusConfiguration(pk=_configuration_pk(corpus), corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
@@ -110,6 +112,15 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     field.save()
     field.full_clean()
     return field
+
+def _clear_corpus_image(corpus: Corpus):
+    if corpus.has_configuration and corpus.configuration.image:
+        image = corpus.configuration.image
+        if image:
+            if os.path.exists(image.path):
+                os.remove(image.path)
+
+            image.delete()
 
 def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     corpus_name = configuration.corpus.name
