@@ -76,7 +76,6 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'document_context',
             'es_alias',
             'es_index',
-            'image',
             'languages',
             'min_date',
             'max_date',
