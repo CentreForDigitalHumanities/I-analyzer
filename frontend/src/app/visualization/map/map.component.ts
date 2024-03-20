@@ -1,9 +1,10 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { Corpus, CorpusField, QueryModel } from '../../models';
+import { Corpus, CorpusField, GeoDocument, QueryModel } from '../../models';
 import { VisualizationService } from '../../services';
 import { showLoading } from '../../utils/utils';
+
 
 @Component({
   selector: 'ia-map',
@@ -18,51 +19,59 @@ export class MapComponent implements OnChanges {
   @Input() resultsCount: number;
   @Input() asTable: boolean;
 
+  @Output() mapError = new EventEmitter();
+
+  results: GeoDocument[];
+
   isLoading$ = new BehaviorSubject<boolean>(false);
 
   constructor(private visualizationService: VisualizationService) { }
 
   get readyToLoad() {
     return (
-        this.corpus &&
-        this.visualizedField &&
-        this.queryModel
+      this.corpus &&
+      this.visualizedField &&
+      this.queryModel
     );
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (
-        this.readyToLoad &&
-        (changes.corpus || changes.visualizedField || changes.queryModel)
+      this.readyToLoad &&
+      (changes.corpus || changes.visualizedField || changes.queryModel)
     ) {
-        if (changes.queryModel) {
-            this.queryModel.update.subscribe(this.loadData.bind(this));
-        }
-        this.loadData();
+      if (changes.queryModel) {
+        this.queryModel.update.subscribe(this.loadData.bind(this));
+      }
+      this.loadData();
     } else {
-        this.makeChart();
+      // this.makeChart();
     }
-}
+  }
 
-loadData() {
+  loadData() {
     showLoading(
       this.isLoading$,
       this.visualizationService
-          .getGeoData(
-              this.visualizedField.name,
-              this.queryModel,
-              this.corpus,
-              this.resultsCount
-          )
-          .then(this.makeChart.bind(this))
-          .catch(this.emitError.bind(this))
-  );
+        .getGeoData(
+          this.visualizedField.name,
+          this.queryModel,
+          this.corpus,
+          this.resultsCount
+        )
+        .then(geoData => {
+          this.results = geoData;
+        })
+        .catch(this.emitError.bind(this))
+    );
+  }
+
+  makeChart(geoData: GeoDocument[]) {
+  }
+
+
+  emitError(error: { message: string }) {
+    this.mapError.emit(error?.message);
+  }
+
 }
-
-makeChart() {}
-
-emitError(error: { message: string }) {}
-
-}
-
-

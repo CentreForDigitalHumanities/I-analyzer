@@ -35,6 +35,9 @@
                         <span *ngIf="state.name === 'wordcloud' || state.name === 'ngram'">
                             Count frequencies in:
                         </span>
+                        <span *ngIf="state.name === 'map'">
+                            Show locations from:
+                        </span>
                     </label>
                     <div class="control">
                         <ia-dropdown *ngIf="fields.length > 1"
@@ -111,6 +114,9 @@
                 <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                     [asTable]="freqtable" [palette]="palette"
                     (ngramError)="setErrorMessage($event)"></ia-ngram>
+                <ia-map *ngSwitchCase=" 'map' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                    [asTable]="false"
+                    (mapError)="setErrorMessage($event)"></ia-map>
             </ng-container>
         </div>
 
