@@ -4,7 +4,6 @@ import { FieldFilterOptions } from './field-filter-options';
 import { SortState } from './sort';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
-import { FoundDocument } from './found-document';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
@@ -26,7 +25,6 @@ export class Corpus implements ElasticSearchIndex {
         public fields: CorpusField[],
         public minDate: Date,
         public maxDate: Date,
-        public image: string,
         public scan_image_type: string,
         public allow_image_download: boolean,
         public word_models_present: boolean,
