@@ -7,7 +7,7 @@ import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import validate_language_code, \
-    validate_image_filename_extension, validate_markdown_filename_extension, \
+    validate_markdown_filename_extension, \
     validate_es_mapping, validate_mimetype, validate_search_filter, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
     validate_searchable_field_has_full_text_search, \
