@@ -72,11 +72,10 @@ describe('FilterManagerComponent', () => {
         });
 
         it('does not show tag filter', async () => {
-            // TO DO
             await fixture.whenStable();
             const compiled = fixture.debugElement;
             const tagFilter = compiled.query(By.css('ia-tag-filter'));
-            expect(tagFilter).not.toBeTruthy();
+            expect(tagFilter).toBeFalsy();
         });
     });
 
