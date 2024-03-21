@@ -47,6 +47,7 @@ FORBIDDEN_FIELD_NAMES = [
     'ngramSettings',
     'scan',
     'tab-scan'
+    'p',
 ]
 '''
 Field names that cannot be used because they are also query parameters in frontend routes.
