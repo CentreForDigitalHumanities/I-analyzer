@@ -68,7 +68,7 @@ describe('pageFromParams', () => {
             size: 20,
         };
 
-        expect(pageToParams(state)).toEqual({ page: null });
+        expect(pageToParams(state)).toEqual({ p: null });
         expect(pageFromParams({})).toEqual(state);
     });
 });

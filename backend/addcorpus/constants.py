@@ -44,7 +44,8 @@ FORBIDDEN_FIELD_NAMES = [
     'visualize',
     'visualizedField',
     'normalize',
-    'ngramSettings'
+    'ngramSettings',
+    'p',
 ]
 '''
 Field names that cannot be used because they are also query parameters in frontend routes.
