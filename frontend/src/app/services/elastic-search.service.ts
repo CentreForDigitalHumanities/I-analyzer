@@ -19,11 +19,13 @@ export class ElasticSearchService {
     isAuthenticated: boolean;
 
     constructor(private authService: AuthService, private http: HttpClient, private tagService: TagService) {
-        this.authService.getCurrentUserPromise().then((user) => {
-            this.isAuthenticated = user !== null;
-            if (this.isAuthenticated) {
-                this.tagService.fetch();
-            }
+        this.authService.currentUser$.subscribe({
+            next: (user) => {
+                this.isAuthenticated = user !== null;
+                if (this.isAuthenticated) {
+                    this.tagService.fetch();
+                }
+        }
         });
     }
 
