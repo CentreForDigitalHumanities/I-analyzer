@@ -72,6 +72,19 @@ export class DocumentViewComponent implements OnChanges {
         return field.name === 'url' || field.name.startsWith('url_');
     }
 
+    isGeoPointField(field: CorpusField) {
+        return field.mappingType === 'geo_point';
+    }
+
+    displayGeoPointField(field: CorpusField) {
+        let latitude = this.document.fieldValue(field)[field.name][1];
+        let longitude = this.document.fieldValue(field)[field.name][0];
+        // Round to 2 decimal places
+        latitude = Math.round(latitude * 100) / 100;
+        longitude = Math.round(longitude * 100) / 100;
+        return `Lat: ${latitude}; Lon: ${longitude}`;
+    }
+
     /**
      * Checks if user has selected fields in the queryModel and whether current field is among them
      * Used to check which fields need to be highlighted
@@ -117,8 +130,8 @@ export class DocumentViewComponent implements OnChanges {
             }
         }
 
-    addParagraphTags(content: string) {
-        const paragraphs = content.split('\n');
+    addParagraphTags(content: string | string[]) {
+        const paragraphs = typeof content === 'string' ? content.split('\n') : content;
         return paragraphs.map(p => `<p>${p}</p>`).join(' ');
     }
 }

@@ -112,7 +112,7 @@ export class CorpusField {
     downloadable: boolean;
     name: string;
     filterOptions: FieldFilterOptions;
-    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
+    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | 'geo_point' | null;
     language: string;
 
     constructor(data: ApiCorpusField) {
