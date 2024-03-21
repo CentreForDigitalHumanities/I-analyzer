@@ -4,15 +4,9 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes are defined in `ianalyzer_readers.extract`
+The `extractor` attribute of a field should define how it extracts its data from source files. This value should be an instance of `Extractor`, which is defined in the `ianalyzer_readers` package. See [the API documentation of ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/api/#extractors) for a list of available extractors and their parameters.
 
-- The extractors `XML`, `HTML`, `CSV` and `JSON` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpusDefinition`, et cetera. All other extractors are available for all corpora.
-- The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
-- The `Constant` extractor can be used to define a constant value.
-- The `Order` extractor gives you the index of that document within the file.
-- The `Choice` and `Combined`, `Backup`, and `Pass` extractors can be used to combine multiple extractors.
-
-A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is falsy.
+These extractors are typically sufficient for new corpora; if they are not, you can create a custom `Extractor` subclass for your corpus, or expand the `ianalyzer_readers` package.
 
 ## Elasticsearch mapping
 

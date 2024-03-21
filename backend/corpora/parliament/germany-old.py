@@ -34,54 +34,40 @@ class ParliamentGermanyOld(Parliament, CSVCorpusDefinition):
     )
 
     book_id = field_defaults.book_id()
-    book_id.extractor = CSV(
-        field='book_id'
-    )
+    book_id.extractor = CSV('book_id')
 
     book_label = field_defaults.book_label()
-    book_label.extractor = CSV(
-        field='book_label'
-    )
+    book_label.extractor = CSV('book_label')
 
     era = field_defaults.era(include_aggregations= False)
-    era.extractor = CSV(
-        field='parliament'
-    )
+    era.extractor = CSV('parliament')
 
     date = field_defaults.date()
-    date.extractor = CSV(
-        field='date'
-    )
+    date.extractor = CSV('date')
     date.search_filter.lower = min_date
     date.search_filter.upper = max_date
 
     date_is_estimate = field_defaults.date_is_estimate()
     date_is_estimate.extractor = CSV(
-        field='date_is_estimate',
+        'date_is_estimate',
         transform=standardize_bool
     )
 
     page = field_defaults.page()
-    page.extractor = CSV(
-        field='page_number'
-    )
+    page.extractor = CSV('page_number')
 
     speech = field_defaults.speech()
     speech.extractor = CSV(
-        field='text',
+        'text',
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
 
     url = field_defaults.url()
-    url.extractor = CSV(
-        field='img_url'
-    )
+    url.extractor = CSV('img_url')
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(
-        field='item_order'
-    )
+    speech_id.extractor = CSV('item_order')
 
     def __init__(self):
         self.fields = [
