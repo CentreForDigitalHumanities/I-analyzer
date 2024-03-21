@@ -5,14 +5,18 @@
                 <th [iaBalloon]="field.description" iaBalloonPosition="left" iaBalloonLength="medium">
                     {{field.displayName}}:
                 </th>
-                <td *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
+                <td *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow"
+                    [attr.lang]="document.language(field)">
                     <ng-container *ngFor="let highlight of document.highlight[field.name]">
                         <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
                         <hr *ngIf="highlight !== document.highlight[field.name][document.highlight[field.name].length-1]">
                     </ng-container>
                 </td>
                 <ng-template #unhighlightedRow>
-                    <td style="word-break:break-word" [innerHtml]="document.fieldValue(field) | highlight:query:true"></td>
+                    <td style="word-break:break-word"
+                        [attr.lang]="document.language(field)"
+                        [innerHtml]="document.fieldValue(field) | highlight:query:true">
+                    </td>
                 </ng-template>
             </tr>
         </ng-container>

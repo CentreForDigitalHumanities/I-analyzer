@@ -61,6 +61,7 @@ class Parliament(CorpusDefinition):
         description='Search only in debates from selected countries',
         option_count=10
     )
+    country.language = 'en'
 
     date = field_defaults.date()
     speech = field_defaults.speech()

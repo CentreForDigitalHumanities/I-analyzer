@@ -48,41 +48,17 @@ The following properties are optional:
 - `desription_page`: filename of markdown document with a comprehensive description, located in a subdirectory `description` of the corpus definition directory.
 - `document_context`: specifies fields that define the natural grouping of documents.
 - `default_sort`: specifies the default method to sort search result.
+- `language_field`: if your corpus contains documents in multiple language, you can specify the name of the field that stores the IETF tag for each document.
 
 The corpus class should also define a function `sources(self, start, end)` which iterates source files (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 
-### XML / HTML corpora
+### Different types of readers
 
-If your source files are XML or HTML files, your corpus definition should respectively subclass `XMLCorpusDefinition` or `HTMLCorpusDefinition`.
+The `CorpusDefinition` class is a subclass of the `Reader` in `ianalyzer_readers`. `Reader` is a base class that does not provide much for data extraction.
 
-In addition to the properties above, the corpus class must define:
-- `tag_toplevel`: The highest-level tag in the source file.
-- `tag_entry`: The tag that corresponds to a single document entry.
+Most corpus definitions also inherit from a more specific `Reader` that provides functionality for the type of source data, e.g. `XMLReader`, `CSVReader`, etc. For convenience, you can use the classes `XMLCorpusDefinition`, `CSVCorpusDefinition`, etc., defined in [corpus.py](/backend/addcorpus/python_corpora/corpus.py).
 
-These tags can be strings or functions that map a metadata dict to a string. Your corpus will have one document for each `tag_entry`.
-
-### CSV corpora
-
-If your source files are CSV files, your corpus definition should subclass `CSVCorpusDefinition`.
-
-The CSV files will be read row by row. You can write the definition so each document is based on a single row, or so that each document is based on a group of adjacent rows.
-
-In addition to the properties above, CSV corpora have the following optional properties:
-- `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.
-- `delimiter`: the delimiter for the CSV reader (`,` by default)
-
-### Spreadsheet corpora
-
-If your source files are XLSX files, your corpus definition should subclass `XLSXCorpusDefinition`.
-
-This reader is quite rudimentary. It will read data with a "CSV-like" structure on the first sheet.
-
-The reader works like the CSV reader and also uses the `CSV` extractor. However, it does not have a `delimiter` parameter.
-
-### JSON corpora
-If your source files are in JSON format, your corpus definition should subclass `JSONCorpusDefinition`.
-
-The JSON ingested via `source2dicts` is expected to contain a list of dictionaries, for which field data can be extracted with a given key.
+See [the documentation of ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/) for the available `Reader` classes and the API for each of them.
 
 ## Settings file
 

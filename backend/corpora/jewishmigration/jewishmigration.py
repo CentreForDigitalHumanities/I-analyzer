@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 from django.conf import settings
 import langcodes
@@ -56,8 +57,12 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     category = 'inscription'
 
     def sources(self, start, end):
-        response = requests.get(self.data_directory)
-        list_of_sources = response.json()
+        if self.data_directory.startswith('http'):
+            response = requests.get(self.data_directory)
+            list_of_sources = response.json()
+        else:
+            with open(self.data_directory, 'r') as f:
+                list_of_sources = json.load(f)
         for source in list_of_sources:
             yield source
 

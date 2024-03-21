@@ -286,7 +286,7 @@ def test_peaceportal_validation(db, peace_test_settings):
     corpus_names = [case['name'] for case in CORPUS_TEST_DATA]
     for corpus_name in corpus_names:
         corpus = Corpus.objects.get(name=corpus_name)
-        assert corpus.active
+        assert corpus.ready_to_publish()
 
 
 def test_zero_pad_year():

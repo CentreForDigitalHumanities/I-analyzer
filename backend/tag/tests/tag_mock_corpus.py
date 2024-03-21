@@ -33,6 +33,7 @@ class TaggingMockCorpus(CSVCorpusDefinition):
         ),
         FieldDefinition(
             name='content',
+            display_type='text_content',
             extractor=CSV('content'),
             es_mapping=main_content_mapping(),
         )

@@ -52,7 +52,7 @@ class ParliamentUK(Parliament, CSVCorpusDefinition):
 
     chamber =  field_defaults.chamber()
     chamber.extractor = CSV(
-        field='house',
+        'house',
         transform=format_house
     )
     chamber.search_filter.option_count = 3
@@ -63,63 +63,51 @@ class ParliamentUK(Parliament, CSVCorpusDefinition):
     )
 
     date = field_defaults.date()
-    date.extractor = CSV(
-        field='date',
-    )
+    date.extractor = CSV('date')
 
     debate_title = field_defaults.debate_title()
     debate_title.extractor = CSV(
-        field='debate',
+        'debate',
         transform=format_debate_title
     )
+    debate_title.language = 'en'
 
     debate_id = field_defaults.debate_id()
-    debate_id.extractor = CSV(
-        field='debate_id'
-    )
+    debate_id.extractor = CSV('debate_id')
 
     speech = field_defaults.speech()
     speech.extractor = CSV(
-        field='content',
+        'content',
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
+    speech.language = 'en'
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(
-        field='speech_id'
-    )
+    speech_id.extractor = CSV('speech_id')
 
     speech_type = field_defaults.speech_type()
-    speech_type.extractor = CSV(
-        field='speech_type'
-    )
+    speech_type.extractor = CSV('speech_type')
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(
-        field='speaker_name',
+        'speaker_name',
         transform=format_speaker
     )
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = CSV(
-        field='speaker_id',
-    )
+    speaker_id.extractor = CSV('speaker_id')
 
     topic = field_defaults.topic()
-    topic.extractor = CSV(
-        field='heading_major',
-    )
+    topic.extractor = CSV('heading_major',)
+    topic.language = 'en'
 
     subtopic = field_defaults.subtopic()
-    subtopic.extractor = CSV(
-        field='heading_minor',
-    )
+    subtopic.extractor = CSV('heading_minor')
+    subtopic.language = 'en'
 
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(
-        field='sequence',
-    )
+    sequence.extractor = CSV('sequence')
 
     def __init__(self):
         self.fields = [

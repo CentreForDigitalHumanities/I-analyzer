@@ -68,7 +68,7 @@ class GoodReads(CSVCorpusDefinition):
             display_name='Year',
             description='Year the review was written.',
             extractor=CSV(
-                field='date',
+                'date',
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y')
             ),
@@ -86,9 +86,7 @@ class GoodReads(CSVCorpusDefinition):
             name='id',
             display_name='ID',
             description='ID of the review.',
-            extractor=CSV(
-                field='id',
-            ),
+            extractor=CSV('id'),
             es_mapping={'type': 'keyword'},
             csv_core=True,
         ),
@@ -120,18 +118,14 @@ class GoodReads(CSVCorpusDefinition):
             name='edition_id',
             display_name='Edition ID',
             description='ID of the edition the review was made for.',
-            extractor=CSV(
-                field='edition_id',
-            ),
+            extractor=CSV('edition_id'),
             es_mapping={'type': 'keyword'},
         ),
         FieldDefinition(
             name='edition_language',
             display_name='Edition language',
             description='The language that the edition that the review is for was written in',
-            extractor=CSV(
-                field='edition_language',
-            ),
+            extractor=CSV('edition_language'),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only editions written in these languages.',
@@ -169,18 +163,14 @@ class GoodReads(CSVCorpusDefinition):
             name='url',
             display_name='Source URL',
             description='Link to the the review on Goodreads',
-            extractor=CSV(
-                field='url',
-            ),
+            extractor=CSV('url'),
             es_mapping={'type': 'keyword'},
         ),
         FieldDefinition(
             name='text',
             display_name='Text',
             description='Fulltext of the review.',
-            extractor=CSV(
-                field='text',
-            ),
+            extractor=CSV('text'),
             es_mapping=main_content_mapping(),
             display_type='text_content',
             csv_core=True,
@@ -192,9 +182,7 @@ class GoodReads(CSVCorpusDefinition):
             name='language',
             display_name='Review language',
             description='The language of the review.',
-            extractor=CSV(
-                field='language',
-            ),
+            extractor=CSV('language'),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only reviews written in these languages.',
@@ -209,7 +197,7 @@ class GoodReads(CSVCorpusDefinition):
             display_name='Date',
             description='Date the review was written.',
             extractor=CSV(
-                field='date',
+                'date',
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
@@ -219,18 +207,14 @@ class GoodReads(CSVCorpusDefinition):
             name='rating_text',
             display_name='Goodreads rating',
             description='Rating in the Goodreads style, e.g. \'really liked it\'.',
-            extractor=CSV(
-                field='rating',
-            ),
+            extractor=CSV('rating'),
             es_mapping={'type': 'keyword'},
         ),
         FieldDefinition(
             name='rating_no',
             display_name='Rating',
             description='Rating as a number.',
-            extractor=CSV(
-                field='rating_no',
-            ),
+            extractor=CSV('rating_no'),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only reviews with these ratings.',
@@ -245,7 +229,7 @@ class GoodReads(CSVCorpusDefinition):
             display_name='Word count',
             description='Number of words (whitespace-delimited) in the review.',
             extractor=CSV(
-                field='text',
+                'text',
                 transform=lambda x: len(x.split(' '))
             ),
             es_mapping={'type': 'integer'},
@@ -261,7 +245,7 @@ class GoodReads(CSVCorpusDefinition):
             display_name='Edition publisher',
             description='Publisher of the edition the review was written for',
             extractor=CSV(
-                field='edition_publisher',
+                'edition_publisher',
             ),
             es_mapping={'type': 'keyword'},
         ),
@@ -270,7 +254,7 @@ class GoodReads(CSVCorpusDefinition):
             display_name='Edition publishing year',
             description='Year the edition the review was written for was published.',
             extractor=CSV(
-                field='edition_publishing_year',
+                'edition_publishing_year',
             ),
             es_mapping={'type': 'keyword'},
         ),

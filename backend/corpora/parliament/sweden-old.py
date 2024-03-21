@@ -57,62 +57,59 @@ class ParliamentSwedenOld(Parliament, CSVCorpusDefinition):
     image =  'sweden-old.jpg'
 
     book_id = field_defaults.book_id()
-    book_id.extractor = CSV(field = 'book_id')
+    book_id.extractor = CSV('book_id')
 
     book_label = field_defaults.book_label()
-    book_label.extractor = CSV(field = 'book_label')
+    book_label.extractor = CSV('book_label')
 
     country = field_defaults.country()
     country.extractor = Constant('Sweden')
 
     era = field_defaults.era()
     era.extractor = CSV(
-        field = 'era',
+        'era',
         transform = format_era
     )
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(
-        field = 'chamber',
+        'chamber',
         transform = format_chamber
     )
     chamber.search_filter.option_count = 6
     chamber.description = 'Chamber (in Tvåkammarriksdagen era) or estate (in Ståndsriksdagen era) where the debate took place'
 
     date_earliest = field_defaults.date_earliest()
-    date_earliest.extractor = CSV(field='date_from')
+    date_earliest.extractor = CSV('date_from')
     date_earliest.search_filter.lower = min_date
     date_earliest.search_filter.upper = max_date
 
     date_latest = field_defaults.date_latest()
-    date_latest.extractor = CSV(field='date_to')
+    date_latest.extractor = CSV('date_to')
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 
     speech = field_defaults.speech()
-    speech.extractor = CSV(field='text')
+    speech.extractor = CSV('text')
+    speech.language = 'sv'
 
     page = field_defaults.page()
-    page.extractor = CSV(field='page_number')
+    page.extractor = CSV('page_number')
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(
-        field = 'date_order',
+        'date_order',
         transform = formatting.extract_integer_value,
     )
     sequence.description = 'Order of documents within the same date range and chamber'
 
     url_pdf = field_defaults.url()
-    url_pdf.extractor = CSV(
-        field='pdf_url'
-    )
+    url_pdf.extractor = CSV('pdf_url')
     url_pdf.display_name = 'Source url (PDF)'
     url_pdf.description = 'URL to PDF source file of this speech'
 
     url_xml = field_defaults.url()
-    url_xml.extractor = CSV(
-        field='xml_url'
-    )
+    url_xml.extractor = CSV('xml_url')
     url_xml.name = 'url_xml'
     url_xml.display_name = 'Source url (XML)'
     url_xml.description = 'URL to XML source file of this speech'

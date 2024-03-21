@@ -37,6 +37,7 @@ class FieldSerializer(serializers.ModelSerializer):
             'sortable',
             'searchable',
             'downloadable',
+            'language',
         ]
 
 
@@ -83,6 +84,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'title',
             'word_models_present',
             'default_sort',
+            'language_field',
             'fields',
         ]
 

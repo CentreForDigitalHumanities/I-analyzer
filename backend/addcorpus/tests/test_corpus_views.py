@@ -1,5 +1,6 @@
 from rest_framework import status
 from users.models import CustomUser
+from addcorpus.models import Corpus
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 
 def test_no_corpora(db, settings, admin_client):
@@ -53,3 +54,11 @@ def test_corpus_serialization(admin_client, mock_corpus):
     for property in secrets:
         assert property not in corpus
 
+def test_corpus_not_publication_ready(admin_client, mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    content_field = corpus.configuration.fields.get(name='lines')
+    content_field.display_type = 'text'
+    content_field.save()
+
+    response = admin_client.get('/api/corpus/')
+    corpus = not any(c['name'] == mock_corpus for c in response.data)
