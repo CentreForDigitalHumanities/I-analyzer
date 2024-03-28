@@ -71,3 +71,16 @@ a.dropdown-item[disabled] {
         color: $grey;
     }
 }
+
+.entity-per {
+    background-color: $entity-person;
+}
+.entity-loc {
+    background-color: $entity-location;
+}
+.entity-org {
+    background-color: $entity-organization;
+}
+.entity-mis {
+    background-color: $entity-miscellaneous;
+}

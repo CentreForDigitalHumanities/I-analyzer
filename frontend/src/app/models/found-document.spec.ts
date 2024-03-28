@@ -1,13 +1,15 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed, fakeAsync, waitForAsync } from '@angular/core/testing';
+import * as _ from 'lodash';
+import { reduce, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { makeDocument } from '../../mock-data/constructor-helpers';
 import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { FoundDocument } from './found-document';
 import { TagService } from '../services/tag.service';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
-import * as _ from 'lodash';
-import { reduce, take } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 import { Tag } from './tag';
+import { ElasticSearchService } from '../services';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 
 const maxScore = 2.9113607;
 const mockResponse = {
@@ -32,20 +34,21 @@ const mockResponse = {
     }
 };
 
-describe('FoundDocument', () => {
-    let tagService: TagService;
+fdescribe('FoundDocument', () => {
+    const mockTagService = new TagServiceMock() as any;
+    const mockElasticService = new ElasticSearchServiceMock() as any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                { provide: TagService, useValue: new TagServiceMock() }
+                { provide: TagService, useClass: TagServiceMock },
+                { provide: ElasticSearchService, useClass: ElasticSearchServiceMock }
             ]
         });
-        tagService = TestBed.inject(TagService);
     });
 
-    it('should construct from an elasticsearch response', () => {
-        const document = new FoundDocument(tagService, mockCorpus, mockResponse, maxScore);
+    fit('should construct from an elasticsearch response', () => {
+        const document = new FoundDocument(mockTagService, mockElasticService, mockCorpus, mockResponse, maxScore);
 
         expect(document.id).toBe('1994_troonrede');
         expect(document.fieldValues['monarch']).toBe('Beatrix');
@@ -89,5 +92,26 @@ describe('FoundDocument', () => {
                 [tag1, tag2]
             ]);
         });
+    }));
+
+    it('should fetch and display named entities', fakeAsync(() => {
+        const searchResponse = {
+            _index: 'test_index',
+            _id: 'my_identifier',
+            _score: 2.9113607,
+            _source: {
+                date: '1994-09-20',
+                id: 'my_identifier',
+                content: 'Wally was last seen in Paris.'
+            },
+            highlight: {
+                content: [
+                    '<em>seen</em>'
+                ]
+            }
+        };
+        const document = new FoundDocument(mockTagService, mockElasticService, mockCorpus, searchResponse, maxScore);
+        expect(document.fieldValues['content']).toEqual(
+            '<mark class="entity-per">Wally</mark> was last seen in <mark class="entity-loc">Paris</mark>');
     }));
 });

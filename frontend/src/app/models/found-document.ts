@@ -4,8 +4,9 @@ import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 import { Tag } from './tag';
 import { Observable, Subject, merge, timer } from 'rxjs';
+import { EntityService } from '../services/entity.service';
 import { TagService } from '../services/tag.service';
-import { map, mergeMap, shareReplay, take, tap } from 'rxjs/operators';
+import { map, mergeMap, shareReplay, take } from 'rxjs/operators';
 
 export class FoundDocument {
     id: string;
@@ -27,13 +28,16 @@ export class FoundDocument {
     /** tags created on the document */
     tags$: Observable<Tag[]>;
 
+    /** named entities associated with the document */
+    entities: string[];
     private tagsChanged$ = new Subject<void>();
 
     constructor(
         private tagService: TagService,
+        private entityService: EntityService,
         public corpus: Corpus,
         hit: SearchHit,
-        maxScore: number = 1
+        maxScore: number = 1,
     ) {
         this.id = hit._id;
         this.relevance = hit._score / maxScore;
@@ -42,8 +46,10 @@ export class FoundDocument {
 
         const created$ = timer(); // observable of the moment of construction (i.e. now)
 
-        // tags need to refreshed when the document is created, and
+        // tags need to be refreshed when the document is created, and
         // after each update
+        // shareReplay shares the value over all observers:
+        // add/removeTag, async pipe in document-tags.component template
         this.tags$ = merge(created$, this.tagsChanged$).pipe(
             mergeMap(() => this.fetchTags()),
             shareReplay(1),
@@ -112,6 +118,14 @@ export class FoundDocument {
         );
     }
 
+
+    fetchEntities(): Promise<void> {
+        return this.entityService.getDocumentEntities(this.corpus, this.id).then((result) => {
+            this.entities = result.entities;
+            result.annotations.map((annotation)=> _.set(this.fieldValues, _.keys(annotation)[0], _.values(annotation)[0]));
+        });
+    }
+
     private setTags(tags: Tag[]): Observable<Tag[]> {
         return this.tagService.setDocumentTags(this, tags);
     }
@@ -119,4 +133,5 @@ export class FoundDocument {
     private fetchTags(): Observable<Tag[]> {
         return this.tagService.getDocumentTags(this);
     }
+
 }

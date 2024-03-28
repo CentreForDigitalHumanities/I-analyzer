@@ -42,6 +42,7 @@
                         [attr.lang]="document.language(field)"
                         [innerHtml]="formatInnerHtml(field)">
                     </div>
+                    <ia-entity-legend [entities]="document.entities"></ia-entity-legend>
                 </ng-template>
                 <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="documentIcons.scan">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>

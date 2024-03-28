@@ -91,6 +91,11 @@ export interface QueryFeedback {
     similarTerms?: string[];
 }
 
+export interface NamedEntitiesResult {
+    entities: string[];
+    annotations: {[fieldName: string]: string}[];
+}
+
 export interface TaskResult { task_ids: string[] };
 
 export interface TaskSuccess {
