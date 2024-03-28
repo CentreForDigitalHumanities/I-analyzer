@@ -255,6 +255,7 @@ FIELD_VISUALIZATIONS = [
     (VisualizationType.TERM_FREQUENCY.value, 'Frequency of the search term'),
     (VisualizationType.NGRAM.value, 'Neighbouring words'),
     (VisualizationType.WORDCLOUD.value, 'Most frequent words'),
+    (VisualizationType.MAP.value, 'Map of geo-coordinates'),
 ]
 '''Options for `visualizations` field'''
 

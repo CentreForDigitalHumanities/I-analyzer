@@ -22,6 +22,8 @@ import { PaletteSelectComponent } from './visualization-footer/palette-select/pa
 import { VisualizationFooterComponent } from './visualization-footer/visualization-footer.component';
 import { VisualizationComponent } from './visualization.component';
 import { WordcloudComponent } from './wordcloud/wordcloud.component';
+import { MapComponent } from './map/map.component';
+
 
 @NgModule({
     providers: [ApiService, DialogService, SearchService, VisualizationService],
@@ -38,6 +40,7 @@ import { WordcloudComponent } from './wordcloud/wordcloud.component';
         FreqtableComponent,
         VisualizationComponent,
         PaletteSelectComponent,
+        MapComponent,
     ],
     imports: [
         ChartModule,
