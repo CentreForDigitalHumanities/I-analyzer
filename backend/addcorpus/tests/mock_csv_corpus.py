@@ -32,13 +32,13 @@ class MockCSVCorpus(CSVCorpusDefinition):
     fields = [
         FieldDefinition(
             name = 'character',
-            extractor = CSV(field = 'character')
+            extractor = CSV('character')
         ),
         FieldDefinition(
             name = 'lines',
             display_type = 'text_content',
             extractor = CSV(
-                field = 'line',
+                'line',
                 multiple = True,
             )
         )
