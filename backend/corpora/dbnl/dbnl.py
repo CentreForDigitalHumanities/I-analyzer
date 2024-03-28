@@ -31,6 +31,7 @@ class DBNL(XMLCorpusDefinition):
     document_context = {
         'context_fields': ['title_id'],
         'sort_field': 'chapter_index',
+        'sort_direction': 'asc',
         'context_display_name': 'book'
     }
 

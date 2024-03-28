@@ -38,6 +38,25 @@ class WordcloudView(APIView):
             raise APIException(detail='could not generate word cloud data')
 
 
+class MapView(APIView):
+    '''
+    Most frequent terms for a small batch of results
+    '''
+
+    permission_classes = [IsAuthenticated,
+                          CorpusAccessPermission, CanSearchTags]
+
+    def post(self, request, *args, **kwargs):
+        check_json_keys(request, ['corpus', 'es_query', 'field'])
+        try:
+            # no need to run async: we will use the result directly
+            documents = tasks.get_geo_data(request.data)
+            return Response(documents)
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='could not generate geo data')
+
+
 class NgramView(APIView):
     '''
     Schedule a task to retrieve ngrams containing the search term

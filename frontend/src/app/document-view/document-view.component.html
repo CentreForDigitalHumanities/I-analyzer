@@ -18,11 +18,12 @@
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValue(field)">
                             <th [iaBalloon]="field.description" iaBalloonPosition="up" iaBalloonLength="medium">{{field.displayName}}</th>
-                            <td *ngIf="!isUrlField(field)"
+                            <td *ngIf="!isUrlField(field) && !isGeoPointField(field)"
                                 data-test-field-value
                                 [attr.lang]="document.language(field)"
                                 [innerHtml]="formatInnerHtml(field)">
                             </td>
+                            <td *ngIf="isGeoPointField(field)">{{displayGeoPointField(field)}}</td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
                             </td>
