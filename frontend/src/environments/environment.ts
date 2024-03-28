@@ -13,6 +13,7 @@ export const environment = {
     samlLogoutUrl: '/users/saml2/logout/',
     showSolis: true,
     runInIFrame: false,
+    directDownloadLimit: 1000,
     version,
     sourceUrl: 'https://github.com/UUDigitalHumanitieslab/I-analyzer/',
 };

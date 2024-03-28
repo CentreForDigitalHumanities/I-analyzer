@@ -81,6 +81,7 @@ CORPUS_SERVER_NAMES = {}
 CORPORA = {}
 
 WORDCLOUD_LIMIT = 1000
+DIRECT_DOWNLOAD_LIMIT = 1000
 
 # Celery configuration
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER', 'redis://')
