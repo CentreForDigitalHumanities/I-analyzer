@@ -116,7 +116,7 @@ def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: Corpu
     filename = corpus_definition.image
     path = os.path.join(corpus_dir(corpus_name), 'images', filename)
     _, ext = os.path.splitext(path)
-    save_as = corpus_name + '.' + ext
+    save_as = corpus_name + ext
     with open(path, 'rb') as f:
         configuration.image = ImageFile(f, name=save_as)
         configuration.save()
