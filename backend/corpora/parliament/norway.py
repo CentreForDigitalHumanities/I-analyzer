@@ -49,14 +49,14 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(
-        field = 'source_file',
+        'source_file',
         transform = remove_file_extension,
     )
 
     book_label = field_defaults.book_label()
     book_label.extractor = Combined(
-        CSV(field = 'title'),
-        CSV(field = 'subtitle'),
+        CSV('title'),
+        CSV('subtitle'),
         transform = lambda parts: '; '.join(parts)
     )
 
@@ -73,7 +73,7 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
-        field = 'year',
+        'year',
         transform = lambda value : formatting.get_date_from_year(value, 'earliest')
     )
     date_earliest.search_filter.lower = min_date
@@ -81,7 +81,7 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
-        field = 'year',
+        'year',
         transform = lambda value : formatting.get_date_from_year(value, 'latest')
     )
     date_latest.search_filter.lower = min_date
@@ -89,14 +89,13 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
 
     page = field_defaults.page()
-    page.extractor = CSV(field = 'page')
+    page.extractor = CSV('page')
 
     speech = field_defaults.speech(language='no')
-    speech.extractor = CSV(field = 'text')
-    speech.language = 'no'
+    speech.extractor = CSV('text')
 
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(field = 'page')
+    sequence.extractor = CSV('page')
 
     def __init__(self):
         self.fields = [

@@ -87,16 +87,16 @@ export const pageToParams = (state: PageParameters): Params => {
 
     if (page === 1) {
         return {
-            page: null,
+            p: null,
         };
     }
 
-    return {page};
+    return {p: page};
 };
 
 export const pageFromParams = (params: Params|undefined): PageParameters => {
-    if (params && params['page']) {
-        const page = _.toInteger(params['page']);
+    if (params && params['p']) {
+        const page = _.toInteger(params['p']);
         const size = RESULTS_PER_PAGE;
         const from = (page - 1) * size;
         return {from, size};

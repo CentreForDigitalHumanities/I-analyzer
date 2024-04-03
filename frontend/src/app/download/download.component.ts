@@ -1,9 +1,10 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import * as _ from 'lodash';
 
+import { environment } from '../../environments/environment';
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel, ResultOverview } from '../models/index';
 import { actionIcons } from '../shared/icons';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-download',
@@ -15,7 +16,8 @@ export class DownloadComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public resultOverview: ResultOverview;
     @Input() public hasLimitedResults: boolean;
-    @Input() public downloadLimit: string;
+    // download limit is either the user's download limit, or (for unauthenticated users) the corpus' direct download limit
+    @Input() public downloadLimit: number;
     @Input() public route: string;
 
     public selectedCsvFields: CorpusField[];
@@ -29,7 +31,7 @@ export class DownloadComponent implements OnChanges {
 
     actionIcons = actionIcons;
 
-    private resultsCutoff = 1000;
+    private directDownloadLimit = environment.directDownloadLimit;
 
     private downloadsPageLink = {
         text: 'view downloads',
@@ -46,7 +48,7 @@ export class DownloadComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        this.availableCsvFields = _.filter(this.corpus.fields, 'downloadable');
+        this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
         const highlight = this.resultOverview?.highlight;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
         if (highlight !== undefined) {
@@ -71,7 +73,7 @@ export class DownloadComponent implements OnChanges {
      * and an email is sent with download link from backend
      */
     public chooseDownloadMethod() {
-        if (this.resultOverview.resultsCount < this.resultsCutoff) {
+        if (this.resultOverview.resultsCount < this.directDownloadLimit || this.downloadLimit === undefined) {
             this.directDownload();
         } else {
             this.longDownload();
@@ -80,13 +82,14 @@ export class DownloadComponent implements OnChanges {
 
     /** download short file directly */
     public confirmDirectDownload(options: DownloadOptions) {
+        const nDocuments = Math.min(this.resultOverview.resultsCount, this.directDownloadLimit);
         this.isDownloading = true;
         this.downloadService
             .download(
                 this.corpus,
                 this.queryModel,
                 this.getCsvFields(),
-                this.resultOverview.resultsCount,
+                nDocuments,
                 this.route,
                 this.resultOverview.sort,
                 this.resultOverview.highlight,

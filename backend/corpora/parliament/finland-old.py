@@ -33,7 +33,7 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
 
     chamber = field_defaults.chamber()
-    chamber.extractor = CSV(field='estate')
+    chamber.extractor = CSV('estate')
     chamber.search_filter = MultipleChoiceFilter(
         description='Search only in debates from the selected chamber(s)',
         option_count=4
@@ -44,7 +44,7 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
-        field='year_start',
+        'year_start',
         transform=lambda value: formatting.get_date_from_year(value, 'earliest')
     )
     date_earliest.search_filter.lower = min_date
@@ -52,33 +52,33 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
-        field='year_end',
+        'year_end',
         transform=lambda value: formatting.get_date_from_year(value, 'latest')
     )
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 
     language = field_defaults.language()
-    language.extractor = CSV(field='language')
+    language.extractor = CSV('language')
 
     page = field_defaults.page()
-    page.extractor = CSV(field='page')
+    page.extractor = CSV('page')
 
     source_archive = field_defaults.source_archive()
-    source_archive.extractor = CSV(field='file')
+    source_archive.extractor = CSV('file')
 
-    speech = field_defaults.speech(language='fin')
-    speech.extractor = CSV(field='text')
+    speech = field_defaults.speech()
+    speech.extractor = CSV('text')
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = Combined(
-        CSV(field='file'),
-        CSV(field='page'),
+        CSV('file'),
+        CSV('page'),
         transform=lambda x: '_'.join(x)
     )
 
     speech_type = field_defaults.speech_type()
-    speech_type.extractor = CSV(field='type')
+    speech_type.extractor = CSV('type')
 
     def __init__(self):
         self.fields = [

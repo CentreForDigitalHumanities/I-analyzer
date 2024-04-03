@@ -36,21 +36,17 @@ class ResultsDownloadView(APIView):
     Download search results up to 1.000 documents
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
-        max_size = 1000
-        size = request.data.get('es_query').pop('size', max_size)
-
-        if size > max_size:
-            raise ParseError(detail='Download failed: too many documents requested')
-
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
+            size = request.data.get('es_query').pop('size')
+            user = request.user if request.user.is_authenticated else None
             download = Download.objects.create(
-                download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
+                download_type='search_results', corpus=corpus, parameters=request.data, user=user)
             csv_path = tasks.make_download(request.data, download.id, size)
             directory, filename = os.path.split(csv_path)
             # Create download for download history
