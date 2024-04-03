@@ -125,12 +125,13 @@ def _clear_corpus_image(corpus: Corpus):
 def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     corpus_name = configuration.corpus.name
     filename = corpus_definition.image
-    path = os.path.join(corpus_dir(corpus_name), 'images', filename)
-    _, ext = os.path.splitext(path)
-    save_as = corpus_name + ext
-    with open(path, 'rb') as f:
-        configuration.image = ImageFile(f, name=save_as)
-        configuration.save()
+    if filename:
+        path = os.path.join(corpus_dir(corpus_name), 'images', filename)
+        _, ext = os.path.splitext(path)
+        save_as = corpus_name + ext
+        with open(path, 'rb') as f:
+            configuration.image = ImageFile(f, name=save_as)
+            configuration.save()
 
 def _prepare_for_import(corpus):
     corpus.has_python_definition = True
