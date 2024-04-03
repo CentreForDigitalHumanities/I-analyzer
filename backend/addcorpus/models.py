@@ -16,7 +16,7 @@ from addcorpus.validation.creation import validate_language_code, \
 from addcorpus.validation.indexing import validate_has_configuration, \
     validate_essential_fields, validate_language_field
 from addcorpus.validation.publishing import validate_ngram_has_date_field,  \
-    validate_default_sort
+    validate_default_sort, validate_has_image
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -117,6 +117,7 @@ class Corpus(models.Model):
         self.validate_ready_to_index()
         validate_ngram_has_date_field(self)
         validate_default_sort(self)
+        validate_has_image(self)
 
     def clean(self):
         if self.active:
