@@ -91,7 +91,7 @@ class ParliamentDenmark(Parliament, CSVCorpusDefinition):
     page = field_defaults.page()
     page.extractor = CSV('page')
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='da')
     speech.extractor = CSV('text')
 
     speech_id = field_defaults.speech_id()

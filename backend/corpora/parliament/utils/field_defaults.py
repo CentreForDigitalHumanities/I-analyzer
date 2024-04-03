@@ -273,22 +273,30 @@ def source_archive():
     )
 
 
-def speech():
+def speech(language=None):
     """
     speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
     stopword and stemmer filter need to be defined for each language
     """
+    has_language = language != None
     return FieldDefinition(
         name='speech',
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True, language='en', updated_highlighting=True),
+        es_mapping = main_content_mapping(
+            token_counts=True,
+            stopword_analysis=has_language,
+            stemming_analysis=has_language,
+            language=language,
+            updated_highlighting=True
+        ),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
         visualizations=['wordcloud', 'ngram'],
         csv_core=True,
+        language=language,
     )
 
 def speech_id():

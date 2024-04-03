@@ -98,9 +98,8 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     sequence = field_defaults.sequence()
     sequence.extractor = CSV('sequence')
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='fr')
     speech.extractor = CSV('page_text')
-    speech.language = 'fr'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV('speech_id')
