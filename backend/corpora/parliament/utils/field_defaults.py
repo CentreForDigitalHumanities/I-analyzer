@@ -278,6 +278,7 @@ def speech(language=None):
     speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
     stopword and stemmer filter need to be defined for each language
     """
+    has_language = language != None
     return FieldDefinition(
         name='speech',
         display_name='Speech',
@@ -285,8 +286,8 @@ def speech(language=None):
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
         es_mapping = main_content_mapping(
             token_counts=True,
-            stopword_analysis=True,
-            stemming_analysis=True,
+            stopword_analysis=has_language,
+            stemming_analysis=has_language,
             language=language,
             updated_highlighting=True
         ),

@@ -121,7 +121,7 @@ class ParliamentFinland(Parliament, XMLCorpusDefinition):
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = person_attribute_extractor('birth_year')
 
-    speech = field_defaults.speech(language='fin')
+    speech = field_defaults.speech()
     speech.extractor = XML(transform = clean_value)
 
     speech_id = field_defaults.speech_id()
