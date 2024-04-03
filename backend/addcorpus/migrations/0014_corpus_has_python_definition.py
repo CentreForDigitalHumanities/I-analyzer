@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('addcorpus', '0012_corpusconfiguration_language_field_field_language'),
+        ('addcorpus', '0013_alter_field_visualizations_map'),
     ]
 
     operations = [
