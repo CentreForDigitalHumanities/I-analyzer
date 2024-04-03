@@ -26,7 +26,6 @@ def _parse_configuration(data: Dict) -> CorpusConfiguration:
     description = get_path(data, 'meta', 'description')
     category = get_path(data, 'meta', 'category')
     es_index = get_path(data, 'name')
-    image = 'missing.png' # TODO: fix this
     languages = get_path(data, 'meta', 'languages')
     min_date = _parse_date(get_path(data, 'meta', 'date_range', 'min'))
     max_date = _parse_date(get_path(data, 'meta', 'date_range', 'max'))
@@ -38,7 +37,6 @@ def _parse_configuration(data: Dict) -> CorpusConfiguration:
         description=description,
         category=category,
         es_index=es_index,
-        image=image,
         languages=languages,
         min_date=min_date,
         max_date=max_date,
