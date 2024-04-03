@@ -20,6 +20,18 @@ def test_corpus_citation_view(admin_client, mock_corpus):
     response = admin_client.get(f'/api/corpus/citation/{mock_corpus}')
     assert response.status_code == 200
 
+def test_corpus_image_view(admin_client, mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    assert not corpus.configuration.image
+
+    response = admin_client.get(f'/api/corpus/image/{mock_corpus}')
+    assert response.status_code == 200
+
+    corpus.configuration.image = 'corpus.jpg'
+    corpus.configuration.save
+
+    response = admin_client.get(f'/api/corpus/image/{mock_corpus}')
+    assert response.status_code == 200
 
 def test_nonexistent_corpus(admin_client):
     response = admin_client.get(f'/api/corpus/documentation/unknown-corpus/mock-csv-corpus.md')

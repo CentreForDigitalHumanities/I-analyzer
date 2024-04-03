@@ -44,11 +44,3 @@ def validate_default_sort(corpus):
         raise CorpusNotPublishableError(
             f'Invalid default sort field: field "{field_name}" is not sortable'
         )
-
-def validate_has_image(corpus):
-    config = corpus.configuration
-    if not config.image:
-        raise CorpusNotPublishableError('Corpus has no image')
-
-    if not os.path.exists(config.image.path):
-        raise FileNotFoundError(f'Corpus image {config.image.path} does not exist')

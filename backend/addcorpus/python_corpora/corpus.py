@@ -2,6 +2,7 @@
 Module contains the base classes from which corpora can derive;
 '''
 
+from typing import Optional
 from ianalyzer_readers import extract
 from datetime import datetime
 from os.path import isdir
@@ -137,13 +138,11 @@ class CorpusDefinition(Reader):
     '''
     language_field = None
 
-    @property
-    def image(self):
-        '''
-        Name of the corpus image. Should be relative path from a directory 'images'
-        in the same directory as the corpus definition file.
-        '''
-        raise NotImplementedError('CorpusDefinition missing image')
+    image: Optional[str] = None
+    '''
+    Name of the corpus image. Should be relative path from a directory 'images'
+    in the same directory as the corpus definition file.
+    '''
 
     '''
     MIME type of scanned documents (images)
