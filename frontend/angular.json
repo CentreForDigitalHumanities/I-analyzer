@@ -38,7 +38,8 @@
                       "ng2-pdf-viewer",
                       "iv-viewer",
                       "smoothscroll-polyfill",
-                      "file-saver"
+                      "file-saver",
+                      "pdfjs-dist"
                   ]
               },
               "configurations": {
