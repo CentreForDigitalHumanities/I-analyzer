@@ -113,7 +113,6 @@
       }
     }
   },
-  "defaultProject": "frontend",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "ia",
@@ -124,6 +123,8 @@
     }
   },
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
