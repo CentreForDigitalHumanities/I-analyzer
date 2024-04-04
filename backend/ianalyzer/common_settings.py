@@ -10,7 +10,12 @@ import sentry_sdk
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if SENTRY_DSN := os.getenv('SENTRY_DSN'):
-    sentry_sdk.init(dsn=SENTRY_DSN, tracing=True)
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        enable_tracing=True,
+        sample_rate=1.0,
+        traces_sample_rate=1.0
+    )
 
 # Application definition
 
