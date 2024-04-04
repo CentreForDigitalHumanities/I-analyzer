@@ -41,7 +41,6 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                     'corpus',
                     'title',
                     'description',
-                    'description_page',
                     'image',
                 ]
             }

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from addcorpus.models import Corpus, CorpusConfiguration, Field
+from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
 
@@ -70,8 +70,6 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
         fields = [
             'allow_image_download',
             'category',
-            'description_page',
-            'citation_page',
             'description',
             'document_context',
             'es_alias',
@@ -102,3 +100,12 @@ class CorpusSerializer(serializers.ModelSerializer):
         conf_data = data.pop('configuration')
         data.update(conf_data)
         return data
+
+
+
+class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
+    type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
+
+    class Meta:
+        model = CorpusDocumentationPage
+        fields = ['corpus_configuration', 'type', 'content']

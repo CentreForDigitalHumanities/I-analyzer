@@ -2,7 +2,7 @@ import os
 from django.db import transaction
 from django.core.files.images import ImageFile
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
-from addcorpus.models import Corpus, CorpusConfiguration, Field
+from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
 import sys
 
@@ -35,6 +35,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
 
     _save_corpus_fields_in_database(corpus_definition, configuration)
     _save_corpus_image(corpus_definition, configuration)
+    _save_corpus_documentation(corpus_definition, configuration)
 
 def get_defined_attributes(object, attributes):
     get = lambda attr: object.__getattribute__(attr)
@@ -51,8 +52,6 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'description',
         'allow_image_download',
         'category',
-        'description_page',
-        'citation_page',
         'document_context',
         'es_alias',
         'es_index',
@@ -132,6 +131,35 @@ def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: Corpu
         with open(path, 'rb') as f:
             configuration.image = ImageFile(f, name=save_as)
             configuration.save()
+
+def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
+    pages = [
+        ('description_page', 'description', CorpusDocumentationPage.PageType.GENERAL),
+        ('citation_page', 'citation', CorpusDocumentationPage.PageType.CITATION),
+        ('license_page', 'license', CorpusDocumentationPage.PageType.LICENSE),
+        ('wordmodels_page', 'wm', CorpusDocumentationPage.PageType.WORDMODELS)
+    ]
+
+    corpus_name = configuration.corpus.name
+
+    for attr, directory, name in pages:
+        filename = corpus_definition.__getattribute__(attr)
+        if filename:
+            path = os.path.join(corpus_dir(corpus_name), directory, filename)
+            with open(path, 'r') as f:
+                content = f.read()
+
+            page, _ = CorpusDocumentationPage.objects.get_or_create(
+                corpus_configuration=configuration, type=name
+            )
+            page.content = content
+            page.save()
+        else:
+            pages = CorpusDocumentationPage.objects.filter(
+                corpus_configuration=configuration, type=name
+            )
+            if pages.exists():
+                pages.delete()
 
 def _prepare_for_import(corpus):
     corpus.has_python_definition = True

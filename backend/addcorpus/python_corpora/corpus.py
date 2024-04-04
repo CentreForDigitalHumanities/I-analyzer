@@ -185,6 +185,21 @@ class CorpusDefinition(Reader):
     '''
     description_page = None
 
+    citation_page: Optional[str] = None
+    '''
+    filename of markdown document with citation guidelines
+    '''
+
+    license_page: Optional[str] = None
+    '''
+    filename of markdown document licence text
+    '''
+
+    wordmodels_page: Optional[str] = None
+    '''
+    filename of markdown document with citation guidelines
+    '''
+
     def update_body(self, **kwargs):
         ''' given one document in the index, give an instruction
         of how to update the index

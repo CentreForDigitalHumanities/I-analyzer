@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer
+from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer
 from rest_framework.response import Response
 from addcorpus.python_corpora.load_corpus import corpus_dir
 import os
@@ -8,7 +8,8 @@ from django.http.response import FileResponse, StreamingHttpResponse
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
-from addcorpus.models import Corpus, CorpusConfiguration
+from rest_framework import viewsets
+from addcorpus.models import Corpus, CorpusConfiguration, CorpusDocumentationPage
 from addcorpus.permissions import corpus_name_from_request
 from addcorpus.citation import render_citation
 from django.conf import settings
@@ -42,6 +43,14 @@ def send_corpus_file(corpus='', subdir='', filename=''):
 
     return FileResponse(open(path, 'rb'))
 
+class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
+    serializer_class = CorpusDocumentationPageSerializer
+
+    def get_queryset(self):
+        corpus_name = corpus_name_from_request(self.request)
+        return CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__name=corpus_name)
+
 class CorpusImageView(APIView):
     '''
     Return the image for a corpus.
@@ -59,15 +68,6 @@ class CorpusImageView(APIView):
 
         return FileResponse(open(path, 'rb'))
 
-class CorpusDocumentationView(APIView):
-    '''
-    Return the documentation for a corpus
-    '''
-
-    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
-
-    def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='description', **kwargs)
 
 class CorpusCitationView(APIView):
     '''

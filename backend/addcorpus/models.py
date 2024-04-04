@@ -153,18 +153,6 @@ class CorpusConfiguration(models.Model):
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
     )
-    description_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the markdown documentation file for this corpus',
-    )
-    citation_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the citation specification (in markdown) for this corpus',
-    )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
@@ -415,6 +403,7 @@ class CorpusDocumentationPage(models.Model):
         GENERAL = ('general', 'General information')
         CITATION = ('citation', 'Citation')
         LICENSE = ('license', 'Licence')
+        WORDMODELS = ('wordmodels', 'Word models')
 
     corpus_configuration = models.ForeignKey(
         to=CorpusConfiguration,

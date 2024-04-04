@@ -4,7 +4,7 @@ from datetime import date
 
 from django.conf import settings
 
-from addcorpus.models import CorpusConfiguration
+from addcorpus.models import CorpusConfiguration, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import corpus_dir
 
 
@@ -14,14 +14,14 @@ def render_citation(corpus_name):
 
 
 def citation_template(corpus_name):
-    conf = CorpusConfiguration.objects.get(corpus__name=corpus_name)
-    page = conf.citation_page
+    pages = CorpusDocumentationPage.objects.filter(
+        corpus_configuration__corpus__name=corpus_name,
+        type=CorpusDocumentationPage.PageType.CITATION
+    )
 
-    if page:
-        path = os.path.join(corpus_dir(corpus_name), 'citation', page)
-        with open(path) as f:
-            content = f.read()
-            return content
+    if pages.exists():
+        page = pages.first()
+        return page.content
 
 
 def render_citation_context(raw_template):
