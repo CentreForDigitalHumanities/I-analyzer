@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Corpus, CorpusConfiguration, Field
+from .models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 
 def show_warning_message(request):
     '''
@@ -142,6 +142,10 @@ class FieldAdmin(admin.ModelAdmin):
         return super().get_form(request, obj, **kwargs)
 
 
+class CorpusDocumentationAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Corpus, CorpusAdmin)
 admin.site.register(CorpusConfiguration, CorpusConfigurationAdmin)
 admin.site.register(Field, FieldAdmin)
+admin.site.register(CorpusDocumentationPage, CorpusDocumentationAdmin)
