@@ -31,7 +31,7 @@ export class DownloadComponent implements OnChanges {
 
     actionIcons = actionIcons;
 
-    private directDownloadLimit = environment.directDownloadLimit;
+    public directDownloadLimit = environment.directDownloadLimit;
 
     private downloadsPageLink = {
         text: 'view downloads',
@@ -73,7 +73,10 @@ export class DownloadComponent implements OnChanges {
      * and an email is sent with download link from backend
      */
     public chooseDownloadMethod() {
-        if (this.resultOverview.resultsCount < this.directDownloadLimit || this.downloadLimit === undefined) {
+        if (
+            this.resultOverview.resultsCount < this.directDownloadLimit ||
+            this.downloadLimit === undefined
+        ) {
             this.directDownload();
         } else {
             this.longDownload();
@@ -82,7 +85,10 @@ export class DownloadComponent implements OnChanges {
 
     /** download short file directly */
     public confirmDirectDownload(options: DownloadOptions) {
-        const nDocuments = Math.min(this.resultOverview.resultsCount, this.directDownloadLimit);
+        const nDocuments = Math.min(
+            this.resultOverview.resultsCount,
+            this.directDownloadLimit
+        );
         this.isDownloading = true;
         this.downloadService
             .download(
@@ -122,7 +128,7 @@ export class DownloadComponent implements OnChanges {
                 this.getCsvFields(),
                 this.route,
                 this.resultOverview.sort,
-                this.resultOverview.highlight,
+                this.resultOverview.highlight
             )
             .then((results) => {
                 this.notificationService.showMessage(
