@@ -94,15 +94,6 @@ BASE_URL = 'http://localhost:4200'
 # for main content fields, needed for the new highlighter
 NEW_HIGHLIGHT_CORPORA = []
 
-# This needs to be the last line of the settings.py, so that all settings can be overridden.
-try:
-    from ianalyzer.settings_local import *
-except ImportError as e:
-    warnings.warn(
-        'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
-        Warning
-    )
-
 DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
 
 LOGGING = {
@@ -132,3 +123,12 @@ LOGGING = {
 }
 
 MEDIA_ROOT = 'data'
+
+# This needs to be the last line of the settings.py, so that all settings can be overridden.
+try:
+    from ianalyzer.settings_local import *
+except ImportError as e:
+    warnings.warn(
+        'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
+        Warning
+    )
