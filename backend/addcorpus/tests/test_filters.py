@@ -1,7 +1,7 @@
 from time import sleep
 
 from addcorpus.es_mappings import date_mapping, date_estimate_mapping
-from addcorpus.corpus import transform_to_date_range
+from addcorpus.python_corpora.corpus import transform_to_date_range
 
 
 def test_date_filter(es_client):

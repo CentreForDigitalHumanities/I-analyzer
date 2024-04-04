@@ -1,3 +1,7 @@
+'''
+This module defines functions to check if a corpus can be saved to the database
+'''
+
 from django.core.exceptions import ValidationError
 from langcodes import tag_is_valid
 import mimetypes
@@ -5,7 +9,7 @@ import warnings
 import os
 
 from addcorpus.constants import MappingType, VisualizationType, FORBIDDEN_FIELD_NAMES
-from addcorpus.filters import VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
+from addcorpus.python_corpora.filters import VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
 
 def primary_mapping_type(es_mapping):
     return es_mapping.get('type', None)
@@ -14,6 +18,9 @@ def supports_full_text_search(es_mapping):
     is_text = primary_mapping_type(es_mapping) == MappingType.TEXT.value
     has_text_multifield = 'text' in es_mapping.get('fields', {})
     return is_text or has_text_multifield
+
+def is_geo_field(es_mapping):
+    return primary_mapping_type(es_mapping) == MappingType.GEO_POINT.value
 
 def supports_aggregation(es_mapping):
     return primary_mapping_type(es_mapping) != MappingType.TEXT.value
@@ -25,6 +32,12 @@ def validate_language_code(value):
 
     if not tag_is_valid(value) or value == '':
         raise ValidationError(f'{value} is not a valid ISO-639 language tag')
+
+def validate_field_language(value):
+    if value == 'dynamic':
+        return
+    else:
+        validate_language_code(value)
 
 def validate_mimetype(value):
     '''
@@ -71,6 +84,10 @@ def validate_visualizations_with_mapping(es_mapping, visualizations):
     '''
     validate that the specified visualisations are compatible with the field mapping
     '''
+
+    if VisualizationType.MAP.value in visualizations:
+        if not is_geo_field(es_mapping):
+            raise ValidationError(f'map visualizations requires a geo mapping')
 
     if not supports_full_text_search(es_mapping):
         if VisualizationType.NGRAM.value in visualizations:
@@ -153,9 +170,19 @@ def validate_image_filename_extension(filename):
     allowed = ['.jpeg', '.jpg', '.png', '.JPG']
     validate_filename_extension(filename, allowed)
 
-def any_date_fields(fields):
-    is_date = lambda field: primary_mapping_type(field.es_mapping) == 'date'
-    return any(map(is_date, fields))
+def validate_sort_configuration(sort_config):
+    '''
+    Validates that the object is a sort configuration
+    '''
 
-def visualisations_require_date_field(visualisations):
-    return visualisations and 'ngram' in visualisations
+    if not sort_config:
+        return
+
+    field = sort_config.get('field', None)
+    ascending = sort_config.get('ascending', None)
+
+    if type(field) is not str:
+        raise ValidationError(f'Sort configuration has invalid "field" property: {field}')
+
+    if type(ascending) is not bool:
+        raise ValidationError(f'Sort configuration has invalid "ascending" property: {ascending}')

@@ -1,21 +1,18 @@
-import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import { CookieService } from 'ngx-cookie-service';
-
 import { appRoutes, declarations, imports, providers } from './app.module';
 
 import { ApiServiceMock } from '../mock-data/api';
+import { AuthServiceMock } from '../mock-data/auth';
 import { CorpusServiceMock } from '../mock-data/corpus';
 import { DialogServiceMock } from '../mock-data/dialog';
 import { ElasticSearchServiceMock } from '../mock-data/elastic-search';
 import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
-import { mockUserResponse } from '../mock-data/user';
-import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService } from './services';
+import { ApiService, AuthService, CorpusService, DialogService, ElasticSearchService, SearchService } from './services';
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 import { VisualizationService } from './services/visualization.service';
@@ -36,6 +33,10 @@ export const commonTestBed = () => {
             useValue: new ApiServiceMock({
                 ['corpus']: MockCorpusResponse,
             }),
+        },
+        {
+            provide: AuthService,
+            useValue: new AuthServiceMock()
         },
         {
             provide: CorpusService, useValue: new CorpusServiceMock()

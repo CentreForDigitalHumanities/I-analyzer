@@ -5,7 +5,7 @@ from string import punctuation
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import corpus_dir, load_corpus_definition
+from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 
 from glob import glob
 

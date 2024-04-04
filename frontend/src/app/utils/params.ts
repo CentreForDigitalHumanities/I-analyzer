@@ -6,11 +6,21 @@ import { PageParameters, PageResultsParameters, RESULTS_PER_PAGE } from '../mode
 import { findByName } from './utils';
 import { SimpleStore } from '../store/simple-store';
 
+// general utility functions
+
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
     const nullKeys = _.keys(params).filter(key => params[key] === null);
     return _.omit(params, nullKeys);
 };
+
+export const mergeParams = (current: Params, next: Params): Params =>
+    _.assign(_.clone(current), next);
+
+export const mergeAllParams = (values: Params[]): Params =>
+    _.reduce(values, mergeParams);
+
+// conversion between models and parameters
 
 export const queryFromParams = (params: Params): string =>
     params['query'];

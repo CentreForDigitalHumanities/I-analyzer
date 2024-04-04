@@ -18,3 +18,14 @@ here = os.path.abspath(os.path.dirname(__file__))
 @pytest.fixture()
 def mock_corpus():
     return 'mock-csv-corpus'
+
+
+@pytest.fixture()
+def basic_corpus():
+    corpus_name = 'mock-basic-corpus'
+    basic_group = Group.objects.create(name='basic')
+    corpus = Corpus.objects.get(name=corpus_name)
+    corpus.groups.add(basic_group)
+    yield corpus_name
+    corpus.groups.remove(basic_group)
+    basic_group.delete()

@@ -1,7 +1,7 @@
 import logging
 import os
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.permissions import (CorpusAccessPermission,
                                    corpus_name_from_request)
 from api.utils import check_json_keys

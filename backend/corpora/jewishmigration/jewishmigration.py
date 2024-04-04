@@ -1,12 +1,13 @@
 from datetime import datetime
+import json
 
 from django.conf import settings
 import langcodes
 import requests
 
-from addcorpus.corpus import JSONCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
-import addcorpus.extract as extract
+import addcorpus.python_corpora.extract as extract
 from corpora.peaceportal.peaceportal import PeacePortal
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -56,12 +57,16 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     category = 'inscription'
 
     def sources(self, start, end):
-        response = requests.get(self.data_directory)
-        list_of_sources = response.json()
+        if self.data_directory.startswith('http'):
+            response = requests.get(self.data_directory)
+            list_of_sources = response.json()
+        else:
+            with open(self.data_directory, 'r') as f:
+                list_of_sources = json.load(f)
         for source in list_of_sources:
             yield source
 
-    
+
     def __init__(self):
         super().__init__()
         self._id.extractor = extract.JSON(key='source')
@@ -74,6 +79,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         self.region.extractor = extract.JSON(key='region')
         self.settlement.extractor = extract.JSON(key='place_name')
         self.coordinates.extractor = extract.JSON(key='coordinates')
+        self.coordinates.visualizations = ['map']
         self.sex.extractor = extract.JSON(key='sex_deceased')
         self.iconography.extractor = extract.JSON(key='symbol')
         self.comments.extractor = extract.JSON(key='comments')

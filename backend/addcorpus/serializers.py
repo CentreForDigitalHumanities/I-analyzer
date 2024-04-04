@@ -35,9 +35,9 @@ class FieldSerializer(serializers.ModelSerializer):
             'hidden',
             'required',
             'sortable',
-            'primary_sort',
             'searchable',
             'downloadable',
+            'language',
         ]
 
 
@@ -63,6 +63,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
     fields = FieldSerializer(many=True, read_only=True)
     languages = serializers.ListField(child=LanguageField())
     category = PrettyChoiceField(choices=CATEGORIES)
+    default_sort = NonEmptyJSONField()
 
     class Meta:
         model = CorpusConfiguration
@@ -70,6 +71,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'allow_image_download',
             'category',
             'description_page',
+            'citation_page',
             'description',
             'document_context',
             'es_alias',
@@ -81,6 +83,8 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'scan_image_type',
             'title',
             'word_models_present',
+            'default_sort',
+            'language_field',
             'fields',
         ]
 

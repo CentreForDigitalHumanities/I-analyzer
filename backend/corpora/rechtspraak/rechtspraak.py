@@ -8,10 +8,11 @@ from zipfile import ZipFile, BadZipFile
 
 from django.conf import settings
 
-from addcorpus import extract, filters
-from addcorpus.corpus import FieldDefinition, XMLCorpusDefinition
+from addcorpus.python_corpora import extract
+from addcorpus.python_corpora.corpus import FieldDefinition, XMLCorpusDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
+from addcorpus.python_corpora import filters
 
 logger = logging.getLogger('indexing')
 
@@ -37,11 +38,12 @@ class Rechtspraak(XMLCorpusDefinition):
     max_date = datetime(year=2022, month=12, day=6)
     data_directory = settings.RECHTSPRAAK_DATA
     es_index = getattr(settings, 'RECHTSPRAAK_ES_INDEX', 'rechtspraak')
-    image = 'rechtszaal.jpeg'
+    image = 'rechtspraak.jpg' #CC-0, from https://commons.wikimedia.org/wiki/File:Courtroom_One_Gavel_-_Flickr_-_Joe_Gratz.jpg
     description_page = 'rechtspraak.md'
     toplevel_zip_file = 'OpenDataUitspraken.zip'
     languages = ['nl']
     category = 'ruling'
+    default_sort = {'field': 'date', 'ascending': False}
 
     @property
     def es_settings(self):
@@ -177,7 +179,6 @@ class Rechtspraak(XMLCorpusDefinition):
             extractor=rdf_description_extractor('dcterms:date'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
-            primary_sort=True,
             csv_core=True,
             search_filter=filters.DateFilter(
                 min_date,
@@ -205,7 +206,8 @@ class Rechtspraak(XMLCorpusDefinition):
             name='publisher',
             display_name='Publisher',
             extractor=rdf_description_extractor('dcterms:publisher'),
-            es_mapping={'type': 'keyword'}
+            es_mapping={'type': 'keyword'},
+            language='nl',
         ),
         FieldDefinition(
             name='creator',
@@ -218,7 +220,8 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings of selected courts.',
                 option_count=9999
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='zaaknr',
@@ -237,7 +240,8 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings of selected type.',
                 option_count=2
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='procedure',
@@ -249,13 +253,15 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings of selected procedure type.',
                 option_count=44
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='spatial',
             display_name='Location',
             es_mapping=keyword_mapping(),
-            extractor=rdf_description_extractor('dcterms:spatial')
+            extractor=rdf_description_extractor('dcterms:spatial'),
+            language='nl',
         ),
         FieldDefinition(
             name='subject',
@@ -267,7 +273,8 @@ class Rechtspraak(XMLCorpusDefinition):
                 description='Accept only rulings within this area of law.',
                 option_count=32
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=['resultscount', 'termfrequency'],
+            language='nl',
         ),
         FieldDefinition(
             name='title',
@@ -276,12 +283,14 @@ class Rechtspraak(XMLCorpusDefinition):
                 'dcterms:title', section='html'),
             results_overview=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='abstract',
             display_name='Abstract',
             extractor=extract.XML(tag='inhoudsindicatie', flatten=True),
             results_overview=True,
+            language='nl',
         ),
         FieldDefinition(
             name='content',
@@ -295,10 +304,12 @@ class Rechtspraak(XMLCorpusDefinition):
             ),
             csv_core=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='url',
-            display_name='URL',
+            display_name='Source URL',
+            description='URL of the case on rechtspraak.nl',
             es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')

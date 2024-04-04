@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import os
 from langcodes import standardize_tag, Language
 
-from addcorpus.extract import Pass, Combined, CSV
+from addcorpus.python_corpora.extract import Pass, Combined, CSV
 
 # === METADATA EXTRACTION ===
 

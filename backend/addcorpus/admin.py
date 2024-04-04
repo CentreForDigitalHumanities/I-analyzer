@@ -14,10 +14,10 @@ def show_warning_message(request):
 
 
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', 'configuration', 'active']
-    fields = ['name', 'groups', 'configuration', 'active']
+    readonly_fields = ['name', 'configuration', 'ready_to_index', 'ready_to_publish']
+    fields = ['name', 'groups', 'configuration', 'ready_to_index', 'ready_to_publish', 'active']
     list_display = ['name', 'active']
-    list_filter = ['groups']
+    list_filter = ['groups', 'active']
 
 class InlineFieldAdmin(admin.StackedInline):
     model = Field
@@ -53,6 +53,7 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                     'min_date',
                     'max_date',
                     'document_context',
+                    'default_sort',
                 ]
             }
         ), (
@@ -120,7 +121,6 @@ class FieldAdmin(admin.ModelAdmin):
                     'searchable',
                     'search_field_core',
                     'sortable',
-                    'primary_sort',
                 ]
             }
         ), (

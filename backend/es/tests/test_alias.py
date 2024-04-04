@@ -2,7 +2,7 @@ import pytest
 
 from es.es_alias import alias, get_highest_version_number
 from es.es_index import create
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 
 
 def test_alias(es_alias_client):

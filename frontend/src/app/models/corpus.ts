@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 import { AdHocFilter, BooleanFilter, DateFilter, MultipleChoiceFilter, RangeFilter, SearchFilter } from './field-filter';
 import { FieldFilterOptions } from './field-filter-options';
-import { SortBy, SortState } from './sort';
+import { SortState } from './sort';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
+import { FoundDocument } from './found-document';
 
 // corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
@@ -32,8 +33,11 @@ export class Corpus implements ElasticSearchIndex {
         public languages: string[],
         public category: string,
         public descriptionpage?: string,
+        public citationPage?: string,
         public documentContext?: DocumentContext,
         public new_highlight?: boolean,
+        public defaultSort?: SortState,
+        public languageField?: CorpusField,
     ) { }
 
     get minYear(): number {
@@ -46,11 +50,6 @@ export class Corpus implements ElasticSearchIndex {
 
     get displayLanguages(): string {
         return this.languages.join(', '); // may have to truncate long lists?
-    }
-
-    get defaultSort(): SortState {
-        const sortBy: SortBy = this.fields.find(field => field.primarySort);
-        return [sortBy, 'desc'];
     }
 }
 
@@ -65,6 +64,7 @@ export interface DocumentContext {
     sortDirection?: 'asc'|'desc';
     displayName: string;
 }
+
 
 export type FieldDisplayType = 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean';
 
@@ -86,9 +86,9 @@ export interface ApiCorpusField {
     hidden: boolean;
     required: boolean;
     sortable: boolean;
-    primary_sort: boolean;
     searchable: boolean;
     downloadable: boolean;
+    language: string;
 }
 
 export class CorpusField {
@@ -108,12 +108,12 @@ export class CorpusField {
     positionsOffsets?: boolean;
     hidden: boolean;
     sortable: boolean;
-    primarySort: boolean;
     searchable: boolean;
     downloadable: boolean;
     name: string;
     filterOptions: FieldFilterOptions;
-    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
+    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | 'geo_point' | null;
+    language: string;
 
     constructor(data: ApiCorpusField) {
         this.description = data.description;
@@ -130,12 +130,12 @@ export class CorpusField {
         this.positionsOffsets = data['es_mapping']?.term_vector ? true : false;
         this.hidden = data.hidden;
         this.sortable = data.sortable;
-        this.primarySort = data.primary_sort;
         this.searchable = data.searchable;
         this.downloadable = data.downloadable;
         this.name = data.name;
         this.filterOptions = data['search_filter'];
         this.mappingType = data.es_mapping?.type;
+        this.language = data.language || undefined;
     }
 
     /** make a SearchFilter for this field */

@@ -1,0 +1,226 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/backend/addcorpus/schemas/corpus.schema.json",
+    "title": "Corpus",
+    "description": "A corpus on I-analyzer",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Internal name. Used in the URL and the database."
+        },
+        "meta": {
+            "type": "object",
+            "description": "Metadata about the corpus",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "Human-friendly name"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Longer description"
+                },
+                "languages": {
+                    "type": "array",
+                    "description": "IETF tags of languages used in the content",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true,
+                    "minItems": 1
+                },
+                "category": {
+                    "type": "string",
+                    "description": "nature of the content",
+                    "enum": [
+                        "parliament",
+                        "periodical",
+                        "finance",
+                        "ruling",
+                        "review",
+                        "inscription",
+                        "oration",
+                        "book",
+                        "informative"
+                    ]
+                },
+                "date_range": {
+                    "type": "object",
+                    "description": "the date range of the content",
+                    "properties": {
+                        "min": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "max": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "title",
+                "description",
+                "languages",
+                "category",
+                "date_range"
+            ]
+        },
+        "source_data": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "data type of the source files",
+                    "enum": ["csv"]
+                },
+                "options": {
+                    "type": "object",
+                    "description": "additional options for source files",
+                    "properties": {
+                        "delimiter": {
+                            "type": "string",
+                            "description": "delimiter between values in the source files",
+                            "enum": [",", ";", "\t"]
+                        }
+                    }
+                }
+            }
+        },
+        "fields": {
+            "type": "array",
+            "description": "list of fields",
+            "items": {
+                "type": "object",
+                "description": "A field in a corpus",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "internal name"
+                    },
+                    "display_name": {
+                        "type": "string",
+                        "description": "human-friendly name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "longer description for users"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "text_content",
+                            "text_metadata",
+                            "url",
+                            "integer",
+                            "float",
+                            "date",
+                            "boolean",
+                            "geo_json"
+                        ]
+                    },
+                    "options": {
+                        "type": "object",
+                        "properties": {
+                            "search": {
+                                "type": "boolean",
+                                "description": "whether the field supports full-text search"
+                            },
+                            "filter": {
+                                "type": "string",
+                                "description": "search filter for the field",
+                                "enum": ["show", "hide", "none"]
+                            },
+                            "preview": {
+                                "type": "boolean",
+                                "description": "whether the field is included in the preview of a document"
+                            },
+                            "visualize": {
+                                "type": "boolean",
+                                "description": "whether the field is visualised"
+                            },
+                            "sort": {
+                                "type": "boolean",
+                                "description": "whether search results can be sorted on this field"
+                            },
+                            "hidden": {
+                                "type": "boolean",
+                                "description": "whether the field is hidden from the interface"
+                            }
+                        },
+                        "required": ["search", "filter", "preview", "visualize", "sort", "hidden"]
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "language of the field's content. Either an IETF tag, or \"dynamic\"."
+                    },
+                    "extract": {
+                        "type": "object",
+                        "description": "how to extract this field's value from source files",
+                        "properties": {
+                            "column": {
+                                "type": "string",
+                                "description": "name of the column in the CSV file"
+                            }
+                        },
+                        "required": ["column"]
+                    }
+                },
+                "required": ["name", "display_name", "type", "options", "extract"]
+            }
+        },
+        "options": {
+            "type": "object",
+            "properties": {
+                "default_sort": {
+                    "description": "default sort settings for search results",
+                    "$ref": "#sortSetting"
+                },
+                "language_field": {
+                    "type": "string",
+                    "description": "name of the field that contains the IETF tag of the document's content"
+                },
+                "document_context": {
+                    "type": "object",
+                    "description": "description of how documents can be grouped",
+                    "properties": {
+                        "context_field": {
+                            "type": "string",
+                            "description": "name of the field to group by"
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "description": "display name of a group, ,e.g. 'book'"
+                        },
+                        "sort": {
+                            "description": "when showing document context, sort them like this",
+                            "$ref": "#sortSetting"
+                        }
+                    },
+                    "required": ["context_field", "display_name"]
+                }
+            }
+        }
+    },
+    "required": ["name", "meta", "source_data", "fields"],
+    "$defs": {
+        "sortSetting": {
+            "$anchor": "sortSetting",
+            "type": "object",
+            "description": "Describes how to sort search results",
+            "properties": {
+                "field": {
+                    "type": "string",
+                    "description": "name of on which to sort"
+                },
+                "ascending": {
+                    "type": "boolean",
+                    "description": "whether the sort direction is ascending or descending"
+                }
+            },
+            "required": ["field", "ascending"]
+        }
+    }
+  }

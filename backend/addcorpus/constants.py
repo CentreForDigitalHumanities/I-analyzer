@@ -35,6 +35,7 @@ class VisualizationType(Enum):
     TERM_FREQUENCY = 'termfrequency'
     NGRAM = 'ngram'
     WORDCLOUD = 'wordcloud'
+    MAP = 'map'
 
 FORBIDDEN_FIELD_NAMES = [
     'query',
@@ -45,6 +46,8 @@ FORBIDDEN_FIELD_NAMES = [
     'visualizedField',
     'normalize',
     'ngramSettings',
+    'scan',
+    'tab-scan'
     'p',
 ]
 '''

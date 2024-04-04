@@ -1,5 +1,5 @@
 import datetime
-from addcorpus.corpus import CorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 
 from os.path import abspath, dirname, join
 
@@ -17,6 +17,11 @@ class WordmodelsMockCorpus(CorpusDefinition):
     fields = [
         FieldDefinition(
             name = 'content',
+            display_type='text_content'
+        ),
+        FieldDefinition(
+            name='date',
+            display_type='date'
         )
     ]
     languages = ['en']

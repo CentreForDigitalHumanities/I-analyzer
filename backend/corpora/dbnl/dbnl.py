@@ -4,11 +4,11 @@ import re
 from tqdm import tqdm
 
 from django.conf import settings
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
-from addcorpus.extract import Metadata, XML, Pass, Order, Backup, Combined
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
-from addcorpus.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
+from addcorpus.python_corpora.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
 from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
 class DBNL(XMLCorpusDefinition):
@@ -18,8 +18,9 @@ class DBNL(XMLCorpusDefinition):
     min_date = datetime(year=1200, month=1, day=1)
     max_date = datetime(year=1890, month=12, day=31)
     es_index = getattr(settings, 'DBNL_ES_INDEX', 'dbnl')
-    image = 'dbnl.jpg'
+    image = 'dbnl.png'
     description_page = 'dbnl.md'
+    citation_page = 'citation.md'
 
     languages = ['nl', 'dum', 'fr', 'la', 'fy', 'lat', 'en', 'nds', 'de', 'af']
     category = 'book'
@@ -30,8 +31,11 @@ class DBNL(XMLCorpusDefinition):
     document_context = {
         'context_fields': ['title_id'],
         'sort_field': 'chapter_index',
+        'sort_direction': 'asc',
         'context_display_name': 'book'
     }
+
+    language_field = 'language_code'
 
     def sources(self, start = None, end = None):
         metadata_corpus = DBNLMetadata()
@@ -229,7 +233,7 @@ class DBNL(XMLCorpusDefinition):
 
     url = FieldDefinition(
         name='url',
-        display_name='View on DBNL',
+        display_name='Source URL',
         description='Link to the book\'s page in DBNL',
         extractor=Metadata('url'),
         es_mapping=keyword_mapping(),
@@ -363,6 +367,7 @@ class DBNL(XMLCorpusDefinition):
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud'],
+        language='dynamic',
     )
 
     has_content = FieldDefinition(
