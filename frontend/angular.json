@@ -31,56 +31,64 @@
                   "buildOptimizer": false,
                   "sourceMap": true,
                   "optimization": false,
-                  "namedChunks": true
+                  "namedChunks": true,
+                  "allowedCommonJsDependencies": [
+                      "lodash",
+                      "moment",
+                      "ng2-pdf-viewer",
+                      "iv-viewer",
+                      "smoothscroll-polyfill",
+                      "file-saver"
+                  ]
               },
               "configurations": {
-                "production": {
-                    "optimization": true,
-                    "outputHashing": "all",
-                    "sourceMap": false,
-                    "namedChunks": false,
-                    "aot": true,
-                    "extractLicenses": true,
-                    "vendorChunk": false,
-                    "buildOptimizer": true,
-                    "fileReplacements": [
-                        {
-                            "replace": "src/environments/environment.ts",
-                            "with": "src/environments/environment.prod.ts"
-                        }
-                    ]
-                },
-                "git": {
-                    "optimization": true,
-                    "outputHashing": "all",
-                    "sourceMap": false,
-                    "namedChunks": false,
-                    "aot": true,
-                    "extractLicenses": true,
-                    "vendorChunk": false,
-                    "buildOptimizer": true,
-                    "fileReplacements": [
-                        {
-                            "replace": "src/environments/environment.ts",
-                            "with": "src/environments/environment.git.ts"
-                        }
-                    ]
-                }
-            },
+                  "production": {
+                      "optimization": true,
+                      "outputHashing": "all",
+                      "sourceMap": false,
+                      "namedChunks": false,
+                      "aot": true,
+                      "extractLicenses": true,
+                      "vendorChunk": false,
+                      "buildOptimizer": true,
+                      "fileReplacements": [
+                          {
+                              "replace": "src/environments/environment.ts",
+                              "with": "src/environments/environment.prod.ts"
+                          }
+                      ]
+                  },
+                  "git": {
+                      "optimization": true,
+                      "outputHashing": "all",
+                      "sourceMap": false,
+                      "namedChunks": false,
+                      "aot": true,
+                      "extractLicenses": true,
+                      "vendorChunk": false,
+                      "buildOptimizer": true,
+                      "fileReplacements": [
+                          {
+                              "replace": "src/environments/environment.ts",
+                              "with": "src/environments/environment.git.ts"
+                          }
+                      ]
+                  }
+              },
               "defaultConfiguration": ""
           },
           "serve": {
               "builder": "@angular-devkit/build-angular:dev-server",
-            "options": {},
+              "options": {},
               "configurations": {
-                "production": {
-                "browserTarget": "frontend:build:production"
-            },
-            "development": {
-                "browserTarget": "frontend:build"
-            }
-            },
-            "defaultConfiguration": "development"
+                  "production": {
+                      "browserTarget": "frontend:build:production"
+                  },
+                  "development": {
+                      "browserTarget": "frontend:build"
+                  }
+              },
+              "defaultConfiguration": "development"
           },
           "extract-i18n": {
               "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -92,16 +100,12 @@
               "builder": "@angular-devkit/build-angular:karma",
               "options": {
                   "main": "src/test.ts",
-                  "karmaConfig": "./karma.conf.js",
                   "polyfills": "src/polyfills.ts",
                   "tsConfig": "src/tsconfig.spec.json",
-                  "scripts": [],
-                  "styles": [
-                      "node_modules/primeicons/primeicons.css",
-                      "node_modules/primeng/resources/primeng.css",
-                      "src/styles.scss"
-                  ],
-                  "assets": ["src/assets"]
+                  "karmaConfig": "karma.conf.js",
+                  "assets": ["src/favicon.ico", "src/assets"],
+                  "styles": ["src/styles.scss"],
+                  "scripts": []
               }
           },
           "lint": {
