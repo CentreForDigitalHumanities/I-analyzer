@@ -140,9 +140,8 @@ export const appRoutes: Routes = [
 ];
 
 const routerOptions: ExtraOptions = {
-    relativeLinkResolution: 'legacy',
-    scrollPositionRestoration: 'disabled',  // functionality patched by NgxScrollPositionRestorationModule
-    anchorScrolling: 'enabled',
+    scrollPositionRestoration: 'disabled',
+    anchorScrolling: 'enabled'
 };
 
 export const declarations: any[] = [
