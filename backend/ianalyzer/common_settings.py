@@ -4,9 +4,13 @@ Values here should be imported in settings.py
 '''
 
 import os
+import sentry_sdk
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+if SENTRY_DSN := os.getenv('SENTRY_DSN'):
+    sentry_sdk.init(dsn=SENTRY_DSN, tracing=True)
 
 # Application definition
 

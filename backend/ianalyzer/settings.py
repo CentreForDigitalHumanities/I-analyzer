@@ -10,7 +10,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import warnings
-import sentry_sdk
 
 from ianalyzer.common_settings import *
 
@@ -21,8 +20,7 @@ from ianalyzer.common_settings import *
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'kxreeb3bds$oibo7ex#f3bi5r+d(1x5zljo-#ms=i2%ih-!pvn'
 
-if SENTRY_DSN := os.getenv('SENTRY_DSN'):
-    sentry_sdk.init(dsn=SENTRY_DSN, tracing=True)
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
