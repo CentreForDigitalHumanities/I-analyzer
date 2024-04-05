@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer
 from rest_framework.response import Response
-from addcorpus.python_corpora.load_corpus import corpus_dir
+from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
 from django.http.response import FileResponse
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -48,7 +48,16 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         corpus_name = corpus_name_from_request(self.request)
-        return CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__name=corpus_name)
+        pages = CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__name=corpus_name)
+
+        # only include wordmodels documentation if models are present
+        if Corpus.objects.get(name=corpus_name).has_python_definition:
+            definition = load_corpus_definition(corpus_name)
+            if definition.word_models_present:
+                return pages
+
+        return pages.exclude(type=CorpusDocumentationPage.PageType.WORDMODELS)
+
 
 class CorpusImageView(APIView):
     '''

@@ -32,6 +32,7 @@ class Parliament(CorpusDefinition):
     max_date = field_defaults.MAX_DATE
     image = 'parliament.jpeg'
     data_directory = 'bogus'
+    wordmodels_page = 'documentation.md'
 
     category = 'parliament'
 
@@ -41,10 +42,7 @@ class Parliament(CorpusDefinition):
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    @property
-    def wordmodels_page(self) -> Optional[str]:
-        if self.word_models_present:
-            return 'documentation.md'
+
 
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
