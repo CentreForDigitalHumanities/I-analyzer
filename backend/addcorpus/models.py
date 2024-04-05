@@ -403,6 +403,7 @@ class CorpusDocumentationPage(models.Model):
         GENERAL = ('general', 'General information')
         CITATION = ('citation', 'Citation')
         LICENSE = ('license', 'Licence')
+        TERMS_OF_SERVICE = ('terms_of_service', 'Terms of service')
         WORDMODELS = ('wordmodels', 'Word models')
 
     corpus_configuration = models.ForeignKey(
