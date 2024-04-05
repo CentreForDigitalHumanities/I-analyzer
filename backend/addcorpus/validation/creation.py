@@ -113,6 +113,13 @@ def validate_name_is_not_a_route_parameter(value):
             f'{value} cannot be used as a field name, because it is also a route parameter'
         )
 
+
+def validate_name_has_no_ner_suffix(value):
+    if value.endswith('_ner'):
+        raise ValidationError(
+            f'{value} cannot be used as a field name: the suffix `_ner` is reserved for annotated_text fields'
+        )
+
 def mapping_can_be_searched(es_mapping):
     '''
     Verify if a mapping is appropriate for searching

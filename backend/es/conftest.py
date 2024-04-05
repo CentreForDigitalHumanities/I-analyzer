@@ -40,6 +40,32 @@ def es_forward_client(es_client, mock_corpus):
     es_client.indices.delete(index='times-test')
 
 
+@pytest.fixture(scope='module')
+def es_ner_search_client(es_client, mock_corpus):
+    """
+    Create and populate an index for the mock corpus in elasticsearch.
+    Returns an elastic search client for the mock corpus.
+    """
+
+    # add data from mock corpus
+    corpus = load_corpus_definition(mock_corpus)
+    es_index.create(es_client, corpus, False, True, False)
+    es_index.populate(es_client, mock_corpus, corpus)
+    es_client.indices.put_mapping(index=corpus.es_index, properties={
+                                  "content_ner": {"type": "annotated_text"}})
+
+    es_client.index(index=corpus.es_index, document={
+        'id': 'my_identifier',
+        'content': 'Guybrush Threepwood is looking for treasure on Monkey Island',
+        'content_ner': '[Guybrush Threepwood](PER) is looking for treasure on [Monkey Island](LOC)'})
+
+    # ES is "near real time", so give it a second before we start searching the index
+    sleep(1)
+    yield es_client
+    # delete index when done
+    es_client.indices.delete(index='times-test')
+
+
 @pytest.fixture()
 def basic_corpus_index(es_client, basic_corpus):
     corpus = load_corpus_definition(basic_corpus)

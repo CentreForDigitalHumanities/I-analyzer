@@ -1,17 +1,19 @@
+import logging
+import re
+
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from ianalyzer.elasticsearch import elasticsearch
-from es.search import get_index, total_hits, hits
-import logging
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
+
 from addcorpus.permissions import CorpusAccessPermission
-from tag.permissions import CanSearchTags
 from api.save_query import should_save_query
 from addcorpus.models import Corpus
 from api.models import Query
 from api.api_query import api_query_to_es_query
+from es.search import get_index, total_hits, hits
+from ianalyzer.elasticsearch import elasticsearch
+from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)
 
@@ -98,3 +100,84 @@ class ForwardSearchView(APIView):
         query.total_results = total_hits(results)
         query.transferred = len(hits(results))
         query.save()
+
+
+class NamedEntitySearchView(APIView):
+    ''' Construct a terms query for named entities, combined with a term query of the id
+        Perform search via Elasticsearch and reformat the output
+    '''
+    entity_dict = {
+        'PER': 'Person',
+        'LOC': 'Location',
+        'ORG': 'Organization',
+        'MISC': 'Miscellaneous'
+    }
+
+    permission_classes = [CorpusAccessPermission]
+
+    def get(self, request, *args, **kwargs):
+        corpus_name = kwargs.get('corpus')
+        document_id = kwargs.get('id')
+        client = elasticsearch(corpus_name)
+        index = get_index(corpus_name)
+        fields = self.find_named_entity_fields(client, index)
+        query = self.construct_named_entity_query(fields, document_id)
+        response = client.search(index=index, query=query, fields=fields)
+        results = hits(response)
+        annotations = {}
+        entity_classes = set()
+        response = {}
+        if len(results):
+            source = results[0]['_source']
+            for field in fields:
+                text_with_entities = source.get(field)
+                annotations.update({field.replace('_ner', ''): self.find_entities(
+                    text_with_entities, entity_classes)})
+            entities = [self.entity_dict.get(entity_class)
+                        for entity_class in list(entity_classes)]
+            response = {'annotations': annotations, 'entities': entities}
+        return Response(response)
+
+    def find_named_entity_fields(self, client, index: str) -> list[str]:
+        mapping = client.indices.get_mapping(index=index)
+        fields = mapping[index]['mappings']['properties']
+        field_names = fields.keys()
+        return [name for name in field_names if name.endswith('_ner') and fields[name].get('type') == 'annotated_text']
+
+    def construct_named_entity_query(self, fields: list[str], document_id: str) -> dict:
+        return {
+            "bool": {
+                "must": [
+                    {
+                        "term": {
+                            "id": document_id
+                        }
+                    }, *self.add_terms(fields)
+                ]
+            }
+        }
+
+    def add_terms(self, fields: list[str]) -> list[dict]:
+        return [
+            {
+                "terms": {
+                    field: ["LOC", "PER", "ORG", "MISC"]
+                }
+            } for field in fields
+        ]
+
+    def find_entities(self, input_text: str, entity_classes: set) -> str:
+        # regex pattern to match annotations of format "[Wally](Person)" and split it into two groups
+        pattern = re.compile('(\[[a-zA-Z ]+\])(\([a-zA-Z ]+\))')
+        annotations = list(set(pattern.findall(input_text)))
+        for annotation in annotations:
+            input_text = self.substitute_annotation_with_tag(
+                annotation, input_text, entity_classes)
+        return input_text
+
+    def substitute_annotation_with_tag(self, annotation: tuple, input_text: str, entity_classes: set) -> str:
+        entity_class = annotation[1][1:-1]
+        annotated = annotation[0][1:-1]
+        entity_classes.update({entity_class})
+        return input_text.replace(
+            ''.join(annotation), f'<mark class="entity-{entity_class.lower()}">{annotated}</mark>')

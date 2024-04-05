@@ -9,7 +9,8 @@ from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import validate_language_code, \
     validate_image_filename_extension, validate_markdown_filename_extension, \
     validate_es_mapping, validate_mimetype, validate_search_filter, \
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
+    validate_name_is_not_a_route_parameter, validate_name_has_no_ner_suffix, \
+    validate_search_filter_with_mapping, \
     validate_searchable_field_has_full_text_search, \
     validate_visualizations_with_mapping, validate_implication, \
     validate_sort_configuration, validate_field_language
@@ -268,7 +269,8 @@ VISUALIZATION_SORT_OPTIONS = [
 class Field(models.Model):
     name = models.SlugField(
         max_length=MAX_LENGTH_NAME,
-        validators=[validate_name_is_not_a_route_parameter],
+        validators=[validate_name_is_not_a_route_parameter,
+                    validate_name_has_no_ner_suffix],
         help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
