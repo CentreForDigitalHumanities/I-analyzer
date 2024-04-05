@@ -142,7 +142,10 @@ class FieldAdmin(admin.ModelAdmin):
 
 
 class CorpusDocumentationAdmin(admin.ModelAdmin):
-    pass
+    def get_form(self, request, obj=None, **kwargs):
+        if obj and obj.corpus_configuration.corpus.has_python_definition:
+            show_warning_message(request)
+        return super().get_form(request, obj, **kwargs)
 
 admin.site.register(Corpus, CorpusAdmin)
 admin.site.register(CorpusConfiguration, CorpusConfigurationAdmin)
