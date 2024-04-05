@@ -2,6 +2,7 @@ from rest_framework import serializers
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
+from addcorpus.documentation import render_documentation_context
 
 class NonEmptyJSONField(serializers.JSONField):
     '''
@@ -101,10 +102,21 @@ class CorpusSerializer(serializers.ModelSerializer):
         data.update(conf_data)
         return data
 
+class DocumentationTemplateField(serializers.CharField):
+    '''
+    Serialiser for the contents of documentation pages.
+
+    Pages are Templates written in markdown.
+    '''
+
+    def to_representation(self, value):
+        content = super().to_representation(value)
+        return render_documentation_context(content)
 
 
 class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
+    content = DocumentationTemplateField()
 
     class Meta:
         model = CorpusDocumentationPage

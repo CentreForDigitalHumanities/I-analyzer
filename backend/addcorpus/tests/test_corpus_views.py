@@ -12,13 +12,17 @@ def test_no_corpora(db, settings, admin_client):
     assert status.is_success(response.status_code)
     assert response.data == []
 
-def test_corpus_documentation_view(admin_client, mock_corpus):
+def test_corpus_documentation_view(admin_client, mock_corpus, settings):
     response = admin_client.get(f'/api/corpus/documentation/{mock_corpus}/')
     assert response.status_code == 200
 
-def test_corpus_citation_view(admin_client, mock_corpus):
-    response = admin_client.get(f'/api/corpus/citation/{mock_corpus}')
-    assert response.status_code == 200
+    # should contain citation guidelines
+    citation_page = next(page for page in response.data if page['type'] == 'Citation')
+
+    # check that the page template is rendered with context
+    content = citation_page['content']
+    assert '{{ frontend_url }}' not in content
+    assert settings.BASE_URL in content
 
 def test_corpus_image_view(admin_client, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
