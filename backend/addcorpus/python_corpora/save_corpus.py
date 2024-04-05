@@ -133,19 +133,12 @@ def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: Corpu
             configuration.save()
 
 def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
-    pages = [
-        ('description_page', 'description', CorpusDocumentationPage.PageType.GENERAL),
-        ('citation_page', 'citation', CorpusDocumentationPage.PageType.CITATION),
-        ('license_page', 'license', CorpusDocumentationPage.PageType.LICENSE),
-        ('wordmodels_page', 'wm', CorpusDocumentationPage.PageType.WORDMODELS)
-    ]
-
     corpus_name = configuration.corpus.name
 
-    for attr, directory, name in pages:
-        filename = corpus_definition.__getattribute__(attr)
-        if filename:
-            path = os.path.join(corpus_dir(corpus_name), directory, filename)
+    for name, _ in CorpusDocumentationPage.PageType.choices:
+        path_in_corpus_dir = corpus_definition.documentation_path(name)
+        if path_in_corpus_dir:
+            path = os.path.join(corpus_dir(corpus_name), path_in_corpus_dir)
             with open(path, 'r') as f:
                 content = f.read()
 
