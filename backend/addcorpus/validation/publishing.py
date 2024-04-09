@@ -2,7 +2,6 @@
 This module defines functions to check if a corpus is ready to be published.
 '''
 
-import os
 from addcorpus.validation.creation import primary_mapping_type
 
 class CorpusNotPublishableError(Exception):
