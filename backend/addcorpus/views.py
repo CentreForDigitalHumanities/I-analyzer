@@ -8,9 +8,10 @@ from django.http.response import FileResponse, StreamingHttpResponse
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.permissions import corpus_name_from_request
 from addcorpus.citation import render_citation
+from django.conf import settings
 
 class CorpusView(APIView):
     '''
@@ -49,7 +50,14 @@ class CorpusImageView(APIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='images', **kwargs)
+        corpus_name = corpus_name_from_request(request)
+        corpus_config = CorpusConfiguration.objects.get(corpus__name=corpus_name)
+        if corpus_config.image:
+            path = corpus_config.image.path
+        else:
+            path = settings.DEFAULT_CORPUS_IMAGE
+
+        return FileResponse(open(path, 'rb'))
 
 class CorpusDocumentationView(APIView):
     '''

@@ -166,10 +166,6 @@ def validate_markdown_filename_extension(filename):
     allowed = ['.md', '.markdown']
     validate_filename_extension(filename, allowed)
 
-def validate_image_filename_extension(filename):
-    allowed = ['.jpeg', '.jpg', '.png', '.JPG']
-    validate_filename_extension(filename, allowed)
-
 def validate_sort_configuration(sort_config):
     '''
     Validates that the object is a sort configuration

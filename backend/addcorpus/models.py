@@ -6,17 +6,24 @@ from django.core.exceptions import ValidationError
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validation.creation import validate_language_code, \
-    validate_image_filename_extension, validate_markdown_filename_extension, \
-    validate_es_mapping, validate_mimetype, validate_search_filter, \
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
-    validate_searchable_field_has_full_text_search, \
-    validate_visualizations_with_mapping, validate_implication, \
-    validate_sort_configuration, validate_field_language
-from addcorpus.validation.indexing import validate_has_configuration, \
-    validate_essential_fields, validate_language_field
-from addcorpus.validation.publishing import validate_ngram_has_date_field,  \
-    validate_default_sort
+from addcorpus.validation.creation import (
+    validate_language_code,
+    validate_markdown_filename_extension,
+    validate_es_mapping, validate_mimetype, validate_search_filter,
+    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_visualizations_with_mapping, validate_implication,
+    validate_sort_configuration, validate_field_language,
+)
+from addcorpus.validation.indexing import (
+    validate_has_configuration,
+    validate_essential_fields,
+    validate_language_field
+)
+from addcorpus.validation.publishing import (
+    validate_ngram_has_date_field,
+    validate_default_sort,
+)
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -182,10 +189,11 @@ class CorpusConfiguration(models.Model):
         max_length=MAX_LENGTH_NAME,
         help_text='name of the corpus index in elasticsearch'
     )
-    image = models.CharField(
-        max_length=126,
-        validators=[validate_image_filename_extension],
-        help_text='filename of the corpus image',
+    image = models.ImageField(
+        upload_to='corpus_images',
+        blank=True,
+        null=True,
+        help_text='image that can be used for the corpus in the interface'
     )
     languages = ArrayField(
         models.CharField(

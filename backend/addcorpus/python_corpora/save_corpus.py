@@ -1,7 +1,9 @@
+import os
 from django.db import transaction
+from django.core.files.images import ImageFile
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field
-from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions
+from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
 import sys
 
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
@@ -19,6 +21,8 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     configuration, regardless of what is currently saved in the database.
     '''
 
+    _clear_corpus_image(corpus)
+
     # create a clean CorpusConfiguration object, but use the existing PK if possible
     pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
     configuration = CorpusConfiguration(pk=pk, corpus=corpus)
@@ -27,6 +31,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     configuration.full_clean()
 
     _save_corpus_fields_in_database(corpus_definition, configuration)
+    _save_corpus_image(corpus_definition, configuration)
 
 def get_defined_attributes(object, attributes):
     get = lambda attr: object.__getattribute__(attr)
@@ -48,7 +53,6 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'document_context',
         'es_alias',
         'es_index',
-        'image',
         'languages',
         'min_date',
         'max_date',
@@ -107,6 +111,26 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     field.save()
     field.full_clean()
     return field
+
+def _clear_corpus_image(corpus: Corpus):
+    if corpus.configuration_obj and corpus.configuration.image:
+        image = corpus.configuration.image
+        if image:
+            if os.path.exists(image.path):
+                os.remove(image.path)
+
+            image.delete()
+
+def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
+    corpus_name = configuration.corpus.name
+    filename = corpus_definition.image
+    if filename:
+        path = os.path.join(corpus_dir(corpus_name), 'images', filename)
+        _, ext = os.path.splitext(path)
+        save_as = corpus_name + ext
+        with open(path, 'rb') as f:
+            configuration.image = ImageFile(f, name=save_as)
+            configuration.save()
 
 def _prepare_for_import(corpus):
     corpus.has_python_definition = True

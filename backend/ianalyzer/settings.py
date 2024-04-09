@@ -130,3 +130,5 @@ LOGGING = {
         }
     },
 }
+
+MEDIA_ROOT = 'data'
