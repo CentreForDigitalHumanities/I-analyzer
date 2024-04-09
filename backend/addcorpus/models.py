@@ -39,14 +39,18 @@ class Corpus(models.Model):
         default=False,
         help_text='an inactive corpus is hidden from the search interface',
     )
+    has_python_definition = models.BooleanField(
+        default=False,
+        help_text='whether the configuration of this corpus is determined by a Python '
+            'module (some features are only available for Python-based corpora)',
+    )
 
     @property
-    def has_configuration(self):
+    def configuration_obj(self) -> models.Model:
         try:
-            self.configuration
-            return True
+            return self.configuration
         except:
-            return False
+            return None
 
     class Meta:
         verbose_name_plural = 'corpora'
@@ -82,7 +86,7 @@ class Corpus(models.Model):
 
         validate_has_configuration(self)
 
-        config = self.configuration
+        config = self.configuration_obj
         fields = config.fields.all()
 
         validate_essential_fields(fields)
@@ -122,6 +126,7 @@ class Corpus(models.Model):
                     'Corpus is set to "active" but does not meet requirements for publication.',
                     e
                 ])
+
 
 class CorpusConfiguration(models.Model):
     '''

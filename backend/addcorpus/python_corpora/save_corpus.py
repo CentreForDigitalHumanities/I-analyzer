@@ -9,11 +9,19 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     Save a corpus configuration in the SQL database.
 
     Parameters:
-    - `corpus`: a Corpus database object, which should not have an existing configuration
-    - `corpus_definition`: a corpus object, output of `load_corpus`
+        corpus: a Corpus database object
+        corpus_definition: a corpus object, output of `load_corpus`
+
+    If the corpus already has a CorpusConfiguration, its contents will be overwritten
+    based on the python definition. If not, a new configuration will be created.
+
+    This function is idempotent: a given corpus definition will always create the same
+    configuration, regardless of what is currently saved in the database.
     '''
 
-    configuration = CorpusConfiguration(corpus=corpus)
+    # create a clean CorpusConfiguration object, but use the existing PK if possible
+    pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
+    configuration = CorpusConfiguration(pk=pk, corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
     configuration.save()
     configuration.full_clean()
@@ -63,6 +71,16 @@ def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configu
     for field in corpus_definition.fields:
         _save_field_in_database(field, configuration)
 
+    for field in configuration.fields.exclude(name__in=corpus_definition.fieldnames):
+        field.delete()
+
+def _field_pk(name: str, configuration: CorpusConfiguration):
+    try:
+        return Field.objects.get(corpus_configuration=configuration, name=name).pk
+    except Field.DoesNotExist:
+        return None
+        return field.pk
+
 def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
     attributes_to_copy = [
         'name', 'display_name', 'display_type',
@@ -80,6 +98,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     filter_definition = field_definition.search_filter.serialize() if field_definition.search_filter else {}
 
     field = Field(
+        pk=_field_pk(field_definition.name, configuration),
         corpus_configuration=configuration,
         search_filter=filter_definition,
         **copy_attributes,
@@ -89,7 +108,8 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     field.full_clean()
     return field
 
-def _deactivate(corpus):
+def _prepare_for_import(corpus):
+    corpus.has_python_definition = True
     corpus.active = False
     corpus.save()
 
@@ -101,14 +121,14 @@ def _activate_if_ready(corpus):
     corpus.active = corpus.ready_to_publish()
     corpus.save()
 
-def _clear_configuration(corpus):
+def _clear_python_definition(corpus):
     '''
-    Remove the configuration attached to a corpus.
+    Mark a corpus as one without a python definition and deactivate it.
     '''
+    corpus.has_python_definition = False
+    corpus.active = False
+    corpus.save()
 
-    _deactivate(corpus)
-    if corpus.has_configuration:
-        corpus.configuration.delete()
 
 def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=sys.stdout, stderr=sys.stderr):
     '''
@@ -120,11 +140,9 @@ def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=s
 
     corpus, _ = Corpus.objects.get_or_create(name=corpus_name)
 
-    CorpusConfiguration.objects.filter(corpus=corpus).delete()
-
     try:
+        _prepare_for_import(corpus)
         with transaction.atomic():
-            _deactivate(corpus)
             _save_corpus_configuration(corpus, corpus_definition)
             _activate_if_ready(corpus)
         if verbose:
@@ -142,8 +160,8 @@ def load_and_save_all_corpora(verbose=False, stdout=sys.stdout, stderr=sys.stder
     corpus_definitions = load_all_corpus_definitions(stderr=stderr)
 
     for corpus_name, corpus_definition in corpus_definitions.items():
-        _save_or_skip_corpus(corpus_name, corpus_definition)
+        _save_or_skip_corpus(corpus_name, corpus_definition, verbose=verbose, stdout=stdout, stderr=stderr)
 
-    not_included = Corpus.objects.exclude(name__in=corpus_definitions.keys())
+    not_included = Corpus.objects.filter(has_python_definition=True).exclude(name__in=corpus_definitions.keys())
     for corpus in not_included:
-        _clear_configuration(corpus)
+        _clear_python_definition(corpus)

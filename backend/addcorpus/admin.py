@@ -9,13 +9,14 @@ def show_warning_message(request):
     messages.add_message(
         request,
         messages.WARNING,
-        'Corpus configurations are based on python classes; any changes here will be reset on server startup'
+        'This corpus configuration is specified in the source code; '
+        'any changes here will be reset when the server is restarted.'
     )
 
 
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', 'configuration', 'ready_to_index', 'ready_to_publish']
-    fields = ['name', 'groups', 'configuration', 'ready_to_index', 'ready_to_publish', 'active']
+    readonly_fields = ['name', 'configuration', 'has_python_definition', 'ready_to_index', 'ready_to_publish']
+    fields = ['name', 'groups', 'configuration', 'has_python_definition', 'ready_to_index', 'ready_to_publish', 'active']
     list_display = ['name', 'active']
     list_filter = ['groups', 'active']
 
@@ -81,7 +82,8 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
     ]
 
     def get_form(self, request, obj=None, **kwargs):
-        show_warning_message(request)
+        if obj and obj.corpus.has_python_definition:
+            show_warning_message(request)
         return super().get_form(request, obj, **kwargs)
 
 
@@ -135,7 +137,8 @@ class FieldAdmin(admin.ModelAdmin):
     ]
 
     def get_form(self, request, obj=None, **kwargs):
-        show_warning_message(request)
+        if obj and obj.corpus_configuration.corpus.has_python_definition:
+            show_warning_message(request)
         return super().get_form(request, obj, **kwargs)
 
 
