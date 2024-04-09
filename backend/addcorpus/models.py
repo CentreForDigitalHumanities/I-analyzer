@@ -7,17 +7,24 @@ from django.db.models.constraints import UniqueConstraint
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validation.creation import validate_language_code, \
-    validate_markdown_filename_extension, \
-    validate_es_mapping, validate_mimetype, validate_search_filter, \
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
-    validate_searchable_field_has_full_text_search, \
-    validate_visualizations_with_mapping, validate_implication, \
-    validate_sort_configuration, validate_field_language
-from addcorpus.validation.indexing import validate_has_configuration, \
-    validate_essential_fields, validate_language_field
-from addcorpus.validation.publishing import validate_ngram_has_date_field,  \
-    validate_default_sort
+from addcorpus.validation.creation import (
+    validate_language_code,
+    validate_markdown_filename_extension,
+    validate_es_mapping, validate_mimetype, validate_search_filter,
+    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_visualizations_with_mapping, validate_implication,
+    validate_sort_configuration, validate_field_language,
+)
+from addcorpus.validation.indexing import (
+    validate_has_configuration,
+    validate_essential_fields,
+    validate_language_field
+)
+from addcorpus.validation.publishing import (
+    validate_ngram_has_date_field,
+    validate_default_sort,
+)
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -47,12 +54,11 @@ class Corpus(models.Model):
     )
 
     @property
-    def has_configuration(self):
+    def configuration_obj(self) -> models.Model:
         try:
-            self.configuration
-            return True
+            return self.configuration
         except:
-            return False
+            return None
 
     class Meta:
         verbose_name_plural = 'corpora'
@@ -88,7 +94,7 @@ class Corpus(models.Model):
 
         validate_has_configuration(self)
 
-        config = self.configuration
+        config = self.configuration_obj
         fields = config.fields.all()
 
         validate_essential_fields(fields)
@@ -128,6 +134,7 @@ class Corpus(models.Model):
                     'Corpus is set to "active" but does not meet requirements for publication.',
                     e
                 ])
+
 
 class CorpusConfiguration(models.Model):
     '''

@@ -6,10 +6,6 @@ from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumenta
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
 import sys
 
-def _configuration_pk(corpus: Corpus):
-    if corpus.has_configuration:
-        return corpus.configuration.pk
-
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
     '''
     Save a corpus configuration in the SQL database.
@@ -19,7 +15,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
         corpus_definition: a corpus object, output of `load_corpus`
 
     If the corpus already has a CorpusConfiguration, its contents will be overwritten
-    based on the python definitions. If not, a new configuration will be created.
+    based on the python definition. If not, a new configuration will be created.
 
     This function is idempotent: a given corpus definition will always create the same
     configuration, regardless of what is currently saved in the database.
@@ -28,7 +24,8 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     _clear_corpus_image(corpus)
 
     # create a clean CorpusConfiguration object, but use the existing PK if possible
-    configuration = CorpusConfiguration(pk=_configuration_pk(corpus), corpus=corpus)
+    pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
+    configuration = CorpusConfiguration(pk=pk, corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
     configuration.save()
     configuration.full_clean()
@@ -81,8 +78,10 @@ def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configu
         field.delete()
 
 def _field_pk(name: str, configuration: CorpusConfiguration):
-    if Field.objects.filter(corpus_configuration=configuration, name=name).exists():
-        field = Field.objects.get(corpus_configuration=configuration, name=name)
+    try:
+        return Field.objects.get(corpus_configuration=configuration, name=name).pk
+    except Field.DoesNotExist:
+        return None
         return field.pk
 
 def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
@@ -113,7 +112,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     return field
 
 def _clear_corpus_image(corpus: Corpus):
-    if corpus.has_configuration and corpus.configuration.image:
+    if corpus.configuration_obj and corpus.configuration.image:
         image = corpus.configuration.image
         if image:
             if os.path.exists(image.path):
@@ -169,7 +168,7 @@ def _activate_if_ready(corpus):
 
 def _clear_python_definition(corpus):
     '''
-    Mark a corpus as one without a python definition deactivate it.
+    Mark a corpus as one without a python definition and deactivate it.
     '''
     corpus.has_python_definition = False
     corpus.active = False
