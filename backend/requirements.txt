@@ -221,7 +221,7 @@ parse-type==0.6.2
     #   seleniumbase
 pdbp==1.4.6
     # via seleniumbase
-pillow==10.2.0
+pillow==10.3.0
     # via -r requirements.in
 platformdirs==3.10.0
     # via seleniumbase
