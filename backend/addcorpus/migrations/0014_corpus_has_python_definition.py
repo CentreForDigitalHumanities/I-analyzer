@@ -10,6 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # adds has_python_definition with default False
+        # for existing Python corpora, has_python_definition will be set to True when the
+        # corpora are imported (usually when you start up the server)
         migrations.AddField(
             model_name='corpus',
             name='has_python_definition',
