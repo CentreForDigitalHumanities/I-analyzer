@@ -126,7 +126,7 @@ def _activate_if_ready(corpus):
 
 def _clear_python_definition(corpus):
     '''
-    Mark a corpus as one without a python definition deactivate it.
+    Mark a corpus as one without a python definition and deactivate it.
     '''
     corpus.has_python_definition = False
     corpus.active = False
