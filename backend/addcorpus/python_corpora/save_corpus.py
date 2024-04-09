@@ -78,8 +78,10 @@ def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configu
         field.delete()
 
 def _field_pk(name: str, configuration: CorpusConfiguration):
-    if Field.objects.filter(corpus_configuration=configuration, name=name).exists():
-        field = Field.objects.get(corpus_configuration=configuration, name=name)
+    try:
+        return Field.objects.get(corpus_configuration=configuration, name=name).pk
+    except Field.DoesNotExist:
+        return None
         return field.pk
 
 def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
