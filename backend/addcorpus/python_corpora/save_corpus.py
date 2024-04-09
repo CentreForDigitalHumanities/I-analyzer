@@ -113,7 +113,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     return field
 
 def _clear_corpus_image(corpus: Corpus):
-    if corpus.has_configuration and corpus.configuration.image:
+    if corpus.configuration_obj and corpus.configuration.image:
         image = corpus.configuration.image
         if image:
             if os.path.exists(image.path):
