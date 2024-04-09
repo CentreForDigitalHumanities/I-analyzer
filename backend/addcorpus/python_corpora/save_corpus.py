@@ -4,10 +4,6 @@ from addcorpus.models import Corpus, CorpusConfiguration, Field
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions
 import sys
 
-def _configuration_pk(corpus: Corpus):
-    if corpus.has_configuration:
-        return corpus.configuration.pk
-
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
     '''
     Save a corpus configuration in the SQL database.
@@ -17,14 +13,15 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
         corpus_definition: a corpus object, output of `load_corpus`
 
     If the corpus already has a CorpusConfiguration, its contents will be overwritten
-    based on the python definitions. If not, a new configuration will be created.
+    based on the python definition. If not, a new configuration will be created.
 
     This function is idempotent: a given corpus definition will always create the same
     configuration, regardless of what is currently saved in the database.
     '''
 
     # create a clean CorpusConfiguration object, but use the existing PK if possible
-    configuration = CorpusConfiguration(pk=_configuration_pk(corpus), corpus=corpus)
+    pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
+    configuration = CorpusConfiguration(pk=pk, corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
     configuration.save()
     configuration.full_clean()

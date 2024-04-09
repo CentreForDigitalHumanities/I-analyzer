@@ -18,7 +18,7 @@ def test_saved_corpora(db):
     for corpus_name in configured:
         assert Corpus.objects.filter(name=corpus_name).exists()
         corpus = Corpus.objects.get(name=corpus_name)
-        assert corpus.has_configuration
+        assert corpus.configuration_obj
         assert corpus.active
 
     assert len(Corpus.objects.all()) == len(configured)
