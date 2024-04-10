@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import Group
 from django.contrib import admin
 from django.core.exceptions import ValidationError
+from django.db.models.constraints import UniqueConstraint
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
@@ -158,18 +159,6 @@ class CorpusConfiguration(models.Model):
         max_length=64,
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
-    )
-    description_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the markdown documentation file for this corpus',
-    )
-    citation_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the citation specification (in markdown) for this corpus',
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
@@ -415,3 +404,35 @@ class Field(models.Model):
                     'the corpus or correct the following errors.',
                     e
                 ])
+
+class CorpusDocumentationPage(models.Model):
+    class PageType(models.TextChoices):
+        GENERAL = ('general', 'General information')
+        CITATION = ('citation', 'Citation')
+        LICENSE = ('license', 'Licence')
+        TERMS_OF_SERVICE = ('terms_of_service', 'Terms of service')
+        WORDMODELS = ('wordmodels', 'Word models')
+
+    corpus_configuration = models.ForeignKey(
+        to=CorpusConfiguration,
+        related_name='documentation_pages',
+        help_text='configuration that this page documents',
+        on_delete=models.CASCADE,
+    )
+    type = models.CharField(
+        max_length=16,
+        choices=PageType.choices,
+        default='general',
+        help_text='the type of documentation'
+    )
+    content = models.TextField(
+        help_text='markdown contents of the documentation'
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['corpus_configuration', 'type'],
+                name='unique_documentation_type_for_corpus'
+            )
+        ]

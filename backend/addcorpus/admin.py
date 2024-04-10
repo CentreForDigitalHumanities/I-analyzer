@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Corpus, CorpusConfiguration, Field
+from .models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 
 def show_warning_message(request):
     '''
@@ -41,7 +41,6 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                     'corpus',
                     'title',
                     'description',
-                    'description_page',
                     'image',
                 ]
             }
@@ -142,6 +141,13 @@ class FieldAdmin(admin.ModelAdmin):
         return super().get_form(request, obj, **kwargs)
 
 
+class CorpusDocumentationAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        if obj and obj.corpus_configuration.corpus.has_python_definition:
+            show_warning_message(request)
+        return super().get_form(request, obj, **kwargs)
+
 admin.site.register(Corpus, CorpusAdmin)
 admin.site.register(CorpusConfiguration, CorpusConfigurationAdmin)
 admin.site.register(Field, FieldAdmin)
+admin.site.register(CorpusDocumentationPage, CorpusDocumentationAdmin)

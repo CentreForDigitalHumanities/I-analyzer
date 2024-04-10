@@ -44,17 +44,6 @@ def word_in_models(query_term, corpus, max_distance=2):
         'similar_keys': similar_keys
     }
 
-
-def load_wm_documentation(corpus_string):
-    corpus = load_corpus_definition(corpus_string)
-    description_file = join(corpus_dir(corpus_string), 'wm', 'documentation.md')
-    if exists(description_file):
-        with open(description_file) as f:
-            contents = f.read()
-            return contents
-    else:
-        return None
-
 def transform_query(query):
     if not has_whitespace(query):
         transformed = strip_punctuation(query).lower()

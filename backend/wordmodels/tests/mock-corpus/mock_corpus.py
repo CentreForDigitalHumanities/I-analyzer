@@ -13,6 +13,7 @@ class WordmodelsMockCorpus(CorpusDefinition):
     max_date = datetime.datetime(year=1899, month=12, day=31)
     data_directory = 'nothing'
     word_model_path = join(here, 'mock-word-models')
+    wordmodels_page = 'documentation.md'
     fields = [
         FieldDefinition(
             name = 'content',
