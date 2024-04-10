@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+  jobs:
+    citation-update:
+    uses: actions/checkout@v3
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update CITATION.cff
+    - run: |
+      version=`grep -o '\d\+\.\d\+\.\d\+' package.json`
+      sed "s/^version: [[:digit:]]\{1,\}\.[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}/version: $version/" CITATION.cff > CITATION.cff.temp
+      rm -f CITATION.cff
+      mv CITATION.cff.temp CITATION.cff
+      git commit -a -m "update version number in CITATION.cff"
+
