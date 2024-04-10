@@ -16,6 +16,7 @@ def test_import(db, json_corpus_data):
     assert config.category == 'book'
     assert config.min_date == date(1500, 1, 1)
     assert config.max_date == date(1700, 12, 31)
+    assert config.source_data
 
     assert len(config.fields.all()) == 2
 
@@ -95,6 +96,7 @@ def test_parse_keyword_field():
     assert field.searchable == True
     assert field.language == ''
 
+
 def test_parse_int_field():
     data = {
         'name': 'year',
@@ -125,6 +127,7 @@ def test_parse_int_field():
     assert field.hidden == False
     assert field.sortable == True
     assert field.searchable == False
+
 
 def test_parse_float_field():
     data = {
@@ -157,6 +160,7 @@ def test_parse_float_field():
     assert field.searchable == False
     assert field.downloadable == True
 
+
 def test_parse_date_field():
     data = {
         'name': 'date',
@@ -186,6 +190,7 @@ def test_parse_date_field():
     assert field.hidden == False
     assert field.sortable == True
     assert field.searchable == False
+
 
 def test_parse_boolean_field():
     data = {
@@ -217,6 +222,7 @@ def test_parse_boolean_field():
     assert field.sortable == False
     assert field.searchable == False
 
+
 def test_parse_geo_field():
     data = {
         'name': 'location',
@@ -246,3 +252,4 @@ def test_parse_geo_field():
     assert field.hidden == False
     assert field.sortable == False
     assert field.searchable == False
+

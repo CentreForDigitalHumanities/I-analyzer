@@ -10,7 +10,7 @@ from addcorpus.validation.creation import validate_language_code, \
     validate_markdown_filename_extension, \
     validate_es_mapping, validate_mimetype, validate_search_filter, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
-    validate_searchable_field_has_full_text_search, \
+    validate_searchable_field_has_full_text_search, validate_source_data_configuration, \
     validate_visualizations_with_mapping, validate_implication, \
     validate_sort_configuration, validate_field_language
 from addcorpus.validation.indexing import validate_has_configuration, \
@@ -228,6 +228,12 @@ class CorpusConfiguration(models.Model):
         blank=True,
         help_text='name of the field that specifies the language of documents (if any);'
             'required to use "dynamic" language on fields',
+    )
+    source_data = models.JSONField(
+        blank=True,
+        default=dict,
+        help_text='information about the source data files (e.g. file type)',
+        validators=[validate_source_data_configuration]
     )
 
     def __str__(self):

@@ -70,6 +70,7 @@
         },
         "source_data": {
             "type": "object",
+            "description": "information about the source data files",
             "properties": {
                 "type": {
                     "type": "string",
@@ -87,7 +88,8 @@
                         }
                     }
                 }
-            }
+            },
+            "required": ["type"]
         },
         "fields": {
             "type": "array",

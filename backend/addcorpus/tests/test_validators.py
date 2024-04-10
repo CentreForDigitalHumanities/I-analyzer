@@ -79,3 +79,19 @@ def test_validate_sort_configuration():
             'field': 'date',
             'ascending': None
         })
+
+
+def test_validate_source_data():
+    validate_source_data_configuration({})
+    validate_source_data_configuration({
+        'type': 'csv'
+    })
+    with pytest.raises(ValidationError):
+        validate_source_data_configuration({
+            'type': 'xml'
+        })
+
+    with pytest.raises(ValidationError):
+        validate_source_data_configuration({
+            'nonsense': 'xml'
+        })

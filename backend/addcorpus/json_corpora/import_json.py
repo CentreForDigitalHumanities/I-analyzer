@@ -1,11 +1,13 @@
 from typing import Dict, Iterable
 from datetime import datetime
 
+
 from addcorpus.models import Corpus, CorpusConfiguration, Field
 from addcorpus.json_corpora.utils import get_path
 from addcorpus import es_mappings
 from addcorpus.constants import VisualizationType
 from addcorpus.validation.publishing import _any_date_fields
+
 
 def import_json_corpus(data: Dict) -> Corpus:
     name = get_path(data, 'name')
@@ -21,6 +23,7 @@ def import_json_corpus(data: Dict) -> Corpus:
 
     return corpus
 
+
 def _parse_configuration(data: Dict) -> CorpusConfiguration:
     title = get_path(data, 'meta', 'title')
     description = get_path(data, 'meta', 'description')
@@ -32,6 +35,7 @@ def _parse_configuration(data: Dict) -> CorpusConfiguration:
     default_sort = get_path(data, 'options', 'default_sort') or {}
     language_field = get_path(data, 'options', 'language_field') or ''
     document_context = get_path(data, 'options', 'document_context') or {}
+    source_data = get_path(data, 'source_data')
     return CorpusConfiguration(
         title=title,
         description=description,
@@ -43,10 +47,13 @@ def _parse_configuration(data: Dict) -> CorpusConfiguration:
         default_sort=default_sort,
         language_field=language_field,
         document_context=document_context,
+        source_data=source_data
     )
+
 
 def _parse_date(date: str):
     return datetime.strptime(date, '%Y-%m-%d').date()
+
 
 def _import_fields(data: Dict, configuration: CorpusConfiguration) -> None:
     fields_data = get_path(data, 'fields')
@@ -58,6 +65,7 @@ def _import_fields(data: Dict, configuration: CorpusConfiguration) -> None:
         field.save()
 
     _include_ngram_visualisation(configuration.fields.all())
+
 
 def _parse_field(field_data: Dict) -> Field:
     name = get_path(field_data, 'name')
@@ -90,6 +98,7 @@ def _parse_field(field_data: Dict) -> Field:
 
     return field
 
+
 def _parse_text_content_field(field: Field, field_data: Dict) -> Field:
     language = _parse_language(field_data)
     has_single_language = language and language != 'dynamic'
@@ -113,6 +122,7 @@ def _parse_text_content_field(field: Field, field_data: Dict) -> Field:
         ]
 
     return field
+
 
 def _parse_text_metadata_field(field: Field, field_data: Dict) -> Field:
     searchable = get_path(field_data, 'options', 'search')
@@ -154,14 +164,17 @@ def _parse_text_metadata_field(field: Field, field_data: Dict) -> Field:
 
     return field
 
+
 def _parse_language(field_data: Dict) -> str:
     return get_path(field_data, 'language') or ''
+
 
 def _parse_url_field(field: Field, field_data: Dict) -> Field:
     field.es_mapping = es_mappings.keyword_mapping()
     field.display_type = 'keyword'
     field.search_filter = {}
     return field
+
 
 def _parse_numeric_field(field: Field, field_data: Dict) -> Field:
     field.display_type = get_path(field_data, 'type')
@@ -191,6 +204,7 @@ def _parse_numeric_field(field: Field, field_data: Dict) -> Field:
         field.visualization_sort = 'key'
     return field
 
+
 def _parse_date_field(field: Field, field_data: Dict) -> Field:
     field.display_type = 'date'
     field.es_mapping = es_mappings.date_mapping()
@@ -213,6 +227,7 @@ def _parse_date_field(field: Field, field_data: Dict) -> Field:
         ]
     return field
 
+
 def _parse_boolean_field(field: Field, field_data: Dict) -> Field:
     field.display_type = 'boolean'
     field.es_mapping = es_mappings.bool_mapping()
@@ -234,11 +249,13 @@ def _parse_boolean_field(field: Field, field_data: Dict) -> Field:
         ]
     return field
 
+
 def _parse_geo_field(field: Field, field_data: Dict) -> Field:
     field.display_type = 'keyword'
     field.es_mapping = es_mappings.geo_mapping()
     field.search_filter = {}
     return field
+
 
 def _include_ngram_visualisation(fields: Iterable[Field]):
     '''
