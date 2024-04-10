@@ -1,9 +1,12 @@
-from django.conf import settings
-import re
-from os.path import abspath, dirname
-from importlib import util
 import logging
+import re
 import sys
+from importlib import util
+from os.path import abspath, dirname
+
+from addcorpus.python_corpora.corpus import CorpusDefinition
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +21,8 @@ def corpus_dir(corpus_name):
     """
     return dirname(corpus_path(corpus_name))
 
-def load_corpus_definition(corpus_name):
+
+def load_corpus_definition(corpus_name) -> CorpusDefinition:
     filepath = corpus_path(corpus_name)
     try:
         corpus_spec = util.spec_from_file_location(
