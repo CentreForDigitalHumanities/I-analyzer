@@ -17,6 +17,7 @@ def test_import(db, json_corpus_data):
     assert config.min_date == date(1500, 1, 1)
     assert config.max_date == date(1700, 12, 31)
     assert config.source_data
+    assert config.es_index == 'test-example'
 
     assert len(config.fields.all()) == 2
 

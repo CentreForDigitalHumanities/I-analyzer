@@ -7,6 +7,7 @@ from addcorpus.json_corpora.utils import get_path
 from addcorpus import es_mappings
 from addcorpus.constants import VisualizationType
 from addcorpus.validation.publishing import _any_date_fields
+from django.conf import settings
 
 
 def import_json_corpus(data: Dict) -> Corpus:
@@ -24,11 +25,18 @@ def import_json_corpus(data: Dict) -> Corpus:
     return corpus
 
 
+def create_index_name(corpus_name: str) -> str:
+    prefix = settings.SERVERS['default'].get('index_prefix', None)
+    if prefix:
+        return f'{prefix}-{corpus_name}'
+    return corpus_name
+
+
 def _parse_configuration(data: Dict) -> CorpusConfiguration:
     title = get_path(data, 'meta', 'title')
     description = get_path(data, 'meta', 'description')
     category = get_path(data, 'meta', 'category')
-    es_index = get_path(data, 'name')
+    es_index = create_index_name(get_path(data, 'name'))
     languages = get_path(data, 'meta', 'languages')
     min_date = _parse_date(get_path(data, 'meta', 'date_range', 'min'))
     max_date = _parse_date(get_path(data, 'meta', 'date_range', 'max'))

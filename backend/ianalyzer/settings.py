@@ -72,7 +72,8 @@ SERVERS = {
         'bulk_timeout': '60s',  # Timeout of ES bulk operation
         'overview_query_size': 20,  # Number of results to appear in the overview query
         'scroll_timeout': '3m',  # Time before scroll results time out
-        'scroll_page_size': 5000  # Number of results per scroll page
+        'scroll_page_size': 5000,  # Number of results per scroll page
+        'index_prefix': 'ianalyzer'  # Prefix applied to index names created on this server
     }
 }
 

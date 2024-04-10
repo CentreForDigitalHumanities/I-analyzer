@@ -21,3 +21,5 @@ TIMES_DATA = path_in_testdir('addcorpus', '../python_corpora/tests')
 TIMES_ES_INDEX = 'times-test'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'test_data')
+
+SERVERS['default']['index_prefix'] = 'test'
