@@ -64,6 +64,7 @@ def test_parse_content_field():
     assert field.searchable == True
     assert field.downloadable == True
     assert field.language == 'en'
+    assert field.extract_options == {'column': 'content'}
 
 
 def test_parse_keyword_field():

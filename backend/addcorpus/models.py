@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validation.creation import validate_language_code, \
+from addcorpus.validation.creation import validate_field_extract_options, validate_language_code, \
     validate_markdown_filename_extension, \
     validate_es_mapping, validate_mimetype, validate_search_filter, \
     validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
@@ -373,6 +373,12 @@ class Field(models.Model):
         help_text='specification for the language of this field; can be blank, an IETF '
             'tag, or "dynamic"; "dynamic" means the language is determined by the '
             'language_field of the corpus configuration',
+    )
+    extract_options = models.JSONField(
+        blank=True,
+        default=dict,
+        help_text='options related to source data extraction',
+        validators=[validate_field_extract_options]
     )
 
     class Meta:

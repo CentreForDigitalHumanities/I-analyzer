@@ -198,3 +198,15 @@ def validate_source_data_configuration(source_data: Dict) -> None:
     except JSONSchemaValidationError as e:
         raise ValidationError(
             ['Corpus source data schema validation failed', e])
+
+
+def validate_field_extract_options(extract_options: Dict) -> None:
+    if extract_options == {}:
+        return
+    try:
+        validate(extract_options, 'properties',
+                 'fields', 'items', 'properties', 'extract')
+    except JSONSchemaValidationError as e:
+        raise ValidationError(
+            ['Field extract options schema validation failed', e]
+        )

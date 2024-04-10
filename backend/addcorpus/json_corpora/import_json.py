@@ -73,6 +73,7 @@ def _parse_field(field_data: Dict) -> Field:
     description = get_path(field_data, 'description')
     results_overview = get_path(field_data, 'options', 'preview')
     hidden = get_path(field_data, 'options', 'hidden')
+    extract = get_path(field_data, 'extract')
 
     field = Field(
         name=name,
@@ -81,6 +82,7 @@ def _parse_field(field_data: Dict) -> Field:
         results_overview=results_overview,
         hidden=hidden,
         csv_core=results_overview,
+        extract_options=extract
     )
 
     field_type = get_path(field_data, 'type')
