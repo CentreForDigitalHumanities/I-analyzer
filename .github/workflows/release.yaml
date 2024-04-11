@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'master'
+      - 'release/**'
+      - 'hotfix/**'
   jobs:
     citation-update:
     uses: actions/checkout@v3
@@ -14,8 +15,8 @@ on:
     - name: Update CITATION.cff
     - run: |
       version=`grep -o '\d\+\.\d\+\.\d\+' package.json`
-      sed "s/^version: [[:digit:]]\{1,\}\.[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}/version: $version/" CITATION.cff > CITATION.cff.temp
-      rm -f CITATION.cff
-      mv CITATION.cff.temp CITATION.cff
-      git commit -a -m "update version number in CITATION.cff"
+      today=`date +"%Y-%m-%d"`
+      sed -i "s/^version: [[:digit:]]\{1,\}\.[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}/version: $version/" CITATION.cff
+      sed -i "s/[[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}/$today/" CITATION.cff
+      git commit -a -m "update version and date in CITATION.cff"
 
