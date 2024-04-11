@@ -43,7 +43,7 @@ def _parse_configuration(data: Dict) -> CorpusConfiguration:
     default_sort = get_path(data, 'options', 'default_sort') or {}
     language_field = get_path(data, 'options', 'language_field') or ''
     document_context = get_path(data, 'options', 'document_context') or {}
-    source_data = get_path(data, 'source_data')
+    delimiter = get_path(data, 'source_data', 'options', 'delimiter') or ','
     return CorpusConfiguration(
         title=title,
         description=description,
@@ -55,7 +55,7 @@ def _parse_configuration(data: Dict) -> CorpusConfiguration:
         default_sort=default_sort,
         language_field=language_field,
         document_context=document_context,
-        source_data=source_data
+        source_data_delimiter=delimiter,
     )
 
 
@@ -81,7 +81,7 @@ def _parse_field(field_data: Dict) -> Field:
     description = get_path(field_data, 'description')
     results_overview = get_path(field_data, 'options', 'preview')
     hidden = get_path(field_data, 'options', 'hidden')
-    extract = get_path(field_data, 'extract')
+    extract_column = get_path(field_data, 'extract', 'column')
 
     field = Field(
         name=name,
@@ -90,7 +90,7 @@ def _parse_field(field_data: Dict) -> Field:
         results_overview=results_overview,
         hidden=hidden,
         csv_core=results_overview,
-        extract_options=extract
+        extract_column=extract_column,
     )
 
     field_type = get_path(field_data, 'type')

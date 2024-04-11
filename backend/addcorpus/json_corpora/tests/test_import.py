@@ -16,7 +16,7 @@ def test_import(db, json_corpus_data):
     assert config.category == 'book'
     assert config.min_date == date(1500, 1, 1)
     assert config.max_date == date(1700, 12, 31)
-    assert config.source_data
+    assert config.source_data_delimiter == ','
     assert config.es_index == 'test-example'
 
     assert len(config.fields.all()) == 2
@@ -65,7 +65,7 @@ def test_parse_content_field():
     assert field.searchable == True
     assert field.downloadable == True
     assert field.language == 'en'
-    assert field.extract_options == {'column': 'content'}
+    assert field.extract_column == 'content'
 
 
 def test_parse_keyword_field():
