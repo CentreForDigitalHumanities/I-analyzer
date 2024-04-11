@@ -23,7 +23,7 @@ Determine if your release is a major, minor, or patch release to figure out the 
 
 Start a new branch for your releases. Use `git flow release start x.x.x` or `git flow hotfix start x.x.x`.
 
-Update the version number in `package.json` and `CITATION.cff`. Update the release date in `CITATION.cff`.
+Update the version number in `package.json`.
 
 ## Check if everything works
 
