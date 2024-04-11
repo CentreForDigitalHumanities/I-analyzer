@@ -99,8 +99,10 @@ def es_client():
     return client
 
 # mock corpora
+
+
 @pytest.fixture(autouse=True)
-def add_mock_corpora_to_db(db):
+def add_mock_corpora_to_db(db, media_dir):
     #add mock corpora to the database at the start of each test
     load_and_save_all_corpora()
 
