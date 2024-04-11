@@ -131,6 +131,12 @@ Optional, should be a string.
 
 If you define a `SAML_GROUP_NAME` in settings, SAML users will always be added to a group with that name when they create an account. (The group will be created if it does not exist.) This can be used to give permissions to SAML users. The group is not used to handle authentication, so you can add non-SAML users to it as well.
 
+### `DEFAULT_CORPUS_IMAGE`
+
+A path (string) to an image file.
+
+Corpora can include an image to use in the interface (e.g. in the corpus selection menu); if the corpus has no image, this one will be used instead.
+
 ### Settings for individual corpora
 
 Python corpus definitions typically rely on the Django settings, to avoid hard-coding properties that depend on the server. When you include a corpus definition in your settings, read the source file to see the related settings. Some of these settings may be optional.
