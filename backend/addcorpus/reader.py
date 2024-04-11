@@ -1,6 +1,5 @@
 import glob
 
-from addcorpus.json_corpora.utils import get_path
 from addcorpus.models import Corpus, Field
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from ianalyzer_readers.extract import CSV
@@ -10,10 +9,9 @@ from ianalyzer_readers.readers.csv import CSVReader
 
 
 def make_reader_field(corpus_field: Field) -> ReaderField:
-    col = get_path(corpus_field.extract_options, 'column')
     return ReaderField(
         name=corpus_field.name,
-        extractor=CSV(column=col)
+        extractor=CSV(corpus_field.extract_column),
     )
 
 
@@ -28,8 +26,7 @@ def make_reader(corpus: Corpus, data_directory: str = None) -> Reader:
         return load_corpus_definition(corpus.name)
 
     class NewReader(CSVReader):
-        delimiter = get_path(
-            corpus.configuration.source_data, 'options', 'delimiter') or ','
+        delimiter = corpus.configuration.source_data_delimiter
         fields = [make_reader_field(f)
                   for f in corpus.configuration.fields.all()]
 
