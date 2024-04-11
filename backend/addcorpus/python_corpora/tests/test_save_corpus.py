@@ -21,8 +21,10 @@ def test_saved_corpora(db):
         assert corpus.configuration_obj
         assert corpus.active
 
-    assert len(Corpus.objects.all()) == len(configured)
-    assert len(CorpusConfiguration.objects.all()) == len(configured)
+    assert len(Corpus.objects.filter(
+        has_python_definition=True)) == len(configured)
+    assert len(CorpusConfiguration.objects.filter(
+        corpus__has_python_definition=True)) == len(configured)
 
 def test_no_errors_when_saving_corpora(db, capsys):
     # try running the save function

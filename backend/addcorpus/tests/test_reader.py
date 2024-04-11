@@ -1,3 +1,4 @@
+import json
 from addcorpus.models import Corpus
 from addcorpus.reader import make_reader
 
@@ -11,3 +12,7 @@ def test_make_reader_python(mock_corpus):
         'character': 'HAMLET',
         'lines': ["Whither wilt thou lead me? Speak, I\'ll go no further."]
     }
+
+
+def test_make_reader_json(json_mock_corpus):
+    assert json_mock_corpus

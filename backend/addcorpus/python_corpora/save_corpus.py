@@ -82,7 +82,6 @@ def _field_pk(name: str, configuration: CorpusConfiguration):
         return Field.objects.get(corpus_configuration=configuration, name=name).pk
     except Field.DoesNotExist:
         return None
-        return field.pk
 
 def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
     attributes_to_copy = [

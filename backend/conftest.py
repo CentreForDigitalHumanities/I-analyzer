@@ -6,6 +6,7 @@ import pytest
 import requests
 from allauth.account.models import EmailAddress
 
+from addcorpus.json_corpora.import_json import import_json_corpus
 from ianalyzer.elasticsearch import elasticsearch
 from ianalyzer.settings_test import MEDIA_ROOT
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
@@ -112,6 +113,12 @@ def json_corpus_data():
     path = os.path.join(settings.BASE_DIR, 'corpora_test', 'mock_corpus.json')
     with open(path) as f:
         return json.load(f)
+
+
+@pytest.fixture(autouse=True)
+def json_mock_corpus(db,  json_corpus_data):
+    # add json mock corpora to the database at the start of each test
+    return import_json_corpus(json_corpus_data)
 
 
 def index_test_corpus(es_client, corpus_name):

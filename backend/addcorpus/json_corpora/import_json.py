@@ -1,4 +1,4 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
 from datetime import datetime
 
 
@@ -15,10 +15,12 @@ def import_json_corpus(data: Dict) -> Corpus:
 
     corpus, _created = Corpus.objects.get_or_create(name=name)
 
-    configuration = _parse_configuration(data)
-    configuration.corpus = corpus
-    configuration.full_clean()
+    # create a clean CorpusConfiguration object, but use the existing PK if possible
+    pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
+    configuration = CorpusConfiguration(pk=pk, corpus=corpus)
+    configuration = _parse_configuration(data, configuration)
     configuration.save()
+    configuration.full_clean()
 
     _import_fields(data, configuration)
 
@@ -32,31 +34,24 @@ def create_index_name(corpus_name: str) -> str:
     return corpus_name
 
 
-def _parse_configuration(data: Dict) -> CorpusConfiguration:
-    title = get_path(data, 'meta', 'title')
-    description = get_path(data, 'meta', 'description')
-    category = get_path(data, 'meta', 'category')
-    es_index = create_index_name(get_path(data, 'name'))
-    languages = get_path(data, 'meta', 'languages')
-    min_date = _parse_date(get_path(data, 'meta', 'date_range', 'min'))
-    max_date = _parse_date(get_path(data, 'meta', 'date_range', 'max'))
-    default_sort = get_path(data, 'options', 'default_sort') or {}
-    language_field = get_path(data, 'options', 'language_field') or ''
-    document_context = get_path(data, 'options', 'document_context') or {}
-    source_data = get_path(data, 'source_data')
-    return CorpusConfiguration(
-        title=title,
-        description=description,
-        category=category,
-        es_index=es_index,
-        languages=languages,
-        min_date=min_date,
-        max_date=max_date,
-        default_sort=default_sort,
-        language_field=language_field,
-        document_context=document_context,
-        source_data=source_data
-    )
+def _parse_configuration(data: Dict, configuration: CorpusConfiguration) -> CorpusConfiguration:
+    configuration.title = get_path(data, 'meta', 'title')
+    configuration.description = get_path(data, 'meta', 'description')
+    configuration.category = get_path(data, 'meta', 'category')
+    configuration.es_index = create_index_name(get_path(data, 'name'))
+    configuration.languages = get_path(data, 'meta', 'languages')
+    configuration.min_date = _parse_date(
+        get_path(data, 'meta', 'date_range', 'min'))
+    configuration.max_date = _parse_date(
+        get_path(data, 'meta', 'date_range', 'max'))
+    configuration.default_sort = get_path(
+        data, 'options', 'default_sort') or {}
+    configuration.language_field = get_path(
+        data, 'options', 'language_field') or ''
+    configuration.document_context = get_path(
+        data, 'options', 'document_context') or {}
+    configuration.source_data = get_path(data, 'source_data')
+    return configuration
 
 
 def _parse_date(date: str):
@@ -67,15 +62,24 @@ def _import_fields(data: Dict, configuration: CorpusConfiguration) -> None:
     fields_data = get_path(data, 'fields')
 
     for field_data in fields_data:
-        field = _parse_field(field_data)
-        field.corpus_configuration = configuration
-        field.full_clean()
+        field = _parse_field(field_data, configuration)
         field.save()
+        field.full_clean()
+
+    for field in configuration.fields.exclude(name__in=(f['name'] for f in fields_data)):
+        field.delete()
 
     _include_ngram_visualisation(configuration.fields.all())
 
 
-def _parse_field(field_data: Dict) -> Field:
+def _field_pk(name: str, configuration: CorpusConfiguration):
+    try:
+        return Field.objects.get(corpus_configuration=configuration, name=name).pk
+    except Field.DoesNotExist:
+        return None
+
+
+def _parse_field(field_data: Dict, configuration: Optional[CorpusConfiguration] = None) -> Field:
     name = get_path(field_data, 'name')
     display_name = get_path(field_data, 'display_name')
     description = get_path(field_data, 'description')
@@ -84,6 +88,8 @@ def _parse_field(field_data: Dict) -> Field:
     extract = get_path(field_data, 'extract')
 
     field = Field(
+        pk=_field_pk(name, configuration) if configuration else None,
+        corpus_configuration=configuration,
         name=name,
         display_name=display_name,
         description=description,
@@ -107,6 +113,7 @@ def _parse_field(field_data: Dict) -> Field:
     field = parsers[field_type](field, field_data)
 
     return field
+
 
 
 def _parse_text_content_field(field: Field, field_data: Dict) -> Field:
