@@ -50,7 +50,8 @@ def _parse_configuration(data: Dict, configuration: CorpusConfiguration) -> Corp
         data, 'options', 'language_field') or ''
     configuration.document_context = get_path(
         data, 'options', 'document_context') or {}
-    configuration.source_data = get_path(data, 'source_data')
+    configuration.source_data_delimiter = get_path(
+        data, 'source_data', 'options', 'delimiter') or ','
     return configuration
 
 
@@ -85,7 +86,7 @@ def _parse_field(field_data: Dict, configuration: Optional[CorpusConfiguration] 
     description = get_path(field_data, 'description')
     results_overview = get_path(field_data, 'options', 'preview')
     hidden = get_path(field_data, 'options', 'hidden')
-    extract = get_path(field_data, 'extract')
+    extract_column = get_path(field_data, 'extract', 'column')
 
     field = Field(
         pk=_field_pk(name, configuration) if configuration else None,
@@ -96,7 +97,7 @@ def _parse_field(field_data: Dict, configuration: Optional[CorpusConfiguration] 
         results_overview=results_overview,
         hidden=hidden,
         csv_core=results_overview,
-        extract_options=extract
+        extract_column=extract_column,
     )
 
     field_type = get_path(field_data, 'type')

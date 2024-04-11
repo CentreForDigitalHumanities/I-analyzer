@@ -164,7 +164,7 @@
                         "properties": {
                             "column": {
                                 "type": "string",
-                                "description": "name of the column in the CSV file"
+                                "description": "name of the column in CSV source files"
                             }
                         },
                         "required": ["column"]

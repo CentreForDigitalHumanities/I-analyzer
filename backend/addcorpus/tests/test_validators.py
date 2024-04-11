@@ -79,34 +79,3 @@ def test_validate_sort_configuration():
             'field': 'date',
             'ascending': None
         })
-
-
-def test_validate_source_data():
-    validate_source_data_configuration({})
-    validate_source_data_configuration({
-        'type': 'csv'
-    })
-    with pytest.raises(ValidationError):
-        validate_source_data_configuration({
-            'type': 'xml'
-        })
-
-    with pytest.raises(ValidationError):
-        validate_source_data_configuration({
-            'nonsense': 'xml'
-        })
-
-
-def test_validate_extract_options():
-    validate_field_extract_options({})
-    validate_field_extract_options({
-        'column': 'character'
-    })
-    validate_field_extract_options({
-        'column': 'no wrong value'
-    })
-
-    with pytest.raises(ValidationError):
-        validate_field_extract_options({
-            'nonsense': 'character'
-        })

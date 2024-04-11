@@ -5,15 +5,13 @@ This module defines functions to check if a corpus can be saved to the database
 import mimetypes
 import os
 import warnings
-from typing import Dict
 
 from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
                                  VisualizationType)
-from addcorpus.json_corpora.validate import validate
 from addcorpus.python_corpora.filters import \
     VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
 from django.core.exceptions import ValidationError
-from jsonschema.exceptions import ValidationError as JSONSchemaValidationError
+
 from langcodes import tag_is_valid
 
 
@@ -188,25 +186,3 @@ def validate_sort_configuration(sort_config):
 
     if type(ascending) is not bool:
         raise ValidationError(f'Sort configuration has invalid "ascending" property: {ascending}')
-
-
-def validate_source_data_configuration(source_data: Dict) -> None:
-    if source_data == {}:
-        return
-    try:
-        validate(source_data, 'properties', 'source_data')
-    except JSONSchemaValidationError as e:
-        raise ValidationError(
-            ['Corpus source data schema validation failed', e])
-
-
-def validate_field_extract_options(extract_options: Dict) -> None:
-    if extract_options == {}:
-        return
-    try:
-        validate(extract_options, 'properties',
-                 'fields', 'items', 'properties', 'extract')
-    except JSONSchemaValidationError as e:
-        raise ValidationError(
-            ['Field extract options schema validation failed', e]
-        )

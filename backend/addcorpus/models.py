@@ -2,14 +2,12 @@ import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
-    validate_es_mapping, validate_field_extract_options,
-    validate_field_language, validate_implication, validate_language_code,
+    validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
     validate_mimetype,
     validate_name_is_not_a_route_parameter, validate_search_filter,
     validate_search_filter_with_mapping,
     validate_searchable_field_has_full_text_search,
-    validate_sort_configuration, validate_source_data_configuration,
-    validate_visualizations_with_mapping)
+    validate_sort_configuration, validate_visualizations_with_mapping)
 from addcorpus.validation.indexing import (validate_essential_fields,
                                            validate_has_configuration,
                                            validate_language_field)
@@ -221,11 +219,15 @@ class CorpusConfiguration(models.Model):
         help_text='name of the field that specifies the language of documents (if any);'
             'required to use "dynamic" language on fields',
     )
-    source_data = models.JSONField(
+    source_data_delimiter = models.CharField(
+        max_length=1,
+        choices=[
+            (',','comma'),
+            (';','semicolon'),
+            ('\t','tab')
+        ],
         blank=True,
-        default=dict,
-        help_text='information about the source data files (e.g. file type)',
-        validators=[validate_source_data_configuration]
+        help_text='delimiter used in (CSV) source data files',
     )
 
     def __str__(self):
@@ -360,17 +362,15 @@ class Field(models.Model):
     language = models.CharField(
         max_length=64,
         blank=True,
-        null=False,
         validators=[validate_field_language],
         help_text='specification for the language of this field; can be blank, an IETF '
             'tag, or "dynamic"; "dynamic" means the language is determined by the '
             'language_field of the corpus configuration',
     )
-    extract_options = models.JSONField(
+    extract_column = models.CharField(
+        max_length=64,
         blank=True,
-        default=dict,
-        help_text='options related to source data extraction',
-        validators=[validate_field_extract_options]
+        help_text='column name in CSV source files from which to extract this field',
     )
 
     class Meta:
