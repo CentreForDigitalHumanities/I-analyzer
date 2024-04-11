@@ -153,3 +153,8 @@ export class CorpusField {
 		return new Filter(store, this);
 	}
 }
+
+export interface CorpusDocumentationPage {
+    type: string;
+    content: string;
+}
