@@ -8,6 +8,7 @@ from addcorpus.python_corpora.corpus import CorpusDefinition
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+from addcorpus.python_corpora.corpus import CorpusDefinition
 
 
 def corpus_path(corpus_name):
@@ -20,7 +21,6 @@ def corpus_dir(corpus_name):
         corpus_name {str} -- Key of the corpus in CORPORA object in settings
     """
     return dirname(corpus_path(corpus_name))
-
 
 def load_corpus_definition(corpus_name) -> CorpusDefinition:
     filepath = corpus_path(corpus_name)

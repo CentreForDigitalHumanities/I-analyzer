@@ -6,6 +6,7 @@ from typing import Optional
 from ianalyzer_readers import extract
 from datetime import datetime
 from os.path import isdir
+import os
 
 from django.conf import settings
 
@@ -18,7 +19,6 @@ from ianalyzer_readers.readers.xlsx import XLSXReader
 import logging
 
 logger = logging.getLogger('indexing')
-
 
 class CorpusDefinition(Reader):
     '''
@@ -180,10 +180,30 @@ class CorpusDefinition(Reader):
     '''
     allow_image_download = False
 
+    description_page: Optional[str] = None
     '''
     filename of markdown document with a comprehensive description
     '''
-    description_page = None
+
+    citation_page: Optional[str] = None
+    '''
+    filename of markdown document with citation guidelines
+    '''
+
+    license_page: Optional[str] = None
+    '''
+    filename of markdown document with licence text
+    '''
+
+    wordmodels_page: Optional[str] = None
+    '''
+    filename of markdown document with documentation for word models
+    '''
+
+    terms_of_service_page: Optional[str] = None
+    '''
+    filename of markdown document with terms of service
+    '''
 
     def update_body(self, **kwargs):
         ''' given one document in the index, give an instruction
@@ -245,6 +265,26 @@ class CorpusDefinition(Reader):
         extracted without reading the file itself can be specified there.
         '''
         super().sources(start=start, end=end)
+
+    def documentation_path(self, page_type: str) -> Optional[str]:
+        '''
+        Returns the path to a documentation file, relative to the corpus directory.
+        '''
+
+        pages = {
+            'general': ('description', 'description_page'),
+            'citation': ('citation', 'citation_page'),
+            'license': ('license', 'license_page'),
+            'terms_of_service': ('terms_of_service', 'terms_of_service_page'),
+            'wordmodels': ('wm', 'wordmodels_page'),
+        }
+
+        if page_type in pages:
+            directory, attr = pages[page_type]
+            filename = self.__getattribute__(attr)
+            if filename:
+                return os.path.join(directory, filename)
+
 
 class ParentCorpusDefinition(CorpusDefinition):
     ''' A class from which other corpus definitions can inherit.

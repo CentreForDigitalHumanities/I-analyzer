@@ -2,13 +2,9 @@ import os
 from django.db import transaction
 from django.core.files.images import ImageFile
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
-from addcorpus.models import Corpus, CorpusConfiguration, Field
+from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
 import sys
-
-def _configuration_pk(corpus: Corpus):
-    if corpus.has_configuration:
-        return corpus.configuration.pk
 
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
     '''
@@ -19,7 +15,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
         corpus_definition: a corpus object, output of `load_corpus`
 
     If the corpus already has a CorpusConfiguration, its contents will be overwritten
-    based on the python definitions. If not, a new configuration will be created.
+    based on the python definition. If not, a new configuration will be created.
 
     This function is idempotent: a given corpus definition will always create the same
     configuration, regardless of what is currently saved in the database.
@@ -28,13 +24,15 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     _clear_corpus_image(corpus)
 
     # create a clean CorpusConfiguration object, but use the existing PK if possible
-    configuration = CorpusConfiguration(pk=_configuration_pk(corpus), corpus=corpus)
+    pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
+    configuration = CorpusConfiguration(pk=pk, corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
     configuration.save()
     configuration.full_clean()
 
     _save_corpus_fields_in_database(corpus_definition, configuration)
     _save_corpus_image(corpus_definition, configuration)
+    _save_corpus_documentation(corpus_definition, configuration)
 
 def get_defined_attributes(object, attributes):
     get = lambda attr: object.__getattribute__(attr)
@@ -51,8 +49,6 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'description',
         'allow_image_download',
         'category',
-        'description_page',
-        'citation_page',
         'document_context',
         'es_alias',
         'es_index',
@@ -82,8 +78,10 @@ def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configu
         field.delete()
 
 def _field_pk(name: str, configuration: CorpusConfiguration):
-    if Field.objects.filter(corpus_configuration=configuration, name=name).exists():
-        field = Field.objects.get(corpus_configuration=configuration, name=name)
+    try:
+        return Field.objects.get(corpus_configuration=configuration, name=name).pk
+    except Field.DoesNotExist:
+        return None
         return field.pk
 
 def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
@@ -114,7 +112,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     return field
 
 def _clear_corpus_image(corpus: Corpus):
-    if corpus.has_configuration and corpus.configuration.image:
+    if corpus.configuration_obj and corpus.configuration.image:
         image = corpus.configuration.image
         if image:
             if os.path.exists(image.path):
@@ -133,6 +131,28 @@ def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: Corpu
             configuration.image = ImageFile(f, name=save_as)
             configuration.save()
 
+def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
+    corpus_name = configuration.corpus.name
+
+    for name, _ in CorpusDocumentationPage.PageType.choices:
+        path_in_corpus_dir = corpus_definition.documentation_path(name)
+        if path_in_corpus_dir:
+            path = os.path.join(corpus_dir(corpus_name), path_in_corpus_dir)
+            with open(path, 'r') as f:
+                content = f.read()
+
+            page, _ = CorpusDocumentationPage.objects.get_or_create(
+                corpus_configuration=configuration, type=name
+            )
+            page.content = content
+            page.save()
+        else:
+            pages = CorpusDocumentationPage.objects.filter(
+                corpus_configuration=configuration, type=name
+            )
+            if pages.exists():
+                pages.delete()
+
 def _prepare_for_import(corpus):
     corpus.has_python_definition = True
     corpus.active = False
@@ -148,7 +168,7 @@ def _activate_if_ready(corpus):
 
 def _clear_python_definition(corpus):
     '''
-    Mark a corpus as one without a python definition deactivate it.
+    Mark a corpus as one without a python definition and deactivate it.
     '''
     corpus.has_python_definition = False
     corpus.active = False

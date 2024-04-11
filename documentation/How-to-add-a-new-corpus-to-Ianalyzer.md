@@ -45,10 +45,11 @@ The following properties are optional:
 - `es_settings`: overwrites the `settings` property of the elasticsearch index. Can be generated using [es_settings.py](../backend/addcorpus/es_settings.py)
 - `scan_image_type`: the filetype of scanned documents, if these are included.
 - `allow_image_download`
-- `desription_page`: filename of markdown document with a comprehensive description, located in a subdirectory `description` of the corpus definition directory.
 - `document_context`: specifies fields that define the natural grouping of documents.
 - `default_sort`: specifies the default method to sort search result.
 - `language_field`: if your corpus contains documents in multiple language, you can specify the name of the field that stores the IETF tag for each document.
+
+Several additional attributes allow you to specify files containing documentation; see [including documentation files](#including-documentation-files).
 
 The corpus class should also define a function `sources(self, start, end)` which iterates source files (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 
@@ -59,6 +60,20 @@ The `CorpusDefinition` class is a subclass of the `Reader` in `ianalyzer_readers
 Most corpus definitions also inherit from a more specific `Reader` that provides functionality for the type of source data, e.g. `XMLReader`, `CSVReader`, etc. For convenience, you can use the classes `XMLCorpusDefinition`, `CSVCorpusDefinition`, etc., defined in [corpus.py](/backend/addcorpus/python_corpora/corpus.py).
 
 See [the documentation of ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/) for the available `Reader` classes and the API for each of them.
+
+### Including documentation files
+
+Documentation pages can be added as markdown files in the corpus directory. See [corpus documentation](/documentation/Corpus-documentation.md) for more information about writing these files.
+
+The method `documentation_path(page_type)` on the `CorpusDefinition` class points to the files that are included. It takes a documentation type as input and returns the path to the file, relative to the directory containing the definition.
+
+The default implementation of `documentation_path` will look at the following attributes of the corpus:
+
+- `description_page`: a path relative to `./description/`
+- `citation_page`: a path relative to `./citation/`
+- `wordmodels_page`: a path relative to `./wm/`
+- `license_page`: a path relative to `./license/`
+- `terms_of_service_page`: a path relative to `./terms_of_service/`
 
 ## Settings file
 

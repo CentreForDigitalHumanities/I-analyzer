@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Observable, Subject, from, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
-import { TaskResult, TasksOutcome } from '../app/models';
+import { CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
 import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 
 export const fakeNgramResult = {
@@ -69,6 +69,13 @@ export class ApiServiceMock {
 
     public keyInfo() {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
+    }
+
+    public corpusDocumentation(): Observable<CorpusDocumentationPage[]> {
+        return of([{
+            type: 'General',
+            content: 'Example of _documentation_.'
+        }]);
     }
 
     public fieldCoverage() {

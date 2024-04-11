@@ -1,22 +1,26 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import Group
-from django.contrib import admin
-from django.core.exceptions import ValidationError
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validation.creation import validate_field_extract_options, validate_language_code, \
-    validate_markdown_filename_extension, \
-    validate_es_mapping, validate_mimetype, validate_search_filter, \
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, \
-    validate_searchable_field_has_full_text_search, validate_source_data_configuration, \
-    validate_visualizations_with_mapping, validate_implication, \
-    validate_sort_configuration, validate_field_language
-from addcorpus.validation.indexing import validate_has_configuration, \
-    validate_essential_fields, validate_language_field
-from addcorpus.validation.publishing import validate_ngram_has_date_field,  \
-    validate_default_sort
+from addcorpus.validation.creation import (
+    validate_es_mapping, validate_field_extract_options,
+    validate_field_language, validate_implication, validate_language_code,
+    validate_mimetype,
+    validate_name_is_not_a_route_parameter, validate_search_filter,
+    validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_sort_configuration, validate_source_data_configuration,
+    validate_visualizations_with_mapping)
+from addcorpus.validation.indexing import (validate_essential_fields,
+                                           validate_has_configuration,
+                                           validate_language_field)
+from addcorpus.validation.publishing import (validate_default_sort,
+                                             validate_ngram_has_date_field)
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.constraints import UniqueConstraint
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -46,12 +50,11 @@ class Corpus(models.Model):
     )
 
     @property
-    def has_configuration(self):
+    def configuration_obj(self) -> models.Model:
         try:
-            self.configuration
-            return True
+            return self.configuration
         except:
-            return False
+            return None
 
     class Meta:
         verbose_name_plural = 'corpora'
@@ -87,7 +90,7 @@ class Corpus(models.Model):
 
         validate_has_configuration(self)
 
-        config = self.configuration
+        config = self.configuration_obj
         fields = config.fields.all()
 
         validate_essential_fields(fields)
@@ -128,6 +131,7 @@ class Corpus(models.Model):
                     e
                 ])
 
+
 class CorpusConfiguration(models.Model):
     '''
     The configuration of the corpus as set by the definition file.
@@ -151,18 +155,6 @@ class CorpusConfiguration(models.Model):
         max_length=64,
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
-    )
-    description_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the markdown documentation file for this corpus',
-    )
-    citation_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the citation specification (in markdown) for this corpus',
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
@@ -421,3 +413,35 @@ class Field(models.Model):
                     'the corpus or correct the following errors.',
                     e
                 ])
+
+class CorpusDocumentationPage(models.Model):
+    class PageType(models.TextChoices):
+        GENERAL = ('general', 'General information')
+        CITATION = ('citation', 'Citation')
+        LICENSE = ('license', 'Licence')
+        TERMS_OF_SERVICE = ('terms_of_service', 'Terms of service')
+        WORDMODELS = ('wordmodels', 'Word models')
+
+    corpus_configuration = models.ForeignKey(
+        to=CorpusConfiguration,
+        related_name='documentation_pages',
+        help_text='configuration that this page documents',
+        on_delete=models.CASCADE,
+    )
+    type = models.CharField(
+        max_length=16,
+        choices=PageType.choices,
+        default='general',
+        help_text='the type of documentation'
+    )
+    content = models.TextField(
+        help_text='markdown contents of the documentation'
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['corpus_configuration', 'type'],
+                name='unique_documentation_type_for_corpus'
+            )
+        ]
