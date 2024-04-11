@@ -15,7 +15,7 @@ class CorpusNotIndexableError(Exception):
     pass
 
 def validate_has_configuration(corpus):
-    if not corpus.has_configuration:
+    if not corpus.configuration_obj:
         raise CorpusNotIndexableError('Corpus has no attached configuration')
 
 def validate_essential_fields(fields):

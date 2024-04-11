@@ -84,7 +84,6 @@ export class CorpusService {
             allFields,
             new Date(data.min_date),
             new Date(data.max_date),
-            data.image,
             data.scan_image_type,
             data.allow_image_download,
             data.word_models_present,

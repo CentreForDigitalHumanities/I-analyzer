@@ -16,6 +16,7 @@ This directory contains documentation for developers.
 - [Indexing corpora](./Indexing-corpora.md)
 - [Indexing in deployment](./Indexing-on-server.md)
 - [Corpus validation](./Corpus-validation.md)
+- [Writing documentation for corpora](./Corpus-documentation.md)
 
 ## Feature development
 

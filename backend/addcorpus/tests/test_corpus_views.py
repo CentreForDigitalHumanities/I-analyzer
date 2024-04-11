@@ -12,17 +12,33 @@ def test_no_corpora(db, settings, admin_client):
     assert status.is_success(response.status_code)
     assert response.data == []
 
-def test_corpus_documentation_view(admin_client, mock_corpus):
-    response = admin_client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
+def test_corpus_documentation_view(admin_client, mock_corpus, settings):
+    response = admin_client.get(f'/api/corpus/documentation/{mock_corpus}/')
     assert response.status_code == 200
 
-def test_corpus_citation_view(admin_client, mock_corpus):
-    response = admin_client.get(f'/api/corpus/citation/{mock_corpus}')
+    # should contain citation guidelines
+    citation_page = next(page for page in response.data if page['type'] == 'Citation')
+
+    # check that the page template is rendered with context
+    content = citation_page['content']
+    assert '{{ frontend_url }}' not in content
+    assert settings.BASE_URL in content
+
+def test_corpus_image_view(admin_client, mock_corpus):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    assert not corpus.configuration.image
+
+    response = admin_client.get(f'/api/corpus/image/{mock_corpus}')
     assert response.status_code == 200
 
+    corpus.configuration.image = 'corpus.jpg'
+    corpus.configuration.save
+
+    response = admin_client.get(f'/api/corpus/image/{mock_corpus}')
+    assert response.status_code == 200
 
 def test_nonexistent_corpus(admin_client):
-    response = admin_client.get(f'/api/corpus/documentation/unknown-corpus/mock-csv-corpus.md')
+    response = admin_client.get(f'/api/corpus/documentation/unknown-corpus/')
     assert response.status_code == 404
 
 def test_no_corpus_access(db, client, mock_corpus):
@@ -30,16 +46,16 @@ def test_no_corpus_access(db, client, mock_corpus):
 
     user = CustomUser.objects.create(username='bad-user', password='secret')
     client.force_login(user)
-    response = client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
+    response = client.get(f'/api/corpus/documentation/{mock_corpus}/')
     assert response.status_code == 403
 
 
 def test_corpus_documentation_unauthenticated(db, client, basic_corpus, mock_corpus):
     response = client.get(
-        f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
+        f'/api/corpus/documentation/{mock_corpus}/')
     assert response.status_code == 401
     response = client.get(
-        f'/api/corpus/documentation/{basic_corpus}/mock-csv-corpus.md')
+        f'/api/corpus/documentation/{basic_corpus}/')
     assert response.status_code == 200
 
 def test_corpus_serialization(admin_client, mock_corpus):
