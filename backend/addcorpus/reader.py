@@ -27,12 +27,15 @@ def make_reader(corpus: Corpus, data_directory: str = None) -> Reader:
     if corpus.has_python_definition:
         return load_corpus_definition(corpus.name)
 
-    reader = CSVReader()
-    reader.delimiter = get_path(
-        corpus.source_data, 'options', 'delimiter') or ','
+    class NewReader(CSVReader):
+        delimiter = get_path(
+            corpus.configuration.source_data, 'options', 'delimiter') or ','
+        fields = [make_reader_field(f)
+                  for f in corpus.configuration.fields.all()]
 
-    reader.fields = [make_reader_field(f)
-                     for f in corpus.configuration.fields.all()]
-    reader.sources = lambda _: glob.glob(f'{data_directory}/**/*.csv')
+        def sources(self, *args, **kwargs):
+            return (
+                (fn, {}) for fn in glob.glob(f'{data_directory}/**/*.csv', recursive=True)
+            )
 
-    return reader
+    return NewReader()
