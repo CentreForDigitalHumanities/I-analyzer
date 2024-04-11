@@ -1,3 +1,4 @@
+import json
 from time import sleep
 import shutil
 import os
@@ -10,6 +11,7 @@ from ianalyzer.settings_test import MEDIA_ROOT
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
+from django.conf import settings
 
 # user credentials and logged-in api clients
 @pytest.fixture
@@ -95,9 +97,17 @@ def es_client():
 
 # mock corpora
 @pytest.fixture(autouse=True)
-def add_mock_corpora_to_db(db):
-    #add mock corpora to the database at the start of each test
+def add_mock_python_corpora_to_db(db):
+    # add python mock corpora to the database at the start of each test
     load_and_save_all_corpora()
+
+
+@pytest.fixture()
+def json_corpus_data():
+    path = os.path.join(settings.BASE_DIR, 'corpora_test', 'mock_corpus.json')
+    with open(path) as f:
+        return json.load(f)
+
 
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus_definition(corpus_name)
