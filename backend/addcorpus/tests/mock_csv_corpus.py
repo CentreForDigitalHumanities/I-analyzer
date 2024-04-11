@@ -21,7 +21,7 @@ class MockCSVCorpus(CSVCorpusDefinition):
     languages = ['en']
     category = 'book'
 
-    def sources(self, start, end):
+    def sources(self, **kwargs):
         for filename in os.listdir(self.data_directory):
             full_path = os.path.join(self.data_directory, filename)
             yield full_path, {
