@@ -10,8 +10,15 @@ from addcorpus.python_corpora.extract import CSV
 here = os.path.abspath(os.path.dirname(__file__))
 
 class MultilingualMockCorpus(CSVCorpusDefinition):
+    '''
+    Corpus that includes multiple languages.
+
+    The source data of this corpus includes diacritics, so this corpus is useful
+    for testing encoding.
+    '''
+
     title = 'Multilingual Mock Corpus'
-    description = 'A mixed-language corpus. Especially useful for testing character encoding'
+    description = 'A mixed-language corpus.'
     visualize = []
     min_date = datetime(year=2000, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)

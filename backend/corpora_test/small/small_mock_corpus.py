@@ -12,6 +12,13 @@ from addcorpus.es_settings import es_settings
 here = os.path.abspath(os.path.dirname(__file__))
 
 class SmallMockCorpus(CSVCorpusDefinition):
+    '''
+    CSV corpus with a small dataset to test queries and aggregations.
+
+    Has multiple field types but a small number of documents, so you can test
+    complex queries and visualisations.
+    '''
+
     title = 'Mock Corpus'
     description = 'Corpus for testing'
     visualize = []
@@ -66,3 +73,6 @@ SPECS = {
     'example_query': 'to',
     'content_field': 'content',
 }
+'''
+Specifications to test search results in this corpus.
+'''

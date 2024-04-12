@@ -24,7 +24,11 @@ def generate_text():
 
 class LargeMockCorpus(CorpusDefinition):
     '''
-    For testing the download limit: a mock corpus that contains over
+    Corpus with a large dataset (> 10.000 documents).
+
+    Documents are small and randomly generated.
+
+    Useful for testing downloads and full data visualisations that need to go past
     10.000 documents.
     '''
 

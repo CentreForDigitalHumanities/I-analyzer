@@ -6,7 +6,15 @@ import datetime
 here = os.path.abspath(os.path.dirname(__file__))
 
 class MockCSVCorpus(CSVCorpusDefinition):
-    """Example CSV corpus class for testing"""
+    '''
+    Basic CSV corpus.
+
+    Includes:
+    - a tiny CSV dataset to test source extraction.
+    - documentation pages
+
+    Also suitable as a base class to test more specific settings.
+    '''
 
     title = "Example"
     description = "Example corpus"

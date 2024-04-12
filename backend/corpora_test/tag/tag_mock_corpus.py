@@ -9,6 +9,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 
 class TaggingMockCorpus(CSVCorpusDefinition):
+    '''
+    Mock corpus for tagging.
+
+    Includes an `id` field which makes it easier to test expectations for tags.
+    '''
+
     title = 'Tagging Mock Corpus'
     description = 'Mock corpus for tagging'
     es_index = 'tagging-mock-corpus'
