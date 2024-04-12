@@ -15,7 +15,7 @@ CORPORA = {
     'media-mock-corpus': test_corpus_path('media', 'media_mock_corpus.py'),
     'mock-csv-corpus': test_corpus_path('csv', 'mock_csv_corpus.py'),
     'mock-basic-corpus': test_corpus_path('csv', 'mock_basic_corpus.py'),
-    'wordmodels-mock-corpus': path_in_testdir('wordmodels', 'mock-corpus', 'mock_corpus.py'),
+    'wordmodels-mock-corpus': test_corpus_path('wordmodels', 'wm_mock_corpus.py'),
     'tagging-mock-corpus': test_corpus_path('tag', 'tag_mock_corpus.py'),
 }
 
