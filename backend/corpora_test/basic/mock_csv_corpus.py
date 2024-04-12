@@ -20,7 +20,7 @@ class MockCSVCorpus(CSVCorpusDefinition):
 
     title = "Example"
     description = "Example corpus"
-    es_index = 'nothing'
+    es_index = 'test-basic-corpus'
     min_date = datetime.datetime(year=1, month=1, day=1)
     max_date = datetime.datetime(year=2022, month=12, day=31)
     data_directory = os.path.join(here, 'source_data')
@@ -29,7 +29,7 @@ class MockCSVCorpus(CSVCorpusDefinition):
     languages = ['en']
     category = 'book'
 
-    def sources(self, **kwargs):
+    def sources(self, *args, **kwargs):
         for filename in os.listdir(self.data_directory):
             full_path = os.path.join(self.data_directory, filename)
             yield full_path, {

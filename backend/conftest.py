@@ -14,6 +14,8 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 from django.conf import settings
+from django.contrib.auth.models import Group
+from addcorpus.models import Corpus
 
 
 @pytest.fixture(autouse=True)
@@ -74,6 +76,16 @@ def admin_client(client, admin_user, admin_credentials):
         password=admin_credentials['password'])
     yield client
     client.logout()
+
+@pytest.fixture()
+def basic_corpus_public(db, basic_mock_corpus):
+    basic_group = Group.objects.create(name='basic')
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
+    corpus.groups.add(basic_group)
+    yield basic_mock_corpus
+    corpus.groups.remove(basic_group)
+    basic_group.delete()
+
 
 @pytest.fixture(scope='session')
 def connected_to_internet():
@@ -146,6 +158,10 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
         index.populate(es_client, corpus_name, corpus)
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
+
+@pytest.fixture()
+def index_basic_mock_corpus(es_client: Elasticsearch, basic_mock_corpus: str, test_index_cleanup):
+    _index_test_corpus(es_client, basic_mock_corpus)
 
 
 @pytest.fixture()

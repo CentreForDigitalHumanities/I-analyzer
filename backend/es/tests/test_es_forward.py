@@ -1,6 +1,5 @@
 import pytest
 
-from addcorpus.conftest import basic_corpus
 from api.models import Query
 from es.search import hits
 from visualization.query import MATCH_ALL
@@ -110,10 +109,10 @@ def test_search_history_is_saved(mock_corpus, times_user, es_forward_client, cli
     assert times_user.queries.count() == 1
 
 
-def test_unauthenticated_search(client, basic_corpus, basic_corpus_index):
+def test_unauthenticated_search(client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
     queries_before_search = Query.objects.count()
     response = client.post(
-        f'/api/es/{basic_corpus}/_search',
+        f'/api/es/{basic_mock_corpus}/_search',
         {'es_query': MATCH_ALL},
         content_type='application/json',
     )

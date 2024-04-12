@@ -50,12 +50,14 @@ def test_no_corpus_access(db, client, basic_mock_corpus):
     assert response.status_code == 403
 
 
-def test_corpus_documentation_unauthenticated(db, client, basic_corpus, basic_mock_corpus):
+def test_corpus_documentation_unauthenticated(db, client, basic_mock_corpus):
     response = client.get(
         f'/api/corpus/documentation/{basic_mock_corpus}/')
     assert response.status_code == 401
+
+def test_public_corpus_documentation_unauthenticated(db, client, basic_corpus_public):
     response = client.get(
-        f'/api/corpus/documentation/{basic_corpus}/')
+        f'/api/corpus/documentation/{basic_corpus_public}/')
     assert response.status_code == 200
 
 def test_corpus_serialization(admin_client, basic_mock_corpus):

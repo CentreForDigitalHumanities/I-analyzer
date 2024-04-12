@@ -14,11 +14,11 @@ def test_no_corpus_access(db, basic_mock_corpus):
     assert not user.has_access(basic_mock_corpus)
 
 
-def test_basic_corpus_access(db, basic_corpus):
+def test_public_corpus_access(db, basic_corpus_public):
     user = CustomUser.objects.create(username='new-user', password='secret')
-    assert user.has_access(basic_corpus)
+    assert user.has_access(basic_corpus_public)
     anon = CustomAnonymousUser()
-    assert anon.has_access(basic_corpus)
+    assert anon.has_access(basic_corpus_public)
 
 def test_api_access(db, basic_mock_corpus, group_with_access, auth_client, auth_user):
     # default: no access
