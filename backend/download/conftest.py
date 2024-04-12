@@ -1,6 +1,6 @@
 import pytest
 import os
-from download.tests.mock_corpora.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
+from corpora_test.mixed_language.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
 from addcorpus.conftest import basic_corpus
 from es.conftest import basic_corpus_index
 from visualization.conftest import small_mock_corpus, large_mock_corpus, index_small_mock_corpus, \
