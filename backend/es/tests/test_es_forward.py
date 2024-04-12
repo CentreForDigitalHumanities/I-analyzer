@@ -7,10 +7,10 @@ from visualization.query import MATCH_ALL
 FORWARD_CASES = {
     'search_restricted_corpus': (
         False,
-        '/api/es/times/_search?size=20&scroll=3m',
+        '/api/es/small-mock-corpus/_search?size=20&scroll=3m',
         { 'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
-                'query': 'banana',
+                'query': 'universally',
                 'lenient': True,
                 'default_operator': 'or',
             }},
@@ -21,7 +21,7 @@ FORWARD_CASES = {
     ),
     'search_bogus': (
         True,
-        '/api/es/times/_search?size=20&scroll=3m',
+        '/api/es/small-mock-corpus/_search?size=20&scroll=3m',
         { 'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'pineapple',
@@ -35,10 +35,10 @@ FORWARD_CASES = {
     ),
     'search_nonexistent': (
         True,
-        '/api/es/daily-mail/_search?size=20&scroll=3m',
+        '/api/es/nonexistent-corpus/_search?size=20&scroll=3m',
         { 'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
-                'query': 'banana',
+                'query': 'universally',
                 'lenient': True,
                 'default_operator': 'or',
             }},
@@ -49,17 +49,17 @@ FORWARD_CASES = {
     ),
     'search_empty': (
         True,
-        '/api/es/times/_search?size=20&scroll=3m',
+        '/api/es/small-mock-corpus/_search?size=20&scroll=3m',
         {},
         3,
         200,
     ),
     'search_success': (
         True,
-        '/api/es/times/_search?size=20&scroll=3m',
+        '/api/es/small-mock-corpus/_search?size=20&scroll=3m',
         {'es_query': {'query': {'bool': {
             'must': {'simple_query_string': {
-                'query': 'banana',
+                'query': 'universally',
                 'lenient': True,
                 'default_operator': 'or',
             }},
@@ -74,12 +74,12 @@ FORWARD_CASES = {
 def scenario(request):
     return request.param
 
-def test_es_forwarding_views(scenario, es_forward_client, client, times_user):
+def test_es_forwarding_views(scenario, index_small_mock_corpus, client, small_mock_corpus_user):
     (authenticate, route, data,
      n_hits, status) = scenario
 
     if authenticate:
-        client.force_login(times_user)
+        client.force_login(small_mock_corpus_user)
 
     response = client.post(route, data, content_type = 'application/json')
     assert response.status_code == status
@@ -87,13 +87,13 @@ def test_es_forwarding_views(scenario, es_forward_client, client, times_user):
     if response.status_code == 200:
         assert len(hits(response.data)) == n_hits
 
-def test_search_history_is_saved(mock_corpus, times_user, es_forward_client, client):
-    assert times_user.queries.count() == 0
+def test_search_history_is_saved(small_mock_corpus, small_mock_corpus_user, index_small_mock_corpus, client):
+    assert small_mock_corpus_user.queries.count() == 0
 
-    client.force_login(times_user)
+    client.force_login(small_mock_corpus_user)
 
     search = lambda: client.post(
-        '/api/es/times/_search',
+        f'/api/es/{small_mock_corpus}/_search',
         {'es_query': MATCH_ALL},
         content_type='application/json',
     )
@@ -101,12 +101,12 @@ def test_search_history_is_saved(mock_corpus, times_user, es_forward_client, cli
     response = search()
 
     assert response.status_code == 200
-    assert times_user.queries.count() == 1
+    assert small_mock_corpus_user.queries.count() == 1
 
     response2 = search()
 
     assert response2.status_code == 200
-    assert times_user.queries.count() == 1
+    assert small_mock_corpus_user.queries.count() == 1
 
 
 def test_unauthenticated_search(client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
