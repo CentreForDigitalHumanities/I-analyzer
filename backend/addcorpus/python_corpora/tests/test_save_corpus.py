@@ -41,39 +41,39 @@ def test_no_errors_when_saving_corpora(db, capsys):
     for line in captured.out.split('\n'):
         assert line == '' or line.startswith('Saved corpus:')
 
-def test_saving_broken_corpus(db, mock_corpus):
-    corpus = Corpus.objects.get(name=mock_corpus)
+def test_saving_broken_corpus(db, basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
     corpus_def = MockCSVCorpus()
 
     corpus_def.min_date = 'Not a valid date'
 
-    _save_or_skip_corpus(mock_corpus, corpus_def)
+    _save_or_skip_corpus(basic_mock_corpus, corpus_def)
 
     corpus.refresh_from_db()
     # expect the the corpus to be inactive now
     assert not corpus.active
     assert corpus.has_python_definition
 
-def test_remove_corpus_from_settings(db, settings, mock_corpus):
-    corpus = Corpus.objects.get(name=mock_corpus)
+def test_remove_corpus_from_settings(db, settings, basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
     assert corpus.active
     assert corpus.has_python_definition
 
-    path = settings.CORPORA.pop(mock_corpus)
+    path = settings.CORPORA.pop(basic_mock_corpus)
     load_and_save_all_corpora()
     corpus.refresh_from_db()
     assert not corpus.active
     assert not corpus.has_python_definition
 
-    settings.CORPORA[mock_corpus] = path
+    settings.CORPORA[basic_mock_corpus] = path
     load_and_save_all_corpora()
     corpus.refresh_from_db()
     assert corpus.active
     assert corpus.has_python_definition
 
 @pytest.fixture()
-def deactivated_corpus(mock_corpus):
-    corpus = Corpus.objects.get(name=mock_corpus)
+def deactivated_corpus(basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
     corpus.active = False
     corpus.save()
 
@@ -82,8 +82,8 @@ def deactivated_corpus(mock_corpus):
     corpus.active = True
     corpus.save()
 
-def test_save_field_definition(db, mock_corpus, deactivated_corpus):
-    corpus = Corpus.objects.get(name=mock_corpus)
+def test_save_field_definition(db, basic_mock_corpus, deactivated_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
     corpus_conf = corpus.configuration
     corpus_def = MockCSVCorpus()
 
@@ -94,22 +94,22 @@ def test_save_field_definition(db, mock_corpus, deactivated_corpus):
         assert field
         assert field.name == field_def.name
 
-def test_save_corpus_purity(db, mock_corpus):
+def test_save_corpus_purity(db, basic_mock_corpus):
     '''
     Test that saved corpus configurations only depend
     on the definition at that time, not on the currently
     saved state
     '''
 
-    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
     corpus_def = MockCSVCorpus()
 
     corpus_def.es_alias = 'test'
-    _save_or_skip_corpus(mock_corpus, corpus_def)
+    _save_or_skip_corpus(basic_mock_corpus, corpus_def)
     corpus.refresh_from_db()
     assert corpus.configuration.es_alias == 'test'
 
     corpus_def.es_alias = None
-    _save_or_skip_corpus(mock_corpus, corpus_def)
+    _save_or_skip_corpus(basic_mock_corpus, corpus_def)
     corpus.refresh_from_db()
     assert not corpus.configuration.es_alias

@@ -103,6 +103,10 @@ def es_client():
     return client
 
 @pytest.fixture()
+def basic_mock_corpus() -> str:
+    return 'mock-csv-corpus'
+
+@pytest.fixture()
 def small_mock_corpus() -> str:
     return 'small-mock-corpus'
 

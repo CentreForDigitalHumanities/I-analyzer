@@ -5,8 +5,8 @@ from addcorpus.reader import make_reader
 
 
 
-def test_make_reader_python(mock_corpus):
-    corpus = Corpus.objects.get(name=mock_corpus)
+def test_make_reader_python(basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
     reader = make_reader(corpus)
     docs = list(reader.documents())
     # The number of lines differs because of different corpus configuration
