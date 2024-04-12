@@ -123,7 +123,6 @@ class ParliamentFinland(Parliament, XMLCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = XML(transform = clean_value)
-    speech.language = 'fi'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(

@@ -8,6 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 class MediaMockCorpus(MockCSVCorpus):
     data_directory = os.path.join(here, 'example_data')
     scan_image_type = 'image/png'
+    citation_page = None
 
     def request_media(self, document, corpus_name):
         field_values = document['fieldValues']

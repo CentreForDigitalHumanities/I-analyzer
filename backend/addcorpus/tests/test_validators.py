@@ -66,12 +66,6 @@ def test_validate_searchable_fields_has_fts():
     with pytest.warns(Warning):
         validate_searchable_field_has_full_text_search(keyword_mapping(), True)
 
-def test_filename_validation():
-    validate_image_filename_extension('image.jpg')
-
-    with pytest.raises(ValidationError):
-        validate_image_filename_extension('image.txt')
-
 def test_validate_sort_configuration():
     validate_sort_configuration({})
 

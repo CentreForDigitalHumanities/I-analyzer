@@ -91,9 +91,8 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
     page = field_defaults.page()
     page.extractor = CSV('page')
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='no')
     speech.extractor = CSV('text')
-    speech.language = 'no'
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV('page')

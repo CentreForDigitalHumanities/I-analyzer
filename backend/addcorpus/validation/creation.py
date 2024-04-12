@@ -19,6 +19,9 @@ def supports_full_text_search(es_mapping):
     has_text_multifield = 'text' in es_mapping.get('fields', {})
     return is_text or has_text_multifield
 
+def is_geo_field(es_mapping):
+    return primary_mapping_type(es_mapping) == MappingType.GEO_POINT.value
+
 def supports_aggregation(es_mapping):
     return primary_mapping_type(es_mapping) != MappingType.TEXT.value
 
@@ -81,6 +84,10 @@ def validate_visualizations_with_mapping(es_mapping, visualizations):
     '''
     validate that the specified visualisations are compatible with the field mapping
     '''
+
+    if VisualizationType.MAP.value in visualizations:
+        if not is_geo_field(es_mapping):
+            raise ValidationError(f'map visualizations requires a geo mapping')
 
     if not supports_full_text_search(es_mapping):
         if VisualizationType.NGRAM.value in visualizations:
@@ -164,10 +171,6 @@ def validate_filename_extension(filename, allowed_extensions):
 
 def validate_markdown_filename_extension(filename):
     allowed = ['.md', '.markdown']
-    validate_filename_extension(filename, allowed)
-
-def validate_image_filename_extension(filename):
-    allowed = ['.jpeg', '.jpg', '.png', '.JPG']
     validate_filename_extension(filename, allowed)
 
 def validate_sort_configuration(sort_config):

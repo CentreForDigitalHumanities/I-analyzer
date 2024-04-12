@@ -50,21 +50,6 @@ class SimilarityView(APIView):
         else:
             return Response(results)
 
-class DocumentationView(APIView):
-    '''
-    Get word models documentation for a corpus
-    '''
-
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
-
-    def get(self, request, *args, **kwargs):
-        corpus = corpus_name_from_request(request)
-        documentation = utils.load_wm_documentation(corpus)
-
-        return Response({
-            'documentation': documentation
-        })
-
 class WordInModelView(APIView):
     '''
     Check if a word has a vector in the model for a corpus

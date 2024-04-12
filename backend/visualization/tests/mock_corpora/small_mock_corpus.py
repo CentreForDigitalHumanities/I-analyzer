@@ -18,7 +18,6 @@ class SmallMockCorpus(CSVCorpusDefinition):
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=1899, month=12, day=31)
     es_index = 'ianalyzer-mock-corpus'
-    image = 'test.jpeg'
     data_directory = 'bogus'
     languages = ['en']
     category = 'book'
@@ -45,7 +44,8 @@ class SmallMockCorpus(CSVCorpusDefinition):
         name = 'content',
         display_type='text_content',
         es_mapping = main_content_mapping(True, True, False, 'en'),
-        extractor = CSV('content')
+        extractor = CSV('content'),
+        language='en',
     )
 
     genre = FieldDefinition(

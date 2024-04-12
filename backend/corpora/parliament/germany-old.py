@@ -56,7 +56,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpusDefinition):
     page = field_defaults.page()
     page.extractor = CSV('page_number')
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='de')
     speech.extractor = CSV(
         'text',
         multiple=True,

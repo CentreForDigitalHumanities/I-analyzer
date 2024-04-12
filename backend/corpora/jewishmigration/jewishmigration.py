@@ -79,6 +79,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         self.region.extractor = extract.JSON(key='region')
         self.settlement.extractor = extract.JSON(key='place_name')
         self.coordinates.extractor = extract.JSON(key='coordinates')
+        self.coordinates.visualizations = ['map']
         self.sex.extractor = extract.JSON(key='sex_deceased')
         self.iconography.extractor = extract.JSON(key='symbol')
         self.comments.extractor = extract.JSON(key='comments')

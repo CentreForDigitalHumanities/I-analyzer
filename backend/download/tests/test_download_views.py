@@ -1,19 +1,23 @@
-from rest_framework import status
 import pytest
-import os
 import csv
+from copy import deepcopy
+import io
+import os
+
+from rest_framework import status
+
 from download.models import Download
 from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
-import io
 from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
 
+
 def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus, csv_directory):
     request_json = {
         "corpus": mock_corpus,
-        "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
+        "es_query": mock_match_all_query(),
         "fields": ['date','content'],
         "size": 3,
         "route": f"/search/{mock_corpus}",
@@ -84,6 +88,12 @@ def mock_es_query(query_text, search_field):
     q = query.MATCH_ALL
     q = query.set_query_text(q, query_text)
     q = query.set_search_fields(q, [search_field])
+    return q
+
+
+def mock_match_all_query():
+    q = deepcopy(query.MATCH_ALL)
+    q.update({'size': 3})
     return q
 
 @pytest.mark.parametrize("visualization_type, request_parameters", [('date_term_frequency', term_frequency_parameters), ('ngram', ngram_parameters)])
@@ -196,14 +206,14 @@ def tag_on_some_document(admin_client, admin_user, small_mock_corpus, some_docum
 
     return tag
 
+
 def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock_corpus, tag_on_some_document):
     encoding = 'utf-8'
     download_request_json = {
         'corpus': small_mock_corpus,
-        'es_query': query.MATCH_ALL,
+        'es_query': mock_match_all_query(),
         'tags': [tag_on_some_document.id],
-        'fields': ['date','content'],
-        'size': 3,
+        'fields': ['date', 'content'],
         'route': f"/search/{small_mock_corpus}",
         'encoding': encoding
     }
@@ -218,3 +228,21 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     reader = csv.DictReader(stream, delimiter=';')
     rows = [row for row in reader]
     assert len(rows) == 1
+
+
+def test_unauthenticated_download(db, client, basic_corpus, basic_corpus_index):
+    download_request_json = {
+        'corpus': basic_corpus,
+        'es_query': mock_match_all_query(),
+        'fields': ['date', 'content'],
+        'route': f"/search/{basic_corpus}",
+        'encoding': 'utf-8'
+    }
+    response = client.post('/api/download/search_results',
+                           download_request_json,
+                           content_type='application/json'
+                           )
+    assert status.is_success(response.status_code)
+    download_objects = Download.objects.all()
+    assert download_objects.count() == 1
+    assert download_objects.first().user == None

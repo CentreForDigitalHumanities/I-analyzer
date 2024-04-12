@@ -9,12 +9,14 @@ import {
     AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
+    CorpusDocumentationPage,
     DateTermFrequencyParameters,
     DocumentTagsResponse,
     Download,
     DownloadOptions,
     FieldCoverage,
     FoundDocument,
+    GeoDocument,
     LimitedResultsDownloadParameters,
     NGramRequestParameters,
     QueryDb,
@@ -140,6 +142,11 @@ export class ApiService {
         return this.http.post<AggregateResult[]>(url, data);
     }
 
+    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
+        const url = this.apiRoute(this.visApiURL, 'geo');
+        return this.http.post<GeoDocument[]>(url, data).toPromise();
+    }
+
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
         const url = this.apiRoute(this.visApiURL, 'ngram');
         return this.http.post<TaskResult>(url, data).toPromise();
@@ -215,25 +222,12 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusdescription(data: {
-        filename: string;
-        corpus: string;
-    }): Promise<string> {
+    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
         const url = this.apiRoute(
             this.corpusApiUrl,
-            `documentation/${data.corpus}/${data.filename}`
+            `documentation/${corpusName}/`
         );
-
-        return this.http
-            .get<string>(url, { responseType: 'text' as 'json' })
-            .toPromise();
-    }
-
-    public corpusCitation(corpusName: string): Promise<string> {
-        const url = this.apiRoute(this.corpusApiUrl, `citation/${corpusName}`);
-        return this.http
-            .get<string>(url, { responseType: 'text' as 'json' })
-            .toPromise();
+        return this.http.get<CorpusDocumentationPage[]>(url);
     }
 
     public corpus() {

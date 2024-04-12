@@ -40,6 +40,7 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.page) {
             this.refresh$.next();
+            this.focusUpdate();
 
             this.page.focus$.pipe(
                 takeUntil(this.refresh$),
