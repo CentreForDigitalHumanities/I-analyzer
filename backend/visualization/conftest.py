@@ -4,7 +4,7 @@ import random
 
 from conftest import index_test_corpus, clear_test_corpus
 from corpora_test.small.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
-from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
+from corpora_test.large.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 
 here = os.path.abspath(os.path.dirname(__file__))
 
