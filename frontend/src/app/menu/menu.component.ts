@@ -45,7 +45,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     ) {}
 
     ngOnDestroy() {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
     }
 
     ngOnInit() {
