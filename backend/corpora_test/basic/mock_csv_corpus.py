@@ -1,5 +1,7 @@
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.python_corpora.extract import CSV
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 import os
 import datetime
 
@@ -24,8 +26,6 @@ class MockCSVCorpus(CSVCorpusDefinition):
     data_directory = os.path.join(here, 'source_data')
     citation_page = 'citation.md'
 
-    field_entry = 'character'
-
     languages = ['en']
     category = 'book'
 
@@ -38,15 +38,21 @@ class MockCSVCorpus(CSVCorpusDefinition):
 
     fields = [
         FieldDefinition(
-            name = 'character',
-            extractor = CSV('character')
+            name='character',
+            display_name='Character',
+            description='Character speaking the line',
+            extractor = CSV('character'),
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            results_overview=True,
+            visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
-            name = 'lines',
+            name = 'line',
             display_type = 'text_content',
-            extractor = CSV(
-                'line',
-                multiple = True,
-            )
+            extractor = CSV('line'),
+            es_mapping=main_content_mapping(),
+            results_overview=True,
+            visualizations=['wordcloud'],
         )
     ]

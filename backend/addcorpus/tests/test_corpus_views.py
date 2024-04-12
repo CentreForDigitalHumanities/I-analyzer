@@ -72,7 +72,7 @@ def test_corpus_serialization(admin_client, mock_corpus):
 
 def test_corpus_not_publication_ready(admin_client, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
-    content_field = corpus.configuration.fields.get(name='lines')
+    content_field = corpus.configuration.fields.get(name='line')
     content_field.display_type = 'text'
     content_field.save()
 

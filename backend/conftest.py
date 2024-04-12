@@ -110,7 +110,7 @@ def add_mock_python_corpora_to_db(db, media_dir):
 
 @pytest.fixture()
 def json_corpus_data():
-    path = os.path.join(settings.BASE_DIR, 'corpora_test', 'mock_corpus.json')
+    path = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'mock_corpus.json')
     with open(path) as f:
         return json.load(f)
 
