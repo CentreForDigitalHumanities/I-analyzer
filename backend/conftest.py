@@ -5,6 +5,7 @@ import os
 import pytest
 import requests
 from allauth.account.models import EmailAddress
+from elasticsearch import Elasticsearch
 
 from addcorpus.json_corpora.import_json import import_json_corpus
 from ianalyzer.elasticsearch import elasticsearch
@@ -101,6 +102,68 @@ def es_client():
 
     return client
 
+@pytest.fixture()
+def small_mock_corpus() -> str:
+    return 'small-mock-corpus'
+
+
+@pytest.fixture()
+def large_mock_corpus() -> str:
+    return 'large-mock-corpus'
+
+
+@pytest.fixture()
+def ml_mock_corpus() -> str:
+    return 'multilingual-mock-corpus'
+
+
+@pytest.fixture()
+def tag_mock_corpus() -> str:
+    return 'tagging-mock-corpus'
+
+def _clear_test_indices(es_client: Elasticsearch):
+    response = es_client.indices.get(index='test-*')
+    for index in response.keys():
+        es_client.indices.delete(index=index)
+
+
+@pytest.fixture(scope='session')
+def test_index_cleanup(es_client: Elasticsearch):
+    _clear_test_indices(es_client)
+    yield
+    _clear_test_indices(es_client)
+
+
+def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
+    corpus = load_corpus_definition(corpus_name)
+
+    if not es_client.indices.exists(index=corpus.es_index):
+        index.create(es_client, corpus, False, True, False)
+        index.populate(es_client, corpus_name, corpus)
+        # ES is "near real time", so give it a second before we start searching the index
+        sleep(2)
+
+
+@pytest.fixture()
+def index_small_mock_corpus(es_client: Elasticsearch, small_mock_corpus: str, test_index_cleanup):
+    _index_test_corpus(es_client, small_mock_corpus)
+
+
+@pytest.fixture()
+def index_large_mock_corpus(es_client: Elasticsearch, large_mock_corpus: str, test_index_cleanup):
+    _index_test_corpus(es_client, large_mock_corpus)
+
+
+@pytest.fixture()
+def index_ml_mock_corpus(es_client: Elasticsearch, ml_mock_corpus: str, test_index_cleanup):
+    _index_test_corpus(es_client, ml_mock_corpus)
+
+
+@pytest.fixture()
+def index_tag_mock_corpus(es_client: Elasticsearch, tag_mock_corpus: str, test_index_cleanup):
+    _index_test_corpus(es_client, tag_mock_corpus)
+
+
 # mock corpora
 @pytest.fixture(autouse=True)
 def add_mock_python_corpora_to_db(db, media_dir):
@@ -119,19 +182,3 @@ def json_corpus_data():
 def json_mock_corpus(db,  json_corpus_data):
     # add json mock corpora to the database at the start of each test
     return import_json_corpus(json_corpus_data)
-
-
-def index_test_corpus(es_client, corpus_name):
-    corpus = load_corpus_definition(corpus_name)
-    index.create(es_client, corpus, False, True, False)
-    index.populate(es_client, corpus_name, corpus)
-
-    # ES is "near real time", so give it a second before we start searching the index
-    sleep(2)
-
-def clear_test_corpus(es_client, corpus_name):
-    corpus = load_corpus_definition(corpus_name)
-    index = corpus.es_index
-    # check existence in case teardown is executed more than once
-    if es_client.indices.exists(index = index):
-        es_client.indices.delete(index = index)

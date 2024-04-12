@@ -3,9 +3,8 @@ import os
 from corpora_test.mixed_language.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
 from addcorpus.conftest import basic_corpus
 from es.conftest import basic_corpus_index
-from visualization.conftest import small_mock_corpus, large_mock_corpus, index_small_mock_corpus, \
-    index_large_mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs
-from conftest import index_test_corpus, clear_test_corpus
+from visualization.conftest import small_mock_corpus_specs, large_mock_corpus_specs
+
 from visualization.query import MATCH_ALL
 from download import tasks
 
@@ -42,13 +41,7 @@ def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
     }
     return specs[mock_corpus]
 
-@pytest.fixture(scope='session')
-def index_ml_mock_corpus(es_client, ml_mock_corpus):
-    index_test_corpus(es_client, ml_mock_corpus)
-    yield ml_mock_corpus
-    clear_test_corpus(es_client, ml_mock_corpus)
-
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def index_mock_corpus(es_client, mock_corpus, index_small_mock_corpus, index_large_mock_corpus, index_ml_mock_corpus):
     yield mock_corpus
 

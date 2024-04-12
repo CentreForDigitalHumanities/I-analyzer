@@ -2,8 +2,6 @@ import pytest
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from tag.models import DOCS_PER_TAG_LIMIT, Tag, TaggedDocument
-from conftest import index_test_corpus, clear_test_corpus
-
 
 @pytest.fixture(scope='session')
 def mock_corpus():
@@ -114,11 +112,3 @@ def multiple_tags(db, mock_corpus, auth_user):
         doc.tags.add(brilliant_tag)
 
     return [riveting_tag, brilliant_tag]
-
-
-@pytest.fixture(scope='session')
-def index_mock_corpus(mock_corpus, es_client):
-    index_test_corpus(es_client, mock_corpus)
-    yield mock_corpus
-    clear_test_corpus(es_client, mock_corpus)
-

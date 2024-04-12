@@ -180,7 +180,7 @@ def search_with_tag(client, corpus_name, tag_id):
     }
     return client.post(route, data, content_type = 'application/json')
 
-def test_search_view_with_tag(auth_client, mock_corpus, auth_user_tag, tagged_documents, index_mock_corpus):
+def test_search_view_with_tag(auth_client, mock_corpus, auth_user_tag, tagged_documents, index_tag_mock_corpus):
     response = search_with_tag(auth_client, mock_corpus, auth_user_tag.id)
     assert status.is_success(response.status_code)
     assert len(hits(response.data)) == auth_user_tag.count

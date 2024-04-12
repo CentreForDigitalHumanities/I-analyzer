@@ -2,7 +2,6 @@ import pytest
 import os
 import random
 
-from conftest import index_test_corpus, clear_test_corpus
 from corpora_test.small.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from corpora_test.large.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 
@@ -69,14 +68,6 @@ def es_client_k_hits():
     '''
     return MockClient(500)
 
-@pytest.fixture(scope='session')
-def small_mock_corpus():
-    return 'small-mock-corpus'
-
-@pytest.fixture(scope='session')
-def large_mock_corpus(scope='session'):
-    return 'large-mock-corpus'
-
 @pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'], scope='session')
 def mock_corpus(request):
     'parametrised version of the mock corpus fixtures: runs with both'
@@ -104,23 +95,8 @@ def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus,
     }
     return specs[mock_corpus]
 
-@pytest.fixture(scope='session')
-def index_small_mock_corpus(small_mock_corpus, es_client):
-    '''Create and populate an index for the small mock corpus.'''
 
-    index_test_corpus(es_client, small_mock_corpus)
-    yield small_mock_corpus
-    clear_test_corpus(es_client, small_mock_corpus)
-
-@pytest.fixture(scope='session')
-def index_large_mock_corpus(large_mock_corpus, es_client):
-    '''Create and populate an index for the large mock corpus'''
-
-    index_test_corpus(es_client, large_mock_corpus)
-    yield large_mock_corpus
-    clear_test_corpus(es_client, large_mock_corpus)
-
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def index_mock_corpus(mock_corpus, index_small_mock_corpus, index_large_mock_corpus):
     '''Create and populate an index for the mock corpus.'''
 
