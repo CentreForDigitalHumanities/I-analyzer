@@ -1,9 +1,5 @@
 from ianalyzer.settings import *
 
-
-def path_in_testdir(app, *path_from_app_tests):
-    return os.path.join(BASE_DIR, app, 'tests', *path_from_app_tests)
-
 def test_corpus_path(*path):
     return os.path.join(BASE_DIR, 'corpora_test', *path)
 
@@ -13,13 +9,13 @@ CORPORA = {
     'multilingual-mock-corpus': test_corpus_path('mixed_language', 'multilingual_mock_corpus.py'),
     'times': os.path.join(BASE_DIR, 'corpora', 'times', 'times.py'),
     'media-mock-corpus': test_corpus_path('media', 'media_mock_corpus.py'),
-    'mock-csv-corpus': test_corpus_path('csv', 'mock_csv_corpus.py'),
-    'mock-basic-corpus': test_corpus_path('csv', 'mock_basic_corpus.py'),
+    'mock-csv-corpus': test_corpus_path('basic', 'mock_csv_corpus.py'),
+    'mock-basic-corpus': test_corpus_path('basic', 'mock_basic_corpus.py'),
     'wordmodels-mock-corpus': test_corpus_path('wordmodels', 'wm_mock_corpus.py'),
     'tagging-mock-corpus': test_corpus_path('tag', 'tag_mock_corpus.py'),
 }
 
-TIMES_DATA = path_in_testdir('addcorpus', '../python_corpora/tests')
+TIMES_DATA = os.path.join(BASE_DIR, 'addcorpus', 'python_corpora', 'tests')
 TIMES_ES_INDEX = 'times-test'
 
 SERVERS['default']['index_prefix'] = 'test'

@@ -18,7 +18,7 @@ def test_make_reader_python(mock_corpus):
 
 
 def test_make_reader_json(json_mock_corpus):
-    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'csv', 'source_data')
+    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data')
     json_mock_corpus.configuration.data_directory = data_dir
     json_mock_corpus.configuration.save()
     reader = make_reader(json_mock_corpus)

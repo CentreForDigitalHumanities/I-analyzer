@@ -1,6 +1,6 @@
 import os
 
-from corpora_test.csv.mock_csv_corpus import MockCSVCorpus
+from corpora_test.basic.mock_csv_corpus import MockCSVCorpus
 from media.media_url import media_url
 
 here = os.path.abspath(os.path.dirname(__file__))
