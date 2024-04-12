@@ -4,6 +4,8 @@ import { TagService } from './tag.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
+import { AuthService } from './auth.service';
+import { AuthServiceMock } from '../../mock-data/auth';
 
 describe('TagService', () => {
     let service: TagService;
@@ -12,6 +14,7 @@ describe('TagService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: ApiService, useValue: new ApiServiceMock() },
+                { provide: AuthService, useValue: new AuthServiceMock() }
             ],
             imports: [
                 HttpClientTestingModule,

@@ -10,6 +10,7 @@ import { formIcons, actionIcons } from '../../shared/icons';
 })
 export class DocumentTagsComponent implements OnChanges {
     @Input() document: FoundDocument;
+    @Input() tags: Tag[];
 
     formIcons = formIcons;
     actionIcons = actionIcons;
