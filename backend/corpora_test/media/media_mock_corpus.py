@@ -6,7 +6,7 @@ from media.media_url import media_url
 here = os.path.abspath(os.path.dirname(__file__))
 
 class MediaMockCorpus(MockCSVCorpus):
-    data_directory = os.path.join(here, 'example_data')
+    data_directory = os.path.join(here, 'source_data')
     scan_image_type = 'image/png'
     citation_page = None
 
