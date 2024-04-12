@@ -1,8 +1,8 @@
 import os
+from django.conf import settings
 from addcorpus.models import Corpus
 from addcorpus.reader import make_reader
 
-HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def test_make_reader_python(mock_corpus):
@@ -18,7 +18,8 @@ def test_make_reader_python(mock_corpus):
 
 
 def test_make_reader_json(json_mock_corpus):
-    json_mock_corpus.configuration.data_directory = os.path.join(HERE, 'csv_example')
+    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'csv', 'source_data')
+    json_mock_corpus.configuration.data_directory = data_dir
     json_mock_corpus.configuration.save()
     reader = make_reader(json_mock_corpus)
     docs = list(reader.documents())

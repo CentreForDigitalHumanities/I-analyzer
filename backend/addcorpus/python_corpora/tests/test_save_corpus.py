@@ -1,7 +1,7 @@
 import sys
 import pytest
 from django.conf import settings
-from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
+from corpora_test.csv.mock_csv_corpus import MockCSVCorpus
 from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.save_corpus import (_save_field_in_database,
     load_and_save_all_corpora, _save_or_skip_corpus
@@ -19,6 +19,7 @@ def test_saved_corpora(db):
     for corpus_name in configured:
         assert Corpus.objects.filter(name=corpus_name).exists()
         corpus = Corpus.objects.get(name=corpus_name)
+        conf = corpus.configuration_obj
         assert corpus.configuration_obj
         assert corpus.active
 

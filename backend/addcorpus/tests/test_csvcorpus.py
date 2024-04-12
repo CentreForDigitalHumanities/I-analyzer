@@ -1,6 +1,4 @@
-import pytest
-
-from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
+from corpora_test.csv.mock_csv_corpus import MockCSVCorpus
 import os
 
 here = os.path.abspath(os.path.dirname(__file__))
