@@ -29,7 +29,7 @@ Update the version number in `package.json`.
 
 In your local environment, start up elasticsearch and run backend tests with `yarn test-back`. Run frontend tests with `yarn test-front`.
 
-Publish the release branch with `git flow release publish x.x.x`. Deploy on the test or acc server. Check that everything works as intended.
+Publish the release branch with `git flow release publish x.x.x`. The push will trigger the [release workflow](https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/.github/workflows/release.yml) to update the version number and release date in `CITATION.cff`. Deploy on the test or acc server. Check that everything works as intended.
 
 ## Publish the release
 
