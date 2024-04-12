@@ -16,7 +16,7 @@ CORPORA = {
     'mock-csv-corpus': test_corpus_path('csv', 'mock_csv_corpus.py'),
     'mock-basic-corpus': test_corpus_path('csv', 'mock_basic_corpus.py'),
     'wordmodels-mock-corpus': path_in_testdir('wordmodels', 'mock-corpus', 'mock_corpus.py'),
-    'tagging-mock-corpus': path_in_testdir('tag', 'tag_mock_corpus.py'),
+    'tagging-mock-corpus': test_corpus_path('tag', 'tag_mock_corpus.py'),
 }
 
 TIMES_DATA = path_in_testdir('addcorpus', '../python_corpora/tests')
