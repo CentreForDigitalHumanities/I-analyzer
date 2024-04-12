@@ -8,7 +8,7 @@ def test_corpus_path(*path):
     return os.path.join(BASE_DIR, 'corpora_test', *path)
 
 CORPORA = {
-    'small-mock-corpus': path_in_testdir('visualization', 'mock_corpora', 'small_mock_corpus.py'),
+    'small-mock-corpus': test_corpus_path('small', 'small_mock_corpus.py'),
     'large-mock-corpus': path_in_testdir('visualization', 'mock_corpora', 'large_mock_corpus.py'),
     'multilingual-mock-corpus': path_in_testdir('download', 'mock_corpora', 'multilingual_mock_corpus.py'),
     'times': os.path.join(BASE_DIR, 'corpora', 'times', 'times.py'),

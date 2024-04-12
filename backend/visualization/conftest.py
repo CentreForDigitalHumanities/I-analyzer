@@ -3,7 +3,7 @@ import os
 import random
 
 from conftest import index_test_corpus, clear_test_corpus
-from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
+from corpora_test.small.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -24,7 +24,7 @@ class MockClient(object):
             'hits': [{'_id': hit_id} for hit_id in range(min(size, self.num_hits))]},
             '_scroll_id': '42'
         }
-    
+
     def clear_scroll(self, scroll_id):
         return {'status': 'ok'}
 
