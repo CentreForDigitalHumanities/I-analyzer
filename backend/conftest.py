@@ -1,6 +1,5 @@
 import json
 from time import sleep
-import shutil
 import os
 import pytest
 import requests
@@ -9,7 +8,6 @@ from elasticsearch import Elasticsearch
 
 from addcorpus.json_corpora.import_json import import_json_corpus
 from ianalyzer.elasticsearch import elasticsearch
-from ianalyzer.settings_test import MEDIA_ROOT
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
@@ -131,6 +129,10 @@ def large_mock_corpus() -> str:
 @pytest.fixture()
 def ml_mock_corpus() -> str:
     return 'multilingual-mock-corpus'
+
+@pytest.fixture()
+def media_mock_corpus() -> str:
+    return 'media-mock-corpus'
 
 
 @pytest.fixture()

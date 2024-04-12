@@ -10,10 +10,10 @@ def test_tag_models(db, auth_user, auth_user_tag, tagged_documents):
     assert auth_user_tag.count == 3
 
 
-def test_tag_lookup(mock_corpus, tagged_documents,
+def test_tag_lookup(tag_mock_corpus, tagged_documents,
                     auth_user_tag, admin_user_tag):
     instances, docs = tagged_documents
-    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
 
     for doc, instance in zip(docs, instances):
         tagged_docs = TaggedDocument.objects.get(doc_id=doc)

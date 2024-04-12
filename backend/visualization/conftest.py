@@ -68,7 +68,7 @@ def es_client_k_hits():
     '''
     return MockClient(500)
 
-@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'], scope='session')
+@pytest.fixture(params=['small-mock-corpus', 'large-mock-corpus'])
 def mock_corpus(request):
     'parametrised version of the mock corpus fixtures: runs with both'
 

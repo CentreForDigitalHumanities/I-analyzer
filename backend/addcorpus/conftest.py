@@ -1,5 +1,4 @@
 import pytest
-import os
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 
@@ -13,4 +12,3 @@ def group_with_access(db, basic_mock_corpus):
     yield group
     group.delete()
 
-here = os.path.abspath(os.path.dirname(__file__))
