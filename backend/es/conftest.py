@@ -1,5 +1,4 @@
 import pytest
-from time import sleep
 from django.contrib.auth.models import Group
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
