@@ -1,6 +1,8 @@
-from addcorpus.citation import render_citation
+from addcorpus.documentation import render_documentation_context
 from datetime import date
 from unittest.mock import patch
+import pytest
+import os
 
 expected = '''## APA
 
@@ -11,11 +13,15 @@ expected = '''## APA
 > Centre for Digital Humanities, Utrecht University. *Example corpus*, http://localhost:4200. Accessed 1 January 2024.
 '''
 
-def test_citation_page(mock_corpus):
-    # monkeypatch.setattr(date, 'today', lambda : date(2024, 1, 1))
+@pytest.fixture()
+def citation_template(settings):
+    path = os.path.join(settings.BASE_DIR, 'addcorpus', 'tests', 'citation', 'citation.md')
+    with open(path) as f:
+        return f.read()
 
-    with patch('addcorpus.citation.date') as mock_date:
+def test_citation_page(citation_template):
+    with patch('addcorpus.documentation.date') as mock_date:
         mock_date.today.return_value = date(2024, 1, 1)
 
-        result = render_citation(mock_corpus)
+        result = render_documentation_context(citation_template)
         assert result == expected

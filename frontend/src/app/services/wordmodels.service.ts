@@ -45,16 +45,6 @@ export class WordmodelsService {
             .toPromise();
     }
 
-    public wordModelsDocumentationRequest(data: {
-        corpus_name: string;
-    }): Promise<{ documentation: string }> {
-        return this.http
-            .get<{ documentation: string }>(this.wmApiRoute('documentation'), {
-                params: data,
-            })
-            .toPromise();
-    }
-
     public async getRelatedWords(
         queryTerm: string,
         corpusName: string,
