@@ -2,15 +2,16 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
+import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint,
     TimeCategory,
     DateFilterData,
-    BarchartSeries} from '../../models/index';
+} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../../utils/select-color';
 import { showLoading } from '../../utils/utils';
+import { DateHistogramAggregator } from '../../models/aggregation';
 
 
 @Component({
@@ -63,12 +64,11 @@ export class TimelineComponent
      * True when retrieving results for the entire series, false when retrieving a window.
      */
     requestSeriesDocCounts(queryModel: QueryModel) {
-        return this.searchService.dateHistogramSearch(
-            this.corpus,
-            queryModel,
-            this.visualizedField.name,
+        const aggregation = new DateHistogramAggregator(
+            this.visualizedField,
             this.currentTimeCategory
         );
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregation]);
     }
 
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {

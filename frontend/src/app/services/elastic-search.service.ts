@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchHit, EsQuery
+    AggregateQueryFeedback, SearchHit
 } from '../models/index';
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
@@ -51,33 +51,6 @@ export class ElasticSearchService {
         const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {
             aggregateData[fieldName] = result.aggregations[fieldName].buckets;
-        });
-        return {
-            completed: true,
-            aggregations: aggregateData
-        };
-    }
-
-    public async dateHistogramSearch(
-        corpusDefinition: Corpus,
-        queryModel: QueryModel,
-        fieldName: string,
-        timeInterval: string): Promise<AggregateQueryFeedback> {
-        const agg = {
-            [fieldName]: {
-                date_histogram: {
-                    field: fieldName,
-                    calendar_interval: timeInterval
-                }
-            }
-        };
-        const query = queryModel.toAPIQuery();
-        const withAggregation = _.set(query, 'es_query.aggs', agg);
-        const withSize0 = _.set(withAggregation, 'es_query.size', 0);
-        const result = await this.execute(corpusDefinition, withSize0);
-        const aggregateData = {};
-        Object.keys(result.aggregations).forEach(field => {
-            aggregateData[field] = result.aggregations[field].buckets;
         });
         return {
             completed: true,

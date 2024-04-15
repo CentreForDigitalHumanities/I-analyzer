@@ -45,20 +45,6 @@ export class SearchService {
         );
     }
 
-    public async dateHistogramSearch(
-        corpus: Corpus,
-        queryModel: QueryModel,
-        fieldName: string,
-        timeInterval: string
-    ): Promise<AggregateQueryFeedback> {
-        return this.elasticSearchService.dateHistogramSearch(
-            corpus,
-            queryModel,
-            fieldName,
-            timeInterval
-        );
-    }
-
     /** filter search results for fields included in resultsOverview of the corpus */
     private filterResultsFields(results: SearchResults, queryModel: QueryModel): SearchResults {
         return {

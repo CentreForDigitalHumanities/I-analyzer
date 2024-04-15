@@ -8,7 +8,14 @@ interface EsTermsAggregator {
     };
 }
 
-export type EsAggregator = EsTermsAggregator;
+interface EsDateHistogramAggregator {
+    date_histogram: {
+        field: string;
+        calendar_interval?: string;
+    };
+}
+
+export type EsAggregator = EsTermsAggregator | EsDateHistogramAggregator;
 
 export abstract class Aggregator {
     name: string;
@@ -32,6 +39,25 @@ export class TermsAggregator extends Aggregator {
                 field: this.field.name,
                 size: this.maxSize,
                 min_doc_count: this.minDocCount,
+            }
+        };
+    }
+}
+
+export class DateHistogramAggregator extends Aggregator {
+    constructor(
+        private field: CorpusField,
+        private timeInterval?: string,
+    ) {
+        super();
+        this.name = field.name;
+    }
+
+    toEsAggregator(): EsDateHistogramAggregator {
+        return {
+            date_histogram: {
+                field: this.field.name,
+                calendar_interval: this.timeInterval,
             }
         };
     }
