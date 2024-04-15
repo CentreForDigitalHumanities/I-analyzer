@@ -6,7 +6,7 @@ import pytest
 import requests
 
 from addcorpus.es_mappings import geo_mapping
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from es import es_index
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -14,7 +14,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 class MockResponse(object):
     def __init__(self, mock_content):
         self.mock_content = mock_content
-    
+
     def json(self):
         return self.mock_content
 

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { FoundDocument } from '../models';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Tag } from '../models';
+import { pick } from 'lodash';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { FoundDocument, Tag } from '../models';
 import { ApiService } from './api.service';
-
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,9 +12,17 @@ import { ApiService } from './api.service';
 export class TagService {
     /** all tags from the user */
     tags$ = new BehaviorSubject<Tag[]>(undefined);
+    authorized: boolean;
 
-    constructor(private apiService: ApiService) {
-        this.fetch();
+    constructor(private apiService: ApiService, private authService: AuthService) {
+        this.authService.currentUser$.subscribe({
+            next: (user) => {
+                this.authorized = user !== null;
+                if (this.authorized) {
+                    this.fetch();
+                }
+            }
+        });
     }
 
     makeTag(name: string, description?: string): Observable<Tag> {
@@ -23,7 +31,21 @@ export class TagService {
             .pipe(tap(() => this.fetch()));
     }
 
-    getDocumentTags(document: FoundDocument): Observable<Tag[]> {
+    deleteTag(tag: Tag) {
+        return this.apiService.deleteTag(tag).pipe(tap(() => this.fetch()));
+    }
+
+    updateTag(updatedTag: Tag) {
+        const updateFields = pick(updatedTag, ['name', 'description']);
+        return this.apiService
+            .patchTag(updatedTag.id, updateFields)
+            .pipe(tap(() => this.fetch()));
+    }
+
+    getDocumentTags(document: FoundDocument): Observable<Tag[] | null> {
+        if (!this.authorized) {
+            return of(null);
+        }
         return this.apiService
             .documentTags(document)
             .pipe(map((response) => response.tags));
@@ -36,9 +58,7 @@ export class TagService {
             .pipe(map((response) => response.tags));
     }
 
-    private fetch(): void {
-        this.apiService.userTags().subscribe(tags =>
-            this.tags$.next(tags)
-        );
+    fetch(): void {
+        this.apiService.userTags().subscribe((tags) => this.tags$.next(tags));
     }
 }

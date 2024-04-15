@@ -1,9 +1,9 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import CSVCorpusDefinition
-from addcorpus.extract import CSV, Combined, Constant
-from addcorpus.filters import MultipleChoiceFilter
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
+from addcorpus.python_corpora.extract import CSV, Combined, Constant
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context
@@ -29,19 +29,22 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     document_context = document_context()
 
+    default_sort = {'field': 'date_latest', 'ascending': False}
+
+
     chamber = field_defaults.chamber()
-    chamber.extractor = CSV(field='estate')
+    chamber.extractor = CSV('estate')
     chamber.search_filter = MultipleChoiceFilter(
         description='Search only in debates from the selected chamber(s)',
         option_count=4
     )
-    
+
     country = field_defaults.country()
     country.extractor = Constant('Finland')
 
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
-        field='year_start',
+        'year_start',
         transform=lambda value: formatting.get_date_from_year(value, 'earliest')
     )
     date_earliest.search_filter.lower = min_date
@@ -49,34 +52,33 @@ class ParliamentFinlandOld(Parliament, CSVCorpusDefinition):
 
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
-        field='year_end',
+        'year_end',
         transform=lambda value: formatting.get_date_from_year(value, 'latest')
     )
-    date_latest.primary_sort = True
     date_latest.search_filter.lower = min_date
     date_latest.search_filter.upper = max_date
 
     language = field_defaults.language()
-    language.extractor = CSV(field='language')
+    language.extractor = CSV('language')
 
     page = field_defaults.page()
-    page.extractor = CSV(field='page')
+    page.extractor = CSV('page')
 
     source_archive = field_defaults.source_archive()
-    source_archive.extractor = CSV(field='file')
+    source_archive.extractor = CSV('file')
 
     speech = field_defaults.speech()
-    speech.extractor = CSV(field='text')
+    speech.extractor = CSV('text')
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = Combined(
-        CSV(field='file'),
-        CSV(field='page'),
+        CSV('file'),
+        CSV('page'),
         transform=lambda x: '_'.join(x)
     )
 
     speech_type = field_defaults.speech_type()
-    speech_type.extractor = CSV(field='type')
+    speech_type.extractor = CSV('type')
 
     def __init__(self):
         self.fields = [

@@ -2,9 +2,6 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { marked } from 'marked';
-import { ApiService } from './api.service';
-
-import { Corpus } from '../models/index';
 
 @Injectable({
     providedIn: 'root'
@@ -17,8 +14,7 @@ export class DialogService {
     public pageEvent = this.behavior.asObservable();
 
     public constructor(
-        private domSanitizer: DomSanitizer,
-        private apiService: ApiService) {
+        private domSanitizer: DomSanitizer) {
     }
 
     public closePage() {
@@ -72,15 +68,6 @@ export class DialogService {
                 routerLink: ['/manual', identifier]
             }
         });
-    }
-
-    public async showDescriptionPage(corpus: Corpus) {
-        const description = this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name});
-        this.showDocumentation(
-            corpus.name,
-            corpus.title,
-            description,
-        );
     }
 
     /**

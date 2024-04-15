@@ -1,4 +1,4 @@
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 import pytest
 import os.path as op
 from operator import itemgetter

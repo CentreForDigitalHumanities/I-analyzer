@@ -49,27 +49,28 @@ import { SearchModule } from './search/search.module';
 import { SharedModule } from './shared/shared.module';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 
 export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'info/:corpus',
         component: CorpusInfoComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'document/:corpus/:id',
         component: DocumentPageComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'login',
@@ -98,7 +99,6 @@ export const appRoutes: Routes = [
     {
         path: 'home',
         component: HomeComponent,
-        canActivate: [LoggedOnGuard],
     },
     {
         path: 'manual/:identifier',
@@ -111,10 +111,12 @@ export const appRoutes: Routes = [
     {
         path: 'search-history',
         component: SearchHistoryComponent,
+        canActivate: [LoggedOnGuard],
     },
     {
         path: 'download-history',
         component: DownloadHistoryComponent,
+        canActivate: [LoggedOnGuard],
     },
     {
         path: 'confirm-email/:key',
@@ -123,6 +125,11 @@ export const appRoutes: Routes = [
     {
         path: 'settings',
         component: SettingsComponent,
+        canActivate: [LoggedOnGuard],
+    },
+    {
+        path: 'tags',
+        component: TagOverviewComponent,
         canActivate: [LoggedOnGuard],
     },
     {

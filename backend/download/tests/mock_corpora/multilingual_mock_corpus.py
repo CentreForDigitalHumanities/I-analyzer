@@ -1,9 +1,9 @@
 from datetime import datetime
 import os
 
-from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
+from addcorpus.python_corpora.corpus import FieldDefinition, CSVCorpusDefinition
 from addcorpus.es_mappings import keyword_mapping, text_mapping
-from addcorpus.extract import CSV
+from addcorpus.python_corpora.extract import CSV
 
 # Fake corpus class for unit tests
 
@@ -16,7 +16,6 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
     min_date = datetime(year=2000, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
     es_index = 'ianalyzer-mixed-language-mock-corpus'
-    image = 'test.jpeg'
     data_directory = 'bogus'
     languages = ['sv', 'de']
     category = 'book'
@@ -28,6 +27,7 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
+        display_type='text_content',
         es_mapping = text_mapping(),
         extractor = CSV('content')
     )

@@ -1,8 +1,8 @@
 from datetime import datetime
 import os
 
-from addcorpus.corpus import FieldDefinition, CSVCorpusDefinition
-from addcorpus.extract import CSV
+from addcorpus.python_corpora.corpus import FieldDefinition, CSVCorpusDefinition
+from addcorpus.python_corpora.extract import CSV
 from addcorpus.es_mappings import date_mapping, keyword_mapping, main_content_mapping, text_mapping
 from addcorpus.es_settings import es_settings
 
@@ -18,7 +18,6 @@ class SmallMockCorpus(CSVCorpusDefinition):
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=1899, month=12, day=31)
     es_index = 'ianalyzer-mock-corpus'
-    image = 'test.jpeg'
     data_directory = 'bogus'
     languages = ['en']
     category = 'book'
@@ -43,8 +42,10 @@ class SmallMockCorpus(CSVCorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
+        display_type='text_content',
         es_mapping = main_content_mapping(True, True, False, 'en'),
-        extractor = CSV('content')
+        extractor = CSV('content'),
+        language='en',
     )
 
     genre = FieldDefinition(

@@ -2,7 +2,7 @@ from functools import reduce
 from operator import concat
 import pandas as pd
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from wordmodels.similarity import find_n_most_similar, term_similarity
 from wordmodels.utils import load_word_models
 

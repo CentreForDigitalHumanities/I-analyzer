@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from addcorpus.models import Corpus, CorpusConfiguration, Field
+from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
+from addcorpus.documentation import render_documentation_context
 
 class NonEmptyJSONField(serializers.JSONField):
     '''
@@ -35,9 +36,9 @@ class FieldSerializer(serializers.ModelSerializer):
             'hidden',
             'required',
             'sortable',
-            'primary_sort',
             'searchable',
             'downloadable',
+            'language',
         ]
 
 
@@ -63,24 +64,25 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
     fields = FieldSerializer(many=True, read_only=True)
     languages = serializers.ListField(child=LanguageField())
     category = PrettyChoiceField(choices=CATEGORIES)
+    default_sort = NonEmptyJSONField()
 
     class Meta:
         model = CorpusConfiguration
         fields = [
             'allow_image_download',
             'category',
-            'description_page',
             'description',
             'document_context',
             'es_alias',
             'es_index',
-            'image',
             'languages',
             'min_date',
             'max_date',
             'scan_image_type',
             'title',
             'word_models_present',
+            'default_sort',
+            'language_field',
             'fields',
         ]
 
@@ -99,3 +101,23 @@ class CorpusSerializer(serializers.ModelSerializer):
         conf_data = data.pop('configuration')
         data.update(conf_data)
         return data
+
+class DocumentationTemplateField(serializers.CharField):
+    '''
+    Serialiser for the contents of documentation pages.
+
+    Pages are Templates written in markdown.
+    '''
+
+    def to_representation(self, value):
+        content = super().to_representation(value)
+        return render_documentation_context(content)
+
+
+class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
+    type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
+    content = DocumentationTemplateField()
+
+    class Meta:
+        model = CorpusDocumentationPage
+        fields = ['corpus_configuration', 'type', 'content']

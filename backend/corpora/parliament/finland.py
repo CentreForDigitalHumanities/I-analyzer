@@ -1,8 +1,8 @@
 from datetime import datetime
 from glob import glob
 
-from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Combined, Constant, Metadata
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.extract import XML, Combined, Constant, Metadata
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context
@@ -93,12 +93,14 @@ class ParliamentFinland(Parliament, XMLCorpusDefinition):
 
     party = field_defaults.party()
     party.extractor = party_attribute_extractor('name')
+    party.language = 'fi'
 
     party_id = field_defaults.party_id()
     party_id.extractor = person_attribute_extractor('party_id')
 
     party_role = field_defaults.party_role()
     party_role.extractor = party_attribute_extractor('role')
+    party_role.language = 'fi'
 
     role = field_defaults.parliamentary_role()
     role.extractor = Combined(
@@ -132,6 +134,7 @@ class ParliamentFinland(Parliament, XMLCorpusDefinition):
         transform_soup_func = speech_metadata,
         attribute = 'speechType'
     )
+    speech_type.language = 'fi'
 
     topic = field_defaults.topic()
     topic.extractor = XML(

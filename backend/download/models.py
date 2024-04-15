@@ -23,7 +23,8 @@ class Download(models.Model):
         ],
         help_text='Type of download (search results or a type of visualisation)')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE, to_field='name', related_name='downloads')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='downloads')
+    user = models.ForeignKey(
+        CustomUser, null=True, on_delete=models.CASCADE, related_name='downloads')
     parameters = models.JSONField(
         help_text='JSON parameters for the download request that was made to the backend'
     )

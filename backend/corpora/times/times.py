@@ -11,12 +11,13 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from addcorpus import extract, filters
-from addcorpus.corpus import (FieldDefinition, XMLCorpusDefinition, after,
+from addcorpus.python_corpora import extract
+from addcorpus.python_corpora.corpus import (FieldDefinition, XMLCorpusDefinition, after,
                               consolidate_start_end_years, string_contains,
                               until)
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
+from addcorpus.python_corpora import filters
 from corpora.times.times_scans import compose_absolute_image_path
 from django.conf import settings
 from media.media_url import media_url
@@ -434,7 +435,8 @@ class Times(XMLCorpusDefinition):
             extractor=extract.XML(
                 tag=['text', 'text.cr'], multiple=True,
                 flatten=True
-            )
+            ),
+            language='en',
         ),
     ]
 

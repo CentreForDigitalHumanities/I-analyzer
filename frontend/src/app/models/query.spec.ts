@@ -5,7 +5,6 @@ import { SearchFilter } from './field-filter';
 import * as _ from 'lodash';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
-import { fakeAsync, flush } from '@angular/core/testing';
 
 const corpus: Corpus = {
     name: 'mock-corpus',
@@ -14,8 +13,9 @@ const corpus: Corpus = {
     description: '',
     index: 'mock-corpus',
     minDate: new Date('1800-01-01'),
+    minYear: 1800,
     maxDate: new Date('1900-01-01'),
-    image: '',
+    maxYear: 1900,
     scan_image_type: null,
     allow_image_download: true,
     word_models_present: false,
@@ -25,6 +25,7 @@ const corpus: Corpus = {
         mockFieldMultipleChoice,
     ],
     languages: ['English'],
+    displayLanguages: 'English',
     category: 'Tests',
 } as Corpus;
 

@@ -4,21 +4,27 @@ Corpus definitions are the way that we configure each corpus in I-analyzer.
 
 This documents gives a basic explanation of how corpus definitions "work" in the backend. For a more elaborate description of how to add corpus definition and what properties they contain, see [How to add a new corpus to I-analyzer](/documentation/How-to-add-a-new-corpus-to-Ianalyzer.md).
 
-## Python classes
+## Definition
 
-Corpus definitions are initially written as Python classes. Each definition is a subclass of `CorpusDefinition`.
+At the moment, I-analyzer supports one method to define a corpus: by writing a custom Python class and including it in the backend.
+
+We plan to support adding corpora through the interface; as we're working on this, some modules may suggest this possibility.
+
+### Python class
+
+Python-based corpora are written as Python classes. Each definition is a subclass of `CorpusDefinition`.
 
 All corpus classes are contained in the [corpora](/backend/corpora/) directory (though it is technically possible to include definitions from elsewhere in the file system). This directory is not a Django app, but just a collection of scripts and metadata.
 
 To be loaded into the application, the definition needs to be added to Django settings. The project includes a `CORPORA` setting which defines a mapping of names and python files, and lists which definitions should be loaded.
 
-On startup, all configured python classes will be loaded into the database. During much of the runtime, the backend will refer to the database model rather than the python class. However, the python class is used for more advanced features like document scans and word models. It is also used during indexing.
+On startup, all configured python classes will be loaded into the database. During much of the runtime, the backend will refer to the database model rather than the python class. However, the python class is imported for more advanced features like document scans and word models. It is also used during indexing.
 
 ## Database models
 
-Database models can be loaded with the `loadcorpora` command in the backend. Normally, this is run when you start the server.
+Python definitions can be loaded into the database with the `loadcorpora` command in the backend. Normally, this is run when you start the server.
 
-This command will parse any configured python corpora and save a `Corpus` and `CorpusConfiguration` object for them. If the python corpus cannot be loaded, the `Corpus` object will still exist in the database, but it will be missing a `CorpusConfiguration` and will not be usable.
+This command will parse any configured python corpora and save a `Corpus` and `CorpusConfiguration` object for them. If the python corpus cannot be loaded, the `Corpus` object will still exist in the database, it will be inactive.
 
 ### Corpus vs. CorpusConfiguration
 
@@ -38,8 +44,8 @@ If you want to remove a corpus from your environment, remove it from the Django 
 
 Removing a corpus from the settings will not delete the `Corpus` object. It has the following effect:
 
-- The `CorpusConfiguration` object (and its fields) will be removed
-- The `active` property of the corpus will be set to false.
+- The properties `corpus.active` and `corpus.has_python_definition` are set to `False`.
+- The methods `corpus.ready_to_index()` and `corpus.read_to_publish()` will return `False`.
 - The corpus will be hidden from the API and interface
 - The python definition will no longer be imported during startup
 

@@ -6,18 +6,14 @@ locations.
 import logging
 logger = logging.getLogger(__name__)
 import os
-from os.path import join, isfile, splitext, isfile
-from datetime import datetime, timedelta
-import re
-import random
-from pprint import pprint
+from os.path import join, splitext
+from datetime import datetime
 
 from django.conf import settings
 
-from addcorpus import extract
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.python_corpora import extract
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
@@ -42,6 +38,8 @@ class Troonredes(XMLCorpusDefinition):
     languages = ['nl']
     category = 'oration'
     description_page = 'troonredes.md'
+    citation_page = 'citation.md'
+    wordmodels_page = 'documentation.md'
 
     @property
     def es_settings(self):
@@ -97,6 +95,7 @@ class Troonredes(XMLCorpusDefinition):
             extractor=extract.XML(tag='title'),
             results_overview=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='monarch',
@@ -141,6 +140,7 @@ class Troonredes(XMLCorpusDefinition):
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],
-            extractor=extract.XML(tag='content')
+            extractor=extract.XML(tag='content'),
+            language='nl',
         ),
     ]

@@ -12,9 +12,9 @@ import openpyxl
 
 from django.conf import settings
 
-from addcorpus import extract
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora import extract
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
@@ -149,7 +149,8 @@ class Periodicals(XMLCorpusDefinition):
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
-            visualizations=["wordcloud"]
+            visualizations=["wordcloud"],
+            language='en',
         ),
         FieldDefinition(
             name='ocr',

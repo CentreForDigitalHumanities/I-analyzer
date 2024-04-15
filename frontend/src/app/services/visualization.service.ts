@@ -4,6 +4,7 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    GeoDocument,
     NGramRequestParameters,
     NgramParameters,
     QueryModel,
@@ -11,6 +12,7 @@ import {
     TimeCategory,
 } from '../models';
 import { ApiService } from './api.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,14 +25,24 @@ export class VisualizationService {
     }
 
 
-    public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
-        Promise<AggregateResult[]> {
+    public getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+        Observable<AggregateResult[]> {
         const query = queryModel.toAPIQuery();
         return this.apiService.wordCloud({
             ...query,
             corpus: corpus.name,
             field: fieldName,
             size,
+        });
+    }
+
+    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
+        Promise<GeoDocument[]> {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.geoData({
+            ...query,
+            corpus: corpus.name,
+            field: fieldName,
         });
     }
 

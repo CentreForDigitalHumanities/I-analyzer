@@ -1,12 +1,14 @@
 from time import sleep
-
+import shutil
+import os
 import pytest
 import requests
 from allauth.account.models import EmailAddress
 
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.load_corpus import load_corpus_definition
-from addcorpus.save_corpus import load_and_save_all_corpora
+from ianalyzer.settings_test import MEDIA_ROOT
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 
 # user credentials and logged-in api clients
@@ -111,3 +113,12 @@ def clear_test_corpus(es_client, corpus_name):
     # check existence in case teardown is executed more than once
     if es_client.indices.exists(index = index):
         es_client.indices.delete(index = index)
+
+@pytest.fixture(scope='session', autouse=True)
+def clean_test_data():
+    if os.path.isdir(MEDIA_ROOT):
+        shutil.rmtree(MEDIA_ROOT)
+
+    yield
+
+    shutil.rmtree(MEDIA_ROOT)

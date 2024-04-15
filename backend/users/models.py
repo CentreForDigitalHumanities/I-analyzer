@@ -1,10 +1,10 @@
+import django.contrib.auth.models as django_auth_models
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
 DEFAULT_DOWNLOAD_LIMIT = 10000
 
 
-class CustomUser(AbstractUser):
+class CustomUser(django_auth_models.AbstractUser):
     saml = models.BooleanField(blank=True, null=True, default=False)
     download_limit = models.IntegerField(
         help_text='Maximum documents that this user can download per query',
@@ -18,6 +18,25 @@ class CustomUser(AbstractUser):
         # check if any corpus added to the user's group(s) match the corpus name
         return any(corpus for group in self.groups.all()
                    for corpus in group.corpora.filter(name=corpus_name))
+
+
+class AnoymousProfile(object):
+    enable_search_history = False
+
+
+class CustomAnonymousUser(django_auth_models.AnonymousUser):
+    ''' extend AnonymousUser class with has_access method
+        return True for any corpus assigned to the `basic` group
+    '''
+    profile = AnoymousProfile()
+
+    def has_access(self, corpus_name):
+        basic_group, _ = django_auth_models.Group.objects.get_or_create(
+            name='basic')
+        return basic_group.corpora.filter(name=corpus_name)
+
+
+django_auth_models.AnonymousUser = CustomAnonymousUser
 
 
 class UserProfile(models.Model):

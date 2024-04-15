@@ -3,17 +3,33 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import Group
 from django.contrib import admin
 from django.core.exceptions import ValidationError
+from django.db.models.constraints import UniqueConstraint
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validators import validate_language_code, validate_image_filename_extension, \
-    validate_markdown_filename_extension, validate_es_mapping, validate_mimetype, validate_search_filter, \
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping, validate_searchable_field_has_full_text_search, \
-    validate_visualizations_with_mapping, validate_implication, any_date_fields, visualisations_require_date_field
+from addcorpus.validation.creation import (
+    validate_language_code,
+    validate_markdown_filename_extension,
+    validate_es_mapping, validate_mimetype, validate_search_filter,
+    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_visualizations_with_mapping, validate_implication,
+    validate_sort_configuration, validate_field_language,
+)
+from addcorpus.validation.indexing import (
+    validate_has_configuration,
+    validate_essential_fields,
+    validate_language_field
+)
+from addcorpus.validation.publishing import (
+    validate_ngram_has_date_field,
+    validate_default_sort,
+)
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
+
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -27,21 +43,98 @@ class Corpus(models.Model):
         blank=True,
         help_text='groups that have access to this corpus',
     )
+    active = models.BooleanField(
+        default=False,
+        help_text='an inactive corpus is hidden from the search interface',
+    )
+    has_python_definition = models.BooleanField(
+        default=False,
+        help_text='whether the configuration of this corpus is determined by a Python '
+            'module (some features are only available for Python-based corpora)',
+    )
 
-    @admin.display()
     @property
-    def active(self):
+    def configuration_obj(self) -> models.Model:
         try:
-            self.configuration
-            return True
+            return self.configuration
         except:
-            return False
+            return None
 
     class Meta:
         verbose_name_plural = 'corpora'
 
     def __str__(self):
         return self.name
+
+    @admin.display()
+    def ready_to_index(self) -> bool:
+        '''
+        Checks whether the corpus is ready for indexing.
+
+        Runs a try/except around `self.validate_ready_to_index()` and returns a
+        boolean; `True` means the validation completed without errors.
+
+        If you want to see validation error messages, use the validation method
+        directly.
+        '''
+        try:
+            self.validate_ready_to_index()
+            return True
+        except:
+            return False
+
+    def validate_ready_to_index(self) -> None:
+        '''
+        Validation that should be carried out before indexing.
+
+        Raises:
+            CorpusNotIndexableError: the corpus is not meeting requirements for making
+                an index.
+        '''
+
+        validate_has_configuration(self)
+
+        config = self.configuration_obj
+        fields = config.fields.all()
+
+        validate_essential_fields(fields)
+        validate_language_field(self)
+
+
+    @admin.display()
+    def ready_to_publish(self) -> bool:
+        '''
+        Checks whether the corpus is ready to be made public.
+        '''
+        try:
+            self.validate_ready_to_publish()
+            return True
+        except:
+            return False
+
+    def validate_ready_to_publish(self) -> None:
+        '''
+        Validation that should be carried out before making the corpus public.
+
+        Raises:
+            CorpusNotIndexableError: the corpus is not meeting requirements for indexing.
+            CorpusNotPublishableError: interface options are improperly configured.
+        '''
+
+        self.validate_ready_to_index()
+        validate_ngram_has_date_field(self)
+        validate_default_sort(self)
+
+    def clean(self):
+        if self.active:
+            try:
+                self.validate_ready_to_publish()
+            except Exception as e:
+                raise ValidationError([
+                    'Corpus is set to "active" but does not meet requirements for publication.',
+                    e
+                ])
+
 
 class CorpusConfiguration(models.Model):
     '''
@@ -67,12 +160,6 @@ class CorpusConfiguration(models.Model):
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
     )
-    description_page = models.CharField(
-        max_length=128,
-        blank=True,
-        validators=[validate_markdown_filename_extension],
-        help_text='filename of the markdown documentation file for this corpus',
-    )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
@@ -91,10 +178,11 @@ class CorpusConfiguration(models.Model):
         max_length=MAX_LENGTH_NAME,
         help_text='name of the corpus index in elasticsearch'
     )
-    image = models.CharField(
-        max_length=126,
-        validators=[validate_image_filename_extension],
-        help_text='filename of the corpus image',
+    image = models.ImageField(
+        upload_to='corpus_images',
+        blank=True,
+        null=True,
+        help_text='image that can be used for the corpus in the interface'
     )
     languages = ArrayField(
         models.CharField(
@@ -124,9 +212,33 @@ class CorpusConfiguration(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
+    default_sort = models.JSONField(
+        blank=True,
+        validators=[validate_sort_configuration],
+        default=dict,
+        help_text='default sort for search results without query text; '
+            'if blank, results are presented in the order in which they are stored',
+    )
+    language_field = models.CharField(
+        blank=True,
+        help_text='name of the field that specifies the language of documents (if any);'
+            'required to use "dynamic" language on fields',
+    )
 
     def __str__(self):
         return f'Configuration of <{self.corpus.name}>'
+
+    def clean(self):
+        if self.corpus.active:
+            try:
+                self.corpus.validate_ready_to_publish()
+            except Exception as e:
+                raise ValidationError([
+                    'Corpus configuration is not valid for an active corpus. Deactivate '
+                    'the corpus or correct the following errors.',
+                    e
+                ])
+
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
@@ -145,6 +257,7 @@ FIELD_VISUALIZATIONS = [
     (VisualizationType.TERM_FREQUENCY.value, 'Frequency of the search term'),
     (VisualizationType.NGRAM.value, 'Neighbouring words'),
     (VisualizationType.WORDCLOUD.value, 'Most frequent words'),
+    (VisualizationType.MAP.value, 'Map of geo-coordinates'),
 ]
 '''Options for `visualizations` field'''
 
@@ -233,10 +346,6 @@ class Field(models.Model):
         default=False,
         help_text='whether search results can be sorted on this field',
     )
-    primary_sort = models.BooleanField(
-        default=False,
-        help_text='if sortable: whether this is the default method of sorting search results',
-    )
     searchable = models.BooleanField(
         default=False,
         help_text='whether this field is listed when selecting search fields',
@@ -245,12 +354,25 @@ class Field(models.Model):
         default=True,
         help_text='whether this field can be included in search results downloads',
     )
+    language = models.CharField(
+        max_length=64,
+        blank=True,
+        null=False,
+        validators=[validate_field_language],
+        help_text='specification for the language of this field; can be blank, an IETF '
+            'tag, or "dynamic"; "dynamic" means the language is determined by the '
+            'language_field of the corpus configuration',
+    )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['corpus_configuration', 'name'],
                                 name='unique_name_for_corpus')
         ]
+
+    @property
+    def is_main_content(self) -> bool:
+        return self.display_type == 'text_content'
 
     def __str__(self) -> str:
         return f'{self.name} ({self.corpus_configuration.corpus.name})'
@@ -264,7 +386,6 @@ class Field(models.Model):
         if self.visualizations:
             validate_visualizations_with_mapping(self.es_mapping, self.visualizations)
 
-        validate_implication(self.primary_sort, self.sortable, "The primary sorting field must be sortable")
         validate_implication(self.csv_core, self.downloadable, "Core download fields must be downloadable")
 
         # core search fields must searchable
@@ -274,8 +395,44 @@ class Field(models.Model):
         except ValidationError as e:
             warnings.warn(e.message)
 
-        validate_implication(
-            self.visualizations, self.corpus_configuration.fields.all(),
-            'The ngram visualisation requires a date field on the corpus',
-            visualisations_require_date_field, any_date_fields,
-        )
+        if self.corpus_configuration.corpus.active:
+            try:
+                self.corpus_configuration.corpus.validate_ready_to_publish()
+            except Exception as e:
+                raise ValidationError([
+                    'Field configuration is not valid in an active corpus. Deactivate '
+                    'the corpus or correct the following errors.',
+                    e
+                ])
+
+class CorpusDocumentationPage(models.Model):
+    class PageType(models.TextChoices):
+        GENERAL = ('general', 'General information')
+        CITATION = ('citation', 'Citation')
+        LICENSE = ('license', 'Licence')
+        TERMS_OF_SERVICE = ('terms_of_service', 'Terms of service')
+        WORDMODELS = ('wordmodels', 'Word models')
+
+    corpus_configuration = models.ForeignKey(
+        to=CorpusConfiguration,
+        related_name='documentation_pages',
+        help_text='configuration that this page documents',
+        on_delete=models.CASCADE,
+    )
+    type = models.CharField(
+        max_length=16,
+        choices=PageType.choices,
+        default='general',
+        help_text='the type of documentation'
+    )
+    content = models.TextField(
+        help_text='markdown contents of the documentation'
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['corpus_configuration', 'type'],
+                name='unique_documentation_type_for_corpus'
+            )
+        ]

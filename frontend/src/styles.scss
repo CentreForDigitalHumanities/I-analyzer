@@ -45,7 +45,7 @@
     @extend %content-loader;
 }
 
-.tag-button {
+.tag-dropdown .button {
 	align-items: center;
 	border-radius: 3px;
 	display: inline-flex;
@@ -56,4 +56,18 @@
 	padding-left: 0.75em;
 	padding-right: 0.75em;
 	white-space: nowrap;
+}
+
+a.dropdown-item:focus {
+    @extend a, .dropdown-item, :hover;
+}
+
+a.dropdown-item[disabled] {
+    color: $grey;
+    cursor: not-allowed;
+
+    &:hover {
+        background-color: inherit;
+        color: $grey;
+    }
 }

@@ -1,9 +1,1 @@
-<progress role="meter"
-    class="progress is-primary"
-    [value]="value" max="1"
-    title="Relevance score = {{value}}"
-    [attr.aria-label]="'Relevance score = {{value}}'"
-    [attr.aria-valuenow]="value"
-    aria-valuemin="0" aria-valuemax="1"
-    >{{value}}
-</progress>
+{{value * 100 | number:'1.0-0' }}%
