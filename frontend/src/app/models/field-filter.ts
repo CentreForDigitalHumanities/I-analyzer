@@ -69,8 +69,8 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter>
 }
 
 export interface DateFilterData {
-    min: Date;
-    max: Date;
+    min?: Date;
+    max?: Date;
 }
 
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
@@ -88,7 +88,7 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
         };
     }
 
-    dataFromString(value: string) {
+    dataFromString(value: string): DateFilterData {
         const [minString, maxString] = parseMinMax(value.split(','));
         return {
             min: this.parseDate(minString),
@@ -96,18 +96,19 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
         };
     }
 
-    dataToString(data: DateFilterData) {
+    dataToString(data: DateFilterData): string {
         const min = this.formatDate(data.min);
         const max = this.formatDate(data.max);
         return `${min}:${max}`;
     }
 
     dataToEsFilter(): EsDateFilter {
+        const data = this.currentData;
         return {
             range: {
                 [this.corpusField.name]: {
-                    gte: this.formatDate(this.currentData.min),
-                    lte: this.formatDate(this.currentData.max),
+                    gte: data.min ? this.formatDate(this.currentData.min) : null,
+                    lte: data.max ? this.formatDate(this.currentData.max) : null,
                     format: 'yyyy-MM-dd',
                     relation: 'within'
                 }
@@ -117,17 +118,22 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
 
     dataFromEsFilter(esFilter: EsDateFilter): DateFilterData {
         const data = _.first(_.values(esFilter.range));
-        const min = this.parseDate(data.gte);
-        const max = this.parseDate(data.lte);
+        const min = data.gte ? this.parseDate(data.gte) : undefined;
+        const max = data.lte ? this.parseDate(data.lte) : undefined;
         return { min, max };
     }
 
-    private formatDate(date: Date): string {
-        return moment(date).format('YYYY-MM-DD');
+    private formatDate(date?: Date): string {
+        if (date) {
+            return moment(date).format('YYYY-MM-DD');
+        }
+        return '';
     }
 
-    private parseDate(dateString: string): Date {
-        return moment(dateString, 'YYYY-MM-DD').toDate();
+    private parseDate(dateString?: string): Date|undefined {
+        if (dateString && dateString.length) {
+            return moment(dateString, 'YYYY-MM-DD').toDate();
+        }
     }
 }
 

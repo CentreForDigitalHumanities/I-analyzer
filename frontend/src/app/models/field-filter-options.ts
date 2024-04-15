@@ -8,8 +8,8 @@ export interface HasDescription {
 
 export type DateFilterOptions = {
     name: 'DateFilter';
-    lower: string;
-    upper: string;
+    lower?: string;
+    upper?: string;
 } & HasDescription;
 
 export type MultipleChoiceFilterOptions = {
