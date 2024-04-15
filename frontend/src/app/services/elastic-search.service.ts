@@ -4,13 +4,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchHit, EsQuery, Aggregator
+    AggregateQueryFeedback, SearchHit, EsQuery
 } from '../models/index';
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
 import { APIQuery } from '../models/search-requests';
 import { PageResultsParameters } from '../models/page-results';
 import { resultsParamsToAPIQuery } from '../utils/es-query';
+import { Aggregator } from '../models/aggregation';
 
 
 @Injectable()
@@ -41,7 +42,7 @@ export class ElasticSearchService {
     ): Promise<AggregateQueryFeedback> {
         const aggregations = {};
         aggregators.forEach(d => {
-            aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
+            aggregations[d.name] = d.toEsAggregator();
         });
         const query = queryModel.toAPIQuery();
         const withAggregation = _.set(query, 'es_query.aggs', aggregations);
@@ -104,21 +105,6 @@ export class ElasticSearchService {
     private async execute(corpus: Corpus, body: APIQuery) {
         const url = `/api/es/${corpus.name}/_search`;
         return this.http.post<SearchResponse>(url, body).toPromise();
-    }
-
-    /**
-     * Construct the aggregator, based on kind of field
-     * Date fields are aggregated in year intervals
-     */
-    private makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
-        const aggregation = {
-            terms: {
-                field: aggregator,
-                size,
-                min_doc_count
-            }
-        };
-        return aggregation;
     }
 
     /**

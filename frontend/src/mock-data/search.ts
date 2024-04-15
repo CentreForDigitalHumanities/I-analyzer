@@ -4,10 +4,11 @@ import { AggregateQueryFeedback, Corpus, CorpusField, FoundDocument, QueryModel,
 import { mockCorpus } from './corpus';
 import { TagServiceMock } from './tag';
 import { TagService } from '../app/services/tag.service';
+import { Aggregator } from '../app/models/aggregation';
 
 export class SearchServiceMock {
-    public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: [{name: string}]): Promise<AggregateQueryFeedback> {
-        const name = aggregator[0].name;
+    public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
+        const name = aggregators[0].name;
         return {
             completed: false,
             aggregations: {

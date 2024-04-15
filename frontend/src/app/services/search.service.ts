@@ -7,6 +7,7 @@ import {
     AggregateQueryFeedback
 } from '../models/index';
 import { PageResultsParameters } from '../models/page-results';
+import { Aggregator } from '../models/aggregation';
 
 
 @Injectable()
@@ -35,7 +36,7 @@ export class SearchService {
     public async aggregateSearch(
         corpus: Corpus,
         queryModel: QueryModel,
-        aggregators: any
+        aggregators: Aggregator[],
     ): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.aggregateSearch(
             corpus,
