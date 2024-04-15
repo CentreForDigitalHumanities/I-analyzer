@@ -76,8 +76,8 @@ export interface DateFilterData {
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
     makeDefaultData(filterOptions: DateFilterOptions) {
         return {
-            min: this.parseDate(filterOptions.lower),
-            max: this.parseDate(filterOptions.upper)
+            min: _.isNull(filterOptions.lower) ? undefined : this.parseDate(filterOptions.lower),
+            max: _.isNull(filterOptions.upper) ? undefined : this.parseDate(filterOptions.upper)
         };
     }
 
@@ -131,7 +131,7 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
     }
 
     private parseDate(dateString?: string): Date|undefined {
-        if (dateString && dateString.length) {
+        if (dateString.length) {
             return moment(dateString, 'YYYY-MM-DD').toDate();
         }
     }
@@ -216,8 +216,8 @@ export interface RangeFilterData {
 export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
         return {
-            min: filterOptions.lower,
-            max: filterOptions.upper
+            min: _.isNull(filterOptions.lower) ? undefined : filterOptions.lower,
+            max: _.isNull(filterOptions.upper) ? undefined : filterOptions.upper
         };
     }
 
@@ -228,13 +228,13 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
     dataFromString(value: string): RangeFilterData {
         const [minString, maxString] = parseMinMax(value.split(','));
         return {
-            min: parseFloat(minString),
-            max: parseFloat(maxString)
+            min: this.parseValue(minString),
+            max: this.parseValue(maxString),
         };
     }
 
     dataToString(data: RangeFilterData): string {
-        return `${data.min},${data.max}`;
+        return `${this.formatValue(data.min)},${this.formatValue(data.max)}`;
     }
 
     dataToEsFilter(): EsRangeFilter {
@@ -253,6 +253,19 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
         const min = data.gte;
         const max = data.lte;
         return { min, max };
+    }
+
+    private parseValue(value: string): number {
+        if (value.length) {
+            return parseFloat(value);
+        }
+    }
+
+    private formatValue(value?: number): string {
+        if (_.isUndefined(value)) {
+            return '';
+        }
+        return `${value}`;
     }
 }
 

@@ -83,6 +83,8 @@ describe('DateFilterComponent', () => {
         const field = _.cloneDeep(mockFieldDate);
         field.filterOptions = {
             name: 'DateFilter',
+            lower: null,
+            upper: null,
             description: ''
         };
 
