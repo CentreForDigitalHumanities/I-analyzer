@@ -11,6 +11,11 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 
+
+@pytest.fixture(autouse=True)
+def media_dir(tmpdir, settings):
+    settings.MEDIA_ROOT = tmpdir
+
 # user credentials and logged-in api clients
 @pytest.fixture
 def user_credentials():
@@ -94,8 +99,10 @@ def es_client():
     return client
 
 # mock corpora
+
+
 @pytest.fixture(autouse=True)
-def add_mock_corpora_to_db(db):
+def add_mock_corpora_to_db(db, media_dir):
     #add mock corpora to the database at the start of each test
     load_and_save_all_corpora()
 
@@ -113,12 +120,3 @@ def clear_test_corpus(es_client, corpus_name):
     # check existence in case teardown is executed more than once
     if es_client.indices.exists(index = index):
         es_client.indices.delete(index = index)
-
-@pytest.fixture(scope='session', autouse=True)
-def clean_test_data():
-    if os.path.isdir(MEDIA_ROOT):
-        shutil.rmtree(MEDIA_ROOT)
-
-    yield
-
-    shutil.rmtree(MEDIA_ROOT)

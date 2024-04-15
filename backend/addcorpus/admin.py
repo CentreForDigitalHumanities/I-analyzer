@@ -15,7 +15,7 @@ def show_warning_message(request):
 
 
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', 'configuration', 'has_python_definition', 'ready_to_index', 'ready_to_publish']
+    readonly_fields = ['configuration', 'ready_to_index', 'ready_to_publish']
     fields = ['name', 'groups', 'configuration', 'has_python_definition', 'ready_to_index', 'ready_to_publish', 'active']
     list_display = ['name', 'active']
     list_filter = ['groups', 'active']
@@ -42,6 +42,13 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                     'title',
                     'description',
                     'image',
+                ]
+            }
+        ), (
+            'Source data extraction',
+            {
+                'fields': [
+                    'source_data_delimiter',
                 ]
             }
         ), (
@@ -105,12 +112,20 @@ class FieldAdmin(admin.ModelAdmin):
             }
         ),
         (
+            'Source data extraction',
+            {
+                'fields': [
+                    'extract_column',
+                    'required',
+                ]
+            }
+        ),
+        (
             'Indexing options',
             {
                 'fields': [
                     'es_mapping',
                     'indexed',
-                    'required',
                 ]
             }
         ), (

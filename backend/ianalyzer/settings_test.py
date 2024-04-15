@@ -20,5 +20,4 @@ CORPORA = {
 TIMES_DATA = path_in_testdir('addcorpus', '../python_corpora/tests')
 TIMES_ES_INDEX = 'times-test'
 
-# location for media files; this directory is removed at the end of the test session
-MEDIA_ROOT = os.path.join(BASE_DIR, 'test_data')
+SERVERS['default']['index_prefix'] = 'test'
