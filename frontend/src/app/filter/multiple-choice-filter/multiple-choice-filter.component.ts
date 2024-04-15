@@ -33,14 +33,12 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
             const aggregator = new TermsAggregator(this.filter.corpusField, optionCount);
             const queryModel = this.queryModel.clone();
             queryModel.filterForField(this.filter.corpusField).deactivate();
-            this.searchService.aggregateSearch(queryModel.corpus, queryModel, [aggregator]).then(
-                response => response.aggregations[this.filter.corpusField.name]).then(aggregations =>
-                    this.options = _.sortBy(
-                        aggregations.map(x => ({ label: x.key, value: x.key, doc_count: x.doc_count })),
-                        o => o.label
-                    )
-                ).catch(() => this.options = []);
-
+            this.searchService.aggregateSearch(queryModel.corpus, queryModel, aggregator).then(result =>
+                this.options = _.sortBy(
+                    result.map(x => ({ label: x.key, value: x.key, doc_count: x.doc_count })),
+                    o => o.label
+                )
+            ).catch(() => this.options = []);
         }
     }
 }

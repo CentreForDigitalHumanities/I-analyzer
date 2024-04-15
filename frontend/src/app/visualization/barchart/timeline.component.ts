@@ -2,7 +2,7 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint,
+import { QueryModel, TimelineSeries, TimelineDataPoint,
     TimeCategory,
     DateFilterData,
 } from '../../models/index';
@@ -11,7 +11,7 @@ import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../../utils/select-color';
 import { showLoading } from '../../utils/utils';
-import { DateHistogramAggregator } from '../../models/aggregation';
+import { DateHistogramAggregator, DateHistogramResult } from '../../models/aggregation';
 
 
 @Component({
@@ -20,7 +20,7 @@ import { DateHistogramAggregator } from '../../models/aggregation';
     styleUrls: ['./timeline.component.scss'],
 })
 export class TimelineComponent
-    extends BarchartDirective<TimelineDataPoint>
+    extends BarchartDirective<DateHistogramResult, TimelineDataPoint>
     implements OnChanges, OnInit {
     /** domain on the axis */
     public xDomain: [Date, Date];
@@ -47,7 +47,7 @@ export class TimelineComponent
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
-    aggregateResultToDataPoint(cat: AggregateResult): TimelineDataPoint {
+    aggregateResultToDataPoint(cat: DateHistogramResult): TimelineDataPoint {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
@@ -68,7 +68,7 @@ export class TimelineComponent
             this.visualizedField,
             this.currentTimeCategory
         );
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregation]);
+        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregation);
     }
 
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {

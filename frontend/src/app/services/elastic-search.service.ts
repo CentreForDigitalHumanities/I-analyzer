@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchHit
+    SearchHit
 } from '../models/index';
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
@@ -35,27 +35,19 @@ export class ElasticSearchService {
             .then(this.firstDocumentFromResults.bind(this));
     }
 
-    public async aggregateSearch(
+    public async aggregateSearch<Result>(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
-        aggregators: Aggregator[]
-    ): Promise<AggregateQueryFeedback> {
-        const aggregations = {};
-        aggregators.forEach(d => {
-            aggregations[d.name] = d.toEsAggregator();
-        });
+        aggregator: Aggregator<Result>
+    ): Promise<Result> {
+        const aggregations = {
+            [aggregator.name]: aggregator.toEsAggregator()
+        };
         const query = queryModel.toAPIQuery();
         const withAggregation = _.set(query, 'es_query.aggs', aggregations);
         const withSize0 = _.set(withAggregation, 'es_query.size', 0);
         const result = await this.execute(corpusDefinition, withSize0);
-        const aggregateData = {};
-        Object.keys(result.aggregations).forEach(fieldName => {
-            aggregateData[fieldName] = result.aggregations[fieldName].buckets;
-        });
-        return {
-            completed: true,
-            aggregations: aggregateData
-        };
+        return aggregator.parseEsResult(result.aggregations[aggregator.name]);
     }
 
     /**

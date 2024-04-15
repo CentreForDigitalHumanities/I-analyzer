@@ -48,7 +48,7 @@ const mockAggregationResponse: SearchResponse = {
         hits: [],
     },
     aggregations: {
-        great_field: {
+        terms_great_field: {
             buckets: [
                 { key: 'test', doc_count: 15 },
                 { key: 'testtest', doc_count: 5 },
@@ -108,7 +108,7 @@ describe('ElasticSearchService', () => {
         const response = service.aggregateSearch(
             mockCorpus,
             queryModel,
-            [aggregator]
+            aggregator
         );
 
         const searchUrl = `/api/es/${mockCorpus.name}/_search`;

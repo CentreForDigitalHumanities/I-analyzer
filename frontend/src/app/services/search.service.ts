@@ -4,7 +4,6 @@ import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import {
     Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback
 } from '../models/index';
 import { PageResultsParameters } from '../models/page-results';
 import { Aggregator } from '../models/aggregation';
@@ -33,15 +32,15 @@ export class SearchService {
         return this.filterResultsFields(results, queryModel);
     }
 
-    public async aggregateSearch(
+    public async aggregateSearch<Result>(
         corpus: Corpus,
         queryModel: QueryModel,
-        aggregators: Aggregator[],
-    ): Promise<AggregateQueryFeedback> {
+        aggregator: Aggregator<Result>,
+    ): Promise<Result> {
         return this.elasticSearchService.aggregateSearch(
             corpus,
             queryModel,
-            aggregators
+            aggregator
         );
     }
 

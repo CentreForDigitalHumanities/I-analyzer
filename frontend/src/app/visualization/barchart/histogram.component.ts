@@ -2,7 +2,6 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 import * as _ from 'lodash';
 
 import {
-    AggregateResult,
     HistogramDataPoint,
     HistogramSeries,
     MultipleChoiceFilterOptions,
@@ -10,7 +9,7 @@ import {
     RangeFilterOptions} from '../../models/index';
 import { selectColor } from '../../utils/select-color';
 import { BarchartDirective } from './barchart.directive';
-import { TermsAggregator } from '../../models/aggregation';
+import { TermsAggregator, TermsResult } from '../../models/aggregation';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
@@ -27,7 +26,7 @@ function formatXAxisLabel(value): string {
     styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent
-    extends BarchartDirective<HistogramDataPoint>
+    extends BarchartDirective<TermsResult, HistogramDataPoint>
     implements OnInit, OnChanges {
     /** On what property should the data be sorted? */
     get defaultSort(): string {
@@ -61,12 +60,10 @@ export class HistogramComponent
     requestSeriesDocCounts(queryModel: QueryModel) {
         const aggregator = this.getAggregator();
 
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [
-            aggregator,
-        ]);
+        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregator);
     }
 
-    aggregateResultToDataPoint(cat: AggregateResult) {
+    aggregateResultToDataPoint(cat: TermsResult) {
         return cat;
     }
 
