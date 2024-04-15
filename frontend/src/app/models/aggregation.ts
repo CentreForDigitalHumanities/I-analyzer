@@ -133,3 +133,31 @@ export class MaxAggregator extends Aggregator<number> {
         return data.value as number;
     }
 }
+
+export class MinDateAggregator extends Aggregator<Date> {
+    aggName = 'min';
+
+    toEsAggregator(): EsMinAggregator {
+        return {
+            min: { field: this.field.name }
+        };
+    }
+
+    parseEsResult(data: any): Date {
+        return new Date(data.value);
+    }
+}
+
+export class MaxDateAggregator extends Aggregator<Date> {
+    aggName = 'max';
+
+    toEsAggregator(): EsMaxAggregator {
+        return {
+            max: { field: this.field.name }
+        };
+    }
+
+    parseEsResult(data: any): Date {
+        return new Date(data.value);
+    }
+}
