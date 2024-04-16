@@ -120,7 +120,7 @@
                             "float",
                             "date",
                             "boolean",
-                            "geo_json"
+                            "geo_point"
                         ]
                     },
                     "options": {

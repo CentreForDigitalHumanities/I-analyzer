@@ -109,7 +109,7 @@ def _parse_field(field_data: Dict, configuration: Optional[CorpusConfiguration] 
         'float': _parse_numeric_field,
         'date': _parse_date_field,
         'boolean': _parse_boolean_field,
-        'geo_json': _parse_geo_field,
+        'geo_point': _parse_geo_field,
     }
     field = parsers[field_type](field, field_data)
 
@@ -269,7 +269,7 @@ def _parse_boolean_field(field: Field, field_data: Dict) -> Field:
 
 
 def _parse_geo_field(field: Field, field_data: Dict) -> Field:
-    field.display_type = 'keyword'
+    field.display_type = 'geo_point'
     field.es_mapping = es_mappings.geo_mapping()
     field.search_filter = {}
     return field

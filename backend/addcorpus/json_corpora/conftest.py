@@ -115,7 +115,7 @@ def geo_field_json():
         'name': 'location',
         'display_name': 'Location',
         'description': 'Location where the text was published',
-        'type': 'geo_json',
+        'type': 'geo_point',
         'options': {
             'search': False,
             'filter': 'none',

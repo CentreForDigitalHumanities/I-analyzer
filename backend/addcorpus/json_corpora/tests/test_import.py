@@ -131,7 +131,7 @@ def test_parse_boolean_field(boolean_field_json):
 def test_parse_geo_field(geo_field_json):
     field = _parse_field(geo_field_json)
     assert field.name == 'location'
-    assert field.display_type == 'keyword'
+    assert field.display_type == 'geo_point'
     assert field.search_filter == {}
     assert field.results_overview == False
     assert field.csv_core == False

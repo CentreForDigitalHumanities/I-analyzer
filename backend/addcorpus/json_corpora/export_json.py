@@ -52,7 +52,7 @@ def export_corpus_options(configuration: CorpusConfiguration) -> Dict:
 
 
 def export_json_field(field: Field) -> Dict:
-    return {
+    data = {
         'name': field.name,
         'display_name': field.display_name,
         'description': field.description,
@@ -60,6 +60,9 @@ def export_json_field(field: Field) -> Dict:
         'options': export_field_options(field),
         'extract': export_field_extract(field)
     }
+    if field.language:
+        data['language'] = field.language
+    return data
 
 
 def export_field_type(field: Field) -> str:
@@ -82,9 +85,10 @@ def export_field_options(field: Field) -> Dict:
 def export_field_filter(field: Field) -> str:
     if field.search_filter != {}:
         return 'show'
-    if primary_mapping_type(field.es_mapping) == 'text' or field.display_type == 'url':
-        return 'none'
-    return 'hide'
+    filterable_mappings = ['keyword', 'int', 'float', 'date', 'boolean']
+    if primary_mapping_type(field.es_mapping) in filterable_mappings and field.display_type != 'url':
+        return 'hide'
+    return 'none'
 
 
 def export_field_extract(field: Field) -> Dict:
