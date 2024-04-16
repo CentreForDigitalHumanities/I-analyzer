@@ -30,25 +30,8 @@ def test_import(db, json_corpus_data):
     assert line_field.display_type == 'text_content'
 
 
-def test_parse_content_field():
-    data = {
-        'name': 'content',
-        'display_name': 'Content',
-        'description': 'Bla bla bla',
-        'type': 'text_content',
-        'language': 'en',
-        'options': {
-            'search': True,
-            'filter': 'none',
-            'preview': True,
-            'visualize': True,
-            'sort': False,
-            'hidden': False
-        },
-        'extract': {'column': 'content'}
-    }
-
-    field = _parse_field(data)
+def test_parse_content_field(content_field_json):
+    field = _parse_field(content_field_json)
     assert field.name == 'content'
     assert field.display_name == 'Content'
     assert field.display_type == 'text_content'
@@ -68,24 +51,8 @@ def test_parse_content_field():
     assert field.extract_column == 'content'
 
 
-def test_parse_keyword_field():
-    data = {
-        'name': 'author',
-        'display_name': 'Author',
-        'description': 'Author of the text',
-        'type': 'text_metadata',
-        'options': {
-            'search': True,
-            'filter': 'show',
-            'preview': True,
-            'visualize': True,
-            'sort': False,
-            'hidden': False
-        },
-        'extract': {'column': 'author'}
-    }
-
-    field = _parse_field(data)
+def test_parse_keyword_field(keyword_field_json):
+    field = _parse_field(keyword_field_json)
     assert field.name == 'author'
     assert field.display_type == 'keyword'
     assert field.search_filter['name'] == 'MultipleChoiceFilter'
@@ -99,24 +66,8 @@ def test_parse_keyword_field():
     assert field.language == ''
 
 
-def test_parse_int_field():
-    data = {
-        'name': 'year',
-        'display_name': 'Year',
-        'description': 'Year in which the text was written',
-        'type': 'integer',
-        'options': {
-            'search': False,
-            'filter': 'show',
-            'preview': False,
-            'visualize': True,
-            'sort': True,
-            'hidden': False
-        },
-        'extract': {'column': 'year'}
-    }
-
-    field = _parse_field(data)
+def test_parse_int_field(int_field_json):
+    field = _parse_field(int_field_json)
     assert field.name == 'year'
     assert field.display_type == 'integer'
     assert field.search_filter['name'] == 'RangeFilter'
@@ -131,24 +82,8 @@ def test_parse_int_field():
     assert field.searchable == False
 
 
-def test_parse_float_field():
-    data = {
-        'name': 'ocr_confidence',
-        'display_name': 'OCR confidence',
-        'description': 'Confidence level of optical character recognition output',
-        'type': 'float',
-        'options': {
-            'search': False,
-            'filter': 'hide',
-            'preview': False,
-            'visualize': False,
-            'sort': False,
-            'hidden': False
-        },
-        'extract': {'column': 'ocr'}
-    }
-
-    field = _parse_field(data)
+def test_parse_float_field(float_field_json):
+    field = _parse_field(float_field_json)
     assert field.name == 'ocr_confidence'
     assert field.display_type == 'float'
     assert field.search_filter == {}
@@ -163,24 +98,8 @@ def test_parse_float_field():
     assert field.downloadable == True
 
 
-def test_parse_date_field():
-    data = {
-        'name': 'date',
-        'display_name': 'Date',
-        'description': 'Date on which the text was written',
-        'type': 'date',
-        'options': {
-            'search': False,
-            'filter': 'show',
-            'preview': True,
-            'visualize': True,
-            'sort': True,
-            'hidden': False
-        },
-        'extract': {'column': 'date'}
-    }
-
-    field = _parse_field(data)
+def test_parse_date_field(date_field_json):
+    field = _parse_field(date_field_json)
     assert field.name == 'date'
     assert field.display_type == 'date'
     assert field.search_filter['name'] == 'DateFilter'
@@ -194,24 +113,8 @@ def test_parse_date_field():
     assert field.searchable == False
 
 
-def test_parse_boolean_field():
-    data = {
-        'name': 'author_known',
-        'display_name': 'Author known',
-        'description': 'Whether the author of the text is known',
-        'type': 'boolean',
-        'options': {
-            'search': False,
-            'filter': 'show',
-            'preview': False,
-            'visualize': True,
-            'sort': False,
-            'hidden': False
-        },
-        'extract': {'column': 'author_known'}
-    }
-
-    field = _parse_field(data)
+def test_parse_boolean_field(boolean_field_json):
+    field = _parse_field(boolean_field_json)
     assert field.name == 'author_known'
     assert field.display_type == 'boolean'
     assert field.search_filter['name'] == 'BooleanFilter'
@@ -225,24 +128,8 @@ def test_parse_boolean_field():
     assert field.searchable == False
 
 
-def test_parse_geo_field():
-    data = {
-        'name': 'location',
-        'display_name': 'Location',
-        'description': 'Location where the text was published',
-        'type': 'geo_json',
-        'options': {
-            'search': False,
-            'filter': 'none',
-            'preview': False,
-            'visualize': False,
-            'sort': False,
-            'hidden': False
-        },
-        'extract': {'column': 'location'}
-    }
-
-    field = _parse_field(data)
+def test_parse_geo_field(geo_field_json):
+    field = _parse_field(geo_field_json)
     assert field.name == 'location'
     assert field.display_type == 'keyword'
     assert field.search_filter == {}
