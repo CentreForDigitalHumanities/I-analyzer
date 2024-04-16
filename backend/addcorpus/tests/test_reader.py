@@ -18,8 +18,9 @@ def test_make_reader_python(mock_corpus):
 
 
 def test_make_reader_json(json_mock_corpus):
-    data_dir = os.path.join(HERE, 'csv_example')
-    reader = make_reader(json_mock_corpus, data_dir)
+    json_mock_corpus.configuration.data_directory = os.path.join(HERE, 'csv_example')
+    json_mock_corpus.configuration.save()
+    reader = make_reader(json_mock_corpus)
     docs = list(reader.documents())
     # The number of lines differs because of different corpus configuration
     assert len(docs) == 10

@@ -15,7 +15,7 @@ def make_reader_field(corpus_field: Field) -> ReaderField:
     )
 
 
-def make_reader(corpus: Corpus, data_directory: str = None) -> Reader:
+def make_reader(corpus: Corpus) -> Reader:
     '''
     From a corpus, returns a Reader object that allows source extraction
 
@@ -26,13 +26,14 @@ def make_reader(corpus: Corpus, data_directory: str = None) -> Reader:
         return load_corpus_definition(corpus.name)
 
     class NewReader(CSVReader):
+        data_directory = corpus.configuration.data_directory
         delimiter = corpus.configuration.source_data_delimiter
         fields = [make_reader_field(f)
                   for f in corpus.configuration.fields.all()]
 
         def sources(self, *args, **kwargs):
             return (
-                (fn, {}) for fn in glob.glob(f'{data_directory}/**/*.csv', recursive=True)
+                (fn, {}) for fn in glob.glob(f'{self.data_directory}/**/*.csv', recursive=True)
             )
 
     return NewReader()
