@@ -11,7 +11,7 @@ import { showLoading } from '../../utils/utils';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements OnChanges {
+export class MapVizComponent implements OnChanges {
 
   @Input() visualizedField: CorpusField;
   @Input() queryModel: QueryModel;

@@ -22,7 +22,7 @@ import { PaletteSelectComponent } from './visualization-footer/palette-select/pa
 import { VisualizationFooterComponent } from './visualization-footer/visualization-footer.component';
 import { VisualizationComponent } from './visualization.component';
 import { WordcloudComponent } from './wordcloud/wordcloud.component';
-import { MapComponent } from './map/map.component';
+import { MapVizComponent } from './map/map.component';
 
 
 @NgModule({
@@ -40,7 +40,7 @@ import { MapComponent } from './map/map.component';
         FreqtableComponent,
         VisualizationComponent,
         PaletteSelectComponent,
-        MapComponent,
+        MapVizComponent,
     ],
     imports: [
         ChartModule,

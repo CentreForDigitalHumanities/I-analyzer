@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { MapComponent } from './map.component';
+import { MapVizComponent } from './map.component';
 import { commonTestBed } from '../../common-test-bed';
 
-describe('MapComponent', () => {
-  let component: MapComponent;
-  let fixture: ComponentFixture<MapComponent>;
+describe('MapVizComponent', () => {
+  let component: MapVizComponent;
+  let fixture: ComponentFixture<MapVizComponent>;
 
   beforeEach(waitForAsync(() => {
     commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MapComponent);
+    fixture = TestBed.createComponent(MapVizComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
