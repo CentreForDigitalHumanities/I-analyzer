@@ -26,7 +26,6 @@ MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
 
-
 class Corpus(models.Model):
     name = models.SlugField(
         max_length=MAX_LENGTH_NAME,

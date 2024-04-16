@@ -8,7 +8,7 @@ from addcorpus import es_mappings
 from addcorpus.constants import VisualizationType
 from addcorpus.validation.publishing import _any_date_fields
 from django.conf import settings
-
+from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER, DATE_FORMAT
 
 def import_json_corpus(data: Dict) -> Corpus:
     name = get_path(data, 'name')
@@ -51,12 +51,12 @@ def _parse_configuration(data: Dict, configuration: CorpusConfiguration) -> Corp
     configuration.document_context = get_path(
         data, 'options', 'document_context') or {}
     configuration.source_data_delimiter = get_path(
-        data, 'source_data', 'options', 'delimiter') or ','
+        data, 'source_data', 'options', 'delimiter') or DEFAULT_CSV_DELIMITER
     return configuration
 
 
 def _parse_date(date: str):
-    return datetime.strptime(date, '%Y-%m-%d').date()
+    return datetime.strptime(date, DATE_FORMAT).date()
 
 
 def _import_fields(data: Dict, configuration: CorpusConfiguration) -> None:
