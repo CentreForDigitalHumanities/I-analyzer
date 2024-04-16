@@ -186,3 +186,7 @@ def validate_sort_configuration(sort_config):
 
     if type(ascending) is not bool:
         raise ValidationError(f'Sort configuration has invalid "ascending" property: {ascending}')
+
+def validate_source_data_directory(value):
+    if value and not os.path.isdir(value):
+        raise ValidationError(f'{value} is not a directory')
