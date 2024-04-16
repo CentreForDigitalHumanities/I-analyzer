@@ -32,7 +32,7 @@ The corpus class should define the following properties:
 
 - `title`: Title to be used in the interface.
 - `description`: Short description, appears as a subtitle in the interface.
-- `data_directory`: Path to the source files. Always get this from the setttings.
+- `data_directory`: Path to the directory containing source files. Always get this from the setttings. You can also set this to `None`; usually because you are getting source data from an API instead of a local directory.
 - `min_date`, `max_date`: The minimum and maximum dates for documents.
 - `es_index`: the name of the index in elasticsearch.
 - `image`: a path or url to the image used for the corpus in the interface.
