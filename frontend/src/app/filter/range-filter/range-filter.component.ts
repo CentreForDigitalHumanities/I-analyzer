@@ -6,6 +6,7 @@ import { Subject, interval } from 'rxjs';
 import { debounce, takeUntil } from 'rxjs/operators';
 import { Aggregator, MaxAggregator, MinAggregator } from '../../models/aggregation';
 import { SearchService } from '../../services';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-range-filter',
@@ -61,14 +62,14 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
     }
 
     private fetchMin(filter: RangeFilter): Promise<number> {
-        if (filter.defaultData.min) {
+        if (!_.isUndefined(filter.defaultData.min)) {
             return Promise.resolve(filter.defaultData.min);
         }
         return this.fetchAggregation(new MinAggregator(filter.corpusField));
     }
 
     private fetchMax(filter: RangeFilter): Promise<number> {
-        if (filter.defaultData.max) {
+        if (!_.isUndefined(filter.defaultData.max)) {
             return Promise.resolve(filter.defaultData.max);
         }
         return this.fetchAggregation(new MaxAggregator(filter.corpusField));
