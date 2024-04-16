@@ -60,6 +60,7 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'word_models_present',
         'default_sort',
         'language_field',
+        'data_directory',
     ]
 
     try:
