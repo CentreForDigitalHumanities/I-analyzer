@@ -3,8 +3,9 @@ import pytest
 from django.conf import settings
 from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
 from addcorpus.models import Corpus, CorpusConfiguration
-from addcorpus.python_corpora.save_corpus import _save_field_in_database, \
+from addcorpus.python_corpora.save_corpus import (_save_field_in_database,
     load_and_save_all_corpora, _save_or_skip_corpus
+)
 
 
 def test_saved_corpora(db):
@@ -21,10 +22,10 @@ def test_saved_corpora(db):
         assert corpus.configuration_obj
         assert corpus.active
 
-    assert len(Corpus.objects.filter(
-        has_python_definition=True)) == len(configured)
-    assert len(CorpusConfiguration.objects.filter(
-        corpus__has_python_definition=True)) == len(configured)
+    assert Corpus.objects.filter(
+        has_python_definition=True).count() == len(configured)
+    assert CorpusConfiguration.objects.filter(
+        corpus__has_python_definition=True).count() == len(configured)
 
 def test_no_errors_when_saving_corpora(db, capsys):
     # try running the save function

@@ -1,4 +1,3 @@
-import json
 import os
 from addcorpus.models import Corpus
 from addcorpus.reader import make_reader
@@ -7,8 +6,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def test_make_reader_python(mock_corpus):
-    py_corpus = Corpus.objects.get(name=mock_corpus)
-    reader = make_reader(py_corpus)
+    corpus = Corpus.objects.get(name=mock_corpus)
+    reader = make_reader(corpus)
     docs = list(reader.documents())
     # The number of lines differs because of different corpus configuration
     assert len(docs) == 7
