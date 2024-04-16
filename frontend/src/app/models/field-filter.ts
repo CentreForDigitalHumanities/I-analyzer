@@ -73,11 +73,23 @@ export interface DateFilterData {
     max?: Date;
 }
 
+/**
+ * Filter for date fields
+ *
+ * Filter data is a range, e.g. [1st Jan 2000, 31st Dec 2000]. The min and max values can
+ * also be undefined, which means no bound in that direction.
+ *
+ * The default data is always the widest possible range. This can be specified on the
+ * field; if not specified, the default range will be (∞,∞). However, note that if the
+ * DateFilter is controlled by a DateFilterComponent, the component will fill in finite
+ * bounds based on an aggregation.
+ */
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
     makeDefaultData(filterOptions: DateFilterOptions) {
+        const parse = value => _.isNull(value) ? undefined : this.parseDate(value);
         return {
-            min: _.isNull(filterOptions.lower) ? undefined : this.parseDate(filterOptions.lower),
-            max: _.isNull(filterOptions.upper) ? undefined : this.parseDate(filterOptions.upper)
+            min: parse(filterOptions.lower),
+            max: parse(filterOptions.upper)
         };
     }
 
@@ -137,6 +149,9 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
     }
 }
 
+/**
+ * Filter for boolean fields
+ */
 export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
@@ -175,6 +190,9 @@ export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter>
 
 type MultipleChoiceFilterData = string[];
 
+/**
+ * Filter for keyword fields
+ */
 export class MultipleChoiceFilter extends AbstractFieldFilter<MultipleChoiceFilterData, EsTermsFilter> {
     makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
@@ -209,15 +227,27 @@ export class MultipleChoiceFilter extends AbstractFieldFilter<MultipleChoiceFilt
 }
 
 export interface RangeFilterData {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
 }
 
+/**
+ * Filter for int and float fields
+ *
+ * Filter data is a range, e.g. [0, 100]. The min and max values can also be undefined, which
+ * means no bound in that direction.
+ *
+ * The default data is always the widest possible range. This can be specified on the field;
+ * if not specified, the default range will be (∞,∞). However, note that if the RangeFilter
+ * is controlled by a RangeFilterComponent, the component will fill in finite bounds based
+ * on an aggregation.
+ */
 export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
+        const parse = (value) => _.isNull(value) ? undefined : value;
         return {
-            min: _.isNull(filterOptions.lower) ? undefined : filterOptions.lower,
-            max: _.isNull(filterOptions.upper) ? undefined : filterOptions.upper
+            min: parse(filterOptions.lower),
+            max: parse(filterOptions.upper)
         };
     }
 
@@ -269,6 +299,12 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
     }
 }
 
+/**
+ * Filter for fields with no filter specification
+ *
+ * This filter can be activated when the user requests to filter on a specific
+ * value.
+ */
 export class AdHocFilter extends AbstractFieldFilter<any, EsTermFilter> {
     makeDefaultData(filterOptions: FieldFilterOptions) { }
 
