@@ -8,7 +8,9 @@ def export_json_corpus(corpus: Corpus) -> Dict:
     data = {'name': corpus.name}
     data['meta'] = export_corpus_meta(config)
     data['source_data'] = export_corpus_source_data(config)
-    data['options'] = export_corpus_options(config)
+    options = export_corpus_options(config)
+    if options:
+        data['options'] = options
     data['fields'] = [
         export_json_field(field) for field in config.fields.all()
     ]
@@ -38,7 +40,14 @@ def export_corpus_source_data(configuration: CorpusConfiguration) -> Dict:
     return data
 
 def export_corpus_options(configuration: CorpusConfiguration) -> Dict:
-    return {}
+    data = {}
+    if configuration.document_context:
+        data['document_context'] = configuration.document_context
+    if configuration.default_sort:
+        data['default_sort'] = configuration.default_sort
+    if configuration.language_field:
+        data['language_field'] = configuration.language_field
+    return data
 
 
 def export_json_field(field: Field) -> Dict:
