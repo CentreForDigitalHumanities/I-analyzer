@@ -2,6 +2,7 @@ from typing import Dict
 from datetime import date
 from addcorpus.models import Corpus, CorpusConfiguration, Field
 from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER, DATE_FORMAT
+from addcorpus.es_mappings import primary_mapping_type
 
 def export_json_corpus(corpus: Corpus) -> Dict:
     config = corpus.configuration
@@ -81,7 +82,7 @@ def export_field_options(field: Field) -> Dict:
 def export_field_filter(field: Field) -> str:
     if field.search_filter != {}:
         return 'show'
-    if field.display_type == 'text_content' or field.display_type == 'url':
+    if primary_mapping_type(field.es_mapping) == 'text' or field.display_type == 'url':
         return 'none'
     return 'hide'
 
