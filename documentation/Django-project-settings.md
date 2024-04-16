@@ -6,11 +6,11 @@ This file describes how to configure project settings in Django.
 
 We keep different settings files to handle different environments.
 
-`settings.py` is the default settings file in a development file. The version in the repository is replaced in our deployment setup. This means that what you write here will affect all development environments, but not production environments.
+`settings.py` is the default settings file in a development file. The version in the repository is replaced in our deployment setup. This means that what you write here will affect all development environments, but not production environments. Developers can override settings in their own environment using `settings_local`, but this is a good place for sensible defaults.
 
 `common_settings.py` is intended for "universal" project settings that apply in both production and development servers. It is imported by `settings.py` on both development and production.
 
-`settings_local.py` is ignored in version control, but the development configuration `settings.py` will attempt to import it. This file can be used for sensitive information configurations that are unique to your setup, such as which corpora you're using. You can also use this to override any existing settings.
+`settings_local.py` is ignored in version control, but the development configuration `settings.py` will attempt to import it. This file can be used for sensitive information, or configurations that are unique to your setup, such as which corpora you're using. You can also use this to override any existing settings.
 
 `settings_test.py` is used during unit tests. It imports everything configured in `settings.py`, but can add or override some settings. Note that you can also adjust settings for individual tests.
 
@@ -32,11 +32,11 @@ For project settings supported by external libraries, see:
 - [configuration for djangosaml2](https://djangosaml2.readthedocs.io/contents/setup.html#configuration)
 - [configuration for Celery](https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html)
 
-In addition, I-analyzer add the following settings.
+In addition, I-analyzer adds the following settings.
 
 ### `SERVERS`
 
-Configuration of elasticsearch servers. This is a dictionary. The keys are the (internal) names you give to each server. (You can connnect more than one server, though most of the time, you only need one.)
+Configuration of elasticsearch servers. This is a dictionary. The keys are the (internal) names you give to each server. (You can connnect more than one server, though in most cases, you only need one.)
 
 The values in the dictionary give specifications.
 
@@ -47,17 +47,12 @@ The values in the dictionary give specifications.
 - `'scroll_timeout'`: Time before scroll results time out
 - `'scroll_page_size'`: Number of results per scroll page
 
-The following settings may appear in legacy configurations, but are no longer supported:
-
-- `'username'`
-- `'password'`
-- `'overview_query_size'`
-
 The following optional settings are implemented but have no documentation:
 
 - `'certs_location'`
 - `'api_key'`
 - `'api_id'`
+
 
 #### Setting a default server
 
@@ -99,7 +94,7 @@ By default, a development server will use the [console backend](https://docs.dja
 
 ### `NLTK_DATA_PATH`
 
-A directory where corpora downloaded from [NLTK](https://nltk.readthedocs.io/en/latest/) can be stored.
+Some functionality on I-analyzer will download the stopwords corpus from [NLTK](https://nltk.readthedocs.io/en/latest/). This setting controls the directory where data downloaded from NLTK can be stored.
 
 ### `CSV_FILES_PATH`
 
@@ -108,12 +103,6 @@ Path to the directory where prepared download files for users should be stored.
 ### `WORDCLOUD_LIMIT`
 
 The maximum number of documents that is analysed in the wordcloud (a.k.a. "most frequent words") visualisation.
-
-### `DIRECT_DOWNLOAD_LIMIT`
-
-The frontend clients has two methods for downloading search results; when the user clicks "download", they can either receive the file in the same session, or be sent an email with a download link. The latter method is more suitable for large downloads.
-
-This setting controls the limit of when files can be downloaded directly.
 
 ### `BASE_URL`
 
