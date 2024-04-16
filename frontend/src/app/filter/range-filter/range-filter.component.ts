@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { RangeFilterData, RangeFilter } from '../../models';
+import { RangeFilterData, RangeFilter, QueryModel } from '../../models';
 import { BaseFilterComponent } from '../base-filter.component';
 import { Subject, interval } from 'rxjs';
 import { debounce, takeUntil } from 'rxjs/operators';
-import { MaxAggregator, MinAggregator } from '../../models/aggregation';
+import { Aggregator, MaxAggregator, MinAggregator } from '../../models/aggregation';
 import { SearchService } from '../../services';
 
 @Component({
@@ -64,19 +64,20 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
         if (filter.defaultData.min) {
             return Promise.resolve(filter.defaultData.min);
         }
-        const aggregator = new MinAggregator(filter.corpusField);
-        return this.searchService.aggregateSearch(
-            this.queryModel.corpus, this.queryModel, aggregator
-        );
+        return this.fetchAggregation(new MinAggregator(filter.corpusField));
     }
 
     private fetchMax(filter: RangeFilter): Promise<number> {
         if (filter.defaultData.max) {
             return Promise.resolve(filter.defaultData.max);
         }
-        const aggregator = new MaxAggregator(filter.corpusField);
+        return this.fetchAggregation(new MaxAggregator(filter.corpusField));
+    }
+
+    private fetchAggregation<Result>(aggregator: Aggregator<Result>): Promise<Result> {
+        const queryModel = new QueryModel(this.queryModel.corpus);
         return this.searchService.aggregateSearch(
-            this.queryModel.corpus, this.queryModel, aggregator
+            queryModel.corpus, queryModel, aggregator
         );
     }
 }

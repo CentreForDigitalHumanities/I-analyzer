@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import * as _ from 'lodash';
 
-import { DateFilter, DateFilterData } from '../../models';
+import { DateFilter, DateFilterData, QueryModel } from '../../models';
 import { BaseFilterComponent } from '../base-filter.component';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { MaxDateAggregator, MinDateAggregator } from '../../models/aggregation';
+import { Aggregator, MaxDateAggregator, MinDateAggregator } from '../../models/aggregation';
 import { SearchService } from '../../services';
 
 @Component({
@@ -49,20 +49,20 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilter> {
         if (filter.defaultData.min) {
             return Promise.resolve(filter.defaultData.min);
         }
-        const aggregator = new MinDateAggregator(filter.corpusField);
-        return this.searchService.aggregateSearch(
-            this.queryModel.corpus, this.queryModel, aggregator
-        );
+        return this.fetchAggregation(new MinDateAggregator(filter.corpusField));
     }
 
     private fetchMax(filter: DateFilter): Promise<Date> {
         if (filter.defaultData.max) {
             return Promise.resolve(filter.defaultData.max);
         }
-        const aggregator = new MaxDateAggregator(filter.corpusField);
-        return this.searchService.aggregateSearch(
-            this.queryModel.corpus, this.queryModel, aggregator
-        );
+        return this.fetchAggregation(new MaxDateAggregator(filter.corpusField));
     }
 
+    private fetchAggregation<Result>(aggregator: Aggregator<Result>): Promise<Result> {
+        const queryModel = new QueryModel(this.queryModel.corpus);
+        return this.searchService.aggregateSearch(
+            queryModel.corpus, queryModel, aggregator
+        );
+    }
 }
