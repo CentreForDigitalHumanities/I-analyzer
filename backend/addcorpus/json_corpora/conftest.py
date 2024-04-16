@@ -126,3 +126,22 @@ def geo_field_json():
         },
         'extract': {'column': 'location'}
     }
+
+@pytest.fixture(
+    params=['content', 'keyword', 'int', 'float', 'date', 'boolean', 'geo']
+)
+def any_field_json(
+    request, content_field_json, keyword_field_json, int_field_json, float_field_json,
+    date_field_json, boolean_field_json, geo_field_json
+):
+    field_type = request.param
+    funcs = {
+        'content': content_field_json,
+        'keyword': keyword_field_json,
+        'int': int_field_json,
+        'float': float_field_json,
+        'date': date_field_json,
+        'boolean': boolean_field_json,
+        'geo': geo_field_json,
+    }
+    return funcs[field_type]
