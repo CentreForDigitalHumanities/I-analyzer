@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
+import { MapComponent } from '@maplibre/ngx-maplibre-gl';
 import {
     ApiService,
     DialogService,
@@ -48,6 +49,7 @@ import { MapVizComponent } from './map/map.component';
         HttpClientModule,
         ChipsModule,
         DropdownModule,
+        MapComponent,
     ],
     exports: [
         TermComparisonEditorComponent,
