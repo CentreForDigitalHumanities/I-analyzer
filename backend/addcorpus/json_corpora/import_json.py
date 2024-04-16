@@ -189,7 +189,7 @@ def _parse_language(field_data: Dict) -> str:
 
 def _parse_url_field(field: Field, field_data: Dict) -> Field:
     field.es_mapping = es_mappings.keyword_mapping()
-    field.display_type = 'keyword'
+    field.display_type = 'url'
     field.search_filter = {}
     return field
 

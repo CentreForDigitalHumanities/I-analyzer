@@ -64,7 +64,8 @@ export interface DocumentContext {
 }
 
 
-export type FieldDisplayType = 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean';
+export type FieldDisplayType =
+    'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean' | 'url';
 
 /** Corpus field info as sent by the backend api */
 export interface ApiCorpusField {

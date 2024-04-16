@@ -69,7 +69,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     isUrlField(field: CorpusField) {
-        return field.name === 'url' || field.name.startsWith('url_');
+        return field.displayType === 'url';
     }
 
     isGeoPointField(field: CorpusField) {

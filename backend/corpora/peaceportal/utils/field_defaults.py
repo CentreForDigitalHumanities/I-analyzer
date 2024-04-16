@@ -30,6 +30,7 @@ def url():
     return FieldDefinition(
         name='url',
         display_name='Source URL',
+        display_type='url',
         description='URL of the inscription entry in the source database.',
         es_mapping=keyword_mapping(),
         search_field_core=True

@@ -81,7 +81,7 @@ def export_field_options(field: Field) -> Dict:
 def export_field_filter(field: Field) -> str:
     if field.search_filter != {}:
         return 'show'
-    if field.display_type == 'text_content':
+    if field.display_type == 'text_content' or field.display_type == 'url':
         return 'none'
     return 'hide'
 
