@@ -35,4 +35,4 @@ However, even if you cite an external source, a proper account of your research 
 
 ## Citing I-analyzer itself
 
-To cite I-analyzer as a piece of software, consult our [zenodo page](https://zenodo.org/record/8091461). This page details how you can cite I-analyzer; it includes templates for various citation styles, and the option to export a template as a bibtex file, among others.
+To cite I-analyzer as a piece of software, consult our [zenodo page](https://zenodo.org/doi/10.5281/zenodo.8064133). This page details how you can cite I-analyzer; it includes templates for various citation styles, and the option to export a template as a bibtex file, among others.

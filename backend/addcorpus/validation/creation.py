@@ -2,14 +2,18 @@
 This module defines functions to check if a corpus can be saved to the database
 '''
 
-from django.core.exceptions import ValidationError
-from langcodes import tag_is_valid
 import mimetypes
-import warnings
 import os
+import warnings
 
-from addcorpus.constants import MappingType, VisualizationType, FORBIDDEN_FIELD_NAMES
-from addcorpus.python_corpora.filters import VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
+from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
+                                 VisualizationType)
+from addcorpus.python_corpora.filters import \
+    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
+from django.core.exceptions import ValidationError
+
+from langcodes import tag_is_valid
+
 
 def primary_mapping_type(es_mapping):
     return es_mapping.get('type', None)

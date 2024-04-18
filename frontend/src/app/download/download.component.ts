@@ -31,7 +31,7 @@ export class DownloadComponent implements OnChanges {
 
     actionIcons = actionIcons;
 
-    private directDownloadLimit = environment.directDownloadLimit;
+    directDownloadLimit = environment.directDownloadLimit;
 
     private downloadsPageLink = {
         text: 'view downloads',

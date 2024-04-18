@@ -51,7 +51,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
-    description_page = 'jewish_migration.md'
     languages = ['en']
 
     category = 'inscription'

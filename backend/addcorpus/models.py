@@ -1,30 +1,24 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import Group
-from django.contrib import admin
-from django.core.exceptions import ValidationError
-from django.db.models.constraints import UniqueConstraint
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
-    validate_language_code,
-    validate_markdown_filename_extension,
-    validate_es_mapping, validate_mimetype, validate_search_filter,
-    validate_name_is_not_a_route_parameter, validate_search_filter_with_mapping,
+    validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
+    validate_mimetype,
+    validate_name_is_not_a_route_parameter, validate_search_filter,
+    validate_search_filter_with_mapping,
     validate_searchable_field_has_full_text_search,
-    validate_visualizations_with_mapping, validate_implication,
-    validate_sort_configuration, validate_field_language,
-)
-from addcorpus.validation.indexing import (
-    validate_has_configuration,
-    validate_essential_fields,
-    validate_language_field
-)
-from addcorpus.validation.publishing import (
-    validate_ngram_has_date_field,
-    validate_default_sort,
-)
+    validate_sort_configuration, validate_visualizations_with_mapping)
+from addcorpus.validation.indexing import (validate_essential_fields,
+                                           validate_has_configuration,
+                                           validate_language_field)
+from addcorpus.validation.publishing import (validate_default_sort,
+                                             validate_ngram_has_date_field)
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.constraints import UniqueConstraint
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
@@ -166,7 +160,8 @@ class CorpusConfiguration(models.Model):
         help_text='short description of the corpus',
     )
     document_context = models.JSONField(
-        null=True,
+        blank=True,
+        default=dict,
         help_text='specification of how documents are grouped into collections',
     )
     es_alias = models.SlugField(
@@ -223,6 +218,16 @@ class CorpusConfiguration(models.Model):
         blank=True,
         help_text='name of the field that specifies the language of documents (if any);'
             'required to use "dynamic" language on fields',
+    )
+    source_data_delimiter = models.CharField(
+        max_length=1,
+        choices=[
+            (',','comma'),
+            (';','semicolon'),
+            ('\t','tab')
+        ],
+        blank=True,
+        help_text='delimiter used in (CSV) source data files',
     )
 
     def __str__(self):
@@ -357,11 +362,15 @@ class Field(models.Model):
     language = models.CharField(
         max_length=64,
         blank=True,
-        null=False,
         validators=[validate_field_language],
         help_text='specification for the language of this field; can be blank, an IETF '
             'tag, or "dynamic"; "dynamic" means the language is determined by the '
             'language_field of the corpus configuration',
+    )
+    extract_column = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text='column name in CSV source files from which to extract this field',
     )
 
     class Meta:

@@ -69,7 +69,8 @@ SERVERS = {
         'max_chunk_bytes': 1*1024*1024,  # Maximum size of ES chunk during bulk operation
         'bulk_timeout': '60s',  # Timeout of ES bulk operation
         'scroll_timeout': '3m',  # Time before scroll results time out
-        'scroll_page_size': 5000  # Number of results per scroll page
+        'scroll_page_size': 5000,  # Number of results per scroll page
+        'index_prefix': 'ianalyzer'  # Prefix applied to index names created on this server
     }
 }
 
