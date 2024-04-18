@@ -38,10 +38,16 @@
         <div class="box">
             <ia-tabs [activeTab]="activeTab">
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
-                    <div class="content"
+                    <div *ngIf="document.annotations$ | async" class="content"
                         [attr.lang]="document.language(field)"
-                        [innerHtml]="field | elasticsearchHighlight:document">
+                        [innerHtml]="field | entity:document">
                     </div>
+                    <ng-template #showHighlights>
+                        <div class="content"
+                            [attr.lang]="document.language(field)"
+                            [innerHtml]="field | elasticsearchHighlight:document">
+                        </div>
+                    </ng-template>
                     <ia-entity-legend [entities]="document.entities"></ia-entity-legend>
                 </ng-template>
                 <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="documentIcons.scan">

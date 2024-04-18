@@ -52,7 +52,6 @@ export class DocumentViewComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.view) {
             this.activeTab = this.tabFromView(this.view);
-            this.document.fetchEntities();
         }
     }
 

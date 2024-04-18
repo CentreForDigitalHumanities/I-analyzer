@@ -1,3 +1,3 @@
 <div *ngFor="let entity of entities">
-    <span class="dot" [ngClass]="formatClass(entity)"></span><span>{{entity}}</span>
+    <span class="dot" [ngClass]="entity | formatEntityClass"></span><span>{{entity}}</span>
 </div>

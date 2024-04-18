@@ -45,7 +45,7 @@ def test_find_entities():
     text = '[Guybrush Threepwood](PER) is looking for treasure on [Monkey Island](LOC)'
     entity_classes = set()
     output = viewset.find_entities(text, entity_classes)
-    expected = '<mark class="entity-per">Guybrush Threepwood</mark> is looking for treasure on <mark class="entity-loc">Monkey Island</mark>'
+    expected = '<span class="entity-per">Guybrush Threepwood</span> is looking for treasure on <span class="entity-loc">Monkey Island</span>'
     assert output == expected
     assert len(list(entity_classes)) == 2
     assert all(entity in list(entity_classes) for entity in ['PER', 'LOC'])

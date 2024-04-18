@@ -30,6 +30,7 @@ export class FoundDocument {
 
     /** named entities associated with the document */
     entities: string[];
+    annotations$: Observable<{[fieldName: string]: string}[]>;
     private tagsChanged$ = new Subject<void>();
 
     constructor(
@@ -52,6 +53,11 @@ export class FoundDocument {
         // add/removeTag, async pipe in document-tags.component template
         this.tags$ = merge(created$, this.tagsChanged$).pipe(
             mergeMap(() => this.fetchTags()),
+            shareReplay(1),
+        );
+
+        this.annotations$ = created$.pipe(
+            mergeMap(() => this.fetchAnnotatedEntities()),
             shareReplay(1),
         );
     }
@@ -118,12 +124,16 @@ export class FoundDocument {
         );
     }
 
-
-    fetchEntities(): Promise<void> {
-        return this.entityService.getDocumentEntities(this.corpus, this.id).then((result) => {
-            this.entities = result.entities;
-            result.annotations.map((annotation)=> _.set(this.fieldValues, _.keys(annotation)[0], _.values(annotation)[0]));
+    private fetchAnnotatedEntities(): Observable<{[fieldName: string]: string}[]> {
+        const response$ = this.entityService.getDocumentEntities(this.corpus, this.id);
+        response$.pipe(
+            map( response => response.entities )
+        ).toPromise().then((entities) => {
+            this.entities = entities;
         });
+        return response$.pipe(
+            map( response => response.annotations)
+        );
     }
 
     private setTags(tags: Tag[]): Observable<Tag[]> {
