@@ -16,7 +16,7 @@
             <span class="panel-icon" aria-hidden="true">
                 <fa-icon [icon]="navIcons.manual"></fa-icon>
             </span>
-            <span [innerHtml]="page.title | highlight:highlightText"></span>
+            <span [innerHtml]="page.title | regexHighlight:highlightText"></span>
         </a>
     </ng-container>
 </nav>

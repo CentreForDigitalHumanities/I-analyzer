@@ -9,7 +9,7 @@
                             <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
                         </td>
                     </tr>
-                    <tr *ngIf="(document?.tags$ | async) as tags">
+                    <tr *ngIf="(document.tags$ | async) as tags">
                         <th>Your tags</th>
                         <td>
                             <ia-document-tags [document]="document" [tags]="tags"></ia-document-tags>
@@ -21,9 +21,9 @@
                             <td *ngIf="!isUrlField(field) && !isGeoPointField(field)"
                                 data-test-field-value
                                 [attr.lang]="document.language(field)"
-                                [innerHtml]="formatInnerHtml(field)">
+                                [innerHtml]="field | elasticsearchHighlight:document">
                             </td>
-                            <td *ngIf="isGeoPointField(field)">{{displayGeoPointField(field)}}</td>
+                            <td *ngIf="isGeoPointField(field)">{{field | geoData:document}}</td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
                             </td>
@@ -40,7 +40,7 @@
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
                     <div class="content"
                         [attr.lang]="document.language(field)"
-                        [innerHtml]="formatInnerHtml(field)">
+                        [innerHtml]="field | elasticsearchHighlight:document">
                     </div>
                     <ia-entity-legend [entities]="document.entities"></ia-entity-legend>
                 </ng-template>

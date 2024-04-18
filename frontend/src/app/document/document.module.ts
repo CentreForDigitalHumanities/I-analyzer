@@ -10,8 +10,7 @@ import { DocumentPopupComponent } from './document-popup/document-popup.componen
 import { DialogModule } from 'primeng/dialog';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EntityLegendComponent } from './entity-legend/entity-legend.component';
-
-
+import { ElasticsearchHighlightPipe, GeoDataPipe, SnippetPipe } from '../pipes';
 
 @NgModule({
     declarations: [
@@ -21,6 +20,9 @@ import { EntityLegendComponent } from './entity-legend/entity-legend.component';
         DocumentPopupComponent,
         DocumentPreviewComponent,
         EntityLegendComponent,
+        ElasticsearchHighlightPipe,
+        GeoDataPipe,
+        SnippetPipe
     ],
     imports: [
         DialogModule,
