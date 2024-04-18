@@ -1,7 +1,4 @@
 <ng-container *ngIf="page && document">
-    <div class="heading" *ngIf="document.relevance">
-        Relevance: <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
-    </div>
     <table class="table is-fullwidth">
         <ng-container *ngFor="let field of page.fields">
             <tr *ngIf="document.fieldValue(field)">
@@ -18,7 +15,7 @@
                 <ng-template #unhighlightedRow>
                     <td style="word-break:break-word"
                         [attr.lang]="document.language(field)"
-                        [innerHtml]="document.fieldValue(field) | snippet">
+                        [innerHtml]="document.fieldValue(field) | highlight:query:true">
                     </td>
                 </ng-template>
             </tr>
@@ -27,9 +24,10 @@
 
 
     <div class="columns is-vcentered">
-        <div class="column" role="presentation">
-            <ia-entity-legend [entities]="document.entities"></ia-entity-legend>
+        <div class="column is-narrow heading" *ngIf="document.relevance">
+            Relevance: <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
         </div>
+        <div class="column" role="presentation"></div>
         <div class="column field is-grouped is-narrow">
             <div class="control">
                 <button class="button is-primary" (click)="page.focus(document)">
