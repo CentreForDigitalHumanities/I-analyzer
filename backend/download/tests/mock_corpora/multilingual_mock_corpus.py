@@ -16,13 +16,13 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
     min_date = datetime(year=2000, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
     es_index = 'ianalyzer-mixed-language-mock-corpus'
-    data_directory = 'bogus'
+    data_directory = os.path.join(here, 'sources_mixed_language')
     languages = ['sv', 'de']
     category = 'book'
 
-    def sources(self, start=min_date, end=max_date):
-        for csv_file in os.listdir(os.path.join(here, 'sources_mixed_language')):
-            yield os.path.join(here, 'sources_mixed_language', csv_file), {}
+    def sources(self, *args, **kwargs):
+        for csv_file in os.listdir(self.data_directory):
+            yield os.path.join(self.data_directory, csv_file), {}
 
 
     content = FieldDefinition(

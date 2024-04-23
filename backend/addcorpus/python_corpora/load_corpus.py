@@ -1,9 +1,12 @@
-from django.conf import settings
-import re
-from os.path import abspath, dirname
-from importlib import util
 import logging
+import re
 import sys
+from importlib import util
+from os.path import abspath, dirname
+
+from addcorpus.python_corpora.corpus import CorpusDefinition
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 from addcorpus.python_corpora.corpus import CorpusDefinition
 
