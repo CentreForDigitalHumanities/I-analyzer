@@ -86,12 +86,6 @@ You do not need to include corpora which use the `'default'` server.
 
 URL of the logo of your organisation. This is used in emails sent to users.
 
-### `DEFAULT_FROM_EMAIL`
-
-The address from which emails to users should be sent.
-
-By default, a development server will use the [console backend](https://docs.djangoproject.com/en/5.0/topics/email/#console-backend) for emails, where it does not really matter what you fill in here.
-
 ### `NLTK_DATA_PATH`
 
 Some functionality on I-analyzer will download the stopwords corpus from [NLTK](https://nltk.readthedocs.io/en/latest/). This setting controls the directory where data downloaded from NLTK can be stored.
