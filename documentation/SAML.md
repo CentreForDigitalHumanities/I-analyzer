@@ -10,4 +10,4 @@ The only tweaks added on top of the DjangoSaml2 package are:
 
 ### Authorisation
 
-If you define a `SAML_GROUP_NAME` in settings, SAML users will always be added to a group with that name when they create an account. (The group will be created if it does not exist.) This can be used to give permissions to SAML users. The group is not used to handle authentication, so you can add non-SAML users to it as well.
+The setting [SAML_GROUP_NAME](/documentation/Django-project-settings.md#saml_group_name) can be used to control permissions for SAML users.

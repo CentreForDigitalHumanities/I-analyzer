@@ -71,8 +71,7 @@ describe('FilterManagerComponent', () => {
             fixture.detectChanges();
         });
 
-        xit('does not show tag filter', async () => {
-            // TO DO
+        it('does not show tag filter', async () => {
             await fixture.whenStable();
             const compiled = fixture.debugElement;
             const tagFilter = compiled.query(By.css('ia-tag-filter'));
