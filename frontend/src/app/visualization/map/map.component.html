@@ -1,2 +1,23 @@
-<p>Map component</p>
-<div>{{ results | json }}</div>
+<mgl-map
+    [style]="'https://demotiles.maplibre.org/style.json'"
+    [zoom]="[3]"
+    [center]="[15, 35]"
+    [preserveDrawingBuffer]="true"
+    [attributionControl]="false"
+>
+    <mgl-layer
+        id="results"
+        type="circle"
+        [source]="{
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: results
+            }
+        }"
+        [paint]="{
+            'circle-color': 'red',
+        }"
+    >
+    </mgl-layer>
+</mgl-map>

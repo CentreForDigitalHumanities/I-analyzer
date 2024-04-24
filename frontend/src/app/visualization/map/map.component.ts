@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-// import { MapComponent } from '@maplibre/ngx-maplibre-gl';
 
 import { Corpus, CorpusField, GeoDocument, QueryModel } from '../../models';
 import { VisualizationService } from '../../services';
