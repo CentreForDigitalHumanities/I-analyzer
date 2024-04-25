@@ -1,0 +1,4 @@
+[submodule "frontend/scroll-position-restoration-local"]
+	path = frontend/scroll-position-restoration-local
+	url = git@github.com:CentreForDigitalHumanities/ngx-scroll-position-restoration.git
+	branch = feature/ivy
