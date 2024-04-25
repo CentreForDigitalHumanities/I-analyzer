@@ -18,7 +18,8 @@ def test_saved_corpora(db):
     for corpus_name in configured:
         assert Corpus.objects.filter(name=corpus_name).exists()
         corpus = Corpus.objects.get(name=corpus_name)
-        assert corpus.has_configuration
+        assert corpus.configuration_obj
+        assert corpus.active
 
     assert len(Corpus.objects.all()) == len(configured)
     assert len(CorpusConfiguration.objects.all()) == len(configured)
@@ -45,25 +46,26 @@ def test_saving_broken_corpus(db, mock_corpus):
     _save_or_skip_corpus(mock_corpus, corpus_def)
 
     corpus.refresh_from_db()
-    # expect the corpus configuration to be missing now
-    assert corpus.has_configuration == False
-    assert corpus.ready_to_index() == False
-    assert corpus.ready_to_publish() == False
-    assert not CorpusConfiguration.objects.filter(corpus=corpus).exists()
+    # expect the the corpus to be inactive now
+    assert not corpus.active
+    assert corpus.has_python_definition
 
 def test_remove_corpus_from_settings(db, settings, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
-    assert corpus.has_configuration
+    assert corpus.active
+    assert corpus.has_python_definition
 
     path = settings.CORPORA.pop(mock_corpus)
     load_and_save_all_corpora()
     corpus.refresh_from_db()
-    assert not corpus.has_configuration
+    assert not corpus.active
+    assert not corpus.has_python_definition
 
     settings.CORPORA[mock_corpus] = path
     load_and_save_all_corpora()
     corpus.refresh_from_db()
-    assert corpus.has_configuration
+    assert corpus.active
+    assert corpus.has_python_definition
 
 @pytest.fixture()
 def deactivated_corpus(mock_corpus):
@@ -98,12 +100,12 @@ def test_save_corpus_purity(db, mock_corpus):
     corpus = Corpus.objects.get(name=mock_corpus)
     corpus_def = MockCSVCorpus()
 
-    corpus_def.description_page = 'test.md'
+    corpus_def.es_alias = 'test'
     _save_or_skip_corpus(mock_corpus, corpus_def)
     corpus.refresh_from_db()
-    assert corpus.configuration.description_page == 'test.md'
+    assert corpus.configuration.es_alias == 'test'
 
-    corpus_def.description_page = None
+    corpus_def.es_alias = None
     _save_or_skip_corpus(mock_corpus, corpus_def)
     corpus.refresh_from_db()
-    assert not corpus.configuration.description_page
+    assert not corpus.configuration.es_alias
