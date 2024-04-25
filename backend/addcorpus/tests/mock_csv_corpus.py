@@ -13,7 +13,6 @@ class MockCSVCorpus(CSVCorpusDefinition):
     es_index = 'nothing'
     min_date = datetime.datetime(year=1, month=1, day=1)
     max_date = datetime.datetime(year=2022, month=12, day=31)
-    image = 'nothing.jpeg'
     data_directory = os.path.join(here, 'csv_example')
     citation_page = 'citation.md'
 
@@ -22,7 +21,7 @@ class MockCSVCorpus(CSVCorpusDefinition):
     languages = ['en']
     category = 'book'
 
-    def sources(self, start, end):
+    def sources(self, **kwargs):
         for filename in os.listdir(self.data_directory):
             full_path = os.path.join(self.data_directory, filename)
             yield full_path, {
@@ -32,12 +31,13 @@ class MockCSVCorpus(CSVCorpusDefinition):
     fields = [
         FieldDefinition(
             name = 'character',
-            extractor = CSV(field = 'character')
+            extractor = CSV('character')
         ),
         FieldDefinition(
             name = 'lines',
+            display_type = 'text_content',
             extractor = CSV(
-                field = 'line',
+                'line',
                 multiple = True,
             )
         )

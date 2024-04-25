@@ -11,12 +11,17 @@ class WordmodelsMockCorpus(CorpusDefinition):
     es_index = 'nothing'
     min_date = datetime.datetime(year=1810, month=1, day=1)
     max_date = datetime.datetime(year=1899, month=12, day=31)
-    image = 'nothing.jpeg'
-    data_directory = 'nothing'
+    data_directory = None
     word_model_path = join(here, 'mock-word-models')
+    wordmodels_page = 'documentation.md'
     fields = [
         FieldDefinition(
             name = 'content',
+            display_type='text_content'
+        ),
+        FieldDefinition(
+            name='date',
+            display_type='date'
         )
     ]
     languages = ['en']

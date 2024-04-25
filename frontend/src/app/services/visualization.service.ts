@@ -4,6 +4,7 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    GeoDocument,
     NGramRequestParameters,
     NgramParameters,
     QueryModel,
@@ -32,6 +33,16 @@ export class VisualizationService {
             corpus: corpus.name,
             field: fieldName,
             size,
+        });
+    }
+
+    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
+        Promise<GeoDocument[]> {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.geoData({
+            ...query,
+            corpus: corpus.name,
+            field: fieldName,
         });
     }
 

@@ -26,4 +26,4 @@ def test_rechtspraak_validation(db, rechtspraak_test_settings):
     load_and_save_all_corpora()
 
     corpus = Corpus.objects.get(name='rechtspraak')
-    assert corpus.active
+    assert corpus.ready_to_publish()

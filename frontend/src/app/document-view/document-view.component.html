@@ -9,16 +9,21 @@
                             <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
                         </td>
                     </tr>
-                    <tr>
+                    <tr *ngIf="(document?.tags$ | async) as tags">
                         <th>Your tags</th>
                         <td>
-                            <ia-document-tags [document]="document"></ia-document-tags>
+                            <ia-document-tags [document]="document" [tags]="tags"></ia-document-tags>
                         </td>
                     </tr>
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValue(field)">
                             <th [iaBalloon]="field.description" iaBalloonPosition="up" iaBalloonLength="medium">{{field.displayName}}</th>
-                            <td *ngIf="!isUrlField(field)" data-test-field-value [innerHtml]="highlightedInnerHtml(field)"></td>
+                            <td *ngIf="!isUrlField(field) && !isGeoPointField(field)"
+                                data-test-field-value
+                                [attr.lang]="document.language(field)"
+                                [innerHtml]="formatInnerHtml(field)">
+                            </td>
+                            <td *ngIf="isGeoPointField(field)">{{displayGeoPointField(field)}}</td>
                             <td *ngIf="isUrlField(field)">
                                 <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
                             </td>
@@ -33,7 +38,10 @@
         <div class="box">
             <ia-tabs [activeTab]="activeTab">
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
-                    <div class="content" [innerHtml]="formatInnerHtml(field)"></div>
+                    <div class="content"
+                        [attr.lang]="document.language(field)"
+                        [innerHtml]="formatInnerHtml(field)">
+                    </div>
                 </ng-template>
                 <ng-template iaTabPanel id="scan" *ngIf="showScanTab" title="Image" [icon]="documentIcons.scan">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>

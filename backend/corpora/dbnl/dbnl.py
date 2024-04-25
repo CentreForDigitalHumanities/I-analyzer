@@ -31,8 +31,11 @@ class DBNL(XMLCorpusDefinition):
     document_context = {
         'context_fields': ['title_id'],
         'sort_field': 'chapter_index',
+        'sort_direction': 'asc',
         'context_display_name': 'book'
     }
+
+    language_field = 'language_code'
 
     def sources(self, start = None, end = None):
         metadata_corpus = DBNLMetadata()
@@ -364,6 +367,7 @@ class DBNL(XMLCorpusDefinition):
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud'],
+        language='dynamic',
     )
 
     has_content = FieldDefinition(

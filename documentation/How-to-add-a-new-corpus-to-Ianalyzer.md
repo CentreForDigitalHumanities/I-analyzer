@@ -32,7 +32,7 @@ The corpus class should define the following properties:
 
 - `title`: Title to be used in the interface.
 - `description`: Short description, appears as a subtitle in the interface.
-- `data_directory`: Path to the source files. Always get this from the setttings.
+- `data_directory`: Path to the directory containing source files. Always get this from the setttings. You can also set this to `None`; usually because you are getting source data from an API instead of a local directory.
 - `min_date`, `max_date`: The minimum and maximum dates for documents.
 - `es_index`: the name of the index in elasticsearch.
 - `image`: a path or url to the image used for the corpus in the interface.
@@ -45,48 +45,39 @@ The following properties are optional:
 - `es_settings`: overwrites the `settings` property of the elasticsearch index. Can be generated using [es_settings.py](../backend/addcorpus/es_settings.py)
 - `scan_image_type`: the filetype of scanned documents, if these are included.
 - `allow_image_download`
-- `desription_page`: filename of markdown document with a comprehensive description, located in a subdirectory `description` of the corpus definition directory.
 - `document_context`: specifies fields that define the natural grouping of documents.
 - `default_sort`: specifies the default method to sort search result.
+- `language_field`: if your corpus contains documents in multiple language, you can specify the name of the field that stores the IETF tag for each document.
+
+Several additional attributes allow you to specify files containing documentation; see [including documentation files](#including-documentation-files).
 
 The corpus class should also define a function `sources(self, start, end)` which iterates source files (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 
-### XML / HTML corpora
+### Different types of readers
 
-If your source files are XML or HTML files, your corpus definition should respectively subclass `XMLCorpusDefinition` or `HTMLCorpusDefinition`.
+The `CorpusDefinition` class is a subclass of the `Reader` in `ianalyzer_readers`. `Reader` is a base class that does not provide much for data extraction.
 
-In addition to the properties above, the corpus class must define:
-- `tag_toplevel`: The highest-level tag in the source file.
-- `tag_entry`: The tag that corresponds to a single document entry.
+Most corpus definitions also inherit from a more specific `Reader` that provides functionality for the type of source data, e.g. `XMLReader`, `CSVReader`, etc. For convenience, you can use the classes `XMLCorpusDefinition`, `CSVCorpusDefinition`, etc., defined in [corpus.py](/backend/addcorpus/python_corpora/corpus.py).
 
-These tags can be strings or functions that map a metadata dict to a string. Your corpus will have one document for each `tag_entry`.
+See [the documentation of ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/) for the available `Reader` classes and the API for each of them.
 
-### CSV corpora
+### Including documentation files
 
-If your source files are CSV files, your corpus definition should subclass `CSVCorpusDefinition`.
+Documentation pages can be added as markdown files in the corpus directory. See [corpus documentation](/documentation/Corpus-documentation.md) for more information about writing these files.
 
-The CSV files will be read row by row. You can write the definition so each document is based on a single row, or so that each document is based on a group of adjacent rows.
+The method `documentation_path(page_type)` on the `CorpusDefinition` class points to the files that are included. It takes a documentation type as input and returns the path to the file, relative to the directory containing the definition.
 
-In addition to the properties above, CSV corpora have the following optional properties:
-- `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.
-- `delimiter`: the delimiter for the CSV reader (`,` by default)
+The default implementation of `documentation_path` will look at the following attributes of the corpus:
 
-### Spreadsheet corpora
-
-If your source files are XLSX files, your corpus definition should subclass `XLSXCorpusDefinition`.
-
-This reader is quite rudimentary. It will read data with a "CSV-like" structure on the first sheet.
-
-The reader works like the CSV reader and also uses the `CSV` extractor. However, it does not have a `delimiter` parameter.
-
-### JSON corpora
-If your source files are in JSON format, your corpus definition should subclass `JSONCorpusDefinition`.
-
-The JSON ingested via `source2dicts` is expected to contain a list of dictionaries, for which field data can be extracted with a given key.
+- `description_page`: a path relative to `./description/`
+- `citation_page`: a path relative to `./citation/`
+- `wordmodels_page`: a path relative to `./wm/`
+- `license_page`: a path relative to `./license/`
+- `terms_of_service_page`: a path relative to `./terms_of_service/`
 
 ## Settings file
 
-The django settings can be used to configure variables that may be depend on the environment. Please use the following naming convention.
+The django settings can be used to configure variables that may depend on the environment. Please use the following naming convention when you add settings for your corpus.
 
 ```python
 CORPUSNAME_DATA = '/MyData/CorpusData' # the directory where the xml / html or other files are located
@@ -113,26 +104,12 @@ Note that for a property like the elasticsearch index, we define a default value
 
 ### Corpus selection
 
-The dictionary `CORPORA` defines the name of the corpora and their filepath. It is defined as
+To include the new corpus in an instance of I-analyzer, the project settings must be adjusted.
 
-```python
-CORPORA = {
-    'times': '.../times.py',
-}
-```
+The [CORPORA setting](/documentation/Django-project-settings.md#corpora) must be updated to include the corpus in your project.
 
-The key of the corpus must match the name of the corpus class (but lowercase/hyphenated), so `'times'` is the key for the `Times` class. Typically, the key also matches the `es_index` of the corpus, as well as its filename.
+Additionally, you can specify an elasticsearch server for the corpus with the [CORPUS_SERVER_NAMES setting](/documentation/Django-project-settings.md#corpus_server_names).
 
-`CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests. You only need to include corpora that do not use the `'default'` server.
-
-```python
-CORPUS_SERVER_NAMES = {
-    'times': 'special_server',
-}
-```
-
-### settings vs. settings_local
-`settings.py` imports all information in `settings_local.py`. If a variable is defined in both, `settings_local` overrules `settings`. All sensitive information (server names, user names, passwords) should be in `settings_local.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment.
 
 ## Elasticsearch
 Once the corpus definition and associated settings are added, the only remaining step is to make the Elasticsearch index. By running `yarn django index corpusname`, information is extracted and sent to Elasticsearch.

@@ -39,6 +39,7 @@ class Troonredes(XMLCorpusDefinition):
     category = 'oration'
     description_page = 'troonredes.md'
     citation_page = 'citation.md'
+    wordmodels_page = 'documentation.md'
 
     @property
     def es_settings(self):
@@ -94,6 +95,7 @@ class Troonredes(XMLCorpusDefinition):
             extractor=extract.XML(tag='title'),
             results_overview=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='monarch',
@@ -138,6 +140,7 @@ class Troonredes(XMLCorpusDefinition):
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],
-            extractor=extract.XML(tag='content')
+            extractor=extract.XML(tag='content'),
+            language='nl',
         ),
     ]

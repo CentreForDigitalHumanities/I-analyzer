@@ -25,7 +25,6 @@ export class Corpus implements ElasticSearchIndex {
         public fields: CorpusField[],
         public minDate: Date,
         public maxDate: Date,
-        public image: string,
         public scan_image_type: string,
         public allow_image_download: boolean,
         public word_models_present: boolean,
@@ -36,6 +35,7 @@ export class Corpus implements ElasticSearchIndex {
         public documentContext?: DocumentContext,
         public new_highlight?: boolean,
         public defaultSort?: SortState,
+        public languageField?: CorpusField,
     ) { }
 
     get minYear(): number {
@@ -86,6 +86,7 @@ export interface ApiCorpusField {
     sortable: boolean;
     searchable: boolean;
     downloadable: boolean;
+    language: string;
 }
 
 export class CorpusField {
@@ -109,7 +110,8 @@ export class CorpusField {
     downloadable: boolean;
     name: string;
     filterOptions: FieldFilterOptions;
-    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
+    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | 'geo_point' | null;
+    language: string;
 
     constructor(data: ApiCorpusField) {
         this.description = data.description;
@@ -131,6 +133,7 @@ export class CorpusField {
         this.name = data.name;
         this.filterOptions = data['search_filter'];
         this.mappingType = data.es_mapping?.type;
+        this.language = data.language || undefined;
     }
 
     /** make a SearchFilter for this field */
@@ -149,4 +152,9 @@ export class CorpusField {
         store = store || new SimpleStore();
 		return new Filter(store, this);
 	}
+}
+
+export interface CorpusDocumentationPage {
+    type: string;
+    content: string;
 }

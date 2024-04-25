@@ -27,6 +27,7 @@ const DISPLAY_NAMES = {
     termfrequency: 'Frequency of the search term',
     ngram: 'Neighbouring words',
     wordcloud: 'Most frequent words',
+    map: 'Map of locations',
 };
 
 export class VisualizationSelector extends StoreSync<VisualizationSelection> {

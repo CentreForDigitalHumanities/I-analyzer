@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 from django.conf import settings
 import langcodes
@@ -50,14 +51,17 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
-    description_page = 'jewish_migration.md'
     languages = ['en']
 
     category = 'inscription'
 
     def sources(self, start, end):
-        response = requests.get(self.data_directory)
-        list_of_sources = response.json()
+        if self.data_directory.startswith('http'):
+            response = requests.get(self.data_directory)
+            list_of_sources = response.json()
+        else:
+            with open(self.data_directory, 'r') as f:
+                list_of_sources = json.load(f)
         for source in list_of_sources:
             yield source
 
@@ -74,6 +78,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         self.region.extractor = extract.JSON(key='region')
         self.settlement.extractor = extract.JSON(key='place_name')
         self.coordinates.extractor = extract.JSON(key='coordinates')
+        self.coordinates.visualizations = ['map']
         self.sex.extractor = extract.JSON(key='sex_deceased')
         self.iconography.extractor = extract.JSON(key='symbol')
         self.comments.extractor = extract.JSON(key='comments')

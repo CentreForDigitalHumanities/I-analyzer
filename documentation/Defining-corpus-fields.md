@@ -4,15 +4,9 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes are defined in `ianalyzer_readers.extract`
+The `extractor` attribute of a field should define how it extracts its data from source files. This value should be an instance of `Extractor`, which is defined in the `ianalyzer_readers` package. See [the API documentation of ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/api/#extractors) for a list of available extractors and their parameters.
 
-- The extractors `XML`, `HTML`, `CSV` and `JSON` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpusDefinition`, et cetera. All other extractors are available for all corpora.
-- The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
-- The `Constant` extractor can be used to define a constant value.
-- The `Order` extractor gives you the index of that document within the file.
-- The `Choice` and `Combined`, `Backup`, and `Pass` extractors can be used to combine multiple extractors.
-
-A field can have the property `required = True`, which means the document will not be added to the index if the extracted value for this field is falsy.
+These extractors are typically sufficient for new corpora; if they are not, you can create a custom `Extractor` subclass for your corpus, or expand the `ianalyzer_readers` package.
 
 ## Elasticsearch mapping
 
@@ -56,3 +50,14 @@ If a field includes the `'resultscount'` and/or `'termfrequency'` visualisations
 `csv_core` determines if a field is included in the CSV download of search results by default.
 
 `sortable` determines whether a field should appear as a sort option.
+
+### Language
+
+For text and keyword fields, you can set the language of the field as follows:
+
+`language` specifies the language of the fields contents. Acceptable values are:
+- `None`; use this if the langauge is unknown or not applicable (e.g. for numbers or dates)
+- an [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag); use this if the language is a constant
+- `'dynamic'`; use this if the language is not always the same, and the IETF tag is stored in the `language_field` of the corpus.
+
+This language metadata is used to set the `lang` property of the DOM element in the interface. Because I-analyzer is an application for text analysis, it may have other uses in the future.

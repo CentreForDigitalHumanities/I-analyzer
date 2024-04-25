@@ -34,8 +34,7 @@ class LargeMockCorpus(CorpusDefinition):
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=1899, month=12, day=31)
     es_index = 'large-mock-corpus'
-    image = 'test.jpeg'
-    data_directory = 'bogus'
+    data_directory = None
     languages = ['en']
     category = 'book'
 
@@ -55,6 +54,7 @@ class LargeMockCorpus(CorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
+        display_type='text_content',
         es_mapping = text_mapping()
     )
 

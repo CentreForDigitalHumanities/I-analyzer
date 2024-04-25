@@ -119,8 +119,7 @@ export class SearchComponent extends ParamDirective {
         this.hasSearched = true;
         this.resultOverview = input;
         this.hasLimitedResults =
-            this.user.downloadLimit &&
-            input.resultsCount > this.user.downloadLimit;
+            this.user? input.resultsCount > this.user.downloadLimit : true;
     }
 
     public showQueryDocumentation() {

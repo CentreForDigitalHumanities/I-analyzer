@@ -7,6 +7,7 @@ import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root',
@@ -84,7 +85,6 @@ export class CorpusService {
             allFields,
             new Date(data.min_date),
             new Date(data.max_date),
-            data.image,
             data.scan_image_type,
             data.allow_image_download,
             data.word_models_present,
@@ -95,6 +95,7 @@ export class CorpusService {
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight,
             this.parseDefaultSort(data.default_sort, allFields),
+            findByName(allFields, data.language_field),
         );
     };
 
@@ -109,7 +110,7 @@ export class CorpusService {
         },
         allFields: CorpusField[]
     ): DocumentContext {
-        if (!data || !data.context_fields) {
+        if (_.isEmpty(data) || !data.context_fields) {
             return undefined;
         }
 

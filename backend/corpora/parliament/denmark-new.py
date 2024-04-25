@@ -59,50 +59,53 @@ class ParliamentDenmarkNew(Parliament, CSVCorpusDefinition):
     country.extractor = Constant('Denmark')
 
     date = field_defaults.date()
-    date.extractor = CSV(field = 'Date')
+    date.extractor = CSV('Date')
     date.search_filter.lower = min_date
     date.search_filter.upper = max_date
 
     party = field_defaults.party()
     party.extractor = Combined(
         CSV(
-            field = 'Party',
+            'Party',
             transform = format_party,
         ),
         Metadata('parties'),
         transform = get_party_name
     )
+    party.language = 'da'
 
     role = field_defaults.parliamentary_role()
-    role.extractor = CSV(field = 'Role')
+    role.extractor = CSV('Role')
+    role.language = 'da'
 
     speaker = field_defaults.speaker()
-    speaker.extractor = CSV(field = 'Name')
+    speaker.extractor = CSV('Name')
 
     speaker_gender = field_defaults.speaker_gender()
-    speaker_gender.extractor = CSV(field = 'Gender')
+    speaker_gender.extractor = CSV('Gender')
 
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = CSV(
-        field = 'Birth',
+        'Birth',
         transform = formatting.extract_year,
     )
 
-    speech = field_defaults.speech()
-    speech.extractor = CSV(field = 'Text')
+    speech = field_defaults.speech(language='da')
+    speech.extractor = CSV('Text')
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(field = 'ID')
+    speech_id.extractor = CSV('ID')
 
     subject = field_defaults.subject()
-    subject.extractor = CSV(field = 'Subject 1')
+    subject.extractor = CSV('Subject 1')
+    subject.language = 'en'
 
     topic = field_defaults.topic()
-    topic.extractor = CSV(field = 'Agenda title')
+    topic.extractor = CSV('Agenda title')
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(
-        field='ID',
+        'ID',
         transform = get_timestamp_from_id
     )
 

@@ -35,7 +35,7 @@ class ParliamentCanada(Parliament, CSVCorpusDefinition):
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(
-        field='house',
+        'house',
         transform=format_house
     )
     # remove search filter and visualisations since there is only value in the data
@@ -48,68 +48,48 @@ class ParliamentCanada(Parliament, CSVCorpusDefinition):
     )
 
     date = field_defaults.date()
-    date.extractor = CSV(
-        field='date_yyyy-mm-dd'
-    )
+    date.extractor = CSV('date_yyyy-mm-dd')
     date.search_filter.lower = min_date
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
-        field='speech_id',
+        'speech_id',
         transform=lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
     )
 
     debate_title = field_defaults.debate_title()
-    debate_title.extractor = CSV(
-        field='heading1'
-    )
+    debate_title.extractor = CSV('heading1')
 
     party = field_defaults.party()
-    party.extractor = CSV(
-        field='speaker_party'
-    )
+    party.extractor = CSV('speaker_party')
 
     role = field_defaults.parliamentary_role()
-    role.extractor = CSV(
-        field='speech_type'
-    )
+    role.extractor = CSV('speech_type')
 
     speaker = field_defaults.speaker()
-    speaker.extractor = CSV(
-        field='speaker_name'
-    )
+    speaker.extractor = CSV('speaker_name')
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = CSV(
-        field='speaker_id'
-    )
+    speaker_id.extractor = CSV('speaker_id')
 
     speaker_constituency = field_defaults.speaker_constituency()
-    speaker_constituency.extractor = CSV(
-        field='speaker_constituency'
-    )
+    speaker_constituency.extractor = CSV('speaker_constituency')
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='en')
     speech.extractor = CSV(
-        field='content',
+        'content',
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(
-        field='speech_id'
-    )
+    speech_id.extractor = CSV('speech_id')
 
     topic = field_defaults.topic()
-    topic.extractor = CSV(
-        field='heading2'
-    )
+    topic.extractor = CSV('heading2')
 
     subtopic = field_defaults.subtopic()
-    subtopic.extractor = CSV(
-        field='heading3'
-    )
+    subtopic.extractor = CSV('heading3')
 
     def __init__(self):
         self.fields = [

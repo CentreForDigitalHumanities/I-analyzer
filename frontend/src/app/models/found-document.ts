@@ -83,6 +83,15 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
+    language(field: CorpusField) {
+        if (field.language === 'dynamic') {
+            return this.fieldValue(this.corpus.languageField);
+        }
+        else {
+            return field.language;
+        }
+    }
+
     addTag(tag: Tag): void {
         this.tags$.pipe(
             take(1),

@@ -38,9 +38,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     )
 
     date = field_defaults.date()
-    date.extractor = CSV(
-        field='date'
-    )
+    date.extractor = CSV('date')
     date.search_filter.lower = min_date
 
     chamber = field_defaults.chamber()
@@ -49,114 +47,91 @@ class ParliamentGermanyNew(Parliament, CSVCorpusDefinition):
     )
     chamber.search_filter = None
     chamber.visualizations = []
+    chamber.language = 'de'
 
     debate_id = field_defaults.debate_id()
-    debate_id.extractor = CSV(
-        field='session'
-    )
+    debate_id.extractor = CSV('session')
 
     # in Germany, abbreviations are the most common way to refer to parties
     party = field_defaults.party()
-    party.extractor = CSV(
-        field='party_abbreviation'
-    )
+    party.extractor = CSV('party_abbreviation')
+    party.language = 'de'
 
     party_full = field_defaults.party_full()
-    party_full.extractor = CSV(
-        field='party_full_name'
-    )
+    party_full.extractor = CSV('party_full_name')
+    party_full.language = 'de'
 
     party_id = field_defaults.party_id()
-    party_id.extractor = CSV(
-        field='party_id'
-    )
+    party_id.extractor = CSV('party_id')
 
     role = field_defaults.parliamentary_role()
-    role.extractor = CSV(
-        field='position_short'
-    )
+    role.extractor = CSV('position_short')
+    role.language = 'en'
+
     role_long = field_defaults.role_long()
-    role_long.extractor = CSV(
-        field='position-long'
-    )
+    role_long.extractor = CSV('position-long')
 
     speaker = field_defaults.speaker()
     speaker.extractor = Combined(
-        CSV(field='speaker_first_name', convert_to_none=False),
-        CSV(field='speaker_last_name', convert_to_none=False),
+        CSV('speaker_first_name', convert_to_none=False),
+        CSV('speaker_last_name', convert_to_none=False),
         transform=lambda x: ' '.join(x)
     )
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = CSV(
-        field='speaker_id'
-    )
+    speaker_id.extractor = CSV('speaker_id')
 
     speaker_aristocracy = field_defaults.speaker_aristocracy()
-    speaker_aristocracy.extractor = CSV(
-        field='speaker_aristocracy'
-    )
+    speaker_aristocracy.extractor = CSV('speaker_aristocracy')
 
     speaker_academic_title = field_defaults.speaker_academic_title()
-    speaker_academic_title.extractor = CSV(
-        field='speaker_academic_title'
-    )
+    speaker_academic_title.extractor = CSV('speaker_academic_title')
 
     speaker_birth_country = field_defaults.speaker_birth_country()
-    speaker_birth_country.extractor = CSV(
-        field='speaker_birth_country'
-    )
+    speaker_birth_country.extractor = CSV('speaker_birth_country')
+    speaker_birth_country.language = 'de'
 
     speaker_birthplace = field_defaults.speaker_birthplace()
-    speaker_birthplace.extractor = CSV(
-        field='speaker_birth_place'
-    )
+    speaker_birthplace.extractor = CSV('speaker_birth_place')
+    speaker_birthplace.language = 'de'
 
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = CSV(
-        field='speaker_birth_date',
+        'speaker_birth_date',
         transform=formatting.extract_year
     )
 
     speaker_death_year = field_defaults.speaker_death_year()
     speaker_death_year.extractor = CSV(
-        field='speaker_death_date',
+        'speaker_death_date',
         transform=formatting.extract_year
     )
 
     speaker_gender = field_defaults.speaker_gender()
-    speaker_gender.extractor = CSV(
-        field='speaker_gender'
-    )
+    speaker_gender.extractor = CSV('speaker_gender')
+    speaker_gender.language = 'en'
 
     speaker_profession = field_defaults.speaker_profession()
-    speaker_profession.extractor = CSV(
-        field='speaker_profession'
-    )
+    speaker_profession.extractor = CSV('speaker_profession')
+    speaker_profession.language = 'de'
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='de')
     speech.extractor = CSV(
-        field='speech_content',
+        'speech_content',
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(
-        field='id'
-    )
+    speech_id.extractor = CSV('id')
 
     url = field_defaults.url()
-    url.extractor = CSV(
-        field='document_url'
-    )
+    url.extractor = CSV('document_url')
 
     # order of speeches: value is identical to speech_id
     # but saved as integer for sorting
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(
-        field = 'id'
-    )
+    sequence.extractor = CSV('id')
 
     def __init__(self):
         self.fields = [

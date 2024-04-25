@@ -18,16 +18,15 @@ class SmallMockCorpus(CSVCorpusDefinition):
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=1899, month=12, day=31)
     es_index = 'ianalyzer-mock-corpus'
-    image = 'test.jpeg'
-    data_directory = 'bogus'
+    data_directory = os.path.join(here, 'source_files')
     languages = ['en']
     category = 'book'
 
     es_settings = es_settings(['en'], stopword_analysis=True)
 
-    def sources(self, start=min_date, end=max_date):
-        for csv_file in os.listdir(os.path.join(here, 'source_files')):
-            yield os.path.join(here, 'source_files', csv_file), {}
+    def sources(self, *args, **kwargs):
+        for csv_file in os.listdir(self.data_directory):
+            yield os.path.join(self.data_directory, csv_file), {}
 
     date = FieldDefinition(
         name = 'date',
@@ -43,8 +42,10 @@ class SmallMockCorpus(CSVCorpusDefinition):
 
     content = FieldDefinition(
         name = 'content',
+        display_type='text_content',
         es_mapping = main_content_mapping(True, True, False, 'en'),
-        extractor = CSV('content')
+        extractor = CSV('content'),
+        language='en',
     )
 
     genre = FieldDefinition(
