@@ -15,6 +15,7 @@ import {
     HighlightService,
 } from './services/index';
 
+import { NgxScrollPositionRestorationModule } from 'ngx-scroll-position-restoration';
 import { AboutComponent } from './about/about.component';
 import { AppComponent } from './app.component';
 import { CorpusModule } from './corpus-header/corpus.module';
@@ -167,8 +168,7 @@ export const imports: any[] = [
     SettingsModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
-    // Deactivate this module, reactivate after updating it for Ivy
-    // NgxScrollPositionRestorationModule.forRoot(),
+    NgxScrollPositionRestorationModule.forRoot(),
 ];
 
 export const providers: any[] = [
