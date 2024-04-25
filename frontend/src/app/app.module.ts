@@ -49,7 +49,6 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { NgxScrollPositionRestorationModule } from 'ngx-scroll-position-restoration/projects/ngx-scroll-position-restoration/src/public-api';
 
 export const appRoutes: Routes = [
     {
@@ -169,7 +168,7 @@ export const imports: any[] = [
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
     // Deactivate this module, reactivate after updating it for Ivy
-    NgxScrollPositionRestorationModule.forRoot(),
+    // NgxScrollPositionRestorationModule.forRoot(),
 ];
 
 export const providers: any[] = [
