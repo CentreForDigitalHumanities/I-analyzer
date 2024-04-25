@@ -168,7 +168,7 @@ class NamedEntitySearchView(APIView):
 
     def find_entities(self, input_text: str, entity_classes: set) -> str:
         # regex pattern to match annotations of format "[Wally](Person)" and split it into two groups
-        pattern = re.compile('(\[[a-zA-Z ]+\])(\([a-zA-Z ]+\))')
+        pattern = re.compile('(\[[^]]+\])(\([A-Z]+\))')
         annotations = list(set(pattern.findall(input_text)))
         for annotation in annotations:
             input_text = self.substitute_annotation_with_tag(

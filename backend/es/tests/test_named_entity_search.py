@@ -3,9 +3,8 @@ from es.views import NamedEntitySearchView
 
 def test_ner_search_view(es_ner_search_client, client, times_user):
     client.force_login(times_user)
-    route = '/api/es/times/named_entities'
-    data = {'id': 'my_identifier'}
-    response = client.post(route, data, content_type='application/json')
+    route = '/api/es/times/my_identifier/named_entities'
+    response = client.get(route, content_type='application/json')
     assert response.status_code == 200
 
 
