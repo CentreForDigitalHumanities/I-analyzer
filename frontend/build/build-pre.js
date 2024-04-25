@@ -2,20 +2,27 @@ const path = require('path');
 const colors = require('colors/safe');
 const fs = require('fs');
 
-console.log(colors.cyan('\nRunning pre-build tasks'));
+
+console.log(colors.cyan("\nRunning pre-build tasks"));
 
 var appVersion;
 
 try {
-    appVersion = require('../../package.json').version;
+    appVersion = require("../../package.json").version;
 } catch {
-    console.warn('Could not import package.json.')
+    console.warn("Could not import package.json.");
     appVersion = undefined;
 }
 
-const versionFilePath = path.join(__dirname + '/../src/environments/version.ts');
+const versionFilePath = path.join(
+    __dirname + "/../src/environments/version.ts"
+);
 const src = `export const version = '${appVersion}';
 `;
+
+
+
+
 
 // ensure version module pulls value from package.json
 fs.writeFile(versionFilePath, src, { flat: 'w' }, function (err) {

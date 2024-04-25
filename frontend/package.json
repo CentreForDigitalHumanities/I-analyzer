@@ -7,6 +7,7 @@
     "preserve": "yarn prebuild",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "prebuild": "node ./build/build-pre.js",
+    "preinstall": "node ./build/install-pre.js",
     "build": "ng build --configuration=production --base-href=/static/",
     "build-local": "ng build --aot",
     "build-git": "ng build --configuration git --aot",
@@ -60,7 +61,8 @@
     "terser-webpack-plugin": "^5.3.0",
     "tslib": "^2.0.0",
     "typescript": "5.4.3",
-    "zone.js": "~0.14.4"
+    "zone.js": "~0.14.4",
+    "ngx-scroll-position-restoration": "./scroll-position-restoration-local/dist/ngx-scroll-position-restoration"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.3",
