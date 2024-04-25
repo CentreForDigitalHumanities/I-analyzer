@@ -28,7 +28,6 @@ class UBlad(HTMLCorpusDefinition):
     data_directory = settings.UBLAD_DATA
     es_index = getattr(settings, 'UBLAD_ES_INDEX', 'ublad')
     image = 'ublad.jpg'
-    citation_page = 'citation.md'
     scan_image_type = getattr(settings, 'UBLAD_SCAN_IMAGE_TYPE', 'image/jpeg')
     allow_image_download = getattr(settings, 'UBLAD_ALLOW_IMAGE_DOWNLOAD', True)
 
