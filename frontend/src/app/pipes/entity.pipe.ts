@@ -1,7 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { CorpusField, FoundDocument } from '../models';
+import { Observable } from 'rxjs';
+
+import { FoundDocument } from '../models';
 import * as _ from 'lodash';
+
 @Pipe({
     name: 'entity'
 })
@@ -14,10 +17,9 @@ export class EntityPipe implements PipeTransform {
      *
      * @param document FoundDocument holding the actual data
      */
-    transform(field: CorpusField, document: FoundDocument) {
-        const newText = document.annotations$.map(
-            (annotation)=> _.set(document.fieldValues, _.keys(annotation)[0], _.values(annotation)[0]));
-        return newText;
+    transform(annotations$: Observable<{[fieldName: string]: string}[]>, document: FoundDocument, fieldName: string) {
+        const newText = annotations$[fieldName];
+        return newText || document.fieldValues[fieldName];
     }
 
 }

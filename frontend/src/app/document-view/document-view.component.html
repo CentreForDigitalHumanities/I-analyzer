@@ -40,7 +40,7 @@
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
                     <div *ngIf="document.annotations$ | async" class="content"
                         [attr.lang]="document.language(field)"
-                        [innerHtml]="field | entity:document">
+                        [innerHtml]="document.annotations$ | async | entity:document:field.name">
                     </div>
                     <ng-template #showHighlights>
                         <div class="content"

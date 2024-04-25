@@ -132,7 +132,7 @@ export class FoundDocument {
             this.entities = entities;
         });
         return response$.pipe(
-            map( response => response.annotations)
+            map( response => response.annotations || [])
         );
     }
 
