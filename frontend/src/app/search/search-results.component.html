@@ -9,6 +9,7 @@
             -
             {{(pageResults.to$ | async)}}
         </h2>
+        <h2>NER<ia-toggle></ia-toggle></h2>
         <ia-highlight-selector *ngIf="!pageResults.highlightDisabled" [pageResults]="pageResults"></ia-highlight-selector>
     </div>
 

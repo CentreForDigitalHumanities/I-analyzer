@@ -15,6 +15,7 @@ import { ScrollToDirective } from '../scroll-to.directive';
 import { DropdownModule } from './dropdown/dropdown.module';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
 import { TabsComponent } from './tabs/tabs.component';
+import { ToggleComponent } from './toggle/toggle.component';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { TabsComponent } from './tabs/tabs.component';
         ScrollToDirective,
         TabsComponent,
         TabPanelDirective,
+        ToggleComponent,
     ],
     exports: [
         // shared components
@@ -45,6 +47,7 @@ import { TabsComponent } from './tabs/tabs.component';
         HttpClientXsrfModule,
         RouterModule,
         TableModule,
+        ToggleComponent,
     ],
     imports: [
         BrowserAnimationsModule,

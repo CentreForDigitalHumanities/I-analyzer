@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { FoundDocument, QueryModel } from '../../models';
 import { Subject } from 'rxjs';
-import { documentIcons, actionIcons } from '../../shared/icons';
+import { documentIcons, actionIcons, corpusIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-document-popup',
@@ -22,6 +22,8 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
 
     actionIcons = actionIcons;
     documentIcons = documentIcons;
+
+    showNamedEntities = false;
 
     private refresh$ = new Subject<void>();
 
@@ -62,5 +64,9 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
             this.document = undefined;
             this.visible = false;
         }
+    }
+
+    toggleNER(): void {
+        this.showNamedEntities = !this.showNamedEntities;
     }
 }
