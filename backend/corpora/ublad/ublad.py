@@ -103,7 +103,7 @@ class UBlad(HTMLCorpusDefinition):
             )
         ),
         FieldDefinition(
-            name='page_id',
+            name='id',
             display_name='Page ID',
             description='Unique identifier for this page',
             hidden=True,
