@@ -41,7 +41,7 @@ def load_corpus_definition(corpus_name) -> CorpusDefinition:
     # assume the class name is the same as the corpus name,
     # allowing for differences in camel case vs. lower case
     regex = re.compile('[^a-zA-Z]')
-    corpus_name = regex.sub('', corpus_name)
+    corpus_name = regex.sub('', corpus_name).lower()
     endpoint = next((attr for attr in dir(corpus_mod)
                      if attr.lower() == corpus_name), None)
     corpus_class = getattr(corpus_mod, endpoint)
