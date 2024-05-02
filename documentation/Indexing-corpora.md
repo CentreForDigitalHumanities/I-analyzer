@@ -6,6 +6,7 @@ You can start indexing once you have
 - A python source file for the corpus
 - A directory with source data
 - Added the necessary properties to django settings
+- Run the admin command `loadcorpora` (`yarn django loadcorpora`)
 
 The basic indexing command is:
 
