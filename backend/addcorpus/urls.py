@@ -1,5 +1,5 @@
 from django.urls import path
-from addcorpus.views import *
+from addcorpus.views import CorpusImageView, CorpusView, CorpusDocumentationPageViewset, CorpusDocumentView
 
 urlpatterns = [
     path('', CorpusView.as_view()),

@@ -1,3 +1,4 @@
+import json
 from time import sleep
 import shutil
 import os
@@ -5,11 +6,18 @@ import pytest
 import requests
 from allauth.account.models import EmailAddress
 
+from addcorpus.json_corpora.import_json import import_json_corpus
 from ianalyzer.elasticsearch import elasticsearch
 from ianalyzer.settings_test import MEDIA_ROOT
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
+from django.conf import settings
+
+
+@pytest.fixture(autouse=True)
+def media_dir(tmpdir, settings):
+    settings.MEDIA_ROOT = tmpdir
 
 # user credentials and logged-in api clients
 @pytest.fixture
@@ -95,9 +103,23 @@ def es_client():
 
 # mock corpora
 @pytest.fixture(autouse=True)
-def add_mock_corpora_to_db(db):
-    #add mock corpora to the database at the start of each test
+def add_mock_python_corpora_to_db(db, media_dir):
+    # add python mock corpora to the database at the start of each test
     load_and_save_all_corpora()
+
+
+@pytest.fixture()
+def json_corpus_data():
+    path = os.path.join(settings.BASE_DIR, 'corpora_test', 'mock_corpus.json')
+    with open(path) as f:
+        return json.load(f)
+
+
+@pytest.fixture(autouse=True)
+def json_mock_corpus(db,  json_corpus_data):
+    # add json mock corpora to the database at the start of each test
+    return import_json_corpus(json_corpus_data)
+
 
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus_definition(corpus_name)
@@ -113,12 +135,3 @@ def clear_test_corpus(es_client, corpus_name):
     # check existence in case teardown is executed more than once
     if es_client.indices.exists(index = index):
         es_client.indices.delete(index = index)
-
-@pytest.fixture(scope='session', autouse=True)
-def clean_test_data():
-    if os.path.isdir(MEDIA_ROOT):
-        shutil.rmtree(MEDIA_ROOT)
-
-    yield
-
-    shutil.rmtree(MEDIA_ROOT)

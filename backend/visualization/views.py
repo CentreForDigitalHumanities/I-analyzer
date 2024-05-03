@@ -141,7 +141,7 @@ class FieldCoverageView(APIView):
     Get the coverage of each field in a corpus
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [CorpusAccessPermission]
 
     def get(self, request, *args, **kwargs):
         corpus = corpus_name_from_request(request)

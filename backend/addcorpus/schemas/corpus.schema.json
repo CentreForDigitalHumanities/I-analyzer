@@ -70,6 +70,7 @@
         },
         "source_data": {
             "type": "object",
+            "description": "information about the source data files",
             "properties": {
                 "type": {
                     "type": "string",
@@ -87,7 +88,8 @@
                         }
                     }
                 }
-            }
+            },
+            "required": ["type"]
         },
         "fields": {
             "type": "array",
@@ -162,7 +164,7 @@
                         "properties": {
                             "column": {
                                 "type": "string",
-                                "description": "name of the column in the CSV file"
+                                "description": "name of the column in CSV source files"
                             }
                         },
                         "required": ["column"]
