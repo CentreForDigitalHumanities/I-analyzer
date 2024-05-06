@@ -192,8 +192,9 @@ def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=s
             _save_corpus_configuration(corpus, corpus_definition)
             _activate_if_ready(corpus)
         if verbose:
-            print(f'Saved corpus: {corpus_name}',  file=stdout)
+            print(f'Saved corpus: {corpus_name}', file=stdout)
     except Exception as e:
+        transaction.rollback()
         print(f'Failed saving corpus: {corpus_name}', file=stderr)
         print(f'Error: {e}', file=stderr)
 

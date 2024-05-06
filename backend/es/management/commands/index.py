@@ -72,7 +72,7 @@ class Command(BaseCommand):
             (Only applicable in combination with --prod)'''
         )
 
-    def handle(self, corpus, start = None, end = None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
+    def handle(self, corpus, start=None, end=None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
         corpus_object = self._corpus_object(corpus)
         self._validate(corpus_object)
 
@@ -117,7 +117,8 @@ class Command(BaseCommand):
                 logging.critical(e)
                 raise
         else:
-            perform_indexing(corpus, corpus_definition, start_index, end_index, mappings_only, add, delete, prod, rollover)
+            perform_indexing(corpus_object, start_index, end_index,
+                             mappings_only, add, delete, prod, rollover)
 
     def _corpus_object(self, corpus_name):
         load_all_corpus_definitions()
