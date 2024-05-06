@@ -15,7 +15,7 @@ expected = '''## APA
 
 @pytest.fixture()
 def citation_template(settings):
-    path = os.path.join(settings.BASE_DIR, 'addcorpus', 'tests', 'citation', 'citation.md')
+    path = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'citation', 'citation.md')
     with open(path) as f:
         return f.read()
 

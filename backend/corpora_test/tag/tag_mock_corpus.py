@@ -9,14 +9,20 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 
 class TaggingMockCorpus(CSVCorpusDefinition):
+    '''
+    Mock corpus for tagging.
+
+    Includes an `id` field which makes it easier to test expectations for tags.
+    '''
+
     title = 'Tagging Mock Corpus'
     description = 'Mock corpus for tagging'
-    es_index = 'tagging-mock-corpus'
+    es_index = 'test-tagging-mock-corpus'
     min_date = datetime.datetime(year=1, month=1, day=1)
     max_date = datetime.datetime(year=2022, month=12, day=31)
-    data_directory = os.path.join(here, 'data')
+    data_directory = os.path.join(here, 'source_data')
 
-    def sources(self, start, end):
+    def sources(self, *args, **kwargs):
         return (
             (os.path.join(self.data_directory, file), {})
             for file in os.listdir(self.data_directory)
