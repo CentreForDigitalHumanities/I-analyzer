@@ -32,7 +32,7 @@ The corpus class should define the following properties:
 
 - `title`: Title to be used in the interface.
 - `description`: Short description, appears as a subtitle in the interface.
-- `data_directory`: Path to the source files. Always get this from the setttings.
+- `data_directory`: Path to the directory containing source files. Always get this from the setttings. You can also set this to `None`; usually because you are getting source data from an API instead of a local directory.
 - `min_date`, `max_date`: The minimum and maximum dates for documents.
 - `es_index`: the name of the index in elasticsearch.
 - `image`: a path or url to the image used for the corpus in the interface.
@@ -77,7 +77,7 @@ The default implementation of `documentation_path` will look at the following at
 
 ## Settings file
 
-The django settings can be used to configure variables that may be depend on the environment. Please use the following naming convention.
+The django settings can be used to configure variables that may depend on the environment. Please use the following naming convention when you add settings for your corpus.
 
 ```python
 CORPUSNAME_DATA = '/MyData/CorpusData' # the directory where the xml / html or other files are located
@@ -104,26 +104,12 @@ Note that for a property like the elasticsearch index, we define a default value
 
 ### Corpus selection
 
-The dictionary `CORPORA` defines the name of the corpora and their filepath. It is defined as
+To include the new corpus in an instance of I-analyzer, the project settings must be adjusted.
 
-```python
-CORPORA = {
-    'times': '.../times.py',
-}
-```
+The [CORPORA setting](/documentation/Django-project-settings.md#corpora) must be updated to include the corpus in your project.
 
-The key of the corpus must match the name of the corpus class (but lowercase/hyphenated), so `'times'` is the key for the `Times` class. Typically, the key also matches the `es_index` of the corpus, as well as its filename.
+Additionally, you can specify an elasticsearch server for the corpus with the [CORPUS_SERVER_NAMES setting](/documentation/Django-project-settings.md#corpus_server_names).
 
-`CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests. You only need to include corpora that do not use the `'default'` server.
-
-```python
-CORPUS_SERVER_NAMES = {
-    'times': 'special_server',
-}
-```
-
-### settings vs. settings_local
-`settings.py` imports all information in `settings_local.py`. If a variable is defined in both, `settings_local` overrules `settings`. All sensitive information (server names, user names, passwords) should be in `settings_local.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment.
 
 ## Elasticsearch
 Once the corpus definition and associated settings are added, the only remaining step is to make the Elasticsearch index. By running `yarn django index corpusname`, information is extracted and sent to Elasticsearch.

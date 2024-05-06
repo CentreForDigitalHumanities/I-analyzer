@@ -9,10 +9,10 @@
                             <ia-search-relevance [value]="document.relevance"></ia-search-relevance>
                         </td>
                     </tr>
-                    <tr>
+                    <tr *ngIf="(document?.tags$ | async) as tags">
                         <th>Your tags</th>
                         <td>
-                            <ia-document-tags [document]="document"></ia-document-tags>
+                            <ia-document-tags [document]="document" [tags]="tags"></ia-document-tags>
                         </td>
                     </tr>
                     <ng-container *ngFor="let field of propertyFields">
