@@ -64,8 +64,6 @@ def test_mismatch_corpus_index_names(mock_corpus, corpus_definition, es_index_cl
 
 
 def test_db_only_corpus(json_mock_corpus, es_client, test_index_cleanup):
-    json_mock_corpus.name = 'example2'
-    json_mock_corpus.configuration.es_index = 'test-example2'
     perform_indexing(
         corpus=json_mock_corpus,
     )
