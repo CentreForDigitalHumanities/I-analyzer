@@ -5,23 +5,59 @@ Script to index the data into ElasticSearch.
 '''
 
 import sys
+from typing import Dict, Optional
 
+from elasticsearch import Elasticsearch
 import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
 from django.conf import settings
 
+from addcorpus.es_settings import es_settings
+from addcorpus.models import Corpus, CorpusConfiguration
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch
 from .es_alias import alias, get_new_version_number
+import datetime
 
 import logging
 logger = logging.getLogger('indexing')
 
 
-def create(client, corpus_definition, add, clear, prod):
+def _make_es_settings(corpus: Corpus) -> Dict:
+    if corpus.has_python_definition:
+        corpus_def = load_corpus_definition(corpus.name)
+        return corpus_def.es_settings
+    return es_settings(
+        languages=corpus.configuration.languages,
+        stemming_analysis=True,
+        stopword_analysis=True,
+    )
+
+
+def _make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
+    '''
+    Create the ElasticSearch mapping for the fields of this corpus. May be
+    passed to the body of an ElasticSearch index creation request.
+    '''
+    return {
+        'properties': {
+            field.name: field.es_mapping
+            for field in corpus_configuration.fields.all()
+            if field.es_mapping and field.indexed
+        }
+    }
+
+
+def create(client: Elasticsearch, corpus: Corpus, add: bool = False, clear: bool = False, prod: bool = False):
     '''
     Initialise an ElasticSearch index.
     '''
+    corpus_config = corpus.configuration
+    index_name = corpus_config.es_index
+    es_mapping = _make_es_mapping(corpus_config)
+
     if add:
         # we add document to existing index - skip creation.
         return None
@@ -29,64 +65,65 @@ def create(client, corpus_definition, add, clear, prod):
     if clear:
         logger.info('Attempting to clean old index...')
         client.indices.delete(
-            index=corpus_definition.es_index, ignore=[400, 404])
+            index=index_name, ignore=[400, 404])
 
-    settings = corpus_definition.es_settings
+    settings = _make_es_settings(corpus)
 
     if prod:
         logger.info('Using a versioned index name')
-        alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
-        corpus_definition.es_index = "{}-{}".format(
-            corpus_definition.es_index, get_new_version_number(client, alias, corpus_definition.es_index))
-        if client.indices.exists(index=corpus_definition.es_index):
+        alias = corpus_config.es_alias if corpus_config.es_alias else index_name
+        index_name = "{}-{}".format(
+            index_name, get_new_version_number(client, alias, index_name))
+        if client.indices.exists(index=index_name):
             logger.error('Index `{}` already exists. Do you need to add an alias for it or perhaps delete it?'.format(
-                corpus_definition.es_index))
+                index_name))
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
         settings['index'].update({
-            'number_of_replicas' : 0,
+            'number_of_replicas': 0,
             'number_of_shards': 5
         })
 
     logger.info('Attempting to create index `{}`...'.format(
-        corpus_definition.es_index))
+        index_name))
     try:
         client.indices.create(
-            index=corpus_definition.es_index,
+            index=index_name,
             settings=settings,
-            mappings=corpus_definition.es_mapping(),
+            mappings=es_mapping,
         )
     except RequestError as e:
-        if not 'already_exists' in e.error:
+        if 'already_exists' not in e.error:
             # ignore that the index already exist,
             # raise any other errors.
             raise
 
 
-def populate(client, corpus_name, corpus_definition, start=None, end=None):
+def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
+    corpus_config = corpus.configuration
+    corpus_name = corpus.name
+    index_name = corpus_config.es_index
+    reader = make_reader(corpus)
 
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
-    files = corpus_definition.sources(
-        start or corpus_definition.min_date,
-        end or corpus_definition.max_date)
-    docs = corpus_definition.documents(files)
-
-    if not type(corpus_definition.es_index)==str:
-        raise Exception('es_index is not a string')
+    files = reader.sources(
+        start=start or corpus_config.min_date,
+        end=end or corpus_config.max_date)
+    docs = reader.documents(files)
 
     # Each source document is decorated as an indexing operation, so that it
     # can be sent to ElasticSearch in bulk
     actions = (
         {
             '_op_type': 'index',
-            '_index': corpus_definition.es_index,
-            '_id' : doc.get('id'),
+            '_index': index_name,
+            '_id': doc.get('id'),
             '_source': doc
         } for doc in docs
     )
@@ -103,44 +140,57 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
 
-def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, add, clear, prod, rollover):
-    logger.info('Started indexing `{}` from {} to {}...'.format(
-        corpus_definition.es_index,
-        start.strftime('%Y-%m-%d'),
-        end.strftime('%Y-%m-%d')
+
+def perform_indexing(
+    corpus: Corpus,
+    start: Optional[datetime.date] = None,
+    end: Optional[datetime.date] = None,
+    mappings_only: bool = False,
+    add: bool = False,
+    clear: bool = False,
+    prod: bool = False,
+    rollover: bool = False
+):
+    corpus_config = corpus.configuration
+    corpus_name = corpus.name
+    index_name = corpus_config.es_index
+
+    logger.info('Started indexing `{}` on index {}'.format(
+        corpus_name,
+        index_name
     ))
 
     if rollover and not prod:
-        logger.info('rollover flag is set but prod flag not set -- no effect')
+        logger.warning(
+            'rollover flag is set but prod flag not set -- no effect')
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
-    logger.info(
-        vars(client).get('_max_retries'))
+    logger.info('max_retries: {}'.format(vars(client).get('_max_retries')))
 
-    logger.info(
-        vars(client).get('_retry_on_timeout')
+    logger.info('retry on timeout: {}'.format(
+        vars(client).get('_retry_on_timeout'))
     )
-    create(client, corpus_definition, add, clear, prod)
+    create(client, corpus, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
 
     if mappings_only:
-        logger.info('Created index `{}` with mappings only.'.format(corpus_definition.es_index))
+        logger.info('Created index `{}` with mappings only.'.format(index_name))
         return
 
-    populate(client, corpus_name, corpus_definition, start=start, end=end)
+    populate(client, corpus, start=start, end=end)
 
-    logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
+    logger.info('Finished indexing `{}` to index `{}`.'.format(
+        corpus_name, index_name))
 
     if prod:
         logger.info('Updating settings for index `{}`'.format(
-            corpus_definition.es_index))
+            index_name))
         client.indices.put_settings(
             settings={'number_of_replicas': 1},
-            index=corpus_definition.es_index
+            index=index_name
         )
         if rollover:
             logger.info('Adjusting alias for index  `{}`'.format(
-                corpus_definition.es_index))
-            alias(corpus_name, corpus_definition) # not deleting old index, so we can roll back
-
+                index_name))
+            alias(corpus)  # not deleting old index, so we can roll back

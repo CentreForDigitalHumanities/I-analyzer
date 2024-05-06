@@ -37,7 +37,7 @@ def es_alias_client(es_client, mock_corpus):
     Returns an elastic search client for the mock corpus.
     """
     # add data from mock corpus
-    corpus = load_corpus_definition(mock_corpus)
+    corpus = Corpus.objects.get(name=mock_corpus)
     es_index.create(es_client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
     es_client.indices.create(index='times-test-2')
     es_client.indices.create(index='times-test-bla-3')

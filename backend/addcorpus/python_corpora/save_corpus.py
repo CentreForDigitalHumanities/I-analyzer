@@ -153,7 +153,8 @@ def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuratio
             if pages.exists():
                 pages.delete()
 
-def _prepare_for_import(corpus):
+
+def _prepare_for_import(corpus: Corpus):
     corpus.has_python_definition = True
     corpus.active = False
     corpus.save()

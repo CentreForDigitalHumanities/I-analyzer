@@ -20,6 +20,7 @@ import logging
 
 logger = logging.getLogger('indexing')
 
+
 class CorpusDefinition(Reader):
     '''
     Subclasses of this class define corpora and their documents by specifying:
@@ -159,7 +160,7 @@ class CorpusDefinition(Reader):
         '''
         if word models are present for this corpus
         '''
-        return self.word_model_path != None and isdir(self.word_model_path)
+        return self.word_model_path is not None and isdir(self.word_model_path)
 
     @property
     def new_highlight(self):
@@ -171,7 +172,7 @@ class CorpusDefinition(Reader):
         '''
         try:
             highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
-        except:
+        except Exception:
             return False
         return self.title in highlight_corpora
 
@@ -242,19 +243,6 @@ class CorpusDefinition(Reader):
         '''
         return {'media': None, 'info': None}
 
-    def es_mapping(self):
-        '''
-        Create the ElasticSearch mapping for the fields of this corpus. May be
-        passed to the body of an ElasticSearch index creation request.
-        '''
-        return {
-            'properties': {
-                field.name: field.es_mapping
-                for field in self.fields
-                if field.es_mapping and not field.skip
-            }
-        }
-
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
@@ -310,25 +298,30 @@ class ParentCorpusDefinition(CorpusDefinition):
         '''
         self.fields = []
 
+
 class XMLCorpusDefinition(CorpusDefinition, XMLReader):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
+
 
 class HTMLCorpusDefinition(CorpusDefinition, HTMLReader):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
 
+
 class CSVCorpusDefinition(CorpusDefinition, CSVReader):
     '''
     An CSVCorpus is any corpus that extracts its data from CSV sources.
     '''
 
+
 class XLSXCorpusDefinition(CorpusDefinition, XLSXReader):
     '''
     An CSVCorpus is any corpus that extracts its data from an XLSX spreadsheet.
     '''
+
 
 class JSONCorpusDefinition(CorpusDefinition):
     '''
@@ -339,13 +332,14 @@ class JSONCorpusDefinition(CorpusDefinition):
         self._reject_extractors(extract.XML, extract.CSV)
 
         field_dict = {
-           field.name: field.extractor.apply(source, *nargs, **kwargs)
+            field.name: field.extractor.apply(source, *nargs, **kwargs)
             for field in self.fields
         }
 
         yield field_dict
 
 # Fields ######################################################################
+
 
 class FieldDefinition(Field):
     '''
@@ -420,17 +414,16 @@ class FieldDefinition(Field):
         self.language = language
         self.hidden = not indexed or hidden
 
-        self.sortable = sortable if sortable != None else \
+        self.sortable = sortable if sortable is not None else \
             not hidden and indexed and \
             mapping_type in ['integer', 'float', 'date']
 
-
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.
         # Keyword fields without a filter are also searchable.
-        self.searchable = searchable if searchable != None else \
+        self.searchable = searchable if searchable is not None else \
             not hidden and indexed and \
             ((mapping_type == 'text') or
-             (mapping_type == 'keyword' and self.search_filter == None))
+             (mapping_type == 'keyword' and self.search_filter is None))
         # Add back reference to field in filter
         self.downloadable = downloadable
 
