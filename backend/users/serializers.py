@@ -12,13 +12,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
-    is_admin = serializers.BooleanField(source='is_staff')
+    is_admin = serializers.BooleanField(source='is_staff', read_only=True)
     profile = UserProfileSerializer()
 
     class Meta(UserDetailsSerializer.Meta):
         fields = ('id', 'username', 'email', 'saml',
                   'download_limit', 'is_admin', 'profile')
-
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', None)
