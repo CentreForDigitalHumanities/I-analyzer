@@ -1,9 +1,12 @@
 from datetime import date
 from addcorpus.json_corpora.import_json import import_json_corpus, _parse_field
-
+from addcorpus.models import Corpus, Field
 
 def test_import(db, json_corpus_data):
-    corpus = import_json_corpus(json_corpus_data)
+    data = import_json_corpus(json_corpus_data)
+    corpus = Corpus(**data)
+    corpus.save()
+    corpus.full_clean()
 
     assert corpus.name == 'example'
     assert corpus.ready_to_index()
@@ -31,7 +34,8 @@ def test_import(db, json_corpus_data):
 
 
 def test_parse_content_field(content_field_json):
-    field = _parse_field(content_field_json)
+    data = _parse_field(content_field_json)
+    field = Field(**data)
     assert field.name == 'content'
     assert field.display_name == 'Content'
     assert field.display_type == 'text_content'
@@ -52,7 +56,8 @@ def test_parse_content_field(content_field_json):
 
 
 def test_parse_keyword_field(keyword_field_json):
-    field = _parse_field(keyword_field_json)
+    data = _parse_field(keyword_field_json)
+    field = Field(**data)
     assert field.name == 'author'
     assert field.display_type == 'keyword'
     assert field.search_filter['name'] == 'MultipleChoiceFilter'
@@ -67,7 +72,8 @@ def test_parse_keyword_field(keyword_field_json):
 
 
 def test_parse_int_field(int_field_json):
-    field = _parse_field(int_field_json)
+    data =  _parse_field(int_field_json)
+    field = Field(**data)
     assert field.name == 'year'
     assert field.display_type == 'integer'
     assert field.search_filter['name'] == 'RangeFilter'
@@ -83,7 +89,8 @@ def test_parse_int_field(int_field_json):
 
 
 def test_parse_float_field(float_field_json):
-    field = _parse_field(float_field_json)
+    data = _parse_field(float_field_json)
+    field = Field(**data)
     assert field.name == 'ocr_confidence'
     assert field.display_type == 'float'
     assert field.search_filter == {}
@@ -99,7 +106,8 @@ def test_parse_float_field(float_field_json):
 
 
 def test_parse_date_field(date_field_json):
-    field = _parse_field(date_field_json)
+    data = _parse_field(date_field_json)
+    field = Field(**data)
     assert field.name == 'date'
     assert field.display_type == 'date'
     assert field.search_filter['name'] == 'DateFilter'
@@ -114,7 +122,8 @@ def test_parse_date_field(date_field_json):
 
 
 def test_parse_boolean_field(boolean_field_json):
-    field = _parse_field(boolean_field_json)
+    data = _parse_field(boolean_field_json)
+    field = Field(**data)
     assert field.name == 'author_known'
     assert field.display_type == 'boolean'
     assert field.search_filter['name'] == 'BooleanFilter'
@@ -129,7 +138,8 @@ def test_parse_boolean_field(boolean_field_json):
 
 
 def test_parse_geo_field(geo_field_json):
-    field = _parse_field(geo_field_json)
+    data = _parse_field(geo_field_json)
+    field = Field(**data)
     assert field.name == 'location'
     assert field.display_type == 'geo_point'
     assert field.search_filter == {}
