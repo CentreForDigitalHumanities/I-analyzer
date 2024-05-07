@@ -160,6 +160,18 @@ describe('QueryModel', () => {
         expect(newQuery.activeFilters.length).toBe(1);
     });
 
+    it('should encode the query as a URI component', () => {
+        query.setQueryText('test testing');
+        expect(store.currentParams()).toEqual({
+            query: 'test%20testing'
+        });
+    });
+
+    it('should decode the query as a URI component', () => {
+        store.paramUpdates$.next({query: 'test%20testing'});
+        expect(query.queryText).toEqual('test testing');
+    });
+
     it('should formulate a link', () => {
         query.setQueryText('test');
         filter.setToValue(someDate);

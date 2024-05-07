@@ -1,4 +1,4 @@
-import { ParamMap, Params, convertToParamMap } from '@angular/router';
+import { ParamMap, Params } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
 import { TagFilter } from '../models/tag-filter';
@@ -22,8 +22,12 @@ export const mergeAllParams = (values: Params[]): Params =>
 
 // conversion between models and parameters
 
-export const queryFromParams = (params: Params): string =>
-    params['query'];
+export const queryFromParams = (params: Params): string|undefined =>
+    _.has(params, 'query') ? decodeURIComponent(params['query']) : undefined;
+
+export const queryToParams = (queryText?: string): Params => ({
+    query: queryText ? encodeURIComponent(queryText) : null
+});
 
 export const searchFieldsFromParams = (params: Params, corpus: Corpus): CorpusField[] => {
     if (params['fields']) {
