@@ -38,7 +38,7 @@ http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
 4. Create and activate a virtualenv for Python.
-5. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus definition file. This file is also the place to add corpus-specific configurations (like the location of source files). See instructions of adding corpora below.
+5. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment, and to include the corpora that are defined in the source code in your environment. See instructions of adding corpora below.
 6. Install the requirements for both the backend and frontend:
 ```
 yarn postinstall
@@ -75,9 +75,9 @@ To include corpora on your environment, you need to index them from their source
 
 _Note:_ these instructions are for indexing a corpus that already has a corpus definition. For adding new corpus definitions, see [How to add a new corpus to I-analyzer](./documentation/How-to-add-a-new-corpus-to-Ianalyzer.md).
 
-1. Add the corpus to the `CORPORA` dictionary in your local settings file. The key should match the class name of the corpus definition. This match is not case-sensitive, and your key may include extra non-alphabetic characters (they will be ignored when matching). The value should be the absolute path the corpus definition file (e.g. `.../backend/corpora/times/times.py`).
-2. Set configurations for your corpus. Check the definition file to see which variables it expects to find in the configuration. Some of these may already be set in settings.py, but you will at least need to define the (absolute) path to your source files.
-3. Activate your python virtual environment. Create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+1. Add the corpus to the `CORPORA` dictionary in your local settings file. See [CORPORA settings documentation](/documentation/Django-project-settings.md#corpora).
+2. Set configurations for your corpus. Check the definition file to see which variables it expects to find in the configuration. Some of these may be optional, but you will at least need to define the (absolute) path to your source files.
+3. Activate your python virtual environment. Run the `loadcorpora` admin command (`yarn django loadcorpora`) to register the new corpus in the SQL database. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
 
 ## Running a dev environment
 

@@ -37,6 +37,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    citation_page = 'citation_public.md'
 
     @property
     def es_settings(self):
