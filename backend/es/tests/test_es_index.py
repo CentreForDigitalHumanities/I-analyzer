@@ -67,6 +67,6 @@ def test_db_only_corpus(json_mock_corpus, es_client, test_index_cleanup):
     perform_indexing(
         corpus=json_mock_corpus,
     )
-    sleep(1)
+    sleep(2)
     res = es_client.count(index=json_mock_corpus.configuration.es_index)
     assert res.get('count') == 10

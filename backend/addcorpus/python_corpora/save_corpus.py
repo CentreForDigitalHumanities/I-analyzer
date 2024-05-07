@@ -194,7 +194,6 @@ def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=s
         if verbose:
             print(f'Saved corpus: {corpus_name}', file=stdout)
     except Exception as e:
-        transaction.rollback()
         print(f'Failed saving corpus: {corpus_name}', file=stderr)
         print(f'Error: {e}', file=stderr)
 
