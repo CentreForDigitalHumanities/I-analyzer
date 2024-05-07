@@ -1,8 +1,13 @@
 from rest_framework import serializers
+from typing import Dict
+
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
 from addcorpus.documentation import render_documentation_context
+from addcorpus.json_corpora.export_json import export_json_corpus
+from addcorpus.json_corpora.import_json import import_json_corpus
+
 
 class NonEmptyJSONField(serializers.JSONField):
     '''
@@ -121,3 +126,14 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CorpusDocumentationPage
         fields = ['corpus_configuration', 'type', 'content']
+
+
+class CorpusEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Corpus
+
+    def to_representation(self, instance) -> Dict:
+        return export_json_corpus(instance)
+
+    def to_internal_value(self, data):
+        return import_json_corpus(data)
