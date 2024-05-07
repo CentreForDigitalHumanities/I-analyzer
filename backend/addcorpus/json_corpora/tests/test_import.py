@@ -1,12 +1,13 @@
 from datetime import date
-from addcorpus.json_corpora.import_json import import_json_corpus, _parse_field
-from addcorpus.models import Corpus, Field
+from addcorpus.json_corpora.import_json import _parse_field
+from addcorpus.models import Field
+from addcorpus.serializers import CorpusEditSerializer
+
 
 def test_import(db, json_corpus_data):
-    data = import_json_corpus(json_corpus_data)
-    corpus = Corpus(**data)
-    corpus.save()
-    corpus.full_clean()
+    serializer = CorpusEditSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    corpus = serializer.create(serializer.validated_data)
 
     assert corpus.name == 'example'
     assert corpus.ready_to_index()
@@ -31,6 +32,16 @@ def test_import(db, json_corpus_data):
     line_field = config.fields.get(name='line')
     assert line_field.display_name == 'Line'
     assert line_field.display_type == 'text_content'
+
+
+def test_serializer_representation(db, json_corpus_data):
+    serializer = CorpusEditSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    corpus = serializer.create(serializer.validated_data)
+
+    serialized = serializer.to_representation(corpus)
+
+    assert json_corpus_data == serialized
 
 
 def test_parse_content_field(content_field_json):
