@@ -1,10 +1,12 @@
 from datetime import date
 from addcorpus.json_corpora.import_json import _parse_field
-from addcorpus.models import Field
+from addcorpus.models import Field, Corpus
 from addcorpus.serializers import CorpusEditSerializer
 
 
-def test_import(db, json_corpus_data):
+def test_json_corpus_import(db, json_corpus_data):
+    Corpus.objects.all().delete()
+
     serializer = CorpusEditSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
@@ -35,6 +37,8 @@ def test_import(db, json_corpus_data):
 
 
 def test_serializer_representation(db, json_corpus_data):
+    Corpus.objects.all().delete()
+
     serializer = CorpusEditSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
