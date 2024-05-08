@@ -48,14 +48,21 @@ def test_serializer_representation(db, json_corpus_data):
     assert json_corpus_data == serialized
 
 def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
+    # edit description
     json_corpus_data['meta']['description'] = 'A different description'
     serializer = CorpusEditSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     serializer.update(json_mock_corpus, serializer.validated_data)
-
     corpus_config = CorpusConfiguration.objects.get(corpus=json_mock_corpus)
     assert corpus_config.description == 'A different description'
 
+    # remove a field
+    assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 2
+    json_corpus_data['fields'] = json_corpus_data['fields'][:-1]
+    serializer = CorpusEditSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    serializer.update(json_mock_corpus, serializer.validated_data)
+    assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 1
 
 
 def test_parse_content_field(content_field_json):
