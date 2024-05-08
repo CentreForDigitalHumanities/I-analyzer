@@ -158,8 +158,8 @@ class CorpusEditSerializer(serializers.ModelSerializer):
         corpus.save()
 
         configuration, _ = CorpusConfiguration.objects.get_or_create(corpus=corpus)
-        for attr in validated_data:
-            setattr(configuration, attr, validated_data[attr])
+        for attr in configuration_data:
+            setattr(configuration, attr, configuration_data[attr])
         configuration.save()
 
         for field_data in fields_data:

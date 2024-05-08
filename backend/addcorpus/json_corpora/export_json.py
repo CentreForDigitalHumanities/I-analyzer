@@ -6,7 +6,7 @@ from addcorpus.es_mappings import primary_mapping_type
 
 def export_json_corpus(corpus: Corpus) -> Dict:
     config = corpus.configuration
-    data = {'name': corpus.name}
+    data = {'name': corpus.name, 'id': corpus.pk }
     data['meta'] = export_corpus_meta(config)
     data['source_data'] = export_corpus_source_data(config)
     options = export_corpus_options(config)

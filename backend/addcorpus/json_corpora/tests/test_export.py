@@ -4,6 +4,7 @@ from addcorpus.json_corpora.import_json import _parse_field
 
 def test_corpus_export(json_mock_corpus: Corpus, json_corpus_data):
     result = export_json_corpus(json_mock_corpus)
+    result.pop('id')
     assert result == json_corpus_data
 
 def test_field_export(any_field_json):

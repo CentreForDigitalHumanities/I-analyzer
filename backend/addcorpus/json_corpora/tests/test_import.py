@@ -2,7 +2,7 @@ from datetime import date
 from addcorpus.json_corpora.import_json import _parse_field
 from addcorpus.models import Field, Corpus
 from addcorpus.serializers import CorpusEditSerializer
-
+from addcorpus.models import Corpus, CorpusConfiguration
 
 def test_json_corpus_import(db, json_corpus_data):
     Corpus.objects.all().delete()
@@ -44,8 +44,18 @@ def test_serializer_representation(db, json_corpus_data):
     corpus = serializer.create(serializer.validated_data)
 
     serialized = serializer.to_representation(corpus)
-
+    serialized.pop('id')
     assert json_corpus_data == serialized
+
+def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
+    json_corpus_data['meta']['description'] = 'A different description'
+    serializer = CorpusEditSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    serializer.update(json_mock_corpus, serializer.validated_data)
+
+    corpus_config = CorpusConfiguration.objects.get(corpus=json_mock_corpus)
+    assert corpus_config.description == 'A different description'
+
 
 
 def test_parse_content_field(content_field_json):
