@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer
+from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusEditSerializer
 from rest_framework.response import Response
 from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
 from django.http.response import FileResponse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
 from rest_framework import viewsets
@@ -86,3 +86,11 @@ class CorpusDocumentView(APIView):
 
     def get(self, request, *args, **kwargs):
         return send_corpus_file(subdir='documents', **kwargs)
+
+
+class CorpusEditViewset(viewsets.ModelViewSet):
+    permission_classes = [IsAdminUser]
+    serializer_class = CorpusEditSerializer
+
+    def get_queryset(self):
+        return Corpus.objects.filter(has_python_definition=False)
