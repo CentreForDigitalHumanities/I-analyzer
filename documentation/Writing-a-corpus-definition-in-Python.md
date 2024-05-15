@@ -51,7 +51,7 @@ The following attributes are required for a corpus to function.
 | `languages` | `List[str]` | A list of IETF tags of the languages used in your corpus. Corpus languages are intended as a way for users to select interesting datasets, so only include languages for which your corpus contains a meaningful amount of data. The list should go from most to least frequent. You can also include `''` for "unknown". |
 | `es_index` | `str` | The name of the elasticsearch index. In development, the corpus name will do. On a production cluster, you may need to use a particular prefix. |
 | `data_directory` | `Optional[str]` | Path to the directory containing source files. Always get this from the setttings. You can also set this to `None`; usually because you are getting source data from an API instead of a local directory. |
-| `fields` | `List[Field]` | The fields for the corpus. See [defining corpus fields](./Defining-corpus-fields.md). |
+| `fields` | `List[Field]` | The fields for the corpus. See [defining fields](#definining-fields). |
 
 ### Required methods
 
@@ -99,6 +99,20 @@ mycorpus/
 ```
 
 The image can be any image file. Documentation pages must be markdown files. See [corpus documentation](/documentation/Corpus-documentation.md) for more information about writing documentation.
+
+## Definining fields
+
+The `fields` property lists the configuration for each field in the corpus. Each of these defines how that field should be extracted from the source file, how it should be stored in elasticsearch, and how it should appear in the interface. See [corpus.py](../backend/addcorpus/corpus.py) for the class definition.
+
+Note that unlike with `CorpusDefinition`, fields are not defined as _classes_ but as _objects_. Rather than creating a custom subclass of `FieldDefinition`, you can just call the `FieldDefinition()` constructor with appropriate parameters.
+
+See the docstring of `FieldDefinition` for a comprehensive overview of all parameters.
+
+### Extracting values
+
+The `extractor` attribute of a field should define how it extracts its data from source files. This value should be an instance of `Extractor`, which is defined in the `ianalyzer_readers` package. See [the API documentation of ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/api/#extractors) for a list of available extractors and their parameters.
+
+These extractors are typically sufficient for new corpora; if they are not, you can create a custom `Extractor` subclass for your corpus, or expand the `ianalyzer_readers` package.
 
 ## Using project settings
 

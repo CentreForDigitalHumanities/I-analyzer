@@ -13,7 +13,7 @@ This directory contains documentation for developers.
 - [Corpus definitions](./Corpus-definitions.md)
 - [Corpus database models](/Corpus-database-models.md)
 - [Writing a corpus definition in Python](./Writing-a-corpus-definition-in-Python.md)
-- [Defining corpus fields](./Defining-corpus-fields.md)
+- [Elasticsearch index settings](./Elasticsearch-index-settings.md)
 - [Indexing corpora](./Indexing-corpora.md)
 - [Indexing in deployment](./Indexing-on-server.md)
 - [Corpus validation](./Corpus-validation.md)
