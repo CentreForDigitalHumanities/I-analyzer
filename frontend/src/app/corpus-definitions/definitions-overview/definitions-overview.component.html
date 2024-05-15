@@ -11,7 +11,7 @@
             </button>
         </div>
 
-        <div class="block">
+        <div class="block" *ngIf="definitions$ | async as definitions">
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
@@ -20,19 +20,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Test</td>
+                    <tr *ngFor="let definition of definitions">
+                        <td>{{definition.meta.title}}</td>
                         <td>
                             <button class="button">
                                 <span class="icon" aria-label="browse">
                                     <fa-icon [icon]="actionIcons.search"></fa-icon>
                                 </span>
                             </button>
+                            &nbsp;
                             <button class="button">
                                 <span class="icon" aria-label="edit">
                                     <fa-icon [icon]="actionIcons.edit"></fa-icon>
                                 </span>
                             </button>
+                            &nbsp;
                             <button class="button">
                                 <span class="icon" aria-label="delete">
                                     <fa-icon [icon]="actionIcons.delete"></fa-icon>
