@@ -50,6 +50,7 @@ import { SharedModule } from './shared/shared.module';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
+import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 
 export const appRoutes: Routes = [
     {
@@ -130,6 +131,11 @@ export const appRoutes: Routes = [
     {
         path: 'tags',
         component: TagOverviewComponent,
+        canActivate: [LoggedOnGuard],
+    },
+    {
+        path: 'corpus-definitions',
+        component: DefinitionsOverviewComponent,
         canActivate: [LoggedOnGuard],
     },
     {
