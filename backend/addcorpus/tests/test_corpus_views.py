@@ -87,17 +87,17 @@ def test_corpus_not_publication_ready(admin_client, basic_mock_corpus):
 def test_corpus_edit_views(admin_client: Client, json_corpus_data: Dict, json_mock_corpus: Corpus):
     json_mock_corpus.delete()
 
-    response = admin_client.get('/api/corpus/edit/')
+    response = admin_client.get('/api/corpus/definitions/')
     assert status.is_success(response.status_code)
     assert len(response.data) == 0
 
     response = admin_client.post(
-        '/api/corpus/edit/',
+        '/api/corpus/definitions/',
         json_corpus_data,
         content_type='application/json',
     )
     assert status.is_success(response.status_code)
 
-    response = admin_client.get('/api/corpus/edit/')
+    response = admin_client.get('/api/corpus/definitions/')
     assert status.is_success(response.status_code)
     assert len(response.data) == 1

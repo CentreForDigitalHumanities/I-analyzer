@@ -1,13 +1,13 @@
 from datetime import date
 from addcorpus.json_corpora.import_json import _parse_field
 from addcorpus.models import Field, Corpus
-from addcorpus.serializers import CorpusEditSerializer
+from addcorpus.serializers import CorpusJSONDefinitionSerializer
 from addcorpus.models import Corpus, CorpusConfiguration
 
 def test_json_corpus_import(db, json_corpus_data):
     Corpus.objects.all().delete()
 
-    serializer = CorpusEditSerializer(data=json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
 
@@ -39,7 +39,7 @@ def test_json_corpus_import(db, json_corpus_data):
 def test_serializer_representation(db, json_corpus_data):
     Corpus.objects.all().delete()
 
-    serializer = CorpusEditSerializer(data=json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
 
@@ -50,7 +50,7 @@ def test_serializer_representation(db, json_corpus_data):
 def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
     # edit description
     json_corpus_data['meta']['description'] = 'A different description'
-    serializer = CorpusEditSerializer(data=json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     serializer.update(json_mock_corpus, serializer.validated_data)
     corpus_config = CorpusConfiguration.objects.get(corpus=json_mock_corpus)
@@ -59,7 +59,7 @@ def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
     # remove a field
     assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 2
     json_corpus_data['fields'] = json_corpus_data['fields'][:-1]
-    serializer = CorpusEditSerializer(data=json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     serializer.update(json_mock_corpus, serializer.validated_data)
     assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 1

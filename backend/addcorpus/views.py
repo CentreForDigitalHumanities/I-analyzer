@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusEditSerializer
+from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
 from rest_framework.response import Response
 from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
@@ -88,9 +88,9 @@ class CorpusDocumentView(APIView):
         return send_corpus_file(subdir='documents', **kwargs)
 
 
-class CorpusEditViewset(viewsets.ModelViewSet):
+class CorpusDefinitionViewset(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
-    serializer_class = CorpusEditSerializer
+    serializer_class = CorpusJSONDefinitionSerializer
 
     def get_queryset(self):
         return Corpus.objects.filter(has_python_definition=False)

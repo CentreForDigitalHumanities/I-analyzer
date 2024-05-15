@@ -128,7 +128,7 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
         fields = ['corpus_configuration', 'type', 'content']
 
 
-class CorpusEditSerializer(serializers.ModelSerializer):
+class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Corpus
         fields = '__all__'

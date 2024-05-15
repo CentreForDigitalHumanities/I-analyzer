@@ -14,7 +14,7 @@ from es import es_index as index
 from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
-from addcorpus.serializers import CorpusEditSerializer
+from addcorpus.serializers import CorpusJSONDefinitionSerializer
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -203,7 +203,7 @@ def json_corpus_data():
 @pytest.fixture(autouse=True)
 def json_mock_corpus(db,  json_corpus_data) -> Corpus:
     # add json mock corpora to the database at the start of each test
-    serializer = CorpusEditSerializer(data=json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
     return corpus
