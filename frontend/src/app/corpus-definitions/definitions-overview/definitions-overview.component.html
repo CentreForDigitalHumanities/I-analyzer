@@ -1,1 +1,47 @@
-<p>definitions-overview works!</p>
+<div class="section">
+    <div class="container">
+        <h1 class="title">Corpus definitions</h1>
+
+        <div class="block">
+            <button class="button is-primary">
+                <span class="icon" aria-hidden="true">
+                    <fa-icon [icon]="actionIcons.add"></fa-icon>
+                </span>
+                <span>Create a new corpus</span>
+            </button>
+        </div>
+
+        <div class="block">
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Corpus</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Test</td>
+                        <td>
+                            <button class="button">
+                                <span class="icon" aria-label="browse">
+                                    <fa-icon [icon]="actionIcons.search"></fa-icon>
+                                </span>
+                            </button>
+                            <button class="button">
+                                <span class="icon" aria-label="edit">
+                                    <fa-icon [icon]="actionIcons.edit"></fa-icon>
+                                </span>
+                            </button>
+                            <button class="button">
+                                <span class="icon" aria-label="delete">
+                                    <fa-icon [icon]="actionIcons.delete"></fa-icon>
+                                </span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

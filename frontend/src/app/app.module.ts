@@ -51,6 +51,7 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
+import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
 
 export const appRoutes: Routes = [
     {
@@ -164,6 +165,7 @@ export const imports: any[] = [
     SharedModule,
     // Feature Modules
     CorpusModule,
+    CorpusDefinitionsModule,
     CorpusSelectionModule,
     DialogModule,
     DocumentModule,
