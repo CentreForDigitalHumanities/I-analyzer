@@ -29,7 +29,8 @@ A _minor_ release can include:
 - Layout changes to the frontend that don't remove functionality
 - Backwards compatible changes to routing in the frontend. A change is backwards compatible if URLs from older versions will still direct to the same content.
 - New corpus definitions
-- Changes to corpus definitions where updating existing definitions is not required, such as new options or source data types
+- Changes to the format for JSON corpus definitions where an older definition will continue to function as before.
+- Changes to the format for Python corpus definitions, which may require older definitions to be updated.
 - Changes that require minor updates to the server configuration that are backwards compatible, such as a new Django setting or environment variable.
 
 A _major_ release can inclue:
@@ -37,7 +38,7 @@ A _major_ release can inclue:
 - Everything listed for minor releases
 - Removing functionality in the frontend
 - Backwards incompatible changes to routing in the frontend: URLs from older versions will no longer direct to the same content
-- Backwards incompatible changes to corpus definitions: these require updating existing definitions
+- Changes to the format for JSON corpus definitions that require updates to existing definitions.
 - Changes that require updating the server configuration in a way that is _not_ backwards compatible
 
 ## When to make a release
@@ -56,4 +57,6 @@ Updating after _patch_ releases is always recommended and should be straightforw
 
 On our own servers, the deployment script (`deploy.py`) takes care of all these steps.
 
-For _minor_ and _major_ releases, make sure to check the release notes to see if they require changes to the server configuration. Note that for major releases, these changes may require significant work or make your server incompatible with older versions of I-analyzer.
+For _minor_ and _major_ releases, make sure to check the release notes to see if they require changes to the server configuration. If you are adding your own Python corpus definitions (that are not in the I-analyzer repository), check for updates in the format.
+
+Note that for major releases, these changes may require significant work or make your server incompatible with older versions of I-analyzer.
