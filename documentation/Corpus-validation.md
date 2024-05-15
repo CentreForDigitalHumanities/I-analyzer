@@ -6,15 +6,17 @@ A corpus has two additional checks for different stages of its creation: _ready 
 
 ## Ready to index
 
-A corpus that does not meet this check cannot be indexed in Elasticsearch. This can mean that it's missing essential fields.
+A corpus that does not meet this check cannot be indexed in Elasticsearch. This can mean that it's missing essential fields, has no source data directory configured, etc.
 
 A corpus must pass this check when you use the `index` command.
 
 ## Ready to publish
 
-A corpus that does not meet this check cannot be searched in the frontend. This usually means the interface configuration is incomplete or invalid. However, a corpus must also be "index-ready".
+A corpus that does not meet this check cannot be searched in the frontend. This usually means the interface configuration is incomplete or invalid.
 
-If a corpus does not pass this check, it won't be included in the API for the search interface.
+A corpus must pass this check to be set to `active` - which enables the corpus in the search interface.
+
+The `ready_to_publish` validation is not used directly when handling views, because it can include some non-trivial checks. For Python corpora, `active` is simply set by running `ready_to_publish()` after importing the corpus definition.
 
 ## API
 
@@ -23,9 +25,3 @@ These checks are available as methods on a `Corpus` object. The corpus has two m
 In addition, the following methods wrap these validation functions in a try/except block and return a boolean value: `corpus.ready_to_index()` and `corpus.ready_to_publish()`.
 
 The first two methods are useful if you want feedback, the latter two methods are useful if you just need a binary state.
-
-## Activity state
-
-The `corpus.ready_to_publish()` is not used directly when handling views, because it can include some non-trivial checks. Instead, corpora have a database field `active` which is checked when responding to HTTP requests.
-
-For Python corpora, `active` is simply set by running `ready_to_publish()` after importing the corpus definition.
