@@ -93,7 +93,7 @@ def test_corpus_edit_views(admin_client: Client, json_corpus_data: Dict, json_mo
 
     response = admin_client.post(
         '/api/corpus/definitions/',
-        json_corpus_data,
+        {'definition': json_corpus_data, 'active': True},
         content_type='application/json',
     )
     assert status.is_success(response.status_code)
