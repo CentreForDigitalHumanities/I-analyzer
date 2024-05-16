@@ -10,7 +10,7 @@
         <h1 class="title">Corpus definitions</h1>
 
         <div class="block">
-            <a class="button is-primary" [routerLink]="['new']">
+            <a class="button" [routerLink]="['new']">
                 <span class="icon" aria-hidden="true">
                     <fa-icon [icon]="actionIcons.add"></fa-icon>
                 </span>
@@ -31,13 +31,20 @@
                         <td>{{definition.meta.title}}</td>
                         <td>
                             <a class="button"
+                                [routerLink]="['/search', definition.name]">
+                                <span class="icon" aria-label="edit">
+                                    <fa-icon [icon]="actionIcons.search"></fa-icon>
+                                </span>
+                            </a>
+                            &nbsp;
+                            <a class="button"
                                 [routerLink]="['edit', definition.id]">
                                 <span class="icon" aria-label="edit">
                                     <fa-icon [icon]="actionIcons.edit"></fa-icon>
                                 </span>
                             </a>
                             &nbsp;
-                            <button class="button">
+                            <button class="button" disabled>
                                 <span class="icon" aria-label="delete">
                                     <fa-icon [icon]="actionIcons.delete"></fa-icon>
                                 </span>
