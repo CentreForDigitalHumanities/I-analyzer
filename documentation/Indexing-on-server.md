@@ -10,7 +10,7 @@ On the server, move data to a location in the `/its` share.
 
 ### Database-only corpora
 
-Add the corpus to the database of the indexing server. You can use the JSON export/import to do this easily. After importing the JSON representation, use the Django admin menu to add the data directory for the corpus (the path to the data on the `/its` share).
+Add the corpus to the database of the indexing server. You can use the JSON export/import to do this easily. After importing the JSON representation, use the Django admin menu to specify the data directory for the corpus (the path to the data directory on the server).
 
 ### Python corpora
 

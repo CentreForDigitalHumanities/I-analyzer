@@ -33,7 +33,7 @@ A _minor_ release can include:
 - Changes to the format for Python corpus definitions, which may require older definitions to be updated.
 - Changes that require minor updates to the server configuration that are backwards compatible, such as a new Django setting or environment variable.
 
-A _major_ release can inclue:
+A _major_ release can include:
 
 - Everything listed for minor releases
 - Removing functionality in the frontend

@@ -389,15 +389,17 @@ class FieldDefinition(Field):
             Should be `Filter` instance.
         extractor: Configuration to extract the field's data from source documents. Should
             be an `Extractor` instance.
-        sortable: Whether this field is shown as an option to sort search results.
-        searchable: Whether this field is shown in the selection for search fields.
+        sortable: Whether this field is shown as an option to sort search results. If
+            `None`, the value is inferred from the mapping type.
+        searchable: Whether this field is shown in the selection for search fields. If
+            `None`, the vlaue is inferred from the mapping type.
         downloadable: Whether this field may be included when downloading results.
         required: Whether this field is required during source extraction. Note that not
             all Reader subclasses currently support this.
     '''
 
     def __init__(self,
-                 name: str = None,
+                 name: str,
                  display_name: Optional[str] = None,
                  display_type: Optional[str] = None,
                  description: str = '',
@@ -407,7 +409,7 @@ class FieldDefinition(Field):
                  csv_core: bool = False,
                  search_field_core: bool = False,
                  visualizations: List[str] = [],
-                 visualization_sort: str = None,
+                 visualization_sort: Optional[str] = None,
                  es_mapping: Dict = {'type': 'text'},
                  language: Optional[str] = None,
                  search_filter: Optional[Filter] = None,

@@ -16,7 +16,7 @@ The steps of adding a new Python corpus are usually the following:
 
 ## Corpus definition
 
-Start by adding a new Python module `corpusname.py` to the `backend/corpora` directory, and include in the `CORPORA` setting of your Django settings. (Use `settings_local.py` to set this for your own development server only.)
+Start by adding a new Python module `<corpusname>.py` to the `backend/corpora` directory, and include in the `CORPORA` setting of your Django settings. (Use `settings_local.py` to set this for your own development server only.)
 
 The actual definition is a class that you define in this module. It should subclass the [`CorpusDefinition` class](/backend/addcorpus/python_corpora/corpus.py).  This class includes some default values for attributes and default behaviour.
 

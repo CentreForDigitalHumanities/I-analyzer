@@ -1,6 +1,8 @@
 # Indexing corpora
 
-Indexing is the step to read the source data of the corpus and load it into elasticsearch, which makes the data available through the I-analyzer interface.
+Indexing is the step to read the source data of the corpus and load it into elasticsearch. Elasticsearch creates an *index* of the data, which makes it available for efficient searching and aggregations.
+
+This step is necessary to make a dataset available in the I-analyzer interface. Note that indexing can take a significant amount of time (depending on the amount of data).
 
 You can start indexing once you have:
 - Created a definition for the corpus

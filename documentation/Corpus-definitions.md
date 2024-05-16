@@ -2,7 +2,7 @@
 
 Corpus definitions are the way that we configure each corpus in I-analyzer.
 
-This documents gives a basic explanation of how corpus definitions "work" in the backend. It introduces the core concepts and mechanics.
+This documents gives a basic explanation of how corpus definitions work in the backend. It introduces the core concepts and mechanics.
 
 ## Corpus definitions
 
@@ -17,7 +17,7 @@ Note that a corpus definition does not include the actual data (i.e. documents),
 
 Corpora can be created in two ways:
 
-- a **Python corpus** is defined in a Python module. Most data from this module is loaded into the databse, but the module also implements custom functions for complex functionality, such as data extraction.
+- a **Python corpus** is defined in a Python module. Most data from this module is loaded into the database, but the module also implements custom functions for complex functionality, such as data extraction.
 - a **database-only corpus** is only represented in the database and does not use any custom Python functions. It offers less customisation, but is easier to create.
 
 > [!NOTE]
@@ -31,7 +31,7 @@ These are the key differences between Python and database-only corpora.
 
 ### Data extraction
 
-A Python corpus can theoretically extract data from any format. In practice, we rely on the [ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/) package which provides extraction utilities for common file types like CSV and XML, but the methods for extraction can as complex as you want. The design philosophy is that you can use the original format of a dataset as the source data for I-analyzer, without any pre-processing.
+A Python corpus can theoretically extract data from any format. In practice, we rely on the [ianalyzer_readers](https://ianalyzer-readers.readthedocs.io/en/latest/) package which provides extraction utilities for common file types like CSV and XML, but the methods for extraction can be as complex as you want. The design philosophy is that you can use the original format of a dataset as the source data for I-analyzer, without any pre-processing.
 
 A database-only corpus only supports CSV extraction with very little room for customisation. Here, the idea is that you pre-process your data *before* you pass it on to I-analyzer. If it is convenient, you can use the `ianalyzer_readers` package to do so.
 

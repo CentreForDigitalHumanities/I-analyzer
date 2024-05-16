@@ -8,7 +8,7 @@ A full corpus definition is represented in four models:
 
 - `Corpus` - the main reference point for the corpus
 - `CorpusConfiguration` - has a one-to-one relationship with `Corpus` and represents all configured metadata
-- `Field` - has a one-to-many relationship with `CorpusConfiguration` and represents a field in the corpus.
+- `Field` - has a many-to-one relationship with `CorpusConfiguration` and represents a field in the corpus.
 - `CorpusDocumentationPage` - has a many-to-many relationship with `CorpusConfiguration` and represents documentation for users.
 
 These are defined in [/backend/addcorpus/models.py](/backend/addcorpus/models.py).
@@ -21,7 +21,7 @@ On the other hand, the `Corpus` contains information about corpus access that is
 
  ## Importing Python corpora
 
-Python definitions can be loaded into the database with the `loadcorpora` command in the backend. Normally, this is run when you start the server, so you do not need to run it manually.
+Python definitions can be loaded into the database with the `loadcorpora` Django command in the backend. Normally, this is run when you start the server, so you do not need to run it manually.
 
 This command will parse any configured python corpora and save a database representation for them. If the python corpus cannot be loaded, the `Corpus` object will still exist in the database, but it will be inactive.
 
@@ -31,7 +31,7 @@ If a corpus by the same name already exists in the database, the command will co
 
 Corpora have an `active` status that determines whether they are available for searching. In addition, you can configure the `groups` connected to a corpus, which determines who has access to it. A user will see a corpus if it is active and they are in a group that is given access. (A superuser implicitly has access to all active corpora.)
 
-I-analyzer always includes a group named `'basic'`, which everyone is a member of by default, including anonymous users. So if you want a corpus to be public, add this group to it.
+I-analyzer always includes a group named `'basic'`, which everyone is a member of by default, including anonymous users. If you want a corpus to be public, add this group to it.
 
 While a corpus is inactive, its validation is less strict. This allows you to build a database-only corpus in steps, and save an incomplete definition as a work in progress. See [Corpus validation](/documentation/Corpus-validation.md) for more details.
 
