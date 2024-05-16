@@ -1,8 +1,13 @@
 from rest_framework import serializers
+from typing import Dict
+
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
 from addcorpus.documentation import render_documentation_context
+from addcorpus.json_corpora.export_json import export_json_corpus
+from addcorpus.json_corpora.import_json import import_json_corpus
+
 
 class NonEmptyJSONField(serializers.JSONField):
     '''
@@ -121,3 +126,50 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CorpusDocumentationPage
         fields = ['corpus_configuration', 'type', 'content']
+
+
+class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Corpus
+        fields = '__all__'
+
+    def to_representation(self, instance) -> Dict:
+        return export_json_corpus(instance)
+
+    def to_internal_value(self, data) -> Dict:
+        return import_json_corpus(data)
+
+    def create(self, validated_data: Dict):
+        configuration_data = validated_data.pop('configuration')
+        fields_data = configuration_data.pop('fields')
+
+        corpus = Corpus.objects.create(**validated_data)
+        configuration = CorpusConfiguration.objects.create(corpus=corpus, **configuration_data)
+        for field_data in fields_data:
+            Field.objects.create(corpus_configuration=configuration, **field_data)
+
+        return corpus
+
+    def update(self, instance: Corpus, validated_data: Dict):
+        configuration_data = validated_data.pop('configuration')
+        fields_data = configuration_data.pop('fields')
+
+        corpus = Corpus(pk=instance.pk, **validated_data)
+        corpus.save()
+
+        configuration, _ = CorpusConfiguration.objects.get_or_create(corpus=corpus)
+        for attr in configuration_data:
+            setattr(configuration, attr, configuration_data[attr])
+        configuration.save()
+
+        for field_data in fields_data:
+            field, _ = Field.objects.get_or_create(
+                corpus_configuration=configuration, name=field_data['name']
+            )
+            for attr in field_data:
+                setattr(field, attr, field_data[attr])
+            field.save()
+
+        configuration.fields.exclude(name__in=(f['name'] for f in fields_data)).delete()
+
+        return corpus

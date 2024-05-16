@@ -1,9 +1,15 @@
 from datetime import date
-from addcorpus.json_corpora.import_json import import_json_corpus, _parse_field
+from addcorpus.json_corpora.import_json import _parse_field
+from addcorpus.models import Field, Corpus
+from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from addcorpus.models import Corpus, CorpusConfiguration
 
+def test_json_corpus_import(db, json_corpus_data):
+    Corpus.objects.all().delete()
 
-def test_import(db, json_corpus_data):
-    corpus = import_json_corpus(json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    corpus = serializer.create(serializer.validated_data)
 
     assert corpus.name == 'example'
     assert corpus.ready_to_index()
@@ -30,8 +36,38 @@ def test_import(db, json_corpus_data):
     assert line_field.display_type == 'text_content'
 
 
+def test_serializer_representation(db, json_corpus_data):
+    Corpus.objects.all().delete()
+
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    corpus = serializer.create(serializer.validated_data)
+
+    serialized = serializer.to_representation(corpus)
+    serialized.pop('id')
+    assert json_corpus_data == serialized
+
+def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
+    # edit description
+    json_corpus_data['meta']['description'] = 'A different description'
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    serializer.update(json_mock_corpus, serializer.validated_data)
+    corpus_config = CorpusConfiguration.objects.get(corpus=json_mock_corpus)
+    assert corpus_config.description == 'A different description'
+
+    # remove a field
+    assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 2
+    json_corpus_data['fields'] = json_corpus_data['fields'][:-1]
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    serializer.update(json_mock_corpus, serializer.validated_data)
+    assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 1
+
+
 def test_parse_content_field(content_field_json):
-    field = _parse_field(content_field_json)
+    data = _parse_field(content_field_json)
+    field = Field(**data)
     assert field.name == 'content'
     assert field.display_name == 'Content'
     assert field.display_type == 'text_content'
@@ -52,7 +88,8 @@ def test_parse_content_field(content_field_json):
 
 
 def test_parse_keyword_field(keyword_field_json):
-    field = _parse_field(keyword_field_json)
+    data = _parse_field(keyword_field_json)
+    field = Field(**data)
     assert field.name == 'author'
     assert field.display_type == 'keyword'
     assert field.search_filter['name'] == 'MultipleChoiceFilter'
@@ -67,7 +104,8 @@ def test_parse_keyword_field(keyword_field_json):
 
 
 def test_parse_int_field(int_field_json):
-    field = _parse_field(int_field_json)
+    data =  _parse_field(int_field_json)
+    field = Field(**data)
     assert field.name == 'year'
     assert field.display_type == 'integer'
     assert field.search_filter['name'] == 'RangeFilter'
@@ -83,7 +121,8 @@ def test_parse_int_field(int_field_json):
 
 
 def test_parse_float_field(float_field_json):
-    field = _parse_field(float_field_json)
+    data = _parse_field(float_field_json)
+    field = Field(**data)
     assert field.name == 'ocr_confidence'
     assert field.display_type == 'float'
     assert field.search_filter == {}
@@ -99,7 +138,8 @@ def test_parse_float_field(float_field_json):
 
 
 def test_parse_date_field(date_field_json):
-    field = _parse_field(date_field_json)
+    data = _parse_field(date_field_json)
+    field = Field(**data)
     assert field.name == 'date'
     assert field.display_type == 'date'
     assert field.search_filter['name'] == 'DateFilter'
@@ -114,7 +154,8 @@ def test_parse_date_field(date_field_json):
 
 
 def test_parse_boolean_field(boolean_field_json):
-    field = _parse_field(boolean_field_json)
+    data = _parse_field(boolean_field_json)
+    field = Field(**data)
     assert field.name == 'author_known'
     assert field.display_type == 'boolean'
     assert field.search_filter['name'] == 'BooleanFilter'
@@ -129,7 +170,8 @@ def test_parse_boolean_field(boolean_field_json):
 
 
 def test_parse_geo_field(geo_field_json):
-    field = _parse_field(geo_field_json)
+    data = _parse_field(geo_field_json)
+    field = Field(**data)
     assert field.name == 'location'
     assert field.display_type == 'geo_point'
     assert field.search_filter == {}
