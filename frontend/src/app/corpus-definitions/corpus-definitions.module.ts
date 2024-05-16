@@ -3,6 +3,7 @@ import { DefinitionsOverviewComponent } from './definitions-overview/definitions
 import { SharedModule } from '../shared/shared.module';
 import { CreateDefinitionComponent } from './create-definition/create-definition.component';
 import { EditDefinitionComponent } from './edit-definition/edit-definition.component';
+import { DefinitionJsonUploadComponent } from './definition-json-upload/definition-json-upload.component';
 
 
 
@@ -11,6 +12,7 @@ import { EditDefinitionComponent } from './edit-definition/edit-definition.compo
         CreateDefinitionComponent,
         DefinitionsOverviewComponent,
         EditDefinitionComponent,
+        DefinitionJsonUploadComponent,
     ],
     exports: [
         CreateDefinitionComponent,

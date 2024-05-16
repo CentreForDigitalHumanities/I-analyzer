@@ -27,22 +27,11 @@
             You can update this corpus by uploading a new JSON definition for it.
         </p>
 
-        <form class="block">
-            <div class="file block">
-                <label class="file-label">
-                    <input class="file-input" type="file" name="definition-upload"
-                        accept=".json,application/json"
-                        (input)="onJSONUpload($event)" />
-                    <span class="file-cta">
-                        <span class="file-icon" aria-hidden="true">
-                            <fa-icon [icon]="actionIcons.upload"></fa-icon>
-                        </span>
-                        <span class="file-label">Upload JSON...</span>
-                    </span>
-                    <span class="file-name" *ngIf="uploadFile$ | async as file">
-                        {{file.name}}
-                    </span>
-                </label>
+        <form>
+            <div class="block">
+                <ia-definition-json-upload
+                    [reset]="reset$" (upload)="onJSONUpload($event)">
+                </ia-definition-json-upload>
             </div>
 
             <div class="block" *ngIf="corpusToSubmit$ | async">

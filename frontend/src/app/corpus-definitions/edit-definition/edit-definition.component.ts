@@ -76,30 +76,20 @@ export class EditDefinitionComponent {
     formIcons = formIcons;
 
     corpus$: Observable<APIEditableCorpus>;
-
-    uploadFile$: BehaviorSubject<File|undefined> = new BehaviorSubject(undefined);
-    uploadData$: Subject<Observable<any>> = new Subject();
-
-    uploadError$: Subject<any> = new Subject();
+    uploadData$: Subject<any> = new Subject();
     uploadResult$: Observable<APIEditableCorpus>;
-
     corpusToSubmit$: Observable<APIEditableCorpus|undefined>;
+    reset$: Subject<void> = new Subject();
 
     private submit$: Subject<void> = new Subject();
-    private reset$: Subject<void> = new Subject();
 
     constructor(
         private editDefinitionService: EditDefinitionService,
     ) {
         this.uploadResult$ = this.uploadData$.pipe(
-            switchAll(),
-            catchError(e => {
-                this.uploadError$.next(e);
-                return of(undefined);
-            }),
             filter(_.negate(_.isUndefined)),
             withLatestFrom(this.editDefinitionService.data$),
-            map(([data, corpus]) => this.mergeUploadedData(corpus, data))
+            map(([data, corpus]) => this.mergeUploadedData(corpus, data)),
         );
 
         this.corpusToSubmit$ = merge(
@@ -128,22 +118,16 @@ export class EditDefinitionComponent {
         saveAs(blob, filename);
     }
 
-    onJSONUpload(event: InputEvent) {
-        const files: File[] = event.target['files'];
-        const file = files ? _.first(files) : undefined;
-        this.uploadFile$.next(file);
-        const data$ = from(file.text().then(text => JSON.parse(text)));
-        this.uploadData$.next(data$);
+    onJSONUpload(data: any) {
+        this.uploadData$.next(data);
     }
 
     submit() {
         this.submit$.next();
-        this.uploadFile$.next(undefined);
     }
 
     reset() {
         this.reset$.next();
-        this.uploadFile$.next(undefined);
     }
 
     private mergeUploadedData(corpus: APIEditableCorpus, data: any): APIEditableCorpus {
