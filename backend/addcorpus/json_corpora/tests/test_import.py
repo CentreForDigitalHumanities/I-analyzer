@@ -4,11 +4,11 @@ from addcorpus.models import Field, Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
 from addcorpus.models import Corpus, CorpusConfiguration
 
-def test_json_corpus_import(db, json_mock_corpus, json_corpus_data):
+def test_json_corpus_import(db, json_mock_corpus, json_corpus_definition):
     json_mock_corpus.delete()
 
     data = {
-        'definition': json_corpus_data,
+        'definition': json_corpus_definition,
         'active': True,
     }
 
@@ -40,11 +40,11 @@ def test_json_corpus_import(db, json_mock_corpus, json_corpus_data):
     assert line_field.display_type == 'text_content'
 
 
-def test_serializer_representation(db, json_mock_corpus, json_corpus_data):
+def test_serializer_representation(db, json_mock_corpus, json_corpus_definition):
     json_mock_corpus.delete()
 
     data = {
-        'definition': json_corpus_data,
+        'definition': json_corpus_definition,
         'active': True,
     }
 
@@ -53,12 +53,12 @@ def test_serializer_representation(db, json_mock_corpus, json_corpus_data):
     corpus = serializer.create(serializer.validated_data)
 
     serialized = serializer.to_representation(corpus)
-    assert json_corpus_data == serialized['definition']
+    assert json_corpus_definition == serialized['definition']
 
-def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
+def test_serializer_update(db, json_corpus_definition, json_mock_corpus: Corpus):
     # edit description
     data = {
-        'definition': json_corpus_data,
+        'definition': json_corpus_definition,
         'active': True,
     }
     data['definition']['meta']['description'] = 'A different description'
@@ -71,7 +71,7 @@ def test_serializer_update(db, json_corpus_data, json_mock_corpus: Corpus):
     # remove a field
     assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 2
     data['definition']['fields'] = data['definition']['fields'][:-1]
-    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=data)
     assert serializer.is_valid()
     serializer.update(json_mock_corpus, serializer.validated_data)
     assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 1
