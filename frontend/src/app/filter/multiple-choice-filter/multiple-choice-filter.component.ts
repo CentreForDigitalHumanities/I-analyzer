@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { BaseFilterComponent } from '../base-filter.component';
 import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../../models';
 import { SearchService } from '../../services';
-import { TermsAggregator } from '../../models/aggregation';
+import { TermsAggregator, TermsResult } from '../../models/aggregation';
 
 @Component({
     selector: 'ia-multiple-choice-filter',
@@ -33,12 +33,17 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
             const aggregator = new TermsAggregator(this.filter.corpusField, optionCount);
             const queryModel = this.queryModel.clone();
             queryModel.filterForField(this.filter.corpusField).deactivate();
-            this.searchService.aggregateSearch(queryModel.corpus, queryModel, aggregator).then(result =>
-                this.options = _.sortBy(
-                    result.map(x => ({ label: x.key, value: x.key, doc_count: x.doc_count })),
-                    o => o.label
-                )
-            ).catch(() => this.options = []);
+
+            const parseOption = (item: TermsResult) => ({
+                label: item.key, value: item.key, doc_count: item.doc_count
+            });
+            this.searchService.aggregateSearch(
+                queryModel.corpus, queryModel, aggregator
+            ).then(result =>
+                this.options = _.sortBy(result.map(parseOption), option => option.label)
+            ).catch(() =>
+                this.options = []
+            );
         }
     }
 }
