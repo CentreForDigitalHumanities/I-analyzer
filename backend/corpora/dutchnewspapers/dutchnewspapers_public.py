@@ -135,6 +135,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
+            display_type='url',
             es_mapping=keyword_mapping(),
             extractor=XML(tag='identifier',
                                   toplevel=True,
