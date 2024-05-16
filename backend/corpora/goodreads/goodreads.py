@@ -162,6 +162,7 @@ class GoodReads(CSVCorpusDefinition):
         FieldDefinition(
             name='url',
             display_name='Source URL',
+            display_type='url',
             description='Link to the the review on Goodreads',
             extractor=CSV('url'),
             es_mapping={'type': 'keyword'},

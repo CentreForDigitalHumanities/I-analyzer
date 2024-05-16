@@ -8,7 +8,7 @@ from addcorpus import es_mappings
 from addcorpus.constants import VisualizationType
 from addcorpus.validation.publishing import _any_date_fields
 from django.conf import settings
-
+from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER, DATE_FORMAT
 
 def import_json_corpus(data: Dict) -> Corpus:
     name = get_path(data, 'name')
@@ -51,12 +51,12 @@ def _parse_configuration(data: Dict, configuration: CorpusConfiguration) -> Corp
     configuration.document_context = get_path(
         data, 'options', 'document_context') or {}
     configuration.source_data_delimiter = get_path(
-        data, 'source_data', 'options', 'delimiter') or ','
+        data, 'source_data', 'options', 'delimiter') or DEFAULT_CSV_DELIMITER
     return configuration
 
 
 def _parse_date(date: str):
-    return datetime.strptime(date, '%Y-%m-%d').date()
+    return datetime.strptime(date, DATE_FORMAT).date()
 
 
 def _import_fields(data: Dict, configuration: CorpusConfiguration) -> None:
@@ -109,7 +109,7 @@ def _parse_field(field_data: Dict, configuration: Optional[CorpusConfiguration] 
         'float': _parse_numeric_field,
         'date': _parse_date_field,
         'boolean': _parse_boolean_field,
-        'geo_json': _parse_geo_field,
+        'geo_point': _parse_geo_field,
     }
     field = parsers[field_type](field, field_data)
 
@@ -189,7 +189,7 @@ def _parse_language(field_data: Dict) -> str:
 
 def _parse_url_field(field: Field, field_data: Dict) -> Field:
     field.es_mapping = es_mappings.keyword_mapping()
-    field.display_type = 'keyword'
+    field.display_type = 'url'
     field.search_filter = {}
     return field
 
@@ -269,7 +269,7 @@ def _parse_boolean_field(field: Field, field_data: Dict) -> Field:
 
 
 def _parse_geo_field(field: Field, field_data: Dict) -> Field:
-    field.display_type = 'keyword'
+    field.display_type = 'geo_point'
     field.es_mapping = es_mappings.geo_mapping()
     field.search_filter = {}
     return field
