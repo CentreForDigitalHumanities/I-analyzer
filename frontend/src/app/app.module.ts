@@ -53,6 +53,7 @@ import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component'
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
 import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
+import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
 
 export const appRoutes: Routes = [
     {
@@ -142,6 +143,10 @@ export const appRoutes: Routes = [
             {
                 path: 'new',
                 component: CreateDefinitionComponent,
+            },
+            {
+                path: 'edit/:corpusID',
+                component: EditDefinitionComponent,
             },
             {
                 path: '',
