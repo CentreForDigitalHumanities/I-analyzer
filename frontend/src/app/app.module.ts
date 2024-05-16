@@ -52,6 +52,7 @@ import { WordModelsModule } from './word-models/word-models.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
+import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
 
 export const appRoutes: Routes = [
     {
@@ -136,8 +137,17 @@ export const appRoutes: Routes = [
     },
     {
         path: 'corpus-definitions',
-        component: DefinitionsOverviewComponent,
         canActivate: [LoggedOnGuard],
+        children: [
+            {
+                path: 'new',
+                component: CreateDefinitionComponent,
+            },
+            {
+                path: '',
+                component: DefinitionsOverviewComponent,
+            },
+        ]
     },
     {
         path: '',

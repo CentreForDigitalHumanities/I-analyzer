@@ -3,12 +3,12 @@
         <h1 class="title">Corpus definitions</h1>
 
         <div class="block">
-            <button class="button is-primary">
+            <a class="button is-primary" [routerLink]="['new']">
                 <span class="icon" aria-hidden="true">
                     <fa-icon [icon]="actionIcons.add"></fa-icon>
                 </span>
                 <span>Create a new corpus</span>
-            </button>
+            </a>
         </div>
 
         <div class="block" *ngIf="definitions$ | async as definitions">
@@ -23,17 +23,12 @@
                     <tr *ngFor="let definition of definitions">
                         <td>{{definition.meta.title}}</td>
                         <td>
-                            <button class="button">
-                                <span class="icon" aria-label="browse">
-                                    <fa-icon [icon]="actionIcons.search"></fa-icon>
-                                </span>
-                            </button>
-                            &nbsp;
-                            <button class="button">
+                            <a class="button"
+                                [routerLink]="[definition.id]">
                                 <span class="icon" aria-label="edit">
                                     <fa-icon [icon]="actionIcons.edit"></fa-icon>
                                 </span>
-                            </button>
+                            </a>
                             &nbsp;
                             <button class="button">
                                 <span class="icon" aria-label="delete">

@@ -1,14 +1,17 @@
 import { NgModule } from '@angular/core';
 import { DefinitionsOverviewComponent } from './definitions-overview/definitions-overview.component';
 import { SharedModule } from '../shared/shared.module';
+import { CreateDefinitionComponent } from './create-definition/create-definition.component';
 
 
 
 @NgModule({
     declarations: [
-        DefinitionsOverviewComponent
+        CreateDefinitionComponent,
+        DefinitionsOverviewComponent,
     ],
     exports: [
+        CreateDefinitionComponent,
         DefinitionsOverviewComponent,
     ],
     imports: [
