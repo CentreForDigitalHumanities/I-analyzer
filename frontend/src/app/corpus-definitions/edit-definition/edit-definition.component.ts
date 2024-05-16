@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { actionIcons } from '../../shared/icons';
-import { Observable, combineLatest } from 'rxjs';
-import { APIEditableCorpus } from '../../models/corpus-definition';
+import { Observable } from 'rxjs';
+import { APICorpusDefinition, APIEditableCorpus } from '../../models/corpus-definition';
 import { ApiService } from '../../services';
 import { ActivatedRoute } from '@angular/router';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+
 
 @Component({
     selector: 'ia-edit-definition',
@@ -25,6 +26,13 @@ export class EditDefinitionComponent {
             map(params => parseInt(params['corpusID'], 10)),
             switchMap(id => this.apiService.corpusDefinition(id))
         );
+    }
+
+    downloadJSON(definition: APICorpusDefinition) {
+        const content = JSON.stringify(definition);
+        const blob = new Blob([content], { type: `text/csv;charset=utf-8`, endings: 'native' });
+        const filename = definition.name + '.json';
+        saveAs(blob, filename);
     }
 
 }
