@@ -14,21 +14,20 @@ People & Parliament presents the *Dutch parliamentary data* corpus, which is a c
 
 > University of Jyväskylä and Utrecht University. "Dutch Parliamentary data". *People & Parliament*, 2020/2023. {{ frontend_url }}/search/parliament-netherlands
 
-## Citing a specific speech
-
-When you cite a speech in the *Dutch Parliamentary data* corpus, newer documents contain a `Source URL` field. If this field is not present, we recommend that you retrieve a link by clicking the *link* icon underneath the speech's document tile. This should give you an url as follows:
-https://people-and-parliament.hum.uu.nl/document/parliament-netherlands/ParlaMint-NL_2021-12-21-eerstekamer-4.u1
-
+## Referring to a debate
 To get an URL for an entire debate, you can use the *view debate* link for a speech. This will get you a link like this:
 
-    {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc
+    {{ frontend_url }}/search/parliament-netherlands?debate_id=ParlaMint-NL_2021-12-21-eerstekamer-4&sort=sequence,asc
 
-This describes the query to view all chapters of the book on I-analyzer.
+## Citing a specific speech
+
+To cite a speech in the *Dutch Parliamentary data* corpus, you can retrieve a link by clicking the *link* icon underneath the speech's document tile. This should give you an url as follows:
+{{ frontend_url }}/document/parliament-netherlands/ParlaMint-NL_2021-12-21-eerstekamer-4.u1
 
 ### APA style
 
-> Porjeere, O. (1788). *Zanglievende uitspanningen*. Martinus de Bruijn. {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc
+> Rutte, M. (2021). In *Report of the meeting of the Dutch Lower House, Meeting 37, Session 2 (2021-12-21)*. {{ frontend_url }}/document/parliament-netherlands/ParlaMint-NL_2021-12-21-tweedekamer-2.u225
 
 ### MLA style
 
-> Porjeere, Olivier. *Zanglievende uitspanningen*. Martinus de Bruijn, 1788. {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc
+> Rutte, Mark. *Report of the meeting of the Dutch Lower House, Meeting 37, Session 2 (2021-12-21)*, 2021. {{ frontend_url }}/document/parliament-netherlands/ParlaMint-NL_2021-12-21-tweedekamer-2.u225
