@@ -1,12 +1,13 @@
 # Indexing corpora
 
-Indexing is the step to load corpus data into elasticsearch, which makes the data available through the I-analyzer interface.
+Indexing is the step to read the source data of the corpus and load it into elasticsearch. Elasticsearch creates an *index* of the data, which makes it available for efficient searching and aggregations.
 
-You can start indexing once you have
-- A python source file for the corpus
-- A directory with source data
-- Added the necessary properties to django settings
-- Run the admin command `loadcorpora` (`yarn django loadcorpora`)
+This step is necessary to make a dataset available in the I-analyzer interface. Note that indexing can take a significant amount of time (depending on the amount of data).
+
+You can start indexing once you have:
+- Created a definition for the corpus
+- If it is a Python corpus: added necessary settings to your project, such as the source data directory.
+- Imported the definition into the database. For Python corpora, run `yarn django loadcorpora` to do this.
 
 The basic indexing command is:
 
@@ -28,10 +29,7 @@ Some options that may be useful for development:
 
 ### Date selection
 
-`--start` / `-s` and `--end` / `-e` respectively give a start and end date to select source files. Note that this only works if the `sources` function in your corpus definition makes use of these options; not all corpora have this defined. (It is not always possible to infer exact dates from source file metadata.)
-
-The filtering of source files may not be exact (e.g. only take the year into account). These flags do *not* filter documents based on their contents.
-
+`--start` / `-s` and `--end` / `-e` respectively give a start and end date to select source files. Note that this only works if the `sources` function in your corpus definition makes use of these options; not all corpora have this defined. (It is not always possible to infer dates from source file metadata without parsing the file.)
 
 ## Production
 
