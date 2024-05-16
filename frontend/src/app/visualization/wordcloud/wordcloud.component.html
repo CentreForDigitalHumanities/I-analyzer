@@ -4,7 +4,7 @@
     </div>
 
     <div class="block" *ngIf="asTable">
-        <ia-freqtable [headers]="tableHeaders" [data]="results.result$ | async" [defaultSort]="'doc_count'" [name]="(result.state$ | async).field?.name">
+        <ia-freqtable [headers]="tableHeaders" [data]="results.result$ | async" [defaultSort]="'doc_count'" [name]="(results.state$ | async).field?.name">
         </ia-freqtable>
     </div>
 </div>
