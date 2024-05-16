@@ -91,8 +91,6 @@ export class EditDefinitionComponent {
     constructor(
         private editDefinitionService: EditDefinitionService,
     ) {
-        this.corpus$ = this.editDefinitionService.data$;
-
         this.uploadResult$ = this.uploadData$.pipe(
             switchAll(),
             catchError(e => {
@@ -100,16 +98,21 @@ export class EditDefinitionComponent {
                 return of(undefined);
             }),
             filter(_.negate(_.isUndefined)),
-            withLatestFrom(this.corpus$),
+            withLatestFrom(this.editDefinitionService.data$),
             map(([data, corpus]) => this.mergeUploadedData(corpus, data))
         );
 
         this.corpusToSubmit$ = merge(
-            this.corpus$.pipe(map(_.constant(undefined))),
+            this.editDefinitionService.data$.pipe(map(_.constant(undefined))),
             this.reset$,
             this.uploadResult$
         ).pipe(
             shareReplay(1)
+        );
+
+        this.corpus$ = merge(
+            this.editDefinitionService.data$,
+            this.corpusToSubmit$.pipe(filter(_.negate(_.isUndefined))),
         );
 
         this.submit$.pipe(
@@ -129,7 +132,7 @@ export class EditDefinitionComponent {
         const files: File[] = event.target['files'];
         const file = files ? _.first(files) : undefined;
         this.uploadFile$.next(file);
-        const data$ = from(file.text().then(text =>JSON.parse(text)));
+        const data$ = from(file.text().then(text => JSON.parse(text)));
         this.uploadData$.next(data$);
     }
 
