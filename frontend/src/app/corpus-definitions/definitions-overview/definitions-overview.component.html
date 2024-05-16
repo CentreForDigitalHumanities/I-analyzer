@@ -18,7 +18,7 @@
             </a>
         </div>
 
-        <div class="block" *ngIf="definitions$ | async as definitions">
+        <div class="block" *ngIf="corpora$ | async as corpora">
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
@@ -27,18 +27,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let definition of definitions">
-                        <td>{{definition.meta.title}}</td>
+                    <tr *ngFor="let corpus of corpora">
+                        <td>{{corpus.definition.meta.title}}</td>
                         <td>
                             <a class="button"
-                                [routerLink]="['/search', definition.name]">
+                                [routerLink]="['/search', corpus.definition.name]"
+                                [attr.disabled]="!corpus.active">
                                 <span class="icon" aria-label="edit">
                                     <fa-icon [icon]="actionIcons.search"></fa-icon>
                                 </span>
                             </a>
                             &nbsp;
                             <a class="button"
-                                [routerLink]="['edit', definition.id]">
+                                [routerLink]="['edit', corpus.id]">
                                 <span class="icon" aria-label="edit">
                                     <fa-icon [icon]="actionIcons.edit"></fa-icon>
                                 </span>

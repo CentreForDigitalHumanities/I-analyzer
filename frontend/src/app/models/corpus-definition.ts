@@ -19,7 +19,6 @@ export interface APICorpusField {
 
 export interface APICorpusDefinition {
     name: string;
-    id?: number;
     meta: {
         title: string;
         category: string;
@@ -52,4 +51,10 @@ export interface APICorpusDefinition {
             ascending: boolean;
         };
     };
+};
+
+export interface APIEditableCorpus {
+    id?: number;
+    active: boolean;
+    definition: APICorpusDefinition;
 };

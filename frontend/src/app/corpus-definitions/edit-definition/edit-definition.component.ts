@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { actionIcons } from '../../shared/icons';
 import { Observable, combineLatest } from 'rxjs';
-import { APICorpusDefinition } from '../../models/corpus-definition';
+import { APIEditableCorpus } from '../../models/corpus-definition';
 import { ApiService } from '../../services';
 import { ActivatedRoute } from '@angular/router';
-import { map, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'ia-edit-definition',
@@ -15,21 +15,15 @@ export class EditDefinitionComponent {
 
     actionIcons = actionIcons;
 
-    definition$: Observable<APICorpusDefinition>;
+    corpus$: Observable<APIEditableCorpus>;
 
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute
     ) {
-        const corpusID$ = this.route.params.pipe(
-            map(params => parseInt(params['corpusID'], 10))
-        );
-        this.definition$ = combineLatest([
-            this.apiService.corpusDefinitions(),
-            corpusID$,
-        ]).pipe(
-            tap(values => console.log(values)),
-            map(([definitions, id]) => definitions.find(def => def.id === id))
+        this.corpus$ = this.route.params.pipe(
+            map(params => parseInt(params['corpusID'], 10)),
+            switchMap(id => this.apiService.corpusDefinition(id))
         );
     }
 

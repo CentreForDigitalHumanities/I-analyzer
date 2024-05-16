@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { actionIcons } from '../../shared/icons';
 import { ApiService} from '../../services';
 import { Observable } from 'rxjs';
-import { APICorpusDefinition } from '../../models/corpus-definition';
+import { APIEditableCorpus } from '../../models/corpus-definition';
 import * as _ from 'lodash';
 
 @Component({
@@ -13,9 +13,9 @@ import * as _ from 'lodash';
 export class DefinitionsOverviewComponent {
     actionIcons = actionIcons;
 
-    definitions$: Observable<APICorpusDefinition[]>;
+    corpora$: Observable<APIEditableCorpus[]>;
 
     constructor(private apiService: ApiService) {
-        this.definitions$ = this.apiService.corpusDefinitions();
+        this.corpora$ = this.apiService.corpusDefinitions();
     }
 }

@@ -31,7 +31,7 @@ import {
 } from '../models/index';
 import { environment } from '../../environments/environment';
 import * as _ from 'lodash';
-import { APICorpusDefinition } from '../models/corpus-definition';
+import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -237,19 +237,23 @@ export class ApiService {
 
     // Corpus definitions
 
-    public corpusDefinitions() {
-        return this.http.get<APICorpusDefinition[]>('/api/corpus/definitions/');
+    public corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        return this.http.get<APIEditableCorpus[]>('/api/corpus/definitions/');
     }
 
-    public createCorpus(data: APICorpusDefinition) {
-        return this.http.post<APICorpusDefinition>('/api/corpus/definitions/', data);
+    public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
+        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
     }
 
-    public updateCorpus(corpusID: number, data: APICorpusDefinition) {
-        return this.http.put<APICorpusDefinition>(`/api/corpus/definitions/${corpusID}`, data);
+    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
     }
 
-    public deleteCorpus(corpusID: number) {
+    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    }
+
+    public deleteCorpus(corpusID: number): Observable<any> {
         return this.http.delete(`/api/corpus/definitions/${corpusID}`);
     }
 
