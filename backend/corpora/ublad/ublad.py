@@ -5,9 +5,9 @@ from os.path import join, splitext
 
 from django.conf import settings
 from addcorpus.python_corpora.corpus import HTMLCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import Metadata, XML, Pass, Order, Backup, Combined, FilterAttribute
+from addcorpus.python_corpora.extract import FilterAttribute
 from addcorpus.es_mappings import *
-from addcorpus.python_corpora.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter, DateFilter
+from addcorpus.python_corpora.filters import DateFilter
 from addcorpus.es_settings import es_settings
 
 
@@ -15,8 +15,33 @@ from ianalyzer_readers.readers.html import HTMLReader
 from ianalyzer_readers.readers.core import Field
 from ianalyzer_readers.extract import html, Constant
 
+from bs4 import BeautifulSoup, Tag
+
 import locale
 locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
+
+def transform_content(soup):
+    """
+    Transforms the text contents of a page node (soup) into a string consisting
+    of blocks of text, foregoing the column structure of the OCR'ed material.
+    """
+    page_text = ""
+    for child in soup.children:
+        if isinstance(child, Tag) and 'ocr_carea' in child.get('class', []):
+            paragraph_text = ""
+            paragraph_list = child.get_text().split('\n')
+            for item in paragraph_list[1:]:
+                if not item:
+                    pass
+                elif item.endswith('-'):
+                    paragraph_text += item.strip('-')
+                else:
+                    paragraph_text += item + ' '
+            if paragraph_text:
+                page_text += paragraph_text + '\n\n'
+    page_node = BeautifulSoup(page_text, 'html.parser')
+    return page_node
+
 
 class UBlad(HTMLCorpusDefinition):
     title = 'U-Blad'
@@ -62,17 +87,23 @@ class UBlad(HTMLCorpusDefinition):
             results_overview=True,
             csv_core=True,
             search_field_core=True,
-            visualisations=['ngram', 'wordcloud'],
+            visualizations=['ngram', 'wordcloud'],
             es_mapping = main_content_mapping(True, True, True, 'nl'),
-            extractor= FilterAttribute(tag='div', recursive=True, multiple=False, flatten=True, attribute_filter={
-                'attribute': 'class',
-                'value': 'ocr_page'
-            })
+            extractor= FilterAttribute(tag='div',
+                                       recursive=True,
+                                       multiple=False,
+                                       flatten=False,
+                                       transform_soup_func=transform_content,
+                                       attribute_filter={
+                                            'attribute': 'class',
+                                            'value': 'ocr_page'
+                                        })
         ),
         FieldDefinition(
             name='pagenum',
             display_name='Page number',
             description='Page number',
+            csv_core=True,
             es_mapping = int_mapping(),
             extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
@@ -80,7 +111,6 @@ class UBlad(HTMLCorpusDefinition):
                 }
             )
         ),
-
         FieldDefinition(
             name='journal_title',
             display_name='Publication Title',
@@ -129,6 +159,7 @@ class UBlad(HTMLCorpusDefinition):
             display_name='Volume',
             sortable=True,
             results_overview=True,
+            csv_core=True,
             description='The volume number of this publication. There is one volume per year.',
             extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
@@ -160,24 +191,11 @@ class UBlad(HTMLCorpusDefinition):
             )
         ),
         FieldDefinition(
-            name='year',
-            display_name='Year',
-            description='The publication year of this volume',
-            es_mapping=keyword_mapping(),
-            visualizations=['resultscount', 'termfrequency'],
-            visualization_sort='key',
-            search_filter=MultipleChoiceFilter(),
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'year',
-                }
-            )
-        ),
-        FieldDefinition(
             name='repo_url',
             display_name='Repository URL',
             description='URL to the dSPACE repository entry of this volume',
             es_mapping=keyword_mapping(),
+            display_type='url',
             searchable=False,
             extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
@@ -190,6 +208,7 @@ class UBlad(HTMLCorpusDefinition):
             display_name='Reader URL',
             description='URL to the UB reader view of this page',
             es_mapping=keyword_mapping(),
+            display_type='url',
             searchable=False,
             extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
@@ -202,6 +221,7 @@ class UBlad(HTMLCorpusDefinition):
             display_name='Image URL',
             description='URL to the jpg file of this page',
             es_mapping=keyword_mapping(),
+            display_type='url',
             searchable=False,
             extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
@@ -214,6 +234,7 @@ class UBlad(HTMLCorpusDefinition):
             display_name='Worldcat URL',
             description='URL to the Worldcat entry of this volume',
             es_mapping=keyword_mapping(),
+            display_type='url',
             searchable=False,
             extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
