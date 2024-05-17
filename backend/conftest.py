@@ -155,8 +155,7 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
     corpus = Corpus.objects.get(name=corpus_name)
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
-        index.create(es_client, corpus, clear=True)
-        index.populate(es_client, corpus)
+        index.perform_indexing(corpus)
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
 
@@ -185,6 +184,11 @@ def index_tag_mock_corpus(db, es_client: Elasticsearch, tag_mock_corpus: str, te
     _index_test_corpus(es_client, tag_mock_corpus)
 
 
+@pytest.fixture()
+def index_json_mock_corpus(db, es_client: Elasticsearch, json_mock_corpus: Corpus, test_index_cleanup):
+    _index_test_corpus(es_client, json_mock_corpus.name)
+
+
 # mock corpora
 @pytest.fixture(autouse=True)
 def add_mock_python_corpora_to_db(db, media_dir):
@@ -205,4 +209,9 @@ def json_mock_corpus(db, json_corpus_data) -> Corpus:
     serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
+
+    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data')
+    corpus.configuration.data_directory = data_dir
+    corpus.configuration.save()
+
     return corpus
