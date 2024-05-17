@@ -1,21 +1,21 @@
 <section class="section">
-    <div class="container" *ngIf="corpus$ | async as corpus">
+    <div class="container">
         <nav aria-label="secondary navigation" class="breadcrumb">
             <ul>
                 <li><a [routerLink]="['/']">Corpora</a></li>
                 <li><a [routerLink]="['../..']">Definitions</a></li>
-                <li class="is-active" aria-current="page"><a>{{corpus.definition.meta.title}}</a></li>
+                <li class="is-active" aria-current="page"><a>{{corpus.definition?.meta.title}}</a></li>
             </ul>
         </nav>
 
-        <h1 class="title">Edit corpus "{{corpus.definition.meta.title}}"</h1>
+        <h1 class="title">Edit corpus "{{corpus.definition?.meta.title}}"</h1>
 
         <p class="block">
             You can download this corpus definition as a JSON file.
         </p>
 
         <div class="block">
-            <button class="button" (click)="downloadJSON(corpus.definition)">
+            <button class="button" (click)="downloadJSON()">
                 <span class="icon" aria-hidden="true">
                     <fa-icon [icon]="actionIcons.download"></fa-icon>
                 </span>
@@ -34,7 +34,7 @@
                 </ia-definition-json-upload>
             </div>
 
-            <div class="block" *ngIf="corpusToSubmit$ | async">
+            <div class="block">
                 <button class="button is-primary" type="submit" (click)="submit()">
                     <span class="icon" aria-hidden="true">
                         <fa-icon [icon]="formIcons.confirm"></fa-icon>

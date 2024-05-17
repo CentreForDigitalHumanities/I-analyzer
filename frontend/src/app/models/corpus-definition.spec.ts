@@ -5,7 +5,7 @@ import { ApiServiceMock } from '../../mock-data/api';
 import { mockCorpusDefinition } from '../../mock-data/corpus-definition';
 
 
-fdescribe('CorpusDefinition', () => {
+describe('CorpusDefinition', () => {
     let apiService: ApiService;
 
     beforeEach(() => {
