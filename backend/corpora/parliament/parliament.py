@@ -31,7 +31,6 @@ class Parliament(CorpusDefinition):
     min_date = field_defaults.MIN_DATE
     max_date = field_defaults.MAX_DATE
     image = 'parliament.jpeg'
-    data_directory = 'bogus'
     wordmodels_page = 'documentation.md'
 
     category = 'parliament'

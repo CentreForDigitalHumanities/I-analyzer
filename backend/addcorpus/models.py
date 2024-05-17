@@ -7,7 +7,9 @@ from addcorpus.validation.creation import (
     validate_name_is_not_a_route_parameter, validate_search_filter,
     validate_search_filter_with_mapping,
     validate_searchable_field_has_full_text_search,
-    validate_sort_configuration, validate_visualizations_with_mapping)
+    validate_sort_configuration, validate_visualizations_with_mapping,
+    validate_source_data_directory,
+)
 from addcorpus.validation.indexing import (validate_essential_fields,
                                            validate_has_configuration,
                                            validate_language_field)
@@ -23,7 +25,6 @@ from django.db.models.constraints import UniqueConstraint
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
-
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -219,6 +220,12 @@ class CorpusConfiguration(models.Model):
         help_text='name of the field that specifies the language of documents (if any);'
             'required to use "dynamic" language on fields',
     )
+    data_directory = models.CharField(
+        max_length=200,
+        validators=[validate_source_data_directory],
+        blank=True,
+        help_text='path to directory containing source data files',
+    )
     source_data_delimiter = models.CharField(
         max_length=1,
         choices=[
@@ -254,7 +261,8 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point')
+    (MappingType.GEO_POINT.value, 'geo_point'),
+    ('url', 'url'),
 ]
 
 FIELD_VISUALIZATIONS = [

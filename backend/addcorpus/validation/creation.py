@@ -11,12 +11,10 @@ from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
 from addcorpus.python_corpora.filters import \
     VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
 from django.core.exceptions import ValidationError
-
+from addcorpus.es_mappings import primary_mapping_type
 from langcodes import tag_is_valid
 
 
-def primary_mapping_type(es_mapping):
-    return es_mapping.get('type', None)
 
 def supports_full_text_search(es_mapping):
     is_text = primary_mapping_type(es_mapping) == MappingType.TEXT.value
@@ -186,3 +184,7 @@ def validate_sort_configuration(sort_config):
 
     if type(ascending) is not bool:
         raise ValidationError(f'Sort configuration has invalid "ascending" property: {ascending}')
+
+def validate_source_data_directory(value):
+    if value and not os.path.isdir(value):
+        raise ValidationError(f'{value} is not a directory')

@@ -11,7 +11,7 @@ def test_count(small_mock_corpus, es_client, index_small_mock_corpus, small_mock
     assert count_total(es_client, small_mock_corpus) == total_docs
 
 
-def test_report(small_mock_corpus, es_client,index_small_mock_corpus, small_mock_corpus_specs):
+def test_report(small_mock_corpus, es_client, index_small_mock_corpus, small_mock_corpus_specs):
     report = report_coverage(small_mock_corpus)
 
     assert report == {

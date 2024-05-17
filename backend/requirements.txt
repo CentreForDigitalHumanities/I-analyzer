@@ -365,7 +365,7 @@ soupsieve==2.4.1
     # via
     #   beautifulsoup4
     #   seleniumbase
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
 tabcompleter==1.2.1
     # via
@@ -381,7 +381,7 @@ tornado==6.3.3
     # via
     #   django-livereload-server
     #   flower
-tqdm==4.66.1
+tqdm==4.66.3
     # via
     #   -r requirements.in
     #   nltk

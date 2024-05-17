@@ -12,21 +12,28 @@ from addcorpus.es_settings import es_settings
 here = os.path.abspath(os.path.dirname(__file__))
 
 class SmallMockCorpus(CSVCorpusDefinition):
+    '''
+    CSV corpus with a small dataset to test queries and aggregations.
+
+    Has multiple field types but a small number of documents, so you can test
+    complex queries and visualisations.
+    '''
+
     title = 'Mock Corpus'
     description = 'Corpus for testing'
     visualize = []
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=1899, month=12, day=31)
-    es_index = 'ianalyzer-mock-corpus'
-    data_directory = 'bogus'
+    es_index = 'test-mock-corpus'
+    data_directory = os.path.join(here, 'source_data')
     languages = ['en']
     category = 'book'
 
     es_settings = es_settings(['en'], stopword_analysis=True)
 
-    def sources(self, start=min_date, end=max_date):
-        for csv_file in os.listdir(os.path.join(here, 'source_files')):
-            yield os.path.join(here, 'source_files', csv_file), {}
+    def sources(self, *args, **kwargs):
+        for csv_file in os.listdir(self.data_directory):
+            yield os.path.join(self.data_directory, csv_file), {}
 
     date = FieldDefinition(
         name = 'date',
@@ -66,3 +73,6 @@ SPECS = {
     'example_query': 'to',
     'content_field': 'content',
 }
+'''
+Specifications to test search results in this corpus.
+'''

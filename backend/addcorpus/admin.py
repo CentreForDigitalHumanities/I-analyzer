@@ -48,6 +48,7 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
             'Source data extraction',
             {
                 'fields': [
+                    'data_directory',
                     'source_data_delimiter',
                 ]
             }
