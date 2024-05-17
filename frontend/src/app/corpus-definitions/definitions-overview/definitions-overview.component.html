@@ -45,7 +45,8 @@
                                 </span>
                             </a>
                             &nbsp;
-                            <button class="button" disabled>
+                            <button class="button" (click)="delete(corpus)"
+                                [disabled]="corpus.active">
                                 <span class="icon" aria-label="delete">
                                     <fa-icon [icon]="actionIcons.delete"></fa-icon>
                                 </span>

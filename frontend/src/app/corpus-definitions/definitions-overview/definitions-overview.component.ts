@@ -18,4 +18,11 @@ export class DefinitionsOverviewComponent {
     constructor(private apiService: ApiService) {
         this.corpora$ = this.apiService.corpusDefinitions();
     }
+
+    delete(corpus: APIEditableCorpus) {
+        this.apiService.deleteCorpus(corpus.id).subscribe(response => {
+            console.log(response);
+            this.corpora$ = this.apiService.corpusDefinitions();
+        });
+    }
 }

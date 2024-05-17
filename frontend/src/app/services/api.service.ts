@@ -254,7 +254,7 @@ export class ApiService {
     }
 
     public deleteCorpus(corpusID: number): Observable<any> {
-        return this.http.delete(`/api/corpus/definitions/${corpusID}`);
+        return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
     // Tagging
