@@ -2,15 +2,16 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
+import { QueryModel, TimelineSeries, TimelineDataPoint,
     TimeCategory,
     DateFilterData,
-    BarchartSeries} from '../../models/index';
+} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../../utils/select-color';
 import { showLoading } from '../../utils/utils';
+import { DateHistogramAggregator, DateHistogramResult } from '../../models/aggregation';
 
 
 @Component({
@@ -19,7 +20,7 @@ import { showLoading } from '../../utils/utils';
     styleUrls: ['./timeline.component.scss'],
 })
 export class TimelineComponent
-    extends BarchartDirective<TimelineDataPoint>
+    extends BarchartDirective<DateHistogramResult, TimelineDataPoint>
     implements OnChanges, OnInit {
     /** domain on the axis */
     public xDomain: [Date, Date];
@@ -46,7 +47,7 @@ export class TimelineComponent
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
-    aggregateResultToDataPoint(cat: AggregateResult): TimelineDataPoint {
+    aggregateResultToDataPoint(cat: DateHistogramResult): TimelineDataPoint {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
@@ -63,12 +64,11 @@ export class TimelineComponent
      * True when retrieving results for the entire series, false when retrieving a window.
      */
     requestSeriesDocCounts(queryModel: QueryModel) {
-        return this.searchService.dateHistogramSearch(
-            this.corpus,
-            queryModel,
-            this.visualizedField.name,
+        const aggregation = new DateHistogramAggregator(
+            this.visualizedField,
             this.currentTimeCategory
         );
+        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregation);
     }
 
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {

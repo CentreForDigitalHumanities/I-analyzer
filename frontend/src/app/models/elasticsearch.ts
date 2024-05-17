@@ -78,8 +78,3 @@ export interface EsQuery {
     from?: number;
     size?: number;
 }
-
-export interface Aggregator {
-    name: string;
-    size: number;
-}
