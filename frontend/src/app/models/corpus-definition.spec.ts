@@ -3,6 +3,7 @@ import { ApiService } from '../services';
 import { CorpusDefinition } from './corpus-definition';
 import { ApiServiceMock } from '../../mock-data/api';
 import { mockCorpusDefinition } from '../../mock-data/corpus-definition';
+import * as _ from 'lodash';
 
 
 describe('CorpusDefinition', () => {
@@ -41,10 +42,12 @@ describe('CorpusDefinition', () => {
         expect(updateSpy).not.toHaveBeenCalled();
         expect(corpus.id).toBeDefined();
 
-        corpus.definition.meta.title = 'Different title';
+        const newDefinition = _.set(_.cloneDeep(mockCorpusDefinition), ['meta', 'title'], 'Different title');
+        corpus.setFromDefinition(newDefinition);
         corpus.save();
 
         expect(createSpy).toHaveBeenCalledTimes(1);
         expect(updateSpy).toHaveBeenCalledTimes(1);
+        expect(corpus.title).toBe('Different title');
     });
 });

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { ApiService } from '../services';
 
 export interface APICorpusField {
@@ -63,6 +64,7 @@ export interface APIEditableCorpus {
 
 export class CorpusDefinition {
     active = false;
+
     definition: APICorpusDefinition;
 
     constructor(private apiService: ApiService, public id?: number) {
@@ -81,6 +83,11 @@ export class CorpusDefinition {
     /** return the JSON definition for the corpus state */
     toDefinition(): APICorpusDefinition {
         return this.definition;
+    }
+
+    /** whether the corpus definition contains all data necessary for saving */
+    isComplete() {
+        return !_.isUndefined(this.definition);
     }
 
     /** save the corpus state in the database */

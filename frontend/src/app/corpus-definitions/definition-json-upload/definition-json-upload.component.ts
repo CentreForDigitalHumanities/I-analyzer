@@ -46,7 +46,7 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
 
     ngOnChanges() {
         this.inputChange$.next();
-        this.reset.pipe(
+        this.reset?.pipe(
             takeUntil(this.inputChange$),
             takeUntil(this.destroy$),
         ).subscribe(() => this.file$.next(undefined));

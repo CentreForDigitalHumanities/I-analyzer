@@ -96,6 +96,11 @@ export class ApiServiceMock {
         return of([]);
     }
 
+    corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        const data = [{ id: 1, active: false, definition: mockCorpusDefinition }];
+        return of(data);
+    }
+
     corpusDefinition(id: number): Observable<APIEditableCorpus> {
         const data = { id, active: false, definition: mockCorpusDefinition };
         return of(data);
