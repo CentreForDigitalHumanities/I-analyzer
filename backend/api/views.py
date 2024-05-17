@@ -12,7 +12,7 @@ from celery import current_app as celery_app
 logger = logging.getLogger()
 
 
-class QueryViewset(viewsets.ModelViewSet):
+class QueryViewset(viewsets.ReadOnlyModelViewSet):
     '''
     Access search history
     '''
@@ -45,7 +45,7 @@ class TaskStatusView(APIView):
         results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
         if not all(results):
             raise APIException(detail='Could not get task data')
-        
+
         if any(result.state == 'FAILURE' for result in results):
             raise APIException(detail='Task failed')
 

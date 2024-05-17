@@ -58,8 +58,8 @@ def test_admin_delete(admin_client, auth_user_tag):
     assert resp.status_code == status.HTTP_204_NO_CONTENT
     assert n_tags() == 0
 
-def test_list_corpus_tags(auth_client, auth_user_tag, tagged_documents, mock_corpus, other_corpus):
-    response = auth_client.get(f'/api/tag/tags/?corpus={mock_corpus}')
+def test_list_corpus_tags(auth_client, auth_user_tag, tagged_documents, tag_mock_corpus, other_corpus):
+    response = auth_client.get(f'/api/tag/tags/?corpus={tag_mock_corpus}')
     assert status.is_success(response.status_code)
     assert len(response.data) == 1
 
@@ -73,20 +73,20 @@ def test_list_corpus_tags(auth_client, auth_user_tag, tagged_documents, mock_cor
     not_found = auth_client.get('/api/tag/tags/?corpus=nonexistent')
     assert not_found.status_code == status.HTTP_404_NOT_FOUND
 
-def test_get_document_tags(auth_user, auth_client, auth_user_tag, tagged_documents, mock_corpus):
+def test_get_document_tags(auth_user, auth_client, auth_user_tag, tagged_documents, tag_mock_corpus):
     doc_id = tagged_documents[1][0]
-    response = auth_client.get(f'/api/tag/document_tags/{mock_corpus}/{doc_id}')
+    response = auth_client.get(f'/api/tag/document_tags/{tag_mock_corpus}/{doc_id}')
     assert status.is_success(response.status_code)
 
-    response = auth_client.get(f'/api/tag/document_tags/{mock_corpus}/not-tagged')
+    response = auth_client.get(f'/api/tag/document_tags/{tag_mock_corpus}/not-tagged')
     assert status.is_success(response.status_code)
 
-def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_corpus_acces):
+def test_patch_document_tags(auth_client, auth_user_tag, tag_mock_corpus, auth_user_corpus_acces):
     assert auth_user_tag.count == 0
 
     new_doc = 'a-new-document'
     patch_request = lambda data: auth_client.patch(
-        f'/api/tag/document_tags/{mock_corpus}/{new_doc}',
+        f'/api/tag/document_tags/{tag_mock_corpus}/{new_doc}',
         data,
         content_type='application/json'
     )
@@ -110,10 +110,10 @@ def test_patch_document_tags(auth_client, auth_user_tag, mock_corpus, auth_user_
     assert auth_user_tag.count == 0
 
 
-def test_assign_multiple_tags_at_once(auth_client, multiple_tags, mock_corpus, auth_user_corpus_acces):
+def test_assign_multiple_tags_at_once(auth_client, multiple_tags, tag_mock_corpus, auth_user_corpus_acces):
     doc = 'test'
     patch_request = lambda data: auth_client.patch(
-        f'/api/tag/document_tags/{mock_corpus}/{doc}',
+        f'/api/tag/document_tags/{tag_mock_corpus}/{doc}',
         data,
         content_type='application/json'
     )
@@ -125,10 +125,10 @@ def test_assign_multiple_tags_at_once(auth_client, multiple_tags, mock_corpus, a
     doc = TaggedDocument.objects.get(doc_id=doc)
     assert doc.tags.count() == len(multiple_tags)
 
-def test_assign_multiple_tags_one_by_one(auth_client, multiple_tags, mock_corpus, auth_user_corpus_acces):
+def test_assign_multiple_tags_one_by_one(auth_client, multiple_tags, tag_mock_corpus, auth_user_corpus_acces):
     doc = 'test'
     patch_request = lambda data: auth_client.patch(
-        f'/api/tag/document_tags/{mock_corpus}/{doc}',
+        f'/api/tag/document_tags/{tag_mock_corpus}/{doc}',
         data,
         content_type='application/json'
     )
@@ -142,13 +142,13 @@ def test_assign_multiple_tags_one_by_one(auth_client, multiple_tags, mock_corpus
         doc = TaggedDocument.objects.get(doc_id=doc)
         assert doc.tags.count() == i + 1
 
-def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, mock_corpus, mock_corpus_obj, auth_user_corpus_acces):
+def test_patch_tags_contamination(auth_client, auth_user_tag, admin_user_tag, tag_mock_corpus, mock_corpus_obj, auth_user_corpus_acces):
     '''
     Verify that patching tags does not affect the tags of other users
     '''
 
     document = 'some-document'
-    route = f'/api/tag/document_tags/{mock_corpus}/{document}'
+    route = f'/api/tag/document_tags/{tag_mock_corpus}/{document}'
     kwargs = {'content_type': 'application/json'}
 
     doc = TaggedDocument.objects.create(corpus=mock_corpus_obj, doc_id=document)
@@ -180,17 +180,17 @@ def search_with_tag(client, corpus_name, tag_id):
     }
     return client.post(route, data, content_type = 'application/json')
 
-def test_search_view_with_tag(auth_client, mock_corpus, auth_user_tag, tagged_documents, index_mock_corpus):
-    response = search_with_tag(auth_client, mock_corpus, auth_user_tag.id)
+def test_search_view_with_tag(auth_client, tag_mock_corpus, auth_user_tag, tagged_documents, index_tag_mock_corpus):
+    response = search_with_tag(auth_client, tag_mock_corpus, auth_user_tag.id)
     assert status.is_success(response.status_code)
     assert len(hits(response.data)) == auth_user_tag.count
 
-def test_search_view_unauthorized_tag(auth_client, mock_corpus, admin_user_tag, auth_user_corpus_acces):
-    response = search_with_tag(auth_client, mock_corpus, admin_user_tag.id)
+def test_search_view_unauthorized_tag(auth_client, tag_mock_corpus, admin_user_tag, auth_user_corpus_acces):
+    response = search_with_tag(auth_client, tag_mock_corpus, admin_user_tag.id)
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
-def test_search_view_nonexistent_tag(auth_client, mock_corpus, auth_user_corpus_acces):
+def test_search_view_nonexistent_tag(auth_client, tag_mock_corpus, auth_user_corpus_acces):
     not_a_real_tag = 12345678
-    response = search_with_tag(auth_client, mock_corpus, not_a_real_tag)
+    response = search_with_tag(auth_client, tag_mock_corpus, not_a_real_tag)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 

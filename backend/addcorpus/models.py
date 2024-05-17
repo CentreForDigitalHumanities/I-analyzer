@@ -26,7 +26,6 @@ MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
 
-
 class Corpus(models.Model):
     name = models.SlugField(
         max_length=MAX_LENGTH_NAME,
@@ -262,7 +261,8 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point')
+    (MappingType.GEO_POINT.value, 'geo_point'),
+    ('url', 'url'),
 ]
 
 FIELD_VISUALIZATIONS = [

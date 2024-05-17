@@ -210,7 +210,17 @@ export abstract class BaseFilter<InitialParameters, FilterData>
         };
     }
 
-    private isDefault(data: FilterData): boolean {
+    /** change the default state of the filter */
+    setDefaultData(data: FilterData): void {
+        if (this.isDefault(this.currentData)) {
+            this.defaultData = data;
+            this.reset();
+        } else {
+            this.defaultData = data;
+        }
+    }
+
+    protected isDefault(data: FilterData): boolean {
         return _.isEqual(data, this.defaultData);
     }
 

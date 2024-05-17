@@ -1,6 +1,8 @@
-<div class="range" *ngIf="(filter?.state$ | async).data as data">
-    <span>{{data.min}} - {{data.max}}</span>
-    <p-slider [animate]="true" [ngModel]="[data.min, data.max]"
-        [range]="true" [min]="min" [max]="max"
-        (onChange)="sliderValue$.next($event.values)"></p-slider>
-</div>
+<ng-container *ngIf="min !== undefined && max !== undefined">
+    <div class="range" *ngIf="(filter?.state$ | async).data as data">
+        <span>{{data.min}} - {{data.max}}</span>
+        <p-slider [animate]="true" [ngModel]="[data.min, data.max]"
+            [range]="true" [min]="min" [max]="max"
+            (onChange)="sliderValue$.next($event.values)"></p-slider>
+    </div>
+</ng-container>

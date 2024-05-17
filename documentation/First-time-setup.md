@@ -71,13 +71,30 @@ Note: you can also call the .env file .myenv and specify this during startup:
 
 ## Adding corpora
 
-To include corpora on your environment, you need to index them from their source files. The source files are not included in this directory; ask another developer about their availability. If you have (a sample of) the source files for a corpus, you can add it your our environment as follows:
+These instructions are for adding *already defined* corpora to your own environment. This means you would be working with a corpus that is already used in I-analyzer or by other developers.
 
-_Note:_ these instructions are for indexing a corpus that already has a corpus definition. For adding new corpus definitions, see [How to add a new corpus to I-analyzer](./documentation/How-to-add-a-new-corpus-to-Ianalyzer.md).
+In a first-time setup, it is recommended that you add at least one existing corpus before creating your own. Documentation on creating new corpus definitions is in [Writing a corpus definition in Python](./Writing-a-corpus-definition-in-Python.md) / [Writing a corpus definition in JSON](./Writing-a-corpus-definition-in-JSON.md).
+
+### Python corpora
+
+Currently, all corpora that are used in production are *Python corpora*, meaning they are defined in the source code. To include these corpora in your environment, you need to add them to your local settings and create an index in Elasticsearch.
+
+The source files of a corpus are not included in this directory; ask another developer about their availability. If you have (a sample of) the source files for a corpus, you can add the corpus your our environment as follows:
 
 1. Add the corpus to the `CORPORA` dictionary in your local settings file. See [CORPORA settings documentation](/documentation/Django-project-settings.md#corpora).
 2. Set configurations for your corpus. Check the definition file to see which variables it expects to find in the configuration. Some of these may be optional, but you will at least need to define the (absolute) path to your source files.
-3. Activate your python virtual environment. Create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+3. Activate your python virtual environment. Run the `loadcorpora` admin command (`yarn django loadcorpora`) to register the new corpus in the SQL database. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+
+### Database-only corpora
+
+Note: database-only corpora are still in development and not yet recommended for first-time users.
+
+To add a database-only corpus, you will need a JSON definition of the corpus, and a directory with (a sample of) the pre-processed source data. To retrieve a JSON definition from a running I-analyzer server, visit `/api/corpus/edit/` and copy the JSON of the corpus you want to import.
+
+1. Start up your I-analyzer server. Make a POST request to `localhost:8000/api/corpus/edit/` (you can use the browsable API for this) to import the JSON definition.
+2. Visit the admin menu (`localhost:8000/admin`). Go to "corpus configurations" and select your corpus. In the "data directory" field, add the path to your source data directory.
+3. Activate your python virutal environment. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+
 
 ## Running a dev environment
 
