@@ -1,8 +1,10 @@
+import { ApiService } from '../services';
+
 export interface APICorpusField {
     name: string;
     display_name: string;
     description: string;
-    type: 'text-content'|'text_metadata'|'url'|'integer'|'float'|'date'|'boolean'|'geo_point';
+    type: 'text_content'|'text_metadata'|'url'|'integer'|'float'|'date'|'boolean'|'geo_point';
     options: {
         search: boolean;
         filter: 'show'|'hide'|'none';
@@ -58,3 +60,49 @@ export interface APIEditableCorpus {
     active: boolean;
     definition: APICorpusDefinition;
 };
+
+export class CorpusDefinition {
+    active = false;
+    definition: APICorpusDefinition;
+
+    constructor(private apiService: ApiService, public id?: number) {
+        if (this.id) {
+            this.apiService.corpusDefinition(this.id).subscribe(result =>
+                this.setFromAPIData(result)
+            );
+        }
+    }
+
+    /** update the corpus state from a JSON definition */
+    setFromDefinition(definition: APICorpusDefinition) {
+        this.definition = definition;
+    }
+
+    /** return the JSON definition for the corpus state */
+    toDefinition(): APICorpusDefinition {
+        return this.definition;
+    }
+
+    /** save the corpus state in the database */
+    save(): void {
+        const data = this.toAPIData();
+        const request$ = this.id ?
+            this.apiService.updateCorpus(this.id, data) :
+            this.apiService.createCorpus(data);
+        request$.subscribe(result => this.setFromAPIData(result));
+    }
+
+    private toAPIData(): APIEditableCorpus {
+        return {
+            id: this.id,
+            active: this.active,
+            definition: this.toDefinition()
+        };
+    }
+
+    private setFromAPIData(result: APIEditableCorpus) {
+        this.id = result.id;
+        this.active = result.active;
+        this.setFromDefinition(result.definition);
+    }
+}
