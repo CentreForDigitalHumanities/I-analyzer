@@ -1,8 +1,10 @@
 import os
 from django.conf import settings
+import pytest
+
 from addcorpus.models import Corpus
 from addcorpus.reader import make_reader
-
+from addcorpus.validation.indexing import CorpusNotIndexableError
 
 
 def test_make_reader_python(basic_mock_corpus):
@@ -29,3 +31,8 @@ def test_make_reader_json(json_mock_corpus):
         'character': 'HAMLET',
         'line': "Whither wilt thou lead me? Speak, I\'ll go no further."
     }
+
+
+def test_reader_validates_directory(json_mock_corpus):
+    with pytest.raises(CorpusNotIndexableError):
+        reader = make_reader(json_mock_corpus)

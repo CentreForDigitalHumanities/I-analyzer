@@ -149,8 +149,10 @@ def perform_indexing(
     add: bool = False,
     clear: bool = False,
     prod: bool = False,
-    rollover: bool = False
+    rollover: bool = False,
 ):
+    corpus.validate_ready_to_index()
+
     corpus_config = corpus.configuration
     corpus_name = corpus.name
     index_name = corpus_config.es_index

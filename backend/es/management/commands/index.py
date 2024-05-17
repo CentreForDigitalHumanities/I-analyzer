@@ -74,7 +74,7 @@ class Command(BaseCommand):
 
     def handle(self, corpus, start=None, end=None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
         corpus_object = self._corpus_object(corpus)
-        self._validate(corpus_object)
+        corpus_object.validate_ready_to_index()
 
         corpus_definition = load_corpus_definition(corpus)
 
@@ -123,6 +123,3 @@ class Command(BaseCommand):
     def _corpus_object(self, corpus_name):
         load_all_corpus_definitions()
         return Corpus.objects.get(name=corpus_name)
-
-    def _validate(self, corpus_obj):
-        corpus_obj.validate_ready_to_index()
