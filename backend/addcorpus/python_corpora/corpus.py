@@ -2,7 +2,7 @@
 Module contains the base classes from which corpora can derive;
 '''
 
-from typing import Optional
+from typing import Optional, List, Dict
 from ianalyzer_readers import extract
 from datetime import datetime
 from os.path import isdir
@@ -15,6 +15,8 @@ from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.readers.csv import CSVReader
 from ianalyzer_readers.readers.html import HTMLReader
 from ianalyzer_readers.readers.xlsx import XLSXReader
+
+from addcorpus.python_corpora.filters import Filter
 
 import logging
 
@@ -346,49 +348,70 @@ class FieldDefinition(Field):
     Definition for a single field in a corpus.
 
     Parameters:
-        name: a short hand name
-        display_name: the name shown to the user
-        display_type: how the field should be displayed in the client
-        description: an explanation of the field for users
-        indexed: whether the field is skipped during indexing
-        hidden: whether the field is hidden in the frontend
-        results_overview: whether the field appears in the preview of a document
-        csv_core: whether the field is pre-selected for CSV downloads
-        search_field_core: whether the field is immediately shown in field selection.
-            If `False`, the field is only shown when the user selects "show all fields".
-        visualizations: visualisations that are available for this field. Options:
-            resultscount, termfrequency, wordcloud, ngram.
-        es_mapping: the mapping of the field in Elasticsearch
-        language: the language of the field's content. Can be `None`, an IETF tag, or
-            `"dynamic"`.
-        search_filter: configuration of the search filter used for the field.
-        extractor: configuration to extract the field's data from source documents
-        sortable: whether this field is shown as an option to sort search results.
-        searchable: whether this field is shown in the selection for search fields.
-        downloadable: whether this field may be included when downloading results.
-        required: whether this field is required during source extraction.
+        name: A shorthand name. Must be a slug.
+        display_name: The name that should be shown to the user. If you leave this out,
+            the `name` will be used.
+        display_type:  Determines how the field should be rendered. This can be any
+            supported elasticsearch mapping type, `'url'`, or `'text_content'`. If you
+            leave this blank, the mapping type of `es_mapping` will be used, so this
+            only needs to be specified for URL and text content fields.
+        description: An explanation of the field for users.
+        indexed: Whether the field is skipped during source extraction and indexing.
+        hidden: Whether the field is hidden in the frontend.
+        results_overview: Whether the field appears in the preview of a document.
+        csv_core: Whether the field is pre-selected for CSV downloads of search results.
+        search_field_core: Whether the field is immediately shown in field selection for
+            the search query. If `False`, the field is only shown when the user selects
+            "show all fields".
+        visualizations: Visualisations that are enabled for this field. Options:
+            resultscount, termfrequency, wordcloud, ngram. For date fields and
+            categorical/ordinal fields (usually keyword type), you can use
+            `['resultscount', 'termfrequency']`. For text fields, you can use
+            `['wordcloud', 'ngram']`. However, the ngram visualisation also requires that
+            the corpus has a date field.
+        visualization_sort: If the visualisations include resultscount or termfrequency
+            and the field is not a date field, this determines how the histogram is
+            sorted. Options are `'value'` (sort from most to least frequent) or `'key'`
+            (sort alphabetically).
+        es_mapping: The mapping of the field in Elasticsearch. It's recommended to use one
+            of the functions in `addcorpus.es_mappings` to construct this.
+        language: The language of the field's content. Can be `None`, an IETF tag, or
+            `"dynamic"`. None means the language is unknown or NA. Dynamic means the
+            `language_field` of the corpus specifies the IETF tag for this field's
+            language per document.
+        search_filter: Configuration of the search filter used for the field (if any).
+            Should be `Filter` instance.
+        extractor: Configuration to extract the field's data from source documents. Should
+            be an `Extractor` instance.
+        sortable: Whether this field is shown as an option to sort search results. If
+            `None`, the value is inferred from the mapping type.
+        searchable: Whether this field is shown in the selection for search fields. If
+            `None`, the vlaue is inferred from the mapping type.
+        downloadable: Whether this field may be included when downloading results.
+        required: Whether this field is required during source extraction. Note that not
+            all Reader subclasses currently support this.
     '''
 
     def __init__(self,
-                 name=None,
-                 display_name=None,
-                 display_type=None,
-                 description='',
-                 indexed=True,
-                 hidden=False,
-                 results_overview=False,
-                 csv_core=False,
-                 search_field_core=False,
-                 visualizations=[],
-                 visualization_sort=None,
-                 es_mapping={'type': 'text'},
-                 language=None,
-                 search_filter=None,
-                 extractor=extract.Constant(None),
-                 sortable=None,
-                 searchable=None,
-                 downloadable=True,
-                 required=False,
+                 name: str,
+                 display_name: Optional[str] = None,
+                 display_type: Optional[str] = None,
+                 description: str = '',
+                 indexed: bool = True,
+                 hidden: bool = False,
+                 results_overview: bool = False,
+                 csv_core: bool = False,
+                 search_field_core: bool = False,
+                 visualizations: List[str] = [],
+                 visualization_sort: Optional[str] = None,
+                 es_mapping: Dict = {'type': 'text'},
+                 language: Optional[str] = None,
+                 search_filter: Optional[Filter] = None,
+                 extractor: extract.Extractor = extract.Constant(None),
+                 sortable: Optional[bool] = None,
+                 searchable: Optional[bool] = None,
+                 downloadable: bool = True,
+                 required: bool = False,
                  **kwargs
                  ):
 

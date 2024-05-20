@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
     GeoDocument,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     NgramParameters,
     QueryModel,
@@ -26,7 +26,7 @@ export class VisualizationService {
 
 
     public getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
-        Observable<AggregateResult[]> {
+        Observable<MostFrequentWordsResult[]> {
         const query = queryModel.toAPIQuery();
         return this.apiService.wordCloud({
             ...query,

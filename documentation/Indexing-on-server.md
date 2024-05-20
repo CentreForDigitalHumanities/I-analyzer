@@ -6,8 +6,15 @@ For production environments, we use *versioned* index names (e.g. `times-1`, `ti
 ## Moving data to server
 On the server, move data to a location in the `/its` share.
 
-## Deployment settings
-In the Deployment repository, set the variables of the corpus.
+## Import the corpus
+
+### Database-only corpora
+
+Add the corpus to the database of the indexing server. You can use the JSON export/import to do this easily. After importing the JSON representation, use the Django admin menu to specify the data directory for the corpus (the path to the data directory on the server).
+
+### Python corpora
+
+If the corpus is based on a Python definition, adjust the deployment repository to include necessary settings.
 
 At the very least, you should set:
 - `YOUR_CORPUS_DATA` the location on the `/its` share.
