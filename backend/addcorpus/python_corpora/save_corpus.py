@@ -153,7 +153,8 @@ def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuratio
             if pages.exists():
                 pages.delete()
 
-def _prepare_for_import(corpus):
+
+def _prepare_for_import(corpus: Corpus):
     corpus.has_python_definition = True
     corpus.active = False
     corpus.save()
@@ -191,7 +192,7 @@ def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=s
             _save_corpus_configuration(corpus, corpus_definition)
             _activate_if_ready(corpus)
         if verbose:
-            print(f'Saved corpus: {corpus_name}',  file=stdout)
+            print(f'Saved corpus: {corpus_name}', file=stdout)
     except Exception as e:
         print(f'Failed saving corpus: {corpus_name}', file=stderr)
         print(f'Error: {e}', file=stderr)
