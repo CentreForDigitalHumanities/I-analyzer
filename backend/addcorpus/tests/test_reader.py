@@ -33,6 +33,12 @@ def test_make_reader_json(json_mock_corpus):
     }
 
 
-def test_reader_validates_directory(json_mock_corpus):
+def test_reader_validates_directory(json_mock_corpus: Corpus):
+    # should run without error
+    make_reader(json_mock_corpus)
+
+    json_mock_corpus.configuration.data_directory = ''
+    json_mock_corpus.configuration.save()
+
     with pytest.raises(CorpusNotIndexableError):
         reader = make_reader(json_mock_corpus)
