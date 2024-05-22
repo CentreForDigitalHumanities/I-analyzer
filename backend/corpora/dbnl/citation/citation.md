@@ -27,6 +27,10 @@ To get an URL for an entire book, you can use the *view book* link for a chapter
 
 This describes the query to view all chapters of the book on I-analyzer.
 
+### Chicago style
+
+Mark Rutte, Dutch Lower House, 21 December 2021, page?, link.
+
 ### APA style
 
 > Porjeere, O. (1788). *Zanglievende uitspanningen*. Martinus de Bruijn. {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc
