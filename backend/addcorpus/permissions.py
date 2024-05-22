@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
+from rest_framework.request import Request
 from users.models import CustomUser
 from typing import List
 from addcorpus.models import Corpus
@@ -54,3 +55,27 @@ class CorpusAccessPermission(permissions.BasePermission):
 
         # check if the user has access
         return user.has_access(corpus)
+
+
+class IsCurator(permissions.BasePermission):
+    '''
+    The user is permitted to use the corpus definition API.
+    '''
+
+    message = 'You do not have permission to manage corpus definitions'
+
+    def has_permission(self, request: Request, view):
+        return request.user.is_staff
+
+class IsCuratorOrReadOnly(permissions.BasePermission):
+    '''
+    The user is permitted to edit the corpus, or it is a read-only request.
+    '''
+
+    message = 'You do not have permission to edit this corpus'
+
+    def has_permission(self, request: Request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return request.user.is_staff
