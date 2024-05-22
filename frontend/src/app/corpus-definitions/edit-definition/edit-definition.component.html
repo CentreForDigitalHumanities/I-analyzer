@@ -4,11 +4,11 @@
             <ul>
                 <li><a [routerLink]="['/']">Corpora</a></li>
                 <li><a [routerLink]="['../..']">Definitions</a></li>
-                <li class="is-active" aria-current="page"><a>{{corpus.definition.meta.title}}</a></li>
+                <li class="is-active" aria-current="page"><a>{{corpus.definition?.meta.title || '...'}}</a></li>
             </ul>
         </nav>
 
-        <h1 class="title">Edit corpus "{{corpus.definition.meta.title}}"</h1>
+        <h1 class="title">Edit corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
 
         <p class="block">
             You can download this corpus definition as a JSON file.

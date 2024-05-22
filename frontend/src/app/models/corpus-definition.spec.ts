@@ -48,6 +48,6 @@ describe('CorpusDefinition', () => {
 
         expect(createSpy).toHaveBeenCalledTimes(1);
         expect(updateSpy).toHaveBeenCalledTimes(1);
-        expect(corpus.title).toBe('Different title');
+        expect(corpus.definition.meta.title).toBe('Different title');
     });
 });
