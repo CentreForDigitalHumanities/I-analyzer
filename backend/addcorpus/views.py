@@ -25,21 +25,6 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
         return filtered_corpora
 
 
-def send_corpus_file(corpus='', subdir='', filename=''):
-    '''
-    Returns a FileResponse for a file in the corpus directory.
-
-    E.g. arguments `(corpus='times', subdir='images', filename='times.jpeg')` will return the file
-    at `<location-of-times-definition>/images/times.jpeg`
-    '''
-
-    path = os.path.join(corpus_dir(corpus), subdir, filename)
-
-    if not os.path.isfile(path):
-        raise NotFound()
-
-    return FileResponse(open(path, 'rb'))
-
 class CorpusDocumentationPageViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = [CorpusAccessPermission, IsCuratorOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
@@ -84,13 +69,19 @@ class CorpusImageView(APIView):
 
 class CorpusDocumentView(APIView):
     '''
-    Return a document for a corpus - e.g. extra metadata.
+    Return a file for a corpus - e.g. extra metadata.
     '''
 
     permission_classes = [CorpusAccessPermission]
 
     def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='documents', **kwargs)
+        corpus = Corpus.objects.get(corpus_name_from_request(request))
+        if not corpus.has_python_definition:
+            raise NotFound()
+        path = os.path.join(corpus_dir(corpus.name), 'documents', kwargs['filename'])
+        if not os.path.isfile(path):
+            raise NotFound()
+        return FileResponse(open(path, 'rb'))
 
 
 class CorpusDefinitionViewset(viewsets.ModelViewSet):
