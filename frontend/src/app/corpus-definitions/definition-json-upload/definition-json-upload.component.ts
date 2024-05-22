@@ -39,7 +39,6 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
         );
 
         this.data$.subscribe(data => {
-            console.log(data);
             this.upload.next(data);
         });
     }

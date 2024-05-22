@@ -35,7 +35,8 @@
             </div>
 
             <div class="block">
-                <button class="button is-primary" type="submit" (click)="submit()">
+                <button class="button is-primary" [class.is-loading]="corpus.loading$ | async"
+                    type="submit" (click)="submit()">
                     <span class="icon" aria-hidden="true">
                         <fa-icon [icon]="formIcons.confirm"></fa-icon>
                     </span>
@@ -52,6 +53,12 @@
                         Cancel changes
                     </span>
                 </button>
+            </div>
+
+            <div class="message is-danger" *ngIf="error">
+                <div class="message-body">
+                    Could not save corpus: {{error.message}}
+                </div>
             </div>
         </form>
     </div>

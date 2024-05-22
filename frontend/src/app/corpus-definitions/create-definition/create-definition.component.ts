@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { actionIcons, formIcons } from '../../shared/icons';
 import { ApiService } from '../../services';
-import { CorpusDefinition } from '../../models/corpus-definition';
+import { APIEditableCorpus, CorpusDefinition } from '../../models/corpus-definition';
+import * as _ from 'lodash';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'ia-create-definition',
@@ -14,7 +17,9 @@ export class CreateDefinitionComponent {
 
     corpus: CorpusDefinition;
 
-    constructor(private apiService: ApiService) {
+    error: Error;
+
+    constructor(private apiService: ApiService, private router: Router) {
         this.corpus = new CorpusDefinition(apiService);
     }
 
@@ -23,7 +28,15 @@ export class CreateDefinitionComponent {
     }
 
     submit() {
-        this.corpus.save();
+        this.error = undefined;
+        this.corpus.save().subscribe(
+            (result: APIEditableCorpus) => {
+                this.router.navigate(['/corpus-definitions', 'edit', result.id]);
+            },
+            (err: HttpErrorResponse) => {
+                this.error = err;
+            }
+        );
     }
 
 }

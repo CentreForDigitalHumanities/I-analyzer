@@ -4,6 +4,9 @@ import { Subject } from 'rxjs';
 import { CorpusDefinition } from '../../models/corpus-definition';
 import { ApiService } from '../../services';
 import { ActivatedRoute } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
+import * as _ from 'lodash';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'ia-edit-definition',
@@ -17,6 +20,8 @@ export class EditDefinitionComponent {
     reset$: Subject<void> = new Subject();
 
     corpus: CorpusDefinition;
+
+    error: Error;
 
     constructor(
         private apiService: ApiService,
@@ -40,7 +45,10 @@ export class EditDefinitionComponent {
     }
 
     submit() {
-        this.corpus.save();
+        this.corpus.save().subscribe(
+            () => this.reset(),
+            (err: HttpErrorResponse) => this.error = err,
+        );
     }
 
     reset() {

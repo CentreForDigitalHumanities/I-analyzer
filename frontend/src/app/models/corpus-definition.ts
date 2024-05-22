@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 import { ApiService } from '../services';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { share } from 'rxjs/operators';
 
 export interface APICorpusField {
     name: string;
@@ -64,14 +66,18 @@ export interface APIEditableCorpus {
 
 export class CorpusDefinition {
     active = false;
+    loading$ = new BehaviorSubject<boolean>(true);
 
     definition: APICorpusDefinition;
+
 
     constructor(private apiService: ApiService, public id?: number) {
         if (this.id) {
             this.apiService.corpusDefinition(this.id).subscribe(result =>
                 this.setFromAPIData(result)
             );
+        } else {
+            this.loading$.next(false);
         }
     }
 
@@ -91,12 +97,15 @@ export class CorpusDefinition {
     }
 
     /** save the corpus state in the database */
-    save(): void {
+    save(): Observable<APIEditableCorpus> {
+        this.loading$.next(true);
         const data = this.toAPIData();
         const request$ = this.id ?
             this.apiService.updateCorpus(this.id, data) :
             this.apiService.createCorpus(data);
-        request$.subscribe(result => this.setFromAPIData(result));
+        const result$ = request$.pipe(share());
+        result$.subscribe(result => this.setFromAPIData(result));
+        return result$;
     }
 
     private toAPIData(): APIEditableCorpus {
@@ -111,5 +120,6 @@ export class CorpusDefinition {
         this.id = result.id;
         this.active = result.active;
         this.setFromDefinition(result.definition);
+        this.loading$.next(false);
     }
 }
