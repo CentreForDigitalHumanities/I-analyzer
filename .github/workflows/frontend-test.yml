@@ -1,0 +1,26 @@
+# This workflow will run frontend tests on the Node version defined in the Dockerfiles
+
+name: Frontend unit tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+      - 'release/**'
+      - 'dependabot/**'
+    paths:
+      - 'frontend/**'
+
+jobs:
+  frontend-test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run frontend tests
+      run: sudo docker-compose --env-file .env-ci run frontend yarn test
