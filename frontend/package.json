@@ -7,7 +7,6 @@
     "preserve": "yarn prebuild",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "prebuild": "node ./build/build-pre.js",
-    "preinstall": "node ./build/install-pre.js",
     "build": "ng build --configuration=production --base-href=/static/",
     "build-local": "ng build --aot",
     "build-git": "ng build --configuration git --aot",
