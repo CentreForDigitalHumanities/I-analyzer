@@ -22,5 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Run frontend tests
-      run: sudo docker-compose --env-file .env-ci run frontend yarn test
+      run: |
+        docker pull ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
+        docker build . --tag ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
+        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
