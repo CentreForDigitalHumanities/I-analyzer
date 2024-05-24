@@ -72,6 +72,10 @@ class UBlad(HTMLCorpusDefinition):
 
     def sources(self, start=min_date, end=max_date):
         for directory, _, filenames in os.walk(self.data_directory):
+            _body, tail = os.path.split(directory)
+            if '.snapshot' in _:
+                _.remove('.snapshot')
+                continue
             for filename in filenames:
                 if filename != '.DS_Store':
                     full_path = join(directory, filename)
