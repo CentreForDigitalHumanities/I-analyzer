@@ -136,14 +136,32 @@ class CorpusConfigurationField(serializers.SlugRelatedField):
         return value.corpus.name
 
 
+class ChoiceOrderSerializer(serializers.ReadOnlyField, serializers.ChoiceField):
+    def __init__(self, choices, **kwargs):
+        super().__init__(choices=choices, **kwargs)
+        self.index = {
+            value: i
+            for i, (value, label) in enumerate(choices)
+        }
+
+    def to_representation(self, value):
+        key = super().to_representation(value)
+        return self.index[key]
+
+
 class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
+    index = ChoiceOrderSerializer(
+        read_only=True,
+        source='type',
+        choices=CorpusDocumentationPage.PageType.choices,
+    )
     content = DocumentationTemplateField()
     corpus = CorpusConfigurationField(source='corpus_configuration')
 
     class Meta:
         model = CorpusDocumentationPage
-        fields = ['id', 'corpus', 'type', 'content']
+        fields = ['id', 'corpus', 'type', 'content', 'index']
 
 
 class JSONDefinitionField(serializers.Field):

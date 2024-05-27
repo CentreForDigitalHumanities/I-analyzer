@@ -21,8 +21,12 @@ def test_corpus_documentation_view(admin_client, basic_mock_corpus, settings):
     assert response.status_code == 200
     pages = response.data
 
-    # check that the pages are sorted in canonical order
-    page_types = [page['type'] for page in pages]
+    # check that the pages specify canonical order
+    sorted_and_filtered = sorted(
+        (page for page in pages if page['corpus'] == basic_mock_corpus),
+        key=lambda page: page['index']
+    )
+    page_types = [page['type'] for page in sorted_and_filtered]
     assert page_types == ['General information', 'Citation', 'License']
 
     # should contain citation guidelines

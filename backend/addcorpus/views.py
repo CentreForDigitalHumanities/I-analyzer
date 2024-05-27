@@ -27,24 +27,30 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     permission_classes = [IsCuratorOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
 
-    @staticmethod
-    def get_relevant_pages(pages, corpus_name):
-        # only include wordmodels documentation if models are present
-        if Corpus.objects.get(name=corpus_name).has_python_definition:
-            definition = load_corpus_definition(corpus_name)
-            if definition.word_models_present:
-                return pages
-        return pages.exclude(type=CorpusDocumentationPage.PageType.WORDMODELS)
-
     def get_queryset(self):
-        corpus_name = corpus_name_from_request(self.request)
-        pages = CorpusDocumentationPage.objects.filter(
-            corpus_configuration__corpus__name=corpus_name)
-        relevant_pages = self.get_relevant_pages(pages, corpus_name)
+        corpora = self.request.user.searchable_corpora()
+        pages = CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__in=corpora)
+        relevant_pages = filter(__class__._is_applicable_in_environment, pages)
         canonical_order = [e.value for e in CorpusDocumentationPage.PageType]
-
         return sorted(
             relevant_pages, key=lambda p: canonical_order.index(p.type))
+
+    @staticmethod
+    def _is_applicable_in_environment(page: CorpusDocumentationPage):
+        '''
+        Whether a documentation page is applicable with the current settings.
+
+        Returns False if the page documents word models that are not present in the
+        environment.
+        '''
+
+        if page.type == CorpusDocumentationPage.PageType.WORDMODELS:
+            corpus = page.corpus_configuration.corpus
+            if corpus.has_python_definition:
+                definition = load_corpus_definition(corpus.name)
+                return definition.word_models_present
+            return False
+        return True
 
 
 class CorpusImageView(APIView):
