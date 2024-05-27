@@ -1,8 +1,6 @@
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
-from users.models import CustomUser
-from typing import List
 from addcorpus.models import Corpus
 
 def corpus_name_from_request(request):
@@ -26,19 +24,6 @@ def corpus_name_from_request(request):
     return corpus
 
 
-def filter_user_corpora(corpora: List[Corpus], user: CustomUser) -> List[Corpus]:
-    '''
-    Filter all available corpora to only
-    include the ones the user has access to
-    '''
-
-    return [
-         corpus
-         for corpus in corpora
-         if user.has_access(corpus.name)
-    ]
-
-
 class CanSearchCorpus(permissions.BasePermission):
     message = 'You do not have permission to access this corpus'
 
@@ -49,12 +34,11 @@ class CanSearchCorpus(permissions.BasePermission):
         # check if the corpus exists
         try:
             corpus = Corpus.objects.get(name=corpus_name)
-            assert corpus.active
         except:
             raise NotFound('Corpus does not exist')
 
         # check if the user has access
-        return user.has_access(corpus)
+        return user.can_search(corpus)
 
 
 class IsCurator(permissions.BasePermission):

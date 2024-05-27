@@ -4,7 +4,7 @@ from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definit
 import os
 from django.http.response import FileResponse
 from addcorpus.permissions import (
-    CanSearchCorpus, filter_user_corpora, corpus_name_from_request, IsCurator,
+    CanSearchCorpus, corpus_name_from_request, IsCurator,
     IsCuratorOrReadOnly)
 from rest_framework.exceptions import NotFound
 from rest_framework import viewsets
@@ -20,9 +20,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
     serializer_class = CorpusSerializer
 
     def get_queryset(self):
-        corpora = Corpus.objects.filter(active=True)
-        filtered_corpora = filter_user_corpora(corpora, self.request.user)
-        return filtered_corpora
+        return self.request.user.searchable_corpora()
 
 
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
