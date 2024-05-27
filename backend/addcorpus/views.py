@@ -4,7 +4,7 @@ from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definit
 import os
 from django.http.response import FileResponse
 from addcorpus.permissions import (
-    CorpusAccessPermission, filter_user_corpora, corpus_name_from_request, IsCurator,
+    CanSearchCorpus, filter_user_corpora, corpus_name_from_request, IsCurator,
     IsCuratorOrReadOnly)
 from rest_framework.exceptions import NotFound
 from rest_framework import viewsets
@@ -26,7 +26,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
 
 
 class CorpusDocumentationPageViewset(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [CorpusAccessPermission, IsCuratorOrReadOnly]
+    permission_classes = [CanSearchCorpus, IsCuratorOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
 
     @staticmethod
@@ -72,7 +72,7 @@ class CorpusDocumentView(APIView):
     Return a file for a corpus - e.g. extra metadata.
     '''
 
-    permission_classes = [CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
         corpus = Corpus.objects.get(corpus_name_from_request(request))

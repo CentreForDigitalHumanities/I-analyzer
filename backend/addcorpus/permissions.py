@@ -39,7 +39,7 @@ def filter_user_corpora(corpora: List[Corpus], user: CustomUser) -> List[Corpus]
     ]
 
 
-class CorpusAccessPermission(permissions.BasePermission):
+class CanSearchCorpus(permissions.BasePermission):
     message = 'You do not have permission to access this corpus'
 
     def has_permission(self, request, view):
