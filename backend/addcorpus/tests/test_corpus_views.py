@@ -17,7 +17,7 @@ def test_no_corpora(db, settings, admin_client):
     assert response.data == []
 
 def test_corpus_documentation_view(admin_client, basic_mock_corpus, settings):
-    response = admin_client.get(f'/api/corpus/documentation/{basic_mock_corpus}/')
+    response = admin_client.get(f'/api/corpus/documentation/')
     assert response.status_code == 200
     pages = response.data
 
@@ -26,7 +26,10 @@ def test_corpus_documentation_view(admin_client, basic_mock_corpus, settings):
     assert page_types == ['General information', 'Citation', 'License']
 
     # should contain citation guidelines
-    citation_page = next(page for page in pages if page['type'] == 'Citation')
+    citation_page = next(
+        page for page in response.data if
+        page['type'] == 'Citation' and page['corpus'] == basic_mock_corpus
+    )
 
     # check that the page template is rendered with context
     content = citation_page['content']
@@ -47,7 +50,7 @@ def test_corpus_image_view(admin_client, basic_mock_corpus):
     assert response.status_code == 200
 
 def test_nonexistent_corpus(admin_client):
-    response = admin_client.get(f'/api/corpus/documentation/unknown-corpus/')
+    response = admin_client.get(f'/api/corpus/image/unknown-corpus')
     assert response.status_code == 404
 
 def test_no_corpus_access(db, client, basic_mock_corpus):
@@ -55,18 +58,18 @@ def test_no_corpus_access(db, client, basic_mock_corpus):
 
     user = CustomUser.objects.create(username='bad-user', password='secret')
     client.force_login(user)
-    response = client.get(f'/api/corpus/documentation/{basic_mock_corpus}/')
+    response = client.get(f'/api/corpus/image/{basic_mock_corpus}')
     assert response.status_code == 403
 
 
 def test_corpus_documentation_unauthenticated(db, client, basic_mock_corpus):
     response = client.get(
-        f'/api/corpus/documentation/{basic_mock_corpus}/')
+        f'/api/corpus/image/{basic_mock_corpus}')
     assert response.status_code == 401
 
 def test_public_corpus_documentation_unauthenticated(db, client, basic_corpus_public):
     response = client.get(
-        f'/api/corpus/documentation/{basic_corpus_public}/')
+        f'/api/corpus/image/{basic_corpus_public}')
     assert response.status_code == 200
 
 def test_corpus_serialization(admin_client, basic_mock_corpus):

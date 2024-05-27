@@ -54,7 +54,7 @@ class CorpusImageView(APIView):
     Return the image for a corpus.
     '''
 
-    permission_classes = [IsCuratorOrReadOnly]
+    permission_classes = [CanSearchCorpus, IsCuratorOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)
