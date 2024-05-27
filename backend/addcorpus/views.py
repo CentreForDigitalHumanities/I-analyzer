@@ -25,8 +25,8 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
         return filtered_corpora
 
 
-class CorpusDocumentationPageViewset(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [CanSearchCorpus, IsCuratorOrReadOnly]
+class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
+    permission_classes = [IsCuratorOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
 
     @staticmethod

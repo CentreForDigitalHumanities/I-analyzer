@@ -121,13 +121,29 @@ class DocumentationTemplateField(serializers.CharField):
         return render_documentation_context(content)
 
 
+class CorpusConfigurationField(serializers.SlugRelatedField):
+    '''
+    Serialise a related corpus configuration as the corpus name.
+    '''
+
+    def __init__(self, **kwargs):
+        super().__init__('corpus__name', **kwargs)
+
+    def get_queryset(self):
+        return CorpusConfiguration.objects.all()
+
+    def to_representation(self, value: CorpusConfiguration) -> str:
+        return value.corpus.name
+
+
 class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
     content = DocumentationTemplateField()
+    corpus = CorpusConfigurationField(source='corpus_configuration')
 
     class Meta:
         model = CorpusDocumentationPage
-        fields = ['corpus_configuration', 'type', 'content']
+        fields = ['id', 'corpus', 'type', 'content']
 
 
 class JSONDefinitionField(serializers.Field):
