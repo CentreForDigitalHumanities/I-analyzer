@@ -136,13 +136,16 @@ class CorpusConfigurationField(serializers.SlugRelatedField):
         return value.corpus.name
 
 
-class ChoiceOrderSerializer(serializers.ReadOnlyField, serializers.ChoiceField):
+class ChoiceOrderSerializer(serializers.ChoiceField):
+    '''
+    Variant on the ChoiceField that serialises to the index in the choices array.
+    '''
     def __init__(self, choices, **kwargs):
         super().__init__(choices=choices, **kwargs)
-        self.index = {
-            value: i
-            for i, (value, label) in enumerate(choices)
-        }
+        self.index = {value: i for i, (value, label) in enumerate(choices)}
+
+    def to_internal_value(self, data):
+        return self.choices[data]
 
     def to_representation(self, value):
         key = super().to_representation(value)
@@ -156,12 +159,13 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
         source='type',
         choices=CorpusDocumentationPage.PageType.choices,
     )
-    content = DocumentationTemplateField()
+    content = DocumentationTemplateField(read_only=True)
+    content_template = serializers.CharField(source='content')
     corpus = CorpusConfigurationField(source='corpus_configuration')
 
     class Meta:
         model = CorpusDocumentationPage
-        fields = ['id', 'corpus', 'type', 'content', 'index']
+        fields = ['id', 'corpus', 'type', 'content', 'content_template', 'index']
 
 
 class JSONDefinitionField(serializers.Field):
