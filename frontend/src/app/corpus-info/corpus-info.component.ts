@@ -5,6 +5,8 @@ import { marked } from 'marked';
 import { Observable } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { pageTitle } from '../utils/app';
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'ia-corpus-info',
@@ -30,7 +32,10 @@ export class CorpusInfoComponent implements OnInit {
 
     setCorpus(corpus: Corpus) {
         this.corpus = corpus;
-        this.documentation$ = this.apiService.corpusDocumentation(corpus.name);
+        this.documentation$ = this.corpusService.getDocumentation(corpus).pipe(
+            map(pages => pages.filter(page => this.includePage(corpus, page))),
+            map(this.sortPages)
+        );
         this.apiService.fieldCoverage(corpus.name).then(
             result => this.fieldCoverage = result
         );
@@ -39,6 +44,14 @@ export class CorpusInfoComponent implements OnInit {
 
     renderMarkdown(content: string): string {
         return marked.parse(content);
+    }
+
+    private sortPages(pages: CorpusDocumentationPage[]): CorpusDocumentationPage[] {
+        return _.sortBy(pages, 'index');
+    }
+
+    private includePage(corpus: Corpus, page: CorpusDocumentationPage): boolean {
+        return page.type !== 'Word models' || corpus.wordModelsPresent;
     }
 
 }

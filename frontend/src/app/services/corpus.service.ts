@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 
-import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
+import { Corpus, CorpusDocumentationPage, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
 import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
 import * as _ from 'lodash';
+import { ApiService } from './api.service';
 
 @Injectable({
     providedIn: 'root',
@@ -23,7 +24,8 @@ export class CorpusService {
 
     constructor(
         private apiRetryService: ApiRetryService,
-        private authService: AuthService
+        private authService: AuthService,
+        private apiService: ApiService,
     ) {
         this.parseField = this.parseField.bind(this);
     }
@@ -70,6 +72,13 @@ export class CorpusService {
         }
     }
 
+    getDocumentation(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
+        const requests = corpus.documentationPageIDs.map(
+            id => this.apiService.corpusDocumentationPage(id)
+        );
+        return combineLatest(requests);
+    }
+
     private async parseCorpusList(data: any): Promise<Corpus[]> {
         return data.map(this.parseCorpusItem);
     }
@@ -90,6 +99,7 @@ export class CorpusService {
             data.languages,
             data.category,
             data.has_named_entities,
+            data.documentation_pages,
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight,
             this.parseDefaultSort(data.default_sort, allFields),

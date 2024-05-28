@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { findByName } from '../app/utils/utils';
 import { BooleanFilterOptions } from '../app/models/field-filter-options';
-import { Corpus, CorpusField } from '../app/models';
+import { Corpus, CorpusDocumentationPage, CorpusField } from '../app/models';
 
 const mockFilterOptions: BooleanFilterOptions = {
     checked: false,
@@ -217,5 +217,15 @@ export class CorpusServiceMock {
                 return true;
             }
         });
+    }
+
+    public getDocumentation(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
+        return of([{
+            id: 1,
+            corpus: corpus.name,
+            type: 'General',
+            content: 'Example of _documentation_.',
+            index: 1,
+        }]);
     }
 }

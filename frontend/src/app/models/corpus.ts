@@ -30,6 +30,7 @@ export class Corpus {
         public languages: string[],
         public category: string,
         public hasNamedEntities: boolean,
+        public documentationPageIDs: number[],
         public documentContext?: DocumentContext,
         public newHighlight?: boolean,
         public defaultSort?: SortState,
@@ -150,6 +151,9 @@ export class CorpusField {
 }
 
 export interface CorpusDocumentationPage {
+    id: number;
+    corpus: string;
     type: string;
     content: string;
+    index?: number;
 }
