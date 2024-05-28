@@ -19,19 +19,18 @@ For the SAML integration, the following libraries are required: xmlsec, python3-
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. Create and activate a virtualenv for Python.
-2. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment. You can leave the file empty for now.
-3. Install the requirements for both the backend and frontend:
+1. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment. You can leave the file empty for now.
+2. Install the requirements for both the backend and frontend:
 ```sh
 yarn postinstall
 ```
-4. For an easy setup, locate the file `config/elasticsearch.yml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but this requires [additional settings](./Django-project-settings.md#api-key).
-5. Set up your postgres database:
+3. For an easy setup, locate the file `config/elasticsearch.yml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but this requires [additional settings](./Django-project-settings.md#api-key).
+4. Set up your postgres database:
 ```sh
 psql -f backend/create_db.sql
 yarn django migrate
 ```
-6. Make a superuser account with `yarn django createsuperuser`
+5. Make a superuser account with `yarn django createsuperuser`
 
 ## Setup with Docker
 Alternatively, you can run the application via Docker:
