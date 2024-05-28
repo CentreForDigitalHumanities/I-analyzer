@@ -19,8 +19,8 @@ For the SAML integration, the following libraries are required: xmlsec, python3-
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. For an easy setup, locate the file `config/elasticsearch.yaml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but then you need to [generate API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html) and set up your `SERVERS` config like so:
-```
+1. For an easy setup, locate the file `config/elasticsearch.yml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but then you need to [generate API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html) and set up your `SERVERS` config like so:
+```py
 SERVERS = {
     # Default ElasticSearch server
     'default': {
@@ -33,15 +33,17 @@ SERVERS = {
 }
 ```
 2. Create and activate a virtualenv for Python.
-3. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment, and to include the corpora that are defined in the source code in your environment. See instructions of adding corpora below.
+3. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment. You can leave the file empty for now.
 4. Install the requirements for both the backend and frontend:
-```
+```sh
 yarn postinstall
 ```
-5. Set up your postgres database by going to the backend directory and running `psql -f create_db.sql`
-The backend readme provides more details on these steps.
-6. Set up the database and migrations by running `yarn django migrate`.
-7. Make a superuser account with `yarn django createsuperuser`
+5. Set up your postgres database:
+```sh
+psql -f backend/create_db.sql
+yarn django migrate
+```
+6. Make a superuser account with `yarn django createsuperuser`
 
 ## Setup with Docker
 Alternatively, you can run the application via Docker:
