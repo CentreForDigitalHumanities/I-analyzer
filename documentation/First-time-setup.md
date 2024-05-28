@@ -32,21 +32,16 @@ SERVERS = {
     }
 }
 ```
-2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
-```
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-```
-3. Create and activate a virtualenv for Python.
-4. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment, and to include the corpora that are defined in the source code in your environment. See instructions of adding corpora below.
-5. Install the requirements for both the backend and frontend:
+2. Create and activate a virtualenv for Python.
+3. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment, and to include the corpora that are defined in the source code in your environment. See instructions of adding corpora below.
+4. Install the requirements for both the backend and frontend:
 ```
 yarn postinstall
 ```
-6. Set up your postgres database by going to the backend directory and running `psql -f create_db.sql`
+5. Set up your postgres database by going to the backend directory and running `psql -f create_db.sql`
 The backend readme provides more details on these steps.
-7. Set up the database and migrations by running `yarn django migrate`.
-8. Make a superuser account with `yarn django createsuperuser`
+6. Set up the database and migrations by running `yarn django migrate`.
+7. Make a superuser account with `yarn django createsuperuser`
 
 ## Setup with Docker
 Alternatively, you can run the application via Docker:
