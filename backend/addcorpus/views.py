@@ -24,6 +24,10 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
 
 
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
+    '''
+    Markdown documentation pages for corpora.
+    '''
+
     permission_classes = [IsCuratorOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
 
@@ -34,26 +38,9 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
         else:
            corpora = self.request.user.searchable_corpora()
 
-        pages = CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__in=corpora)
-        relevant_pages = filter(__class__._is_applicable_in_environment, pages)
-        return relevant_pages
-
-    @staticmethod
-    def _is_applicable_in_environment(page: CorpusDocumentationPage):
-        '''
-        Whether a documentation page is applicable with the current settings.
-
-        Returns False if the page documents word models that are not present in the
-        environment.
-        '''
-
-        if page.type == CorpusDocumentationPage.PageType.WORDMODELS:
-            corpus = page.corpus_configuration.corpus
-            if corpus.has_python_definition:
-                definition = load_corpus_definition(corpus.name)
-                return definition.word_models_present
-            return False
-        return True
+        return CorpusDocumentationPage.objects.filter(
+            corpus_configuration__corpus__in=corpora
+        )
 
 
 class CorpusImageView(APIView):

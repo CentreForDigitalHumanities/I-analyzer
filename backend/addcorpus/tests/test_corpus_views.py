@@ -3,7 +3,7 @@ from django.test.client import Client
 from typing import Dict
 
 from users.models import CustomUser
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, CorpusDocumentationPage
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 
 def test_no_corpora(db, settings, admin_client):
@@ -16,7 +16,7 @@ def test_no_corpora(db, settings, admin_client):
     assert status.is_success(response.status_code)
     assert response.data == []
 
-def test_corpus_documentation_view(admin_client, basic_mock_corpus, settings):
+def test_corpus_documentation_list_view(admin_client, basic_mock_corpus, settings):
     response = admin_client.get(f'/api/corpus/documentation/')
     assert response.status_code == 200
     pages = response.data
@@ -39,6 +39,12 @@ def test_corpus_documentation_view(admin_client, basic_mock_corpus, settings):
     content = citation_page['content']
     assert '{{ frontend_url }}' not in content
     assert settings.BASE_URL in content
+
+def test_corpus_documentation_retrieve_view(admin_client: Client, basic_mock_corpus):
+    page = CorpusDocumentationPage.objects.first()
+    response = admin_client.get(f'/api/corpus/documentation/{page.pk}/')
+    assert status.is_success(response.status_code)
+
 
 def test_corpus_image_view(admin_client, basic_mock_corpus):
     corpus = Corpus.objects.get(name=basic_mock_corpus)
@@ -66,12 +72,12 @@ def test_no_corpus_access(db, client, basic_mock_corpus):
     assert response.status_code == 403
 
 
-def test_corpus_documentation_unauthenticated(db, client, basic_mock_corpus):
+def test_private_corpus_image_unauthenticated(db, client, basic_mock_corpus):
     response = client.get(
         f'/api/corpus/image/{basic_mock_corpus}')
     assert response.status_code == 401
 
-def test_public_corpus_documentation_unauthenticated(db, client, basic_corpus_public):
+def test_public_corpus_image_unauthenticated(db, client, basic_corpus_public):
     response = client.get(
         f'/api/corpus/image/{basic_corpus_public}')
     assert response.status_code == 200
