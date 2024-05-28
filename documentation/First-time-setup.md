@@ -19,8 +19,7 @@ For the SAML integration, the following libraries are required: xmlsec, python3-
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. Install the ElasticSearch v.8 (https://www.elastic.co/) and postgreSQL on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
-2. For an easy setup, locate the file `config/elasticsearch.yaml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but then you need to [generate API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html) and set up your SERVERS config like so:
+1. For an easy setup, locate the file `config/elasticsearch.yaml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but then you need to [generate API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html) and set up your `SERVERS` config like so:
 ```
 SERVERS = {
     # Default ElasticSearch server
@@ -33,21 +32,21 @@ SERVERS = {
     }
 }
 ```
-3. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
+2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
 ```
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
-4. Create and activate a virtualenv for Python.
-5. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment, and to include the corpora that are defined in the source code in your environment. See instructions of adding corpora below.
-6. Install the requirements for both the backend and frontend:
+3. Create and activate a virtualenv for Python.
+4. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment, and to include the corpora that are defined in the source code in your environment. See instructions of adding corpora below.
+5. Install the requirements for both the backend and frontend:
 ```
 yarn postinstall
 ```
-7. Set up your postgres database by going to the backend directory and running `psql -f create_db.sql`
+6. Set up your postgres database by going to the backend directory and running `psql -f create_db.sql`
 The backend readme provides more details on these steps.
-8. Set up the database and migrations by running `yarn django migrate`.
-9. Make a superuser account with `yarn django createsuperuser`
+7. Set up the database and migrations by running `yarn django migrate`.
+8. Make a superuser account with `yarn django createsuperuser`
 
 ## Setup with Docker
 Alternatively, you can run the application via Docker:
