@@ -28,12 +28,15 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     serializer_class = CorpusDocumentationPageSerializer
 
     def get_queryset(self):
-        corpora = self.request.user.searchable_corpora()
+        # curators are not limited to active corpora (to allow editing)
+        if self.request.user.is_staff:
+            corpora = Corpus.objects.all()
+        else:
+           corpora = self.request.user.searchable_corpora()
+
         pages = CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__in=corpora)
         relevant_pages = filter(__class__._is_applicable_in_environment, pages)
-        canonical_order = [e.value for e in CorpusDocumentationPage.PageType]
-        return sorted(
-            relevant_pages, key=lambda p: canonical_order.index(p.type))
+        return relevant_pages
 
     @staticmethod
     def _is_applicable_in_environment(page: CorpusDocumentationPage):
