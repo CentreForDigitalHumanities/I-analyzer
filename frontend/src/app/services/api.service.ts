@@ -223,12 +223,14 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
-        const url = this.apiRoute(
-            this.corpusApiUrl,
-            `documentation/${corpusName}/`
-        );
+    public corpusDocumentationPages(): Observable<CorpusDocumentationPage[]> {
+        const url = this.apiRoute(this.corpusApiUrl, 'documentation/');
         return this.http.get<CorpusDocumentationPage[]>(url);
+    }
+
+    public corpusDocumentationPage(pageID: number): Observable<CorpusDocumentationPage> {
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
+        return this.http.get<CorpusDocumentationPage>(url);
     }
 
     public corpus() {
