@@ -7,8 +7,9 @@ These are instructions to set up an I-analyzer server. If you are going to devel
 * Python == 3.9
 * PostgreSQL >= 10, client, server and C libraries
 * [ElasticSearch](https://www.elastic.co/) 8. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
-* [Redis](https://www.redis.io/) (used by [Celery](http://www.celeryproject.org/)). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
-* Yarn
+* [Redis](https://www.redis.io/). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
+* [Node.js](https://nodejs.org/)
+* [Yarn](https://yarnpkg.com/)
 
 The documentation includes a [recipe for installing the prerequisites on Debian 10](./documentation/Local-Debian-I-Analyzer-setup.md)
 
