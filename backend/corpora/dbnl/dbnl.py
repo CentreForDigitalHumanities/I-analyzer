@@ -137,7 +137,6 @@ class DBNL(XMLCorpusDefinition):
         es_mapping=int_mapping(),
         search_filter=RangeFilter(
             description='Select books by publication year',
-            lower=1200, upper=1890
         ),
         visualizations=['resultscount', 'termfrequency'],
         sortable=True,
@@ -234,6 +233,7 @@ class DBNL(XMLCorpusDefinition):
     url = FieldDefinition(
         name='url',
         display_name='Source URL',
+        display_type='url',
         description='Link to the book\'s page in DBNL',
         extractor=Metadata('url'),
         es_mapping=keyword_mapping(),

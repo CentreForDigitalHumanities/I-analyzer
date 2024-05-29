@@ -1,4 +1,5 @@
-import { AggregateResult, DateResult } from '.';
+import { DateResult } from '.';
+import { TermsResult } from './aggregation';
 import { APIQuery } from './search-requests';
 
 export interface TermFrequencyResult {
@@ -31,9 +32,6 @@ export interface TimelineDataPoint {
     matches_by_doc_count?: number;
 }
 
-// common type for all histogram/timeline results
-export type BarchartResult = DateResult|AggregateResult;
-
 /**
  * Dataseries for barcharts.
  * Each dataseries defines its own query text
@@ -48,7 +46,7 @@ export type BarchartResult = DateResult|AggregateResult;
     queryText?: string; // replaces the text in this.queryModel when searching
 }
 
-export type HistogramSeries = BarchartSeries<AggregateResult>;
+export type HistogramSeries = BarchartSeries<TermsResult>;
 export type TimelineSeries = BarchartSeries<DateResult>;
 
 

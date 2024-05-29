@@ -6,7 +6,6 @@ import { interval, Observable } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
     CorpusDocumentationPage,
@@ -18,6 +17,7 @@ import {
     FoundDocument,
     GeoDocument,
     LimitedResultsDownloadParameters,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
@@ -137,9 +137,9 @@ export class ApiService {
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Observable<AggregateResult[]> {
+    public wordCloud(data: WordcloudParameters): Observable<MostFrequentWordsResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
-        return this.http.post<AggregateResult[]>(url, data);
+        return this.http.post<MostFrequentWordsResult[]>(url, data);
     }
 
     public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {

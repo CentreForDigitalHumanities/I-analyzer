@@ -8,13 +8,12 @@ from elasticsearch import Elasticsearch
 
 from addcorpus.json_corpora.import_json import import_json_corpus
 from ianalyzer.elasticsearch import elasticsearch
-from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
-
+from addcorpus.serializers import CorpusJSONDefinitionSerializer
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -153,37 +152,41 @@ def test_index_cleanup(es_client: Elasticsearch):
 
 
 def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
-    corpus = load_corpus_definition(corpus_name)
+    corpus = Corpus.objects.get(name=corpus_name)
 
-    if not es_client.indices.exists(index=corpus.es_index):
-        index.create(es_client, corpus, False, True, False)
-        index.populate(es_client, corpus_name, corpus)
+    if not es_client.indices.exists(index=corpus.configuration.es_index):
+        index.perform_indexing(corpus)
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
 
 @pytest.fixture()
-def index_basic_mock_corpus(es_client: Elasticsearch, basic_mock_corpus: str, test_index_cleanup):
+def index_basic_mock_corpus(db, es_client: Elasticsearch, basic_mock_corpus: str, test_index_cleanup):
     _index_test_corpus(es_client, basic_mock_corpus)
 
 
 @pytest.fixture()
-def index_small_mock_corpus(es_client: Elasticsearch, small_mock_corpus: str, test_index_cleanup):
+def index_small_mock_corpus(db, es_client: Elasticsearch, small_mock_corpus: str, test_index_cleanup):
     _index_test_corpus(es_client, small_mock_corpus)
 
 
 @pytest.fixture()
-def index_large_mock_corpus(es_client: Elasticsearch, large_mock_corpus: str, test_index_cleanup):
+def index_large_mock_corpus(db, es_client: Elasticsearch, large_mock_corpus: str, test_index_cleanup):
     _index_test_corpus(es_client, large_mock_corpus)
 
 
 @pytest.fixture()
-def index_ml_mock_corpus(es_client: Elasticsearch, ml_mock_corpus: str, test_index_cleanup):
+def index_ml_mock_corpus(db, es_client: Elasticsearch, ml_mock_corpus: str, test_index_cleanup):
     _index_test_corpus(es_client, ml_mock_corpus)
 
 
 @pytest.fixture()
-def index_tag_mock_corpus(es_client: Elasticsearch, tag_mock_corpus: str, test_index_cleanup):
+def index_tag_mock_corpus(db, es_client: Elasticsearch, tag_mock_corpus: str, test_index_cleanup):
     _index_test_corpus(es_client, tag_mock_corpus)
+
+
+@pytest.fixture()
+def index_json_mock_corpus(db, es_client: Elasticsearch, json_mock_corpus: Corpus, test_index_cleanup):
+    _index_test_corpus(es_client, json_mock_corpus.name)
 
 
 # mock corpora
@@ -201,6 +204,14 @@ def json_corpus_data():
 
 
 @pytest.fixture(autouse=True)
-def json_mock_corpus(db,  json_corpus_data):
+def json_mock_corpus(db, json_corpus_data) -> Corpus:
     # add json mock corpora to the database at the start of each test
-    return import_json_corpus(json_corpus_data)
+    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    assert serializer.is_valid()
+    corpus = serializer.create(serializer.validated_data)
+
+    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data')
+    corpus.configuration.data_directory = data_dir
+    corpus.configuration.save()
+
+    return corpus

@@ -11,10 +11,9 @@ from addcorpus.validation.creation import (
     validate_source_data_directory,
 )
 from addcorpus.validation.indexing import (validate_essential_fields,
-                                           validate_has_configuration,
-                                           validate_language_field)
+    validate_has_configuration, validate_language_field, validate_has_data_directory)
 from addcorpus.validation.publishing import (validate_default_sort,
-                                             validate_ngram_has_date_field)
+    validate_ngram_has_date_field)
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.postgres.fields import ArrayField
@@ -25,7 +24,6 @@ from django.db.models.constraints import UniqueConstraint
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
-
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -93,6 +91,7 @@ class Corpus(models.Model):
         config = self.configuration_obj
         fields = config.fields.all()
 
+        validate_has_data_directory(self)
         validate_essential_fields(fields)
         validate_language_field(self)
 
@@ -112,12 +111,21 @@ class Corpus(models.Model):
         '''
         Validation that should be carried out before making the corpus public.
 
+        This also includes most checks that are needed to create an index, but not all
+        (if the index already exists, you do not need source data).
+
         Raises:
             CorpusNotIndexableError: the corpus is not meeting requirements for indexing.
             CorpusNotPublishableError: interface options are improperly configured.
         '''
 
-        self.validate_ready_to_index()
+        validate_has_configuration(self)
+
+        config = self.configuration_obj
+        fields = config.fields.all()
+
+        validate_essential_fields(fields)
+        validate_language_field(self)
         validate_ngram_has_date_field(self)
         validate_default_sort(self)
 
@@ -262,7 +270,8 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point')
+    (MappingType.GEO_POINT.value, 'geo_point'),
+    ('url', 'url'),
 ]
 
 FIELD_VISUALIZATIONS = [
