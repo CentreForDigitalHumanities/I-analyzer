@@ -14,7 +14,7 @@ on:
       - 'release/**'
       - 'dependabot/**'
     paths-ignore:
-      - 'frontend/**'
+      - 'backend/**'
       - '**.md'
 
 jobs:
