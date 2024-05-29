@@ -13,8 +13,9 @@ on:
       - 'hotfix/**'
       - 'release/**'
       - 'dependabot/**'
-    paths:
+    paths-ignore:
       - 'frontend/**'
+      - '**.md'
 
 jobs:
   frontend-test:
