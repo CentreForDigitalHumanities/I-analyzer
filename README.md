@@ -10,8 +10,6 @@ I-analyzer is a web application for exploring corpora (large collections of text
 
 I-analyzer is primarily intended for academic research and higher education. We focus on data that is relevant for the humanities, but we are open to datasets that are relevant for other fields.
 
-Editing this README to test if this triggers an action.
-
 ## Contents
 
 This repository contains the source code for the I-analyzer web application, which consists of a Django backend and Angular frontend.
