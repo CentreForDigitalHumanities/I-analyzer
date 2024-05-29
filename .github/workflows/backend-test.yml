@@ -1,0 +1,27 @@
+# This workflow will run backend tests on the Python version defined in the Dockerfiles
+
+name: Backend unit tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+      - 'release/**'
+      - 'dependabot/**'
+    paths-ignore:
+      - 'frontend/**'
+      - '**.md'
+
+jobs:
+  backend-test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run backend tests
+      run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
