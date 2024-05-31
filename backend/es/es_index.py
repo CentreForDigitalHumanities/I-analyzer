@@ -14,6 +14,8 @@ from django.conf import settings
 from ianalyzer.elasticsearch import elasticsearch
 from .es_alias import alias, get_new_version_number
 
+import locale
+
 import logging
 logger = logging.getLogger('indexing')
 
@@ -93,6 +95,15 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
     corpus_server = settings.SERVERS[
         settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
+
+    # set corpus-specific locale
+    try:
+        corpus_locale = settings.CORPORA_LOCALES[corpus_name]
+        if corpus_locale:
+            locale.setlocale(locale.LC_ALL, corpus_locale)
+    except:
+        pass
+
     # Do bulk operation
     for success, info in es_helpers.streaming_bulk(
         client,
@@ -102,6 +113,9 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
     ):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
+
+    #revert back to default locale
+    locale.setlocale(locale.LC_ALL, '')
 
 def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, add, clear, prod, rollover):
     logger.info('Started indexing `{}` from {} to {}...'.format(

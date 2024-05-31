@@ -17,9 +17,6 @@ from ianalyzer_readers.extract import html, Constant
 
 from bs4 import BeautifulSoup, Tag
 
-import locale
-locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
-
 def transform_content(soup):
     """
     Transforms the text contents of a page node (soup) into a string consisting
