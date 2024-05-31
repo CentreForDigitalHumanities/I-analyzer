@@ -36,8 +36,7 @@ def transform_content(soup):
                     paragraph_text += item + ' '
             if paragraph_text:
                 page_text += paragraph_text + '\n\n'
-    page_node = BeautifulSoup(page_text, 'html.parser')
-    return page_node
+    return page_text
 
 
 class UBlad(HTMLCorpusDefinition):
@@ -94,7 +93,7 @@ class UBlad(HTMLCorpusDefinition):
                                        recursive=True,
                                        multiple=False,
                                        flatten=False,
-                                       transform_soup_func=transform_content,
+                                       extract_soup_func=transform_content,
                                        attribute_filter={
                                             'attribute': 'class',
                                             'value': 'ocr_page'
