@@ -126,6 +126,7 @@ class UBlad(HTMLCorpusDefinition):
             display_name='Volume ID',
             description='Unique identifier for this volume',
             hidden=True,
+            es_mapping=keyword_mapping(),
             extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
                 'value': 'identifier_ocn'
@@ -148,6 +149,7 @@ class UBlad(HTMLCorpusDefinition):
             display_name='Edition',
             description='The number of the edition in this volume. Every year starts at 1.',
             sortable=True,
+            es_mapping = keyword_mapping(),
             extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
                 'value': 'aflevering'
@@ -161,6 +163,7 @@ class UBlad(HTMLCorpusDefinition):
             results_overview=True,
             csv_core=True,
             description='The volume number of this publication. There is one volume per year.',
+            es_mapping=keyword_mapping(),
             extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
                 'attribute': 'name',
                 'value': 'yearstring'
