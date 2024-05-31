@@ -4,4 +4,4 @@ In 1974 veranderde de naam in het _Ublad_. Dat bleef zo tot de universiteit besl
 
 Om alle informatie uit het verleden toegankelijk te maken, heeft het Centre for Digital Humanities samen met de Universiteitsbibliotheek de oude jaargangen gedigitaliseerd. In I-analyzer kunt u alle jaargangen van U utrechtse universitaire reflexen en het Ublad vinden en doorzoeken.
 
-Het onafhankelijke Ublad geeft een kleurrijk verslag van wat er speelde op de universiteit, de stad en het studentenleven door middel van atikelen, foto’s en cartoons. De afbeelding die is gebruikt voor OCR is voor elke pagina bijgevoegd zodat u altijd het originele bronmateriaal kan raadplegen.
+Het onafhankelijke Ublad geeft een kleurrijk verslag van wat er speelde op de universiteit, de stad en het studentenleven door middel van artikelen, foto’s en cartoons. De afbeelding die is gebruikt voor OCR is voor elke pagina bijgevoegd zodat u altijd het originele bronmateriaal kunt raadplegen.
