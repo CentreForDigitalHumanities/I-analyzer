@@ -6,6 +6,7 @@ import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
 import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { visualizationIcons } from '../shared/icons';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'ia-word-models',
@@ -54,7 +55,8 @@ export class WordModelsComponent extends ParamDirective {
         paramService: ParamService,
         private corpusService: CorpusService,
         private authService: AuthService,
-        private wordModelsService: WordmodelsService
+        private wordModelsService: WordmodelsService,
+        private title: Title,
     ) {
         super(route, router, paramService);
     }
@@ -108,6 +110,7 @@ export class WordModelsComponent extends ParamDirective {
     setCorpus(corpus: Corpus): void {
         if (corpus && (!this.corpus || this.corpus.name !== corpus.name)) {
             this.corpus = corpus;
+            this.title.setTitle(`Word models of ${corpus.title} - I-analyzer`);
         }
     }
 

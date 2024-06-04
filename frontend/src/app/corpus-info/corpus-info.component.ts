@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService, CorpusService, WordmodelsService } from '../services';
+import { ApiService, CorpusService } from '../services';
 import { Corpus, CorpusDocumentationPage, FieldCoverage } from '../models';
 import { marked } from 'marked';
 import { Observable } from 'rxjs';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../utils/app';
 
 @Component({
   selector: 'ia-corpus-info',
@@ -16,7 +18,11 @@ export class CorpusInfoComponent implements OnInit {
 
     documentation$: Observable<CorpusDocumentationPage[]>;
 
-    constructor(private corpusService: CorpusService, private apiService: ApiService, private wordModelsService: WordmodelsService) { }
+    constructor(
+        private corpusService: CorpusService,
+        private apiService: ApiService,
+        private title: Title,
+    ) { }
 
     ngOnInit(): void {
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
@@ -28,6 +34,7 @@ export class CorpusInfoComponent implements OnInit {
         this.apiService.fieldCoverage(corpus.name).then(
             result => this.fieldCoverage = result
         );
+        this.title.setTitle(pageTitle(`About ${corpus.title}`));
     }
 
     renderMarkdown(content: string): string {
