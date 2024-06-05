@@ -3,6 +3,7 @@ import { SafeHtml, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { DialogService } from '../services';
+import { pageTitle } from '../utils/app';
 
 @Component({
     selector: 'ia-manual',
@@ -19,7 +20,7 @@ export class ManualComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         title: Title
     ) {
-        title.setTitle('Manual - I-analyzer');
+        title.setTitle(pageTitle('Manual'));
     }
 
     ngOnInit() {
