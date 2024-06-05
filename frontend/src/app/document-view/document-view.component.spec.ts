@@ -20,7 +20,7 @@ describe('DocumentViewComponent', () => {
         fixture = TestBed.createComponent(DocumentViewComponent);
         component = fixture.componentInstance;
         component.corpus = _.merge({
-            scan_image_type: 'farout_image_type',
+            scanImageType: 'farout_image_type',
             fields: [mockField]
         }, mockCorpus);
         component.document = makeDocument({ great_field: 'Hello world!' });

@@ -6,6 +6,8 @@ import { takeUntil } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
 import { userIcons } from '../../shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../../utils/app';
 
 interface RegisterErrors {
     non_field_errors?: string[];
@@ -41,9 +43,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     private destroy$ = new Subject<boolean>();
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private title: Title) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.title.setTitle(pageTitle('Register'));
+    }
+
     ngOnDestroy() {
         this.destroy$.next(true);
     }
