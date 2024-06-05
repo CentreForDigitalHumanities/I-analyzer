@@ -1,6 +1,8 @@
 # Adding word models
 
-Corpora have the option to include word vectors. I-analyzer visualisations are built for _diachronic_ word models, showing how word meaning changes over time. As such, I-analyzer expects that you trained models for different time intervals.
+Corpora have the option to include word vectors. (This option is only supported for Python corpora.)
+
+I-analyzer visualisations are built for _diachronic_ word models, showing how word meaning changes over time. As such, I-analyzer expects that you trained models for different time intervals.
 
 ## Expected file format
 Word embeddings are expected to come with the following files:
@@ -9,7 +11,7 @@ For each time bin, it expects files of the format
 - `_{startYear}_{endYear}.wv` (contains gensim KeyedVectors for a model trained on the time bin)
 
 ## Documentation
-Please include documentation on the method and settings used to train a model. This documentation is expected to be located in `wm/documentation.md`, next to the corpus definition that includes word models.
+Please include documentation on the method and settings used to train a model. See the separate documentation on [how to include documentation pages](./Writing-a-corpus-definition-in-Python.md#documentation-files-and-corpus-image) and [how to write documenation pages](./Corpus-documentation.md).
 
 ## Including word models
 

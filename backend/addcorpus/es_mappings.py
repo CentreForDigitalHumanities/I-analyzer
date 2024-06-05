@@ -1,4 +1,8 @@
+from typing import Dict
 from addcorpus.es_settings import add_language_string, stopwords_available, stemming_available
+
+def primary_mapping_type(es_mapping: Dict) -> str:
+    return es_mapping.get('type', None)
 
 def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, language=None, updated_highlighting=True):
     '''

@@ -230,12 +230,12 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     assert len(rows) == 1
 
 
-def test_unauthenticated_download(db, client, basic_corpus, basic_corpus_index):
+def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
     download_request_json = {
-        'corpus': basic_corpus,
+        'corpus': basic_mock_corpus,
         'es_query': mock_match_all_query(),
         'fields': ['date', 'content'],
-        'route': f"/search/{basic_corpus}",
+        'route': f"/search/{basic_mock_corpus}",
         'encoding': 'utf-8'
     }
     response = client.post('/api/download/search_results',
