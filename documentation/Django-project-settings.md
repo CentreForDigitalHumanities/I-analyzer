@@ -56,8 +56,8 @@ Create an API key for the server: see [creating an API key](https://www.elastic.
 Add the following values to the configuration:
 
 - `'certs_location'`: Fill in the following path: `{your_elasticsearch_directory}/config/certs/http_ca.crt`
-- `'api_key'`: the ID of the API key
-- `'api_id'`: the generated API key
+- `'api_id'`: the ID of the API key
+- `'api_key'`: the generated API key
 
 
 #### Setting a default server
