@@ -1,12 +1,15 @@
 <nav class="menu" aria-labelledby="topics-header">
     <h2 class="title is-5" id="topics-header">Manual topics</h2>
-    <ul class="menu-list">
-        <li *ngFor="let page of manifest | async">
-            <a [routerLink]="['/manual', page.id]"
-                routerLinkActive="is-active"
-                ariaCurrentWhenActive="page">
-                {{page.title}}
-            </a>
-        </li>
-    </ul>
+    <ng-container *ngFor="let section of (manifest | async)">
+        <h3 class="menu-label">{{section.title}}</h3>
+        <ul class="menu-list">
+            <li *ngFor="let page of section.pages">
+                <a [routerLink]="['/manual', page.id]"
+                    routerLinkActive="is-active"
+                    ariaCurrentWhenActive="page">
+                    {{page.title}}
+                </a>
+            </li>
+        </ul>
+    </ng-container>
 </nav>
