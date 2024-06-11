@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ElasticSearchService, SearchResponse } from './elastic-search.service';
-import { Aggregator, QueryModel } from '../models';
+import { QueryModel } from '../models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
 import { TagService } from './tag.service';
 import { TagServiceMock } from '../../mock-data/tag';
+import { Aggregator, TermsAggregator } from '../models/aggregation';
 
 const mockResponse: SearchResponse = {
     took: 4,
@@ -47,7 +48,7 @@ const mockAggregationResponse: SearchResponse = {
         hits: [],
     },
     aggregations: {
-        great_field: {
+        terms_great_field: {
             buckets: [
                 { key: 'test', doc_count: 15 },
                 { key: 'testtest', doc_count: 5 },
@@ -103,14 +104,11 @@ describe('ElasticSearchService', () => {
 
     it('should make an aggregation request', async () => {
         const queryModel = new QueryModel(mockCorpus);
-        const aggregator: Aggregator = {
-            name: mockField.name,
-            size: 10,
-        };
+        const aggregator = new TermsAggregator(mockField, 10);
         const response = service.aggregateSearch(
             mockCorpus,
             queryModel,
-            [aggregator]
+            aggregator
         );
 
         const searchUrl = `/api/es/${mockCorpus.name}/_search`;

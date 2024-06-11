@@ -6,9 +6,9 @@ import { interval, Observable } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
+    CorpusDocumentationPage,
     DateTermFrequencyParameters,
     DocumentTagsResponse,
     Download,
@@ -17,6 +17,7 @@ import {
     FoundDocument,
     GeoDocument,
     LimitedResultsDownloadParameters,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
@@ -136,9 +137,9 @@ export class ApiService {
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Observable<AggregateResult[]> {
+    public wordCloud(data: WordcloudParameters): Observable<MostFrequentWordsResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
-        return this.http.post<AggregateResult[]>(url, data);
+        return this.http.post<MostFrequentWordsResult[]>(url, data);
     }
 
     public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
@@ -221,25 +222,12 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusdescription(data: {
-        filename: string;
-        corpus: string;
-    }): Promise<string> {
+    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
         const url = this.apiRoute(
             this.corpusApiUrl,
-            `documentation/${data.corpus}/${data.filename}`
+            `documentation/${corpusName}/`
         );
-
-        return this.http
-            .get<string>(url, { responseType: 'text' as 'json' })
-            .toPromise();
-    }
-
-    public corpusCitation(corpusName: string): Promise<string> {
-        const url = this.apiRoute(this.corpusApiUrl, `citation/${corpusName}`);
-        return this.http
-            .get<string>(url, { responseType: 'text' as 'json' })
-            .toPromise();
+        return this.http.get<CorpusDocumentationPage[]>(url);
     }
 
     public corpus() {

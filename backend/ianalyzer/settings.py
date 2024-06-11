@@ -65,14 +65,12 @@ SERVERS = {
     'default': {
         'host': os.getenv('ES_HOST', 'localhost'),
         'port': 9200,
-        'username': '',
-        'password': '',
         'chunk_size': 900,  # Maximum number of documents sent during ES bulk operation
         'max_chunk_bytes': 1*1024*1024,  # Maximum size of ES chunk during bulk operation
         'bulk_timeout': '60s',  # Timeout of ES bulk operation
-        'overview_query_size': 20,  # Number of results to appear in the overview query
         'scroll_timeout': '3m',  # Time before scroll results time out
-        'scroll_page_size': 5000  # Number of results per scroll page
+        'scroll_page_size': 5000,  # Number of results per scroll page
+        'index_prefix': 'ianalyzer'  # Prefix applied to index names created on this server
     }
 }
 
@@ -81,7 +79,6 @@ CORPUS_SERVER_NAMES = {}
 CORPORA = {}
 
 WORDCLOUD_LIMIT = 1000
-DIRECT_DOWNLOAD_LIMIT = 1000
 
 # Celery configuration
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER', 'redis://')
@@ -93,15 +90,6 @@ BASE_URL = 'http://localhost:4200'
 # list of corpora that have been re-indexed using the top-level term vector
 # for main content fields, needed for the new highlighter
 NEW_HIGHLIGHT_CORPORA = []
-
-# This needs to be the last line of the settings.py, so that all settings can be overridden.
-try:
-    from ianalyzer.settings_local import *
-except ImportError as e:
-    warnings.warn(
-        'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
-        Warning
-    )
 
 DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
 
@@ -130,3 +118,14 @@ LOGGING = {
         }
     },
 }
+
+MEDIA_ROOT = 'data'
+
+# This needs to be the last line of the settings.py, so that all settings can be overridden.
+try:
+    from ianalyzer.settings_local import *
+except ImportError as e:
+    warnings.warn(
+        'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
+        Warning
+    )

@@ -39,6 +39,7 @@ class Troonredes(XMLCorpusDefinition):
     category = 'oration'
     description_page = 'troonredes.md'
     citation_page = 'citation.md'
+    wordmodels_page = 'documentation.md'
 
     @property
     def es_settings(self):
@@ -72,10 +73,8 @@ class Troonredes(XMLCorpusDefinition):
             results_overview=True,
             csv_core=True,
             search_filter=filters.DateFilter(
-                min_date,
-                max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
+                    'Accept only speeches given between these dates.'
                 )
             ),
             sortable=True

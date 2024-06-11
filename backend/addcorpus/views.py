@@ -1,16 +1,17 @@
 from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer
+from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
 from rest_framework.response import Response
-from addcorpus.python_corpora.load_corpus import corpus_dir
+from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
-import io
-from django.http.response import FileResponse, StreamingHttpResponse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.http.response import FileResponse
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
-from addcorpus.models import Corpus
+from rest_framework import viewsets
+from addcorpus.models import Corpus, CorpusConfiguration, CorpusDocumentationPage
 from addcorpus.permissions import corpus_name_from_request
-from addcorpus.citation import render_citation
+
+from django.conf import settings
 
 class CorpusView(APIView):
     '''
@@ -20,7 +21,7 @@ class CorpusView(APIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
-        corpora = Corpus.objects.filter(configuration__isnull=False)
+        corpora = Corpus.objects.filter(active=True)
         filtered_corpora = filter_user_corpora(corpora, request.user)
         serializer = CorpusSerializer(filtered_corpora, many=True)
         return Response(serializer.data)
@@ -41,6 +42,23 @@ def send_corpus_file(corpus='', subdir='', filename=''):
 
     return FileResponse(open(path, 'rb'))
 
+class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
+    serializer_class = CorpusDocumentationPageSerializer
+
+    def get_queryset(self):
+        corpus_name = corpus_name_from_request(self.request)
+        pages = CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__name=corpus_name)
+
+        # only include wordmodels documentation if models are present
+        if Corpus.objects.get(name=corpus_name).has_python_definition:
+            definition = load_corpus_definition(corpus_name)
+            if definition.word_models_present:
+                return pages
+
+        return pages.exclude(type=CorpusDocumentationPage.PageType.WORDMODELS)
+
+
 class CorpusImageView(APIView):
     '''
     Return the image for a corpus.
@@ -49,30 +67,15 @@ class CorpusImageView(APIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='images', **kwargs)
-
-class CorpusDocumentationView(APIView):
-    '''
-    Return the documentation for a corpus
-    '''
-
-    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
-
-    def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='description', **kwargs)
-
-class CorpusCitationView(APIView):
-    '''
-    Return the documentation for a corpus
-    '''
-
-    permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
-
-    def get(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)
-        citation = render_citation(corpus_name)
-        buffer = io.StringIO(citation, newline=None)
-        return StreamingHttpResponse(buffer)
+        corpus_config = CorpusConfiguration.objects.get(corpus__name=corpus_name)
+        if corpus_config.image:
+            path = corpus_config.image.path
+        else:
+            path = settings.DEFAULT_CORPUS_IMAGE
+
+        return FileResponse(open(path, 'rb'))
+
 
 class CorpusDocumentView(APIView):
     '''
@@ -83,3 +86,11 @@ class CorpusDocumentView(APIView):
 
     def get(self, request, *args, **kwargs):
         return send_corpus_file(subdir='documents', **kwargs)
+
+
+class CorpusDefinitionViewset(viewsets.ModelViewSet):
+    permission_classes = [IsAdminUser]
+    serializer_class = CorpusJSONDefinitionSerializer
+
+    def get_queryset(self):
+        return Corpus.objects.filter(has_python_definition=False)

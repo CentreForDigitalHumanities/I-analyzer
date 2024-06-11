@@ -24,7 +24,7 @@ export class CorpusHeaderComponent implements OnChanges, OnInit {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.corpus) {
-            this.wordModelsPresent = this.corpus.word_models_present;
+            this.wordModelsPresent = this.corpus.wordModelsPresent;
         }
     }
 }

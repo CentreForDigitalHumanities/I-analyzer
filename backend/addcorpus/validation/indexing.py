@@ -3,6 +3,7 @@ This module defines functions to check if a corpus is ready for indexing.
 '''
 
 import warnings
+import os
 
 from addcorpus.validation.creation import primary_mapping_type
 
@@ -15,7 +16,7 @@ class CorpusNotIndexableError(Exception):
     pass
 
 def validate_has_configuration(corpus):
-    if not corpus.has_configuration:
+    if not corpus.configuration_obj:
         raise CorpusNotIndexableError('Corpus has no attached configuration')
 
 def validate_essential_fields(fields):
@@ -74,4 +75,24 @@ def validate_language_field(corpus):
         raise CorpusNotIndexableError(
             'Cannot use "dynamic" language for fields without configuring a '
             'field_language for the corpus'
+        )
+
+def validate_has_data_directory(corpus):
+    '''
+    If the corpus does not have a Python definition, validate that it has a data
+    directory.
+    '''
+
+    if corpus.has_python_definition:
+        return
+
+    config = corpus.configuration
+    if not config.data_directory:
+        raise CorpusNotIndexableError(
+            'Missing data directory'
+        )
+
+    if not os.path.isdir(config.data_directory):
+        raise CorpusNotIndexableError(
+            'Configured data directory does not exist.'
         )

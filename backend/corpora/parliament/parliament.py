@@ -1,7 +1,7 @@
 import logging
 import os
 import os.path as op
-
+from typing import Optional
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import CorpusDefinition
@@ -31,7 +31,7 @@ class Parliament(CorpusDefinition):
     min_date = field_defaults.MIN_DATE
     max_date = field_defaults.MAX_DATE
     image = 'parliament.jpeg'
-    data_directory = 'bogus'
+    wordmodels_page = 'documentation.md'
 
     category = 'parliament'
 
@@ -40,6 +40,7 @@ class Parliament(CorpusDefinition):
     @property
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
+
 
 
     # overwrite below in child class if you need to extract the (converted) transcription

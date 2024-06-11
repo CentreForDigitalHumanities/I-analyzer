@@ -4,12 +4,10 @@ import { FieldFilterOptions } from './field-filter-options';
 import { SortState } from './sort';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
-import { FoundDocument } from './found-document';
 
 // corresponds to the corpus definition on the backend.
-export class Corpus implements ElasticSearchIndex {
+export class Corpus {
     constructor(
-        public serverName,
         /**
          * Internal name for referring to this corpus e.g. in URLs.
          */
@@ -26,16 +24,13 @@ export class Corpus implements ElasticSearchIndex {
         public fields: CorpusField[],
         public minDate: Date,
         public maxDate: Date,
-        public image: string,
-        public scan_image_type: string,
-        public allow_image_download: boolean,
-        public word_models_present: boolean,
+        public scanImageType: string,
+        public allowImageDownload: boolean,
+        public wordModelsPresent: boolean,
         public languages: string[],
         public category: string,
-        public descriptionpage?: string,
-        public citationPage?: string,
         public documentContext?: DocumentContext,
-        public new_highlight?: boolean,
+        public newHighlight?: boolean,
         public defaultSort?: SortState,
         public languageField?: CorpusField,
     ) { }
@@ -49,14 +44,10 @@ export class Corpus implements ElasticSearchIndex {
     }
 
     get displayLanguages(): string {
-        return this.languages.join(', '); // may have to truncate long lists?
+        return this.languages.join(', ');
     }
 }
 
-export interface ElasticSearchIndex {
-    index: string;
-    serverName: string;
-}
 
 export interface DocumentContext {
     contextFields: CorpusField[];
@@ -66,7 +57,8 @@ export interface DocumentContext {
 }
 
 
-export type FieldDisplayType = 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean';
+export type FieldDisplayType =
+    'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean' | 'url';
 
 /** Corpus field info as sent by the backend api */
 export interface ApiCorpusField {
@@ -154,4 +146,9 @@ export class CorpusField {
         store = store || new SimpleStore();
 		return new Filter(store, this);
 	}
+}
+
+export interface CorpusDocumentationPage {
+    type: string;
+    content: string;
 }

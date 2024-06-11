@@ -2,9 +2,11 @@
 Module contains the base classes from which corpora can derive;
 '''
 
+from typing import Optional, List, Dict
 from ianalyzer_readers import extract
 from datetime import datetime
 from os.path import isdir
+import os
 
 from django.conf import settings
 
@@ -13,6 +15,8 @@ from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.readers.csv import CSVReader
 from ianalyzer_readers.readers.html import HTMLReader
 from ianalyzer_readers.readers.xlsx import XLSXReader
+
+from addcorpus.python_corpora.filters import Filter
 
 import logging
 
@@ -137,13 +141,11 @@ class CorpusDefinition(Reader):
     '''
     language_field = None
 
-    @property
-    def image(self):
-        '''
-        Name of the corpus image. Should be relative path from a directory 'images'
-        in the same directory as the corpus definition file.
-        '''
-        raise NotImplementedError('CorpusDefinition missing image')
+    image: Optional[str] = None
+    '''
+    Name of the corpus image. Should be relative path from a directory 'images'
+    in the same directory as the corpus definition file.
+    '''
 
     '''
     MIME type of scanned documents (images)
@@ -160,7 +162,7 @@ class CorpusDefinition(Reader):
         '''
         if word models are present for this corpus
         '''
-        return self.word_model_path != None and isdir(self.word_model_path)
+        return self.word_model_path is not None and isdir(self.word_model_path)
 
     @property
     def new_highlight(self):
@@ -172,7 +174,7 @@ class CorpusDefinition(Reader):
         '''
         try:
             highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
-        except:
+        except Exception:
             return False
         return self.title in highlight_corpora
 
@@ -181,10 +183,30 @@ class CorpusDefinition(Reader):
     '''
     allow_image_download = False
 
+    description_page: Optional[str] = None
     '''
     filename of markdown document with a comprehensive description
     '''
-    description_page = None
+
+    citation_page: Optional[str] = None
+    '''
+    filename of markdown document with citation guidelines
+    '''
+
+    license_page: Optional[str] = None
+    '''
+    filename of markdown document with licence text
+    '''
+
+    wordmodels_page: Optional[str] = None
+    '''
+    filename of markdown document with documentation for word models
+    '''
+
+    terms_of_service_page: Optional[str] = None
+    '''
+    filename of markdown document with terms of service
+    '''
 
     def update_body(self, **kwargs):
         ''' given one document in the index, give an instruction
@@ -223,19 +245,6 @@ class CorpusDefinition(Reader):
         '''
         return {'media': None, 'info': None}
 
-    def es_mapping(self):
-        '''
-        Create the ElasticSearch mapping for the fields of this corpus. May be
-        passed to the body of an ElasticSearch index creation request.
-        '''
-        return {
-            'properties': {
-                field.name: field.es_mapping
-                for field in self.fields
-                if field.es_mapping and not field.skip
-            }
-        }
-
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
@@ -246,6 +255,26 @@ class CorpusDefinition(Reader):
         extracted without reading the file itself can be specified there.
         '''
         super().sources(start=start, end=end)
+
+    def documentation_path(self, page_type: str) -> Optional[str]:
+        '''
+        Returns the path to a documentation file, relative to the corpus directory.
+        '''
+
+        pages = {
+            'general': ('description', 'description_page'),
+            'citation': ('citation', 'citation_page'),
+            'license': ('license', 'license_page'),
+            'terms_of_service': ('terms_of_service', 'terms_of_service_page'),
+            'wordmodels': ('wm', 'wordmodels_page'),
+        }
+
+        if page_type in pages:
+            directory, attr = pages[page_type]
+            filename = self.__getattribute__(attr)
+            if filename:
+                return os.path.join(directory, filename)
+
 
 class ParentCorpusDefinition(CorpusDefinition):
     ''' A class from which other corpus definitions can inherit.
@@ -271,25 +300,30 @@ class ParentCorpusDefinition(CorpusDefinition):
         '''
         self.fields = []
 
+
 class XMLCorpusDefinition(CorpusDefinition, XMLReader):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
+
 
 class HTMLCorpusDefinition(CorpusDefinition, HTMLReader):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
 
+
 class CSVCorpusDefinition(CorpusDefinition, CSVReader):
     '''
     An CSVCorpus is any corpus that extracts its data from CSV sources.
     '''
 
+
 class XLSXCorpusDefinition(CorpusDefinition, XLSXReader):
     '''
     An CSVCorpus is any corpus that extracts its data from an XLSX spreadsheet.
     '''
+
 
 class JSONCorpusDefinition(CorpusDefinition):
     '''
@@ -300,7 +334,7 @@ class JSONCorpusDefinition(CorpusDefinition):
         self._reject_extractors(extract.XML, extract.CSV)
 
         field_dict = {
-           field.name: field.extractor.apply(source, *nargs, **kwargs)
+            field.name: field.extractor.apply(source, *nargs, **kwargs)
             for field in self.fields
         }
 
@@ -308,54 +342,76 @@ class JSONCorpusDefinition(CorpusDefinition):
 
 # Fields ######################################################################
 
+
 class FieldDefinition(Field):
     '''
     Definition for a single field in a corpus.
 
     Parameters:
-        name: a short hand name
-        display_name: the name shown to the user
-        display_type: how the field should be displayed in the client
-        description: an explanation of the field for users
-        indexed: whether the field is skipped during indexing
-        hidden: whether the field is hidden in the frontend
-        results_overview: whether the field appears in the preview of a document
-        csv_core: whether the field is pre-selected for CSV downloads
-        search_field_core: whether the field is immediately shown in field selection.
-            If `False`, the field is only shown when the user selects "show all fields".
-        visualizations: visualisations that are available for this field. Options:
-            resultscount, termfrequency, wordcloud, ngram.
-        es_mapping: the mapping of the field in Elasticsearch
-        language: the language of the field's content. Can be `None`, an IETF tag, or
-            `"dynamic"`.
-        search_filter: configuration of the search filter used for the field.
-        extractor: configuration to extract the field's data from source documents
-        sortable: whether this field is shown as an option to sort search results.
-        searchable: whether this field is shown in the selection for search fields.
-        downloadable: whether this field may be included when downloading results.
-        required: whether this field is required during source extraction.
+        name: A shorthand name. Must be a slug.
+        display_name: The name that should be shown to the user. If you leave this out,
+            the `name` will be used.
+        display_type:  Determines how the field should be rendered. This can be any
+            supported elasticsearch mapping type, `'url'`, or `'text_content'`. If you
+            leave this blank, the mapping type of `es_mapping` will be used, so this
+            only needs to be specified for URL and text content fields.
+        description: An explanation of the field for users.
+        indexed: Whether the field is skipped during source extraction and indexing.
+        hidden: Whether the field is hidden in the frontend.
+        results_overview: Whether the field appears in the preview of a document.
+        csv_core: Whether the field is pre-selected for CSV downloads of search results.
+        search_field_core: Whether the field is immediately shown in field selection for
+            the search query. If `False`, the field is only shown when the user selects
+            "show all fields".
+        visualizations: Visualisations that are enabled for this field. Options:
+            resultscount, termfrequency, wordcloud, ngram. For date fields and
+            categorical/ordinal fields (usually keyword type), you can use
+            `['resultscount', 'termfrequency']`. For text fields, you can use
+            `['wordcloud', 'ngram']`. However, the ngram visualisation also requires that
+            the corpus has a date field.
+        visualization_sort: If the visualisations include resultscount or termfrequency
+            and the field is not a date field, this determines how the histogram is
+            sorted. Options are `'value'` (sort from most to least frequent) or `'key'`
+            (sort alphabetically).
+        es_mapping: The mapping of the field in Elasticsearch. It's recommended to use one
+            of the functions in `addcorpus.es_mappings` to construct this.
+        language: The language of the field's content. Can be `None`, an IETF tag, or
+            `"dynamic"`. None means the language is unknown or NA. Dynamic means the
+            `language_field` of the corpus specifies the IETF tag for this field's
+            language per document.
+        search_filter: Configuration of the search filter used for the field (if any).
+            Should be `Filter` instance.
+        extractor: Configuration to extract the field's data from source documents. Should
+            be an `Extractor` instance.
+        sortable: Whether this field is shown as an option to sort search results. If
+            `None`, the value is inferred from the mapping type.
+        searchable: Whether this field is shown in the selection for search fields. If
+            `None`, the vlaue is inferred from the mapping type.
+        downloadable: Whether this field may be included when downloading results.
+        required: Whether this field is required during source extraction. Note that not
+            all Reader subclasses currently support this.
     '''
 
     def __init__(self,
-                 name=None,
-                 display_name=None,
-                 display_type=None,
-                 description='',
-                 indexed=True,
-                 hidden=False,
-                 results_overview=False,
-                 csv_core=False,
-                 search_field_core=False,
-                 visualizations=[],
-                 visualization_sort=None,
-                 es_mapping={'type': 'text'},
-                 language=None,
-                 search_filter=None,
-                 extractor=extract.Constant(None),
-                 sortable=None,
-                 searchable=None,
-                 downloadable=True,
-                 required=False,
+                 name: str,
+                 display_name: Optional[str] = None,
+                 display_type: Optional[str] = None,
+                 description: str = '',
+                 indexed: bool = True,
+                 hidden: bool = False,
+                 results_overview: bool = False,
+                 csv_core: bool = False,
+                 search_field_core: bool = False,
+                 visualizations: List[str] = [],
+                 visualization_sort: Optional[str] = None,
+                 es_mapping: Dict = {'type': 'text'},
+                 language: Optional[str] = None,
+                 search_filter: Optional[Filter] = None,
+                 extractor: extract.Extractor = extract.Constant(None),
+                 sortable: Optional[bool] = None,
+                 searchable: Optional[bool] = None,
+                 downloadable: bool = True,
+                 required: bool = False,
                  **kwargs
                  ):
 
@@ -381,17 +437,16 @@ class FieldDefinition(Field):
         self.language = language
         self.hidden = not indexed or hidden
 
-        self.sortable = sortable if sortable != None else \
+        self.sortable = sortable if sortable is not None else \
             not hidden and indexed and \
             mapping_type in ['integer', 'float', 'date']
 
-
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.
         # Keyword fields without a filter are also searchable.
-        self.searchable = searchable if searchable != None else \
+        self.searchable = searchable if searchable is not None else \
             not hidden and indexed and \
             ((mapping_type == 'text') or
-             (mapping_type == 'keyword' and self.search_filter == None))
+             (mapping_type == 'keyword' and self.search_filter is None))
         # Add back reference to field in filter
         self.downloadable = downloadable
 

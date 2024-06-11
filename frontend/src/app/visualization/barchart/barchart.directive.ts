@@ -6,8 +6,8 @@ import * as _ from 'lodash';
 import { ApiService, NotificationService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import {
-    AggregateResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
+    Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+    BarchartSeries, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
 } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -15,6 +15,7 @@ import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
 import { showLoading } from '../../utils/utils';
 import { takeUntil } from 'rxjs/operators';
+import { DateHistogramResult, TermsResult } from '../../models/aggregation';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -28,6 +29,7 @@ const barchartID = 'barchart';
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
 export abstract class BarchartDirective<
+    AggregateResult extends TermsResult | DateHistogramResult,
     DataPoint extends TimelineDataPoint | HistogramDataPoint
 > implements OnChanges, OnInit, OnDestroy {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
@@ -339,14 +341,12 @@ export abstract class BarchartDirective<
      * @returns a copy of the series with the document counts included.
      */
     docCountResultIntoSeries(
-        result,
+        result: AggregateResult[],
         series: BarchartSeries<DataPoint>,
         setSearchRatio = true
     ): BarchartSeries<DataPoint> {
-        let data = result.aggregations[this.visualizedField.name].map(
-            this.aggregateResultToDataPoint
-        );
-        const total_doc_count = this.totalDocCount(data);
+        let data = result.map(this.aggregateResultToDataPoint);
+        const total_doc_count = this.totalDocCount(result);
         const searchRatio = setSearchRatio
             ? this.documentLimit / total_doc_count
             : series.searchRatio;
@@ -533,7 +533,7 @@ export abstract class BarchartDirective<
     /** Request doc counts for a series */
     abstract requestSeriesDocCounts(
         queryModel: QueryModel
-    ): Promise<AggregateQueryFeedback>;
+    ): Promise<AggregateResult[]>;
 
     requestFullData() {
         this.fullDataRequest()

@@ -4,7 +4,6 @@ import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index'
 import { DocumentView } from '../models/document-page';
 import * as _ from 'lodash';
 import { documentIcons } from '../shared/icons';
-import { findByName } from '../utils/utils';
 
 @Component({
     selector: 'ia-document-view',
@@ -47,7 +46,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     get showScanTab() {
-        return !!this.corpus.scan_image_type;
+        return !!this.corpus.scanImageType;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -69,7 +68,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     isUrlField(field: CorpusField) {
-        return field.name === 'url' || field.name.startsWith('url_');
+        return field.displayType === 'url';
     }
 
     isGeoPointField(field: CorpusField) {
