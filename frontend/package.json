@@ -93,7 +93,10 @@
     "pre-commit": "^1.2.2",
     "ts-node": "~3.2.0"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "pdfjs-dist": "~2.16.105",
+    "webpack": "^5.1.0"
+  },
   "overrides": {},
   "resolutions": {}
 }
