@@ -26,14 +26,14 @@
         <div class="navbar-menu" id="navigation-menu" [class.is-active]="menuOpen$ | async">
             <div class="navbar-start">
                 <!-- navbar items -->
-                <a class="navbar-item" *ngIf="user$ | async"
+                <a class="navbar-item"
                     [routerLinkActive]="'is-active'" [routerLink]="['/home']">
                     <span class="icon" aria-hidden="true">
                         <fa-icon [icon]="navIcons.corpora"></fa-icon>
                     </span>
                     Corpora
                 </a>
-                <a class="navbar-item" *ngIf="user$ | async"
+                <a class="navbar-item"
                     [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
                     <span class="icon" aria-hidden="true">
                         <fa-icon [icon]="navIcons.manual"></fa-icon>
