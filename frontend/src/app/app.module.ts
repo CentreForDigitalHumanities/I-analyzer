@@ -166,7 +166,7 @@ export const imports: any[] = [
     SearchModule,
     SettingsModule,
     WordModelsModule,
-    RouterModule.forRoot(appRoutes, routerOptions),
+    RouterModule.forRoot(appRoutes),
     // Deactivate this module, reactivate after updating it for Ivy
     // NgxScrollPositionRestorationModule.forRoot(),
 ];
