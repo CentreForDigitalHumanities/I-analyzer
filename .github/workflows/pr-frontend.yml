@@ -1,0 +1,33 @@
+# This workflow will run frontend tests on the Node version defined in the Dockerfiles
+
+name: Frontend unit tests (pull request)
+
+on: [pull_request]
+
+jobs:
+  frontend-test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if files have been changed in the frontend
+        uses: actions/github-script@0.9.0
+        id: frontend-changed
+        with:
+          result-encoding: string
+          script: |
+            const result = await github.pulls.listFiles({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.number,
+              per_page: 100
+            })
+            const frontendChanged = result.data.filter(f => f.filename.startsWith("frontend/") || f.filename.startsWith(".github") || f.filename.startsWith("docker-compose")  || f.filename.startsWith(".env-ci")).length > 0
+            console.log("Frontend changed: ", frontendChanged)
+            return frontendChanged
+
+      - name: Checkout repository
+        if: ${{ steps.frontend-changed.outputs.result == 'true' }}
+        uses: actions/checkout@v3
+
+      - name: Run frontend tests
+        run: sudo docker-compose --env-file .env-ci run frontend yarn test

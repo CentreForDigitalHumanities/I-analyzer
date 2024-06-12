@@ -1,0 +1,32 @@
+# This workflow will run backend tests on the Python version defined in the Dockerfiles
+
+name: Backend unit tests (pull request)
+
+on: [pull_request]
+jobs:
+  backend-test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if files have been changed in the backend
+        uses: actions/github-script@0.9.0
+        id: backend-changed
+        with:
+          result-encoding: string
+          script: |
+            const result = await github.pulls.listFiles({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.number,
+              per_page: 100
+            })
+            const backendChanged = result.data.filter(f => f.filename.startsWith("backend/") || f.filename.startsWith(".github") || f.filename.startsWith("docker-compose") || f.filename.startsWith(".env-ci")).length > 0
+            console.log("backend changed: ", backendChanged)
+            return backendChanged
+
+      - name: Checkout repository
+        if: ${{ steps.backend-changed.outputs.result == 'true' }}
+        uses: actions/checkout@v3
+
+      - name: Run backend tests
+        run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
