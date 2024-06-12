@@ -188,3 +188,5 @@ export const providers: any[] = [
     bootstrap: [AppComponent],
 })
 export class AppModule {}
+
+// don't merge me!
