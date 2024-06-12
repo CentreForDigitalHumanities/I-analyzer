@@ -4,6 +4,7 @@
             Complicated setup because the menu is outside of router-outlet and so
             it can't use [routerLink]="." -->
         <a class="skip-to-content-link" *ngIf="route$ | async as route"
+
             [routerLink]="route.url" [queryParams]="route.queryParams" fragment="main">
             Skip to content
         </a>

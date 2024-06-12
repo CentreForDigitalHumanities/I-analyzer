@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from './services/auth.service';
 
 import { CorpusService, NotificationService } from './services/index';
 
 @Injectable()
-export class CorpusGuard implements CanActivate {
+export class CorpusGuard {
     constructor(
         private notificationService: NotificationService,
         private corpusService: CorpusService,
