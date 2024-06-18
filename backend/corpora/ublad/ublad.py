@@ -1,7 +1,8 @@
 from datetime import datetime
 import os
 from os.path import join, splitext
-
+import locale
+import logging
 
 from django.conf import settings
 from addcorpus.python_corpora.corpus import HTMLCorpusDefinition, FieldDefinition
@@ -38,6 +39,18 @@ def transform_content(soup):
                 page_text += paragraph_text + '\n\n'
     return page_text
 
+def transform_date(date_string):
+    try:
+        locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
+        date = datetime.strptime(date_string, '%d %B %Y').strftime('%Y-%m-%d')
+        locale.setlocale(locale.LC_ALL, '')
+        return date
+    except ValueError:
+        logger.error("Unable to get date from {}".format(date_string))
+        return None
+
+
+logger = logging.getLogger('indexing')
 
 class UBlad(HTMLCorpusDefinition):
     title = 'U-Blad'
@@ -49,8 +62,8 @@ class UBlad(HTMLCorpusDefinition):
     data_directory = settings.UBLAD_DATA
     es_index = getattr(settings, 'UBLAD_ES_INDEX', 'ublad')
     image = 'ublad.jpg'
-    scan_image_type = getattr(settings, 'UBLAD_SCAN_IMAGE_TYPE', 'image/jpeg')
-    allow_image_download = getattr(settings, 'UBLAD_ALLOW_IMAGE_DOWNLOAD', True)
+    scan_image_type = 'image/jpeg'
+    allow_image_download = True
 
     document_context = {
         'context_fields': ['volume_id'],
@@ -189,8 +202,7 @@ class UBlad(HTMLCorpusDefinition):
                 'attribute': 'name',
                 'value': 'datestring',
                 },
-                transform=lambda x: datetime.strptime(
-                    x, '%d %B %Y').strftime('%Y-%m-%d')
+                transform=transform_date
             )
         ),
         FieldDefinition(
