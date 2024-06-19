@@ -17,4 +17,6 @@ CORPORA = {
 TIMES_DATA = os.path.join(BASE_DIR, 'addcorpus', 'python_corpora', 'tests')
 TIMES_ES_INDEX = 'times-test'
 
+UBLAD_DATA = '' # necessary to make ublad test not fail
+
 SERVERS['default']['index_prefix'] = 'test'

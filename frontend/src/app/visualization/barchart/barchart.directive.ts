@@ -181,7 +181,7 @@ export abstract class BarchartDirective<
 
     ngOnDestroy(): void {
         this.stopPolling$.next();
-        this.destroy$.next();
+        this.destroy$.next(undefined);
     }
 
     /** check whether input changes should force reloading the data */
