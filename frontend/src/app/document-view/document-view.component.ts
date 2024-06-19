@@ -24,6 +24,9 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public view: DocumentView;
 
+    @Input()
+    public showEntities: boolean;
+
     documentIcons = documentIcons;
 
     /** active tab on opening */

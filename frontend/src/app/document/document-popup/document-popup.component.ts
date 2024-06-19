@@ -66,7 +66,7 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
         }
     }
 
-    toggleNER(): void {
-        this.showNamedEntities = !this.showNamedEntities;
+    toggleNER(active: boolean): void {
+        this.showNamedEntities = active;
     }
 }

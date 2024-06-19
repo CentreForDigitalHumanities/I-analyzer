@@ -3,9 +3,10 @@
         [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true">
         <ng-template pTemplate="header">
             <span>Document {{document.position}} of {{page.total}}</span>
+            <span iaBalloon="Show named entities for this document">NER<ia-toggle (toggled)="toggleNER($event)"></ia-toggle></span>
         </ng-template>
 
-        <ia-document-view [document]="document" [queryModel]="queryModel" [corpus]="document.corpus" [view]="view"></ia-document-view>
+        <ia-document-view [document]="document" [queryModel]="queryModel" [corpus]="document.corpus" [view]="view" [showEntities]="showNamedEntities"></ia-document-view>
 
         <ng-template pTemplate="footer">
             <div class="columns" style="text-align:left">
