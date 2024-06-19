@@ -15,8 +15,6 @@ export class EntityService {
 
     public getDocumentEntities(corpus: Corpus, id: string): Observable<NamedEntitiesResult> {
         const url = `/api/es/${corpus.name}/${id}/named_entities`;
-        return this.http.get<NamedEntitiesResult>(url).pipe(
-            take(1),
-        );
+        return this.http.get<NamedEntitiesResult>(url);
     }
 }

@@ -126,13 +126,11 @@ export class FoundDocument {
 
     private fetchAnnotatedEntities(): Observable<{[fieldName: string]: string}[]> {
         const response$ = this.entityService.getDocumentEntities(this.corpus, this.id);
-        response$.pipe(
-            map( response => response.entities )
-        ).toPromise().then((entities) => {
-            this.entities = entities;
-        });
         return response$.pipe(
-            map( response => response.annotations || [])
+            map( response => {
+                this.entities = response.entities;
+                return response.annotations || [];
+            })
         );
     }
 
