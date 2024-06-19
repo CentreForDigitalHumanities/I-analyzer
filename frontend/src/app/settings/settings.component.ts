@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../utils/app';
 
 @Component({
     selector: 'ia-settings',
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.scss']
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
 
-    constructor() { }
+    constructor(private title: Title) { }
+
+    ngOnInit(): void {
+        this.title.setTitle(pageTitle('Settings'));
+    }
 
 }

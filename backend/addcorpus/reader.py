@@ -1,11 +1,13 @@
 import glob
 
-from addcorpus.models import Corpus, Field
-from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from ianalyzer_readers.extract import CSV
 from ianalyzer_readers.readers.core import Field as ReaderField
 from ianalyzer_readers.readers.core import Reader
 from ianalyzer_readers.readers.csv import CSVReader
+
+from addcorpus.models import Corpus, Field
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.validation.indexing import validate_has_data_directory
 
 
 def make_reader_field(corpus_field: Field) -> ReaderField:
@@ -24,6 +26,8 @@ def make_reader(corpus: Corpus) -> Reader:
     '''
     if corpus.has_python_definition:
         return load_corpus_definition(corpus.name)
+
+    validate_has_data_directory(corpus)
 
     class NewReader(CSVReader):
         data_directory = corpus.configuration.data_directory

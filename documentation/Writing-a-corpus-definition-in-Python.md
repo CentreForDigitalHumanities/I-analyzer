@@ -60,6 +60,7 @@ The corpus class must define a method `sources(self, **kwargs)`. See the [API do
 ### Optional attributes
 
 | Attribute | Type | Description |
+|-----------|------|-------------|
 | `image` | `str` | The filename of the image used for the corpus in the interface. (See below.) |
 | `es_alias` | `str` | An alias that you want to assign to the index in elasticsearch. |
 | `es_settings` | `Dict` | Customises the settings of the elasticsearch index. Can be generated using [es_settings.py](../backend/addcorpus/es_settings.py) |

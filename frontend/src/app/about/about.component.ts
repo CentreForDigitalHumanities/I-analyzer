@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
+import { SafeHtml, Title } from '@angular/platform-browser';
 import { environment } from '../../environments/environment';
 import { DialogService } from '../services';
 
@@ -13,12 +13,14 @@ export class AboutComponent implements OnInit {
     public aboutHtml: SafeHtml;
     public isLoading = false;
 
-    constructor(private dialogService: DialogService) { }
+    constructor(private dialogService: DialogService, private title: Title) {
+    }
 
     ngOnInit() {
         this.isLoading = true;
         this.appName = environment.appName;
         this.fetchData();
+        this.title.setTitle(`About - ${this.appName}`);
     }
 
     async fetchData() {

@@ -43,8 +43,8 @@ export class ImageViewComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus) {
-            this.allowDownload = this.corpus.allow_image_download;
-            this.mediaType = this.corpus.scan_image_type;
+            this.allowDownload = this.corpus.allowImageDownload;
+            this.mediaType = this.corpus.scanImageType;
         }
         if (
             changes.document &&

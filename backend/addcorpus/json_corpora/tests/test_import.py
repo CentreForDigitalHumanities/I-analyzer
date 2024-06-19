@@ -12,7 +12,6 @@ def test_json_corpus_import(db, json_corpus_data):
     corpus = serializer.create(serializer.validated_data)
 
     assert corpus.name == 'example'
-    assert corpus.ready_to_index()
 
     config = corpus.configuration
 

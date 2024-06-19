@@ -7,7 +7,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
 
-import { NgxScrollPositionRestorationModule } from 'ngx-scroll-position-restoration';
 
 import {
     ApiRetryService,
@@ -39,17 +38,17 @@ import { ResetPasswordComponent } from './login/reset-password/reset-password.co
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { ManualComponent } from './manual/manual.component';
 import { ManualModule } from './manual/manual.module';
-import { SettingsComponent } from './settings/settings.component';
-import { SettingsModule } from './settings/settings.module';
 import { MenuComponent } from './menu/menu.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { SearchComponent } from './search/index';
 import { SearchModule } from './search/search.module';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsModule } from './settings/settings.module';
 import { SharedModule } from './shared/shared.module';
+import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 
 export const appRoutes: Routes = [
     {
@@ -140,8 +139,7 @@ export const appRoutes: Routes = [
 ];
 
 const routerOptions: ExtraOptions = {
-    relativeLinkResolution: 'legacy',
-    scrollPositionRestoration: 'disabled',  // functionality patched by NgxScrollPositionRestorationModule
+    scrollPositionRestoration: 'disabled',
     anchorScrolling: 'enabled',
 };
 
@@ -169,7 +167,6 @@ export const imports: any[] = [
     SettingsModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
-    NgxScrollPositionRestorationModule.forRoot(),
 ];
 
 export const providers: any[] = [

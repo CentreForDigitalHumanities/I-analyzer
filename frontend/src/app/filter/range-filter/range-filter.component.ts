@@ -35,7 +35,7 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 

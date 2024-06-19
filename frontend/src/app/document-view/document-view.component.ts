@@ -46,7 +46,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     get showScanTab() {
-        return !!this.corpus.scan_image_type;
+        return !!this.corpus.scanImageType;
     }
 
     ngOnChanges(changes: SimpleChanges): void {

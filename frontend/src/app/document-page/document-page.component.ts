@@ -6,6 +6,8 @@ import { Corpus, FoundDocument } from '../models';
 import { CorpusService, ElasticSearchService } from '../services';
 import { makeContextParams } from '../utils/document-context';
 import { documentIcons } from '../shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../utils/app';
 
 @Component({
   selector: 'ia-document-page',
@@ -25,6 +27,7 @@ export class DocumentPageComponent implements OnInit {
         private corpusService: CorpusService,
         private elasticSearchService: ElasticSearchService,
         private activatedRoute: ActivatedRoute,
+        private title: Title,
     ) { }
 
     get contextDisplayName(): string {
@@ -53,6 +56,7 @@ export class DocumentPageComponent implements OnInit {
             this.corpus = corpus;
             this.documentId = params['id'];
             this.getDocument(this.documentId);
+            this.title.setTitle(pageTitle(`Document in ${corpus.title}`));
         });
     }
 
