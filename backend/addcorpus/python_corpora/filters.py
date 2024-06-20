@@ -37,7 +37,7 @@ class DateFilter(Filter):
 
     mapping_types = (MappingType.DATE, MappingType.DATE_RANGE,)
 
-    def __init__(self, lower, upper, *nargs, **kwargs):
+    def __init__(self, lower=None, upper=None, *nargs, **kwargs):
         self.lower = lower
         self.upper = upper
         super().__init__(*nargs, **kwargs)
@@ -50,7 +50,7 @@ class RangeFilter(Filter):
 
     mapping_types = (MappingType.INTEGER, MappingType.FLOAT)
 
-    def __init__(self, lower, upper, *nargs, **kwargs):
+    def __init__(self, lower=None, upper=None, *nargs, **kwargs):
         self.lower = lower
         self.upper = upper
         super().__init__(*nargs, **kwargs)

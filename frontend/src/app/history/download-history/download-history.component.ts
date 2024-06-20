@@ -6,6 +6,8 @@ import { HistoryDirective } from '../history.directive';
 import { findByName } from '../../utils/utils';
 import { actionIcons } from '../../shared/icons';
 import { downloadQueryModel, downloadQueryModels } from '../../utils/download-history';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../../utils/app';
 
 @Component({
     selector: 'ia-download-history',
@@ -23,12 +25,14 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         private downloadService: DownloadService,
         private apiService: ApiService,
         corpusService: CorpusService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private title: Title,
     ) {
         super(corpusService);
     }
 
     ngOnInit(): void {
+        this.title.setTitle(pageTitle('Downloads'));
         this.retrieveCorpora();
         this.apiService.downloads()
             .then(downloadHistory => this.downloads = this.sortByDate(downloadHistory))

@@ -60,6 +60,7 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'word_models_present',
         'default_sort',
         'language_field',
+        'data_directory',
     ]
 
     try:
@@ -82,7 +83,6 @@ def _field_pk(name: str, configuration: CorpusConfiguration):
         return Field.objects.get(corpus_configuration=configuration, name=name).pk
     except Field.DoesNotExist:
         return None
-        return field.pk
 
 def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
     attributes_to_copy = [
@@ -153,7 +153,8 @@ def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuratio
             if pages.exists():
                 pages.delete()
 
-def _prepare_for_import(corpus):
+
+def _prepare_for_import(corpus: Corpus):
     corpus.has_python_definition = True
     corpus.active = False
     corpus.save()
@@ -191,7 +192,7 @@ def _save_or_skip_corpus(corpus_name, corpus_definition, verbose=False, stdout=s
             _save_corpus_configuration(corpus, corpus_definition)
             _activate_if_ready(corpus)
         if verbose:
-            print(f'Saved corpus: {corpus_name}',  file=stdout)
+            print(f'Saved corpus: {corpus_name}', file=stdout)
     except Exception as e:
         print(f'Failed saving corpus: {corpus_name}', file=stderr)
         print(f'Error: {e}', file=stderr)

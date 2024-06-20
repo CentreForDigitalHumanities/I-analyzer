@@ -72,7 +72,7 @@ class DutchAnnualReports(XMLCorpusDefinition):
                 full_path = op.join(directory, filename)
                 file_path = op.join(rel_dir, filename)
                 image_path = op.join(
-                    rel_dir, name + '.' + self.scan_image_type)
+                    rel_dir, name + '.pdf')
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue

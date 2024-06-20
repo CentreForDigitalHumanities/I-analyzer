@@ -1,6 +1,6 @@
 import pytest
 
-from addcorpus.es_settings import es_settings
+from addcorpus.es_settings import es_settings, stopwords_available, stemming_available
 
 char_filter_tokenizer = {'char_filter': ['number_filter'], 'tokenizer': 'standard'}
 
@@ -68,3 +68,11 @@ def test_es_settings(test_config):
         assert settings['analysis']['analyzer'][analyzer]['filter'][1] in settings['analysis']['filter']
         if analyzer.startswith('stemmed'):
             assert settings['analysis']['analyzer'][analyzer]['filter'][2] in settings['analysis']['filter']
+
+@pytest.mark.parametrize('is_available', [stopwords_available, stemming_available])
+def test_analysis_available(is_available):
+    assert is_available('en') # ISO 639-1
+    assert is_available('eng') # ISO 639-3
+    assert not is_available('')
+    assert not is_available(None)
+    assert not is_available('enm') # enm = Middle English

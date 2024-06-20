@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 
 
-import { AggregateResult, QueryModel, FreqTableHeaders } from '../../models/index';
+import { MostFrequentWordsResult, QueryModel, FreqTableHeaders } from '../../models/index';
 import { VisualizationService } from '../../services/visualization.service';
 import { Chart, ChartData, ChartDataset, ChartOptions, ScriptableContext, TooltipItem } from 'chart.js';
 import { WordCloudChart } from 'chartjs-chart-wordcloud';
@@ -83,7 +83,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
         this.wordcloudError.emit(error?.message);
     }
 
-    makeChart(result: AggregateResult[]) {
+    makeChart(result: MostFrequentWordsResult[]) {
         if (!this.asTable) {
             const data = this.chartData(result);
             const options = this.chartOptions(result);
@@ -97,7 +97,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
         }
     }
 
-    private chartData(result: AggregateResult[]): ChartData<'wordCloud'> {
+    private chartData(result: MostFrequentWordsResult[]): ChartData<'wordCloud'> {
         if (result) {
             const labels = this.chartLabels(result);
             const datasets = [this.chartDataset(result)];
@@ -106,11 +106,11 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
         return { labels: [], datasets: [] };
     }
 
-    private chartLabels(result: AggregateResult[]): string[] {
+    private chartLabels(result: MostFrequentWordsResult[]): string[] {
         return result.map((item) => item.key);
     }
 
-    private chartDataset(result: AggregateResult[]): ChartDataset<'wordCloud'> {
+    private chartDataset(result: MostFrequentWordsResult[]): ChartDataset<'wordCloud'> {
         const frequencies = result.map((item) => item.doc_count);
         const scale = sizeScale(_.min(frequencies), _.max(frequencies));
         const sizes = frequencies.map(scale);
@@ -134,7 +134,7 @@ export class WordcloudComponent implements OnChanges, OnDestroy {
         return (context) => selectColor(palette, context.dataIndex);
     }
 
-    private chartOptions(data: AggregateResult[]): ChartOptions<'wordCloud'> {
+    private chartOptions(data: MostFrequentWordsResult[]): ChartOptions<'wordCloud'> {
         return {
             plugins: {
                 legend: {

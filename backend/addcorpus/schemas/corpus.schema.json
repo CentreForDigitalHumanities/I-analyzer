@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/backend/addcorpus/schemas/corpus.schema.json",
     "title": "Corpus",
-    "description": "A corpus on I-analyzer",
+    "description": "Definition of a corpus in I-analyzer",
     "type": "object",
     "properties": {
         "name": {
@@ -23,7 +23,7 @@
                 },
                 "languages": {
                     "type": "array",
-                    "description": "IETF tags of languages used in the content",
+                    "description": "IETF tags of languages used in the content. List as most to least frequent.",
                     "items": {
                         "type": "string"
                     },
@@ -32,7 +32,7 @@
                 },
                 "category": {
                     "type": "string",
-                    "description": "nature of the content",
+                    "description": "Nature of the content",
                     "enum": [
                         "parliament",
                         "periodical",
@@ -47,7 +47,7 @@
                 },
                 "date_range": {
                     "type": "object",
-                    "description": "the date range of the content",
+                    "description": "The date range of the content",
                     "properties": {
                         "min": {
                             "type": "string",
@@ -70,46 +70,49 @@
         },
         "source_data": {
             "type": "object",
+            "description": "Information about the source data files",
             "properties": {
                 "type": {
                     "type": "string",
-                    "description": "data type of the source files",
+                    "description": "Data type of the source files",
                     "enum": ["csv"]
                 },
                 "options": {
                     "type": "object",
-                    "description": "additional options for source files",
+                    "description": "Additional options for source files",
                     "properties": {
                         "delimiter": {
                             "type": "string",
-                            "description": "delimiter between values in the source files",
+                            "description": "Delimiter between values in the source files",
                             "enum": [",", ";", "\t"]
                         }
                     }
                 }
-            }
+            },
+            "required": ["type"]
         },
         "fields": {
             "type": "array",
-            "description": "list of fields",
+            "description": "List of fields",
             "items": {
                 "type": "object",
                 "description": "A field in a corpus",
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "internal name"
+                        "description": "Internal name"
                     },
                     "display_name": {
                         "type": "string",
-                        "description": "human-friendly name"
+                        "description": "Human-friendly name"
                     },
                     "description": {
                         "type": "string",
-                        "description": "longer description for users"
+                        "description": "Longer description for users"
                     },
                     "type": {
                         "type": "string",
+                        "description": "The type of data",
                         "enum": [
                             "text_content",
                             "text_metadata",
@@ -118,7 +121,7 @@
                             "float",
                             "date",
                             "boolean",
-                            "geo_json"
+                            "geo_point"
                         ]
                     },
                     "options": {
@@ -126,43 +129,43 @@
                         "properties": {
                             "search": {
                                 "type": "boolean",
-                                "description": "whether the field supports full-text search"
+                                "description": "Whether the field supports full-text search"
                             },
                             "filter": {
                                 "type": "string",
-                                "description": "search filter for the field",
+                                "description": "Whether users can filter results based on this field, and if the filter widget is shown by default",
                                 "enum": ["show", "hide", "none"]
                             },
                             "preview": {
                                 "type": "boolean",
-                                "description": "whether the field is included in the preview of a document"
+                                "description": "Whether the field is included in the preview of a document"
                             },
                             "visualize": {
                                 "type": "boolean",
-                                "description": "whether the field is visualised"
+                                "description": "Whether the field is visualised"
                             },
                             "sort": {
                                 "type": "boolean",
-                                "description": "whether search results can be sorted on this field"
+                                "description": "Whether search results can be sorted on this field"
                             },
                             "hidden": {
                                 "type": "boolean",
-                                "description": "whether the field is hidden from the interface"
+                                "description": "Whether the field is hidden from the interface"
                             }
                         },
                         "required": ["search", "filter", "preview", "visualize", "sort", "hidden"]
                     },
                     "language": {
                         "type": "string",
-                        "description": "language of the field's content. Either an IETF tag, or \"dynamic\"."
+                        "description": "Language of the field's content. Either an IETF tag, or \"dynamic\"."
                     },
                     "extract": {
                         "type": "object",
-                        "description": "how to extract this field's value from source files",
+                        "description": "How to extract this field's value from source files",
                         "properties": {
                             "column": {
                                 "type": "string",
-                                "description": "name of the column in the CSV file"
+                                "description": "Name of the column in CSV source files"
                             }
                         },
                         "required": ["column"]
@@ -175,31 +178,35 @@
             "type": "object",
             "properties": {
                 "default_sort": {
-                    "description": "default sort settings for search results",
+                    "description": "Default sort settings for search results",
                     "$ref": "#sortSetting"
                 },
                 "language_field": {
                     "type": "string",
-                    "description": "name of the field that contains the IETF tag of the document's content"
+                    "description": "Name of the field that contains the IETF tag of each document's content"
                 },
                 "document_context": {
                     "type": "object",
-                    "description": "description of how documents can be grouped",
+                    "description": "Description of how documents can be grouped",
                     "properties": {
-                        "context_field": {
-                            "type": "string",
-                            "description": "name of the field to group by"
+                        "context_fields": {
+                            "type": "array",
+                            "description": "The fields to group by",
+                            "items": {
+                                "type": "string",
+                                "description": "Name of the field"
+                            }
                         },
                         "display_name": {
                             "type": "string",
-                            "description": "display name of a group, ,e.g. 'book'"
+                            "description": "Display name of a group, ,e.g. 'book'"
                         },
                         "sort": {
-                            "description": "when showing document context, sort them like this",
+                            "description": "How documents within a group should be sorted",
                             "$ref": "#sortSetting"
                         }
                     },
-                    "required": ["context_field", "display_name"]
+                    "required": ["context_fields", "display_name"]
                 }
             }
         }
@@ -209,15 +216,15 @@
         "sortSetting": {
             "$anchor": "sortSetting",
             "type": "object",
-            "description": "Describes how to sort search results",
+            "description": "How to sort search results",
             "properties": {
                 "field": {
                     "type": "string",
-                    "description": "name of on which to sort"
+                    "description": "Name of the field on which to sort"
                 },
                 "ascending": {
                     "type": "boolean",
-                    "description": "whether the sort direction is ascending or descending"
+                    "description": "Whether the sort direction is ascending or descending"
                 }
             },
             "required": ["field", "ascending"]

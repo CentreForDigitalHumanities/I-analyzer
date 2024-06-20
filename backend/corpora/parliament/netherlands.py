@@ -11,6 +11,7 @@ from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
 from corpora.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
+from corpora.utils.constants import document_context
 import corpora.parliament.utils.field_defaults as field_defaults
 import re
 
@@ -132,11 +133,13 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     es_index = getattr(settings, 'PP_NL_INDEX', 'parliament-netherlands')
     image = 'netherlands.jpg'
     description_page = 'netherlands.md'
+    citation_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
     languages = ['nl']
 
     category = 'parliament'
+    document_context = document_context()
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)

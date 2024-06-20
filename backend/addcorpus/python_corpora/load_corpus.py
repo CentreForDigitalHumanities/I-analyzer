@@ -1,9 +1,12 @@
-from django.conf import settings
-import re
-from os.path import abspath, dirname
-from importlib import util
 import logging
+import re
 import sys
+from importlib import util
+from os.path import abspath, dirname
+
+from addcorpus.python_corpora.corpus import CorpusDefinition
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 from addcorpus.python_corpora.corpus import CorpusDefinition
 
@@ -38,7 +41,7 @@ def load_corpus_definition(corpus_name) -> CorpusDefinition:
     # assume the class name is the same as the corpus name,
     # allowing for differences in camel case vs. lower case
     regex = re.compile('[^a-zA-Z]')
-    corpus_name = regex.sub('', corpus_name)
+    corpus_name = regex.sub('', corpus_name).lower()
     endpoint = next((attr for attr in dir(corpus_mod)
                      if attr.lower() == corpus_name), None)
     corpus_class = getattr(corpus_mod, endpoint)

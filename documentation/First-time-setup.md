@@ -7,8 +7,9 @@ These are instructions to set up an I-analyzer server. If you are going to devel
 * Python == 3.9
 * PostgreSQL >= 10, client, server and C libraries
 * [ElasticSearch](https://www.elastic.co/) 8. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
-* [Redis](https://www.redis.io/) (used by [Celery](http://www.celeryproject.org/)). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
-* Yarn
+* [Redis](https://www.redis.io/). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
+* [Node.js](https://nodejs.org/). See [.nvmrc](/.nvmrc) for the recommended version.
+* [Yarn](https://yarnpkg.com/)
 
 The documentation includes a [recipe for installing the prerequisites on Debian 10](./documentation/Local-Debian-I-Analyzer-setup.md)
 
@@ -18,35 +19,18 @@ For the SAML integration, the following libraries are required: xmlsec, python3-
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. Install the ElasticSearch v.8 (https://www.elastic.co/) and postgreSQL on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
-2. For an easy setup, locate the file `config/elasticsearch.yaml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but then you need to [generate API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html) and set up your SERVERS config like so:
-```
-SERVERS = {
-    # Default ElasticSearch server
-    'default': {
-        'host': 'localhost',
-        'port': 9200,
-        'certs_location': '{your_elasticsearch_directory/config/certs/http_ca.crt}'
-        'api_id': '{generated_api_id}'
-        'api_key': '{generated_api_key}'
-    }
-}
-```
-3. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
-```
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-```
-4. Create and activate a virtualenv for Python.
-5. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus definition file. This file is also the place to add corpus-specific configurations (like the location of source files). See instructions of adding corpora below.
-6. Install the requirements for both the backend and frontend:
-```
+1. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. It can be used to customise your environment. You can leave the file empty for now.
+2. Install the requirements for both the backend and frontend:
+```sh
 yarn postinstall
 ```
-7. Set up your postgres database by going to the backend directory and running `psql -f create_db.sql`
-The backend readme provides more details on these steps.
-8. Set up the database and migrations by running `yarn django migrate`.
-9. Make a superuser account with `yarn django createsuperuser`
+3. For an easy setup, locate the file `config/elasticsearch.yml` in your Elasticsearch directory, and set the variable `xpack.security.enabled: false`. Alternatively, you can leave this on its default value(`true`), but this requires [additional settings](./Django-project-settings.md#api-key).
+4. Set up your postgres database:
+```sh
+psql -f backend/create_db.sql
+yarn django migrate
+```
+5. Make a superuser account with `yarn django createsuperuser`
 
 ## Setup with Docker
 Alternatively, you can run the application via Docker:
@@ -71,13 +55,30 @@ Note: you can also call the .env file .myenv and specify this during startup:
 
 ## Adding corpora
 
-To include corpora on your environment, you need to index them from their source files. The source files are not included in this directory; ask another developer about their availability. If you have (a sample of) the source files for a corpus, you can add it your our environment as follows:
+These instructions are for adding *already defined* corpora to your own environment. This means you would be working with a corpus that is already used in I-analyzer or by other developers.
 
-_Note:_ these instructions are for indexing a corpus that already has a corpus definition. For adding new corpus definitions, see [How to add a new corpus to I-analyzer](./documentation/How-to-add-a-new-corpus-to-Ianalyzer.md).
+In a first-time setup, it is recommended that you add at least one existing corpus before creating your own. Documentation on creating new corpus definitions is in [Writing a corpus definition in Python](./Writing-a-corpus-definition-in-Python.md) / [Writing a corpus definition in JSON](./Writing-a-corpus-definition-in-JSON.md).
 
-1. Add the corpus to the `CORPORA` dictionary in your local settings file. The key should match the class name of the corpus definition. This match is not case-sensitive, and your key may include extra non-alphabetic characters (they will be ignored when matching). The value should be the absolute path the corpus definition file (e.g. `.../backend/corpora/times/times.py`).
-2. Set configurations for your corpus. Check the definition file to see which variables it expects to find in the configuration. Some of these may already be set in settings.py, but you will at least need to define the (absolute) path to your source files.
-3. Activate your python virtual environment. Create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+### Python corpora
+
+Currently, all corpora that are used in production are *Python corpora*, meaning they are defined in the source code. To include these corpora in your environment, you need to add them to your local settings and create an index in Elasticsearch.
+
+The source files of a corpus are not included in this directory; ask another developer about their availability. If you have (a sample of) the source files for a corpus, you can add the corpus your our environment as follows:
+
+1. Add the corpus to the `CORPORA` dictionary in your local settings file. See [CORPORA settings documentation](/documentation/Django-project-settings.md#corpora).
+2. Set configurations for your corpus. Check the definition file to see which variables it expects to find in the configuration. Some of these may be optional, but you will at least need to define the (absolute) path to your source files.
+3. Activate your python virtual environment. Run the `loadcorpora` admin command (`yarn django loadcorpora`) to register the new corpus in the SQL database. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+
+### Database-only corpora
+
+Note: database-only corpora are still in development and not yet recommended for first-time users.
+
+To add a database-only corpus, you will need a JSON definition of the corpus, and a directory with (a sample of) the pre-processed source data. To retrieve a JSON definition from a running I-analyzer server, visit `/api/corpus/edit/` and copy the JSON of the corpus you want to import.
+
+1. Start up your I-analyzer server. Make a POST request to `localhost:8000/api/corpus/edit/` (you can use the browsable API for this) to import the JSON definition.
+2. Visit the admin menu (`localhost:8000/admin`). Go to "corpus configurations" and select your corpus. In the "data directory" field, add the path to your source data directory.
+3. Activate your python virutal environment. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+
 
 ## Running a dev environment
 

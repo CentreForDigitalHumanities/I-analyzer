@@ -35,6 +35,7 @@ class Times(XMLCorpusDefinition):
     image = 'times.jpg'
     scan_image_type = getattr(settings, 'TIMES_SCAN_IMAGE_TYPE', 'image/png')
     description_page = 'times.md'
+    citation_page = 'citation.md'
     languages = ['en']
     category = 'periodical'
 

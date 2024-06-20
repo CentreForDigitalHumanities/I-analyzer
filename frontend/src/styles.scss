@@ -1,8 +1,8 @@
 @import "_utilities";
-@import "~bulma/bulma.sass";
+@import "bulma/bulma.sass";
 @import "_primeng";
-@import "~balloon-css";
-@import "~bulma-switch";
+@import "balloon-css";
+@import "bulma-switch";
 
 [data-balloon]:after {
     border-radius: 0;

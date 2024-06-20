@@ -1,34 +1,29 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import Group
-from django.contrib import admin
-from django.core.exceptions import ValidationError
-from django.db.models.constraints import UniqueConstraint
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
-    validate_language_code,
-    validate_es_mapping, validate_mimetype, validate_search_filter,
+    validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
+    validate_mimetype,
     validate_name_is_not_a_route_parameter, validate_name_has_no_ner_suffix,
-    validate_search_filter_with_mapping, validate_searchable_field_has_full_text_search,
-    validate_visualizations_with_mapping, validate_implication,
-    validate_sort_configuration, validate_field_language,
+    validate_search_filter, validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_sort_configuration, validate_visualizations_with_mapping,
+    validate_source_data_directory,
 )
-from addcorpus.validation.indexing import (
-    validate_has_configuration,
-    validate_essential_fields,
-    validate_language_field
-)
-from addcorpus.validation.publishing import (
-    validate_ngram_has_date_field,
-    validate_default_sort,
-)
+from addcorpus.validation.indexing import (validate_essential_fields,
+    validate_has_configuration, validate_language_field, validate_has_data_directory)
+from addcorpus.validation.publishing import (validate_default_sort,
+    validate_ngram_has_date_field)
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.constraints import UniqueConstraint
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
-
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -96,6 +91,7 @@ class Corpus(models.Model):
         config = self.configuration_obj
         fields = config.fields.all()
 
+        validate_has_data_directory(self)
         validate_essential_fields(fields)
         validate_language_field(self)
 
@@ -115,12 +111,21 @@ class Corpus(models.Model):
         '''
         Validation that should be carried out before making the corpus public.
 
+        This also includes most checks that are needed to create an index, but not all
+        (if the index already exists, you do not need source data).
+
         Raises:
             CorpusNotIndexableError: the corpus is not meeting requirements for indexing.
             CorpusNotPublishableError: interface options are improperly configured.
         '''
 
-        self.validate_ready_to_index()
+        validate_has_configuration(self)
+
+        config = self.configuration_obj
+        fields = config.fields.all()
+
+        validate_essential_fields(fields)
+        validate_language_field(self)
         validate_ngram_has_date_field(self)
         validate_default_sort(self)
 
@@ -165,7 +170,8 @@ class CorpusConfiguration(models.Model):
         help_text='short description of the corpus',
     )
     document_context = models.JSONField(
-        null=True,
+        blank=True,
+        default=dict,
         help_text='specification of how documents are grouped into collections',
     )
     es_alias = models.SlugField(
@@ -223,6 +229,22 @@ class CorpusConfiguration(models.Model):
         help_text='name of the field that specifies the language of documents (if any);'
             'required to use "dynamic" language on fields',
     )
+    data_directory = models.CharField(
+        max_length=200,
+        validators=[validate_source_data_directory],
+        blank=True,
+        help_text='path to directory containing source data files',
+    )
+    source_data_delimiter = models.CharField(
+        max_length=1,
+        choices=[
+            (',','comma'),
+            (';','semicolon'),
+            ('\t','tab')
+        ],
+        blank=True,
+        help_text='delimiter used in (CSV) source data files',
+    )
 
     def __str__(self):
         return f'Configuration of <{self.corpus.name}>'
@@ -248,7 +270,8 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point')
+    (MappingType.GEO_POINT.value, 'geo_point'),
+    ('url', 'url'),
 ]
 
 FIELD_VISUALIZATIONS = [
@@ -357,11 +380,15 @@ class Field(models.Model):
     language = models.CharField(
         max_length=64,
         blank=True,
-        null=False,
         validators=[validate_field_language],
         help_text='specification for the language of this field; can be blank, an IETF '
             'tag, or "dynamic"; "dynamic" means the language is determined by the '
             'language_field of the corpus configuration',
+    )
+    extract_column = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text='column name in CSV source files from which to extract this field',
     )
 
     class Meta:

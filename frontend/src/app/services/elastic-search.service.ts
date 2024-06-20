@@ -4,8 +4,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
     FoundDocument, Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchHit, Aggregator
+    SearchHit
 } from '../models/index';
+import { Aggregator } from '../models/aggregation';
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
 import { APIQuery } from '../models/search-requests';
@@ -35,54 +36,19 @@ export class ElasticSearchService {
             .then(this.firstDocumentFromResults.bind(this));
     }
 
-    public async aggregateSearch(
+    public async aggregateSearch<Result>(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
-        aggregators: Aggregator[]
-    ): Promise<AggregateQueryFeedback> {
-        const aggregations = {};
-        aggregators.forEach(d => {
-            aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
-        });
+        aggregator: Aggregator<Result>
+    ): Promise<Result> {
+        const aggregations = {
+            [aggregator.name]: aggregator.toEsAggregator()
+        };
         const query = queryModel.toAPIQuery();
         const withAggregation = _.set(query, 'es_query.aggs', aggregations);
         const withSize0 = _.set(withAggregation, 'es_query.size', 0);
         const result = await this.execute(corpusDefinition, withSize0);
-        const aggregateData = {};
-        Object.keys(result.aggregations).forEach(fieldName => {
-            aggregateData[fieldName] = result.aggregations[fieldName].buckets;
-        });
-        return {
-            completed: true,
-            aggregations: aggregateData
-        };
-    }
-
-    public async dateHistogramSearch(
-        corpusDefinition: Corpus,
-        queryModel: QueryModel,
-        fieldName: string,
-        timeInterval: string): Promise<AggregateQueryFeedback> {
-        const agg = {
-            [fieldName]: {
-                date_histogram: {
-                    field: fieldName,
-                    calendar_interval: timeInterval
-                }
-            }
-        };
-        const query = queryModel.toAPIQuery();
-        const withAggregation = _.set(query, 'es_query.aggs', agg);
-        const withSize0 = _.set(withAggregation, 'es_query.size', 0);
-        const result = await this.execute(corpusDefinition, withSize0);
-        const aggregateData = {};
-        Object.keys(result.aggregations).forEach(field => {
-            aggregateData[field] = result.aggregations[field].buckets;
-        });
-        return {
-            completed: true,
-            aggregations: aggregateData
-        };
+        return aggregator.parseEsResult(result.aggregations[aggregator.name]);
     }
 
     /**
@@ -107,21 +73,6 @@ export class ElasticSearchService {
     private async execute(corpus: Corpus, body: APIQuery) {
         const url = `/api/es/${corpus.name}/_search`;
         return this.http.post<SearchResponse>(url, body).toPromise();
-    }
-
-    /**
-     * Construct the aggregator, based on kind of field
-     * Date fields are aggregated in year intervals
-     */
-    private makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
-        const aggregation = {
-            terms: {
-                field: aggregator,
-                size,
-                min_doc_count
-            }
-        };
-        return aggregation;
     }
 
     /**

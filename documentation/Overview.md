@@ -8,7 +8,7 @@ The I-analyzer backend (`/backend`) is a python/Django app that provides the fol
 
 - A 'users' module that defines user accounts.
 
-- A 'corpora' module containing corpus definitions and metadata of the currently implemented corpora. For each corpus added in I-analyzer, this module defines how to extract document contents from its source files and sets parameters for displaying the corpus in the interface, such as sorting options.
+- A 'corpora' module containing corpus definitions and metadata of all corpora that are defined in Python. (Corpora can also be defined as database objects.) For each Python corpus added in I-analyzer, this module defines how to extract document contents from its source files and sets parameters for displaying the corpus in the interface, such as sorting options.
 
 - An 'addcorpus' module which manages the functionality to extract data from corpus source files (given the definition) and save this in an elasticsearch index. Source files can be XML or HTML format (which are parsed with `beautifulsoup4` + `lxml`) or CSV. This module also provides the basic data structure for corpora.
 

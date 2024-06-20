@@ -49,7 +49,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     get showScanTab() {
-        return !!this.corpus.scan_image_type;
+        return !!this.corpus.scanImageType;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -71,7 +71,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     isUrlField(field: CorpusField) {
-        return field.name === 'url' || field.name.startsWith('url_');
+        return field.displayType === 'url';
     }
 
     isGeoPointField(field: CorpusField) {

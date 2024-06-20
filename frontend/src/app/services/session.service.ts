@@ -5,10 +5,10 @@ import { Subject } from 'rxjs';
     providedIn: 'root'
 })
 export class SessionService {
-    private static sessionExpiredSubject = new Subject();
+    private static sessionExpiredSubject = new Subject<void>();
     public expired = SessionService.sessionExpiredSubject.asObservable();
 
     public static markExpired() {
-        SessionService.sessionExpiredSubject.next();
+        SessionService.sessionExpiredSubject.next(undefined);
     }
 }

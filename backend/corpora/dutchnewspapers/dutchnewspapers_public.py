@@ -37,6 +37,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    citation_page = 'citation_public.md'
 
     @property
     def es_settings(self):
@@ -73,7 +74,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                                 self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
-            meta_dict = self.metadata_from_xml(definition_file, tags=[
+            meta_dict = self._metadata_from_xml(definition_file, tags=[
                     "title",
                     "date",
                     "publisher",
@@ -134,6 +135,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
+            display_type='url',
             es_mapping=keyword_mapping(),
             extractor=XML(tag='identifier',
                                   toplevel=True,
