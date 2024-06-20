@@ -49,7 +49,6 @@ export class HighlightService {
         }
 
         let result: RegExpExecArray;
-        const parsedText: TextPart[] = [];
         let lastIndex = 0;
 
         for (
