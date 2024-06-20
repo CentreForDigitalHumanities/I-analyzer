@@ -85,7 +85,7 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 

@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Corpus } from '../../models';
-import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs-compat';
 import { formIcons } from '../../shared/icons';
 
 @Component({

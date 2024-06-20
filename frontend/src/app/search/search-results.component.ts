@@ -95,7 +95,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
 
     ngOnDestroy(): void {
         this.pageResults?.complete();
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 

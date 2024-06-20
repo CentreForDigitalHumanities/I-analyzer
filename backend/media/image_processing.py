@@ -47,7 +47,7 @@ def retrieve_pdf(path):
     '''
     Retrieve the pdf as a file object.
     '''
-    pdf = PdfReader(path, 'rb')
+    pdf = PdfReader(path)
 
     return pdf
 

@@ -40,7 +40,7 @@ export class FoundDocument {
         this.fieldValues = Object.assign({ id: hit._id }, hit._source);
         this.highlight = hit.highlight;
 
-        const created$ = timer(); // observable of the moment of construction (i.e. now)
+        const created$ = timer(0); // observable of the moment of construction (i.e. now)
 
         // tags need to refreshed when the document is created, and
         // after each update

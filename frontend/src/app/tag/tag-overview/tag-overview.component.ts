@@ -6,6 +6,8 @@ import { CorpusService } from '../../services';
 import { TagService } from '../../services/tag.service';
 import { actionIcons, formIcons } from '../../shared/icons';
 import { findByName } from '../../utils/utils';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../../utils/app';
 
 @Component({
     selector: 'ia-tag-overview',
@@ -26,12 +28,14 @@ export class TagOverviewComponent implements OnInit {
 
     constructor(
         private tagService: TagService,
-        private corpusService: CorpusService
+        private corpusService: CorpusService,
+        private title: Title,
     ) {}
 
     async ngOnInit(): Promise<void> {
         this.corpora = await this.corpusService.get(false);
         this.tagService.fetch();
+        this.title.setTitle(pageTitle('Tags'));
     }
 
     delete(tag: Tag) {
