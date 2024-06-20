@@ -10,6 +10,7 @@ from addcorpus.python_corpora.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
+
 class PeacePortal(ParentCorpusDefinition):
     '''
     Base class for corpora in the PEACE portal.
@@ -44,6 +45,11 @@ class PeacePortal(ParentCorpusDefinition):
     # from external files. See README.
     # el stands for modern Greek (1500-)
     languages = ['en', 'de', 'nl', 'he', 'la', 'el']
+
+    # We need a data_directory to create a corpus
+    # Nothing is actually done with this, since the parent corpus has no actual sources.
+    # So pick a placeholder location we are sure exists
+    data_directory = settings.BASE_DIR
 
     @property
     def es_settings(self):
