@@ -1,9 +1,8 @@
 from es.views import NamedEntitySearchView
 
 
-def test_ner_search_view(es_ner_search_client, client, times_user):
-    client.force_login(times_user)
-    route = '/api/es/times/my_identifier/named_entities'
+def test_ner_search_view(es_ner_search_client, client):
+    route = '/api/es/mock-csv-corpus/my_identifier/named_entities'
     response = client.get(route, content_type='application/json')
     assert response.status_code == 200
 
@@ -34,7 +33,7 @@ def test_construct_ner_query():
 def test_find_named_entity_fields(es_ner_search_client):
     viewset = NamedEntitySearchView()
     fields = viewset.find_named_entity_fields(
-        es_ner_search_client, 'times-test')
+        es_ner_search_client, 'test-basic-corpus')
     assert len(fields) == 1
     assert fields[0] == 'content_ner'
 
