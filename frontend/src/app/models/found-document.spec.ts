@@ -4,12 +4,13 @@ import { reduce, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { makeDocument } from '../../mock-data/constructor-helpers';
 import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
-import { FoundDocument } from './found-document';
-import { TagService } from '../services/tag.service';
+import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
+import { FoundDocument } from './found-document';
+import { EntityService } from '../services/entity.service';
+import { TagService } from '../services/tag.service';
 import { Tag } from './tag';
-import { ElasticSearchService } from '../services';
-import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
+
 
 const maxScore = 2.9113607;
 const mockResponse = {
@@ -36,19 +37,19 @@ const mockResponse = {
 
 fdescribe('FoundDocument', () => {
     const mockTagService = new TagServiceMock() as any;
-    const mockElasticService = new ElasticSearchServiceMock() as any;
+    const mockEntityService = new EntityServiceMock() as any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: TagService, useClass: TagServiceMock },
-                { provide: ElasticSearchService, useClass: ElasticSearchServiceMock }
+                { provide: EntityService, useClass: EntityServiceMock }
             ]
         });
     });
 
     fit('should construct from an elasticsearch response', () => {
-        const document = new FoundDocument(mockTagService, mockElasticService, mockCorpus, mockResponse, maxScore);
+        const document = new FoundDocument(mockTagService, mockEntityService, mockCorpus, mockResponse, maxScore);
 
         expect(document.id).toBe('1994_troonrede');
         expect(document.fieldValues['monarch']).toBe('Beatrix');
@@ -110,7 +111,7 @@ fdescribe('FoundDocument', () => {
                 ]
             }
         };
-        const document = new FoundDocument(mockTagService, mockElasticService, mockCorpus, searchResponse, maxScore);
+        const document = new FoundDocument(mockTagService, mockEntityService, mockCorpus, searchResponse, maxScore);
         expect(document.fieldValues['content']).toEqual(
             '<mark class="entity-per">Wally</mark> was last seen in <mark class="entity-loc">Paris</mark>');
     }));

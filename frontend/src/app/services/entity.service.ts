@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Corpus, NamedEntitiesResult } from '../models';
-import { map, share, shareReplay, take } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',

@@ -1,4 +1,4 @@
-import { FoundDocument, NamedEntitiesResult, SearchResults } from '../app/models';
+import { FoundDocument, SearchResults } from '../app/models';
 import { makeDocument } from './constructor-helpers';
 
 export class ElasticSearchServiceMock {
