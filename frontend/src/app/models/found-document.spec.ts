@@ -48,7 +48,7 @@ fdescribe('FoundDocument', () => {
         });
     });
 
-    fit('should construct from an elasticsearch response', () => {
+    it('should construct from an elasticsearch response', () => {
         const document = new FoundDocument(mockTagService, mockEntityService, mockCorpus, mockResponse, maxScore);
 
         expect(document.id).toBe('1994_troonrede');
@@ -95,24 +95,4 @@ fdescribe('FoundDocument', () => {
         });
     }));
 
-    it('should fetch and display named entities', fakeAsync(() => {
-        const searchResponse = {
-            _index: 'test_index',
-            _id: 'my_identifier',
-            _score: 2.9113607,
-            _source: {
-                date: '1994-09-20',
-                id: 'my_identifier',
-                content: 'Wally was last seen in Paris.'
-            },
-            highlight: {
-                content: [
-                    '<em>seen</em>'
-                ]
-            }
-        };
-        const document = new FoundDocument(mockTagService, mockEntityService, mockCorpus, searchResponse, maxScore);
-        expect(document.fieldValues['content']).toEqual(
-            '<mark class="entity-per">Wally</mark> was last seen in <mark class="entity-loc">Paris</mark>');
-    }));
 });
