@@ -21,6 +21,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 
+from ianalyzer.elasticsearch import elasticsearch
+
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
@@ -259,6 +261,20 @@ class CorpusConfiguration(models.Model):
                     'the corpus or correct the following errors.',
                     e
                 ])
+
+    @property
+    def has_named_entities(self):
+        client = elasticsearch(self.es_index)
+        try:
+            mapping = client.indices.get_mapping(
+                index=self.es_index)
+            fields = mapping[self.es_index].get(
+                'mappings', {}).get('properties', {}).keys()
+            if any(field.endswith('_ner') for field in fields):
+                return True
+        except:
+            return False
+        return False
 
 
 FIELD_DISPLAY_TYPES = [
