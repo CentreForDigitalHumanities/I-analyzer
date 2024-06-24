@@ -24,6 +24,7 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
     documentIcons = documentIcons;
 
     showNamedEntities = false;
+    showNEROption = false;
 
     private refresh$ = new Subject<void>();
 
@@ -40,6 +41,9 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.showNEROption = this.queryModel.corpus.hasNamedEntities;
+        }
         if (changes.page) {
             this.refresh$.next();
             this.focusUpdate();
