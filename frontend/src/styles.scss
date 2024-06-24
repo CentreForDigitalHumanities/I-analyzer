@@ -72,15 +72,23 @@ a.dropdown-item[disabled] {
     }
 }
 
+span[class^='entity'] {
+    padding-left: .4em;
+}
+
 .entity-per {
     background-color: $entity-person;
+    clip-path: polygon(100% 0%, 100% 100%, 0% 100%, 5px 50%, 0% 0%);
 }
 .entity-loc {
     background-color: $entity-location;
+    clip-path: polygon(5px 0%, 100% 0%, 100% 100%, 5px 100%, 0% 50%);
 }
 .entity-org {
     background-color: $entity-organization;
+    clip-path: polygon(0 0, 100% 0%, 100% 100%, 5px 100%);
 }
 .entity-mis {
     background-color: $entity-miscellaneous;
+    clip-path: polygon(5px 0, 100% 0%, 100% 100%, 0% 100%);
 }
