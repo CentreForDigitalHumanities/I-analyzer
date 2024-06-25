@@ -73,11 +73,12 @@ The source files of a corpus are not included in this directory; ask another dev
 
 Note: database-only corpora are still in development and not yet recommended for first-time users.
 
-To add a database-only corpus, you will need a JSON definition of the corpus, and a directory with (a sample of) the pre-processed source data. To retrieve a JSON definition from a running I-analyzer server, visit `/api/corpus/edit/` and copy the JSON of the corpus you want to import.
+To add a database-only corpus, you will need a JSON definition of the corpus, and a directory with (a sample of) the pre-processed source data. To retrieve a JSON definition from a running I-analyzer server, log in as a staff user and visit `/corpus-definitions/`. Open the corpus you want to import and click "Download JSON".
 
-1. Start up your I-analyzer server. Make a POST request to `localhost:8000/api/corpus/edit/` (you can use the browsable API for this) to import the JSON definition.
-2. Visit the admin menu (`localhost:8000/admin`). Go to "corpus configurations" and select your corpus. In the "data directory" field, add the path to your source data directory.
-3. Activate your python virutal environment. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+1. Start up your I-analyzer server and log in as a staff user. Go to `localhost:4200/corpus-definitions/new`. Upload the JSON definition file and save.
+2. Visit the admin menu (`localhost:4200/admin`). Go to "corpus configurations" and select your corpus. In the "data directory" field, add the path to your source data directory.
+3. Activate your python virtual environment. Create an ElasticSearch index from the source files by running `yarn django index {corpusname}`. See [Indexing](documentation/Indexing-corpora.md) for more information.
+4. Visit the admin menu again. Go to "corpora" and select te corpus. Set "active" to true and save.
 
 
 ## Running a dev environment

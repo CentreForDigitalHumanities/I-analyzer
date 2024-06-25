@@ -128,33 +128,47 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
         fields = ['corpus_configuration', 'type', 'content']
 
 
-class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Corpus
-        fields = '__all__'
+class JSONDefinitionField(serializers.Field):
+    def get_attribute(self, instance: Corpus):
+        return instance
 
-    def to_representation(self, instance) -> Dict:
-        return export_json_corpus(instance)
+    def to_representation(self, value: Corpus) -> Dict:
+        return export_json_corpus(value)
 
-    def to_internal_value(self, data) -> Dict:
+    def to_internal_value(self, data: Dict) -> Dict:
         return import_json_corpus(data)
 
+
+class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
+    definition = JSONDefinitionField()
+
+    class Meta:
+        model = Corpus
+        fields = ['id', 'active', 'definition']
+        read_only_fields = ['id']
+
     def create(self, validated_data: Dict):
-        configuration_data = validated_data.pop('configuration')
+        definition_data = validated_data.get('definition')
+        configuration_data = definition_data.pop('configuration')
         fields_data = configuration_data.pop('fields')
 
-        corpus = Corpus.objects.create(**validated_data)
+        corpus = Corpus.objects.create(**definition_data)
         configuration = CorpusConfiguration.objects.create(corpus=corpus, **configuration_data)
         for field_data in fields_data:
             Field.objects.create(corpus_configuration=configuration, **field_data)
 
+        if validated_data.get('active') == True:
+            corpus.active = True
+            corpus.save()
+
         return corpus
 
     def update(self, instance: Corpus, validated_data: Dict):
-        configuration_data = validated_data.pop('configuration')
+        definition_data = validated_data.get('definition')
+        configuration_data = definition_data.pop('configuration')
         fields_data = configuration_data.pop('fields')
 
-        corpus = Corpus(pk=instance.pk, **validated_data)
+        corpus = Corpus(pk=instance.pk, **definition_data)
         corpus.save()
 
         configuration, _ = CorpusConfiguration.objects.get_or_create(corpus=corpus)
@@ -171,5 +185,9 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             field.save()
 
         configuration.fields.exclude(name__in=(f['name'] for f in fields_data)).delete()
+
+        if validated_data.get('active') == True:
+            corpus.active = True
+            corpus.save()
 
         return corpus
