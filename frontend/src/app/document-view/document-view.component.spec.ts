@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import * as _ from 'lodash';
 import { mockCorpus, mockField } from '../../mock-data/corpus';
@@ -7,7 +7,6 @@ import { commonTestBed } from '../common-test-bed';
 
 import { DocumentViewComponent } from './document-view.component';
 import { makeDocument } from '../../mock-data/constructor-helpers';
-import { of } from 'rxjs';
 
 describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;

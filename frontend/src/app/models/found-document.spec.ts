@@ -35,7 +35,7 @@ const mockResponse = {
     }
 };
 
-fdescribe('FoundDocument', () => {
+describe('FoundDocument', () => {
     const mockTagService = new TagServiceMock() as any;
     const mockEntityService = new EntityServiceMock() as any;
 
