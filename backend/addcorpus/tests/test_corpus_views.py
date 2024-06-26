@@ -7,6 +7,7 @@ from addcorpus.models import Corpus
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 
 def test_no_corpora(db, settings, admin_client):
+    Corpus.objects.all().delete()
     settings.CORPORA = {}
     load_and_save_all_corpora()
 
@@ -84,7 +85,7 @@ def test_corpus_not_publication_ready(admin_client, basic_mock_corpus):
     response = admin_client.get('/api/corpus/')
     corpus = not any(c['name'] == basic_mock_corpus for c in response.data)
 
-def test_corpus_edit_views(admin_client: Client, json_corpus_data: Dict, json_mock_corpus: Corpus):
+def test_corpus_edit_views(admin_client: Client, json_corpus_definition: Dict, json_mock_corpus: Corpus):
     json_mock_corpus.delete()
 
     response = admin_client.get('/api/corpus/definitions/')
@@ -93,7 +94,7 @@ def test_corpus_edit_views(admin_client: Client, json_corpus_data: Dict, json_mo
 
     response = admin_client.post(
         '/api/corpus/definitions/',
-        json_corpus_data,
+        {'definition': json_corpus_definition, 'active': True},
         content_type='application/json',
     )
     assert status.is_success(response.status_code)

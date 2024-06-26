@@ -7,9 +7,9 @@ import {
     faAngleDown, faAngleUp, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
     faCheck, faChevronDown, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
     faDownload, faEdit, faEnvelope, faEye, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
-    faMinus, faPalette, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
+    faMinus, faPalette, faPencil, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
     faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc, faSquare,
-    faTable, faTags, faTimes, faTrashCan, faUndo, faUser
+    faTable, faTags, faTimes, faTrashCan, faUndo, faUpload, faUser
 } from '@fortawesome/free-solid-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
@@ -40,6 +40,7 @@ export const actionIcons: Icons = {
     help: faInfoCircle,
     helpAlt: faQuestionCircle,
     download: faDownload,
+    upload: faUpload,
     config: faCog,
     email: faEnvelope,
     more: faPlus,
@@ -52,7 +53,7 @@ export const actionIcons: Icons = {
     add: faPlus,
     remove: faTimes,
     delete: faTrashCan,
-    edit: faEdit,
+    edit: faPencil,
     view: faEye,
 };
 

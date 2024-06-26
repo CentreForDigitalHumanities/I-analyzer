@@ -27,4 +27,13 @@ describe('TabsComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should produce slug tab IDs', () => {
+        const tabIdNumerical = 1;
+        const tabIdString = 'General Information';
+        expect(component.tabLinkId(tabIdNumerical)).toEqual('tab-1');
+        expect(component.tabLinkId(tabIdString)).toEqual(
+            'tab-general-information'
+        );
+    });
 });

@@ -16,6 +16,7 @@ import { DropdownModule } from './dropdown/dropdown.module';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
 import { TabsComponent } from './tabs/tabs.component';
 import { ToggleComponent } from './toggle/toggle.component';
+import { SlugifyPipe } from './pipes/slugify.pipe';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { ToggleComponent } from './toggle/toggle.component';
         TabsComponent,
         TabPanelDirective,
         ToggleComponent,
+        SlugifyPipe,
     ],
     exports: [
         // shared components
@@ -48,6 +50,9 @@ import { ToggleComponent } from './toggle/toggle.component';
         RouterModule,
         TableModule,
         ToggleComponent,
+
+        // Shared pipes
+        SlugifyPipe,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -64,7 +69,7 @@ import { ToggleComponent } from './toggle/toggle.component';
             headerName: 'X-CSRFToken',
         }),
         RouterModule,
-
     ],
+    providers: [SlugifyPipe],
 })
 export class SharedModule {}
