@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { HighlightService } from '../services/highlight.service';
+import { HighlightService } from '../../services/highlight.service';
 
 @Pipe({
     name: 'regexHighlight'

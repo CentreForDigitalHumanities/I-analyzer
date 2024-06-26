@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 
-import { FoundDocument } from '../models';
+import { FoundDocument } from '../../models';
 import * as _ from 'lodash';
 
 @Pipe({
