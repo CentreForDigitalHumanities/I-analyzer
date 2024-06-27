@@ -131,7 +131,7 @@ class NamedEntitySearchView(APIView):
             source = results[0]['_source']
             for field in fields:
                 text_with_entities = source.get(field)
-                annotations.update({field.replace(':ner', ''): self.find_entities(
+                annotations.update({field.replace('_ner', ''): self.find_entities(
                     text_with_entities, entity_classes)})
             entities = [self.entity_dict.get(entity_class)
                         for entity_class in list(entity_classes)]
@@ -142,7 +142,7 @@ class NamedEntitySearchView(APIView):
         mapping = client.indices.get_mapping(index=index)
         fields = mapping[index]['mappings']['properties']
         field_names = fields.keys()
-        return [name for name in field_names if name.endswith(':ner') and fields[name].get('type') == 'annotated_text']
+        return [name for name in field_names if name.endswith('_ner') and fields[name].get('type') == 'annotated_text']
 
     def construct_named_entity_query(self, fields: list[str], document_id: str) -> dict:
         return {

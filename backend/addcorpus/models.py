@@ -270,7 +270,7 @@ class CorpusConfiguration(models.Model):
                 index=self.es_index)
             fields = mapping[self.es_index].get(
                 'mappings', {}).get('properties', {}).keys()
-            if any(field.endswith(':ner') for field in fields):
+            if any(field.endswith('_ner') for field in fields):
                 return True
         except:
             return False
