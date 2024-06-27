@@ -124,9 +124,9 @@ def validate_name_is_not_a_route_parameter(value):
 
 
 def validate_name_has_no_ner_suffix(value):
-    if value.endswith('_ner'):
+    if value.endswith(':ner'):
         raise ValidationError(
-            f'{value} cannot be used as a field name: the suffix `_ner` is reserved for annotated_text fields'
+            f'{value} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields'
         )
 
 def mapping_can_be_searched(es_mapping):

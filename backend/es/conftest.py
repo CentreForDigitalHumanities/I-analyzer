@@ -28,12 +28,12 @@ def es_ner_search_client(es_client, basic_mock_corpus, basic_corpus_public, inde
     # add data from mock corpus
     corpus = Corpus.objects.get(name=basic_mock_corpus)
     es_client.indices.put_mapping(index=corpus.configuration.es_index, properties={
-                                  "content_ner": {"type": "annotated_text"}})
+                                  "content:ner": {"type": "annotated_text"}})
 
     es_client.index(index=corpus.configuration.es_index, document={
         'id': 'my_identifier',
         'content': 'Guybrush Threepwood is looking for treasure on Monkey Island',
-        'content_ner': '[Guybrush Threepwood](PER) is looking for treasure on [Monkey Island](LOC)'})
+        'content:ner': '[Guybrush Threepwood](PER) is looking for treasure on [Monkey Island](LOC)'})
 
     # ES is "near real time", so give it a second before we start searching the index
     sleep(1)
