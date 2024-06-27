@@ -180,4 +180,4 @@ class NamedEntitySearchView(APIView):
         annotated = annotation[0][1:-1]
         entity_classes.update({entity_class})
         return input_text.replace(
-            ''.join(annotation), f'<span class="entity-{entity_class.lower()}">{annotated}</span>')
+            ''.join(annotation), f'<mark class="entity-{entity_class.lower()}">{annotated} <fa-icon icon="fa-person" title="{entity_class.lower()}"></mark>')
