@@ -60,12 +60,12 @@ class PeaceportalNorthAfrica(PeacePortal, XLSXCorpusDefinition):
     data_directory = settings.PEACEPORTAL_NORTHAFRICA_DATA
     es_index = getattr(
         settings, 'PEACEPORTAL_NORTHAFRICA_ES_INDEX', 'peaceportal-northafrica')
-    title = 'PEACE Portal (North Africa)'
+    title = 'Jewish Funerary Inscriptions from North Africa'
 
     def __init__(self):
         super().__init__()
         self.source_database.extractor = Constant(
-            value='North Africa'
+            value='Jewish Funerary Inscriptions from North Africa'
         )
 
         self._id.extractor = CSV(
