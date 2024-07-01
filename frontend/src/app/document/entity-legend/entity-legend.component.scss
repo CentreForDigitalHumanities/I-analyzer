@@ -1,6 +1,8 @@
-span.dot {
-    height: .7rem;
-    width: .7rem;
-    margin-right: .4rem;
-    display: inline-block;
+ul {
+    list-style-type: none;
+    margin-left: 0;
+}
+
+.no-entities-message {
+    opacity: 0.6;
 }

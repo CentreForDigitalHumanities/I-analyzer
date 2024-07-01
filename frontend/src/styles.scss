@@ -72,23 +72,30 @@ a.dropdown-item[disabled] {
     }
 }
 
-span[class^='entity'] {
-    padding-left: .4em;
+@mixin mark-entity($color) {
+    background-color: rgb(from $color r g b /.2);
+    border-bottom: .2em solid;
+    border-color: $color;
+
+    .entity-icon, &.entity-icon {
+        padding-left: .3em;
+        padding-right: .3em;
+        color: $color;
+    }
 }
 
-.entity-per {
-    background-color: $entity-person;
-    clip-path: polygon(100% 0%, 100% 100%, 0% 100%, 5px 50%, 0% 0%);
+.entity-person {
+    @include mark-entity($entity-person);
 }
-.entity-loc {
-    background-color: $entity-location;
-    clip-path: polygon(5px 0%, 100% 0%, 100% 100%, 5px 100%, 0% 50%);
+
+.entity-location {
+    @include mark-entity($entity-location);
 }
-.entity-org {
-    background-color: $entity-organization;
-    clip-path: polygon(0 0, 100% 0%, 100% 100%, 5px 100%);
+
+.entity-organization {
+    @include mark-entity($entity-organization);
 }
-.entity-mis {
-    background-color: $entity-miscellaneous;
-    clip-path: polygon(5px 0, 100% 0%, 100% 100%, 0% 100%);
+
+.entity-miscellaneous {
+    @include mark-entity($entity-miscellaneous);
 }

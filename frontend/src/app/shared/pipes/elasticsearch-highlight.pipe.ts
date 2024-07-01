@@ -1,14 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { CorpusField, FoundDocument } from '../../models';
 import * as _ from 'lodash';
+
+import { CorpusField, FoundDocument } from '../../models';
 
 @Pipe({
     name: 'elasticsearchHighlight'
 })
 export class ElasticsearchHighlightPipe implements PipeTransform {
-    constructor(private sanitizer: DomSanitizer) {
-    }
 
     /**
      * Transforms a text to display highlights fetched from Elasticsearch
@@ -23,8 +21,7 @@ export class ElasticsearchHighlightPipe implements PipeTransform {
         }
 
         const highlighted = this.highlightedInnerHtml(field, document);
-        const paragraphs = this.addParagraphTags(highlighted);
-        return this.sanitizer.bypassSecurityTrustHtml(paragraphs);
+        return highlighted;
     }
 
     highlightedInnerHtml(field: CorpusField, document: FoundDocument) {
@@ -36,11 +33,6 @@ export class ElasticsearchHighlightPipe implements PipeTransform {
                 }
             }
         return highlighted;
-    }
-
-    addParagraphTags(content: string | string[]) {
-        const paragraphs = typeof content === 'string' ? content.split('\n') : content;
-        return paragraphs.map(p => `<p>${p}</p>`).join(' ');
     }
 
     stripTags(htmlString: string){

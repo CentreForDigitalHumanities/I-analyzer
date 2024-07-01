@@ -1,4 +1,6 @@
 import * as _ from 'lodash';
+import { map, mergeMap, shareReplay, take } from 'rxjs/operators';
+
 import { makeContextParams } from '../utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
@@ -6,7 +8,7 @@ import { Tag } from './tag';
 import { Observable, Subject, merge, timer } from 'rxjs';
 import { EntityService } from '../services/entity.service';
 import { TagService } from '../services/tag.service';
-import { map, mergeMap, shareReplay, take } from 'rxjs/operators';
+import { FieldEntities } from './search-results';
 
 export class FoundDocument {
     id: string;
@@ -29,8 +31,7 @@ export class FoundDocument {
     tags$: Observable<Tag[]>;
 
     /** named entities associated with the document */
-    entities: string[];
-    annotations$: Observable<{[fieldName: string]: string}[]>;
+    entityAnnotations$: Observable<{[fieldName: string]: FieldEntities[]}>;
     private tagsChanged$ = new Subject<void>();
 
     constructor(
@@ -56,7 +57,7 @@ export class FoundDocument {
             shareReplay(1),
         );
 
-        this.annotations$ = created$.pipe(
+        this.entityAnnotations$ = created$.pipe(
             mergeMap(() => this.fetchAnnotatedEntities()),
             shareReplay(1),
         );
@@ -124,13 +125,10 @@ export class FoundDocument {
         );
     }
 
-    private fetchAnnotatedEntities(): Observable<{[fieldName: string]: string}[]> {
+    private fetchAnnotatedEntities(): Observable<{[fieldName: string]: FieldEntities[]}> {
         const response$ = this.entityService.getDocumentEntities(this.corpus, this.id);
         return response$.pipe(
-            map( response => {
-                this.entities = response.entities;
-                return response.annotations || [];
-            })
+            map( response => response.annotations || {} )
         );
     }
 

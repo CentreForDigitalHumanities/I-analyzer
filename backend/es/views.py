@@ -107,10 +107,10 @@ class NamedEntitySearchView(APIView):
         Perform search via Elasticsearch and reformat the output
     '''
     entity_dict = {
-        'PER': 'Person',
-        'LOC': 'Location',
-        'ORG': 'Organization',
-        'MISC': 'Miscellaneous'
+        'PER': 'person',
+        'LOC': 'location',
+        'ORG': 'organization',
+        'MISC': 'miscellaneous'
     }
 
     permission_classes = [CorpusAccessPermission]
@@ -125,17 +125,14 @@ class NamedEntitySearchView(APIView):
         response = client.search(index=index, query=query, fields=fields)
         results = hits(response)
         annotations = {}
-        entity_classes = set()
         response = {}
         if len(results):
             source = results[0]['_source']
             for field in fields:
                 text_with_entities = source.get(field)
                 annotations.update({field.replace('_ner', ''): self.find_entities(
-                    text_with_entities, entity_classes)})
-            entities = [self.entity_dict.get(entity_class)
-                        for entity_class in list(entity_classes)]
-            response = {'annotations': annotations, 'entities': entities}
+                    text_with_entities)})
+            response = {'annotations': annotations}
         return Response(response)
 
     def find_named_entity_fields(self, client, index: str) -> list[str]:
@@ -166,18 +163,18 @@ class NamedEntitySearchView(APIView):
             } for field in fields
         ]
 
-    def find_entities(self, input_text: str, entity_classes: set) -> str:
+    def find_entities(self, input_text: str) -> str:
         # regex pattern to match annotations of format "[Wally](Person)" and split it into two groups
         pattern = re.compile('(\[[^]]+\])(\([A-Z]+\))')
-        annotations = list(set(pattern.findall(input_text)))
-        for annotation in annotations:
-            input_text = self.substitute_annotation_with_tag(
-                annotation, input_text, entity_classes)
-        return input_text
-
-    def substitute_annotation_with_tag(self, annotation: tuple, input_text: str, entity_classes: set) -> str:
-        entity_class = annotation[1][1:-1]
-        annotated = annotation[0][1:-1]
-        entity_classes.update({entity_class})
-        return input_text.replace(
-            ''.join(annotation), f'<mark class="entity-{entity_class.lower()}">{annotated} <fa-icon icon="fa-person" title="{entity_class.lower()}"></mark>')
+        annotations = pattern.split(input_text)
+        output = []
+        for index, annotation in enumerate(annotations):
+            if annotation.startswith('('):
+                continue
+            elif annotation.startswith('['):
+               output.append(
+                   {'entity': self.entity_dict.get(annotations[index+1][1:-1]), 'text': annotation[1:-1]})
+            else:
+                if annotation:
+                    output.append({'entity': 'flat', 'text': annotation})
+        return output

@@ -83,9 +83,12 @@ export interface QueryFeedback {
     similarTerms?: string[];
 }
 
+export interface FieldEntities {
+    [entityType: string] : string
+}
+
 export interface NamedEntitiesResult {
-    entities: string[];
-    annotations: {[fieldName: string]: string}[];
+    annotations: {[fieldName: string]: FieldEntities[]};
 }
 
 export interface TaskResult { task_ids: string[] };

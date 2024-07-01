@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
 import { DocumentView } from '../models/document-page';
 import * as _ from 'lodash';
-import { documentIcons } from '../shared/icons';
+import { documentIcons, entityIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-document-view',
@@ -28,6 +28,7 @@ export class DocumentViewComponent implements OnChanges {
     public showEntities: boolean;
 
     documentIcons = documentIcons;
+    entityIcons = entityIcons;
 
     /** active tab on opening */
     activeTab: string;
