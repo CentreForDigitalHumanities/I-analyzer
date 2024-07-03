@@ -132,8 +132,7 @@ class NamedEntitySearchView(APIView):
                 text_with_entities = source.get(field)
                 annotations.update({field.replace(':ner', ''): self.find_entities(
                     text_with_entities)})
-            response = {'annotations': annotations}
-        return Response(response)
+        return Response(annotations)
 
     def find_named_entity_fields(self, client, index: str) -> list[str]:
         mapping = client.indices.get_mapping(index=index)

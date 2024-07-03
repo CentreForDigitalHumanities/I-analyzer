@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
+import {FontAwesomeTestingModule} from '@fortawesome/angular-fontawesome/testing';
 
 import { appRoutes, declarations, imports, providers } from './app.module';
 
@@ -28,6 +29,7 @@ import { SimpleStore } from './store/simple-store';
 export const commonTestBed = () => {
     const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
     filteredImports.push(RouterTestingModule.withRoutes(appRoutes));
+    filteredImports.push(FontAwesomeTestingModule)
     const filteredProviders = providers.filter(provider => !(
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService]));
     filteredProviders.push(

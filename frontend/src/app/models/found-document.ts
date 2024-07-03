@@ -126,10 +126,7 @@ export class FoundDocument {
     }
 
     private fetchAnnotatedEntities(): Observable<{[fieldName: string]: FieldEntities[]}> {
-        const response$ = this.entityService.getDocumentEntities(this.corpus, this.id);
-        return response$.pipe(
-            map( response => response.annotations || {} )
-        );
+        return this.entityService.getDocumentEntities(this.corpus, this.id);
     }
 
     private setTags(tags: Tag[]): Observable<Tag[]> {

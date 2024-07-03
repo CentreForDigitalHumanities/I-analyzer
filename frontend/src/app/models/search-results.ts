@@ -88,7 +88,7 @@ export interface FieldEntities {
 }
 
 export interface NamedEntitiesResult {
-    annotations: {[fieldName: string]: FieldEntities[]};
+    [fieldName: string]: FieldEntities[]
 }
 
 export interface TaskResult { task_ids: string[] };

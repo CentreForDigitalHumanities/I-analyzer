@@ -44,7 +44,7 @@
                             <span *ngFor="let textSegment of annotations[field.name]">
                                 <mark *ngIf="textSegment.entity !== 'flat'; else unannotatedText" [className]="'entity-'+textSegment.entity">
                                     {{textSegment.text}}
-                                    <fa-icon class="entity-icon" [icon]="entityIcons[textSegment.entity]" [title]="textSegment.entity"></fa-icon>
+                                    <fa-icon [icon]="entityIcons[textSegment.entity]" [title]="textSegment.entity" class="entity-icon"></fa-icon>
                                 </mark>
                                 <ng-template #unannotatedText>
                                     {{textSegment.text | paragraph}}

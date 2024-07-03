@@ -45,9 +45,11 @@ describe('DocumentViewComponent', () => {
         expect(debug[1].attributes['id']).toBe('tab-scan');
     });
 
-    it('shows a named entity legend if showEntities is true', () => {
+    it('shows named entities if showEntities is true', async () => {
         expect(fixture.debugElement.query(By.css('ia-entity-legend'))).toBeFalsy();
         component.showEntities = true;
+        fixture.detectChanges();
+        await fixture.whenStable();
         fixture.detectChanges();
         expect(fixture.debugElement.query(By.css('ia-entity-legend'))).toBeTruthy();
     });

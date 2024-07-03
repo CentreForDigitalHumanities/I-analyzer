@@ -19,8 +19,8 @@ import { ElasticsearchHighlightPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } f
         SearchRelevanceComponent,
         DocumentPopupComponent,
         DocumentPreviewComponent,
-        ElasticsearchHighlightPipe,
         EntityLegendComponent,
+        ElasticsearchHighlightPipe,
         GeoDataPipe,
         ParagraphPipe,
         SnippetPipe
@@ -36,6 +36,7 @@ import { ElasticsearchHighlightPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } f
         DocumentViewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,
+        EntityLegendComponent,
         SearchRelevanceComponent,
     ]
 })
