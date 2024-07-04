@@ -1,8 +1,9 @@
 import { Params } from '@angular/router';
 import { StoreSync } from '../store/store-sync';
 import { Store } from '../store/types';
+import * as _ from 'lodash';
 
-export type SearchTab = 'documents'|'visualizations'|'download';
+export type SearchTab = 'search-results'|'visualizations'|'download';
 
 interface SearchTabState {
     tab: SearchTab
@@ -17,18 +18,18 @@ export class SearchTabs extends StoreSync<SearchTabState> {
     }
 
     protected storeToState(params: Params): SearchTabState {
-        if (params.get('tab')) {
+        if (_.get(params, 'tab')) {
             return { tab: params.tab }
         }
-        else if (params.get('visualize')) {
+        else if (_.get(params, 'visualize')) {
             return { tab: 'visualizations' };
         } else {
-            return { tab: 'documents' }
+            return { tab: 'search-results' }
         };
     }
 
     protected stateToStore(state: SearchTabState): Params {
-        if (state.tab == 'documents') {
+        if (state.tab == 'search-results') {
             return { tab: null }
         } else {
             return state;

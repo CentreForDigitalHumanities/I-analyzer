@@ -42,7 +42,7 @@
             </div>
             <!-- search results, on right -->
             <div class="column is-9" *ngIf="queryModel">
-                <ia-tabs [activeTab]="showVisualization ? 'visualizations' : 'search-results'">
+                <ia-tabs [activeTab]="tabs.state$.value.tab" (tabChange)="onTabChange($event)">
                     <ng-template iaTabPanel id="search-results" title="Search results" [icon]="searchIcons.documents">
                         <ia-search-results #searchResults [queryModel]="queryModel" [user]="user"
                             (searched)="onSearched($event)" role="tabpanel">
