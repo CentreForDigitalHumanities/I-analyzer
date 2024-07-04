@@ -1,26 +1,74 @@
-<ng-container *ngIf="totalResults.result$ | async as result">
-    <p>{{result}} results.</p>
+<ng-container *ngIf="totalResults.result$ | async as total">
+    <p class="block">{{total}} results.</p>
 
-<div class="level-item">
-    <div class="field has-addons">
-        <p class="control" iaBalloon="Only the first {{downloadLimit || directDownloadLimit}} results will be in the file!"
-            [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
-            <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
-                (click)="chooseDownloadMethod()" [disabled]="result == 0">
-                <span class="icon">
-                    <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon>
-                </span>
-                <span>Download csv</span>
-            </button>
-        </p>
-        <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
-            <ia-select-field [corpusFields]="availableCsvFields" filterCriterion="downloadable"
-                (selection)="selectCsvFields($event)">
-            </ia-select-field>
+    <p class="block">
+        You can download a CSV file with your search results. View the
+        <a [routerLink]="['/manual', 'download']">manual</a>
+        for more information.
+    </p>
+
+    <div class="message" *ngIf="downloadLimit < total">
+        <p class="message-body">
+            Only the first {{downloadLimit}} results will be included in the file.
         </p>
     </div>
-</div>
+    <form>
+        <div class="field">
+            <label class="label">Fields</label>
+            <div class="control">
+                <ia-select-field [corpusFields]="availableCsvFields" filterCriterion="downloadable"
+                    (selection)="selectCsvFields($event)">
+                </ia-select-field>
+            </div>
+            <p class="help">
+                Select which fields should be included as columns in the CSV file.
+            </p>
+        </div>
+        <div class="field">
+            <label class="label">
+                Sort results
+            </label>
+        </div>
+        <div class="field" *ngIf="queryModel.queryText">
+            <label class="label">
+                Include highlight snippets
+            </label>
+        </div>
 
-<ia-download-options [download]="pendingDownload" [isDownloading]="isDownloading" (cancel)="pendingDownload = undefined"
-    (confirm)="confirmDirectDownload($event)"></ia-download-options>
+        <ng-container *ngIf="(canDownloadDirectly$ | async); else longDownloadSubmit">
+            <div class="field" *ngIf="canDownloadDirectly$ | async">
+                <label class="label">Encoding</label>
+            </div>
+            <div class="block">
+                <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}"
+                    type="submit"
+                    (click)="chooseDownloadMethod()" [disabled]="total == 0">
+                    <span class="icon">
+                        <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon>
+                    </span>
+                    <span>Download</span>
+                </button>
+            </div>
+        </ng-container>
+        <ng-template #longDownloadSubmit>
+            <div class="message">
+                <p class="message-body">
+                    Your download contains too many documents to be immediately available.
+                    You can request the download now, and receive an email when it's
+                    ready.
+                </p>
+            </div>
+            <div class="block">
+                <button class="button is-primary" type="submit" (click)="longDownload()">
+                    <span class="icon">
+                        <fa-icon [icon]="actionIcons.wait"></fa-icon>
+                    </span>
+                    <span>Request download</span>
+                </button>
+            </div>
+        </ng-template>
+    </form>
+
+    <ia-download-options [download]="pendingDownload" [isDownloading]="isDownloading" (cancel)="pendingDownload = undefined"
+        (confirm)="confirmDirectDownload($event)"></ia-download-options>
 </ng-container>
