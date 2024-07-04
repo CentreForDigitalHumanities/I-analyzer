@@ -15,7 +15,7 @@ on:
       - 'dependabot/**'
     paths:
       - 'frontend/**'
-      - '.github/workflows/**'
+      - '.github/workflows/frontend*'
       - 'docker-compose.yaml'
 
 jobs:
@@ -38,4 +38,4 @@ jobs:
         docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend || true
     - name: Run frontend unit tests
       run: |
-        docker run ianalyzer-frontend bash -c "yarn prebuild && yarn test"
+        docker run ianalyzer-frontend sh -c "yarn prebuild && yarn test"

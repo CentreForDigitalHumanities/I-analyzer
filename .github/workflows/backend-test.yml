@@ -15,7 +15,7 @@ on:
       - 'dependabot/**'
     paths:
       - 'backend/**'
-      - '.github/workflows/**'
+      - '.github/workflows/backend*'
       - 'docker-compose.yaml'
 
 jobs:
