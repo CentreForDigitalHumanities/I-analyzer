@@ -33,9 +33,21 @@
         </div>
 
         <div class="field" *ngIf="queryModel.queryText">
-            <label class="label">
-                Include highlight snippets
-            </label>
+            <div role="group" class="control">
+                <legend class="label">
+                    Query in context
+                </legend>
+                <label>
+                    <input type="checkbox"
+                        [checked]="(resultsConfig.highlight$ | async) !== undefined"
+                        (change)="onHighlightChange($event)">
+                    Include "query in context" snippets
+                </label>
+            </div>
+            <p class="help">
+                You can include extra columns with snippets of text, showing the context
+                in which your search query occurred. View the manual for more information.
+            </p>
         </div>
 
         <ng-container *ngIf="(canDownloadDirectly$ | async); else longDownloadSubmit">

@@ -12,6 +12,21 @@ import { Router } from '@angular/router';
 import { pageResultsParametersToParams } from '../utils/params';
 import { PageResults, PageResultsParameters } from '../models/page-results';
 
+const QUERY_IN_CONTEXT_FIELD = {
+    name: 'context',
+    description: `Query surrounded by 200 characters`,
+    displayName: 'Query in context',
+    displayType: 'text_content',
+    csvCore: false,
+    hidden: false,
+    sortable: false,
+    searchable: false,
+    downloadable: true,
+    filterOptions: null,
+    mappingType: null,
+} as unknown as CorpusField;
+
+
 @Component({
     selector: 'ia-download',
     templateUrl: './download.component.html',
@@ -41,8 +56,6 @@ export class DownloadComponent implements OnChanges {
     encodingOptions = ['utf-8', 'utf-16'];
     encoding: 'utf-8' | 'utf-16' = 'utf-8';
 
-    highlight = false;
-
     totalResults: TotalResults;
     downloadDisabled$: Observable<boolean>;
 
@@ -65,10 +78,6 @@ export class DownloadComponent implements OnChanges {
         this.downloadLimit = this.userDownloadLimit || this.directDownloadLimit;
     }
 
-    private get highlightSize(): number|undefined {
-        return this.highlight ? 200  : undefined;
-    }
-
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
             this.totalResults?.complete();
@@ -88,29 +97,20 @@ export class DownloadComponent implements OnChanges {
         }
 
         this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
-        const highlight = undefined;
-        // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
-        if (highlight !== undefined) {
-            this.availableCsvFields.push({
-                name: 'context',
-                description: `Query surrounded by ${highlight} characters`,
-                displayName: 'Query in context',
-                displayType: 'text_content',
-                csvCore: false,
-                hidden: false,
-                sortable: false,
-                searchable: false,
-                downloadable: true,
-                filterOptions: null,
-                mappingType: null,
-            } as unknown as CorpusField);
-        }
     }
 
+    onHighlightChange(event): void {
+        if (event.target.checked) {
+            this.resultsConfig.setParams({ highlight: 200 });
+        } else {
+            this.resultsConfig.setParams({ highlight: null });
+        }
+    }
 
     /** download short file directly */
     public confirmDirectDownload() {
         const sort = this.resultsConfig.state$.value.sort;
+        const highlight = this.resultsConfig.state$.value.highlight;
         this.isDownloading = true;
         this.downloadService
             .download(
@@ -118,9 +118,9 @@ export class DownloadComponent implements OnChanges {
                 this.queryModel,
                 this.getCsvFields(),
                 this.directDownloadLimit,
-                this.resultsRoute(this.queryModel, sort, this.highlightSize),
+                this.resultsRoute(this.queryModel, sort, highlight),
                 sort,
-                this.highlightSize,
+                highlight,
                 { encoding: this.encoding }
             )
             .catch((error) => {
@@ -139,14 +139,15 @@ export class DownloadComponent implements OnChanges {
     /** start backend task to create csv file */
     longDownload() {
         const sort = this.resultsConfig.state$.value.sort;
+        const highlight = this.resultsConfig.state$.value.highlight;
         this.downloadService
             .downloadTask(
                 this.corpus,
                 this.queryModel,
                 this.getCsvFields(),
-                this.resultsRoute(this.queryModel, sort, this.highlightSize),
+                this.resultsRoute(this.queryModel, sort, highlight),
                 sort,
-                this.highlightSize,
+                highlight,
             )
             .then((results) => {
                 this.notificationService.showMessage(
@@ -161,11 +162,16 @@ export class DownloadComponent implements OnChanges {
     }
 
     private getCsvFields(): CorpusField[] {
+        let selected: CorpusField[];
         if (this.selectedCsvFields === undefined) {
-            return this.corpus.fields.filter((field) => field.csvCore);
+            selected = this.corpus.fields.filter((field) => field.csvCore);
         } else {
-            return this.selectedCsvFields;
+            selected = this.selectedCsvFields;
         }
+        if (this.resultsConfig.state$.value.highlight) {
+            selected.push(QUERY_IN_CONTEXT_FIELD);
+        }
+        return selected;
     }
 
     /**
@@ -174,7 +180,7 @@ export class DownloadComponent implements OnChanges {
     private resultsRoute(
         queryModel: QueryModel, sort: SortState, highlight?: number
     ): string {
-        const resultsParameters: PageResultsParameters = {sort, from: 0, size: 20 };
+        const resultsParameters: PageResultsParameters = {sort, from: 0, size: 20, highlight };
         const queryParams = {
             ...queryModel.toQueryParams(),
             ...pageResultsParametersToParams(resultsParameters, queryModel.corpus)
