@@ -36,20 +36,25 @@ def output_path(directory, filename):
     output_name = name + '_converted' + '.' + ext
     return os.path.join(directory, output_name), output_name
 
-def write_output(filename, df, encoding='utf-8', format = None, dialect_name='excel'):
+def write_output(filename, df, query_term=None, encoding='utf-8', format=None, dialect_name='excel'):
     dialect = csv.get_dialect(dialect_name)
 
     if format == 'wide':
-        header =  [format_wide_format_column_name(column) for column in df.columns] # nicely format wide format columns
-        include_index = True # show index after wide format reformatting, when the field value is used as the index
+        header = [format_wide_format_column_name(column) for column in df.columns]  # nicely format wide format columns
+        include_index = True  # show index after wide format reformatting, when the field value is used as the index
         index_label = df.index.name
     else:
-        header = df.columns
+        header = df.columns.tolist()
+        if query_term:
+            header.append('Query')
         include_index = False
         index_label = None
 
+    if query_term:
+        df['Query'] = query_term
+
     df.to_csv(filename, index=include_index, header=header, index_label=index_label, encoding=encoding,
-        sep=dialect.delimiter, quotechar=dialect.quotechar, quoting=dialect.quoting)
+              sep=dialect.delimiter, quotechar=dialect.quotechar, quoting=dialect.quoting)
 
 
 def format_wide_format_column_name(column):
@@ -63,16 +68,18 @@ def format_wide_format_column_name(column):
     else:
         return '{} ({})'.format(quantity, query)
 
-def set_long_wide_format(df, format):
+def set_long_wide_format(df, format, query_term=None):
     # check if wide format conversion is needed
-    # i.e. specified format is wide, and the resutls include multiple queries (i.e. there is a query column)
+    # i.e. specified format is wide, and the results include multiple queries (i.e. there is a query column)
     if format == 'wide' and df.columns[0] == 'Query':
         query_column = df.columns[0]
-        field_column = df.columns[1] # the field values are being compared on
+        field_column = df.columns[1]  # the field values are being compared on
         value_columns = df.columns[2:]
 
-        wide = pandas.pivot(df, index = field_column, columns=query_column, values = value_columns)
+        wide = pandas.pivot(df, index=field_column, columns=query_column, values=value_columns)
         no_duplicate_columns = drop_duplicate_total_columns(wide)
+        if query_term:
+            no_duplicate_columns['Query'] = query_term
         return no_duplicate_columns
 
     return df
