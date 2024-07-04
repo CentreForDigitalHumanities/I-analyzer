@@ -26,7 +26,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
 
     isLoading$ = new BehaviorSubject<boolean>(false);
 
-    neighbours = 5;
+    neighbours: number = 5;
 
     timeIntervals: string[] = [];
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
@@ -61,7 +61,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     teardown() {}
 
     setStateFromParams(params: Params) {
-        this.neighbours = _.get(params, 'neighbours', 5);
+        this.neighbours = params.get('neighbours');
     }
 
     getData(): void {
