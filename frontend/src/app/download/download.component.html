@@ -36,8 +36,18 @@
         </div>
 
         <ng-container *ngIf="(canDownloadDirectly$ | async); else longDownloadSubmit">
-            <div class="field" *ngIf="canDownloadDirectly$ | async">
-                <label class="label">Encoding</label>
+            <div class="field">
+                <div role="group" class="control">
+                    <legend class="label">File encoding</legend>
+                    <label class="radio" *ngFor="let encodingOption of encodingOptions">
+                        <input type="radio" name="encoding" (click)="encoding=encodingOption" [checked]="encoding===encodingOption">
+                        {{encodingOption}}
+                    </label>
+                </div>
+                <p class="help">
+                    We recommend using utf-8 encoding for most applications, including Python and R.
+                    For importing files in Microsoft Excel, we recommend utf-16.
+                </p>
             </div>
             <div class="block">
                 <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}"
@@ -68,7 +78,4 @@
             </div>
         </ng-template>
     </form>
-
-    <ia-download-options [download]="pendingDownload" [isDownloading]="isDownloading" (cancel)="pendingDownload = undefined"
-        (confirm)="confirmDirectDownload($event)"></ia-download-options>
 </ng-container>

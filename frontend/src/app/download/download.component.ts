@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 import { environment } from '../../environments/environment';
 import { AuthService, DownloadService, NotificationService, SearchService } from '../services/index';
-import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel, ResultOverview, SortState } from '../models/index';
+import { Corpus, CorpusField, PendingDownload, QueryModel, SortState } from '../models/index';
 import { actionIcons } from '../shared/icons';
 import { TotalResults } from '../models/total-results';
 import { SimpleStore } from '../store/simple-store';
@@ -35,6 +35,9 @@ export class DownloadComponent implements OnChanges {
     downloadLimit: number;
 
     canDownloadDirectly$: Observable<boolean>;
+
+    encodingOptions = ['utf-8', 'utf-16'];
+    encoding: 'utf-8' | 'utf-16' = 'utf-8';
 
     sort: SortState = [undefined, 'asc'];
     highlight = false;
@@ -101,7 +104,7 @@ export class DownloadComponent implements OnChanges {
 
 
     /** download short file directly */
-    public confirmDirectDownload(options: DownloadOptions) {
+    public confirmDirectDownload() {
         this.isDownloading = true;
         this.downloadService
             .download(
@@ -112,7 +115,7 @@ export class DownloadComponent implements OnChanges {
                 this.resultsRoute(this.queryModel, this.sort, this.highlightSize),
                 this.sort,
                 this.highlightSize,
-                options
+                { encoding: this.encoding }
             )
             .catch((error) => {
                 this.notificationService.showMessage(error);
