@@ -9,6 +9,8 @@ import { TotalResults } from '../models/total-results';
 import { SimpleStore } from '../store/simple-store';
 import { Observable, map } from 'rxjs';
 import { Router } from '@angular/router';
+import { pageResultsParametersToParams } from '../utils/params';
+import { PageResultsParameters } from '../models/page-results';
 
 @Component({
     selector: 'ia-download',
@@ -107,7 +109,7 @@ export class DownloadComponent implements OnChanges {
                 this.queryModel,
                 this.getCsvFields(),
                 this.directDownloadLimit,
-                this.router.url,
+                this.resultsRoute(this.queryModel, this.sort, this.highlightSize),
                 this.sort,
                 this.highlightSize,
                 options
@@ -132,7 +134,7 @@ export class DownloadComponent implements OnChanges {
                 this.corpus,
                 this.queryModel,
                 this.getCsvFields(),
-                this.router.url,
+                this.resultsRoute(this.queryModel, this.sort, this.highlightSize),
                 this.sort,
                 this.highlightSize,
             )
@@ -148,17 +150,29 @@ export class DownloadComponent implements OnChanges {
             });
     }
 
-    /** results can be downloaded directly: show menu to pick file options */
-    private directDownload() {
-        this.pendingDownload = { download_type: 'search_results' };
-    }
-
-
     private getCsvFields(): CorpusField[] {
         if (this.selectedCsvFields === undefined) {
             return this.corpus.fields.filter((field) => field.csvCore);
         } else {
             return this.selectedCsvFields;
         }
+    }
+
+    /**
+     * Generate URL to view these results in the web interface
+     */
+    private resultsRoute(
+        queryModel: QueryModel, sort: SortState, highlight?: number
+    ): string {
+        const resultsParameters: PageResultsParameters = {sort, from: 0, size: 20 };
+        const queryParams = {
+            ...queryModel.toQueryParams(),
+            ...pageResultsParametersToParams(resultsParameters, queryModel.corpus)
+        };
+        const tree = this.router.createUrlTree(
+            ['/search', queryModel.corpus.name],
+            { queryParams }
+        );
+        return tree.toString();
     }
 }
