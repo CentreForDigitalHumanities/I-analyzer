@@ -17,7 +17,6 @@ import { map, takeUntil } from 'rxjs/operators';
 import { ShowError } from '../error/error.component';
 import {
     QueryModel,
-    ResultOverview,
     SearchResults,
     User,
 } from '../models/index';
@@ -46,7 +45,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     public user: User;
 
     @Output()
-    public searched = new EventEmitter<ResultOverview>();
+    public searched = new EventEmitter<void>();
 
     public pageResults: PageResults;
 
@@ -82,13 +81,8 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
             this.error$ = this.pageResults.error$.pipe(map(this.parseError));
             this.pageResults.result$
                 .pipe(takeUntil(this.destroy$))
-                .subscribe((result) => {
-                    this.searched.emit({
-                        queryText: this.queryModel.queryText,
-                        sort: this.pageResults.state$.value.sort,
-                        highlight: this.pageResults.state$.value.highlight,
-                        resultsCount: result?.total,
-                    });
+                .subscribe(() => {
+                    this.searched.emit();
                 });
         }
     }

@@ -1,10 +1,9 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
-import { CorpusService, DialogService, ParamService, } from '../services/index';
+import { Corpus, CorpusField, QueryModel, User } from '../models/index';
+import { CorpusService, DialogService, } from '../services/index';
 
 import { AuthService } from '../services/auth.service';
 import { distinct, filter } from 'rxjs/operators';
@@ -31,10 +30,6 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public isSearching: boolean;
     public hasSearched: boolean;
-    /**
-     * Whether the total number of hits exceeds the download limit.
-     */
-    public hasLimitedResults = false;
 
     public user: User;
 
@@ -46,8 +41,6 @@ export class SearchComponent implements OnInit, OnDestroy {
      * This is the query text currently entered in the interface.
      */
     public queryText: string;
-
-    resultOverview: ResultOverview;
 
     public filterFields: CorpusField[] = [];
 
@@ -109,12 +102,10 @@ export class SearchComponent implements OnInit, OnDestroy {
      *
      * @param input
      */
-    public onSearched(input: ResultOverview) {
+    public onSearched() {
         this.isSearching = false;
         this.hasSearched = true;
-        this.resultOverview = input;
-        this.hasLimitedResults =
-            this.user? input.resultsCount > this.user.downloadLimit : true;
+
     }
 
     public showQueryDocumentation() {
