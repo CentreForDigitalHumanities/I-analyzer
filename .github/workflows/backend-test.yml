@@ -38,5 +38,5 @@ jobs:
     - name: Run backend tests
       run: |
         cd ..
-        mkdir -p /ci-data
+        sudo mkdir -p /ci-data
         docker-compose --env-file .env-ci run --rm backend pytest
