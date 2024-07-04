@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import { showLoading } from '../../utils/utils';
@@ -60,8 +60,8 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
 
     teardown() {}
 
-    setStateFromParams(params: Params) {
-        this.neighbours = params.get('neighbours');
+    setStateFromParams(params: ParamMap) {
+        this.neighbours = Number(params.get('neighbours'));
     }
 
     getData(): void {
