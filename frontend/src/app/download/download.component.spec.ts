@@ -5,6 +5,7 @@ import { commonTestBed } from '../common-test-bed';
 import { QueryModel } from '../models';
 
 import { DownloadComponent } from './download.component';
+import { SimpleChange } from '@angular/core';
 
 describe('DownloadComponent', () => {
     let component: DownloadComponent;
@@ -19,7 +20,9 @@ describe('DownloadComponent', () => {
         component = fixture.componentInstance;
         component.corpus = mockCorpus;
         component.queryModel = new QueryModel(mockCorpus);
-        component.ngOnChanges();
+        component.ngOnChanges({
+            queryModel: new SimpleChange(undefined, component.queryModel, true)
+         });
         fixture.detectChanges();
     });
 

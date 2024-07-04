@@ -1,10 +1,13 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 
 import { environment } from '../../environments/environment';
-import { DownloadService, NotificationService } from '../services/index';
+import { DownloadService, NotificationService, SearchService } from '../services/index';
 import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel, ResultOverview } from '../models/index';
 import { actionIcons } from '../shared/icons';
+import { TotalResults } from '../models/total-results';
+import { SimpleStore } from '../store/simple-store';
+import { Observable, map } from 'rxjs';
 
 @Component({
     selector: 'ia-download',
@@ -33,6 +36,9 @@ export class DownloadComponent implements OnChanges {
 
     directDownloadLimit = environment.directDownloadLimit;
 
+    totalResults: TotalResults;
+    downloadDisabled$: Observable<boolean>;
+
     private downloadsPageLink = {
         text: 'view downloads',
         route: ['/download-history'],
@@ -40,14 +46,25 @@ export class DownloadComponent implements OnChanges {
 
     constructor(
         private downloadService: DownloadService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private searchService: SearchService,
     ) {}
 
     get downloadDisabled(): boolean {
         return !this.resultOverview || this.resultOverview.resultsCount === 0;
     }
 
-    ngOnChanges() {
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.queryModel) {
+            this.totalResults?.complete();
+            this.totalResults = new TotalResults(
+                new SimpleStore(), this.searchService, this.queryModel
+            );
+            this.downloadDisabled$ = this.totalResults.result$.pipe(
+                map(result => result > 0)
+            );
+        }
+
         this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
         const highlight = this.resultOverview?.highlight;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
