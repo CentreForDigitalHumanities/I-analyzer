@@ -18,7 +18,6 @@ export class WordModelsComponent extends ParamDirective {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    user: User;
     corpus: Corpus;
 
     queryText: string;
@@ -79,7 +78,6 @@ export class WordModelsComponent extends ParamDirective {
     }
 
     async initialize(): Promise<void> {
-        this.user = await this.authService.getCurrentUserPromise();
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
     }
 
