@@ -69,8 +69,10 @@ def format_wide_format_column_name(column):
         return '{} ({})'.format(quantity, query)
 
 def set_long_wide_format(df, format, query_term=None):
+
     # check if wide format conversion is needed
     # i.e. specified format is wide, and the results include multiple queries (i.e. there is a query column)
+
     if format == 'wide' and df.columns[0] == 'Query':
         query_column = df.columns[0]
         field_column = df.columns[1]  # the field values are being compared on
