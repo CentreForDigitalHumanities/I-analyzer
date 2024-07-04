@@ -25,12 +25,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public corpus: Corpus;
 
-    /**
-     * The filters have been modified.
-     */
-    public isSearching: boolean;
-    public hasSearched: boolean;
-
     public user: User;
 
     searchIcons = searchIcons;
@@ -94,18 +88,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
         this.queryModel.complete();
-    }
-
-
-    /**
-     * Event triggered from search-results.component
-     *
-     * @param input
-     */
-    public onSearched() {
-        this.isSearching = false;
-        this.hasSearched = true;
-
     }
 
     public showQueryDocumentation() {

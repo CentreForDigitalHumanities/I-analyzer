@@ -16,7 +16,7 @@
                         placeholder="Query" />
                 </div>
                 <div class="control">
-                    <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
+                    <button class="button is-primary" type="submit" id="search">
                         <span class="icon">
                             <fa-icon [icon]="actionIcons.search" aria-hidden="true"></fa-icon>
                         </span>
@@ -44,12 +44,12 @@
             <div class="column is-9" *ngIf="queryModel">
                 <ia-tabs [activeTab]="tabs.state$.value.tab" (tabChange)="onTabChange($event)">
                     <ng-template iaTabPanel id="search-results" title="Search results" [icon]="searchIcons.documents">
-                        <ia-search-results #searchResults [queryModel]="queryModel" [user]="user"
-                            (searched)="onSearched($event)" role="tabpanel">
+                        <ia-search-results [queryModel]="queryModel" [user]="user">
                         </ia-search-results>
                     </ng-template>
                     <ng-template iaTabPanel id="visualizations" title="Visualizations" [icon]="searchIcons.visualizations">
-                        <ia-visualization #visualization [corpus]="corpus" [queryModel]="queryModel" role="tabpanel"></ia-visualization>
+                        <ia-visualization [corpus]="corpus" [queryModel]="queryModel">
+                        </ia-visualization>
                     </ng-template>
                     <ng-template iaTabPanel id="download" title="Download"
                         [icon]="actionIcons.download">

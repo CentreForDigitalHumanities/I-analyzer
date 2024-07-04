@@ -2,12 +2,10 @@
 import {
     Component,
     ElementRef,
-    EventEmitter,
     HostListener,
     Input,
     OnChanges,
     OnDestroy,
-    Output,
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
@@ -44,9 +42,6 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     @Input()
     public user: User;
 
-    @Output()
-    public searched = new EventEmitter<void>();
-
     public pageResults: PageResults;
 
     public isLoading = false;
@@ -55,8 +50,6 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     public results: SearchResults;
 
     public resultsPerPage = 20;
-
-    public imgSrc: Uint8Array;
 
     error$: Observable<ShowError>;
 
@@ -81,9 +74,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
             this.error$ = this.pageResults.error$.pipe(map(this.parseError));
             this.pageResults.result$
                 .pipe(takeUntil(this.destroy$))
-                .subscribe(() => {
-                    this.searched.emit();
-                });
+                .subscribe();
         }
     }
 
