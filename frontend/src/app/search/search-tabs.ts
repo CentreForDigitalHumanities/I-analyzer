@@ -10,7 +10,7 @@ interface SearchTabState {
 };
 
 export class SearchTabs extends StoreSync<SearchTabState> {
-    protected keysInStore: ['tab', 'visualize'];
+    protected keysInStore = ['tab', 'visualize'];
 
     constructor(store: Store) {
         super(store);
@@ -20,8 +20,7 @@ export class SearchTabs extends StoreSync<SearchTabState> {
     protected storeToState(params: Params): SearchTabState {
         if (_.get(params, 'tab')) {
             return { tab: params.tab }
-        }
-        else if (_.get(params, 'visualize')) {
+        } else if (_.get(params, 'visualize')) {
             return { tab: 'visualizations' };
         } else {
             return { tab: 'search-results' }
@@ -29,8 +28,8 @@ export class SearchTabs extends StoreSync<SearchTabState> {
     }
 
     protected stateToStore(state: SearchTabState): Params {
-        if (state.tab == 'search-results') {
-            return { tab: null }
+        if (state.tab === 'search-results') {
+            return { tab: null };
         } else {
             return state;
         }
