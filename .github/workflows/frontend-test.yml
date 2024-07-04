@@ -33,9 +33,8 @@ jobs:
     - name: Build frontend image, using cache from Github registry
       run: |
         cd frontend
-        docker pull ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
-        docker build . --tag ianalyzer-frontend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
-        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
+        docker build . --tag ianalyzer-frontend --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend
+        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend || true
     - name: Run frontend unit tests
       run: |
-        docker run ianalyzer-frontend:latest yarn test
+        docker run ianalyzer-frontend yarn test
