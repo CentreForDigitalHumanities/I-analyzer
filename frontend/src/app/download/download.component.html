@@ -24,11 +24,14 @@
                 Select which fields should be included as columns in the CSV file.
             </p>
         </div>
+
         <div class="field">
             <label class="label">
                 Sort results
             </label>
+            <ia-search-sorting [pageResults]="resultsConfig"></ia-search-sorting>
         </div>
+
         <div class="field" *ngIf="queryModel.queryText">
             <label class="label">
                 Include highlight snippets

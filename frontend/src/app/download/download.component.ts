@@ -10,7 +10,7 @@ import { SimpleStore } from '../store/simple-store';
 import { Observable, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { pageResultsParametersToParams } from '../utils/params';
-import { PageResultsParameters } from '../models/page-results';
+import { PageResults, PageResultsParameters } from '../models/page-results';
 
 @Component({
     selector: 'ia-download',
@@ -30,6 +30,8 @@ export class DownloadComponent implements OnChanges {
 
     public pendingDownload: PendingDownload;
 
+    resultsConfig: PageResults;
+
     actionIcons = actionIcons;
 
     downloadLimit: number;
@@ -39,7 +41,6 @@ export class DownloadComponent implements OnChanges {
     encodingOptions = ['utf-8', 'utf-16'];
     encoding: 'utf-8' | 'utf-16' = 'utf-8';
 
-    sort: SortState = [undefined, 'asc'];
     highlight = false;
 
     totalResults: TotalResults;
@@ -71,6 +72,7 @@ export class DownloadComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
             this.totalResults?.complete();
+            this.resultsConfig?.complete();
             this.totalResults = new TotalResults(
                 new SimpleStore(), this.searchService, this.queryModel
             );
@@ -79,6 +81,9 @@ export class DownloadComponent implements OnChanges {
             );
             this.canDownloadDirectly$ = this.totalResults.result$.pipe(
                 map(result => result <= this.directDownloadLimit)
+            );
+            this.resultsConfig = new PageResults(
+                new SimpleStore(), this.searchService, this.queryModel
             );
         }
 
@@ -105,6 +110,7 @@ export class DownloadComponent implements OnChanges {
 
     /** download short file directly */
     public confirmDirectDownload() {
+        const sort = this.resultsConfig.state$.value.sort;
         this.isDownloading = true;
         this.downloadService
             .download(
@@ -112,8 +118,8 @@ export class DownloadComponent implements OnChanges {
                 this.queryModel,
                 this.getCsvFields(),
                 this.directDownloadLimit,
-                this.resultsRoute(this.queryModel, this.sort, this.highlightSize),
-                this.sort,
+                this.resultsRoute(this.queryModel, sort, this.highlightSize),
+                sort,
                 this.highlightSize,
                 { encoding: this.encoding }
             )
@@ -132,13 +138,14 @@ export class DownloadComponent implements OnChanges {
 
     /** start backend task to create csv file */
     longDownload() {
+        const sort = this.resultsConfig.state$.value.sort;
         this.downloadService
             .downloadTask(
                 this.corpus,
                 this.queryModel,
                 this.getCsvFields(),
-                this.resultsRoute(this.queryModel, this.sort, this.highlightSize),
-                this.sort,
+                this.resultsRoute(this.queryModel, sort, this.highlightSize),
+                sort,
                 this.highlightSize,
             )
             .then((results) => {

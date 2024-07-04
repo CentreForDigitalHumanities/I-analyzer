@@ -5,6 +5,7 @@ import { DownloadService } from '../services';
 import { SelectFieldComponent } from '../select-field/select-field.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SharedModule } from '../shared/shared.module';
+import { ResultsSortModule } from '../search/results-sort/results-sort.module';
 
 
 
@@ -20,6 +21,7 @@ import { SharedModule } from '../shared/shared.module';
     imports: [
         SharedModule,
         MultiSelectModule,
+        ResultsSortModule,
     ],
     exports: [
         DownloadComponent,
