@@ -32,11 +32,11 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build backend image, using cache from Github registry
       run: |
+        docker pull ghcr.io/uudigitalhumanitieslab/ianalyzer-backend || true
         cd backend
         docker build . --tag ghcr.io/uudigitalhumanitieslab/ianalyzer-backend --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend
         docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-backend || true
     - name: Run backend tests
       run: |
-        cd ..
         sudo mkdir -p /ci-data
         docker-compose --env-file .env-ci run --rm backend pytest
