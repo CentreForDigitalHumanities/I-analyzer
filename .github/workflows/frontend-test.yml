@@ -15,6 +15,8 @@ on:
       - 'dependabot/**'
     paths:
       - 'frontend/**'
+      - '.github/workflows/**'
+      - 'docker-compose.yaml'
 
 jobs:
   frontend-test:
@@ -28,8 +30,12 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Run frontend tests
+    - name: Build frontend image, using cache from Github registry
       run: |
+        cd frontend
         docker pull ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
-        docker build . --tag ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
-        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
+        docker build . --tag ianalyzer-frontend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
+        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest || true
+    - name: Run frontend unit tests
+      run: |
+        docker run ianalyzer-frontend:latest yarn test

@@ -15,6 +15,8 @@ on:
       - 'dependabot/**'
     paths:
       - 'backend/**'
+      - '.github/workflows/**'
+      - 'docker-compose.yaml'
 
 jobs:
   backend-test:
@@ -22,5 +24,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build backend image, using cache from Github registry
+      run: |
+        cd backend
+        docker pull ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest || true
+        docker build . --tag ianalyzer-backend:latest --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
+        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest || true
     - name: Run backend tests
-      run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
+      run: |
+        cd ..
+        mkdir -p /ci-data
+        docker-compose --env-file .env-ci run --rm backend pytest
