@@ -11,6 +11,8 @@ import { DownloadModule } from '../download/download.module';
 import { QueryService, SearchService } from '../services';
 import { VisualizationModule } from '../visualization/visualization.module';
 import { ResultsSortModule } from './results-sort/results-sort.module';
+import { SelectFieldComponent } from '../select-field/select-field.component';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 
 
@@ -24,6 +26,7 @@ import { ResultsSortModule } from './results-sort/results-sort.module';
         PaginationComponent,
         SearchComponent,
         SearchResultsComponent,
+        SelectFieldComponent,
     ],
     imports: [
         CorpusModule,
@@ -33,6 +36,7 @@ import { ResultsSortModule } from './results-sort/results-sort.module';
         SharedModule,
         VisualizationModule,
         ResultsSortModule,
+        MultiSelectModule,
     ],
     exports: [
         SearchComponent,

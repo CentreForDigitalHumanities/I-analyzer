@@ -79,6 +79,10 @@ export class DownloadComponent implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (changes.corpus) {
+            this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
+            this.selectedCsvFields = _.filter(this.corpus?.fields, 'csvCore');
+        }
         if (changes.queryModel) {
             this.totalResults?.complete();
             this.resultsConfig?.complete();
@@ -95,8 +99,6 @@ export class DownloadComponent implements OnChanges {
                 new SimpleStore(), this.searchService, this.queryModel
             );
         }
-
-        this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
     }
 
     onHighlightChange(event): void {
@@ -132,9 +134,6 @@ export class DownloadComponent implements OnChanges {
             });
     }
 
-    public selectCsvFields(selection: CorpusField[]) {
-        this.selectedCsvFields = selection;
-    }
 
     /** start backend task to create csv file */
     longDownload() {

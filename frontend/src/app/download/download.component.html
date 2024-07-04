@@ -16,9 +16,12 @@
         <div class="field">
             <label class="label">Fields</label>
             <div class="control">
-                <ia-select-field [corpusFields]="availableCsvFields" filterCriterion="downloadable"
-                    (selection)="selectCsvFields($event)">
-                </ia-select-field>
+                <p-multiSelect [options]="availableCsvFields"
+                    [(ngModel)]="selectedCsvFields"
+                    optionLabel="displayName"
+                    placeholder="select fields"
+                    name="searchFields">
+                </p-multiSelect>
             </div>
             <p class="help">
                 Select which fields should be included as columns in the CSV file.
