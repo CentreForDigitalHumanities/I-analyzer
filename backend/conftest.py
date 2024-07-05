@@ -197,16 +197,20 @@ def add_mock_python_corpora_to_db(db, media_dir):
 
 
 @pytest.fixture()
-def json_corpus_data():
+def json_corpus_definition():
     path = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'mock_corpus.json')
     with open(path) as f:
         return json.load(f)
 
 
 @pytest.fixture(autouse=True)
-def json_mock_corpus(db, json_corpus_data) -> Corpus:
+def json_mock_corpus(db, json_corpus_definition) -> Corpus:
     # add json mock corpora to the database at the start of each test
-    serializer = CorpusJSONDefinitionSerializer(data=json_corpus_data)
+    data = {
+        'definition': json_corpus_definition,
+        'active': True,
+    }
+    serializer = CorpusJSONDefinitionSerializer(data=data)
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
 
