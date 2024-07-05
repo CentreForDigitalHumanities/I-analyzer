@@ -19,9 +19,14 @@ def test_no_corpora(db, settings, admin_client):
 def test_corpus_documentation_view(admin_client, basic_mock_corpus, settings):
     response = admin_client.get(f'/api/corpus/documentation/{basic_mock_corpus}/')
     assert response.status_code == 200
+    pages = response.data
+
+    # check that the pages are sorted in canonical order
+    page_types = [page['type'] for page in pages]
+    assert page_types == ['General information', 'Citation', 'License']
 
     # should contain citation guidelines
-    citation_page = next(page for page in response.data if page['type'] == 'Citation')
+    citation_page = next(page for page in pages if page['type'] == 'Citation')
 
     # check that the page template is rendered with context
     content = citation_page['content']

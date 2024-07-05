@@ -48,9 +48,9 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     min_date = datetime(year=1, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
 
-    data_directory = getattr(settings, 'JMIG_DATA')
-    data_url = getattr(settings, 'JMIG_DATA_URL',
-                       'localhost:8100/api/records/')
+    data_directory = settings.JMIG_DATA_DIR
+    data_filepath = getattr(settings, 'JMIG_DATA', None)
+    data_url = getattr(settings, 'JMIG_DATA_URL', None)
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
@@ -62,12 +62,12 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         if self.data_url:
             response = requests.get(self.data_url)
             list_of_sources = response.json()
-        elif self.data_directory:
-            with open(self.data_directory, 'r') as f:
+        elif self.data_filepath:
+            with open(self.data_filepath, 'r') as f:
                 list_of_sources = json.load(f)
         else:
             logging.getLogger('indexing').warning(
-                'No data directory or URL provided.')
+                'No data filepath or URL provided.')
         for source in list_of_sources:
             yield source
 
