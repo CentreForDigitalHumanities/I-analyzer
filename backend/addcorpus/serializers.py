@@ -135,7 +135,9 @@ class JSONDefinitionField(serializers.Field):
         return instance
 
     def to_representation(self, value: Corpus) -> Dict:
-        return export_json_corpus(value)
+        representation = export_json_corpus(value)
+        representation["$schema"] = "http://example.com/schema/corpus.json"
+        return representation
 
     def to_internal_value(self, data: Dict) -> Dict:
         return import_json_corpus(data)
@@ -146,7 +148,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Corpus
-        fields = ['id', 'active', 'definition']
+        fields = ['id', 'active', 'definition', 'schema_url']
         read_only_fields = ['id']
 
     def create(self, validated_data: Dict):
