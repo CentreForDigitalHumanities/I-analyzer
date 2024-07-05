@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as _ from 'lodash';
 
 import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
@@ -83,7 +83,7 @@ export class WordModelsComponent extends ParamDirective {
 
     teardown() {}
 
-    setStateFromParams(params: Params) {
+    setStateFromParams(params: ParamMap) {
         const queryFromParams = params.get('query');
         if (queryFromParams !== this.activeQuery) {
             this.queryText = queryFromParams;
@@ -99,7 +99,7 @@ export class WordModelsComponent extends ParamDirective {
             this.queryFeedback = { status: 'success' };
         }
         if (params.has('show')) {
-            this.currentTab = params.get('show');
+            this.currentTab = params.get('show') as 'relatedwords' | 'wordsimilarity';
         } else {
             this.currentTab = 'relatedwords';
         }
