@@ -448,11 +448,12 @@ class Field(models.Model):
                     e
                 ])
 
+
 class CorpusDocumentationPage(models.Model):
     class PageType(models.TextChoices):
         GENERAL = ('general', 'General information')
         CITATION = ('citation', 'Citation')
-        LICENSE = ('license', 'Licence')
+        LICENSE = ('license', 'License')
         TERMS_OF_SERVICE = ('terms_of_service', 'Terms of service')
         WORDMODELS = ('wordmodels', 'Word models')
 
@@ -471,6 +472,9 @@ class CorpusDocumentationPage(models.Model):
     content = models.TextField(
         help_text='markdown contents of the documentation'
     )
+
+    def __str__(self):
+        return f'{self.corpus_configuration.corpus.name} - {self.type}'
 
     class Meta:
         constraints = [
