@@ -153,7 +153,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                                       'match': 'id'
                                   },
                                   external_file={
-                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_toplevel': {'name': 'DIDL'},
                                       'xml_tag_entry': 'dcx'
                                   }
             )
@@ -243,7 +243,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                                       'match': 'id'
                                   },
                                   external_file={
-                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_toplevel': {'name': 'DIDL'},
                                       'xml_tag_entry': 'dcx'
                                   }
                                   ),
