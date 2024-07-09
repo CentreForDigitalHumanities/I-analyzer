@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { FoundDocument, Tag } from '../app/models';
 import { tap } from 'rxjs/operators';
 
@@ -17,10 +17,12 @@ export const mockTags: Tag[] = [
 ];
 
 export class TagServiceMock {
-    tags$ = of(mockTags);
+    tags$ = new BehaviorSubject<Tag[]>(mockTags);
+
+    private docTags: Tag[] = mockTags;
 
     getDocumentTags(document: FoundDocument): Observable<Tag[]> {
-        return of(mockTags);
+        return of(this.docTags);
     }
 
     makeTag(name: string, description?: string): Observable<Tag> {
@@ -30,11 +32,11 @@ export class TagServiceMock {
     }
 
     setDocumentTags(document: FoundDocument, tagIds: Tag[]): Observable<Tag[]> {
-        const tags = mockTags.filter(tag => tagIds.includes(tag));
-        return of(tags);
+        this.docTags = mockTags.filter(tag => tagIds.includes(tag));
+        return of(this.docTags);
     };
 
     private fetch() {
-        this.tags$ = of(mockTags);
+        this.tags$.next(mockTags);
     }
 }

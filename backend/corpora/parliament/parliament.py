@@ -1,13 +1,12 @@
 import logging
 import os
 import os.path as op
-
+from typing import Optional
 from django.conf import settings
 
-from addcorpus.corpus import CorpusDefinition
-from addcorpus.filters import MultipleChoiceFilter
+from addcorpus.python_corpora.corpus import CorpusDefinition
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
-from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_settings import es_settings
 
 class Parliament(CorpusDefinition):
@@ -32,13 +31,16 @@ class Parliament(CorpusDefinition):
     min_date = field_defaults.MIN_DATE
     max_date = field_defaults.MAX_DATE
     image = 'parliament.jpeg'
-    data_directory = 'bogus'
+    wordmodels_page = 'documentation.md'
 
     category = 'parliament'
+
+    default_sort = {'field': 'date', 'ascending': False}
 
     @property
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
+
 
 
     # overwrite below in child class if you need to extract the (converted) transcription
@@ -60,6 +62,7 @@ class Parliament(CorpusDefinition):
         description='Search only in debates from selected countries',
         option_count=10
     )
+    country.language = 'en'
 
     date = field_defaults.date()
     speech = field_defaults.speech()

@@ -1,0 +1,2 @@
+DEFAULT_CSV_DELIMITER = ','
+DATE_FORMAT = '%Y-%m-%d'

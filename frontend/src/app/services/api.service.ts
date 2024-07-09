@@ -2,20 +2,22 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { Observable, timer } from 'rxjs';
-import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { interval, Observable } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
+    CorpusDocumentationPage,
     DateTermFrequencyParameters,
     DocumentTagsResponse,
     Download,
     DownloadOptions,
     FieldCoverage,
     FoundDocument,
+    GeoDocument,
     LimitedResultsDownloadParameters,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
@@ -29,6 +31,7 @@ import {
 } from '../models/index';
 import { environment } from '../../environments/environment';
 import * as _ from 'lodash';
+import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -108,49 +111,41 @@ export class ApiService {
     }
 
     // Tasks
-    public getTasksStatus<ExpectedResult>(
-        tasks: TaskResult
-    ): Promise<TasksOutcome<ExpectedResult>> {
-        return this.http
-            .post<TasksOutcome<ExpectedResult>>('/api/task_status', tasks)
-            .toPromise();
+    public getTasksStatus(tasks: TaskResult): Observable<TasksOutcome> {
+        return this.http.post<TasksOutcome>('/api/task_status', tasks);
     }
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
         return this.http
-            .post<TaskSuccess>('/api/task_status', data)
+            .post<TaskSuccess>('/api/abort_tasks', data)
             .toPromise();
     }
 
-    private tasksDone<ExpectedResult>(response: TasksOutcome<ExpectedResult>) {
-        return response.status !== 'working';
+    private tasksDone(response: TasksOutcome) {
+        return response.status === 'done';
     }
 
-    public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
-        return timer(0, 5000)
-            .pipe(
-                switchMap(() =>
-                    this.getTasksStatus<ExpectedResult>({ task_ids: ids })
-                ),
-                filter(this.tasksDone),
-                take(1)
-                // eslint-disable-next-line @typescript-eslint/no-shadow
-            )
-            .toPromise()
-            .then(
-                (result) =>
-                    new Promise((resolve, reject) =>
-                        result.status === 'done'
-                            ? resolve(result.results)
-                            : reject()
-                    )
-            );
+    public pollTasks(
+        ids: string[],
+        stopPolling$: Observable<void>
+    ): Observable<TasksOutcome> {
+        return interval(5000).pipe(
+            takeUntil(stopPolling$),
+            switchMap((arg) => this.getTasksStatus({ task_ids: ids })),
+            filter(this.tasksDone),
+            take(1)
+        );
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Promise<AggregateResult[]> {
+    public wordCloud(data: WordcloudParameters): Observable<MostFrequentWordsResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
-        return this.http.post<AggregateResult[]>(url, data).toPromise();
+        return this.http.post<MostFrequentWordsResult[]>(url, data);
+    }
+
+    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
+        const url = this.apiRoute(this.visApiURL, 'geo');
+        return this.http.post<GeoDocument[]>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
@@ -228,22 +223,38 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusdescription(data: {
-        filename: string;
-        corpus: string;
-    }): Promise<string> {
+    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
         const url = this.apiRoute(
             this.corpusApiUrl,
-            `documentation/${data.corpus}/${data.filename}`
+            `documentation/${corpusName}/`
         );
-
-        return this.http
-            .get<string>(url, { responseType: 'text' as 'json' })
-            .toPromise();
+        return this.http.get<CorpusDocumentationPage[]>(url);
     }
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Corpus definitions
+
+    public corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        return this.http.get<APIEditableCorpus[]>('/api/corpus/definitions/');
+    }
+
+    public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
+        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
+    }
+
+    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    }
+
+    public deleteCorpus(corpusID: number): Observable<any> {
+        return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
     // Tagging
@@ -256,6 +267,16 @@ export class ApiService {
     public createTag(name: string, description?: string): Observable<Tag> {
         const url = this.apiRoute(this.tagApiUrl, 'tags/');
         return this.http.post<Tag>(url, { name, description });
+    }
+
+    public deleteTag(tag: Tag): Observable<null> {
+        const url = this.apiRoute(this.tagApiUrl, `tags/${tag.id}/`);
+        return this.http.delete<null>(url);
+    }
+
+    public patchTag(tagId: number, fields: Partial<Tag>): Observable<Tag> {
+        const url = this.apiRoute(this.tagApiUrl, `tags/${tagId}/`);
+        return this.http.patch<Tag>(url, fields);
     }
 
     public documentTags(

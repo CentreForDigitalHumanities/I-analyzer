@@ -6,8 +6,8 @@ import * as _ from 'lodash';
 import { ApiService, NotificationService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import {
-    AggregateResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
+    Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+    BarchartSeries, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
 } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -15,6 +15,7 @@ import { selectColor } from '../../utils/select-color';
 import { VisualizationService } from '../../services/visualization.service';
 import { showLoading } from '../../utils/utils';
 import { takeUntil } from 'rxjs/operators';
+import { DateHistogramResult, TermsResult } from '../../models/aggregation';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -28,6 +29,7 @@ const barchartID = 'barchart';
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
 export abstract class BarchartDirective<
+    AggregateResult extends TermsResult | DateHistogramResult,
     DataPoint extends TimelineDataPoint | HistogramDataPoint
 > implements OnChanges, OnInit, OnDestroy {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
@@ -85,9 +87,13 @@ export abstract class BarchartDirective<
     @Output() error = new EventEmitter();
 
     destroy$ = new Subject<void>();
+    stopPolling$ = new Subject<void>();
 
-    basicChartOptions: ChartOptions = {
-        // chart options not suitable for Chart.defaults.global
+    tasksToCancel: string[];
+
+    dataHasLoaded: boolean;
+
+    basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
             x: {
                 title: { display: true },
@@ -151,7 +157,6 @@ export abstract class BarchartDirective<
         chartDefault.plugins.tooltip.intersect = false;
     }
 
-    @HostBinding('class.is-loading')
     get isLoading() {
         return this.isLoading$.value;
     }
@@ -175,7 +180,8 @@ export abstract class BarchartDirective<
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.stopPolling$.next();
+        this.destroy$.next(undefined);
     }
 
     /** check whether input changes should force reloading the data */
@@ -317,7 +323,7 @@ export abstract class BarchartDirective<
                     field.searchable && field.displayType === 'text_content'
             );
             const queryModelCopy = queryModel.clone();
-            queryModelCopy.searchFields = mainContentFields;
+            queryModelCopy.setParams({searchFields: mainContentFields});
             return queryModelCopy;
         }
     }
@@ -335,14 +341,12 @@ export abstract class BarchartDirective<
      * @returns a copy of the series with the document counts included.
      */
     docCountResultIntoSeries(
-        result,
+        result: AggregateResult[],
         series: BarchartSeries<DataPoint>,
         setSearchRatio = true
     ): BarchartSeries<DataPoint> {
-        let data = result.aggregations[this.visualizedField.name].map(
-            this.aggregateResultToDataPoint
-        );
-        const total_doc_count = this.totalDocCount(data);
+        let data = result.map(this.aggregateResultToDataPoint);
+        const total_doc_count = this.totalDocCount(result);
         const searchRatio = setSearchRatio
             ? this.documentLimit / total_doc_count
             : series.searchRatio;
@@ -383,15 +387,11 @@ export abstract class BarchartDirective<
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData(
-        rawData: typeof this.rawData
-    ): Promise<BarchartSeries<DataPoint>[]> {
-        const dataPromises = rawData.map((series) => {
-            if (
-                series.queryText &&
-                series.data.length &&
-                series.data[0].match_count === undefined
-            ) {
+    requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
+        // cancel and stop polling running tasks
+        this.stopPolling$.next();
+        const dataPromises = rawData.map(series => {
+            if (series.queryText && series.data.length && series.data[0].match_count === undefined) {
                 // retrieve data if it was not already loaded
                 return this.getTermFrequencies(series, this.queryModel);
             } else {
@@ -424,30 +424,49 @@ export abstract class BarchartDirective<
         series: BarchartSeries<DataPoint>,
         queryModel: QueryModel
     ): Promise<BarchartSeries<DataPoint>> {
+        this.dataHasLoaded = false;
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy)
-            .then((result) =>
-                this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
-            )
-            .then((res) => this.processSeriesTermFrequency(res, series))
-            .catch((error) => {
-                console.error(error);
-                this.error.emit(`could not load results: ${error.message}`);
-                return series;
+        return new Promise((resolve, reject) => {
+            this.requestSeriesTermFrequency(series, queryModelCopy).then(response => {
+                this.tasksToCancel = response.task_ids;
+                const poller$ = this.apiService.pollTasks(this.tasksToCancel, this.stopPolling$);
+                poller$.subscribe({
+                    error: (error) => {
+                        this.onFailure(error);
+                        reject(error);
+                    },
+                    next: (result) => {
+                        resolve(this.processSeriesTermFrequency(result['results'], series));
+                    },
+                    complete: () => {
+                        // abort tasks if the Observable is completed via takeUntil
+                        if (!this.dataHasLoaded) {
+                            this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                        }
+                    }
+                });
             });
+        });
     }
 
-    abstract requestSeriesTermFrequency(
-        series: BarchartSeries<DataPoint>,
-        queryModel: QueryModel
-    ): Promise<TaskResult>;
+    onFailure(error) {
+        console.error(error);
+        this.error.emit(`could not load results: ${error.message}`);
+    }
+
+    abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
 
     abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
 
-    abstract processSeriesTermFrequency(
-        results: TermFrequencyResult[],
-        series: BarchartSeries<DataPoint>
-    ): BarchartSeries<DataPoint>;
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint> {
+        this.dataHasLoaded = true;
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
+    };
+
 
     /** total document count for a data array */
     totalDocCount(data: AggregateResult[]) {
@@ -507,14 +526,14 @@ export abstract class BarchartDirective<
         queryModel: QueryModel
     ) {
         return this.selectSearchFields(
-            this.removeSort(this.setQueryText(queryModel, series.queryText))
+            this.setQueryText(queryModel, series.queryText)
         );
     }
 
     /** Request doc counts for a series */
     abstract requestSeriesDocCounts(
         queryModel: QueryModel
-    ): Promise<AggregateQueryFeedback>;
+    ): Promise<AggregateResult[]>;
 
     requestFullData() {
         this.fullDataRequest()
@@ -657,14 +676,7 @@ export abstract class BarchartDirective<
     /** return a copy of a query model with the query text set to the given value */
     setQueryText(query: QueryModel, queryText: string): QueryModel {
         const queryModelCopy = query.clone();
-        queryModelCopy.queryText = queryText;
-        return queryModelCopy;
-    }
-
-    /** return a copy of a query model with removed sort parameter (=> relevance sorting) */
-    removeSort(query: QueryModel): QueryModel {
-        const queryModelCopy = query.clone();
-        queryModelCopy.sort.reset();
+        queryModelCopy.setQueryText(queryText);
         return queryModelCopy;
     }
 

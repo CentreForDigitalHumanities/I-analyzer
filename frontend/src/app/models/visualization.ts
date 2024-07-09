@@ -1,5 +1,6 @@
-import { AggregateResult, DateResult } from '.';
-import { QueryParameters } from './search-requests';
+import { DateResult } from '.';
+import { TermsResult } from './aggregation';
+import { APIQuery } from './search-requests';
 
 export interface TermFrequencyResult {
     key: string;
@@ -31,9 +32,6 @@ export interface TimelineDataPoint {
     matches_by_doc_count?: number;
 }
 
-// common type for all histogram/timeline results
-export type BarchartResult = DateResult|AggregateResult;
-
 /**
  * Dataseries for barcharts.
  * Each dataseries defines its own query text
@@ -48,7 +46,7 @@ export type BarchartResult = DateResult|AggregateResult;
     queryText?: string; // replaces the text in this.queryModel when searching
 }
 
-export type HistogramSeries = BarchartSeries<AggregateResult>;
+export type HistogramSeries = BarchartSeries<TermsResult>;
 export type TimelineSeries = BarchartSeries<DateResult>;
 
 
@@ -63,7 +61,7 @@ export type TermFrequencyParameters<Bin> = {
     bins: Bin[];
     full_data?: boolean;
     unit?: TimeCategory;
-} & QueryParameters;
+} & APIQuery;
 
 
 export type AggregateTermFrequencyParameters = TermFrequencyParameters<HistogramBin>;
@@ -74,7 +72,7 @@ export type WordcloudParameters = {
     corpus: string;
     field: string;
     size?: number;
-} & QueryParameters;
+} & APIQuery;
 
 
 export interface FreqTableHeader {
@@ -108,7 +106,7 @@ export type NGramRequestParameters = {
     max_size_per_interval?: number;
     number_of_ngrams?: number;
     date_field: string;
-} & QueryParameters;
+} & APIQuery;
 
 export class NgramParameters {
     size: number;

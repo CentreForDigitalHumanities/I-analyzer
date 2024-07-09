@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib import admin
 
 from users.models import CustomUser
 from addcorpus.models import Corpus
@@ -22,7 +23,8 @@ class Download(models.Model):
         ],
         help_text='Type of download (search results or a type of visualisation)')
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE, to_field='name', related_name='downloads')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='downloads')
+    user = models.ForeignKey(
+        CustomUser, null=True, on_delete=models.CASCADE, related_name='downloads')
     parameters = models.JSONField(
         help_text='JSON parameters for the download request that was made to the backend'
     )
@@ -31,10 +33,12 @@ class Download(models.Model):
         help_text='Path to the assembled CSV file'
     )
 
+
     @property
     def is_done(self):
         return self.completed != None
 
+    @admin.display()
     @property
     def status(self):
         if self.is_done and self.filename:

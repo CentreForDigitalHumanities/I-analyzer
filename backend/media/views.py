@@ -1,7 +1,7 @@
 import logging
 import os
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.permissions import (CorpusAccessPermission,
                                    corpus_name_from_request)
 from api.utils import check_json_keys
@@ -19,7 +19,7 @@ class GetMediaView(APIView):
     Return the image/pdf of a document
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = (CorpusAccessPermission,)
 
     def get(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)
@@ -60,7 +60,7 @@ class MediaMetadataView(APIView):
     Return metadata on the media for a document
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = (CorpusAccessPermission,)
 
     def post(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)

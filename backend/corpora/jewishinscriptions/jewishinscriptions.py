@@ -6,9 +6,9 @@ from datetime import datetime
 
 from django.conf import settings
 
-from addcorpus.extract import XML, Metadata, Combined
-from addcorpus.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import XML
+from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 

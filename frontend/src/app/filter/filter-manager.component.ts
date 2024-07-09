@@ -7,6 +7,8 @@ import { map } from 'rxjs/operators';
 
 import { FilterInterface, QueryModel } from '../models/index';
 import { filterIcons } from '../shared/icons';
+import { AuthService } from '../services/auth.service';
+import { isTagFilter } from '../models/tag-filter';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -17,8 +19,10 @@ export class FilterManagerComponent {
     @Input() queryModel: QueryModel;
 
     filterIcons = filterIcons;
+    authorized: boolean;
 
-    constructor() {
+    constructor(private authService: AuthService) {
+        this.authorized = this.authService.getCurrentUser() !== null;
     }
 
     get activeFilters(): FilterInterface[] {
@@ -26,14 +30,19 @@ export class FilterManagerComponent {
     }
 
     get filters(): FilterInterface[] {
-        return this.queryModel?.filters;
+        const filters = this.queryModel?.filters;
+        if (this.authorized) {
+            return filters;
+        } else {
+            return filters.filter(filter => !isTagFilter(filter));
+        }
     }
 
     get anyActiveFilters$(): Observable<boolean> {
         if (this.filters) {
-            const statuses = this.filters.map(filter => filter.active);
+            const statuses = this.filters.map(filter => filter.state$);
             return combineLatest(statuses).pipe(
-                map(values => _.some(values)),
+                map(values => _.some(values, state => state.active)),
             );
         }
     }

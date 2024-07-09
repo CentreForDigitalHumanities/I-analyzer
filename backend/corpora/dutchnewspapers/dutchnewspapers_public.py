@@ -10,10 +10,10 @@ import os
 
 from django.conf import settings
 
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
-from addcorpus import filters
-from addcorpus.extract import Metadata, XML
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.extract import Metadata, XML
+from addcorpus.python_corpora.load_corpus import corpus_dir
 
 from corpora.utils.constants import document_context
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
@@ -37,6 +37,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    citation_page = 'citation_public.md'
 
     @property
     def es_settings(self):
@@ -75,7 +76,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                                 self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
-            meta_dict = self.metadata_from_xml(definition_file, tags=[
+            meta_dict = self._metadata_from_xml(definition_file, tags=[
                     "title",
                     "date",
                     "publisher",
@@ -141,6 +142,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
+            display_type='url',
             es_mapping=keyword_mapping(),
             extractor=XML(tag='identifier',
                                   toplevel=True,
@@ -329,7 +331,8 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,
                                   flatten=True, toplevel=True),
-            visualizations=["wordcloud"]
+            visualizations=["wordcloud"],
+            language='nl',
         ),
     ]
 

@@ -31,7 +31,7 @@ export class AuthService implements OnDestroy {
     private currentUserSubject = new BehaviorSubject<User>(null);
     public currentUser$ = this.currentUserSubject
         .asObservable()
-        .pipe(distinctUntilChanged());
+        .pipe(distinctUntilChanged(), takeUntil(this.destroy$));
     // Provide the currentUser as a Promise to adapt to existing functionality
     public currentUserPromise = this.currentUser$.toPromise();
 
@@ -50,7 +50,7 @@ export class AuthService implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
     }
 
     /**

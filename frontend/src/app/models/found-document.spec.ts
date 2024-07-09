@@ -1,11 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, waitForAsync } from '@angular/core/testing';
+import * as _ from 'lodash';
+import { reduce, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { makeDocument } from '../../mock-data/constructor-helpers';
 import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
-import { FoundDocument } from './found-document';
-import { TagService } from '../services/tag.service';
+import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
+import { FoundDocument } from './found-document';
+import { EntityService } from '../services/entity.service';
+import { TagService } from '../services/tag.service';
 import { Tag } from './tag';
-import * as _ from 'lodash';
+
 
 const maxScore = 2.9113607;
 const mockResponse = {
@@ -31,19 +36,20 @@ const mockResponse = {
 };
 
 describe('FoundDocument', () => {
-    let tagService: TagService;
+    const mockTagService = new TagServiceMock() as any;
+    const mockEntityService = new EntityServiceMock() as any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                { provide: TagService, useValue: new TagServiceMock() }
+                { provide: TagService, useClass: TagServiceMock },
+                { provide: EntityService, useClass: EntityServiceMock }
             ]
         });
-        tagService = TestBed.inject(TagService);
     });
 
     it('should construct from an elasticsearch response', () => {
-        const document = new FoundDocument(tagService, mockCorpus, mockResponse, maxScore);
+        const document = new FoundDocument(mockTagService, mockEntityService, mockCorpus, mockResponse, maxScore);
 
         expect(document.id).toBe('1994_troonrede');
         expect(document.fieldValues['monarch']).toBe('Beatrix');
@@ -63,13 +69,30 @@ describe('FoundDocument', () => {
         expect(shouldHaveContext.hasContext).toBeTrue();
     });
 
-    it('should set tags', () => {
+    it('should set tags', waitForAsync(() => {
         const doc = makeDocument({ great_field: 'test' });
-        expect(doc.tags$.value).toEqual(mockTags);
-        const tag = _.first(mockTags);
-        doc.removeTag(tag);
-        expect(doc.tags$.value.length).toBe(1);
-        doc.addTag(tag);
-        expect(doc.tags$.value.length).toBe(2);
-    });
+
+        const tags$: Observable<Tag[][]> = doc.tags$.pipe(
+            take(3),
+            reduce(
+                (accumulated, current) => [...accumulated, current],
+                [],
+            ),
+        );
+
+        const tag1 = _.first(mockTags);
+        const tag2 = _.last(mockTags);
+
+        doc.removeTag(tag1);
+        doc.addTag(tag1);
+
+        tags$.subscribe(allTags => {
+            expect(allTags).toEqual([
+                [tag1, tag2],
+                [tag2],
+                [tag1, tag2]
+            ]);
+        });
+    }));
+
 });

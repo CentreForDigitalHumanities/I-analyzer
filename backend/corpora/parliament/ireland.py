@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup
 import json
 import csv
 
-from addcorpus.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
-from addcorpus.extract import Constant, CSV, XML, Metadata, Combined, Backup
+from addcorpus.python_corpora.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
+from addcorpus.python_corpora.extract import Constant, CSV, XML, Metadata, Combined, Backup
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
@@ -447,6 +447,7 @@ class ParliamentIreland(Parliament, CorpusDefinition):
     max_date = datetime(year=2020, month=12, day=31)
     data_directory = settings.PP_IRELAND_DATA
     es_index = getattr(settings, 'PP_IRELAND_INDEX', 'parliament-ireland')
+    word_model_path = getattr(settings, 'PP_IRELAND_WM', None)
     image = 'ireland.png'
     description_page = 'ireland.md'
     es_settings = {'index': {'number_of_replicas': 0}} # do not include analyzers in es_settings

@@ -1,59 +1,87 @@
 import csv
-from datetime import datetime
-from bs4 import BeautifulSoup
 import os
+from typing import Dict, Iterable, List, Union
 
+from bs4 import BeautifulSoup
 from django.conf import settings
-
-from visualization.query import get_query_text
 from visualization.term_frequency import parse_datestring
 
-def write_file(filename, fieldnames, rows, dialect = 'excel'):
+QUERY_CONTEXT_INFIX = '_qic_'
+
+
+def write_file(filename, fieldnames, rows, dialect='excel'):
     if not os.path.isdir(settings.CSV_FILES_PATH):
         os.mkdir(settings.CSV_FILES_PATH)
 
     filepath = os.path.join(settings.CSV_FILES_PATH, filename)
 
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, dialect = dialect)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, dialect=dialect)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
 
     return filepath
 
+
 def create_filename(download_id):
     return f'{download_id}.csv'
 
-def search_results_csv(results, fields, query, download_id):
-    entries = []
+
+def is_context_fieldname(fn: str) -> bool:
+    return QUERY_CONTEXT_INFIX in fn
+
+
+def sort_fieldnames(fns: Iterable[str]) -> List[str]:
+    '''Sorts fieldnames.
+    Retains input order, but puts all query context fields at the end (sorted)
+    '''
+    context_fieldnames = [fn for fn in fns if is_context_fieldname(fn)]
+    reg_fieldnames = [fn for fn in fns if not is_context_fieldname(fn)]
+    return reg_fieldnames + sorted(context_fieldnames)
+
+
+def search_results_csv(results: Iterable[Dict], fields, query, download_id) -> Union[os.PathLike, str]:
+    '''Writes a CSV file for search results.
+    Operates on either lists or generator containing results.
+    '''
     field_set = set(fields)
     field_set.update(['query'])
+
+    # create csv file
+    filename = create_filename(download_id)
+    field_set.discard('context')
+    fieldnames = sort_fieldnames(field_set)
+
+    entries = generate_rows(results, fields, query, field_set)
+
+    filepath = write_file(filename, fieldnames, entries,
+                          dialect='resultsDialect')
+    return filepath
+
+
+def generate_rows(results: Iterable[Dict], fields, query, field_set):
+    ''' Yields rows of data to be written to the CSV file'''
     for result in results:
-        entry={'query': query}
+        entry = {'query': query}
         for field in fields:
-            #this assures that old indices, which have their id on
-            #the top level '_id' field, will fill in id here
-            if field=="id" and "_id" in result:
-                entry.update( {field: result['_id']} )
+            # this assures that old indices, which have their id on
+            # the top level '_id' field, will fill in id here
+            if field == "id" and "_id" in result:
+                entry.update({field: result['_id']})
             if field in result['_source']:
-                entry.update( {field:result['_source'][field]} )
+                entry.update({field: result['_source'][field]})
         highlights = result.get('highlight')
         if 'context' in fields and highlights:
             hi_fields = highlights.keys()
             for hf in hi_fields:
                 for index, hi in enumerate(highlights[hf]):
-                    highlight_field_name = '{}_qic_{}'.format(hf, index+1)
+                    highlight_field_name = '{}{}{}'.format(
+                        hf, QUERY_CONTEXT_INFIX, index + 1)
                     field_set.update([highlight_field_name])
                     soup = BeautifulSoup(hi, 'html.parser')
                     entry.update({highlight_field_name: soup.get_text()})
-        entries.append(entry)
-
-    filename = create_filename(download_id)
-    field_set.discard('context')
-    fieldnames = sorted(field_set)
-    filepath = write_file(filename, fieldnames, entries, dialect = 'resultsDialect')
-    return filepath
+        yield entry
 
 
 def term_frequency_csv(queries, results, field_name, download_id, unit = None):
@@ -100,8 +128,8 @@ def format_field_value(value, unit):
             'week': '%Y-%m-%d',
             'day': '%Y-%m-%d'
         }
-        return date.strftime(formats[unit]) 
-    
+        return date.strftime(formats[unit])
+
 def ngram_csv(results, log_id):
     rows = ngram_table(results)
     fieldnames = ['date', 'N-gram', 'Frequency']

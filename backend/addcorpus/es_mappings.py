@@ -1,12 +1,16 @@
-from addcorpus.es_settings import add_language_string
+from typing import Dict
+from addcorpus.es_settings import add_language_string, stopwords_available, stemming_available
+
+def primary_mapping_type(es_mapping: Dict) -> str:
+    return es_mapping.get('type', None)
 
 def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_analysis=False, language=None, updated_highlighting=True):
     '''
     Mapping for the main content field. Options:
 
     - `token_counts`: enables aggregations for the total number of words. Used for relative term frequencies.
-    - `stopword_analysis`: enables analysis using stopword removal.
-    - `stemming_analysis`: enables analysis using stemming.
+    - `stopword_analysis`: enables analysis using stopword removal, if available for the language.
+    - `stemming_analysis`: enables analysis using stemming, if available for the language.
     - `updated_highlighting`: enables the new highlighter, which only works for fields that are indexed with the term vector set to 'with_positions_offsets'.
     '''
 
@@ -26,13 +30,13 @@ def main_content_mapping(token_counts=True, stopword_analysis=False, stemming_an
                 "type":     "token_count",
                 "analyzer": "standard"
             }
-        if stopword_analysis:
+        if stopword_analysis and stopwords_available(language):
             multifields['clean'] = {
                 "type": "text",
                 "analyzer": add_language_string('clean', language),
                 "term_vector": "with_positions_offsets" # include character positions for highlighting
             }
-        if stemming_analysis:
+        if stemming_analysis and stemming_available(language):
             multifields['stemmed'] = {
                 "type": "text",
                 "analyzer": add_language_string('stemmed', language),
@@ -87,5 +91,14 @@ def int_mapping():
         'type': 'integer'
     }
 
+def float_mapping():
+    return {
+        'type': 'float'
+    }
+
+
 def bool_mapping():
     return {'type': 'boolean'}
+
+def geo_mapping():
+    return {'type': 'geo_point'}

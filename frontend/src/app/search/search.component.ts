@@ -7,9 +7,10 @@ import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models
 import { CorpusService, DialogService, ParamService, } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 import { AuthService } from '../services/auth.service';
-import { paramsHaveChanged } from '../utils/params';
-import { filter } from 'rxjs/operators';
+import { distinct, filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
+import { RouterStoreService } from '../store/router-store.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'ia-search',
@@ -47,7 +48,7 @@ export class SearchComponent extends ParamDirective {
      */
     public queryText: string;
 
-    public resultsCount = 0;
+    resultOverview: ResultOverview;
 
     public filterFields: CorpusField[] = [];
 
@@ -69,9 +70,12 @@ export class SearchComponent extends ParamDirective {
         private dialogService: DialogService,
         paramService: ParamService,
         route: ActivatedRoute,
-        router: Router
+        router: Router,
+        private routerStoreService: RouterStoreService,
+        private title: Title,
     ) {
         super(route, router, paramService);
+
     }
 
     @HostListener('window:scroll', [])
@@ -84,7 +88,10 @@ export class SearchComponent extends ParamDirective {
     async initialize(): Promise<void> {
         this.user = await this.authService.getCurrentUserPromise();
         this.corpusSubscription = this.corpusService.currentCorpus
-            .pipe(filter((corpus) => !!corpus))
+            .pipe(
+                filter((corpus) => !!corpus),
+                distinct(corpus => corpus.name),
+            )
             .subscribe((corpus) => {
                 this.setCorpus(corpus);
             });
@@ -98,13 +105,11 @@ export class SearchComponent extends ParamDirective {
     teardown() {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
+        this.queryModel.complete();
     }
 
     setStateFromParams(params: ParamMap) {
         this.showVisualization = params.has('visualize') ? true : false;
-        if (paramsHaveChanged(this.queryModel, params)) {
-            this.setQueryModel(false);
-        }
     }
 
     /**
@@ -115,10 +120,9 @@ export class SearchComponent extends ParamDirective {
     public onSearched(input: ResultOverview) {
         this.isSearching = false;
         this.hasSearched = true;
-        this.resultsCount = input.resultsCount;
+        this.resultOverview = input;
         this.hasLimitedResults =
-            this.user.downloadLimit &&
-            input.resultsCount > this.user.downloadLimit;
+            this.user? input.resultsCount > this.user.downloadLimit : true;
     }
 
     public showQueryDocumentation() {
@@ -129,26 +133,17 @@ export class SearchComponent extends ParamDirective {
         this.queryModel.setQueryText(this.queryText);
     }
 
-    /**
-     * Escape field names these so they won't interfere with any other parameter (e.g. query)
-     */
-
     private setCorpus(corpus: Corpus) {
-        if (!this.corpus || this.corpus.name !== corpus.name) {
-            const reset = !_.isUndefined(this.corpus);
-            this.corpus = corpus;
-            this.setQueryModel(reset);
-        }
+        this.corpus = corpus;
+        this.setQueryModel();
+        this.title.setTitle(`Search ${corpus.title} - I-analyzer`);
     }
 
-    private setQueryModel(reset: boolean) {
-        const params = reset ? undefined : this.route.snapshot.queryParamMap;
-        const queryModel = new QueryModel(this.corpus, params);
-        this.queryModel = queryModel;
-        this.queryText = queryModel.queryText;
-        this.queryModel.update.subscribe(() => {
-            this.queryText = this.queryModel.queryText;
-            this.setParams(this.queryModel.toRouteParam());
-        });
+    private setQueryModel() {
+        if (this.queryModel) {
+            this.queryModel.complete();
+        }
+        this.queryModel = new QueryModel(this.corpus, this.routerStoreService);
+        this.queryText = this.queryModel.queryText;
     }
 }

@@ -6,12 +6,13 @@ from os.path import join
 from django.conf import settings
 
 import bs4
-from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Constant, Combined, Choice
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
+from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
 from corpora.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.field_defaults  as field_defaults
+from corpora.utils.constants import document_context
+import corpora.parliament.utils.field_defaults as field_defaults
 import re
 
 logger = logging.getLogger('indexing')
@@ -132,11 +133,13 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     es_index = getattr(settings, 'PP_NL_INDEX', 'parliament-netherlands')
     image = 'netherlands.jpg'
     description_page = 'netherlands.md'
+    citation_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
     languages = ['nl']
 
     category = 'parliament'
+    document_context = document_context()
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -206,6 +209,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             transform=format_house_recent
         )
     )
+    chamber.language = 'nl'
 
     debate_title = field_defaults.debate_title()
     debate_title.extractor = Choice(
@@ -221,6 +225,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             transform=lambda titles: titles[-2] if len(titles) else titles
         )
     )
+    debate_title.language = 'nl'
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = Choice(
@@ -249,8 +254,9 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             recursive=True
         )
     )
+    topic.language = 'nl'
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language='nl')
     speech.extractor = Choice(
         XML(
             tag='p',
@@ -330,6 +336,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
         ),
         party_attribute_extractor('name')
     )
+    party.language = 'nl'
 
 
     party_id = field_defaults.party_id()
@@ -350,6 +357,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
         ),
         party_attribute_extractor('full_name')
     )
+    party_full.language = 'nl'
 
     page = field_defaults.page()
     page.extractor = Choice(

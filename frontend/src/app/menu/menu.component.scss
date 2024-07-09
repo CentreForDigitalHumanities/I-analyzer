@@ -46,6 +46,7 @@
 .navbar-dropdown {
     background-color: $primary;
     color: $text-invert;
+    z-index: 1000;
 
     .navbar-item {
         color: $text-primary-color;

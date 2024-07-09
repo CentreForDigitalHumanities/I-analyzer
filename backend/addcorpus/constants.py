@@ -25,6 +25,7 @@ class MappingType(Enum):
     INTEGER  = 'integer'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
+    GEO_POINT = 'geo_point'
 
 
 class VisualizationType(Enum):
@@ -34,6 +35,7 @@ class VisualizationType(Enum):
     TERM_FREQUENCY = 'termfrequency'
     NGRAM = 'ngram'
     WORDCLOUD = 'wordcloud'
+    MAP = 'map'
 
 FORBIDDEN_FIELD_NAMES = [
     'query',
@@ -43,7 +45,10 @@ FORBIDDEN_FIELD_NAMES = [
     'visualize',
     'visualizedField',
     'normalize',
-    'ngramSettings'
+    'ngramSettings',
+    'scan',
+    'tab-scan'
+    'p',
 ]
 '''
 Field names that cannot be used because they are also query parameters in frontend routes.

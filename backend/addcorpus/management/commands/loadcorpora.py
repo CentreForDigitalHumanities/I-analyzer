@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 
 class Command(BaseCommand):
     help = '''

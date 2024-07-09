@@ -6,6 +6,8 @@ import { Corpus, FoundDocument } from '../models';
 import { CorpusService, ElasticSearchService } from '../services';
 import { makeContextParams } from '../utils/document-context';
 import { documentIcons } from '../shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../utils/app';
 
 @Component({
   selector: 'ia-document-page',
@@ -17,14 +19,19 @@ export class DocumentPageComponent implements OnInit {
     documentId: string;
     document: FoundDocument;
 
-    documentNotFound: boolean;
+    documentFound: boolean;
 
     documentIcons = documentIcons;
+
+    showNEROption: boolean;
+
+    showNamedEntities = false;
 
     constructor(
         private corpusService: CorpusService,
         private elasticSearchService: ElasticSearchService,
         private activatedRoute: ActivatedRoute,
+        private title: Title,
     ) { }
 
     get contextDisplayName(): string {
@@ -52,15 +59,21 @@ export class DocumentPageComponent implements OnInit {
         ]).subscribe(([params, corpus]) => {
             this.corpus = corpus;
             this.documentId = params['id'];
+            this.showNEROption = this.corpus.hasNamedEntities;
             this.getDocument(this.documentId);
+            this.title.setTitle(pageTitle(`Document in ${corpus.title}`));
         });
     }
 
     getDocument(id: string) {
         this.elasticSearchService.getDocumentById(id, this.corpus).then(document => {
             this.document = document;
-            this.documentNotFound = _.isUndefined(this.document);
+            this.documentFound = !_.isUndefined(this.document);
         });
+    }
+
+    toggleNER(active: boolean): void {
+        this.showNamedEntities = active;
     }
 
 

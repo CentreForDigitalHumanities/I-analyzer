@@ -1,8 +1,13 @@
 import * as _ from 'lodash';
-import { Subject, Observable, of } from 'rxjs';
+import { Observable, Subject, from, of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
+import { CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
+import { LimitedResultsDownloadParameters } from '../app/models/search-results';
+import { mockCorpusDefinition } from './corpus-definition';
+import { APIEditableCorpus } from '../app/models/corpus-definition';
 
-const fakeNgramResult = {
+export const fakeNgramResult = {
     words: [
         {
             label: 'the test',
@@ -15,10 +20,11 @@ const fakeNgramResult = {
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
     public SessionExpired = this.SessionExpiredSubject.asObservable();
+    public stopPolling$: Subject<boolean> = new Subject<boolean>();
 
     constructor(public fakeResult: { [path: string]: any } = {}) {}
 
-    public abortTasks() {
+    public abortTasks(data: TaskResult) {
         return { success: true };
     }
 
@@ -31,6 +37,10 @@ export class ApiServiceMock {
         return of(this.get('corpus'));
     }
 
+    download(data: LimitedResultsDownloadParameters): Promise<any> {
+        return Promise.resolve({});
+    }
+
     public searchHistory() {
         return Promise.resolve([]);
     }
@@ -39,13 +49,16 @@ export class ApiServiceMock {
         return this.get('get_wordcloud_data');
     }
 
-    public pollTasks(ids: string[]) {
+    public pollTasks(ids: string[], stopPolling$: Subject<void>): Observable<TasksOutcome> {
         const fakeResults = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'ngram-task-id': fakeNgramResult,
         };
-        const response = ids.map((id) => _.get(fakeResults, id, {}));
-        return Promise.resolve(response);
+        const response: TasksOutcome = {
+            status: 'done',
+            results: ids.map((id) => fakeResults[id])
+        };
+        return from([response, response]).pipe(takeUntil(stopPolling$));
     }
 
     public downloads() {
@@ -58,6 +71,13 @@ export class ApiServiceMock {
 
     public keyInfo() {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
+    }
+
+    public corpusDocumentation(): Observable<CorpusDocumentationPage[]> {
+        return of([{
+            type: 'General',
+            content: 'Example of _documentation_.'
+        }]);
     }
 
     public fieldCoverage() {
@@ -74,5 +94,24 @@ export class ApiServiceMock {
 
     userTags() {
         return of([]);
+    }
+
+    corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        const data = [{ id: 1, active: false, definition: mockCorpusDefinition }];
+        return of(data);
+    }
+
+    corpusDefinition(id: number): Observable<APIEditableCorpus> {
+        const data = { id, active: false, definition: mockCorpusDefinition };
+        return of(data);
+    }
+
+    createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        const result = _.merge({ id: 1 }, data);
+        return of(result);
+    }
+
+    updateCorpus(_id: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return of(data);
     }
 }

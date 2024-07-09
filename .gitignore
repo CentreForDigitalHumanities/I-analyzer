@@ -36,6 +36,9 @@ coverage.xml
 # pyenv
 .python-version
 
+# ASDF
+.tool-versions
+
 # Environments
 env/
 .env/

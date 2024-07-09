@@ -1,8 +1,8 @@
 @import "_utilities";
-@import "~bulma/bulma.sass";
+@import "bulma/bulma.sass";
 @import "_primeng";
-@import "~balloon-css";
-@import "~bulma-switch";
+@import "balloon-css";
+@import "bulma-switch";
 
 [data-balloon]:after {
     border-radius: 0;
@@ -15,9 +15,9 @@
 .search-section {
     background: rgba(255, 255, 255, 1);
     position: sticky;
-    z-index: 1000;
     top: 0;
     transition: box-shadow 0.2s;
+    z-index: 500;
 
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)
@@ -45,7 +45,7 @@
     @extend %content-loader;
 }
 
-.tag-button {
+.tag-dropdown .button {
 	align-items: center;
 	border-radius: 3px;
 	display: inline-flex;
@@ -56,4 +56,46 @@
 	padding-left: 0.75em;
 	padding-right: 0.75em;
 	white-space: nowrap;
+}
+
+a.dropdown-item:focus {
+    @extend a, .dropdown-item, :hover;
+}
+
+a.dropdown-item[disabled] {
+    color: $grey;
+    cursor: not-allowed;
+
+    &:hover {
+        background-color: inherit;
+        color: $grey;
+    }
+}
+
+@mixin mark-entity($color) {
+    background-color: rgb(from $color r g b /.2);
+    border-bottom: .2em solid;
+    border-color: $color;
+
+    .entity-icon, &.entity-icon {
+        padding-left: .3em;
+        padding-right: .3em;
+        color: $color;
+    }
+}
+
+.entity-person {
+    @include mark-entity($entity-person);
+}
+
+.entity-location {
+    @include mark-entity($entity-location);
+}
+
+.entity-organization {
+    @include mark-entity($entity-organization);
+}
+
+.entity-miscellaneous {
+    @include mark-entity($entity-miscellaneous);
 }

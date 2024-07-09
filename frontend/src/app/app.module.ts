@@ -7,7 +7,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
 
-import { NgxScrollPositionRestorationModule } from 'ngx-scroll-position-restoration';
 
 import {
     ApiRetryService,
@@ -18,6 +17,10 @@ import {
 
 import { AboutComponent } from './about/about.component';
 import { AppComponent } from './app.component';
+import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
+import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
+import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
+import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
@@ -39,14 +42,15 @@ import { ResetPasswordComponent } from './login/reset-password/reset-password.co
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { ManualComponent } from './manual/manual.component';
 import { ManualModule } from './manual/manual.module';
-import { SettingsComponent } from './settings/settings.component';
-import { SettingsModule } from './settings/settings.module';
 import { MenuComponent } from './menu/menu.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { SearchComponent } from './search/index';
 import { SearchModule } from './search/search.module';
+import { SettingsComponent } from './settings/settings.component';
+import { SettingsModule } from './settings/settings.module';
 import { SharedModule } from './shared/shared.module';
+import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 
@@ -54,22 +58,22 @@ export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'info/:corpus',
         component: CorpusInfoComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'document/:corpus/:id',
         component: DocumentPageComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard],
+        canActivate: [CorpusGuard],
     },
     {
         path: 'login',
@@ -98,7 +102,6 @@ export const appRoutes: Routes = [
     {
         path: 'home',
         component: HomeComponent,
-        canActivate: [LoggedOnGuard],
     },
     {
         path: 'manual/:identifier',
@@ -111,10 +114,12 @@ export const appRoutes: Routes = [
     {
         path: 'search-history',
         component: SearchHistoryComponent,
+        canActivate: [LoggedOnGuard],
     },
     {
         path: 'download-history',
         component: DownloadHistoryComponent,
+        canActivate: [LoggedOnGuard],
     },
     {
         path: 'confirm-email/:key',
@@ -126,6 +131,29 @@ export const appRoutes: Routes = [
         canActivate: [LoggedOnGuard],
     },
     {
+        path: 'tags',
+        component: TagOverviewComponent,
+        canActivate: [LoggedOnGuard],
+    },
+    {
+        path: 'corpus-definitions',
+        canActivate: [LoggedOnGuard],
+        children: [
+            {
+                path: 'new',
+                component: CreateDefinitionComponent,
+            },
+            {
+                path: 'edit/:corpusID',
+                component: EditDefinitionComponent,
+            },
+            {
+                path: '',
+                component: DefinitionsOverviewComponent,
+            },
+        ]
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
@@ -133,8 +161,7 @@ export const appRoutes: Routes = [
 ];
 
 const routerOptions: ExtraOptions = {
-    relativeLinkResolution: 'legacy',
-    scrollPositionRestoration: 'disabled',  // functionality patched by NgxScrollPositionRestorationModule
+    scrollPositionRestoration: 'disabled',
     anchorScrolling: 'enabled',
 };
 
@@ -151,6 +178,7 @@ export const imports: any[] = [
     SharedModule,
     // Feature Modules
     CorpusModule,
+    CorpusDefinitionsModule,
     CorpusSelectionModule,
     DialogModule,
     DocumentModule,
@@ -162,7 +190,6 @@ export const imports: any[] = [
     SettingsModule,
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
-    NgxScrollPositionRestorationModule.forRoot(),
 ];
 
 export const providers: any[] = [

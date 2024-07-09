@@ -23,6 +23,7 @@ import {
 } from '../models/index';
 import { PageResults, PageResultsParameters } from '../models/page-results';
 import { SearchService } from '../services';
+import { RouterStoreService } from '../store/router-store.service';
 
 const MAXIMUM_DISPLAYED = 10000;
 
@@ -65,12 +66,16 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
 
     private destroy$ = new Subject<void>();
 
-    constructor(private searchService: SearchService) {}
+    constructor(
+        private routerStoreService: RouterStoreService,
+        private searchService: SearchService,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryModel) {
             this.pageResults?.complete();
             this.pageResults = new PageResults(
+                this.routerStoreService,
                 this.searchService,
                 this.queryModel
             );
@@ -80,7 +85,9 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
                 .subscribe((result) => {
                     this.searched.emit({
                         queryText: this.queryModel.queryText,
-                        resultsCount: result.total,
+                        sort: this.pageResults.state$.value.sort,
+                        highlight: this.pageResults.state$.value.highlight,
+                        resultsCount: result?.total,
                     });
                 });
         }
@@ -88,12 +95,12 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
 
     ngOnDestroy(): void {
         this.pageResults?.complete();
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 
     setParameters(parameters: PageResultsParameters) {
-        this.pageResults?.setParameters(parameters);
+        this.pageResults?.setParams(parameters);
     }
 
     totalDisplayed(totalResults: number) {

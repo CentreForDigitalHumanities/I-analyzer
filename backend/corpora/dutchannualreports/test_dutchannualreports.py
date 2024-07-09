@@ -1,6 +1,5 @@
 import os
 from corpora.utils_test import corpus_from_api
-from addcorpus.save_corpus import load_and_save_all_corpora
 
 here = os.path.abspath(os.path.dirname(__file__))
 

@@ -4,16 +4,15 @@ locations.
 '''
 import os
 from os.path import join, isfile, split, splitext
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 import re
-from io import BytesIO
 
 from django.conf import settings
 
-from addcorpus.extract import Combined, Metadata, XML
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import Combined, Metadata, XML
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from corpora.utils.constants import document_context
@@ -92,7 +91,7 @@ class Ecco(XMLCorpusDefinition):
                             'Volume'
                         ]
 
-                        meta_dict = self.metadata_from_xml(
+                        meta_dict = self._metadata_from_xml(
                             full_path, tags=meta_tags)
                         meta_dict['id'] = record_id
                         meta_dict['category'] = category

@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from addcorpus.corpus import FieldDefinition
-from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+from addcorpus.python_corpora.corpus import FieldDefinition
+from addcorpus.python_corpora.filters import DateFilter, MultipleChoiceFilter
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping, main_content_mapping
 
@@ -83,7 +83,6 @@ def date():
             description='Search only within this time range.'
         ),
         visualizations=['resultscount', 'termfrequency'],
-        primary_sort=True,
         csv_core=True,
     )
 
@@ -274,22 +273,30 @@ def source_archive():
     )
 
 
-def speech():
+def speech(language=None):
     """
     speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
     stopword and stemmer filter need to be defined for each language
     """
+    has_language = language != None
     return FieldDefinition(
         name='speech',
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True, language='en', updated_highlighting=True),
+        es_mapping = main_content_mapping(
+            token_counts=True,
+            stopword_analysis=has_language,
+            stemming_analysis=has_language,
+            language=language,
+            updated_highlighting=True
+        ),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
         visualizations=['wordcloud', 'ngram'],
         csv_core=True,
+        language=language,
     )
 
 def speech_id():
@@ -539,7 +546,8 @@ def url():
     """url of the source file"""
     return FieldDefinition(
         name='url',
-        display_name='Source url',
+        display_name='Source URL',
+        display_type='url',
         description='URL to source file of this speech',
         es_mapping=keyword_mapping(),
         searchable=False,

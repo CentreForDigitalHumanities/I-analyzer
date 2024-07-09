@@ -29,3 +29,7 @@ seleniumbase>3
 tqdm
 langcodes
 language_data
+flower
+ianalyzer_readers
+jsonschema
+Pillow

@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { DocumentFocus, DocumentPage, DocumentView } from '../../models/document-page';
-import { filter, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { FoundDocument, QueryModel } from '../../models';
 import { Subject } from 'rxjs';
-import { documentIcons, actionIcons } from '../../shared/icons';
+import { documentIcons, actionIcons, corpusIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-document-popup',
@@ -23,6 +23,9 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
     actionIcons = actionIcons;
     documentIcons = documentIcons;
 
+    showNamedEntities = false;
+    showNEROption = false;
+
     private refresh$ = new Subject<void>();
 
     get documentPageLink(): string[] {
@@ -38,8 +41,12 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.showNEROption = this.queryModel.corpus.hasNamedEntities;
+        }
         if (changes.page) {
             this.refresh$.next();
+            this.focusUpdate();
 
             this.page.focus$.pipe(
                 takeUntil(this.refresh$),
@@ -61,5 +68,9 @@ export class DocumentPopupComponent implements OnChanges, OnDestroy {
             this.document = undefined;
             this.visible = false;
         }
+    }
+
+    toggleNER(active: boolean): void {
+        this.showNamedEntities = active;
     }
 }

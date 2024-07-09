@@ -7,11 +7,11 @@ from datetime import datetime
 
 from django.conf import settings
 
-from addcorpus.extract import XML, Metadata, Combined
-from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import XML, Metadata, Combined
+from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.python_corpora.load_corpus import corpus_dir
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 
@@ -72,7 +72,7 @@ class DutchAnnualReports(XMLCorpusDefinition):
                 full_path = op.join(directory, filename)
                 file_path = op.join(rel_dir, filename)
                 image_path = op.join(
-                    rel_dir, name + '.' + self.scan_image_type)
+                    rel_dir, name + '.pdf')
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
@@ -193,7 +193,8 @@ class DutchAnnualReports(XMLCorpusDefinition):
                 multiple=True,
                 transform=lambda x: ' '.join(x),
             ),
-            search_field_core=True
+            search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='file_path',

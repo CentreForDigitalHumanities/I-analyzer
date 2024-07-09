@@ -2,12 +2,28 @@ from celery import chord, group, shared_task
 from django.conf import settings
 from visualization import wordcloud, ngram, term_frequency
 from es import download as es_download
+from api.api_query import api_query_to_es_query
 
 @shared_task()
 def get_wordcloud_data(request_json):
-    list_of_texts, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], settings.WORDCLOUD_LIMIT)
+    corpus_name = request_json['corpus']
+    es_query = api_query_to_es_query(request_json, corpus_name)
+    list_of_texts, _ = es_download.scroll(corpus_name, es_query, settings.WORDCLOUD_LIMIT)
     word_counts = wordcloud.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
     return word_counts
+
+
+@shared_task()
+def get_geo_data(request_json):
+    ''' Fetch all documents regardless of number of search results.
+    This should be fast enough for this operation.
+    '''
+    corpus_name = request_json['corpus']
+    geo_field = request_json['field']
+    es_query = api_query_to_es_query(request_json, corpus_name)
+    list_of_documents, _ = es_download.scroll(
+        corpus_name, es_query, source_includes=['id', geo_field])
+    return list_of_documents
 
 @shared_task
 def get_ngram_data_bin(**kwargs):
@@ -18,14 +34,14 @@ def integrate_ngram_results(results, **kwargs):
     return ngram.get_ngrams(results, **kwargs)
 
 def ngram_data_tasks(request_json):
-    corpus = request_json['corpus_name']
-    es_query = request_json['es_query']
+    corpus_name = request_json['corpus_name']
+    es_query = api_query_to_es_query(request_json, corpus_name)
     freq_compensation = request_json['freq_compensation']
-    bins = ngram.get_time_bins(es_query, corpus)
+    bins = ngram.get_time_bins(es_query, corpus_name)
 
     return chord(group([
         get_ngram_data_bin.s(
-            corpus_name=corpus,
+            corpus_name=corpus_name,
             es_query=es_query,
             field=request_json['field'],
             bin=b,
@@ -41,7 +57,7 @@ def ngram_data_tasks(request_json):
             number_of_ngrams=request_json['number_of_ngrams']
         )
     )
-    
+
 @shared_task()
 def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_value, size, include_query_in_result = False):
     '''
@@ -58,13 +74,14 @@ def histogram_term_frequency_tasks(request_json, include_query_in_result = False
     Calculate values for an entire series in the histogram term frequency graph.
     Schedules one task for each bin, which can be run in parallel.
     '''
-    corpus = request_json['corpus_name']
+    corpus_name = request_json['corpus_name']
+    es_query = api_query_to_es_query(request_json, corpus_name)
     bins = request_json['bins']
 
     return group([
         get_histogram_term_frequency_bin.s(
-            request_json['es_query'],
-            corpus,
+            es_query,
+            corpus_name,
             request_json['field_name'],
             bin['field_value'],
             bin['size'],
@@ -90,13 +107,14 @@ def timeline_term_frequency_tasks(request_json, include_query_in_result = False)
     Schedules one task for each bin, which can be run in parallel.
     '''
 
-    corpus = request_json['corpus_name']
+    corpus_name = request_json['corpus_name']
+    es_query = api_query_to_es_query(request_json, corpus_name)
     bins = request_json['bins']
 
     return group(
         get_timeline_term_frequency_bin.s(
-            request_json['es_query'],
-            corpus,
+            es_query,
+            corpus_name,
             request_json['field_name'],
             bin['start_date'],
             bin['end_date'],

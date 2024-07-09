@@ -9,8 +9,6 @@ import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { QueryService } from './query.service';
 import { SearchService } from './search.service';
 import { SessionService } from './session.service';
-import { WordmodelsService } from './wordmodels.service';
-import { WordmodelsServiceMock } from '../../mock-data/wordmodels';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { QueryModel } from '../models';
 import { mockCorpus } from '../../mock-data/corpus';
@@ -45,7 +43,7 @@ describe('SearchService', () => {
 
     it('should search', inject([SearchService], async (service: SearchService) => {
         const queryModel = new QueryModel(mockCorpus);
-        const results = await service.loadResults(queryModel, 0, 20);
+        const results = await service.loadResults(queryModel, {from: 0, size: 20, sort: [undefined, 'desc']});
         expect(results).toBeTruthy();
         expect(results.total.value).toBeGreaterThan(0);
     }));
