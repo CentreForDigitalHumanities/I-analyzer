@@ -58,6 +58,17 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
+    def update_body(self, doc=None):
+        if not doc:
+            return True
+        url = "http://resolver.kb.nl/resolve?urn=ddd:{}:mpeg21:{}".format(*doc['_id'].split(":"))
+        return {
+            "doc": {
+                "url" : url
+            }
+        }
+
+
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         consolidate_start_end_years(start, end, self.min_date, self.max_date)
@@ -99,7 +110,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
 
                     if article_match:
                         parts = name.split("_")
-                        record_id = 'KBPERS01:' + parts[1] + \
+                        record_id = parts[0] + ':' + parts[1] + \
                           ":mpeg21:a" + parts[2]
                         meta_dict.update({
                             'external_file': definition_file,
