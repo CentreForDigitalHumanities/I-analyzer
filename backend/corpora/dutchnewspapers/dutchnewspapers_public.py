@@ -91,7 +91,6 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                     if extension != '.xml':
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
-                    #def_match = self.definition_pattern.match(name)
 
                     article_match = False
                     for pattern in self.article_patterns:
