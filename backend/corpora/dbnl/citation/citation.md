@@ -12,6 +12,9 @@ I-analyzer presents the [DBNL-dataset](https://www.kb.nl/onderzoeken-vinden/data
 
 > KB, Nationale Biliotheek. "DBNL-dataset". *I-analyzer*, 2023, {{ frontend_url }}/search/dbnl
 
+### Chicago "notes and bibliography" style
+> KB, Nationale Bibliotheek, "DBNL-dataset", distributed by I-analyzer, 2023. {{ frontend_url }}/search/dbnl.
+
 
 ## Citing a specific work
 
@@ -34,3 +37,11 @@ This describes the query to view all chapters of the book on I-analyzer.
 ### MLA style
 
 > Porjeere, Olivier. *Zanglievende uitspanningen*. Martinus de Bruijn, 1788. {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc
+
+### Chicago "notes and bibliography" style
+#### First note
+> Olivier Porjeere, *Zanglievende uitspanningen* (Alkmaar: Martinus de Bruijn, 1788) {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc.
+#### Shortened note
+> Porjeere, *Zanglievende uitspanningen*
+#### Bibliography entry
+> Porjeere, Olivier. *Zanglievende uitspanningen*. Alkmaar: Martinus de Bruijn, 1788. {{ frontend_url }}/search/dbnl?title_id=porj001zang01_01&sort=chapter_index,asc.

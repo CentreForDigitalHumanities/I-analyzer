@@ -4,12 +4,8 @@ import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } fro
 import { User } from '../models/index';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { catchError, filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import {
-    faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
-    faUser
-} from '@fortawesome/free-solid-svg-icons';
 import { navIcons, userIcons } from '../shared/icons';
 
 @Component({
@@ -45,7 +41,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     ) {}
 
     ngOnDestroy() {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
     }
 
     ngOnInit() {

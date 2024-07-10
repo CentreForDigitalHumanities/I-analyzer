@@ -149,7 +149,7 @@
             "name": "url",
             "display_name": "Source URL",
             "description": "Link to the review on Goodreads",
-            "type": "text_metadata",
+            "type": "url",
             "options": {
                 "search": false,
                 "filter": "none",

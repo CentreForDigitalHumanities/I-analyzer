@@ -4,17 +4,16 @@ from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
     validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
     validate_mimetype,
-    validate_name_is_not_a_route_parameter, validate_search_filter,
-    validate_search_filter_with_mapping,
+    validate_name_is_not_a_route_parameter, validate_name_has_no_ner_suffix,
+    validate_search_filter, validate_search_filter_with_mapping,
     validate_searchable_field_has_full_text_search,
     validate_sort_configuration, validate_visualizations_with_mapping,
     validate_source_data_directory,
 )
 from addcorpus.validation.indexing import (validate_essential_fields,
-                                           validate_has_configuration,
-                                           validate_language_field)
+    validate_has_configuration, validate_language_field, validate_has_data_directory)
 from addcorpus.validation.publishing import (validate_default_sort,
-                                             validate_ngram_has_date_field)
+    validate_ngram_has_date_field)
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.postgres.fields import ArrayField
@@ -22,10 +21,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 
+from ianalyzer.elasticsearch import elasticsearch
+
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
-
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -93,6 +93,7 @@ class Corpus(models.Model):
         config = self.configuration_obj
         fields = config.fields.all()
 
+        validate_has_data_directory(self)
         validate_essential_fields(fields)
         validate_language_field(self)
 
@@ -112,12 +113,21 @@ class Corpus(models.Model):
         '''
         Validation that should be carried out before making the corpus public.
 
+        This also includes most checks that are needed to create an index, but not all
+        (if the index already exists, you do not need source data).
+
         Raises:
             CorpusNotIndexableError: the corpus is not meeting requirements for indexing.
             CorpusNotPublishableError: interface options are improperly configured.
         '''
 
-        self.validate_ready_to_index()
+        validate_has_configuration(self)
+
+        config = self.configuration_obj
+        fields = config.fields.all()
+
+        validate_essential_fields(fields)
+        validate_language_field(self)
         validate_ngram_has_date_field(self)
         validate_default_sort(self)
 
@@ -252,6 +262,20 @@ class CorpusConfiguration(models.Model):
                     e
                 ])
 
+    @property
+    def has_named_entities(self):
+        client = elasticsearch(self.es_index)
+        try:
+            mapping = client.indices.get_mapping(
+                index=self.es_index)
+            fields = mapping[self.es_index].get(
+                'mappings', {}).get('properties', {}).keys()
+            if any(field.endswith(':ner') for field in fields):
+                return True
+        except:
+            return False
+        return False
+
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
@@ -262,7 +286,8 @@ FIELD_DISPLAY_TYPES = [
     (MappingType.INTEGER.value, 'integer'),
     (MappingType.FLOAT.value, 'float'),
     (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point')
+    (MappingType.GEO_POINT.value, 'geo_point'),
+    ('url', 'url'),
 ]
 
 FIELD_VISUALIZATIONS = [
@@ -284,7 +309,8 @@ VISUALIZATION_SORT_OPTIONS = [
 class Field(models.Model):
     name = models.SlugField(
         max_length=MAX_LENGTH_NAME,
-        validators=[validate_name_is_not_a_route_parameter],
+        validators=[validate_name_is_not_a_route_parameter,
+                    validate_name_has_no_ner_suffix],
         help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
@@ -422,11 +448,12 @@ class Field(models.Model):
                     e
                 ])
 
+
 class CorpusDocumentationPage(models.Model):
     class PageType(models.TextChoices):
         GENERAL = ('general', 'General information')
         CITATION = ('citation', 'Citation')
-        LICENSE = ('license', 'Licence')
+        LICENSE = ('license', 'License')
         TERMS_OF_SERVICE = ('terms_of_service', 'Terms of service')
         WORDMODELS = ('wordmodels', 'Word models')
 
@@ -445,6 +472,9 @@ class CorpusDocumentationPage(models.Model):
     content = models.TextField(
         help_text='markdown contents of the documentation'
     )
+
+    def __str__(self):
+        return f'{self.corpus_configuration.corpus.name} - {self.type}'
 
     class Meta:
         constraints = [

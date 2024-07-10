@@ -135,7 +135,7 @@ export class VisualizationSelector extends StoreSync<VisualizationSelection> {
      * based on the query state.
      */
     private disabled$(name: string, query: QueryModel): Observable<boolean> {
-        const now = timer();
+        const now = timer(0);
         const updates = merge(now, query.update);
         return updates.pipe(
             map(() => this.disabled(name, query)),

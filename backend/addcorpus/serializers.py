@@ -1,8 +1,13 @@
 from rest_framework import serializers
+from typing import Dict
+
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
 from addcorpus.documentation import render_documentation_context
+from addcorpus.json_corpora.export_json import export_json_corpus
+from addcorpus.json_corpora.import_json import import_json_corpus
+
 
 class NonEmptyJSONField(serializers.JSONField):
     '''
@@ -65,6 +70,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
     languages = serializers.ListField(child=LanguageField())
     category = PrettyChoiceField(choices=CATEGORIES)
     default_sort = NonEmptyJSONField()
+    has_named_entities = serializers.ReadOnlyField()
 
     class Meta:
         model = CorpusConfiguration
@@ -84,6 +90,7 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'default_sort',
             'language_field',
             'fields',
+            'has_named_entities',
         ]
 
 
@@ -121,3 +128,68 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CorpusDocumentationPage
         fields = ['corpus_configuration', 'type', 'content']
+
+
+class JSONDefinitionField(serializers.Field):
+    def get_attribute(self, instance: Corpus):
+        return instance
+
+    def to_representation(self, value: Corpus) -> Dict:
+        return export_json_corpus(value)
+
+    def to_internal_value(self, data: Dict) -> Dict:
+        return import_json_corpus(data)
+
+
+class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
+    definition = JSONDefinitionField()
+
+    class Meta:
+        model = Corpus
+        fields = ['id', 'active', 'definition']
+        read_only_fields = ['id']
+
+    def create(self, validated_data: Dict):
+        definition_data = validated_data.get('definition')
+        configuration_data = definition_data.pop('configuration')
+        fields_data = configuration_data.pop('fields')
+
+        corpus = Corpus.objects.create(**definition_data)
+        configuration = CorpusConfiguration.objects.create(corpus=corpus, **configuration_data)
+        for field_data in fields_data:
+            Field.objects.create(corpus_configuration=configuration, **field_data)
+
+        if validated_data.get('active') == True:
+            corpus.active = True
+            corpus.save()
+
+        return corpus
+
+    def update(self, instance: Corpus, validated_data: Dict):
+        definition_data = validated_data.get('definition')
+        configuration_data = definition_data.pop('configuration')
+        fields_data = configuration_data.pop('fields')
+
+        corpus = Corpus(pk=instance.pk, **definition_data)
+        corpus.save()
+
+        configuration, _ = CorpusConfiguration.objects.get_or_create(corpus=corpus)
+        for attr in configuration_data:
+            setattr(configuration, attr, configuration_data[attr])
+        configuration.save()
+
+        for field_data in fields_data:
+            field, _ = Field.objects.get_or_create(
+                corpus_configuration=configuration, name=field_data['name']
+            )
+            for attr in field_data:
+                setattr(field, attr, field_data[attr])
+            field.save()
+
+        configuration.fields.exclude(name__in=(f['name'] for f in fields_data)).delete()
+
+        if validated_data.get('active') == True:
+            corpus.active = True
+            corpus.save()
+
+        return corpus

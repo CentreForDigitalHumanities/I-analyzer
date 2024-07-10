@@ -230,12 +230,12 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     assert len(rows) == 1
 
 
-def test_unauthenticated_download(db, client, basic_corpus, basic_corpus_index):
+def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
     download_request_json = {
-        'corpus': basic_corpus,
+        'corpus': basic_mock_corpus,
         'es_query': mock_match_all_query(),
         'fields': ['date', 'content'],
-        'route': f"/search/{basic_corpus}",
+        'route': f"/search/{basic_mock_corpus}",
         'encoding': 'utf-8'
     }
     response = client.post('/api/download/search_results',
@@ -246,3 +246,22 @@ def test_unauthenticated_download(db, client, basic_corpus, basic_corpus_index):
     download_objects = Download.objects.all()
     assert download_objects.count() == 1
     assert download_objects.first().user == None
+
+def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
+    es_query = query.set_query_text(mock_match_all_query(), 'ghost')
+    download_request_json = {
+        'corpus': basic_mock_corpus,
+        'es_query': es_query,
+        'fields': ['character', 'line'],
+        'route': f"/search/{basic_mock_corpus}",
+        'encoding': 'utf-8'
+    }
+    response = client.post('/api/download/search_results',
+                           download_request_json,
+                           content_type='application/json'
+                           )
+    assert status.is_success(response.status_code)
+    stream = read_file_response(response, 'utf-8')
+    reader = csv.DictReader(stream, delimiter=';')
+    row = next(reader)
+    assert row['query'] == 'ghost'

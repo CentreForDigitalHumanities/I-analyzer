@@ -27,7 +27,7 @@ export class TagSelectComponent implements OnDestroy {
     @ViewChild('tagSelect') tagSelect: ElementRef;
 
     tags$: Observable<Tag[]>;
-    destroy$ = new Subject();
+    destroy$ = new Subject<void>();
 
     formIcons = formIcons;
     actionIcons = actionIcons;
@@ -66,7 +66,7 @@ export class TagSelectComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 }
