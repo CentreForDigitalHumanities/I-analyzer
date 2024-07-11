@@ -213,28 +213,33 @@ export class HistogramComponent
                     formatDownload: this.formatDownloadValue,
                     isOptional: 'relative_doc_count' !== valueKey,
                 },
-                {
-                    key: 'match_count',
-                    label: 'Token Frequency',
-                    format: this.formatValue('raw'),
-                    formatDownload: this.formatDownloadValue,
-                    isOptional: 'match_count' !== valueKey,
-                },
-                {
-                    key: 'matches_by_doc_count',
-                    label: 'Relative Frequency (documents)',
-                    format: this.formatValue('documents'),
-                    formatDownload: this.formatDownloadValue,
-                    isOptional: 'matches_by_doc_count' !== valueKey,
-                },
-                {
-                    key: 'matches_by_token_count',
-                    label: 'Relative Frequency (terms)',
-                    format: this.formatValue('terms'),
-                    formatDownload: this.formatDownloadValue,
-                    isOptional: 'matches_by_token_count' !== valueKey,
-                },
             ];
+            if (this.frequencyMeasure == 'tokens') {
+                // Headers related to tokens should not be applied to document visualizations
+                this.tableHeaders = this.tableHeaders.concat([
+                    {
+                        key: 'match_count',
+                        label: 'Token Frequency',
+                        format: this.formatValue('raw'),
+                        formatDownload: this.formatDownloadValue,
+                        isOptional: 'match_count' !== valueKey,
+                    },
+                    {
+                        key: 'matches_by_doc_count',
+                        label: 'Relative Frequency (documents)',
+                        format: this.formatValue('documents'),
+                        formatDownload: this.formatDownloadValue,
+                        isOptional: 'matches_by_doc_count' !== valueKey,
+                    },
+                    {
+                        key: 'matches_by_token_count',
+                        label: 'Relative Frequency (terms)',
+                        format: this.formatValue('terms'),
+                        formatDownload: this.formatDownloadValue,
+                        isOptional: 'matches_by_token_count' !== valueKey,
+                    },
+                ]);
+            }
         }
     }
 }

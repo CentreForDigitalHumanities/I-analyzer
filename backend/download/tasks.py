@@ -44,17 +44,10 @@ def make_download(request_json, download_id, download_size=None):
     es_query = api_query_to_es_query(request_json, corpus_name)
     results, _total = es_download.scroll(
         corpus_name, es_query, download_size)
+
     filepath = create_csv.search_results_csv(
-        results, request_json['fields'], query, download_id)
+        results, request_json['fields'], query.get_query_text(es_query), download_id)
     return filepath
-
-
-def create_query(request_json):
-    """
-    format the route of the search into a query string
-    """
-    route = request_json.get('route')
-    return re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
 
 
 def try_download(tasks_func, download):
