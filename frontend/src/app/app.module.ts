@@ -17,6 +17,10 @@ import {
 
 import { AboutComponent } from './about/about.component';
 import { AppComponent } from './app.component';
+import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
+import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
+import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
+import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
@@ -132,6 +136,24 @@ export const appRoutes: Routes = [
         canActivate: [LoggedOnGuard],
     },
     {
+        path: 'corpus-definitions',
+        canActivate: [LoggedOnGuard],
+        children: [
+            {
+                path: 'new',
+                component: CreateDefinitionComponent,
+            },
+            {
+                path: 'edit/:corpusID',
+                component: EditDefinitionComponent,
+            },
+            {
+                path: '',
+                component: DefinitionsOverviewComponent,
+            },
+        ]
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
@@ -156,6 +178,7 @@ export const imports: any[] = [
     SharedModule,
     // Feature Modules
     CorpusModule,
+    CorpusDefinitionsModule,
     CorpusSelectionModule,
     DialogModule,
     DocumentModule,

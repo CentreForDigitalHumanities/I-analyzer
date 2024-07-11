@@ -1,11 +1,20 @@
 <section class="section">
     <div class="container is-readable">
+        <a class="button is-pulled-right" *ngIf="showManageLink$ | async"
+            [routerLink]="['/corpus-definitions/']">
+            <span class="icon" aria-hidden="true">
+                <fa-icon [icon]="actionIcons.edit"></fa-icon>
+            </span>
+            <span>Corpus definitions</span>
+        </a>
+
         <h1 class="title">
             Welcome
         </h1>
         <h2 class="subtitle">
             Select a corpus to search through
         </h2>
+
         <hr>
 
         <div class="block">

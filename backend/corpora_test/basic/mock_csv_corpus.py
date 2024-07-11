@@ -25,6 +25,8 @@ class MockCSVCorpus(CSVCorpusDefinition):
     max_date = datetime.datetime(year=2022, month=12, day=31)
     data_directory = os.path.join(here, 'source_data')
     citation_page = 'citation.md'
+    license_page = 'license.md'
+    description_page = 'mock-csv-corpus.md'
 
     languages = ['en']
     category = 'book'

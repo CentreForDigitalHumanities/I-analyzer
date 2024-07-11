@@ -13,6 +13,8 @@ class MediaMockCorpus(MockCSVCorpus):
     data_directory = os.path.join(here, 'source_data')
     scan_image_type = 'image/png'
     citation_page = None
+    license_page = None
+    description_page = None
 
     def request_media(self, document, corpus_name):
         field_values = document['fieldValues']

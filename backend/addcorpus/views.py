@@ -42,21 +42,29 @@ def send_corpus_file(corpus='', subdir='', filename=''):
 
     return FileResponse(open(path, 'rb'))
 
+
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, CorpusAccessPermission]
     serializer_class = CorpusDocumentationPageSerializer
 
-    def get_queryset(self):
-        corpus_name = corpus_name_from_request(self.request)
-        pages = CorpusDocumentationPage.objects.filter(corpus_configuration__corpus__name=corpus_name)
-
+    @staticmethod
+    def get_relevant_pages(pages, corpus_name):
         # only include wordmodels documentation if models are present
         if Corpus.objects.get(name=corpus_name).has_python_definition:
             definition = load_corpus_definition(corpus_name)
             if definition.word_models_present:
                 return pages
-
         return pages.exclude(type=CorpusDocumentationPage.PageType.WORDMODELS)
+
+    def get_queryset(self):
+        corpus_name = corpus_name_from_request(self.request)
+        pages = CorpusDocumentationPage.objects.filter(
+            corpus_configuration__corpus__name=corpus_name)
+        relevant_pages = self.get_relevant_pages(pages, corpus_name)
+        canonical_order = [e.value for e in CorpusDocumentationPage.PageType]
+
+        return sorted(
+            relevant_pages, key=lambda p: canonical_order.index(p.type))
 
 
 class CorpusImageView(APIView):
