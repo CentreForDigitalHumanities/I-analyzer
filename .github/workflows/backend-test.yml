@@ -38,8 +38,8 @@ jobs:
         context: backend/.
         push: true
         tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest"
-        cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:buildcache
-        cache-to: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:buildcache,mode=max
+        cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
+        cache-to: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest,mode=max
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data

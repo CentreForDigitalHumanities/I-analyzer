@@ -38,8 +38,8 @@ jobs:
         context: frontend/.
         push: true
         tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest"
-        cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:buildcache
-        cache-to: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:buildcache,mode=max
+        cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
+        cache-to: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest,mode=max
     - name: Run frontend unit tests
       run: |
         docker-compose --env-file .env-ci run --rm frontend yarn test
