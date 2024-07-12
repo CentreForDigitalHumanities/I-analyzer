@@ -42,4 +42,4 @@ jobs:
         cache-to: type=gha,mode=max
     - name: Run frontend unit tests
       run: |
-        docker run ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest sh -c "yarn prebuild && yarn test"
+        docker-compose --env-file .env-ci run --rm frontend yarn test
