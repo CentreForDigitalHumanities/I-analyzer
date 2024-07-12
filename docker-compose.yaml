@@ -13,7 +13,7 @@ services:
     volumes:
       - ianalyzer-db:/var/lib/postgresql/data/
   backend:
-    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend
+    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
     build:
       context: ./backend
     depends_on:

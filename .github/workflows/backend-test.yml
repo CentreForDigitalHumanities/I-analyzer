@@ -24,18 +24,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+    - name: Build and push
+      uses: docker/build-push-action@v6
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build backend image, using cache from Github registry
-      run: |
-        docker pull ghcr.io/uudigitalhumanitieslab/ianalyzer-backend || true
-        cd backend
-        docker build . --tag ghcr.io/uudigitalhumanitieslab/ianalyzer-backend --cache-from=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend
-        docker push ghcr.io/uudigitalhumanitieslab/ianalyzer-backend || true
+        context: .
+        push: true
+        tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data
