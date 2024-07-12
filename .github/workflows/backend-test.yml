@@ -39,7 +39,7 @@ jobs:
         push: true
         tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest"
         cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
-        cache-to: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest,mode=max
+        cache-to: type=inline
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data
