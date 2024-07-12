@@ -80,8 +80,6 @@ services:
     restart: unless-stopped
   celery:
     image: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
-    build:
-      context: ./backend
     environment:
       CELERY_BROKER: $CELERY_BROKER
       SQL_DATABASE: $SQL_DATABASE
