@@ -17,6 +17,8 @@ on:
       - 'backend/**'
       - '.github/workflows/backend*'
       - 'docker-compose.yaml'
+    paths-ignore:
+      - '**.md'
 
 jobs:
   backend-test:
