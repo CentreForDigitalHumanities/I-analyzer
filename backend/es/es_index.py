@@ -115,11 +115,6 @@ def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
 
     logger.info('Attempting to populate index...')
 
-    # Obtain source documents
-    files = reader.sources(
-        start=start or corpus_config.min_date,
-        end=end or corpus_config.max_date)
-    docs = reader.documents(files)
 
     # Each source document is decorated as an indexing operation, so that it
     # can be sent to ElasticSearch in bulk
@@ -129,8 +124,10 @@ def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
             '_index': index_name,
             '_id': doc.get('id'),
             '_source': doc
-        } for doc in docs
-    )
+        } for doc in reader.documents( # call the documents generator
+            reader.sources( # call the sources generator
+                start=start or corpus_config.min_date,
+                end=end or corpus_config.max_date)))
     actions = iter_snap(actions)
 
     corpus_server = settings.SERVERS[
