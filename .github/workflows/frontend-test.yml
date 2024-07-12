@@ -17,9 +17,6 @@ on:
       - 'frontend/**'
       - '.github/workflows/frontend*'
       - 'docker-compose.yaml'
-    paths-ignore:
-      - '**.md'
-
 
 jobs:
   frontend-test:
