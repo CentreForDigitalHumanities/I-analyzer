@@ -33,13 +33,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build frontend image, using cache from Github registry
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
+        context: frontend/.
         push: true
-        tags: ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend
-        cache-from: type=registry, ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend
-        cache-to: type=registry, ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend
-        file: frontend/Dockerfile
+        tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
     - name: Run frontend unit tests
       run: |
-        docker run ianalyzer-frontend sh -c "yarn prebuild && yarn test"
+        docker run ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest sh -c "yarn prebuild && yarn test"

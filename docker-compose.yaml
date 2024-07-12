@@ -40,7 +40,7 @@ services:
         target: /corpora
     command: bash -c "python manage.py migrate && python manage.py loadcorpora && python manage.py runserver 0.0.0.0:8000"
   frontend:
-    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend
+    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
     build:
       context: ./frontend
     ports:
@@ -79,7 +79,7 @@ services:
     image: redis:latest
     restart: unless-stopped
   celery:
-    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend
+    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
     build:
       context: ./backend
     environment:
