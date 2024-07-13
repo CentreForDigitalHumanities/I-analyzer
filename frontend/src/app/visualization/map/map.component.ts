@@ -79,6 +79,10 @@ export class MapComponent implements OnChanges {
             "autosize": "none",
 
             "signals": [
+                {
+                    name: "corpusName",
+                    value: this.corpus.name
+                },
                 { "name": "tx", "update": "width / 2" },
                 { "name": "ty", "update": "height / 2" },
                 {
@@ -196,6 +200,7 @@ export class MapComponent implements OnChanges {
                             "fill": { "value": "red" },
                             "stroke": { "value": "grey" },
                             "tooltip": { "field": "properties.id" },
+                            "href": { "signal": "'/document/' + corpusName + '/' + datum.properties.id" },
                         },
                     },
                     "transform": [
