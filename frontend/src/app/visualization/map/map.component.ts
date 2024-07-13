@@ -74,8 +74,8 @@ export class MapComponent implements OnChanges {
         return {
             "$schema": "https://vega.github.io/schema/vega/v5.json",
             "description": "An interactive map supporting pan and zoom.",
-            "width": 600,
-            "height": 400,
+            "width": { "signal": "width" },
+            "height": { "signal": "height" },
             "autosize": "none",
 
             "signals": [
@@ -212,11 +212,16 @@ export class MapComponent implements OnChanges {
 
     async renderChart(): Promise<void> {
         const spec = this.getVegaSpec();
+        const aspectRatio = 2 / 3;
+        const width = this.vegaMap.nativeElement.offsetWidth;
+        const height = width * aspectRatio;
 
         try {
             await embed(this.vegaMap.nativeElement, spec, {
                 mode: 'vega',
                 renderer: 'canvas',
+                width: width,
+                height: height,
                 actions: false,
                 tooltip: true,
             });
