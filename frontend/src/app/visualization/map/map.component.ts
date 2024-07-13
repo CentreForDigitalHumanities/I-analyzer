@@ -195,6 +195,7 @@ export class MapComponent implements OnChanges {
                             "height": { "value": 3 },
                             "fill": { "value": "red" },
                             "stroke": { "value": "grey" },
+                            "tooltip": { "field": "properties.id" },
                         },
                     },
                     "transform": [
@@ -217,6 +218,7 @@ export class MapComponent implements OnChanges {
                 mode: 'vega',
                 renderer: 'canvas',
                 actions: false,
+                tooltip: true,
             });
         } catch (error) {
             this.emitError(error);
