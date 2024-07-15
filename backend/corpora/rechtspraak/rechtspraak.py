@@ -6,7 +6,6 @@ from os import makedirs, remove
 from typing import Optional
 from zipfile import ZipFile, BadZipFile
 from ianalyzer_readers.xml_tag import Tag, ParentTag
-import bs4
 
 from django.conf import settings
 
