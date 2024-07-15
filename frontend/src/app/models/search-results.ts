@@ -27,22 +27,11 @@ export interface ResultOverview {
     resultsCount: number;
 };
 
-export interface AggregateQueryFeedback {
-    completed: boolean;
-    aggregations: AggregateData;
-};
-
-export interface AggregateFrequencyResults {
-    success: boolean;
-    message?: string;
-    data?: AggregateResult[];
-};
-
-export interface AggregateResult {
+export interface MostFrequentWordsResult {
     key: string;
     doc_count: number;
-    key_as_string?: string;
 };
+
 
 export interface GeoDocument {
     id: string;
@@ -60,10 +49,6 @@ export interface DateFrequencyPair {
 export interface DateResult {
     date: Date;
     doc_count: number;
-};
-
-export interface AggregateData {
-    [fieldName: string]: AggregateResult[];
 };
 
 export interface WordSimilarity {
@@ -96,6 +81,14 @@ export type WordInModelResult = {
 export interface QueryFeedback {
     status: 'not in model'|'success'|'error'|'multiple words'|'empty';
     similarTerms?: string[];
+}
+
+export interface FieldEntities {
+    [entityType: string] : string
+}
+
+export interface NamedEntitiesResult {
+    [fieldName: string]: FieldEntities[]
 }
 
 export interface TaskResult { task_ids: string[] };

@@ -70,6 +70,25 @@
             ],
             "console": "internalConsole",
             "justMyCode": false
+        }, {
+            "name": "celery",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/backend",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": [
+                "-A",
+                "ianalyzer.celery",
+                "worker",
+                "--pool=solo",
+                "--concurrency=1",
+                "--events",
+                "--loglevel=info"
+            ]
         }
     ],
     "inputs": [

@@ -16,4 +16,5 @@ export const environment = {
     directDownloadLimit: 1000,
     version,
     sourceUrl: 'https://github.com/UUDigitalHumanitieslab/I-analyzer/',
+    logos: undefined,
 };

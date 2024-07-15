@@ -316,6 +316,7 @@ class Rechtspraak(XMLCorpusDefinition):
         FieldDefinition(
             name='url',
             display_name='Source URL',
+            display_type='url',
             description='URL of the case on rechtspraak.nl',
             es_mapping=keyword_mapping(),
             extractor=_rdf_description_extractor(

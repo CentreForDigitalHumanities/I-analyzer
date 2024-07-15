@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { TabPanelDirective } from './tab-panel.directive';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { modulo } from '../../utils/utils';
+import { SlugifyPipe } from '../pipes/slugify.pipe';
 
 interface Tab {
     label: string; // display name
@@ -28,7 +29,7 @@ export class TabsComponent implements AfterContentInit {
 
     tabs: Tab[];
 
-    constructor() { }
+    constructor(private slugifyPipe: SlugifyPipe) {}
 
     ngAfterContentInit(): void {
         this.tabs = this.tabPanels.map(tabPanel => ({
@@ -74,6 +75,7 @@ export class TabsComponent implements AfterContentInit {
     }
 
     tabLinkId(tabId: string | number): string {
-        return `tab-${tabId}`;
+        const slugifiedId = this.slugifyPipe.transform(tabId);
+        return `tab-${slugifiedId}`;
     }
 }

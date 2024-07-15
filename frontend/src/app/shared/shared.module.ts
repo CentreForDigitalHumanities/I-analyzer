@@ -12,20 +12,22 @@ import { BalloonDirective } from '../balloon.directive';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
 import { ErrorComponent } from '../error/error.component';
 import { ScrollToDirective } from '../scroll-to.directive';
-import { HighlightPipe } from '../search';
 import { DropdownModule } from './dropdown/dropdown.module';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
 import { TabsComponent } from './tabs/tabs.component';
+import { ToggleComponent } from './toggle/toggle.component';
+import { SlugifyPipe } from './pipes/slugify.pipe';
 
 @NgModule({
     declarations: [
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
-        HighlightPipe,
         ScrollToDirective,
         TabsComponent,
         TabPanelDirective,
+        ToggleComponent,
+        SlugifyPipe,
     ],
     exports: [
         // shared components
@@ -43,11 +45,14 @@ import { TabsComponent } from './tabs/tabs.component';
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
-        HighlightPipe,
         HttpClientModule,
         HttpClientXsrfModule,
         RouterModule,
         TableModule,
+        ToggleComponent,
+
+        // Shared pipes
+        SlugifyPipe,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -64,7 +69,7 @@ import { TabsComponent } from './tabs/tabs.component';
             headerName: 'X-CSRFToken',
         }),
         RouterModule,
-
     ],
+    providers: [SlugifyPipe],
 })
 export class SharedModule {}

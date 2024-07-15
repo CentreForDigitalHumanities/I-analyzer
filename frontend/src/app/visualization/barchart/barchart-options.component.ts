@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
 import { Normalizer, ChartType, ChartParameters } from '../../models';
@@ -85,7 +85,7 @@ export class BarchartOptionsComponent
 
     teardown() {}
 
-    setStateFromParams(params: Params) {
+    setStateFromParams(params: ParamMap) {
         if (params.has('normalize')) {
             this.currentNormalizer = params.get('normalize') as Normalizer;
         } else {

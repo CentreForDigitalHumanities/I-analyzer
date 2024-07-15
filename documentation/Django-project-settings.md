@@ -47,11 +47,17 @@ The values in the dictionary give specifications.
 - `'scroll_timeout'`: Time before scroll results time out
 - `'scroll_page_size'`: Number of results per scroll page
 
-The following optional settings are implemented but have no documentation:
+### API key
 
-- `'certs_location'`
-- `'api_key'`
-- `'api_id'`
+By default, an elasticsearch server will have security features enabled; you can turn this off for a local development server (see [first-time setup](./First-time-setup.md)). Otherwise, the server configuration must specify an API key.
+
+Create an API key for the server: see [creating an API key](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html). Note down the `'id'` and `'api_key'` values of the response.
+
+Add the following values to the configuration:
+
+- `'certs_location'`: Fill in the following path: `{your_elasticsearch_directory}/config/certs/http_ca.crt`
+- `'api_id'`: the ID of the API key
+- `'api_key'`: the generated API key
 
 
 #### Setting a default server

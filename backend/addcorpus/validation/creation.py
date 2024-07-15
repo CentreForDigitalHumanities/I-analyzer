@@ -11,12 +11,10 @@ from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
 from addcorpus.python_corpora.filters import \
     VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
 from django.core.exceptions import ValidationError
-
+from addcorpus.es_mappings import primary_mapping_type
 from langcodes import tag_is_valid
 
 
-def primary_mapping_type(es_mapping):
-    return es_mapping.get('type', None)
 
 def supports_full_text_search(es_mapping):
     is_text = primary_mapping_type(es_mapping) == MappingType.TEXT.value
@@ -122,6 +120,13 @@ def validate_name_is_not_a_route_parameter(value):
     if value in FORBIDDEN_FIELD_NAMES:
         raise ValidationError(
             f'{value} cannot be used as a field name, because it is also a route parameter'
+        )
+
+
+def validate_name_has_no_ner_suffix(value):
+    if value.endswith(':ner'):
+        raise ValidationError(
+            f'{value} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields'
         )
 
 def mapping_can_be_searched(es_mapping):

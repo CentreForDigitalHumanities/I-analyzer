@@ -9,10 +9,10 @@ example_document = {
 
 expected_url = f'/api/get_media?corpus=media-mock-corpus&image_path=images%2Fhamlet.png'
 
-def test_media_views(client, mock_corpus, admin_client):
+def test_media_views(client, media_mock_corpus, admin_client):
     response = admin_client.post(
         '/api/request_media',
-        {'corpus': mock_corpus, 'document': example_document},
+        {'corpus': media_mock_corpus, 'document': example_document},
         content_type='application/json'
     )
     assert status.is_success(response.status_code)

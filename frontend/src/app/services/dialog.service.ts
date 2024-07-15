@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { marked } from 'marked';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DialogService {
     private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
-    private manifest: Promise<ManualPageMetaData[]> | undefined;
+    private manifest: Promise<ManualSection[]> | undefined;
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     public pageEvent = this.behavior.asObservable();
@@ -33,12 +34,13 @@ export class DialogService {
 
         const html = await pagePromise;
         const manifest = await this.getManifest();
-        const title = manifest.find(page => page.id === identifier).title;
+        const pages = _.flatMap(manifest, 'pages');
+        const title = pages.find(page => page.id === identifier).title;
 
         return { html, title };
     }
 
-    public getManifest(): Promise<ManualPageMetaData[]> {
+    public getManifest(): Promise<ManualSection[]> {
         if (this.manifest) {
             return this.manifest;
         }
@@ -120,7 +122,12 @@ export type DialogPageEvent =
   };
 
 
-export interface ManualPageMetaData {
+export interface ManualSection {
     title: string;
     id: string;
 }
+
+export interface ManualSection {
+    title: string;
+    pages: ManualSection[];
+};

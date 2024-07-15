@@ -2,17 +2,10 @@ import pytest
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from tag.models import DOCS_PER_TAG_LIMIT, Tag, TaggedDocument
-from conftest import index_test_corpus, clear_test_corpus
-
-
-@pytest.fixture(scope='session')
-def mock_corpus():
-    return 'tagging-mock-corpus'
-
 
 @pytest.fixture()
-def mock_corpus_obj(db, mock_corpus):
-    return Corpus.objects.get(name=mock_corpus)
+def mock_corpus_obj(db, tag_mock_corpus):
+    return Corpus.objects.get(name=tag_mock_corpus)
 
 
 @pytest.fixture()
@@ -88,8 +81,8 @@ def other_corpus(db):
     return name
 
 @pytest.fixture()
-def multiple_tags(db, mock_corpus, auth_user):
-    corpus = Corpus.objects.get(name=mock_corpus)
+def multiple_tags(db, tag_mock_corpus, auth_user):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
     riveting_tag = Tag.objects.create(
         name='riveting',
         user=auth_user
@@ -114,11 +107,3 @@ def multiple_tags(db, mock_corpus, auth_user):
         doc.tags.add(brilliant_tag)
 
     return [riveting_tag, brilliant_tag]
-
-
-@pytest.fixture(scope='session')
-def index_mock_corpus(mock_corpus, es_client):
-    index_test_corpus(es_client, mock_corpus)
-    yield mock_corpus
-    clear_test_corpus(es_client, mock_corpus)
-

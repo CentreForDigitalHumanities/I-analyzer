@@ -2,7 +2,6 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 import * as _ from 'lodash';
 
 import {
-    AggregateResult,
     HistogramDataPoint,
     HistogramSeries,
     MultipleChoiceFilterOptions,
@@ -10,6 +9,7 @@ import {
     RangeFilterOptions} from '../../models/index';
 import { selectColor } from '../../utils/select-color';
 import { BarchartDirective } from './barchart.directive';
+import { TermsAggregator, TermsResult } from '../../models/aggregation';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
@@ -26,7 +26,7 @@ function formatXAxisLabel(value): string {
     styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent
-    extends BarchartDirective<HistogramDataPoint>
+    extends BarchartDirective<TermsResult, HistogramDataPoint>
     implements OnInit, OnChanges {
     /** On what property should the data be sorted? */
     get defaultSort(): string {
@@ -39,10 +39,11 @@ export class HistogramComponent
     /** specify aggregator object based on visualised field;
      * used in document requests.
      */
-    getAggregator() {
+    getAggregator(): TermsAggregator {
         let size = 0;
+
         if (!this.visualizedField.filterOptions) {
-            return { name: this.visualizedField.name, size: 100 };
+            return new TermsAggregator(this.visualizedField, 100);
         }
 
         const filterOptions = this.visualizedField.filterOptions;
@@ -53,18 +54,16 @@ export class HistogramComponent
                 (filterOptions as RangeFilterOptions).upper -
                 (filterOptions as RangeFilterOptions).lower;
         }
-        return { name: this.visualizedField.name, size };
+        return new TermsAggregator(this.visualizedField, size);
     }
 
     requestSeriesDocCounts(queryModel: QueryModel) {
         const aggregator = this.getAggregator();
 
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [
-            aggregator,
-        ]);
+        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregator);
     }
 
-    aggregateResultToDataPoint(cat: AggregateResult) {
+    aggregateResultToDataPoint(cat: TermsResult) {
         return cat;
     }
 
@@ -214,28 +213,33 @@ export class HistogramComponent
                     formatDownload: this.formatDownloadValue,
                     isOptional: 'relative_doc_count' !== valueKey,
                 },
-                {
-                    key: 'match_count',
-                    label: 'Token Frequency',
-                    format: this.formatValue('raw'),
-                    formatDownload: this.formatDownloadValue,
-                    isOptional: 'match_count' !== valueKey,
-                },
-                {
-                    key: 'matches_by_doc_count',
-                    label: 'Relative Frequency (documents)',
-                    format: this.formatValue('documents'),
-                    formatDownload: this.formatDownloadValue,
-                    isOptional: 'matches_by_doc_count' !== valueKey,
-                },
-                {
-                    key: 'matches_by_token_count',
-                    label: 'Relative Frequency (terms)',
-                    format: this.formatValue('terms'),
-                    formatDownload: this.formatDownloadValue,
-                    isOptional: 'matches_by_token_count' !== valueKey,
-                },
             ];
+            if (this.frequencyMeasure == 'tokens') {
+                // Headers related to tokens should not be applied to document visualizations
+                this.tableHeaders = this.tableHeaders.concat([
+                    {
+                        key: 'match_count',
+                        label: 'Token Frequency',
+                        format: this.formatValue('raw'),
+                        formatDownload: this.formatDownloadValue,
+                        isOptional: 'match_count' !== valueKey,
+                    },
+                    {
+                        key: 'matches_by_doc_count',
+                        label: 'Relative Frequency (documents)',
+                        format: this.formatValue('documents'),
+                        formatDownload: this.formatDownloadValue,
+                        isOptional: 'matches_by_doc_count' !== valueKey,
+                    },
+                    {
+                        key: 'matches_by_token_count',
+                        label: 'Relative Frequency (terms)',
+                        format: this.formatValue('terms'),
+                        formatDownload: this.formatDownloadValue,
+                        isOptional: 'matches_by_token_count' !== valueKey,
+                    },
+                ]);
+            }
         }
     }
 }

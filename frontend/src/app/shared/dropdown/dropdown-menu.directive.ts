@@ -23,7 +23,7 @@ export class DropdownMenuDirective implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
     }
 
     /** shift the focus in the dropdownItem children */

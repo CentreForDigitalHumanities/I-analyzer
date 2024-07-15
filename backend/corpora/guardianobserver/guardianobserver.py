@@ -88,6 +88,7 @@ class GuardianObserver(XMLCorpusDefinition):
                 Tag('NumericPubDate'),
                 transform=lambda x: '{y}-{m}-{d}'.format(y=x[:4],m=x[4:6],d=x[6:])
             ),
+            sortable=True,
         ),
         FieldDefinition(
             name='date-pub',

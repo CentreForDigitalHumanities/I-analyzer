@@ -6,7 +6,6 @@ import { interval, Observable } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
     CorpusDocumentationPage,
@@ -18,6 +17,7 @@ import {
     FoundDocument,
     GeoDocument,
     LimitedResultsDownloadParameters,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
@@ -31,6 +31,7 @@ import {
 } from '../models/index';
 import { environment } from '../../environments/environment';
 import * as _ from 'lodash';
+import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -137,9 +138,9 @@ export class ApiService {
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Observable<AggregateResult[]> {
+    public wordCloud(data: WordcloudParameters): Observable<MostFrequentWordsResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
-        return this.http.post<AggregateResult[]>(url, data);
+        return this.http.post<MostFrequentWordsResult[]>(url, data);
     }
 
     public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
@@ -232,6 +233,28 @@ export class ApiService {
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Corpus definitions
+
+    public corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        return this.http.get<APIEditableCorpus[]>('/api/corpus/definitions/');
+    }
+
+    public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
+        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
+    }
+
+    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    }
+
+    public deleteCorpus(corpusID: number): Observable<any> {
+        return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
     // Tagging

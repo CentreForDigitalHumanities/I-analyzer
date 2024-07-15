@@ -92,7 +92,7 @@ class Ecco(XMLCorpusDefinition):
                             'Volume'
                         ]
 
-                        meta_dict = self.metadata_from_xml(
+                        meta_dict = self._metadata_from_xml(
                             full_path, tags=meta_tags)
                         meta_dict['id'] = record_id
                         meta_dict['category'] = category

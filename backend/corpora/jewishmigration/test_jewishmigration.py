@@ -6,8 +6,11 @@ import pytest
 import requests
 
 from addcorpus.es_mappings import geo_mapping
+from addcorpus.models import Corpus
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index
+
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -129,14 +132,21 @@ EXPECTED_DOCUMENT = {
 }
 
 @pytest.fixture
-def jm_corpus(settings):
+def jm_corpus_settings(settings):
     settings.CORPORA = {
         'jewishmigration': os.path.join(here, 'jewishmigration.py')
     }
-    settings.JMIG_DATA = 'https://example.com'
+    settings.JMIG_DATA_DIR = '/corpora'
+    settings.JMIG_DATA = None
+    settings.JMIG_DATA_URL = 'http://www.example.com'
     settings.JMIG_INDEX = 'test-jewishmigration'
-    corpus_definition = load_corpus_definition('jewishmigration')
-    return corpus_definition
+
+
+@pytest.fixture
+def jm_corpus(jm_corpus_settings):
+    load_and_save_all_corpora()
+    corpus = Corpus.objects.get(name='jewishmigration')
+    return corpus
 
 
 @pytest.fixture
@@ -152,17 +162,24 @@ def jm_client(es_client, jm_corpus):
     sleep(1)
     yield es_client
     # delete index when done
-    es_client.indices.delete(index=jm_corpus.es_index)
+    es_client.indices.delete(index=jm_corpus.configuration.es_index)
+
+
+def test_jm_validation(db, jm_corpus):
+    assert jm_corpus
+    assert jm_corpus.configuration_obj
+    assert jm_corpus.active
 
 
 def test_geofield(jm_client, jm_corpus):
-    assert jm_client.indices.get(index=jm_corpus.es_index)
+    es_index = jm_corpus.configuration.es_index
+    assert jm_client.indices.get(index=es_index)
     field_mapping = jm_client.indices.get_field_mapping(
-        fields='coordinates', index=jm_corpus.es_index)
-    assert field_mapping[jm_corpus.es_index]['mappings']['coordinates']['mapping']['coordinates'] == geo_mapping()
+        fields='coordinates', index=es_index)
+    assert field_mapping[es_index]['mappings']['coordinates']['mapping']['coordinates'] == geo_mapping()
     geo_data = 'gibberish'
     try:
-        jm_client.create(index=jm_corpus.es_index, id=1,
+        jm_client.create(index=es_index, id=1,
                          document={'coordinates': geo_data})
     except Exception as e:
         assert type(e) == BadRequestError
@@ -173,9 +190,9 @@ def test_geofield(jm_client, jm_corpus):
                 3.0 #latitude north/south
             ]
     }
-    jm_client.create(index=jm_corpus.es_index, id=1,
+    jm_client.create(index=es_index, id=1,
                      document={'coordinates': geo_data})
-    document = jm_client.get(index=jm_corpus.es_index, id=1)
+    document = jm_client.get(index=es_index, id=1)
     assert document['_source']['coordinates'] == geo_data
     query = {
         "geo_bounding_box": {
@@ -193,15 +210,16 @@ def test_geofield(jm_client, jm_corpus):
     }
     # wait for the indexing operation to be finished
     sleep(1)
-    results = jm_client.search(index=jm_corpus.es_index, query=query)
+    results = jm_client.search(index=es_index, query=query)
     assert results['hits']['total']['value'] == 1
 
 
 def test_data_from_request(jm_corpus, monkeypatch):
     monkeypatch.setattr(requests, "get", mock_get)
-    sources = jm_corpus.sources(
-        start=jm_corpus.min_date, end=jm_corpus.max_date)
-    documents = list(jm_corpus.documents(sources))
+    corpus_def = load_corpus_definition(jm_corpus.name)
+    sources = corpus_def.sources(
+        start=corpus_def.min_date, end=corpus_def.max_date)
+    documents = list(corpus_def.documents(sources))
     assert len(documents) == 3
     reference_document = documents[0]
     for key in EXPECTED_DOCUMENT.keys():
