@@ -18,10 +18,6 @@ def format_role(values):
         clean_id = id.replace('#', '')
         return roles.get(clean_id, clean_id)
 
-# def find_topic(speech_node):
-#     return speech_node.parent.find_previous_sibling('head')
-
-
 
 class ParliamentFinland(Parliament, XMLCorpusDefinition):
     title = 'People and Parliament (Finland, 1907-)'
