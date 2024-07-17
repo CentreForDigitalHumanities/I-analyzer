@@ -52,4 +52,6 @@ jobs:
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data
-        docker-compose --env-file .env-ci run --rm backend pytest
+        docker compose pull elasticsearch
+        docker compose pull backend
+        docker compose --env-file .env-ci run --rm backend pytest
