@@ -35,12 +35,11 @@ jobs:
     - name: Build and push Elasticsearch image
       uses: docker/build-push-action@v6
       with:
-        context: .
         file: DockerfileElastic
         push: true
         tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-elastic:latest"
         cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-elastic:latest
-        cache-to: type=inline
+        cache-to: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-elastic:latest
     - name: Build and push Backend
       uses: docker/build-push-action@v6
       with:
@@ -52,4 +51,4 @@ jobs:
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data
-        docker-compose --env-file .env-ci run --rm backend pytest
+        docker-compose --env-file .env-ci run --rm backend pytest -n 4
