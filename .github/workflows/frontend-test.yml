@@ -42,4 +42,5 @@ jobs:
         cache-to: type=inline
     - name: Run frontend unit tests
       run: |
-        docker-compose --env-file .env-ci run --rm frontend yarn test
+        docker compose pull
+        docker compose --env-file .env-ci run --rm frontend yarn test
