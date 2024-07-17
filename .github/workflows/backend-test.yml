@@ -1,4 +1,4 @@
-# This workflow will run backend tests on the Python version defined in the Dockerfiles
+# This workflow will run backend tests on the Python version defined in the backend/Dockerfile
 
 name: Backend unit tests
 
