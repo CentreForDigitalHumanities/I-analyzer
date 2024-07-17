@@ -74,7 +74,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                                 self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
-            meta_dict = self.metadata_from_xml(definition_file, tags=[
+            meta_dict = self._metadata_from_xml(definition_file, tags=[
                     "title",
                     "date",
                     "publisher",

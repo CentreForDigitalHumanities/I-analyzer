@@ -31,6 +31,7 @@ import {
 } from '../models/index';
 import { environment } from '../../environments/environment';
 import * as _ from 'lodash';
+import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -232,6 +233,28 @@ export class ApiService {
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Corpus definitions
+
+    public corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        return this.http.get<APIEditableCorpus[]>('/api/corpus/definitions/');
+    }
+
+    public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
+        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
+    }
+
+    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    }
+
+    public deleteCorpus(corpusID: number): Observable<any> {
+        return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
     // Tagging

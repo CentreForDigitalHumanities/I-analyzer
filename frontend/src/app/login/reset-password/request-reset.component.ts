@@ -6,6 +6,8 @@ import { AuthService } from '../../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
 import { userIcons } from '../../shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '../../utils/app';
 
 @Component({
     selector: 'ia-request-reset',
@@ -20,9 +22,15 @@ export class RequestResetComponent implements OnInit {
 
     userIcons = userIcons;
 
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(
+        private authService: AuthService,
+        private router: Router,
+        private title: Title
+    ) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.title.setTitle(pageTitle('Reset password'));
+    }
 
     requestReset(requestResetForm: NgForm) {
         const email: string = requestResetForm.value.email;

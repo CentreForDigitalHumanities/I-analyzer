@@ -200,7 +200,7 @@ describe('CorpusService', () => {
             expect(items.length).toBe(1);
             const corpus = _.first(items);
 
-            expect(corpus.scan_image_type).toBe('png');
+            expect(corpus.scanImageType).toBe('png');
 
             const fieldData = [
                 {

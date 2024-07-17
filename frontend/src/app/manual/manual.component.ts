@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
+import { SafeHtml, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { DialogService } from '../services';
+import { pageTitle } from '../utils/app';
 
 @Component({
     selector: 'ia-manual',
@@ -14,7 +15,12 @@ export class ManualComponent implements OnInit {
     public title: string | undefined;
     public manualHtml: SafeHtml | undefined;
 
-    constructor(private dialogService: DialogService, private activatedRoute: ActivatedRoute) {
+    constructor(
+        private dialogService: DialogService,
+        private activatedRoute: ActivatedRoute,
+        title: Title
+    ) {
+        title.setTitle(pageTitle('Manual'));
     }
 
     ngOnInit() {

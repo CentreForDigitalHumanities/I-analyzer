@@ -130,6 +130,7 @@ def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
 
     corpus_server = settings.SERVERS[
         settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
+
     # Do bulk operation
     for success, info in es_helpers.streaming_bulk(
         client,

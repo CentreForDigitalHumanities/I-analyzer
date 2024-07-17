@@ -77,7 +77,6 @@ export class CorpusService {
     private parseCorpusItem = (data: any): Corpus => {
         const allFields: CorpusField[] = data.fields.map(this.parseField);
         return new Corpus(
-            data.server_name,
             data.name,
             data.title,
             data.description,
@@ -90,8 +89,7 @@ export class CorpusService {
             data.word_models_present,
             data.languages,
             data.category,
-            data.description_page,
-            data.citation_page,
+            data.has_named_entities,
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight,
             this.parseDefaultSort(data.default_sort, allFields),

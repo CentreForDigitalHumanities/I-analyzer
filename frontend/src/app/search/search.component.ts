@@ -10,6 +10,7 @@ import { AuthService } from '../services/auth.service';
 import { distinct, filter } from 'rxjs/operators';
 import { actionIcons, searchIcons } from '../shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
     selector: 'ia-search',
@@ -71,8 +72,10 @@ export class SearchComponent extends ParamDirective {
         route: ActivatedRoute,
         router: Router,
         private routerStoreService: RouterStoreService,
+        private title: Title,
     ) {
         super(route, router, paramService);
+
     }
 
     @HostListener('window:scroll', [])
@@ -133,6 +136,7 @@ export class SearchComponent extends ParamDirective {
     private setCorpus(corpus: Corpus) {
         this.corpus = corpus;
         this.setQueryModel();
+        this.title.setTitle(`Search ${corpus.title} - I-analyzer`);
     }
 
     private setQueryModel() {

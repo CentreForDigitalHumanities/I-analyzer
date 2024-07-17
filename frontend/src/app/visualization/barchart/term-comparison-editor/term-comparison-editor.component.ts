@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { ParamDirective } from '../../../param/param-directive';
 import { ParamService } from '../../../services';
@@ -44,7 +44,7 @@ export class TermComparisonEditorComponent
 
     teardown() {}
 
-    setStateFromParams(params: Params) {
+    setStateFromParams(params: ParamMap) {
         if (params.has('compareTerm')) {
             this.queries = params.getAll('compareTerm');
             this.queriesChanged.emit(this.queries);

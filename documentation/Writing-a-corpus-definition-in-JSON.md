@@ -6,7 +6,7 @@ The format is defined in [corpus.schema.json](/backend/addcorpus/schemas/corpus.
 
 ## Importing and exporting definitions
 
-Currently, importing and exporting JSON definitions is only supported through the backend API.
+You can import and export JSON definitions through the frontend. Visit `/corpus-definitions/` to do so.
 
 Some notes on importing and exporting JSON definitions:
 
