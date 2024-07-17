@@ -54,6 +54,7 @@ services:
         target: /frontend/build
     command: sh -c "yarn prebuild && yarn start-docker"
   elasticsearch:
+    image: ghcr.io/uudigitalhumanitieslab/ianalyzer-elastic:latest
     build:
       context: .
       dockerfile: DockerfileElastic

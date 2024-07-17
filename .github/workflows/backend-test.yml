@@ -32,7 +32,16 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build and push
+    - name: Build and push Elasticsearch image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: DockerfileElastic
+        push: true
+        tags: "ghcr.io/uudigitalhumanitieslab/ianalyzer-elastic:latest"
+        cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-elastic:latest
+        cache-to: type=inline
+    - name: Build and push Backend
       uses: docker/build-push-action@v6
       with:
         context: backend/.
