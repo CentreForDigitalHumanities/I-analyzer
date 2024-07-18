@@ -12,20 +12,6 @@ import { Router } from '@angular/router';
 import { pageResultsParametersToParams } from '../utils/params';
 import { PageResults, PageResultsParameters } from '../models/page-results';
 
-const QUERY_IN_CONTEXT_FIELD = {
-    name: 'context',
-    description: `Query surrounded by 200 characters`,
-    displayName: 'Query in context',
-    displayType: 'text_content',
-    csvCore: false,
-    hidden: false,
-    sortable: false,
-    searchable: false,
-    downloadable: true,
-    filterOptions: null,
-    mappingType: null,
-} as unknown as CorpusField;
-
 
 @Component({
     selector: 'ia-download',
@@ -118,7 +104,7 @@ export class DownloadComponent implements OnChanges {
             .download(
                 this.corpus,
                 this.queryModel,
-                this.getCsvFields(),
+                this.getColumnNames(),
                 this.directDownloadLimit,
                 this.resultsRoute(this.queryModel, sort, highlight),
                 sort,
@@ -143,7 +129,7 @@ export class DownloadComponent implements OnChanges {
             .downloadTask(
                 this.corpus,
                 this.queryModel,
-                this.getCsvFields(),
+                this.getColumnNames(),
                 this.resultsRoute(this.queryModel, sort, highlight),
                 sort,
                 highlight,
@@ -160,15 +146,16 @@ export class DownloadComponent implements OnChanges {
             });
     }
 
-    private getCsvFields(): CorpusField[] {
-        let selected: CorpusField[];
+    private getColumnNames(): string[] {
+        let selectedFields: CorpusField[];
         if (this.selectedCsvFields === undefined) {
-            selected = this.corpus.fields.filter((field) => field.csvCore);
+            selectedFields = this.corpus.fields.filter((field) => field.csvCore);
         } else {
-            selected = this.selectedCsvFields;
+            selectedFields = this.selectedCsvFields;
         }
+        const selected = _.map(selectedFields, 'name');
         if (this.resultsConfig.state$.value.highlight) {
-            selected.push(QUERY_IN_CONTEXT_FIELD);
+            selected.push('context');
         }
         return selected;
     }
