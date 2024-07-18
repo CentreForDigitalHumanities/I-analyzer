@@ -72,8 +72,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
             parameters.fields : [parameters[0].field_name];
         const corpus = findByName(this.corpora, download.corpus);
         const fields = fieldNames.map(fieldName =>
-            findByName(corpus.fields, fieldName).displayName
-        );
+            findByName(corpus.fields, fieldName)?.displayName
+        ).filter(_.negate(_.isUndefined));
         return _.join(fields, ', ');
     }
 
