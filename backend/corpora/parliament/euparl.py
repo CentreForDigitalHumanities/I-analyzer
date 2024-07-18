@@ -26,7 +26,7 @@ def extract_speaker_name(input):
 
 
 def extract_party_name(input):
-    ''' extract the party name, which, if given, 
+    ''' extract the party name, which, if given,
     is stated in brackets after the name of the speaker
     '''
     speaker_info = input.split(' ')
@@ -35,7 +35,7 @@ def extract_party_name(input):
 
 
 def get_speech_text(input):
-    ''' Extract the speech text, discarding the potential 
+    ''' Extract the speech text, discarding the potential
     source language indication
     '''
     if input and input.startswith('('):
@@ -51,7 +51,7 @@ def get_source_language(input):
         return input.split(' ')[0][1:-1]
 
 
-class EuParlRDFReader(Parliament, RDFReader):
+class EuropeanParliament(Parliament, RDFReader):
     """
     Example XML reader for testing
     """
