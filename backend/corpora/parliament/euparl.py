@@ -51,7 +51,7 @@ def get_source_language(input):
         return input.split(' ')[0][1:-1]
 
 
-class EuropeanParliament(Parliament, RDFReader):
+class ParliamentEurope(Parliament, RDFReader):
     """
     Example XML reader for testing
     """
