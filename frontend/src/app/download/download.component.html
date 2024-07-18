@@ -32,7 +32,8 @@
             <ia-search-sorting [pageResults]="resultsConfig"></ia-search-sorting>
         </div>
 
-        <div class="field" *ngIf="queryModel.queryText">
+        <!-- TODO: show this option when query-in-context download is fixed -->
+        <div class="field" *ngIf="queryModel.queryText" hidden>
             <div role="group" class="control">
                 <legend class="label">
                     Query in context
