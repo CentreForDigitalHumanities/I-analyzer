@@ -1,8 +1,8 @@
 <ng-container *ngIf="totalResults.result$ | async as total">
-    <p class="block">{{total}} results.</p>
+    <p class="block" aria-live="polite" aria-atomic="true">{{total}} results.</p>
 
     <p class="block">
-        You can download a CSV file with your search results. View the
+        You can download your search results as a CSV file. View the
         <a [routerLink]="['/manual', 'download']">manual</a>
         for more information.
     </p>
@@ -14,13 +14,14 @@
     </div>
     <form>
         <div class="field">
-            <label class="label">Fields</label>
+            <label class="label" id="fields-select-label">Fields</label>
             <div class="control">
                 <p-multiSelect [options]="availableCsvFields"
                     [(ngModel)]="selectedCsvFields"
                     optionLabel="displayName"
                     placeholder="select fields"
-                    name="searchFields">
+                    name="searchFields"
+                    ariaLabelledBy="fields-select-label">
                 </p-multiSelect>
             </div>
             <p class="help">
@@ -29,9 +30,9 @@
         </div>
 
         <div class="field">
-            <label class="label">
+            <p class="label">
                 Sort results
-            </label>
+            </p>
             <ia-search-sorting [pageResults]="resultsConfig"></ia-search-sorting>
         </div>
 
@@ -39,19 +40,17 @@
         <div class="field" *ngIf="queryModel.queryText" hidden>
             <div role="group" class="control">
                 <legend class="label">
-                    Query in context
+                    Additional columns
                 </legend>
                 <label>
+                    <!-- checkbox: include query? -->
+                     <!-- checkbox: include user tags? -->
                     <input type="checkbox"
                         [checked]="(resultsConfig.highlight$ | async) !== undefined"
                         (change)="onHighlightChange($event)">
                     Include "query in context" snippets
                 </label>
             </div>
-            <p class="help">
-                You can include extra columns with snippets of text, showing the context
-                in which your search query occurred. View the manual for more information.
-            </p>
         </div>
 
         <ng-container *ngIf="(canDownloadDirectly$ | async); else longDownloadSubmit">
