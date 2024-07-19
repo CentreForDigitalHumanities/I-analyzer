@@ -79,7 +79,7 @@ export class DownloadComponent implements OnChanges {
                 map(result => result > 0)
             );
             this.canDownloadDirectly$ = this.totalResults.result$.pipe(
-                map(result => result <= this.directDownloadLimit)
+                map(this.enableDirectDownload.bind(this))
             );
             this.resultsConfig = new PageResults(
                 new SimpleStore(), this.searchService, this.queryModel
@@ -144,6 +144,11 @@ export class DownloadComponent implements OnChanges {
             .catch((error) => {
                 this.notificationService.showMessage(error, 'danger');
             });
+    }
+
+    private enableDirectDownload(totalResults: number) {
+        const totalToDownload = _.min([totalResults, this.downloadLimit]);
+        return totalToDownload <= this.directDownloadLimit;
     }
 
     private getColumnNames(): string[] {
