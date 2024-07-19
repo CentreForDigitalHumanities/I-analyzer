@@ -266,7 +266,7 @@ def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, i
     row = next(reader)
     assert row['query'] == 'ghost'
 
-@pytest.mark.xfail('query in context download does not work')
+@pytest.mark.xfail(reason='query in context download does not work')
 def test_download_with_query_in_context(
     db, admin_client, small_mock_corpus, index_small_mock_corpus
 ):
