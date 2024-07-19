@@ -60,7 +60,7 @@ export class DownloadComponent implements OnChanges {
         private authService: AuthService,
         private router: Router,
     ) {
-        this.userDownloadLimit = this.authService.getCurrentUser().downloadLimit;
+        this.userDownloadLimit = this.authService.getCurrentUser()?.downloadLimit;
         this.downloadLimit = this.userDownloadLimit || this.directDownloadLimit;
     }
 
