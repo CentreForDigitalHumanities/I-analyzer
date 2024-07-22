@@ -64,7 +64,7 @@ export class DownloadComponent implements OnChanges {
         this.downloadLimit = this.userDownloadLimit || this.directDownloadLimit;
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
             this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
             this.selectedCsvFields = _.filter(this.corpus?.fields, 'csvCore');
@@ -96,7 +96,7 @@ export class DownloadComponent implements OnChanges {
     }
 
     /** download short file directly */
-    public confirmDirectDownload() {
+    public confirmDirectDownload(): void {
         const sort = this.resultsConfig.state$.value.sort;
         const highlight = this.resultsConfig.state$.value.highlight;
         this.isDownloading = true;
@@ -122,7 +122,7 @@ export class DownloadComponent implements OnChanges {
 
 
     /** start backend task to create csv file */
-    longDownload() {
+    longDownload(): void {
         const sort = this.resultsConfig.state$.value.sort;
         const highlight = this.resultsConfig.state$.value.highlight;
         this.downloadService
@@ -146,7 +146,7 @@ export class DownloadComponent implements OnChanges {
             });
     }
 
-    private enableDirectDownload(totalResults: number) {
+    private enableDirectDownload(totalResults: number): boolean {
         const totalToDownload = _.min([totalResults, this.downloadLimit]);
         return totalToDownload <= this.directDownloadLimit;
     }
