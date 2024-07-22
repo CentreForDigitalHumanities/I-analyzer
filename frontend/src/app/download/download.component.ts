@@ -10,7 +10,7 @@ import { SimpleStore } from '../store/simple-store';
 import { Observable, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { pageResultsParametersToParams } from '../utils/params';
-import { PageResults, PageResultsParameters } from '../models/page-results';
+import { DEFAULT_HIGHLIGHT_SIZE, PageResults, PageResultsParameters } from '../models/page-results';
 
 
 @Component({
@@ -89,7 +89,7 @@ export class DownloadComponent implements OnChanges {
 
     onHighlightChange(event): void {
         if (event.target.checked) {
-            this.resultsConfig.setParams({ highlight: 200 });
+            this.resultsConfig.setParams({ highlight: DEFAULT_HIGHLIGHT_SIZE });
         } else {
             this.resultsConfig.setParams({ highlight: null });
         }
