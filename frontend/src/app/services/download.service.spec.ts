@@ -41,7 +41,8 @@ describe('DownloadService', () => {
         };
 
         spyOn(apiService, 'download').and.returnValue(Promise.resolve({}));
-        service.download(query.corpus, query, query.corpus.fields, size, route, sort, highlight, options);
+        const fieldNames = query.corpus.fields.map(field => field.name)
+        service.download(query.corpus, query, fieldNames, size, route, sort, highlight, options);
         const expectedBody: LimitedResultsDownloadParameters = {
             corpus: mockCorpus.name,
             fields: ['great_field', 'speech'],
