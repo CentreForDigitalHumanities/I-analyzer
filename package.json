@@ -35,7 +35,7 @@
     "patch": "yarn version --patch --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
     "minor": "yarn version --minor --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
     "major": "yarn version --major --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
-    "update-citation": "$PWD/update-citation.sh"
+    "update-citation": "python $PWD/update_citation.py"
   },
   "private": true,
   "devDependencies": {},
