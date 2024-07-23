@@ -31,7 +31,10 @@
     "watch-front-p": "yarn front yarn watch",
     "start-back-p": "cd backend && python manage.py runserver --settings production --insecure --pythonpath ..",
     "start-p": "yarn static-p && yarn watch-front-p & yarn start-back-p",
-    "celery": "yarn back celery -A ianalyzer.celery"
+    "celery": "yarn back celery -A ianalyzer.celery",
+    "patch": "yarn version --patch --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
+    "minor": "yarn version --minor --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
+    "major": "yarn version --major --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild"
   },
   "private": true,
   "devDependencies": {},
