@@ -34,7 +34,8 @@
     "celery": "yarn back celery -A ianalyzer.celery",
     "patch": "yarn version --patch --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
     "minor": "yarn version --minor --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
-    "major": "yarn version --major --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild"
+    "major": "yarn version --major --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
+    "update-citation": "$PWD/update-citation.sh"
   },
   "private": true,
   "devDependencies": {},
