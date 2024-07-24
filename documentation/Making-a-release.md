@@ -30,7 +30,7 @@ Use the `yarn [major|minor|patch]` command to update the version number in `pack
 
 In your local environment, start up elasticsearch and run backend tests with `yarn test-back`. Run frontend tests with `yarn test-front`.
 
-Publish the release branch with `git flow release publish x.x.x`.
+Publish the release branch with `git flow release publish x.x.x`. Deploy on the test or acc server. Check that everything works as intended.
 
 ## Publish the release
 
