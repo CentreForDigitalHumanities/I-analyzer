@@ -11,6 +11,7 @@ import { Store } from '../store/types';
 import { pageResultsParametersFromParams, pageResultsParametersToParams } from '../utils/params';
 
 export const RESULTS_PER_PAGE = 20;
+export const DEFAULT_HIGHLIGHT_SIZE = 200;
 
 export interface PageParameters {
     from: number;

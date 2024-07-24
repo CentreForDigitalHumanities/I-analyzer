@@ -36,8 +36,6 @@ def make_reader(corpus: Corpus) -> Reader:
                   for f in corpus.configuration.fields.all()]
 
         def sources(self, *args, **kwargs):
-            return (
-                (fn, {}) for fn in glob.glob(f'{self.data_directory}/**/*.csv', recursive=True)
-            )
+            return glob.glob(f'{self.data_directory}/**/*.csv', recursive=True)
 
     return NewReader()

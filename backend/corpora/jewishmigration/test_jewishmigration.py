@@ -136,7 +136,7 @@ def jm_corpus_settings(settings):
     settings.CORPORA = {
         'jewishmigration': os.path.join(here, 'jewishmigration.py')
     }
-    settings.JMIG_DATA_DIR = '/corpora'
+    settings.JMIG_DATA_DIR = None
     settings.JMIG_DATA = None
     settings.JMIG_DATA_URL = 'http://www.example.com'
     settings.JMIG_INDEX = 'test-jewishmigration'
