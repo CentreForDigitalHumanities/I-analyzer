@@ -5,6 +5,7 @@ import { commonTestBed } from '../common-test-bed';
 import { QueryModel } from '../models';
 
 import { DownloadComponent } from './download.component';
+import { SimpleChange } from '@angular/core';
 
 describe('DownloadComponent', () => {
     let component: DownloadComponent;
@@ -19,7 +20,9 @@ describe('DownloadComponent', () => {
         component = fixture.componentInstance;
         component.corpus = mockCorpus;
         component.queryModel = new QueryModel(mockCorpus);
-        component.ngOnChanges();
+        component.ngOnChanges({
+            queryModel: new SimpleChange(undefined, component.queryModel, true)
+         });
         fixture.detectChanges();
     });
 
@@ -29,16 +32,15 @@ describe('DownloadComponent', () => {
 
     it('should respond to field selection', () => {
         // Start with a single field
-        expect(component['getCsvFields']()).toEqual(mockCorpus.fields);
+        expect(component['getColumnNames']()).toEqual(['great_field', 'speech']);
 
         // Deselect all
-        component.selectCsvFields([]);
-        expect(component['getCsvFields']()).toEqual([]);
+        component.selectedCsvFields = [];
+        expect(component['getColumnNames']()).toEqual([]);
 
         // Select two
-        component.selectCsvFields([mockField, mockField2]);
-        const expected_fields = [mockField, mockField2];
-        expect(component['getCsvFields']()).toEqual(expected_fields);
-        expect(component.selectedCsvFields).toEqual(expected_fields);
+        component.selectedCsvFields = [mockField, mockField2];
+        const expected_fields = ['great_field', 'speech'];
+        expect(component['getColumnNames']()).toEqual(expected_fields);
     });
 });

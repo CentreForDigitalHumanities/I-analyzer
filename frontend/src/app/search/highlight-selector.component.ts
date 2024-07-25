@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { actionIcons } from '../shared/icons';
-import { PageResults } from '../models/page-results';
+import { DEFAULT_HIGHLIGHT_SIZE, PageResults } from '../models/page-results';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
@@ -27,10 +27,10 @@ export class HighlightSelectorComponent {
     }
 
     updateHighlightSize(instruction?: string) {
-        const currentValue = this.pageResults.state$.value.highlight || 200;
+        const currentValue = this.pageResults.state$.value.highlight || DEFAULT_HIGHLIGHT_SIZE;
         let newValue: number|undefined;
         if (instruction === 'on') {
-            newValue = 200;
+            newValue = DEFAULT_HIGHLIGHT_SIZE;
         } else if (instruction === 'more' && currentValue < 800) {
             newValue = currentValue + 200;
         } else if (instruction === 'less' && currentValue > 200) {
