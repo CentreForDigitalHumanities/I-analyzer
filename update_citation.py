@@ -16,11 +16,8 @@ TODAY = datetime.today().strftime('%Y-%m-%d')
 
 with open(PACKAGE_FILE, 'r') as package_file:
     package_json = json.load(package_file)
-    try:
-        VERSION = package_json.get('version')
-    except KeyError:
-        print('No version found in root package.json')
-        VERSION = '0.0.0'
+    VERSION = package_json.get('version')
+
 
 with open(CITATION_FILE) as citation_file:
     citation_in = citation_file.readlines()
