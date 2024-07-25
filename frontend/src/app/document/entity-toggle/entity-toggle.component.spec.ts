@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { commonTestBed } from '../../common-test-bed';
 import { EntityToggleComponent } from './entity-toggle.component';
 
 describe('EntityToggleComponent', () => {
@@ -7,11 +8,8 @@ describe('EntityToggleComponent', () => {
   let fixture: ComponentFixture<EntityToggleComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [EntityToggleComponent]
-    })
-    .compileComponents();
-    
+    await commonTestBed().testingModule.compileComponents();
+
     fixture = TestBed.createComponent(EntityToggleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
