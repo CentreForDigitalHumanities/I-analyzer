@@ -5,8 +5,7 @@ import re
 from django.conf import settings
 from rdflib import URIRef
 from ianalyzer_readers.readers.rdf import RDFReader
-from ianalyzer_readers.readers.core import Field
-from ianalyzer_readers.extract import Backup, RDF
+from ianalyzer_readers.extract import Backup, Combined, RDF
 
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -14,15 +13,6 @@ import corpora.parliament.utils.field_defaults as field_defaults
 
 def get_id(input):
     return os.path.split(input)[1]
-
-
-def parse_date(input):
-    date_pattern = re.compile('\\d{4}-\\d{2}-\\d{2}')
-    return re.search(date_pattern, str(input)).group()
-
-
-def extract_speaker_name(input):
-    return input.split(' ')[0]
 
 
 def extract_party_name(input):
@@ -33,6 +23,9 @@ def extract_party_name(input):
     if len(speaker_info) == 2:
         return speaker_info[1][1:-1]
 
+def get_speech_index(input):
+    speeches, speech = input
+    return speeches.index(speech)
 
 def get_speech_text(input):
     ''' Extract the speech text, discarding the potential
@@ -41,14 +34,6 @@ def get_speech_text(input):
     if input and input.startswith('('):
         return ' '.join(input.split(' ')[1:])
     return input
-
-
-def get_source_language(input):
-    ''' Extract the source language, which, if applicable,
-    is stated in brackets before the speech
-    '''
-    if input and input.startswith('('):
-        return input.split(' ')[0][1:-1]
 
 
 class ParliamentEurope(Parliament, RDFReader):
@@ -66,21 +51,28 @@ class ParliamentEurope(Parliament, RDFReader):
     image = 'euparl.jpeg'
 
     def sources(self, **kwargs):
-        for filename in os.listdir(self.data_directory):
-            full_path = os.path.join(self.data_directory, filename)
-            yield full_path
+        yield os.path.join(self.data_directory, 'EUParl.ttl')
+
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = RDF(
+        URIRef('http://purl.org/dc/terms/isPartOf')
+    )
+
+    debate_title = field_defaults.debate_title()
+    debate_title.extractor = RDF(
+        URIRef('http://purl.org/dc/terms/isPartOf'),
+        URIRef('http://purl.org/dc/terms/title')
+    )
 
     date = field_defaults.date()
     date.extractor = RDF(
-        URIRef('http://purl.org/linkedpolitics/eu/plenary/'),
-        node_type='subject',
-        transform=parse_date
+        URIRef('http://purl.org/dc/terms/date')
     )
 
     speaker = field_defaults.speaker()
     speaker.extractor = RDF(
-        URIRef('http://purl.org/linkedpolitics/vocabulary/unclassifiedMetadata'),
-        transform=extract_speaker_name
+        URIRef('http://purl.org/linkedpolitics/vocabulary/speaker'),
+        URIRef('http://xmlns.com/foaf/0.1/name')
     )
 
     party = field_defaults.party()
@@ -88,6 +80,30 @@ class ParliamentEurope(Parliament, RDFReader):
         URIRef('http://purl.org/linkedpolitics/vocabulary/unclassifiedMetadata'),
         transform=extract_party_name
     )
+
+    sequence = field_defaults.sequence()
+    sequence.extractor = (
+        Combined(
+            RDF(
+                URIRef('http://purl.org/linkedpolitics/eu/plenary/')
+            ),
+            RDF(
+                URIRef('http://purl.org/dc/terms/isPartOf'),
+                URIRef('http://purl.org/dc/terms/hasPart'),
+                multiple=True
+            ),
+            transform=get_speech_index
+        )
+    )
+
+    source_language = field_defaults.language()
+    source_language.display_name = 'Source language'
+    source_language.description = 'Original language of the speech'
+    source_language.search_filter.description = 'Search only in speeches in the selected source languages',
+    source_language.extractor = RDF(
+        URIRef('http://purl.org/dc/terms/language')
+    )
+
 
     speech = field_defaults.speech(language='en')
     speech.extractor = Backup(
@@ -101,14 +117,6 @@ class ParliamentEurope(Parliament, RDFReader):
         )
     )
 
-    source_language = field_defaults.language()
-    source_language.display_name = 'Source language'
-    source_language.description = 'Original language of the speech'
-    source_language.search_filter.description = 'Search only in speeches in the selected source languages',
-    source_language.extractor = RDF(
-        URIRef('http://purl.org/linkedpolitics/vocabulary/translatedText'),
-        transform=get_source_language
-    )
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = RDF(
