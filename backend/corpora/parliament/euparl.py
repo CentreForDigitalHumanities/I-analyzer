@@ -3,7 +3,8 @@ import os
 import re
 
 from django.conf import settings
-from rdflib import URIRef
+from rdflib import Graph, URIRef
+from rdflib.namespace import RDF
 from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.extract import Backup, Combined, RDF
 
@@ -52,6 +53,9 @@ class ParliamentEurope(Parliament, RDFReader):
 
     def sources(self, **kwargs):
         yield os.path.join(self.data_directory, 'EUParl.ttl')
+
+    def document_subjects(self, graph: Graph):
+        return graph.subjects(RDF.type, URIRef('http://purl.org/linkedpolitics/vocabulary/speech'))
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = RDF(
@@ -135,7 +139,10 @@ class ParliamentEurope(Parliament, RDFReader):
     def __init__(self):
         self.fields = [
             self.date,
+            self.debate_id,
+            self.debate_title,
             self.party,
+            self.sequence,
             self.speaker,
             self.speech, self.speech_id,
             self.url
