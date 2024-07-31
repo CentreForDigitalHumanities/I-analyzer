@@ -165,10 +165,13 @@ class CorpusConfiguration(models.Model):
         max_length=64,
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
+        blank=True,
+        null=True
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
+        null=True,
         help_text='short description of the corpus',
     )
     document_context = models.JSONField(
@@ -198,6 +201,8 @@ class CorpusConfiguration(models.Model):
             blank=True,
         ),
         help_text='languages used in the content of the corpus (from most to least frequent)',
+        blank=True,
+        null=True,
     )
     min_date = models.DateField(
         help_text='earliest date for the data in the corpus',

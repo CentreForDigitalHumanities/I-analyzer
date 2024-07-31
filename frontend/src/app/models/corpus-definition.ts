@@ -26,10 +26,10 @@ export interface APICorpusDefinition {
     name: string;
     meta: {
         title: string;
-        category: string;
-        description: string;
-        languages: string[];
-        date_range: {
+        category?: string;
+        description?: string;
+        languages?: string[];
+        date_range?: {
             min: string;
             max: string;
         };
@@ -37,7 +37,7 @@ export interface APICorpusDefinition {
     source_data: {
         type: 'csv';
         options?: {
-            delimiter?: ','|';'|'\t';
+            delimiter?: ',' | ';' | '\t';
         };
     };
     fields: APICorpusField[];
