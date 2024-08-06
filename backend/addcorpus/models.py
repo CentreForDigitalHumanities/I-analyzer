@@ -488,3 +488,11 @@ class CorpusDocumentationPage(models.Model):
                 name='unique_documentation_type_for_corpus'
             )
         ]
+
+
+class CorpusDataFile(models.Model):
+    corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='corpus_datafiles',
+                            help_text='file containing corpus data')
+    is_sample = models.BooleanField(
+        default=False, help_text='this file reflects only part of the total data, for use in creating the corpus definition')

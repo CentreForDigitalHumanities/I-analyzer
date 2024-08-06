@@ -1,14 +1,14 @@
 from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
+from addcorpus.serializers import CorpusDataFileSerializer, CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
 from rest_framework.response import Response
 from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
 from django.http.response import FileResponse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
 from rest_framework.exceptions import NotFound
 from rest_framework import viewsets
-from addcorpus.models import Corpus, CorpusConfiguration, CorpusDocumentationPage
+from addcorpus.models import Corpus, CorpusConfiguration, CorpusDataFile, CorpusDocumentationPage
 from addcorpus.permissions import corpus_name_from_request
 
 from django.conf import settings
@@ -102,3 +102,11 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Corpus.objects.filter(has_python_definition=False)
+
+
+class CorpusDataFileViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CorpusDataFileSerializer
+
+    def get_queryset(self):
+        return CorpusDataFile.objects.all()

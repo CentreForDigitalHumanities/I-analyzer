@@ -33,12 +33,14 @@ from api import urls as api_urls
 from media import urls as media_urls
 from tag import urls as tag_urls
 from tag.views import TagViewSet
-from addcorpus.views import CorpusDefinitionViewset
+from addcorpus.views import CorpusDataFileViewSet, CorpusDefinitionViewset
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
 api_router.register('search_history', QueryViewset, basename='query')
 api_router.register('tag/tags', TagViewSet)
 api_router.register('corpus/definitions', CorpusDefinitionViewset, basename='corpus')
+api_router.register('corpus/datafiles',
+                    CorpusDataFileViewSet, basename='datafiles')
 
 if settings.PROXY_FRONTEND:
     spa_url = re_path(r'^(?P<path>.*)$', proxy_frontend)

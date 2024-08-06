@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from typing import Dict
 
-from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
+from addcorpus.models import Corpus, CorpusConfiguration, CorpusDataFile, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
 from langcodes import Language, standardize_tag
 from addcorpus.documentation import render_documentation_context
@@ -193,3 +193,9 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             corpus.save()
 
         return corpus
+
+
+class CorpusDataFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CorpusDataFile
+        fields = '__all__'
