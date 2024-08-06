@@ -38,6 +38,10 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
         else:
            corpora = self.request.user.searchable_corpora()
 
+        queried_corpus = self.request.query_params.get('corpus')
+        if queried_corpus:
+            corpora = corpora.filter(name=queried_corpus)
+
         return CorpusDocumentationPage.objects.filter(
             corpus_configuration__corpus__in=corpora
         )

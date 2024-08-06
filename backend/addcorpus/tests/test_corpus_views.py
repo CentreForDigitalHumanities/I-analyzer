@@ -40,6 +40,13 @@ def test_corpus_documentation_list_view(admin_client, basic_mock_corpus, setting
     assert '{{ frontend_url }}' not in content
     assert settings.BASE_URL in content
 
+def test_corpus_documentation_filter_list_view(admin_client, basic_mock_corpus):
+    response = admin_client.get(f'/api/corpus/documentation/?corpus={basic_mock_corpus}')
+    assert response.status_code == 200
+    pages = response.data
+    for page in pages:
+        assert page['corpus'] == basic_mock_corpus
+
 def test_corpus_documentation_retrieve_view(admin_client: Client, basic_mock_corpus):
     page = CorpusDocumentationPage.objects.first()
     response = admin_client.get(f'/api/corpus/documentation/{page.pk}/')
