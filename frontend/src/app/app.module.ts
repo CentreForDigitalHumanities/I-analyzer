@@ -53,6 +53,9 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
+import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
+import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
 
 export const appRoutes: Routes = [
     {
@@ -148,10 +151,22 @@ export const appRoutes: Routes = [
                 component: EditDefinitionComponent,
             },
             {
+                path: 'form/:corpusID',
+                component: CorpusFormComponent,
+            },
+            {
+                path: 'metaform',
+                component: MetaFormComponent,
+            },
+            {
+                path: 'fieldform',
+                component: FieldFormComponent,
+            },
+            {
                 path: '',
                 component: DefinitionsOverviewComponent,
             },
-        ]
+        ],
     },
     {
         path: '',

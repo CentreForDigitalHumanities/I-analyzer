@@ -38,6 +38,12 @@
                                 </span>
                             </a>
                             &nbsp;
+                            <a class="button" [routerLink]="['form', corpus.id]">
+                                <span class="icon" aria-label="edit">
+                                    <fa-icon [icon]="documentIcons.text"></fa-icon>
+                                </span>
+                            </a>
+                            &nbsp;
                             <a class="button"
                                 [routerLink]="['edit', corpus.id]">
                                 <span class="icon" aria-label="edit">

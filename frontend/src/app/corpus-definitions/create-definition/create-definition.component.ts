@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject } from 'rxjs';
+import { SlugifyPipe } from '../../shared/pipes/slugify.pipe';
 
 @Component({
     selector: 'ia-create-definition',
@@ -22,8 +23,14 @@ export class CreateDefinitionComponent {
 
     reset$ = new Subject<void>();
 
-    constructor(private apiService: ApiService, private router: Router) {
-        this.corpus = new CorpusDefinition(apiService);
+    newCorpusTitle: string;
+
+    constructor(
+        private apiService: ApiService,
+        private router: Router,
+        private slugify: SlugifyPipe
+    ) {
+        this.corpus = new CorpusDefinition(this.apiService);
     }
 
     onJSONUpload(data: any) {
@@ -31,12 +38,27 @@ export class CreateDefinitionComponent {
     }
 
     submit() {
+        this.corpus.definition = {
+            name: this.slugify.transform(this.newCorpusTitle),
+            meta: {
+                title: this.newCorpusTitle,
+            },
+            fields: [],
+            source_data: {
+                type: 'csv',
+            },
+        };
+        this.corpus.definition.meta.title = this.newCorpusTitle;
+        this.saveCorpus();
+    }
+
+    saveCorpus() {
         this.error = undefined;
         this.corpus.save().subscribe(
             (result: APIEditableCorpus) => {
                 this.router.navigate([
                     '/corpus-definitions',
-                    'edit',
+                    'form',
                     result.id,
                 ]);
             },

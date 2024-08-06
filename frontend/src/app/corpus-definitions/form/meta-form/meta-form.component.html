@@ -1,0 +1,47 @@
+<form (ngSubmit)="onSubmit()" class="container is-readable" [formGroup]="metaForm">
+    <div class="container is-login">
+        <h1 class="title">Corpus Metadata</h1>
+        <div class="field">
+            <label class="label" for="title">Title</label>
+            <div class="control">
+                <input class="input" type="text" name="title" formControlName="title" />
+            </div>
+            <p class="help">Enter a short, clear title for your corpus.</p>
+        </div>
+
+        <div class="field">
+            <label class="label" for="description">Description</label>
+            <div class="control">
+                <input class="input" type="text" name="description" formControlName="description" />
+            </div>
+            <p class="help">Enter a description for your corpus.</p>
+        </div>
+
+        <div class="field">
+            <label class="label" for="category">Category</label>
+            <div class="control">
+                <input class="input" type="text" name="category" formControlName="category" />
+            </div>
+            <p class="help">Enter a category for your corpus.</p>
+        </div>
+
+        <div class="field is-grouped">
+            <div formGroupName="date_range">
+                <label class="label" for="category">Start year</label>
+                <div class="control">
+                    <input class="input" type="text" name="min" formControlName="min" />
+                </div>
+                <label class="label" for="category">End year</label>
+                <div class="control">
+                    <input class="input" type="text" name="max" formControlName="max" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <p class="control">
+            <button class="button is-primary">Next</button>
+        </p>
+    </div>
+</form>

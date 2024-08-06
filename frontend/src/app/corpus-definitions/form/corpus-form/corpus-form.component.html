@@ -1,0 +1,9 @@
+<p-steps [model]="steps$ | async" [readonly]="false" [activeIndex]="activeStep$ | async"
+    (activeIndexChange)="onActiveIndexChange($event)" />
+
+<ng-container [ngSwitch]="activeStep$ | async">
+    <ng-container *ngSwitchCase="0">
+        <ia-meta-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" />
+    </ng-container>
+    <div *ngSwitchCase="1">2</div>
+    <ia-field-form *ngSwitchCase="2">3</ia-field-form>
