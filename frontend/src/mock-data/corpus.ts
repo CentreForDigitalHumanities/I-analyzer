@@ -218,14 +218,4 @@ export class CorpusServiceMock {
             }
         });
     }
-
-    public getDocumentation(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
-        return of([{
-            id: 1,
-            corpus: corpus.name,
-            type: 'General',
-            content: 'Example of _documentation_.',
-            index: 1,
-        }]);
-    }
 }

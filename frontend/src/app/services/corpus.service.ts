@@ -72,13 +72,6 @@ export class CorpusService {
         }
     }
 
-    getDocumentation(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
-        const requests = corpus.documentationPageIDs.map(
-            id => this.apiService.corpusDocumentationPage(id)
-        );
-        return combineLatest(requests);
-    }
-
     private async parseCorpusList(data: any): Promise<Corpus[]> {
         return data.map(this.parseCorpusItem);
     }
@@ -99,7 +92,6 @@ export class CorpusService {
             data.languages,
             data.category,
             data.has_named_entities,
-            data.documentation_pages,
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight,
             this.parseDefaultSort(data.default_sort, allFields),

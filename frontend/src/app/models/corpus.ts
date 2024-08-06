@@ -30,7 +30,6 @@ export class Corpus {
         public languages: string[],
         public category: string,
         public hasNamedEntities: boolean,
-        public documentationPageIDs: number[],
         public documentContext?: DocumentContext,
         public newHighlight?: boolean,
         public defaultSort?: SortState,

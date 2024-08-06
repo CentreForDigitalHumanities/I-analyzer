@@ -223,8 +223,9 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusDocumentationPages(): Observable<CorpusDocumentationPage[]> {
-        const url = this.apiRoute(this.corpusApiUrl, 'documentation/');
+    public corpusDocumentationPages(corpus?: Corpus): Observable<CorpusDocumentationPage[]> {
+        const queryParams = corpus ? `?corpus=${corpus.name}` : ''
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/${queryParams}`);
         return this.http.get<CorpusDocumentationPage[]>(url);
     }
 

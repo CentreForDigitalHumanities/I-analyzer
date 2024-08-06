@@ -73,7 +73,7 @@ export class ApiServiceMock {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
     }
 
-    public corpusDocumentationPage(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
+    public corpusDocumentationPages(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
         return of([{
             id: 1,
             corpus: corpus.name,
