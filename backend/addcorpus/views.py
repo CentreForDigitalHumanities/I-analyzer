@@ -1,17 +1,28 @@
-from rest_framework.views import APIView
-from addcorpus.serializers import CorpusDataFileSerializer, CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
-from rest_framework.response import Response
-from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
-from django.http.response import FileResponse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
-from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
-from rest_framework.exceptions import NotFound
-from rest_framework import viewsets
-from addcorpus.models import Corpus, CorpusConfiguration, CorpusDataFile, CorpusDocumentationPage
-from addcorpus.permissions import corpus_name_from_request
 
+from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
+                              CorpusDocumentationPage)
+from addcorpus.permissions import (CorpusAccessPermission,
+                                   corpus_name_from_request,
+                                   filter_user_corpora)
+from addcorpus.python_corpora.load_corpus import (corpus_dir,
+                                                  load_corpus_definition)
+from addcorpus.serializers import (CorpusDataFileSerializer,
+                                   CorpusDocumentationPageSerializer,
+                                   CorpusJSONDefinitionSerializer,
+                                   CorpusSerializer)
+from addcorpus.utils import get_csv_info
 from django.conf import settings
+from django.http.response import FileResponse
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
+from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
+
 
 class CorpusView(APIView):
     '''
@@ -110,3 +121,11 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return CorpusDataFile.objects.all()
+
+    @action(detail=True, methods=['get'])
+    def info(self, request, pk):
+        obj = self.get_object()
+
+        info = get_csv_info(obj.file.path)
+
+        return Response(info, HTTP_200_OK)
