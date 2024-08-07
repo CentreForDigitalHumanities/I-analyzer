@@ -1,0 +1,362 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix lp: <http://purl.org/linkedpolitics/> .
+@prefix lp_eu: <http://purl.org/linkedpolitics/eu/plenary/> .
+@prefix lpv: <http://purl.org/linkedpolitics/vocabulary/> .
+@prefix lpv_eu: <http://purl.org/linkedpolitics/vocabulary/eu/plenary/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+lp_eu:2011-11-15-Speech-2-699-000 a lpv_eu:Speech ;
+    dcterms:date "2011-11-15"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2011-11-15_AgendaItem_34 ;
+    dcterms:language "fr"^^xsd:language ;
+    lpv:docno "en.20111115.34.2-699-000" ;
+    lpv:hasSubsequent lp_eu:2011-11-15-Speech-2-701-000 ;
+    lpv:speaker lp:EUmember_840 ;
+    lpv:translatedText """Mr President, Ms Striffler is right to question the consistency of the commitments taken by the European Union in terms of official development aid.
+Let us say this straightaway: without the European Union’s contribution to development policy, achieving the Millennium Development Goals would remain a pipedream. Let us nevertheless add that the European Union shares this responsibility with other players.
+The United States is an important donor in absolute terms, but with 0.2% of its GDP devoted to official development aid, it is far behind the European Union in relative terms, without forgetting the emerging countries, which generate substantial resources, an increasing part of which will have to be allocated for the purpose of development and combating poverty within their own borders.
+Nevertheless, what is comforting is to see that various EU Member States – the list is not exhaustive – are setting an example in this regard. With only a few days until the Fourth High-Level Forum on aid effectiveness in Busan, I think it would be wise to insist not only on the volume of the European Union’s official development aid, but also on its ‘leverage effect’.
+As the largest provider of funds, we have a position that enables the European Union to assert itself more at global level. Without being perceived as giving lectures, the European Union can and must remind those at Busan that combating poverty is an obligation for all the Member States; as developing countries and, more specifically, emerging countries gradually generate their own resources, they must also devote them to eradicating poverty within their borders. It is, first and foremost, up to them to act and we cannot take their responsibilities in this area upon ourselves."""@en ;
+    lpv:videoURI <http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20111115-20:02:15-969> .
+
+lp_eu:2011-11-15-Speech-2-701-000 a lpv_eu:Speech ;
+    dcterms:date "2011-11-15"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2011-11-15_AgendaItem_34 ;
+    dcterms:language "fr"^^xsd:language ;
+    lpv:docno "en.20111115.34.2-701-000" ;
+    lpv:hasSubsequent lp_eu:2011-11-15-Speech-2-703-000 ;
+    lpv:speaker lp:EUmember_96745 ;
+    lpv:translatedText """Mr President, the EU committed itself to help developing countries reach the Millennium Goals, achieving 0.7% official development aid by 2015, and committed itself on aid effectiveness, debt, climate, finance, etc. The EU has not reached the 0.7% target and, with the crisis, is unlikely to do so in the near future.
+The Greens believe in a change of policy, addressing tax havens and tax evasion, with binding measures, implementing Article 208 of the Lisbon Treaty on policy coherence, by matching words with actions, with coherent policies between trade, agriculture and fishing, addressing farmland acquisition by foreign investors with the risk of undermining food security, such as in Africa, and putting in place fair trade rules to break the vicious circle whereby developing countries are locked into dire poverty despite agricultural and mineral resources. The trade pattern where developing countries export raw materials and buy manufactured products from industrialised countries has to change. The next report on the EU’s accountability should include the abovementioned policy changes as well as its financial commitments."""@en ;
+    lpv:unclassifiedMetadata "Catherine Grèze,",
+        "on behalf of the Verts/ALE Group." ;
+    lpv:videoURI <http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20111115-20:04:39-503> .
+
+lp_eu:2011-11-15-Speech-2-703-000 a lpv_eu:Speech ;
+    dcterms:date "2011-11-15"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2011-11-15_AgendaItem_34 ;
+    dcterms:language "en"^^xsd:language ;
+    lpv:docno "en.20111115.34.2-703-000" ;
+    lpv:hasSubsequent lp_eu:2011-11-15-Speech-2-705-000 ;
+    lpv:speaker lp:EUmember_96798 ;
+    lpv:spokenText """Mr President, as stringent austerity measures are being introduced across Europe out of necessity, and democratically elected governments are being dismantled and replaced by technocrats backed by the EU, the self-same Union’s Court of Auditors has found unforgivable budgetary flaws, including EUR 3.2 billion squandered overseas, at a time when European Union Member States are in dire financial crisis. Those EUR 3.2 billion are effectively unaccounted for, due to non-compliance with procurement procedures and VAT and a host of ineligible activities in European Development Fund projects.
+The eurozone has had to turn to the developing world to ask for help as it is heading towards ruination due to the inept handling of the common currency. Yet, at the same time, vast amounts of money are simply being lost abroad.
+Foreign aid should be the sole concern of individual countries and should relate to the nation’s foreign policy and development-funding ethos. It should not be the concern of the EU, which has been proven, time and again, as unaccountable and ineffective."""@en ;
+    lpv:unclassifiedMetadata "John Bufton,",
+        "on behalf of the EFD Group." ;
+    lpv:videoURI <http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20111115-20:06:30-628> .
+
+lp_eu:2011-11-15-Speech-2-705-000 a lpv_eu:Speech ;
+    dcterms:date "2011-11-15"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2011-11-15_AgendaItem_34 ;
+    dcterms:language "el"^^xsd:language ;
+    lpv:docno "en.20111115.34.2-705-000" ;
+    lpv:hasSubsequent lp_eu:2011-11-15-Speech-2-707-000 ;
+    lpv:speaker lp:EUmember_25704 ;
+    lpv:translatedText """Mr President, the EU budget for developing countries has a deficit in the order of EUR 50 billion. At the same time, however, financing for development is considered to be insufficiently effective, especially in light of the fact that millions of European citizens are living below the poverty line, even though numerous areas of the European Union have exited the economic crisis.
+Therefore, we are forced to raise the basic issue of more intensive management and efficacy controls of European taxpayers’ money, especially now, at a time of severe economic crisis and serious effort to rescue the euro and the euro area. I have always ardently supported the need for bold support for underdeveloped and developing countries, because it benefits the people of Europe in the medium term. However, this is not possible without adequate and strict controls, so that the European taxpayers’ money is not lost in the black hole of corruption and unaccountability.
+I will go even further, beyond financing for development: it is not right that Greek citizens, for example, should be subjected to humiliating terms and degradation in order to save a Member State of the euro area while, at the same time, millions are being lost left, right and centre due to the lack of controls. Not a single cent of European taxpayers’ money should be handed over without controls and accountability.
+To go even further still, pre-accession aid should also be subject to controls. I was recently in Turkey, which boasts that it is spending millions to become the leading country in the area, in Gaza, in Libya and in the Horn of Africa, while, at the same time, complaining that it is receiving crumbs from the European Union.
+We do not want the European taxpayers’ money to be used for weapons and nuclear programmes and multidimensional national policies; we want it to be used for development projects."""@en ;
+    lpv:videoURI <http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20111115-20:07:44-012> .
+
+lp_eu:2000-10-03-Speech-2-003 a lpv_eu:Speech ;
+    dcterms:date "2000-10-03"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2000-10-03_AgendaItem_1 ;
+    dcterms:language "fr"^^xsd:language ;
+    lpv:docno "en.20001003.1.2-003" ;
+    lpv:hasSubsequent lp_eu:2000-10-03-Speech-2-005 ;
+    lpv:speaker lp:EUmember_945 ;
+    lpv:translatedText """Ladies and gentlemen, Germany today celebrates the tenth anniversary of its reunification. Something that had seemed impossible just a few years previously has become reality. This reunification, made possible by the fall of the Berlin Wall the year before, was not only of great significance to the Germans, but also, to the whole of Europe as it symbolised reconciliation between the East and the West after 40 years of cold war.
+I would like to express, on behalf of Parliament, our shared pleasure with our friends in Germany in celebrating this anniversary."""@en ;
+    lpv:unclassifiedMetadata "(Applause)",
+        "President." .
+
+lp_eu:2000-10-03-Speech-2-005 a lpv_eu:Speech ;
+    dcterms:date "2000-10-03"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2000-10-03_AgendaItem_1 ;
+    dcterms:language "fr"^^xsd:language ;
+    lpv:docno "en.20001003.1.2-005" ;
+    lpv:hasSubsequent lp_eu:2000-10-03-Speech-2-006 ;
+    lpv:speaker lp:EUmember_945 ;
+    lpv:translatedText """The Minutes of yesterday’s sitting have been distributed.
+Are there any comments?
+***"""@en ;
+    lpv:unclassifiedMetadata "(The Minutes were approved)",
+        "President. –" .
+
+lp_eu:2000-10-03-Speech-2-006 a lpv_eu:Speech ;
+    dcterms:date "2000-10-03"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2000-10-03_AgendaItem_1 ;
+    dcterms:language "de"^^xsd:language ;
+    lpv:docno "en.20001003.1.2-006" ;
+    lpv:hasSubsequent lp_eu:2000-10-03-Speech-2-007 ;
+    lpv:speaker lp:EUmember_1249 ;
+    lpv:translatedText "Madam President, yesterday we decided – and this is also recorded in the Minutes – to hold a debate on Thursday on developments in the Middle East. However, we did not set a deadline for tabling motions for resolutions. I would request that we set such a deadline, both for the actual motions – this could be today at 6 p.m. – and for amendments, where we should try to set the deadline for as late as possible tomorrow, so that we can take into account any results from the meeting between Ehud Barak and Yassir Arafat tomorrow in Paris. I would ask that we set this deadline and that it be as late as possible."@en .
+
+lp_eu:2000-10-03-Speech-2-007 a lpv_eu:Speech ;
+    dcterms:date "2000-10-03"^^xsd:date ;
+    dcterms:isPartOf lp_eu:2000-10-03_AgendaItem_1 ;
+    dcterms:language "fr"^^xsd:language ;
+    lpv:docno "en.20001003.1.2-007" ;
+    lpv:hasSubsequent lp_eu:2000-10-03-Speech-2-009 ;
+    lpv:speaker lp:EUmember_945 ;
+    lpv:translatedText "The Group of the Party of European Socialists has requested that the debate on the situation regarding the Middle East Peace Process, that was timetabled for Thursday afternoon, be closed with a motion for a resolution. I will now put this request to the vote."@en ;
+    lpv:unclassifiedMetadata "(Parliament gave its assent)",
+        "President. –" .
+
+lp_eu:2000-10-03_AgendaItem_1 a lpv_eu:AgendaItem ;
+    dcterms:date "2000-10-03"^^xsd:date ;
+    dcterms:hasPart lp_eu:2000-10-03-Speech-2-002,
+        lp_eu:2000-10-03-Speech-2-003,
+        lp_eu:2000-10-03-Speech-2-005,
+        lp_eu:2000-10-03-Speech-2-006,
+        lp_eu:2000-10-03-Speech-2-007 ;
+    dcterms:isPartOf lp_eu:2000-10-03_SessionDay ;
+    dcterms:title "Approval of the Minutes of the previous sitting"@en ;
+    lpv:docno "en.20001003.1" ;
+    lpv:hasSubsequent lp_eu:2000-10-03_AgendaItem_2 .
+
+
+lp_eu:2011-11-15_AgendaItem_34 a lpv_eu:AgendaItem ;
+    dcterms:date "2011-11-15"^^xsd:date ;
+    dcterms:hasPart lp_eu:2011-11-15-Speech-2-688-000,
+        lp_eu:2011-11-15-Speech-2-689-000,
+        lp_eu:2011-11-15-Speech-2-689-500,
+        lp_eu:2011-11-15-Speech-2-691-000,
+        lp_eu:2011-11-15-Speech-2-693-000,
+        lp_eu:2011-11-15-Speech-2-695-000,
+        lp_eu:2011-11-15-Speech-2-697-000,
+        lp_eu:2011-11-15-Speech-2-699-000,
+        lp_eu:2011-11-15-Speech-2-701-000,
+        lp_eu:2011-11-15-Speech-2-703-000,
+        lp_eu:2011-11-15-Speech-2-705-000,
+        lp_eu:2011-11-15-Speech-2-707-000,
+        lp_eu:2011-11-15-Speech-2-709-000,
+        lp_eu:2011-11-15-Speech-2-711-000,
+        lp_eu:2011-11-15-Speech-2-713-000,
+        lp_eu:2011-11-15-Speech-2-716-000,
+        lp_eu:2011-11-15-Speech-2-718-000,
+        lp_eu:2011-11-15-Speech-2-720-000,
+        lp_eu:2011-11-15-Speech-2-722-000,
+        lp_eu:2011-11-15-Speech-2-723-000 ;
+    dcterms:isPartOf lp_eu:2011-11-15_SessionDay ;
+    dcterms:title "Accountability report on financing for development (debate)"@en ;
+    lpv:docno "en.20111115.34" ;
+    lpv:hasSubsequent lp_eu:2011-11-15_AgendaItem_35 .
+
+lp:EUmember_840 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "840" ;
+    lpv:countryOfRepresentation lp:EUCountry_LU ;
+    lpv:dateOfBirth "1952-02-06"^^xsd:date ;
+    lpv:placeOfBirth "Ettelbruck" ;
+    lpv:politicalFunction lp:pf01b66dd38147df891becf14e97b22fe9,
+        lp:pf024b599d51b8c31168ad92d0f5381358,
+        lp:pf03cc10dad6c6ff6fca828302dd37983d,
+        lp:pf07927311b214c612e417dc544b2ddf69,
+        lp:pf11006348aa40e247c602aae409bb439d,
+        lp:pf1224e7c0d7bbca13b619f5719924b122,
+        lp:pf189257ad515d6bd20db3c5db101eef07,
+        lp:pf253b1227f6d2f982cb1cfc5c7d37ef0c,
+        lp:pf26c5357542d1bb8d45b19fa198513d3c,
+        lp:pf47c7b69810b83649ee33767c471b742f,
+        lp:pf4baba9f276f5e426c9fd367ebf562ef6,
+        lp:pf52812fe7cd5f82c9c44b0a13884090fa,
+        lp:pf5ae81f2934da2357157316c9da6ec387,
+        lp:pf65f55a5f7477cefd97ef5e8fb0113c8a,
+        lp:pf6d0641e81e247803063331b13048fe26,
+        lp:pf7112f0a524e61237486e7dcdb6251831,
+        lp:pf71133b345e4b4c7ca932a4baf73a292b,
+        lp:pf737f7989f232377618e279d3067433b6,
+        lp:pf745a2bc8ca900f2089934bfe0dd87cc3,
+        lp:pf797f4c41aaf3c02e4bb6ff47880a3a5c,
+        lp:pf7a0abbc6079c66d946d0d2ace1de7da2,
+        lp:pf90a50d523a3ddefa7a71eca9ec2fad5d,
+        lp:pf9ace165ccfa7c0732c6c0b7c782281f0,
+        lp:pfa5c6289f775e9ac5edf32803a5277e0a,
+        lp:pfab3de23ba6383d97ef5fd8f3d64a43e8,
+        lp:pfac5d75dee334ee07865d6d57a8fd6d25,
+        lp:pfac7cb8f7e8007c6ef0a022cad781615a,
+        lp:pfaf9fcbf33b9cdfd96a8c515b4f797421,
+        lp:pfbc904cfa025835d030dcbb6a802617a2,
+        lp:pfbfb0873d0edbdaaeaec76dd1f9317538,
+        lp:pfc222e8bdcd9710b805c3dea017dbd0f7,
+        lp:pfc2c08db9caa3c5b16db48d78f27dfc0e,
+        lp:pfc7ef786fe26d074cf4c6ef7e0999b20e,
+        lp:pfc9a482d9a07a11d3bc627a7bf939f094,
+        lp:pfea0f72870ac2826cab47700e24532d80,
+        lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b,
+        lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 ;
+    foaf:name "Charles Goerens" .
+
+lp:EUmember_96745 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "96745" ;
+    lpv:countryOfRepresentation lp:EUCountry_FR ;
+    lpv:dateOfBirth "1960-04-15"^^xsd:date ;
+    lpv:placeOfBirth "Paris" ;
+    lpv:politicalFunction lp:pf35172334b6b8f9078fda26be87802370,
+        lp:pf39b586c05a51751bd64302beec7c8a5a,
+        lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f,
+        lp:pfd596fa9966d3058ebcf8b8990b4d6722,
+        lp:pffdc5ddf65756545247d5c5f584cf1327,
+        lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 ;
+    foaf:name "Catherine Grèze" .
+
+lp:EUmember_96798 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "96798" ;
+    lpv:countryOfRepresentation lp:EUCountry_GB ;
+    lpv:dateOfBirth "1962-08-31"^^xsd:date ;
+    lpv:placeOfBirth "Llanidloes (Wales)" ;
+    lpv:politicalFunction lp:pf01c89c2f398367704a4689609f392d42,
+        lp:pf554ca047ea110b78d8aff94c2db972c7,
+        lp:pf9a29a58f7ddf374041878b8b8ed5fb72,
+        lp:pf9fb7590b74447a5717d77fd860a258a5,
+        lp:pfeb0137accd103f37eece9081562fe5db,
+        lp:pff8e080b96e1cf25a0d664ce6b6f1bef6 ;
+    foaf:name "John Bufton" .
+
+lp:EUmember_25704 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "25704" ;
+    lpv:countryOfRepresentation lp:EUCountry_CY ;
+    lpv:dateOfBirth "1953-06-24"^^xsd:date ;
+    lpv:placeOfBirth "Amiantos" ;
+    lpv:politicalFunction lp:pf0b21817e5c58df07f2ddb58311e2bdca,
+        lp:pf4b3ccc95a5cea8081bfa2728364cddf6,
+        lp:pf763050bd559bd7fc23e44f1cfe19040c,
+        lp:pf7ae03588a147501df09f8ae2e4043941,
+        lp:pf86c6085800b6cad18678c165f8dbafe6,
+        lp:pf89f77da4f2697b76a5d00ae421bc6c98,
+        lp:pfae56ca2fc467af318f21dd48f7d9c787,
+        lp:pfb1d854c61fa3a936403320c006ec466f,
+        lp:pfb6efc695bd78c09241dd52e97ac4a420,
+        lp:pfce98fac035ed0ff2bc557cc7612cdce3,
+        lp:pfd702f502bd67b2f8f3513663c5027be4,
+        lp:pfd7355fd756c61b33c5998a725f5df933,
+        lp:pfea5771041ba1e890b47a79c2394bf5ea,
+        lp:pff105a8c273e98e3ff1a36b7721cf6bfb,
+        lp:pff478af693939964e00d57ba0e8dc9f45,
+        lp:pff78b1287d460a53b1bb9c4f3b2cfd058,
+        lp:pffe70d0ff9aa82f38aecb6a6a15d009b3 ;
+    foaf:name "Eleni Theocharous" .
+
+
+lp:EUmember_1249 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "1249" ;
+    lpv:countryOfRepresentation lp:EUCountry_DE ;
+    lpv:dateOfBirth "1939-11-12"^^xsd:date ;
+    lpv:placeOfBirth "Athen" ;
+    lpv:politicalFunction lp:pf0cc89a12f324f264466c43f63516d58a,
+        lp:pf1860e223109780c41f7d956e1453f2c7,
+        lp:pf25e329ff1bbb78d8ac4bb80c26a6e355,
+        lp:pf29c8c42f979d4c2fbf5c5739e1d404c3,
+        lp:pf2c4238441660737141af00d919a6117e,
+        lp:pf30c05bf7a231468702a806814f834f0b,
+        lp:pf3bc2e9f4398d745a41652a7dd2c8da1d,
+        lp:pf3c847b77a9d74837a541d11c1635659d,
+        lp:pf42258ebbd7504c1c3b856ef87b61914f,
+        lp:pf45f2885fe3f8af7ad83c8f7116a67d80,
+        lp:pf5decfc6a8c9013f72f1083c9482fd923,
+        lp:pf6956d6fafdb0bc05e56031bc4423b3fc,
+        lp:pf7247774894261cf8cced184e252e039c,
+        lp:pf746020565296d5b9b732c5788d383bd4,
+        lp:pf74aa8881cc9ae1fe2ef7fbab875221b9,
+        lp:pf756f85f5355809acb7a5b8e0a5cf051e,
+        lp:pf780f5c06f721db0fb7980e02fdfd0933,
+        lp:pf7916607b05136e1a484dc66dfa5159ca,
+        lp:pf7ac23cf51b1369c781f8941ae6411db8,
+        lp:pf9a6199039e339342c9863eddcb463301,
+        lp:pf9d32d9fd4ebca66e60358bfb505f21b0,
+        lp:pf9dd821cac306f49f2759862891d581c2,
+        lp:pfa9b85f646551992660e40582921dcf50,
+        lp:pfae3eac4dd0d97ab2f49b22ce63922f01,
+        lp:pfb19baef1c5e5e0a83b78a5187e86e0ea,
+        lp:pfbd153d619cb2dff64dd59f71d73bc9a1,
+        lp:pfc458349dd3e37d3c8af9901f5c4175a1,
+        lp:pfcf8981723a1e74b245ca948f2d535a55,
+        lp:pfdc1ebaa7a537f14f0b52e964dfa8f8ba,
+        lp:pfdee85c256c92704b2849276ecab416e2,
+        lp:pfe729fccc96f7110857711b516a5c4906,
+        lp:pfe7ebc6d6c1da679e82302ac22c13d8e7,
+        lp:pfe91ecf17d167c3aa25e4fe6fb3bd481d,
+        lp:pfea90449ff2391d902301a141844469a8,
+        lp:pfee0a0a20cd688f361602f2b701da87a4,
+        lp:pff6a174025025552c134815e914801af9,
+        lp:pff8b9c089b9a3c2e5551a956a9b737800,
+        lp:pff9c37c823b2b3b9442391187a9c0bef5 ;
+    foaf:name "Jannis Sakellariou" .
+
+lp:EUmember_96798 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "96798" ;
+    lpv:countryOfRepresentation lp:EUCountry_GB ;
+    lpv:dateOfBirth "1962-08-31"^^xsd:date ;
+    lpv:placeOfBirth "Llanidloes (Wales)" ;
+    lpv:politicalFunction lp:pf01c89c2f398367704a4689609f392d42,
+        lp:pf554ca047ea110b78d8aff94c2db972c7,
+        lp:pf9a29a58f7ddf374041878b8b8ed5fb72,
+        lp:pf9fb7590b74447a5717d77fd860a258a5,
+        lp:pfeb0137accd103f37eece9081562fe5db,
+        lp:pff8e080b96e1cf25a0d664ce6b6f1bef6 ;
+    foaf:name "John Bufton" .
+
+lp:EUmember_945 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "945" ;
+    lpv:countryOfRepresentation lp:EUCountry_FR ;
+    lpv:dateOfBirth "1942-01-16"^^xsd:date ;
+    lpv:placeOfBirth "Grainville-Ymauville (Seine-Maritime)" ;
+    lpv:politicalFunction lp:pf00d7f81579a686b362df54cc9f01f8fe,
+        lp:pf08d773fc86f4da3f327266e4db59caed,
+        lp:pf0b6a76dd71e221d4a6ac0d6189133a7b,
+        lp:pf0c5200abbc5e2c15b042c0c3b5ea8715,
+        lp:pf0c7ba2f8a9c740e67012489d9988c6b5,
+        lp:pf116118b3178ebd089482deb11a0855c0,
+        lp:pf185a09d4d0542dacb0e145e07b831916,
+        lp:pf1fbbc470c07d122c3b48096d6f97abce,
+        lp:pf28cb8089df89f405df4cd8b4bb37bf54,
+        lp:pf329a806d6e84a18999fbacdbb604b306,
+        lp:pf3372c3d511b6fea6ae6a92349c34273e,
+        lp:pf41c4aa4ed2e5f72fc90bb1a708d51926,
+        lp:pf44d84f33ebdfdf7f663f188ad9b5500f,
+        lp:pf504096079dc240bafd07658ab7dde931,
+        lp:pf50f40f99138e3896ffcc1569f6d90524,
+        lp:pf585807d17cd067ddfe6bbcd729ee3fe5,
+        lp:pf5b9d67e5e03e32cc7f68c877d2438d3d,
+        lp:pf603a8ef996a496964d3edcbefd4c05c2,
+        lp:pf6560549532d5db9f79b9e06e52e9b859,
+        lp:pf710e51f53062fbe5cfa9a4a11f3c91a2,
+        lp:pf76568ccc390fbcf07773151a2ee5d30a,
+        lp:pf7b49b1c25b2a3848193da0bd3de578f8,
+        lp:pf7c70fad07f269aee18f388c48308afa9,
+        lp:pf840b1dc4ab893d8de151318f37d8cb79,
+        lp:pf9694144466c479d48a3ff231b0f3dec5,
+        lp:pf9ef6702e39ee591aa63e3f6b627d6b71,
+        lp:pfa4e22e8cec3294c4c7800f8f8ab5eb8c,
+        lp:pfad0bdf3d794d6c052c8dca9ea70e60d9,
+        lp:pfafe0ec83abcbf1788241bc19b6267a73,
+        lp:pfafe3a1f5721845c7bc6346e93383d3c3,
+        lp:pfb3c08b0d6775183d8b756855e34b3bd1,
+        lp:pfb74302460cc05e252c60b0fce55a526a,
+        lp:pfb79819b7abdb2475eac725d58396ad96,
+        lp:pfc3a42a3889e32f9839bcd1b540986c54,
+        lp:pfc465a98e7ff27d34443b0c2c7dd9bb14,
+        lp:pfc54c85d345d69f774d36204e8791d9c3,
+        lp:pfc600306d2ec3cfb5be5306decf94ea5b,
+        lp:pfc932c9cc8aeb54418288e7c4394d3144,
+        lp:pfd054630f1652fd6a7c24dbd65b83462f,
+        lp:pfd3c7d2a02f01778cd489a2f44e0b399b,
+        lp:pfd5a2c29b1824bd46a09fef572fb1e7dd,
+        lp:pfd9635a3752b6b9825de001ff4fc2373c,
+        lp:pfe2631fe3beab99a9ae22b0f79679480b,
+        lp:pfe61170421ccc1038faafc8c94fe670e4,
+        lp:pfecda77f41e86a871a91979d974a70dfe,
+        lp:pfff816f79447e5bfa662c1e0feae531ae ;
+    foaf:name "Nicole Fontaine" .
