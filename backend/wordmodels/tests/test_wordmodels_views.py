@@ -1,11 +1,8 @@
 import pytest
 
 def test_wm_documentation_view(admin_client, mock_corpus):
-    response = admin_client.get(f'/api/corpus/documentation/')
-    assert any(
-        page['type'] == 'Word models' and page['corpus'] == mock_corpus
-        for page in response.data
-    )
+    response = admin_client.get(f'/api/corpus/documentation/?corpus={mock_corpus}')
+    assert any(page['type'] == 'Word models'for page in response.data)
 
 def test_related_words_view(admin_client, mock_corpus):
 
