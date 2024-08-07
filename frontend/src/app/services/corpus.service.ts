@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
-import { Corpus, CorpusDocumentationPage, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
+import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
 import { ApiRetryService } from './api-retry.service';
-import { AuthService } from './auth.service';
 import { findByName } from '../utils/utils';
 import * as _ from 'lodash';
-import { ApiService } from './api.service';
 
 @Injectable({
     providedIn: 'root',
@@ -24,8 +22,6 @@ export class CorpusService {
 
     constructor(
         private apiRetryService: ApiRetryService,
-        private authService: AuthService,
-        private apiService: ApiService,
     ) {
         this.parseField = this.parseField.bind(this);
     }

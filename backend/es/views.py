@@ -5,12 +5,7 @@ from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-from ianalyzer.elasticsearch import elasticsearch
-from es.search import get_index, total_hits, hits
-import logging
-from rest_framework.exceptions import APIException
 from addcorpus.permissions import CanSearchCorpus
-from tag.permissions import CanSearchTags
 from api.save_query import should_save_query
 from addcorpus.models import Corpus
 from api.models import Query

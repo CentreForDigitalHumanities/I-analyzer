@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { findByName } from '../app/utils/utils';
 import { BooleanFilterOptions } from '../app/models/field-filter-options';
-import { Corpus, CorpusDocumentationPage, CorpusField } from '../app/models';
+import { Corpus, CorpusField } from '../app/models';
 
 const mockFilterOptions: BooleanFilterOptions = {
     checked: false,
