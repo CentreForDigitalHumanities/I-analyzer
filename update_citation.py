@@ -7,7 +7,7 @@ from datetime import datetime
 import json
 import re
 
-CITATION_FILE = 'CITATION.CFF'
+CITATION_FILE = 'CITATION.cff'
 PACKAGE_FILE = 'package.json'
 VERSION_PATTERN = r'^version:\s+.*$'
 DATE_RELEASED_PATTERN = r'^date-released:.*$'
