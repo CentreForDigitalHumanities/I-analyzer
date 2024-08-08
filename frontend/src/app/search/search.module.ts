@@ -6,11 +6,13 @@ import { SearchResultsComponent } from './search-results.component';
 import { SearchComponent } from './search.component';
 import { DocumentModule } from '../document/document.module';
 import { CorpusModule } from '../corpus-header/corpus.module';
-import { SearchSortingComponent } from './search-sorting.component';
 import { FilterModule } from '../filter/filter.module';
 import { DownloadModule } from '../download/download.module';
 import { QueryService, SearchService } from '../services';
 import { VisualizationModule } from '../visualization/visualization.module';
+import { ResultsSortModule } from './results-sort/results-sort.module';
+import { SelectFieldComponent } from '../select-field/select-field.component';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 
 
@@ -24,7 +26,7 @@ import { VisualizationModule } from '../visualization/visualization.module';
         PaginationComponent,
         SearchComponent,
         SearchResultsComponent,
-        SearchSortingComponent,
+        SelectFieldComponent,
     ],
     imports: [
         CorpusModule,
@@ -33,6 +35,8 @@ import { VisualizationModule } from '../visualization/visualization.module';
         FilterModule,
         SharedModule,
         VisualizationModule,
+        ResultsSortModule,
+        MultiSelectModule,
     ],
     exports: [
         SearchComponent,

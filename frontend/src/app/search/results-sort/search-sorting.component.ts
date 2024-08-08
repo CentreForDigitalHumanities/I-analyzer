@@ -3,9 +3,9 @@ import {
     HostBinding,
     Input,
 } from '@angular/core';
-import { CorpusField, SortState } from '../models';
-import { sortIcons } from '../shared/icons';
-import { PageResults } from '../models/page-results';
+import { CorpusField, SortState } from '../../models';
+import { sortIcons } from '../../shared/icons';
+import { PageResults } from '../../models/page-results';
 
 const defaultValueType = 'alpha';
 @Component({
