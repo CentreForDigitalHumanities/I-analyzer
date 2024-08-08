@@ -1,0 +1,290 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix lpv: <http://purl.org/linkedpolitics/vocabulary/> .
+@prefix lp: <http://purl.org/linkedpolitics/> .
+
+lp:EUmember_840 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "840" ;
+    lpv:countryOfRepresentation lp:EUCountry_LU ;
+    lpv:dateOfBirth "1952-02-06"^^xsd:date ;
+    lpv:placeOfBirth "Ettelbruck" ;
+    lpv:politicalFunction lp:pf01b66dd38147df891becf14e97b22fe9,
+        lp:pf024b599d51b8c31168ad92d0f5381358,
+        lp:pf03cc10dad6c6ff6fca828302dd37983d,
+        lp:pf07927311b214c612e417dc544b2ddf69,
+        lp:pf11006348aa40e247c602aae409bb439d,
+        lp:pf1224e7c0d7bbca13b619f5719924b122,
+        lp:pf189257ad515d6bd20db3c5db101eef07,
+        lp:pf253b1227f6d2f982cb1cfc5c7d37ef0c,
+        lp:pf26c5357542d1bb8d45b19fa198513d3c,
+        lp:pf47c7b69810b83649ee33767c471b742f,
+        lp:pf4baba9f276f5e426c9fd367ebf562ef6,
+        lp:pf52812fe7cd5f82c9c44b0a13884090fa,
+        lp:pf5ae81f2934da2357157316c9da6ec387,
+        lp:pf65f55a5f7477cefd97ef5e8fb0113c8a,
+        lp:pf6d0641e81e247803063331b13048fe26,
+        lp:pf7112f0a524e61237486e7dcdb6251831,
+        lp:pf71133b345e4b4c7ca932a4baf73a292b,
+        lp:pf737f7989f232377618e279d3067433b6,
+        lp:pf745a2bc8ca900f2089934bfe0dd87cc3,
+        lp:pf797f4c41aaf3c02e4bb6ff47880a3a5c,
+        lp:pf7a0abbc6079c66d946d0d2ace1de7da2,
+        lp:pf90a50d523a3ddefa7a71eca9ec2fad5d,
+        lp:pf9ace165ccfa7c0732c6c0b7c782281f0,
+        lp:pfa5c6289f775e9ac5edf32803a5277e0a,
+        lp:pfab3de23ba6383d97ef5fd8f3d64a43e8,
+        lp:pfac5d75dee334ee07865d6d57a8fd6d25,
+        lp:pfac7cb8f7e8007c6ef0a022cad781615a,
+        lp:pfaf9fcbf33b9cdfd96a8c515b4f797421,
+        lp:pfbc904cfa025835d030dcbb6a802617a2,
+        lp:pfbfb0873d0edbdaaeaec76dd1f9317538,
+        lp:pfc222e8bdcd9710b805c3dea017dbd0f7,
+        lp:pfc2c08db9caa3c5b16db48d78f27dfc0e,
+        lp:pfc7ef786fe26d074cf4c6ef7e0999b20e,
+        lp:pfc9a482d9a07a11d3bc627a7bf939f094,
+        lp:pfea0f72870ac2826cab47700e24532d80,
+        lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b,
+        lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 ;
+    foaf:name "Charles Goerens" .
+
+lp:EUmember_96745 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "96745" ;
+    lpv:countryOfRepresentation lp:EUCountry_FR ;
+    lpv:dateOfBirth "1960-04-15"^^xsd:date ;
+    lpv:placeOfBirth "Paris" ;
+    lpv:politicalFunction lp:pf35172334b6b8f9078fda26be87802370,
+        lp:pf39b586c05a51751bd64302beec7c8a5a,
+        lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f,
+        lp:pfd596fa9966d3058ebcf8b8990b4d6722,
+        lp:pffdc5ddf65756545247d5c5f584cf1327,
+        lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 ;
+    foaf:name "Catherine Grèze" .
+
+lp:EUmember_96798 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "96798" ;
+    lpv:countryOfRepresentation lp:EUCountry_GB ;
+    lpv:dateOfBirth "1962-08-31"^^xsd:date ;
+    lpv:placeOfBirth "Llanidloes (Wales)" ;
+    lpv:politicalFunction lp:pf01c89c2f398367704a4689609f392d42,
+        lp:pf554ca047ea110b78d8aff94c2db972c7,
+        lp:pf9a29a58f7ddf374041878b8b8ed5fb72,
+        lp:pf9fb7590b74447a5717d77fd860a258a5,
+        lp:pfeb0137accd103f37eece9081562fe5db,
+        lp:pff8e080b96e1cf25a0d664ce6b6f1bef6 ;
+    foaf:name "John Bufton" .
+
+lp:EUmember_25704 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "25704" ;
+    lpv:countryOfRepresentation lp:EUCountry_CY ;
+    lpv:dateOfBirth "1953-06-24"^^xsd:date ;
+    lpv:placeOfBirth "Amiantos" ;
+    lpv:politicalFunction lp:pf0b21817e5c58df07f2ddb58311e2bdca,
+        lp:pf4b3ccc95a5cea8081bfa2728364cddf6,
+        lp:pf763050bd559bd7fc23e44f1cfe19040c,
+        lp:pf7ae03588a147501df09f8ae2e4043941,
+        lp:pf86c6085800b6cad18678c165f8dbafe6,
+        lp:pf89f77da4f2697b76a5d00ae421bc6c98,
+        lp:pfae56ca2fc467af318f21dd48f7d9c787,
+        lp:pfb1d854c61fa3a936403320c006ec466f,
+        lp:pfb6efc695bd78c09241dd52e97ac4a420,
+        lp:pfce98fac035ed0ff2bc557cc7612cdce3,
+        lp:pfd702f502bd67b2f8f3513663c5027be4,
+        lp:pfd7355fd756c61b33c5998a725f5df933,
+        lp:pfea5771041ba1e890b47a79c2394bf5ea,
+        lp:pff105a8c273e98e3ff1a36b7721cf6bfb,
+        lp:pff478af693939964e00d57ba0e8dc9f45,
+        lp:pff78b1287d460a53b1bb9c4f3b2cfd058,
+        lp:pffe70d0ff9aa82f38aecb6a6a15d009b3 ;
+    foaf:name "Eleni Theocharous" .
+
+
+lp:EUmember_1249 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "1249" ;
+    lpv:countryOfRepresentation lp:EUCountry_DE ;
+    lpv:dateOfBirth "1939-11-12"^^xsd:date ;
+    lpv:placeOfBirth "Athen" ;
+    lpv:politicalFunction lp:pf0cc89a12f324f264466c43f63516d58a,
+        lp:pf1860e223109780c41f7d956e1453f2c7,
+        lp:pf25e329ff1bbb78d8ac4bb80c26a6e355,
+        lp:pf29c8c42f979d4c2fbf5c5739e1d404c3,
+        lp:pf2c4238441660737141af00d919a6117e,
+        lp:pf30c05bf7a231468702a806814f834f0b,
+        lp:pf3bc2e9f4398d745a41652a7dd2c8da1d,
+        lp:pf3c847b77a9d74837a541d11c1635659d,
+        lp:pf42258ebbd7504c1c3b856ef87b61914f,
+        lp:pf45f2885fe3f8af7ad83c8f7116a67d80,
+        lp:pf5decfc6a8c9013f72f1083c9482fd923,
+        lp:pf6956d6fafdb0bc05e56031bc4423b3fc,
+        lp:pf7247774894261cf8cced184e252e039c,
+        lp:pf746020565296d5b9b732c5788d383bd4,
+        lp:pf74aa8881cc9ae1fe2ef7fbab875221b9,
+        lp:pf756f85f5355809acb7a5b8e0a5cf051e,
+        lp:pf780f5c06f721db0fb7980e02fdfd0933,
+        lp:pf7916607b05136e1a484dc66dfa5159ca,
+        lp:pf7ac23cf51b1369c781f8941ae6411db8,
+        lp:pf9a6199039e339342c9863eddcb463301,
+        lp:pf9d32d9fd4ebca66e60358bfb505f21b0,
+        lp:pf9dd821cac306f49f2759862891d581c2,
+        lp:pfa9b85f646551992660e40582921dcf50,
+        lp:pfae3eac4dd0d97ab2f49b22ce63922f01,
+        lp:pfb19baef1c5e5e0a83b78a5187e86e0ea,
+        lp:pfbd153d619cb2dff64dd59f71d73bc9a1,
+        lp:pfc458349dd3e37d3c8af9901f5c4175a1,
+        lp:pfcf8981723a1e74b245ca948f2d535a55,
+        lp:pfdc1ebaa7a537f14f0b52e964dfa8f8ba,
+        lp:pfdee85c256c92704b2849276ecab416e2,
+        lp:pfe729fccc96f7110857711b516a5c4906,
+        lp:pfe7ebc6d6c1da679e82302ac22c13d8e7,
+        lp:pfe91ecf17d167c3aa25e4fe6fb3bd481d,
+        lp:pfea90449ff2391d902301a141844469a8,
+        lp:pfee0a0a20cd688f361602f2b701da87a4,
+        lp:pff6a174025025552c134815e914801af9,
+        lp:pff8b9c089b9a3c2e5551a956a9b737800,
+        lp:pff9c37c823b2b3b9442391187a9c0bef5 ;
+    foaf:name "Jannis Sakellariou" .
+
+lp:EUmember_96798 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "96798" ;
+    lpv:countryOfRepresentation lp:EUCountry_GB ;
+    lpv:dateOfBirth "1962-08-31"^^xsd:date ;
+    lpv:placeOfBirth "Llanidloes (Wales)" ;
+    lpv:politicalFunction lp:pf01c89c2f398367704a4689609f392d42,
+        lp:pf554ca047ea110b78d8aff94c2db972c7,
+        lp:pf9a29a58f7ddf374041878b8b8ed5fb72,
+        lp:pf9fb7590b74447a5717d77fd860a258a5,
+        lp:pfeb0137accd103f37eece9081562fe5db,
+        lp:pff8e080b96e1cf25a0d664ce6b6f1bef6 ;
+    foaf:name "John Bufton" .
+
+lp:EUmember_945 a lpv:MemberOfParliament,
+        lpv:Speaker ;
+    lpv:MEP_ID "945" ;
+    lpv:countryOfRepresentation lp:EUCountry_FR ;
+    lpv:dateOfBirth "1942-01-16"^^xsd:date ;
+    lpv:placeOfBirth "Grainville-Ymauville (Seine-Maritime)" ;
+    lpv:politicalFunction lp:pf00d7f81579a686b362df54cc9f01f8fe,
+        lp:pf08d773fc86f4da3f327266e4db59caed,
+        lp:pf0b6a76dd71e221d4a6ac0d6189133a7b,
+        lp:pf0c5200abbc5e2c15b042c0c3b5ea8715,
+        lp:pf0c7ba2f8a9c740e67012489d9988c6b5,
+        lp:pf116118b3178ebd089482deb11a0855c0,
+        lp:pf185a09d4d0542dacb0e145e07b831916,
+        lp:pf1fbbc470c07d122c3b48096d6f97abce,
+        lp:pf28cb8089df89f405df4cd8b4bb37bf54,
+        lp:pf329a806d6e84a18999fbacdbb604b306,
+        lp:pf3372c3d511b6fea6ae6a92349c34273e,
+        lp:pf41c4aa4ed2e5f72fc90bb1a708d51926,
+        lp:pf44d84f33ebdfdf7f663f188ad9b5500f,
+        lp:pf504096079dc240bafd07658ab7dde931,
+        lp:pf50f40f99138e3896ffcc1569f6d90524,
+        lp:pf585807d17cd067ddfe6bbcd729ee3fe5,
+        lp:pf5b9d67e5e03e32cc7f68c877d2438d3d,
+        lp:pf603a8ef996a496964d3edcbefd4c05c2,
+        lp:pf6560549532d5db9f79b9e06e52e9b859,
+        lp:pf710e51f53062fbe5cfa9a4a11f3c91a2,
+        lp:pf76568ccc390fbcf07773151a2ee5d30a,
+        lp:pf7b49b1c25b2a3848193da0bd3de578f8,
+        lp:pf7c70fad07f269aee18f388c48308afa9,
+        lp:pf840b1dc4ab893d8de151318f37d8cb79,
+        lp:pf9694144466c479d48a3ff231b0f3dec5,
+        lp:pf9ef6702e39ee591aa63e3f6b627d6b71,
+        lp:pfa4e22e8cec3294c4c7800f8f8ab5eb8c,
+        lp:pfad0bdf3d794d6c052c8dca9ea70e60d9,
+        lp:pfafe0ec83abcbf1788241bc19b6267a73,
+        lp:pfafe3a1f5721845c7bc6346e93383d3c3,
+        lp:pfb3c08b0d6775183d8b756855e34b3bd1,
+        lp:pfb74302460cc05e252c60b0fce55a526a,
+        lp:pfb79819b7abdb2475eac725d58396ad96,
+        lp:pfc3a42a3889e32f9839bcd1b540986c54,
+        lp:pfc465a98e7ff27d34443b0c2c7dd9bb14,
+        lp:pfc54c85d345d69f774d36204e8791d9c3,
+        lp:pfc600306d2ec3cfb5be5306decf94ea5b,
+        lp:pfc932c9cc8aeb54418288e7c4394d3144,
+        lp:pfd054630f1652fd6a7c24dbd65b83462f,
+        lp:pfd3c7d2a02f01778cd489a2f44e0b399b,
+        lp:pfd5a2c29b1824bd46a09fef572fb1e7dd,
+        lp:pfd9635a3752b6b9825de001ff4fc2373c,
+        lp:pfe2631fe3beab99a9ae22b0f79679480b,
+        lp:pfe61170421ccc1038faafc8c94fe670e4,
+        lp:pfecda77f41e86a871a91979d974a70dfe,
+        lp:pfff816f79447e5bfa662c1e0feae531ae ;
+    foaf:name "Nicole Fontaine" .
+
+lp:EUParty\/ALDE a lpv:EUParty .
+lp:EUParty\/ALDE lpv:acronym "ALDE" .
+lp:EUParty\/ALDE lpv:featuredRoleDescriptions "Group of the Alliance of Liberals and Democrats for Europe -" .
+lp:EUParty\/ALDE lpv:featuredRoleDescriptions "Group of the Alliance of Liberals and Democrats for Europe - Chair" .
+lp:EUParty\/ALDE lpv:featuredRoleDescriptions "Group of the Alliance of Liberals and Democrats for Europe - Member" .
+lp:EUParty\/ALDE lpv:featuredRoleDescriptions "Group of the Alliance of Liberals and Democrats for Europe - Member of the Bureau" .
+lp:EUParty\/ALDE lpv:featuredRoleDescriptions "Group of the Alliance of Liberals and Democrats for Europe - Vice-Chair" .
+lp:EUParty\/ALDE rdfs:label "ALDE" .
+lp:EUParty\/ALDE rdfs:label "Group of the Alliance of Liberals and Democrats for Europe" .
+
+lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 a lpv:PoliticalFunction .
+lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 lpv:beginning "1997-01-16"^^xsd:date .
+lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 lpv:end "1999-07-19"^^xsd:date .
+lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 lpv:institution lp:EUCommittee\/Subcommittee_on_Security_and_Disarmament .
+lp:pffdcd83e892d8dd0804cc4dd2a8558ba5 lpv:role lp:Role\/substitute .
+
+lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b a lpv:PoliticalFunction .
+lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b lpv:beginning "2009-07-14"^^xsd:date .
+lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b lpv:end "2009-07-19"^^xsd:date .
+lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b lpv:institution lp:EUParty\/ALDE .
+lp:pfeb54a3e53cd7f90bbfeaf436eae62e9b lpv:role lp:Role\/member .
+
+lp:pfac5d75dee334ee07865d6d57a8fd6d25 a lpv:PoliticalFunction .
+lp:pfac5d75dee334ee07865d6d57a8fd6d25 lpv:beginning "2009-07-20"^^xsd:date .
+lp:pfac5d75dee334ee07865d6d57a8fd6d25 lpv:end "2014-06-30"^^xsd:date .
+lp:pfac5d75dee334ee07865d6d57a8fd6d25 lpv:institution lp:EUParty\/ALDE .
+lp:pfac5d75dee334ee07865d6d57a8fd6d25 lpv:role lp:Role\/member_of_the_bureau .
+
+lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 a lpv:PoliticalFunction .
+lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 lpv:beginning "2009-07-16"^^xsd:date .
+lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 lpv:end "2012-01-18"^^xsd:date .
+lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 lpv:institution lp:EUCommittee\/DEVE .
+lp:pffe6ab224baaff6c99b64d9e1fc1b6ae6 lpv:role lp:Role\/member .
+
+lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f a lpv:PoliticalFunction .
+lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f lpv:beginning "2009-07-14"^^xsd:date .
+lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f lpv:end "2014-06-30"^^xsd:date .
+lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f lpv:institution lp:NationalParty\/E%C3%89_France .
+lp:pfc8ddda2f7ee73f0e06d84a1a9afde01f lpv:role lp:Role\/member .
+
+lp:pf9fb7590b74447a5717d77fd860a258a5 a lpv:PoliticalFunction .
+lp:pf9fb7590b74447a5717d77fd860a258a5 lpv:beginning "2009-07-16"^^xsd:date .
+lp:pf9fb7590b74447a5717d77fd860a258a5 lpv:end "2012-01-18"^^xsd:date .
+lp:pf9fb7590b74447a5717d77fd860a258a5 lpv:institution lp:EUCommittee\/AGRI .
+lp:pf9fb7590b74447a5717d77fd860a258a5 lpv:role lp:Role\/substitute .
+
+lp:pf01c89c2f398367704a4689609f392d42 a lpv:PoliticalFunction .
+lp:pf01c89c2f398367704a4689609f392d42 lpv:beginning "2009-07-16"^^xsd:date .
+lp:pf01c89c2f398367704a4689609f392d42 lpv:end "2012-01-18"^^xsd:date .
+lp:pf01c89c2f398367704a4689609f392d42 lpv:institution lp:EUCommittee\/REGI .
+lp:pf01c89c2f398367704a4689609f392d42 lpv:role lp:Role\/member .
+
+lp:pff105a8c273e98e3ff1a36b7721cf6bfb a lpv:PoliticalFunction .
+lp:pff105a8c273e98e3ff1a36b7721cf6bfb lpv:beginning "2009-07-16"^^xsd:date .
+lp:pff105a8c273e98e3ff1a36b7721cf6bfb lpv:end "2012-01-18"^^xsd:date .
+lp:pff105a8c273e98e3ff1a36b7721cf6bfb lpv:institution lp:EUCommittee\/ENVI .
+lp:pff105a8c273e98e3ff1a36b7721cf6bfb lpv:role lp:Role\/substitute .
+
+lp:pfb6efc695bd78c09241dd52e97ac4a420 a lpv:PoliticalFunction .
+lp:pfb6efc695bd78c09241dd52e97ac4a420 lpv:beginning "2003-10-06"^^xsd:date .
+lp:pfb6efc695bd78c09241dd52e97ac4a420 lpv:end "2003-11-30"^^xsd:date .
+lp:pfb6efc695bd78c09241dd52e97ac4a420 lpv:institution lp:EUParty\/EPP-ED .
+lp:pfb6efc695bd78c09241dd52e97ac4a420 lpv:role lp:Role\/unknown .
+
+lp:pfea90449ff2391d902301a141844469a8 a lpv:PoliticalFunction .
+lp:pfea90449ff2391d902301a141844469a8 lpv:beginning "1984-07-24"^^xsd:date .
+lp:pfea90449ff2391d902301a141844469a8 lpv:end "1989-07-24"^^xsd:date .
+lp:pfea90449ff2391d902301a141844469a8 lpv:institution lp:EUParty\/SOC .
+lp:pfea90449ff2391d902301a141844469a8 lpv:role lp:Role\/member .
+
