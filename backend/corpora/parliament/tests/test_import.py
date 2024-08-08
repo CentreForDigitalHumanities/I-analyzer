@@ -617,16 +617,17 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
         'docs': [{
             'id': '2011-11-15-Speech-2-699-000',
             'date': '2011-11-15',
-            'debate_id': 'lp_eu:2011-11-15_AgendaItem_34',
+            'debate_id': '2011-11-15_AgendaItem_34',
             'debate_title': 'Accountability report on financing for development (debate)',
-            'party': None,
-            'sequence': 6,
+            'party': 'ALDE',
+            'sequence': 8,
+            'source_language': 'fr',
             'speaker': 'Charles Goerens',
             'speech': '''Mr President, Ms Striffler is right to question the consistency of the commitments taken by the European Union in terms of official development aid.
-                Let us say this straightaway: without the European Union’s contribution to development policy, achieving the Millennium Development Goals would remain a pipedream. Let us nevertheless add that the European Union shares this responsibility with other players.
-                The United States is an important donor in absolute terms, but with 0.2% of its GDP devoted to official development aid, it is far behind the European Union in relative terms, without forgetting the emerging countries, which generate substantial resources, an increasing part of which will have to be allocated for the purpose of development and combating poverty within their own borders.
-                Nevertheless, what is comforting is to see that various EU Member States – the list is not exhaustive – are setting an example in this regard. With only a few days until the Fourth High-Level Forum on aid effectiveness in Busan, I think it would be wise to insist not only on the volume of the European Union’s official development aid, but also on its ‘leverage effect’.
-                As the largest provider of funds, we have a position that enables the European Union to assert itself more at global level. Without being perceived as giving lectures, the European Union can and must remind those at Busan that combating poverty is an obligation for all the Member States; as developing countries and, more specifically, emerging countries gradually generate their own resources, they must also devote them to eradicating poverty within their borders. It is, first and foremost, up to them to act and we cannot take their responsibilities in this area upon ourselves''',
+Let us say this straightaway: without the European Union’s contribution to development policy, achieving the Millennium Development Goals would remain a pipedream. Let us nevertheless add that the European Union shares this responsibility with other players.
+The United States is an important donor in absolute terms, but with 0.2% of its GDP devoted to official development aid, it is far behind the European Union in relative terms, without forgetting the emerging countries, which generate substantial resources, an increasing part of which will have to be allocated for the purpose of development and combating poverty within their own borders.
+Nevertheless, what is comforting is to see that various EU Member States – the list is not exhaustive – are setting an example in this regard. With only a few days until the Fourth High-Level Forum on aid effectiveness in Busan, I think it would be wise to insist not only on the volume of the European Union’s official development aid, but also on its ‘leverage effect’.
+As the largest provider of funds, we have a position that enables the European Union to assert itself more at global level. Without being perceived as giving lectures, the European Union can and must remind those at Busan that combating poverty is an obligation for all the Member States; as developing countries and, more specifically, emerging countries gradually generate their own resources, they must also devote them to eradicating poverty within their borders. It is, first and foremost, up to them to act and we cannot take their responsibilities in this area upon ourselves.''',
             'source_language': 'fr',
             'url': 'http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20111115-20:02:15-969'
         }] +
@@ -637,11 +638,12 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
             'debate_id': '2000-10-03_AgendaItem_1',
             'debate_title': 'Approval of the Minutes of the previous sitting',
             'party': None,
-            'sequence': 3,
+            'sequence': 5,
+            'source_language': 'fr',
             'speaker': 'Nicole Fontaine',
             'speech': "The Group of the Party of European Socialists has requested that the debate on the situation regarding the Middle East Peace Process, that was timetabled for Thursday afternoon, be closed with a motion for a resolution. I will now put this request to the vote.",
             'source_language': 'fr',
-            'url': None
+            'url': 'http://purl.org/linkedpolitics/eu/plenary/2000-10-03-Speech-2-007'
         }],
         'n_documents': 8
     }
