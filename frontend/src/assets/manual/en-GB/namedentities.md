@@ -6,7 +6,7 @@ Activating the toggle will show entities of four types:
 - Organizations
 - Miscellaneous
 
-### Disclaimer
+## Disclaimer
 Named entities are automatically assigned using machine learning. As such, the annotations can include mistakes, and should not be taken at face value.
 
 If a corpus has named entity annotations, the info page for the corpus will provide more information on how the models were trained. We recommend being critical about the accuracy and possible biases of this process if you intend to use named entities in your research.
