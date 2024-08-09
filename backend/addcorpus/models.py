@@ -473,6 +473,13 @@ class CorpusDocumentationPage(models.Model):
         help_text='markdown contents of the documentation'
     )
 
+    @property
+    def page_index(self):
+        '''Numerical index to determine the order in which pages should be displayed.
+        Based on the order in which `PageType` choices are declared.'''
+        indexed_values = enumerate(__class__.PageType.values)
+        return next((i for (i, value) in indexed_values if value == self.type), None)
+
     def __str__(self):
         return f'{self.corpus_configuration.corpus.name} - {self.type}'
 

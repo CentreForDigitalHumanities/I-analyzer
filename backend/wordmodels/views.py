@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from addcorpus.permissions import CorpusAccessPermission, corpus_name_from_request
+from addcorpus.permissions import CanSearchCorpus, corpus_name_from_request
 from wordmodels import utils, visualisations
 from rest_framework.exceptions import APIException
 
@@ -9,7 +9,7 @@ class RelatedWordsView(APIView):
     Get words with the highest similarity to the query term
     '''
 
-    permission_classes = [CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         corpus = corpus_name_from_request(request)
@@ -33,7 +33,7 @@ class SimilarityView(APIView):
     Get similarity between two query terms
     '''
 
-    permission_classes = [CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
         corpus = corpus_name_from_request(request)
@@ -53,7 +53,7 @@ class WordInModelView(APIView):
     Check if a word has a vector in the model for a corpus
     '''
 
-    permission_classes = [CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
         corpus = corpus_name_from_request(request)
