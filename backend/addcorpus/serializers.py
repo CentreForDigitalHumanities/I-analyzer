@@ -121,21 +121,6 @@ class DocumentationTemplateField(serializers.CharField):
         return render_documentation_context(content)
 
 
-class CorpusConfigurationField(serializers.SlugRelatedField):
-    '''
-    Serialise a related corpus configuration as the corpus name.
-    '''
-
-    def __init__(self, **kwargs):
-        super().__init__('corpus__name', **kwargs)
-
-    def get_queryset(self):
-        return CorpusConfiguration.objects.all()
-
-    def to_representation(self, value: CorpusConfiguration) -> str:
-        return value.corpus.name
-
-
 class ChoiceOrderSerializer(serializers.ChoiceField):
     '''
     Variant on the ChoiceField that serialises to the index in the choices array.
@@ -161,7 +146,11 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     )
     content = DocumentationTemplateField(read_only=True)
     content_template = serializers.CharField(source='content')
-    corpus = CorpusConfigurationField(source='corpus_configuration')
+    corpus = serializers.SlugRelatedField(
+        source='corpus_configuration',
+        queryset=CorpusConfiguration.objects.all(),
+        slug_field='corpus__name',
+    )
 
     class Meta:
         model = CorpusDocumentationPage
