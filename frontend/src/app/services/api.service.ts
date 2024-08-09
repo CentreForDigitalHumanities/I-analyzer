@@ -224,9 +224,9 @@ export class ApiService {
 
     // Corpus
     public corpusDocumentationPages(corpus?: Corpus): Observable<CorpusDocumentationPage[]> {
-        const queryParams = corpus ? `?corpus=${corpus.name}` : ''
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${queryParams}`);
-        return this.http.get<CorpusDocumentationPage[]>(url);
+        const params = new URLSearchParams({corpus: corpus.name}).toString();
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/?${params}`);
+        return this.http.get<CorpusDocumentationPage[]>(url.toString());
     }
 
     public corpusDocumentationPage(pageID: number): Observable<CorpusDocumentationPage> {
