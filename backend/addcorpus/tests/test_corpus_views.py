@@ -30,9 +30,9 @@ def test_corpus_documentation_list_view(admin_client, basic_mock_corpus, setting
     assert page_types == ['General information', 'Citation', 'License']
 
     # should contain citation guidelines
+    match = { 'type': 'Citation', 'corpus': basic_mock_corpus }
     citation_page = next(
-        page for page in response.data if
-        page['type'] == 'Citation' and page['corpus'] == basic_mock_corpus
+        page for page in response.data if match.items() <= page.items()
     )
 
     # check that the page template is rendered with context
