@@ -65,6 +65,16 @@ class PrettyChoiceField(serializers.ChoiceField):
         key = super().to_representation(value)
         return self.choices[key]
 
+    def to_internal_value(self, data):
+        # If the data provides a display name, get the corresponding key.
+        # The browsable API sends keys instead of labels; use the original data if no
+        # matching label is found.
+        value = next(
+            (key for (key, label) in self.choices.items() if label == data),
+            data
+        )
+        return super().to_internal_value(value)
+
 class CorpusConfigurationSerializer(serializers.ModelSerializer):
     fields = FieldSerializer(many=True, read_only=True)
     languages = serializers.ListField(child=LanguageField())
