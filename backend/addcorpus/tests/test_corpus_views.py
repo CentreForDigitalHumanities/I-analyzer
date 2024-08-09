@@ -42,7 +42,7 @@ def test_corpus_documentation_list_view(admin_client, basic_mock_corpus, setting
 
 def test_corpus_documentation_filter_list_view(admin_client, basic_mock_corpus):
     response = admin_client.get(f'/api/corpus/documentation/?corpus={basic_mock_corpus}')
-    assert response.status_code == 200
+    assert status.is_success(response.status_code)
     pages = response.data
     for page in pages:
         assert page['corpus'] == basic_mock_corpus
