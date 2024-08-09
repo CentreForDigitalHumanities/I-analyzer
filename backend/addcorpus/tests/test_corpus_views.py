@@ -47,9 +47,24 @@ def test_corpus_documentation_filter_list_view(admin_client, basic_mock_corpus):
     for page in pages:
         assert page['corpus'] == basic_mock_corpus
 
+
 def test_corpus_documentation_retrieve_view(admin_client: Client, basic_mock_corpus):
     page = CorpusDocumentationPage.objects.first()
     response = admin_client.get(f'/api/corpus/documentation/{page.pk}/')
+    assert status.is_success(response.status_code)
+
+
+def test_corpus_documentation_create_view(admin_client, basic_mock_corpus):
+    request_data = {
+        'corpus': basic_mock_corpus,
+        'type': 'Terms of service',
+        'content_template': 'You can do whatever you want.'
+    }
+    response = admin_client.post(
+        '/api/corpus/documentation/',
+        request_data,
+        content_type='application/json'
+    )
     assert status.is_success(response.status_code)
 
 
