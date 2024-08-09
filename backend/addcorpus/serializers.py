@@ -131,29 +131,9 @@ class DocumentationTemplateField(serializers.CharField):
         return render_documentation_context(content)
 
 
-class ChoiceOrderSerializer(serializers.ChoiceField):
-    '''
-    Variant on the ChoiceField that serialises to the index in the choices array.
-    '''
-    def __init__(self, choices, **kwargs):
-        super().__init__(choices=choices, **kwargs)
-        self.index = {value: i for i, (value, label) in enumerate(choices)}
-
-    def to_internal_value(self, data):
-        return self.choices[data]
-
-    def to_representation(self, value):
-        key = super().to_representation(value)
-        return self.index[key]
-
-
 class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
-    index = ChoiceOrderSerializer(
-        read_only=True,
-        source='type',
-        choices=CorpusDocumentationPage.PageType.choices,
-    )
+    index = serializers.IntegerField(source='page_index', read_only=True)
     content = DocumentationTemplateField(read_only=True)
     content_template = serializers.CharField(source='content')
     corpus = serializers.SlugRelatedField(
