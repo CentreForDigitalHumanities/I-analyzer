@@ -1,17 +1,42 @@
 import { TestBed } from '@angular/core/testing';
-import { CanActivateFn } from '@angular/router';
+import { Router, RouterModule} from '@angular/router';
 
 import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
+import { Component } from '@angular/core';
+
+@Component({
+    template: '<p>Hello world!</p>',
+})
+class TestComponent {}
 
 describe('forwardLegacyParamsGuard', () => {
-    const executeGuard: CanActivateFn = (...guardParameters) =>
-        TestBed.runInInjectionContext(() => forwardLegacyParamsGuard(...guardParameters));
+    let router: Router;
+    const legacyUrl = '/search/my-corpus?query=test&compareTerm=test&compareTerm=testing&compareTerm=tester';
+    const targetUrl = '/search/my-corpus?query=test&compareTerms=testing,tester';
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [
+                RouterModule.forRoot([
+                    {
+                        path: 'search/:corpus',
+                        component: TestComponent,
+                        canActivate: [forwardLegacyParamsGuard],
+                    }
+                ])
+            ],
+            declarations: [TestComponent],
+        });
+        router = TestBed.inject(Router);
     });
 
-    it('should be created', () => {
-        expect(executeGuard).toBeTruthy();
+    it('should activate valid routes', async () => {
+        await router.navigateByUrl(targetUrl);
+        expect(router.url).toBe(targetUrl)
+    });
+
+    it('should forward legacy parameters', async () => {
+        await router.navigateByUrl(legacyUrl);
+        expect(router.url).toBe(targetUrl);
     });
 });
