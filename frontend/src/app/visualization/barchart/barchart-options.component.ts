@@ -101,7 +101,7 @@ export class BarchartOptionsComponent
 
     updateQueries(queries: string[]) {
         this.queries = queries;
-        if (this.queries.length === 0) {
+        if (_.isEqual(this.queries, [this.queryText])) {
             this.showEdit = false;
         }
         this.queriesChanged.emit(this.queries);
@@ -111,5 +111,6 @@ export class BarchartOptionsComponent
         this.queries = [this.queryText];
         this.showEdit = false;
         this.clearQueries.emit();
+        this.queriesChanged.emit(this.queries);
     }
 }
