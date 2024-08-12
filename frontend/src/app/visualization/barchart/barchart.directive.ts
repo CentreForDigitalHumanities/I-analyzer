@@ -249,13 +249,6 @@ export abstract class BarchartDirective<
         };
     }
 
-    /** Remove any additional queries from the BarchartOptions component.
-     * Only keep the original query */
-    clearAddedQueries() {
-        this.rawData = this.rawData.slice(0, 1);
-        this.prepareChart();
-    }
-
     /** Show a loading spinner and load data for the graph.
      * This function should be called after (potential) changes to parameters.
      */

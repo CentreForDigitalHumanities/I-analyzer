@@ -15,7 +15,6 @@ export class TermComparisonEditorComponent implements OnDestroy {
     @Input() termLimit = 10;
 
     @Output() queriesChanged = new EventEmitter<string[]>();
-    @Output() clearQueries = new EventEmitter<void>();
 
     comparedQueries: ComparedQueries;
 
@@ -53,6 +52,5 @@ export class TermComparisonEditorComponent implements OnDestroy {
 
     reset() {
         this.comparedQueries.reset();
-        this.clearQueries.emit();
     }
 }

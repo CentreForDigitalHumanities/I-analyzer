@@ -23,7 +23,6 @@ export class BarchartOptionsComponent
 
     @Output() chartParameters = new EventEmitter<ChartParameters>();
     @Output() queriesChanged = new EventEmitter<string[]>();
-    @Output() clearQueries = new EventEmitter<void>();
 
     currentNormalizer: Normalizer;
 
@@ -107,10 +106,4 @@ export class BarchartOptionsComponent
         this.queriesChanged.emit(this.queries);
     }
 
-    signalClearQueries() {
-        this.queries = [this.queryText];
-        this.showEdit = false;
-        this.clearQueries.emit();
-        this.queriesChanged.emit(this.queries);
-    }
 }
