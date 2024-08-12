@@ -37,16 +37,10 @@ export class ComparedQueries extends StoreSync<CompareQueryState> {
 
     protected storeToState(params: Params): CompareQueryState {
         const primary = queryFromParams(params);
-
-        let compare: string[];
-        if (_.get(params, COMPARE_TERMS_KEY)) {
-            compare = this.cleanComparedQueries(
-                primary,
-                params[COMPARE_TERMS_KEY].split(DELIMITER)
-            );
-        } else {
-            compare = [];
-        }
+        const compare = this.cleanComparedQueries(
+            primary,
+            this.comparedTermsInParams(params)
+        );
         return { primary, compare };
     }
 
@@ -62,9 +56,13 @@ export class ComparedQueries extends StoreSync<CompareQueryState> {
     }
 
     protected storeOnComplete(): Params {
+        /** on complete, reset the compareTerms parameter, but not the query text */
         return { [COMPARE_TERMS_KEY]: null };
     }
 
+    /** checks that the stored state does not contain duplicate terms, & pushes a
+     * cleaned version if that happens
+     */
     private cleanStoredState() {
         this.store.params$.pipe(
             takeUntil(this.complete$),
@@ -83,16 +81,20 @@ export class ComparedQueries extends StoreSync<CompareQueryState> {
     }
 
     /**
-     * This model does some filtering of stored queries. This function checks whether the stored
-     * value contains queries that are ignored by the model (and is therefore in need of cleaning).
+     * Checks whether a stored state contains queries that must be cleaned (i.e.
+     * duplicates)
      */
     private isDirty(params: Params): boolean {
-        if (_.has(params, COMPARE_TERMS_KEY)) {
-            const stored = params[COMPARE_TERMS_KEY].split(DELIMITER);
-            const cleaned = this.storeToState(params).compare;
-            return !_.isEqual(stored, cleaned);
-        }
-        return false;
+        const stored = this.comparedTermsInParams(params);
+        const cleaned = this.storeToState(params).compare;
+        return !_.isEqual(stored, cleaned);
     }
 
+    private comparedTermsInParams(params: Params): string[] {
+        if (_.has(params, COMPARE_TERMS_KEY)) {
+            return params[COMPARE_TERMS_KEY].split(DELIMITER);
+        } else {
+            return [];
+        }
+    }
 }

@@ -1,9 +1,9 @@
-import { mockCorpus, mockField2 } from '../../mock-data/corpus';
+import { mockCorpus } from '../../mock-data/corpus';
 import { SimpleStore } from '../store/simple-store';
 import { ComparedQueries } from './compared-queries';
 import { QueryModel } from './query';
 
-fdescribe('ComparedQueries', () => {
+describe('ComparedQueries', () => {
     let store: SimpleStore;
     let query: QueryModel;
     let compared: ComparedQueries;
