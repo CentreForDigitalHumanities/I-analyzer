@@ -43,10 +43,6 @@ export class BarchartOptionsComponent
         super(route, router, paramService);
     }
 
-    get showTermFrequency(): boolean {
-        return _.some(this.queries);
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryText) {
             if (this.queryText) {
