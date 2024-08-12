@@ -11,8 +11,8 @@ interface CompareQueryState {
     compare: string[];
 }
 
-const COMPARE_TERMS_KEY = 'compareTerms';
-const DELIMITER = ',';
+export const COMPARE_TERMS_KEY = 'compareTerms';
+export const DELIMITER = ',';
 
 export class ComparedQueries extends StoreSync<CompareQueryState> {
     /** all queries, including the primary query text */
