@@ -28,8 +28,6 @@ export class BarchartOptionsComponent
 
     currentChartType: ChartType = 'bar';
 
-    public queries: string[] = [];
-
     showEdit = false;
 
     nullableParameters = ['normalize'];
@@ -43,14 +41,6 @@ export class BarchartOptionsComponent
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryText) {
-            if (this.queryText) {
-                this.queries = [this.queryText];
-            } else {
-                this.queries = [];
-            }
-        }
-
         if (
             changes.showTokenCountOption &&
             changes.showTokenCountOption.currentValue &&
@@ -99,11 +89,10 @@ export class BarchartOptionsComponent
     }
 
     updateQueries(queries: string[]) {
-        this.queries = queries;
-        if (_.isEqual(this.queries, [this.queryText])) {
+        if (_.isEqual(queries, [this.queryText])) {
             this.showEdit = false;
         }
-        this.queriesChanged.emit(this.queries);
+        this.queriesChanged.emit(queries);
     }
 
 }
