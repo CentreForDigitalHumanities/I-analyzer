@@ -61,8 +61,6 @@ export abstract class BarchartDirective<
     tableHeaders: FreqTableHeaders;
     tableData: any[];
 
-    /** list of query used by each series in te graph */
-    queries: string[] = [];
 
     /** Stores the key that can be used in a DataPoint object
      * to retrieve the y-axis value.
@@ -219,7 +217,6 @@ export abstract class BarchartDirective<
 
     initQueries(): void {
         this.rawData = [this.newSeries(this.queryText)];
-        this.queries = [this.queryText];
     }
 
     /** if a chart is active, clear canvas and reset chart object */
@@ -256,7 +253,6 @@ export abstract class BarchartDirective<
      * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
-        this.queries = [this.queryText];
         this.prepareChart();
     }
 
