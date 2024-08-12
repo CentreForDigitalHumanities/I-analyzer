@@ -56,7 +56,12 @@ export class WordSimilarityComponent implements OnChanges {
 
     updateComparisonTerms(terms: string[] = []) {
         this.comparisonTerms = terms;
-        this.getData();
+
+        if (terms.length > 1) {
+            this.getData();
+        } else {
+            this.clearData();
+        }
     }
 
     getData(): void {
@@ -74,6 +79,12 @@ export class WordSimilarityComponent implements OnChanges {
         )
             .then(this.onDataLoaded.bind(this))
             .catch(this.onError.bind(this));
+    }
+
+    clearData() {
+        this.results = undefined;
+        this.timeIntervals = undefined;
+        this.data = undefined;
     }
 
     getTimePoints(points: WordSimilarity[]) {
