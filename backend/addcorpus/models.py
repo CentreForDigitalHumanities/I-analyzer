@@ -503,3 +503,6 @@ class CorpusDataFile(models.Model):
                             help_text='file containing corpus data')
     is_sample = models.BooleanField(
         default=False, help_text='this file reflects only part of the total data, for use in creating the corpus definition')
+
+    def __str__(self):
+        return f'{self.file.name}'
