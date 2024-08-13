@@ -13,13 +13,9 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { ShowError } from '../error/error.component';
-import {
-    QueryModel,
-    SearchResults,
-    User,
-} from '../models/index';
-import { PageResults, PageResultsParameters } from '../models/page-results';
-import { SearchService } from '../services';
+import { QueryModel, SearchResults, User } from '@models/index';
+import { PageResults, PageResultsParameters } from '@models/page-results';
+import { SearchService } from '@services';
 import { RouterStoreService } from '../store/router-store.service';
 
 const MAXIMUM_DISPLAYED = 10000;

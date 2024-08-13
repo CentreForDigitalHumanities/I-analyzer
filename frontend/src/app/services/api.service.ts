@@ -28,10 +28,13 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../models/index';
-import { environment } from '../../environments/environment';
+} from '@models/index';
+import { environment } from '@environments/environment';
 import * as _ from 'lodash';
-import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
+import {
+    APICorpusDefinition,
+    APIEditableCorpus,
+} from '@models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;

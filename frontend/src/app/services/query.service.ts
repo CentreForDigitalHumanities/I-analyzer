@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiRetryService } from './api-retry.service';
-import { QueryDb } from '../models/query';
+import { QueryDb } from '@models/query';
 import * as _ from 'lodash';
 
 @Injectable()

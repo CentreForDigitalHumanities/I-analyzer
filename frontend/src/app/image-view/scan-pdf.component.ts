@@ -1,6 +1,6 @@
 import { Component, Input, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 
-import { ApiService } from '../services';
+import { ApiService } from '@services';
 
 
 @Component({

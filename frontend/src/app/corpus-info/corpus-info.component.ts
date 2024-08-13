@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService, CorpusService } from '../services';
-import { Corpus, CorpusDocumentationPage, FieldCoverage } from '../models';
+import { ApiService, CorpusService } from '@services';
+import { Corpus, CorpusDocumentationPage, FieldCoverage } from '@models';
 import { marked } from 'marked';
 import { Observable } from 'rxjs';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../utils/app';
+import { pageTitle } from '@utils/app';
 import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 

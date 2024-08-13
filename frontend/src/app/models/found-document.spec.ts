@@ -7,8 +7,8 @@ import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
 import { FoundDocument } from './found-document';
-import { EntityService } from '../services/entity.service';
-import { TagService } from '../services/tag.service';
+import { EntityService } from '@services/entity.service';
+import { TagService } from '@services/tag.service';
 import { Tag } from './tag';
 
 

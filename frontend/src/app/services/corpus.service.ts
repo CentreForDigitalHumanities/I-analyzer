@@ -3,9 +3,15 @@ import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
+import {
+    Corpus,
+    CorpusField,
+    DocumentContext,
+    SortDirection,
+    SortState,
+} from '@models/index';
 import { ApiRetryService } from './api-retry.service';
-import { findByName } from '../utils/utils';
+import { findByName } from '@utils/utils';
 import * as _ from 'lodash';
 
 @Injectable({

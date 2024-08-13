@@ -10,7 +10,7 @@ import {
     QueryModel,
     TaskResult,
     TimeCategory,
-} from '../models';
+} from '@models';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
 

@@ -2,10 +2,17 @@ import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
-import { Corpus, CorpusField, DownloadOptions, LimitedResultsDownloadParameters, QueryModel, SortState } from '../models/index';
+import {
+    Corpus,
+    CorpusField,
+    DownloadOptions,
+    LimitedResultsDownloadParameters,
+    QueryModel,
+    SortState,
+} from '@models/index';
 import * as _ from 'lodash';
-import { resultsParamsToAPIQuery } from '../utils/es-query';
-import { PageResultsParameters } from '../models/page-results';
+import { resultsParamsToAPIQuery } from '@utils/es-query';
+import { PageResultsParameters } from '@models/page-results';
 
 @Injectable()
 export class DownloadService {
