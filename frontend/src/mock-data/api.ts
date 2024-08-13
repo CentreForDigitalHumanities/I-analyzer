@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Observable, Subject, from, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
-import { CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
+import { Corpus, CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
 import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 import { mockCorpusDefinition } from './corpus-definition';
 import { APIEditableCorpus } from '../app/models/corpus-definition';
@@ -73,10 +73,13 @@ export class ApiServiceMock {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
     }
 
-    public corpusDocumentation(): Observable<CorpusDocumentationPage[]> {
+    public corpusDocumentationPages(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
         return of([{
+            id: 1,
+            corpus: corpus.name,
             type: 'General',
-            content: 'Example of _documentation_.'
+            content: 'Example of _documentation_.',
+            index: 1,
         }]);
     }
 
