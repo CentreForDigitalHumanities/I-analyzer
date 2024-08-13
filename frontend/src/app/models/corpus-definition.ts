@@ -3,6 +3,16 @@ import { ApiService } from '../services';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 
+export interface CorpusDataFile {
+    corpusID: number;
+    file: File | string;
+    is_sample: boolean;
+}
+
+export interface DataFileInfo {
+    [columnName: string]: APICorpusField['type'];
+}
+
 export interface APICorpusField {
     name: string;
     display_name: string;

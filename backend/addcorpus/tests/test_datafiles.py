@@ -23,6 +23,6 @@ def test_csv_upload(admin_client, json_mock_corpus):
         'line': 'text',
         'date-column': 'date',
         'FLOAT COLUMN': 'float',
-        'int_column': 'int',
+        'int_column': 'integer',
         'bool column': 'boolean'
     }

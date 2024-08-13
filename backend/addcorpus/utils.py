@@ -22,7 +22,7 @@ def map_col(col: pd.Series) -> str:
     elif col.dtypes == np.float64:
         return 'float'
     elif col.dtypes == np.int64:
-        return 'int'
+        return 'integer'
     elif col.dtypes == bool:
         return 'boolean'
     return 'text'
