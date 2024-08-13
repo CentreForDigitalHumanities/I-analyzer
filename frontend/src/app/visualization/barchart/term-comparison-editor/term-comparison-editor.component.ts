@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { formIcons } from '../../../shared/icons';
 import { RouterStoreService } from '../../../store/router-store.service';
 import { ComparedQueries } from '../../../models/compared-queries';
@@ -16,7 +16,7 @@ export class TermComparisonEditorComponent implements OnDestroy {
 
     comparedQueries: ComparedQueries;
 
-    queries: string[] = [];
+    queries: string[] = []; // queries in user input (not necessarily submitted)
     showReset$: Observable<boolean>;
 
     formIcons = formIcons;
