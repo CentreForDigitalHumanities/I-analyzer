@@ -18,6 +18,7 @@ import { CorpusFormComponent } from './form/corpus-form/corpus-form.component';
         DefinitionJsonUploadComponent,
         MetaFormComponent,
         CorpusFormComponent,
+        FieldFormComponent,
     ],
     exports: [
         CreateDefinitionComponent,
@@ -25,11 +26,6 @@ import { CorpusFormComponent } from './form/corpus-form/corpus-form.component';
         EditDefinitionComponent,
         CorpusFormComponent,
     ],
-    imports: [
-        SharedModule,
-        ReactiveFormsModule,
-        FieldFormComponent,
-        StepsModule,
-    ],
+    imports: [SharedModule, ReactiveFormsModule, StepsModule],
 })
 export class CorpusDefinitionsModule {}

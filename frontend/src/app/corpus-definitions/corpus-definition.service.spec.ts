@@ -2,11 +2,13 @@ import { TestBed } from '@angular/core/testing';
 
 import { CorpusDefinitionService } from './corpus-definition.service';
 
-describe('CorpusDefinitionServiceService', () => {
+describe('CorpusDefinitionService', () => {
     let service: CorpusDefinitionService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            providers: [CorpusDefinitionService],
+        });
         service = TestBed.inject(CorpusDefinitionService);
     });
 

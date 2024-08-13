@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MetaFormComponent } from './meta-form.component';
+import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 
 describe('MetaFormComponent', () => {
   let component: MetaFormComponent;
@@ -8,10 +9,10 @@ describe('MetaFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MetaFormComponent]
-    })
-    .compileComponents();
-    
+        declarations: [MetaFormComponent],
+        providers: [CorpusDefinitionService],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(MetaFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
