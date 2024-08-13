@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 
 import * as _ from 'lodash';
 
+import { TermsAggregator, TermsResult } from '@models/aggregation';
+import { SearchService } from '@services';
+import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
-import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../../models';
-import { SearchService } from '../../services';
-import { TermsAggregator, TermsResult } from '../../models/aggregation';
 
 @Component({
     selector: 'ia-multiple-choice-filter',

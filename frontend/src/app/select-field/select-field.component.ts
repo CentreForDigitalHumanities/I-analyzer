@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as _ from 'lodash';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { CorpusField, QueryModel } from '../models/index';
-import { actionIcons } from '../shared/icons';
+import { CorpusField, QueryModel } from '@models/index';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-select-field',

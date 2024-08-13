@@ -6,10 +6,13 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, QueryModel } from '../models/index';
-import { actionIcons, visualizationIcons } from '../shared/icons';
+import { Corpus, CorpusField, QueryModel } from '@models/index';
+import { actionIcons, visualizationIcons } from '@shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
-import { VisualizationOption, VisualizationSelector } from '../models/visualization-selector';
+import {
+    VisualizationOption,
+    VisualizationSelector,
+} from '@models/visualization-selector';
 import { Observable, Subject, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 

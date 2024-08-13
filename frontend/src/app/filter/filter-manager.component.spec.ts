@@ -5,9 +5,9 @@ import { commonTestBed } from '../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
 import { mockCorpus, mockCorpus2 } from '../../mock-data/corpus';
-import { QueryModel } from '../models';
+import { QueryModel } from '@models';
 
-import { AuthService } from '../services';
+import { AuthService } from '@services';
 import { UnauthenticatedMock } from '../../mock-data/auth';
 
 describe('FilterManagerComponent', () => {

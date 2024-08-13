@@ -5,7 +5,7 @@ import {
 import * as _ from 'lodash';
 import { TabPanelDirective } from './tab-panel.directive';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { modulo } from '../../utils/utils';
+import { modulo } from '@utils/utils';
 import { SlugifyPipe } from '../pipes/slugify.pipe';
 
 interface Tab {

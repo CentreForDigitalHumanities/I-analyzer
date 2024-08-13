@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { actionIcons, documentIcons } from '../../shared/icons';
-import { ApiService} from '../../services';
+import { APIEditableCorpus } from '@models/corpus-definition';
+import { ApiService } from '@services';
+import { actionIcons, documentIcons } from '@shared/icons';
 import { Observable } from 'rxjs';
-import { APIEditableCorpus } from '../../models/corpus-definition';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-definitions-overview',

@@ -28,10 +28,13 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../models/index';
-import { environment } from '../../environments/environment';
+} from '@models/index';
+import { environment } from '@environments/environment';
 import * as _ from 'lodash';
-import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
+import {
+    APICorpusDefinition,
+    APIEditableCorpus,
+} from '@models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -223,12 +226,15 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
-        const url = this.apiRoute(
-            this.corpusApiUrl,
-            `documentation/${corpusName}/`
-        );
-        return this.http.get<CorpusDocumentationPage[]>(url);
+    public corpusDocumentationPages(corpus?: Corpus): Observable<CorpusDocumentationPage[]> {
+        const params = new URLSearchParams({corpus: corpus.name}).toString();
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/?${params}`);
+        return this.http.get<CorpusDocumentationPage[]>(url.toString());
+    }
+
+    public corpusDocumentationPage(pageID: number): Observable<CorpusDocumentationPage> {
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
+        return this.http.get<CorpusDocumentationPage>(url);
     }
 
     public corpus() {

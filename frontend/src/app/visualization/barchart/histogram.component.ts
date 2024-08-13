@@ -6,10 +6,11 @@ import {
     HistogramSeries,
     MultipleChoiceFilterOptions,
     QueryModel,
-    RangeFilterOptions} from '../../models/index';
-import { selectColor } from '../../utils/select-color';
+    RangeFilterOptions,
+} from '@models/index';
+import { selectColor } from '@utils/select-color';
 import { BarchartDirective } from './barchart.directive';
-import { TermsAggregator, TermsResult } from '../../models/aggregation';
+import { TermsAggregator, TermsResult } from '@models/aggregation';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api

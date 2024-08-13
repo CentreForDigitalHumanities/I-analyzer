@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
-import { QueryModel } from '../models';
+import { QueryModel } from '@models';
 
 import { DownloadComponent } from './download.component';
 import { SimpleChange } from '@angular/core';

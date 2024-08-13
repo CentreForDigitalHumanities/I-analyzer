@@ -5,8 +5,7 @@ from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-
-from addcorpus.permissions import CorpusAccessPermission
+from addcorpus.permissions import CanSearchCorpus
 from api.save_query import should_save_query
 from addcorpus.models import Corpus
 from api.models import Query
@@ -46,7 +45,7 @@ class ForwardSearchView(APIView):
     the query parameter will be used.
     '''
 
-    permission_classes = [CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')
@@ -113,7 +112,7 @@ class NamedEntitySearchView(APIView):
         'MISC': 'miscellaneous'
     }
 
-    permission_classes = [CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')

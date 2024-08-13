@@ -1,9 +1,9 @@
 import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { showLoading } from '../../utils/utils';
-import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services';
+import { showLoading } from '@utils/utils';
+import { Corpus, WordSimilarity } from '@models';
+import { WordmodelsService } from '@services';
 
 @Component({
     selector: 'ia-word-similarity',

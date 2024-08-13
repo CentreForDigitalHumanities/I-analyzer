@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart, ChartData, ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
-import { NgramResults } from '../../../models';
-import { selectColor } from '../../../utils/select-color';
+import { NgramResults } from '@models';
+import { selectColor } from '@utils/select-color';
 
 @Component({
     selector: 'ia-joyplot',
