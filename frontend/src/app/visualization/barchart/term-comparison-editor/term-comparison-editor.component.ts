@@ -14,8 +14,6 @@ import { map } from 'rxjs/operators';
 export class TermComparisonEditorComponent implements OnDestroy {
     @Input() termLimit = 10;
 
-    @Output() queriesChanged = new EventEmitter<string[]>();
-
     comparedQueries: ComparedQueries;
 
     queries: string[] = [];
@@ -28,9 +26,8 @@ export class TermComparisonEditorComponent implements OnDestroy {
     ) {
         this.comparedQueries = new ComparedQueries(this.routerStoreService);
 
-        // note that state$ and allQueries$ are completed by this component's ngOnDestroy
+        // note that state$ is completed by this component's ngOnDestroy
         this.comparedQueries.state$.subscribe(state => this.queries = state.compare);
-        this.comparedQueries.allQueries$.subscribe(this.queriesChanged);
 
         this.showReset$ = this.comparedQueries.state$.pipe(
             map(state => !_.isEmpty(state.compare))
