@@ -2,7 +2,7 @@ import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChange
 import * as _ from 'lodash';
 import { saveAs } from 'file-saver';
 import { FreqTableHeader, FreqTableHeaders } from '../models';
-import { actionIcons } from '../shared/icons';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-freqtable',

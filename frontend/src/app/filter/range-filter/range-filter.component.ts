@@ -4,7 +4,7 @@ import { RangeFilterData, RangeFilter, QueryModel } from '../../models';
 import { BaseFilterComponent } from '../base-filter.component';
 import { Subject, interval } from 'rxjs';
 import { debounce, takeUntil } from 'rxjs/operators';
-import { Aggregator, MaxAggregator, MinAggregator } from '../../models/aggregation';
+import { Aggregator, MaxAggregator, MinAggregator } from '@models/aggregation';
 import { SearchService } from '../../services';
 import * as _ from 'lodash';
 

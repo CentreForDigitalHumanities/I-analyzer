@@ -7,10 +7,10 @@ import {
     SimpleQueryString, SortBy, SortDirection } from '../models';
 import { EsQuery } from '../models';
 import { findByName } from './utils';
-import { SearchFilter } from '../models/field-filter';
-import { APIQuery } from '../models/search-requests';
-import { TagFilter } from '../models/tag-filter';
-import { PageResultsParameters } from '../models/page-results';
+import { SearchFilter } from '@models/field-filter';
+import { APIQuery } from '@models/search-requests';
+import { TagFilter } from '@models/tag-filter';
+import { PageResultsParameters } from '@models/page-results';
 import { DeepPartial } from 'chart.js/dist/types/utils';
 import { SimpleStore } from '../store/simple-store';
 

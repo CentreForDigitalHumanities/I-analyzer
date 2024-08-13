@@ -3,7 +3,7 @@ import { SafeHtml, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { DialogService } from '../services';
-import { pageTitle } from '../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-manual',

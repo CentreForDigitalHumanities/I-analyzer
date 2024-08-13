@@ -7,7 +7,7 @@ import { WordSimilarityComponent } from './word-similarity/word-similarity.compo
 import { SimilarityChartComponent } from './similarity-chart/similarity-chart.component';
 import { WordmodelsService } from '../services';
 import { TimeIntervalSliderComponent } from './similarity-chart/time-interval-slider/time-interval-slider.component';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { CorpusModule } from '../corpus-header/corpus.module';
 
 

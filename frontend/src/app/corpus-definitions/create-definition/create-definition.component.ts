@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { actionIcons, formIcons } from '../../shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
 import { ApiService } from '../../services';
-import { APIEditableCorpus, CorpusDefinition } from '../../models/corpus-definition';
+import { APIEditableCorpus, CorpusDefinition } from '@models/corpus-definition';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';

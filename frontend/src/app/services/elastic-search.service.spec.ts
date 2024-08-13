@@ -7,7 +7,7 @@ import { EntityService } from './entity.service';
 import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock } from '../../mock-data/tag';
 import { TagService } from './tag.service';
-import { TermsAggregator } from '../models/aggregation';
+import { TermsAggregator } from '@models/aggregation';
 
 
 const mockResponse: SearchResponse = {

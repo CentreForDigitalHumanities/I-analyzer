@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { actionIcons } from '../../shared/icons';
+import { actionIcons } from '@shared/icons';
 import { ApiService} from '../../services';
 import { Observable } from 'rxjs';
-import { APIEditableCorpus } from '../../models/corpus-definition';
+import { APIEditableCorpus } from '@models/corpus-definition';
 import * as _ from 'lodash';
 
 @Component({

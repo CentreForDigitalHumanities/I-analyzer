@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SafeHtml, Title } from '@angular/platform-browser';
-import { environment } from '../../environments/environment';
+import { environment } from '@environments/environment';
 import { DialogService } from '../services';
 
 @Component({

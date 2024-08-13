@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FoundDocument } from '../../models';
-import { DocumentPage } from '../../models/document-page';
-import { actionIcons, documentIcons } from '../../shared/icons';
+import { DocumentPage } from '@models/document-page';
+import { actionIcons, documentIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-document-preview',

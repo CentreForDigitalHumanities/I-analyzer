@@ -3,7 +3,7 @@ import { Chart, ChartData, ChartOptions, ChartType, Filler, TooltipItem } from '
 import Zoom from 'chartjs-plugin-zoom';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { selectColor } from '../../utils/select-color';
+import { selectColor } from '@utils/select-color';
 import { FreqTableHeaders, WordSimilarity } from '../../models';
 
 /**

@@ -1,5 +1,5 @@
 import { Corpus, Download, QueryModel } from '../models';
-import { APIQuery } from '../models/search-requests';
+import { APIQuery } from '@models/search-requests';
 import { apiQueryToQueryModel } from './es-query';
 import * as _ from 'lodash';
 

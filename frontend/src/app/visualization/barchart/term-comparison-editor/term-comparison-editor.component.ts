@@ -3,7 +3,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { ParamDirective } from '../../../param/param-directive';
 import { ParamService } from '../../../services';
-import { formIcons } from '../../../shared/icons';
+import { formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-term-comparison-editor',

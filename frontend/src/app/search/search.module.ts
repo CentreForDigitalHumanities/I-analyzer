@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { PaginationComponent } from './pagination/pagination.component';
 import { HighlightSelectorComponent } from './highlight-selector.component';
 import { SearchResultsComponent } from './search-results.component';

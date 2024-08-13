@@ -2,12 +2,12 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { Corpus, CorpusField, QueryModel, User } from '../models/index';
-import { CorpusService, DialogService, } from '../services/index';
+import { Corpus, CorpusField, QueryModel, User } from '@models/index';
+import { CorpusService, DialogService } from '@services/index';
 
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { distinct, filter } from 'rxjs/operators';
-import { actionIcons, searchIcons } from '../shared/icons';
+import { actionIcons, searchIcons } from '@shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
 import { Title } from '@angular/platform-browser';
 import { SearchTab, SearchTabs } from './search-tabs';

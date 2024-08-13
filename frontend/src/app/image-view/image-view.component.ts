@@ -4,7 +4,7 @@ import { ConfirmationService } from 'primeng/api';
 
 import { FoundDocument, Corpus } from '../models';
 import { ApiService } from '../services';
-import { scanIcons, actionIcons, formIcons } from '../shared/icons';
+import { scanIcons, actionIcons, formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-image-view',

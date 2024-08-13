@@ -1,8 +1,12 @@
 import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
 import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
-import { TagFilter } from '../models/tag-filter';
-import { PageParameters, PageResultsParameters, RESULTS_PER_PAGE } from '../models/page-results';
+import { TagFilter } from '@models/tag-filter';
+import {
+    PageParameters,
+    PageResultsParameters,
+    RESULTS_PER_PAGE,
+} from '@models/page-results';
 import { findByName } from './utils';
 import { SimpleStore } from '../store/simple-store';
 

@@ -3,7 +3,7 @@ import { Store } from './types';
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { map, scan } from 'rxjs/operators';
-import { mergeParams, omitNullParameters } from '../utils/params';
+import { mergeParams, omitNullParameters } from '@utils/params';
 
 /** simple store that does not depend on services or routing
  *

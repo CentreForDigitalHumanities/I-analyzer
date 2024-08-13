@@ -4,7 +4,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
 import { DialogService } from './../services/index';
-import { navIcons } from '../shared/icons';
+import { navIcons } from '@shared/icons';
 
 @Component({
   selector: 'ia-dialog',

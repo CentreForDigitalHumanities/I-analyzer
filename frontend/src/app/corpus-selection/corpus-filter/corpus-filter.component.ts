@@ -3,7 +3,7 @@ import { Corpus } from '../../models';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
-import { formIcons } from '../../shared/icons';
+import { formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-corpus-filter',

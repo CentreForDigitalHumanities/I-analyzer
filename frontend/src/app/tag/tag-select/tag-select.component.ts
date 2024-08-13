@@ -10,9 +10,9 @@ import {
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { Tag } from '../../models';
-import { TagService } from '../../services/tag.service';
+import { TagService } from '@services/tag.service';
 import { takeUntil } from 'rxjs/operators';
-import { actionIcons, formIcons } from '../../shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-tag-select',

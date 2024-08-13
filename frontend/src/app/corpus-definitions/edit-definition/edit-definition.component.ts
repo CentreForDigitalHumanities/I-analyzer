@@ -1,7 +1,7 @@
 import { Component, } from '@angular/core';
-import { actionIcons, formIcons } from '../../shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
 import { Subject } from 'rxjs';
-import { CorpusDefinition } from '../../models/corpus-definition';
+import { CorpusDefinition } from '@models/corpus-definition';
 import { ApiService } from '../../services';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';

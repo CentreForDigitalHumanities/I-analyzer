@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import * as _ from 'lodash';
 
-import { entityIcons } from '../../shared/icons';
+import { entityIcons } from '@shared/icons';
 import { FieldEntities } from '../../models';
 
 @Component({

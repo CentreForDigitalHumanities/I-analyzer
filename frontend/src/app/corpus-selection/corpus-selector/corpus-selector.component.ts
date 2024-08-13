@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Corpus } from '../../models';
 import { Router } from '@angular/router';
 import * as _ from 'lodash';
-import { corpusIcons } from '../../shared/icons';
+import { corpusIcons } from '@shared/icons';
 
 @Component({
   selector: 'ia-corpus-selector',

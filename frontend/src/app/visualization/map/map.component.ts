@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { Corpus, CorpusField, GeoDocument, QueryModel } from '../../models';
 import { VisualizationService } from '../../services';
-import { showLoading } from '../../utils/utils';
+import { showLoading } from '@utils/utils';
 
 
 @Component({

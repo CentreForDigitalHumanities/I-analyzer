@@ -4,7 +4,7 @@ import { commonTestBed } from '../../common-test-bed';
 import { QueryModel } from '../../models';
 
 import { SearchSortingComponent } from './search-sorting.component';
-import { PageResults } from '../../models/page-results';
+import { PageResults } from '@models/page-results';
 import { SimpleStore } from '../../store/simple-store';
 import { SearchServiceMock } from '../../../mock-data/search';
 import { SearchService } from '../../services';

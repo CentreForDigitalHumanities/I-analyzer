@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { BaseFilterComponent } from '../base-filter.component';
 import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../../models';
 import { SearchService } from '../../services';
-import { TermsAggregator, TermsResult } from '../../models/aggregation';
+import { TermsAggregator, TermsResult } from '@models/aggregation';
 
 @Component({
     selector: 'ia-multiple-choice-filter',

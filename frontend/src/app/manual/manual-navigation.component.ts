@@ -5,7 +5,7 @@ import {
     DialogService,
     ManualSection,
 } from '../services';
-import { actionIcons, navIcons } from '../shared/icons';
+import { actionIcons, navIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-manual-navigation',

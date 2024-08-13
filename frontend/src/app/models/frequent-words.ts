@@ -6,7 +6,7 @@ import { VisualizationService } from '../services';
 import { Store } from '../store/types';
 import { QueryModel } from './query';
 import { CorpusField } from './corpus';
-import { findByName } from '../utils/utils';
+import { findByName } from '@utils/utils';
 
 interface FrequentWordsParameters {
     field: CorpusField;
