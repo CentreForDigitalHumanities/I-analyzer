@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { Tag } from '../../models';
+import { Tag } from '@models';
 import { TagService } from '@services/tag.service';
 import { takeUntil } from 'rxjs/operators';
 import { actionIcons, formIcons } from '@shared/icons';

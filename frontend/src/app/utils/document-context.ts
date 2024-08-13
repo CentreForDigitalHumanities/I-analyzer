@@ -1,5 +1,5 @@
 import { Params } from '@angular/router';
-import { Corpus, FoundDocument, QueryModel } from '../models';
+import { Corpus, FoundDocument, QueryModel } from '@models';
 import { PageResultsParameters } from '@models/page-results';
 import { omitNullParameters, pageResultsParametersToParams } from './params';
 

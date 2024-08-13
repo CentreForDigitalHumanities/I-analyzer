@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ElasticSearchService, SearchResponse } from './elastic-search.service';
-import { QueryModel } from '../models';
+import { QueryModel } from '@models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
 import { EntityService } from './entity.service';
 import { EntityServiceMock } from '../../mock-data/entity';

@@ -2,8 +2,8 @@ import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleC
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { showLoading } from '@utils/utils';
-import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services';
+import { Corpus, WordSimilarity } from '@models';
+import { WordmodelsService } from '@services';
 
 @Component({
     selector: 'ia-word-similarity',

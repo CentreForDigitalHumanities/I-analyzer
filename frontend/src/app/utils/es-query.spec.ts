@@ -5,7 +5,7 @@ import {
     makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification,
     resultsParamsToAPIQuery
 } from './es-query';
-import { QueryModel } from '../models';
+import { QueryModel } from '@models';
 import { PageResultsParameters } from '@models/page-results';
 import { APIQuery } from '@models/search-requests';
 import { isTagFilter } from '@models/tag-filter';

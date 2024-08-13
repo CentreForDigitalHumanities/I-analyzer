@@ -1,12 +1,16 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import * as _ from 'lodash';
 
-import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
-import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
-import { ParamDirective } from '../param/param-directive';
-import { visualizationIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
+import {
+    AuthService,
+    CorpusService,
+    ParamService,
+    WordmodelsService,
+} from '@services';
+import { visualizationIcons } from '@shared/icons';
+import { Corpus, QueryFeedback, WordInModelResult } from '@models';
+import { ParamDirective } from '../param/param-directive';
 
 @Component({
     selector: 'ia-word-models',

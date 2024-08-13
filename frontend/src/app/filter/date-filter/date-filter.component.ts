@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import * as _ from 'lodash';
 
-import { DateFilter, DateFilterData, QueryModel } from '../../models';
+import { DateFilter, DateFilterData, QueryModel } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
@@ -9,7 +9,7 @@ import {
     MaxDateAggregator,
     MinDateAggregator,
 } from '@models/aggregation';
-import { SearchService } from '../../services';
+import { SearchService } from '@services';
 
 @Component({
     selector: 'ia-date-filter',

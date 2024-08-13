@@ -3,7 +3,7 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import { showLoading } from '@utils/utils';
-import { Corpus, WordSimilarity } from '../../models';
+import { Corpus, WordSimilarity } from '@models';
 import { ParamService, WordmodelsService } from '@services/index';
 import { ParamDirective } from '../../param/param-directive';
 import { formIcons } from '@shared/icons';

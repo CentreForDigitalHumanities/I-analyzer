@@ -20,7 +20,7 @@ import {
     HistogramDataPoint,
     TermFrequencyResult,
     ChartParameters,
-} from '../../models';
+} from '@models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { selectColor } from '@utils/select-color';

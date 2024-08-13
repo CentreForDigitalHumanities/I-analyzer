@@ -1,10 +1,7 @@
 
 import { Subject } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import {
-    DialogService,
-    ManualSection,
-} from '../services';
+import { DialogService, ManualSection } from '@services';
 import { actionIcons, navIcons } from '@shared/icons';
 
 @Component({

@@ -2,7 +2,7 @@ import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import { Corpus, CorpusField, EsFilter, FilterInterface } from '@models/index';
-import { EsQuery } from '../models';
+import { EsQuery } from '@models';
 import { combineSearchClauseAndFilters } from '@utils/es-query';
 import {
     omitNullParameters,

@@ -2,8 +2,8 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ConfirmationService } from 'primeng/api';
 
-import { FoundDocument, Corpus } from '../models';
-import { ApiService } from '../services';
+import { FoundDocument, Corpus } from '@models';
+import { ApiService } from '@services';
 import { scanIcons, actionIcons, formIcons } from '@shared/icons';
 
 @Component({

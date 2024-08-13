@@ -3,7 +3,7 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 
-import { ParamService } from '../services';
+import { ParamService } from '@services';
 
 @Directive()
 export abstract class ParamDirective implements OnDestroy, OnInit {

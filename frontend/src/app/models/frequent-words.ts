@@ -2,7 +2,7 @@ import { Observable, of } from 'rxjs';
 import { Results } from './results';
 import { MostFrequentWordsResult } from './search-results';
 import { Params } from '@angular/router';
-import { VisualizationService } from '../services';
+import { VisualizationService } from '@services';
 import { Store } from '../store/types';
 import { QueryModel } from './query';
 import { CorpusField } from './corpus';

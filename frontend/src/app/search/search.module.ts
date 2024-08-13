@@ -8,7 +8,7 @@ import { DocumentModule } from '../document/document.module';
 import { CorpusModule } from '../corpus-header/corpus.module';
 import { FilterModule } from '../filter/filter.module';
 import { DownloadModule } from '../download/download.module';
-import { QueryService, SearchService } from '../services';
+import { QueryService, SearchService } from '@services';
 import { VisualizationModule } from '../visualization/visualization.module';
 import { ResultsSortModule } from './results-sort/results-sort.module';
 import { SelectFieldComponent } from '../select-field/select-field.component';

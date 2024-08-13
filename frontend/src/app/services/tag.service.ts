@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { pick } from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { FoundDocument, Tag } from '../models';
+import { FoundDocument, Tag } from '@models';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 

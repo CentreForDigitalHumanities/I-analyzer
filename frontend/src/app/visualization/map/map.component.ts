@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { Corpus, CorpusField, GeoDocument, QueryModel } from '../../models';
-import { VisualizationService } from '../../services';
+import { Corpus, CorpusField, GeoDocument, QueryModel } from '@models';
+import { VisualizationService } from '@services';
 import { showLoading } from '@utils/utils';
 
 

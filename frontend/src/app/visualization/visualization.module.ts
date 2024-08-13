@@ -8,7 +8,7 @@ import {
     DialogService,
     SearchService,
     VisualizationService,
-} from '../services';
+} from '@services';
 import { SharedModule } from '@shared/shared.module';
 import { BarchartOptionsComponent } from './barchart/barchart-options.component';
 import { HistogramComponent } from './barchart/histogram.component';

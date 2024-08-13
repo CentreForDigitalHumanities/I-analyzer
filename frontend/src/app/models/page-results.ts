@@ -1,7 +1,7 @@
 import { Observable, combineLatest, from, of } from 'rxjs';
 import { QueryModel } from './query';
 import { map } from 'rxjs/operators';
-import { SearchService } from '../services';
+import { SearchService } from '@services';
 import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';

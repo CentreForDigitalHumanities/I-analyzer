@@ -4,9 +4,21 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
 import { formIcons } from '@shared/icons';
-import { Corpus, FreqTableHeaders, QueryModel,
-    CorpusField, NgramResults, NgramParameters, SuccessfulTask } from '../../models';
-import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
+import {
+    Corpus,
+    FreqTableHeaders,
+    QueryModel,
+    CorpusField,
+    NgramResults,
+    NgramParameters,
+    SuccessfulTask,
+} from '@models';
+import {
+    ApiService,
+    NotificationService,
+    ParamService,
+    VisualizationService,
+} from '@services';
 import { ParamDirective } from '../../param/param-directive';
 
 @Component({

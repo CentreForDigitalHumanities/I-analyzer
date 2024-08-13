@@ -3,7 +3,7 @@ import { BaseFilterComponent } from '../base-filter.component';
 import { TagFilter } from '@models/tag-filter';
 import { TagService } from '@services/tag.service';
 import { Observable } from 'rxjs';
-import { Tag } from '../../models';
+import { Tag } from '@models';
 
 @Component({
     selector: 'ia-tag-filter',

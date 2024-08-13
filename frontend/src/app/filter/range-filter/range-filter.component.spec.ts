@@ -2,12 +2,12 @@ import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } f
 
 import { commonTestBed } from '../../common-test-bed';
 
-import { RangeFilterComponent } from './range-filter.component';
-import { QueryModel, RangeFilter } from '../../models';
-import { mockCorpus3, mockField3 } from '../../../mock-data/corpus';
-import { SearchService } from '../../services';
+import { SearchService } from '@services';
 import * as _ from 'lodash';
+import { mockCorpus3, mockField3 } from '../../../mock-data/corpus';
+import { QueryModel, RangeFilter } from '@models';
 import { SimpleStore } from '../../store/simple-store';
+import { RangeFilterComponent } from './range-filter.component';
 
 describe('RangeFilterComponent', () => {
     let component: RangeFilterComponent;

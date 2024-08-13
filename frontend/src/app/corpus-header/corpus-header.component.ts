@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Corpus } from '../models';
+import { Corpus } from '@models';
 import { corpusIcons } from '@shared/icons';
 
 @Component({

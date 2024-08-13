@@ -1,6 +1,15 @@
 import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
+import {
+    Corpus,
+    CorpusField,
+    FilterInterface,
+    QueryModel,
+    SearchFilter,
+    SortBy,
+    SortDirection,
+    SortState,
+} from '@models';
 import { TagFilter } from '@models/tag-filter';
 import {
     PageParameters,

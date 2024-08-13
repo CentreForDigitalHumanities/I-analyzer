@@ -6,7 +6,7 @@ import {
 } from '@models/document-page';
 import { takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { FoundDocument, QueryModel } from '../../models';
+import { FoundDocument, QueryModel } from '@models';
 import { Subject } from 'rxjs';
 import { documentIcons, actionIcons, corpusIcons } from '@shared/icons';
 

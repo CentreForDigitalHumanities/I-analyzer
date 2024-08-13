@@ -2,10 +2,19 @@
 
 import * as _ from 'lodash';
 import {
-    BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, FilterInterface, MatchAll,
+    BooleanQuery,
+    Corpus,
+    CorpusField,
+    EsFilter,
+    EsSearchClause,
+    FilterInterface,
+    MatchAll,
     QueryModel,
-    SimpleQueryString, SortBy, SortDirection } from '../models';
-import { EsQuery } from '../models';
+    SimpleQueryString,
+    SortBy,
+    SortDirection,
+} from '@models';
+import { EsQuery } from '@models';
 import { findByName } from './utils';
 import { SearchFilter } from '@models/field-filter';
 import { APIQuery } from '@models/search-requests';

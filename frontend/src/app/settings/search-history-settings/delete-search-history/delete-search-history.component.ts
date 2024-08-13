@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService, NotificationService } from '../../../services';
+import { ApiService, NotificationService } from '@services';
 import { tap } from 'rxjs/operators';
 import { actionIcons } from '@shared/icons';
 

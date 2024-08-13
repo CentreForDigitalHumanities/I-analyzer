@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { isUndefined } from 'lodash';
-import { Corpus, QueryModel, Tag } from '../../models';
+import { Corpus, QueryModel, Tag } from '@models';
 import { isTagFilter } from '@models/tag-filter';
-import { CorpusService } from '../../services';
+import { CorpusService } from '@services';
 import { TagService } from '@services/tag.service';
 import { actionIcons, formIcons } from '@shared/icons';
 import { findByName } from '@utils/utils';

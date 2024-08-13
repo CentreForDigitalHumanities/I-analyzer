@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Corpus } from '@models/corpus';
 import * as _ from 'lodash';
-import { AuthService } from '../services';
+import { AuthService } from '@services';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { actionIcons } from '@shared/icons';

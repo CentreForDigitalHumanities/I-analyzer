@@ -4,7 +4,7 @@ import Zoom from 'chartjs-plugin-zoom';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '@utils/select-color';
-import { FreqTableHeaders, WordSimilarity } from '../../models';
+import { FreqTableHeaders, WordSimilarity } from '@models';
 
 /**
  * Child component of the related words and compare similarity graphs.

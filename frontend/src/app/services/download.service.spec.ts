@@ -4,7 +4,12 @@ import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { DownloadService } from './download.service';
 import { mockCorpus, mockField } from '../../mock-data/corpus';
-import { DownloadOptions, LimitedResultsDownloadParameters, QueryModel, SortState } from '../models';
+import {
+    DownloadOptions,
+    LimitedResultsDownloadParameters,
+    QueryModel,
+    SortState,
+} from '@models';
 
 describe('DownloadService', () => {
     let apiService: ApiService;

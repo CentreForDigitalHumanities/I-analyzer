@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FoundDocument } from '../../models';
+import { FoundDocument } from '@models';
 import { DocumentPage } from '@models/document-page';
 import { actionIcons, documentIcons } from '@shared/icons';
 

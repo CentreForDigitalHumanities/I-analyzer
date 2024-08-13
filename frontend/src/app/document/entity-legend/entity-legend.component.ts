@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import * as _ from 'lodash';
 
 import { entityIcons } from '@shared/icons';
-import { FieldEntities } from '../../models';
+import { FieldEntities } from '@models';
 
 @Component({
   selector: 'ia-entity-legend',

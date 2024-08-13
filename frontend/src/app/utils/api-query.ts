@@ -1,9 +1,11 @@
-import { FilterInterface } from '../models';
+import { FilterInterface } from '@models';
 import { APITagFilter } from '@models/search-requests';
 
 import { TAG_FILTER, TagFilter } from '@models/tag-filter';
 
-export const makeTagSpecification = (filters: FilterInterface[]): APITagFilter => {
+export const makeTagSpecification = (
+    filters: FilterInterface[]
+): APITagFilter => {
     const tagFilter = filters.find(isTagFilter);
     return tagFilter.dataToAPI();
 };

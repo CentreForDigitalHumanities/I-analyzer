@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SafeHtml, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
-import { DialogService } from '../services';
+import { DialogService } from '@services';
 import { pageTitle } from '@utils/app';
 
 @Component({
