@@ -49,8 +49,8 @@ describe('es-query utils', () => {
         expect(makeHighlightSpecification(mockCorpus3, 'test', 100)).toEqual({
             highlight: {
                 fragment_size: 100,
-                pre_tags: ['<span class="highlight">'],
-                post_tags: ['</span>'],
+                pre_tags: ['<mark class="highlight">'],
+                post_tags: ['</mark>'],
                 order: 'score',
                 fields: [{speech: {}}]
             }
