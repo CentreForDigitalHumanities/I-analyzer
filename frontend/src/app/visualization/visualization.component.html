@@ -61,13 +61,17 @@
                 <div class="field has-addons">
                     <!-- Buttons for switching between table and graphical representation -->
                     <div class="control">
-                        <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
-                            <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
+                        <button class="button" [class.is-primary]="!freqtable"
+                            (click)="freqtable = false" aria-label="view chart"
+                            [attr.aria-pressed]="!freqtable">
+                            <fa-icon [icon]="visualizationIcons.chart" aria-hidden="true" />
                         </button>
                     </div>
                     <div class="control">
-                        <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
-                            <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
+                        <button class="button" [class.is-primary]="freqtable"
+                            (click)="freqtable = true" aria-label="view table"
+                            [attr.aria-pressed]="freqtable">
+                            <fa-icon [icon]="visualizationIcons.table" aria-hidden="true"/>
                         </button>
                     </div>
                 </div>
