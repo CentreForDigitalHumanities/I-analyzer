@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 
 
-def get_csv_info(path: Union[str, os.PathLike]) -> Dict:
-    df = pd.read_csv(path)
+def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
+    df = pd.read_csv(path, **kwargs)
     info = {
         col_name: map_col(df[col_name]) for col_name in df.columns
     }

@@ -3,9 +3,13 @@
 
 <ng-container [ngSwitch]="activeStep$ | async">
     <ng-container *ngSwitchCase="0">
-        <ia-meta-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" />
+        <div class="section">
+            <div class="container is-readable"><ia-meta-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" /></div>
+        </div>
     </ng-container>
     <div *ngSwitchCase="1">
-        <ia-upload-sample></ia-upload-sample>
+        <div class="section">
+            <div class="container is-readable"><ia-upload-sample /></div>
+        </div>
     </div>
     <ia-field-form *ngSwitchCase="2">3</ia-field-form>

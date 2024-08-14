@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { CorpusDefinition } from '../models/corpus-definition';
+import {
+    APICorpusDefinition,
+    CorpusDefinition,
+} from '../models/corpus-definition';
 import { MenuItem } from 'primeng/api';
-import { cloneDeep } from 'lodash';
+import * as _ from 'lodash';
 
 @Injectable()
 export class CorpusDefinitionService {
@@ -18,7 +21,7 @@ export class CorpusDefinitionService {
     public toggleStep(stepIndex: number) {
         const newValue = this.steps$.value;
         newValue[stepIndex].disabled = !newValue[stepIndex].disabled;
-        this.steps$.next(cloneDeep(newValue));
+        this.steps$.next(_.cloneDeep(newValue));
     }
 
     public activateStep(index: number) {
@@ -26,7 +29,23 @@ export class CorpusDefinitionService {
     }
 
     public setCorpus(corpus: CorpusDefinition) {
-        // console.log(corpus);
         this.corpus$.next(corpus);
+    }
+
+    public setDelimiter(
+        delimiter: APICorpusDefinition['source_data']['options']['delimiter']
+    ): void {
+        let sourceDataOpts = this.corpus$.value.definition.source_data.options;
+        if (
+            _.isUndefined(sourceDataOpts) ||
+            sourceDataOpts.delimiter !== delimiter
+        ) {
+            let updatedCorpus = _.clone(this.corpus$.value);
+            updatedCorpus.definition.source_data.options = {
+                delimiter: delimiter,
+            };
+            this.setCorpus(updatedCorpus);
+            this.corpus$.value.save().subscribe();
+        }
     }
 }

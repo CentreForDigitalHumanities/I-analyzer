@@ -1,6 +1,7 @@
-<form (ngSubmit)="onSubmit()" class="container is-readable" [formGroup]="metaForm">
-    <div class="container is-login">
-        <h1 class="title">Corpus Metadata</h1>
+<h1 class="title">Corpus Metadata</h1>
+<h2 class="subtitle">Provide some basic information about your corpus</h2>
+<form (ngSubmit)="onSubmit()" [formGroup]="metaForm">
+
         <div class="field">
             <label class="label" for="title">Title</label>
             <div class="control">
@@ -37,7 +38,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <div class="field">
         <p class="control">

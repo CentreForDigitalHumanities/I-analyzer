@@ -1,5 +1,31 @@
-<div>{{file$ | async | json}}</div>
-<div class="file block">
+<h1 class="title">Upload a sample of your data</h1>
+<h2 class="subtitle">Determines sensible default values for the fields of your corpus</h2>
+
+<div *ngIf="fileInfo$|async as fileInfo" class="block">
+    Found the following columns in your sample file:
+    <ul>
+        <li *ngFor="let field of fileInfo|keyvalue">
+            <strong>{{field.key}}</strong> {{field.value}}
+        </li>
+    </ul>
+</div>
+
+<form>
+    <div class="field">
+        <label class="label">Delimiter</label>
+        <div class="control">
+            <div class="select">
+                <select (change)="onDelimiterChange($event)">
+                    <option *ngFor="let option of delimiterOptions" [value]="option.value"
+                        [selected]="option.value===((corpusDefService.corpus$|async).definition.source_data.options?.delimiter || ',')">
+                        {{option.label}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="file has-name">
     <label class="file-label">
         <input class="file-input" type="file" name="definition-upload"
             accept=".csv,.tsv,text/csv,text/tab-separated-values " (input)="onUploadConfirm($event)" />
@@ -14,6 +40,7 @@
         </span>
     </label>
 </div>
+</div>
 
 <div class="message is-danger" *ngIf="error$ | async as error">
     <div class="message-header">
@@ -23,3 +50,4 @@
         An error occurred when reading the file: {{error.message}}
     </div>
 </div>
+</form>

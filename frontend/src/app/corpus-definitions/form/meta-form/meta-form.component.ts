@@ -55,12 +55,12 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         const newMeta = this.metaForm.value;
         this.corpus.definition.meta =
             newMeta as CorpusDefinition['definition']['meta'];
-        this.corpus.save().subscribe(
-            () => {
+        this.corpus.save().subscribe({
+            next: () => {
                 this.corpusDefService.toggleStep(1);
                 this.corpusDefService.activateStep(1);
             },
-            (err) => console.log(err)
-        );
+            error: console.error,
+        });
     }
 }

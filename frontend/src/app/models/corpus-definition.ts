@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 
 export interface CorpusDataFile {
+    id?: number;
     corpusID: number;
     file: File | string;
     is_sample: boolean;
