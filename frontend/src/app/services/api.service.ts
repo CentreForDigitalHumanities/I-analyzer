@@ -28,13 +28,10 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '@models/index';
+} from '@models';
 import { environment } from '@environments/environment';
 import * as _ from 'lodash';
-import {
-    APICorpusDefinition,
-    APIEditableCorpus,
-} from '@models/corpus-definition';
+import { APIEditableCorpus, CorpusDataFile } from '@models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -261,6 +258,22 @@ export class ApiService {
 
     public deleteCorpus(corpusID: number): Observable<any> {
         return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    // Corpus datafiles
+    public createDataFile(
+        corpusId: number,
+        file: File
+    ): Observable<CorpusDataFile> {
+        const formData: FormData = new FormData();
+        console.log(file);
+        formData.append('file', file, 'newFile.csv');
+        formData.append('corpus', String(corpusId));
+        formData.append('is_sample', 'True');
+        return this.http.post<CorpusDataFile>(
+            `/api/corpus/datafiles/`,
+            formData
+        );
     }
 
     // Tagging

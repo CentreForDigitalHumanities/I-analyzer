@@ -1,3 +1,4 @@
+import os
 import warnings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
@@ -498,8 +499,11 @@ class CorpusDocumentationPage(models.Model):
 
 
 class CorpusDataFile(models.Model):
+    def upload_path(self, filename):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}', filename)
+
     corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='corpus_datafiles',
+    file = models.FileField(upload_to=upload_path,
                             help_text='file containing corpus data')
     is_sample = models.BooleanField(
         default=False, help_text='this file reflects only part of the total data, for use in creating the corpus definition')

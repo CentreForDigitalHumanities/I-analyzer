@@ -1,0 +1,25 @@
+<div>{{file$ | async | json}}</div>
+<div class="file block">
+    <label class="file-label">
+        <input class="file-input" type="file" name="definition-upload"
+            accept=".csv,.tsv,text/csv,text/tab-separated-values " (input)="onUploadConfirm($event)" />
+        <span class="file-cta">
+            <span class="file-icon" aria-hidden="true">
+                <fa-icon [icon]="actionIcons.upload"></fa-icon>
+            </span>
+            <span class="file-label">Upload CSV file...</span>
+        </span>
+        <span class="file-name" *ngIf="file$ | async as file">
+            {{file.name}}
+        </span>
+    </label>
+</div>
+
+<div class="message is-danger" *ngIf="error$ | async as error">
+    <div class="message-header">
+        Invalid file
+    </div>
+    <div class="message-body">
+        An error occurred when reading the file: {{error.message}}
+    </div>
+</div>
