@@ -11,10 +11,10 @@ export interface CorpusDataFile {
 }
 
 export interface DataFileInfo {
-    [columnName: string]: APICorpusField['type'];
+    [columnName: string]: APICorpusDefinitionField['type'];
 }
 
-export interface APICorpusField {
+export interface APICorpusDefinitionField {
     name: string;
     display_name: string;
     description: string;
@@ -59,7 +59,7 @@ export interface APICorpusDefinition {
             delimiter?: ',' | ';' | '\t';
         };
     };
-    fields: APICorpusField[];
+    fields: APICorpusDefinitionField[];
     options?: {
         language_field?: string;
         document_context?: {
