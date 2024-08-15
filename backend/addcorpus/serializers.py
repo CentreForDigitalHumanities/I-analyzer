@@ -196,9 +196,12 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
         configuration.save()
 
         for field_data in fields_data:
-            field, _ = Field.objects.get_or_create(
-                corpus_configuration=configuration, name=field_data['name']
-            )
+            try:
+                field = Field.objects.get(
+                    corpus_configuration=configuration, name=field_data['name'])
+            except Field.DoesNotExist:
+                field = Field(corpus_configuration=configuration,
+                              name=field_data['name'])
             for attr in field_data:
                 setattr(field, attr, field_data[attr])
             field.save()

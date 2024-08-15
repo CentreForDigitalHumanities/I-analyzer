@@ -10,7 +10,7 @@
     </ul>
 </div>
 
-<form>
+<form (ngSubmit)="onSubmit()">
     <div class="field">
         <label class="label">Delimiter</label>
         <div class="control">
@@ -28,7 +28,7 @@
         <div class="file has-name">
     <label class="file-label">
         <input class="file-input" type="file" name="definition-upload"
-            accept=".csv,.tsv,text/csv,text/tab-separated-values " (input)="onUploadConfirm($event)" />
+            accept=".csv,.tsv,text/csv,text/tab-separated-values " (input)="onUpload($event)" />
         <span class="file-cta">
             <span class="file-icon" aria-hidden="true">
                 <fa-icon [icon]="actionIcons.upload"></fa-icon>
@@ -40,6 +40,12 @@
         </span>
     </label>
 </div>
+</div>
+
+<div *ngIf="fileInfo$|async" class="field">
+    <p class="control">
+        <button class="button is-primary">Next</button>
+    </p>
 </div>
 
 <div class="message is-danger" *ngIf="error$ | async as error">

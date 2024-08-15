@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     APICorpusDefinition,
+    APICorpusDefinitionField,
     CorpusDefinition,
     DataFileInfo,
 } from '@models/corpus-definition';
@@ -8,14 +9,14 @@ import { ApiService } from '@services';
 import { actionIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
-import { BehaviorSubject, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, from, of, Subject, switchMap, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'ia-upload-sample',
     templateUrl: './upload-sample.component.html',
     styleUrl: './upload-sample.component.scss',
 })
-export class UploadSampleComponent {
+export class UploadSampleComponent implements OnInit, OnDestroy {
     actionIcons = actionIcons;
 
     file$ = new BehaviorSubject<File | undefined>(undefined);
@@ -34,11 +35,28 @@ export class UploadSampleComponent {
         private corpusDefService: CorpusDefinitionService
     ) {}
 
+    ngOnInit() {
+        this.fileInfo$
+            .pipe(
+                takeUntil(this.destroy$),
+                switchMap((info: DataFileInfo) => {
+                    const fields = _.map(info, (dtype, colName) =>
+                        this.corpusDefService.makeDefaultField(dtype, colName)
+                    );
+                    return of(fields);
+                })
+            )
+            .subscribe({
+                next: (fields) => this.corpusDefService.setFields(fields),
+                error: console.error,
+            });
+    }
+
     onDelimiterChange(event: InputEvent) {
         this.corpusDefService.setDelimiter(event.target['value']);
     }
 
-    onUploadConfirm(event: InputEvent) {
+    onUpload(event: InputEvent) {
         const files: File[] = event.target['files'];
         const file = files ? _.first(files) : undefined;
         this.file$.next(file);
@@ -54,10 +72,14 @@ export class UploadSampleComponent {
             .subscribe({
                 next: (info) => {
                     this.fileInfo$.next(info);
-                    this.corpusDefService.toggleStep(2);
                 },
                 error: (err) => this.error$.next(err),
             });
+    }
+
+    onSubmit() {
+        this.corpusDefService.toggleStep(2);
+        this.corpusDefService.activateStep(2);
     }
 
     ngOnDestroy(): void {
