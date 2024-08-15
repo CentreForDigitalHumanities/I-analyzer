@@ -1,15 +1,16 @@
-<p-steps [model]="steps$ | async" [readonly]="false" [activeIndex]="activeStep$ | async"
-    (activeIndexChange)="onActiveIndexChange($event)" />
-
-<ng-container [ngSwitch]="activeStep$ | async">
-    <ng-container *ngSwitchCase="0">
-        <div class="section">
-            <div class="container is-readable"><ia-meta-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" /></div>
-        </div>
-    </ng-container>
-    <div *ngSwitchCase="1">
-        <div class="section">
-            <div class="container is-readable"><ia-upload-sample /></div>
-        </div>
+<div class="section">
+    <div class="container is-readable">
+        <p-steps [model]="steps$ | async" [readonly]="false" [activeIndex]="activeStep$ | async"
+            (activeIndexChange)="onActiveIndexChange($event)" />
     </div>
-    <ia-field-form *ngSwitchCase="2">3</ia-field-form>
+    </div>
+<ng-container [ngSwitch]="activeStep$ | async">
+    <div *ngSwitchCase="0" class="section">
+        <div class="container is-readable"><ia-meta-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" /></div>
+    </div>
+    <div *ngSwitchCase="1" class="section">
+            <div class="container is-readable"><ia-upload-sample /></div>
+    </div>
+    <div *ngSwitchCase="2" class="section">
+        <div class="container is-readable"><ia-field-form>3</ia-field-form></div>
+    </div>

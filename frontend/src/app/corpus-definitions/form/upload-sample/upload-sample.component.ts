@@ -52,7 +52,10 @@ export class UploadSampleComponent {
                 )
             )
             .subscribe({
-                next: (info) => this.fileInfo$.next(info),
+                next: (info) => {
+                    this.fileInfo$.next(info);
+                    this.corpusDefService.toggleStep(2);
+                },
                 error: (err) => this.error$.next(err),
             });
     }
