@@ -1,19 +1,68 @@
-<form class="container is-readable">
-    <div class="container is-login">
-        <h1 class="title">Field</h1>
-        <div class="field">
-            <label class="label" for="title">Title</label>
-            <div class="control">
-                <input class="input" type="text" name="title" formControlName="title" />
-            </div>
-            <p class="help">Enter a short, clear title for your corpus.</p>
-        </div>
+<h1 class="title">Fields</h1>
+<form class="container is-readable" [formGroup]="fieldForm">
 
-        <div class="field">
-            <label class="label" for="description">Description</label>
-            <div class="control">
-                <input class="input" type="text" name="description" formControlName="description" />
+    <div class="field">
+        <label class="label" for="display_name">Display name</label>
+        <div class="control">
+            <input class="input" type="text" name="display_name" formControlName="display_name" />
             </div>
+    </div>
+    
+    <div class="field">
+        <label class="label" for="description">Description</label>
+        <div class="control">
+            <input class="input" type="text" name="description" formControlName="description" />
+        </div>
+    </div>
+    
+    <div class="field">
+        <label class="label" for="type">Type</label>
+        <div class="control">
+            <input class="input" type="text" name="type" formControlName="type" />
+        </div>
+    </div>
+
+    <div class="field">
+        <ng-container formGroupName="options">
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" name="search" formControlName="search" />Search
+                </label>
+            </div>
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" name="filter" formControlName="filter" />Filter
+                </label>
+            </div>
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" name="preview" formControlName="preview" />Preview
+                </label>
+            </div>
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" name="sort" formControlName="sort" />Sort
+                </label>
+            </div>
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" name="hidden" formControlName="hidden" />Hidden
+                </label>
+            </div>
+        </ng-container>
+        </div>
+        <div class="field">
+            <label class="label" for="type">Language</label>
+            <div class="control">
+                <input class="input" type="text" name="language" formControlName="language" />
+            </div>
+        </div>
+        
+        <!-- <div class="field">
+                                                            <label class="label" for="description">Description</label>
+                                                            <div class="control">
+                                                                <input class="input" type="text" name="description" formControlName="description" />
+                                                            </div>
             <p class="help">Enter a description for your corpus.</p>
         </div>
 
@@ -35,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
     <div class="field">

@@ -15,8 +15,8 @@ export class CorpusDefinitionService {
 
     steps$ = new BehaviorSubject<MenuItem[]>([
         { label: 'Corpus information' },
-        { label: 'Sample data', disabled: true },
-        { label: 'Define fields', disabled: true },
+        { label: 'Sample data', disabled: false },
+        { label: 'Define fields', disabled: false },
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
