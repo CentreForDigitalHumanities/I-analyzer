@@ -5,7 +5,7 @@ import {
     RelatedWordsResults,
     WordInModelResult,
     WordSimilarity,
-} from '../models';
+} from '@models';
 
 @Injectable()
 export class WordmodelsService {

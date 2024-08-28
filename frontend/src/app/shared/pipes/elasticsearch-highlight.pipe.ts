@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import * as _ from 'lodash';
 
-import { CorpusField, FoundDocument } from '../../models';
+import { CorpusField, FoundDocument } from '@models';
 
 @Pipe({
     name: 'elasticsearchHighlight'

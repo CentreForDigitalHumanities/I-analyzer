@@ -1,16 +1,19 @@
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-import { Corpus, CorpusField, EsFilter, FilterInterface, } from '../models/index';
-import { EsQuery } from '../models';
-import { combineSearchClauseAndFilters,  } from '../utils/es-query';
+import { Corpus, CorpusField, EsFilter, FilterInterface } from '@models/index';
+import { EsQuery } from '@models';
+import { combineSearchClauseAndFilters } from '@utils/es-query';
 import {
-    omitNullParameters, queryFiltersToParams,
-    queryFromParams, queryToParams, searchFieldsFromParams
-} from '../utils/params';
+    omitNullParameters,
+    queryFiltersToParams,
+    queryFromParams,
+    searchFieldsFromParams,
+    queryToParams,
+} from '@utils/params';
 import { isFieldFilter, SearchFilter } from './field-filter';
 import { isTagFilter, TagFilter } from './tag-filter';
-import { makeTagSpecification } from '../utils/api-query';
+import { makeTagSpecification } from '@utils/api-query';
 import { APIQuery } from './search-requests';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';

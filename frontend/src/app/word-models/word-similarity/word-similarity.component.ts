@@ -1,11 +1,11 @@
 import { Component, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { showLoading } from '../../utils/utils';
-import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services';
 import { RouterStoreService } from '../../store/router-store.service';
-import { ComparedQueries } from '../../models/compared-queries';
+import { ComparedQueries } from '@models/compared-queries';
+import { showLoading } from '@utils/utils';
+import { Corpus, WordSimilarity } from '@models';
+import { WordmodelsService } from '@services';
 
 @Component({
     selector: 'ia-word-similarity',

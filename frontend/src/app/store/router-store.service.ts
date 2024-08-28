@@ -3,7 +3,7 @@ import { Params, Router } from '@angular/router';
 import { Store } from './types';
 import { Observable, Subject } from 'rxjs';
 import { bufferTime, filter, map } from 'rxjs/operators';
-import { mergeAllParams } from '../utils/params';
+import { mergeAllParams } from '@utils/params';
 import * as _ from 'lodash';
 
 /**

@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
-import { Normalizer, ChartType, ChartParameters } from '../../models';
-import { ParamService } from '../../services';
+import { Normalizer, ChartType, ChartParameters } from '@models';
+import { ParamService } from '@services';
 
 @Component({
     selector: 'ia-barchart-options',

@@ -3,20 +3,32 @@ import { Directive, EventEmitter, Host, HostBinding, Input, OnChanges, OnDestroy
 
 import * as _ from 'lodash';
 
-import { ApiService, NotificationService, SearchService } from '../../services/index';
+import {
+    ApiService,
+    NotificationService,
+    SearchService,
+} from '@services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import {
-    Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult, ChartParameters
-} from '../../models';
+    Corpus,
+    FreqTableHeaders,
+    QueryModel,
+    CorpusField,
+    TaskResult,
+    BarchartSeries,
+    TimelineDataPoint,
+    HistogramDataPoint,
+    TermFrequencyResult,
+    ChartParameters,
+} from '@models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { selectColor } from '../../utils/select-color';
-import { VisualizationService } from '../../services/visualization.service';
-import { showLoading } from '../../utils/utils';
+import { selectColor } from '@utils/select-color';
+import { VisualizationService } from '@services/visualization.service';
+import { showLoading } from '@utils/utils';
 import { takeUntil } from 'rxjs/operators';
-import { DateHistogramResult, TermsResult } from '../../models/aggregation';
-import { ComparedQueries } from '../../models/compared-queries';
+import { DateHistogramResult, TermsResult } from '@models/aggregation';
+import { ComparedQueries } from '@models/compared-queries';
 import { RouterStoreService } from '../../store/router-store.service';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';

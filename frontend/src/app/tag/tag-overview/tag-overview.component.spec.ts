@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TagOverviewComponent } from './tag-overview.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ApiRetryService } from '../../services';
+import { ApiRetryService } from '@services';
 import { RouterTestingModule } from '@angular/router/testing';
 import { commonTestBed } from '../../common-test-bed';
 

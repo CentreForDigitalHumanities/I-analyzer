@@ -3,15 +3,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-    FoundDocument, Corpus, QueryModel, SearchResults,
-    SearchHit
-} from '../models/index';
-import { Aggregator } from '../models/aggregation';
+    FoundDocument,
+    Corpus,
+    QueryModel,
+    SearchResults,
+    SearchHit,
+} from '@models/index';
+import { Aggregator } from '@models/aggregation';
 import * as _ from 'lodash';
 import { TagService } from './tag.service';
-import { APIQuery } from '../models/search-requests';
-import { PageResultsParameters } from '../models/page-results';
-import { resultsParamsToAPIQuery } from '../utils/es-query';
+import { APIQuery } from '@models/search-requests';
+import { PageResultsParameters } from '@models/page-results';
+import { resultsParamsToAPIQuery } from '@utils/es-query';
 import { EntityService } from './entity.service';
 
 

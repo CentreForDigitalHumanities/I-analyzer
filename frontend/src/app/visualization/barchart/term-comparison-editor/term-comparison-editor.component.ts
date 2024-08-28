@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { formIcons } from '../../../shared/icons';
+import { formIcons } from '@shared/icons';
 import { RouterStoreService } from '../../../store/router-store.service';
-import { ComparedQueries } from '../../../models/compared-queries';
+import { ComparedQueries } from '@models/compared-queries';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
