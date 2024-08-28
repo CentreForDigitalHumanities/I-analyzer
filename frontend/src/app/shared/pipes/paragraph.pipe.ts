@@ -10,12 +10,14 @@ export class ParagraphPipe implements PipeTransform {
         return splitText;
     }
 
-    addParagraphBreaks(content: string | string[]) {
+    addParagraphBreaks(content: string | string[]): string {
         const paragraphs = typeof content === 'string' ? content.split('\n') : content;
         if (!paragraphs || paragraphs.length === 1) {
-            return content;
+            return content as string;
         }
-        return paragraphs.filter(p => p !== '').join('<br><br>');
+        const cleanedParagraphs = paragraphs.filter(p => p !== '')
+        const wrapped = cleanedParagraphs.join('</p><p>')
+        return `<p>${wrapped}</p>`;
     }
 
 

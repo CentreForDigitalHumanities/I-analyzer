@@ -60,7 +60,7 @@ input:checked {
         -ms-transform: translateX(2rem);
         -o-transform: translateX(2rem);
     }
-    
+
     + .slider:after {
         left: calc(100% - 5px);
         transform: translateX(-100%);
