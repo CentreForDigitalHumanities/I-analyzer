@@ -615,37 +615,31 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
         'name': 'parliament-europe',
         'start': datetime(1999, 7, 20),
         'docs': [{
-            'id': '2011-11-15-Speech-2-699-000',
-            'date': '2011-11-15',
-            'debate_id': '2011-11-15_AgendaItem_34',
-            'debate_title': 'Accountability report on financing for development (debate)',
-            'party': 'ALDE',
-            'sequence': 8,
-            'source_language': 'fr',
-            'speaker': 'Charles Goerens',
-            'speech': '''Mr President, Ms Striffler is right to question the consistency of the commitments taken by the European Union in terms of official development aid.
-Let us say this straightaway: without the European Union’s contribution to development policy, achieving the Millennium Development Goals would remain a pipedream. Let us nevertheless add that the European Union shares this responsibility with other players.
-The United States is an important donor in absolute terms, but with 0.2% of its GDP devoted to official development aid, it is far behind the European Union in relative terms, without forgetting the emerging countries, which generate substantial resources, an increasing part of which will have to be allocated for the purpose of development and combating poverty within their own borders.
-Nevertheless, what is comforting is to see that various EU Member States – the list is not exhaustive – are setting an example in this regard. With only a few days until the Fourth High-Level Forum on aid effectiveness in Busan, I think it would be wise to insist not only on the volume of the European Union’s official development aid, but also on its ‘leverage effect’.
-As the largest provider of funds, we have a position that enables the European Union to assert itself more at global level. Without being perceived as giving lectures, the European Union can and must remind those at Busan that combating poverty is an obligation for all the Member States; as developing countries and, more specifically, emerging countries gradually generate their own resources, they must also devote them to eradicating poverty within their borders. It is, first and foremost, up to them to act and we cannot take their responsibilities in this area upon ourselves.''',
-            'source_language': 'fr',
-            'url': 'http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20111115-20:02:15-969'
+            'id': '1999-07-21-Speech-3-063',
+            'date': '1999-07-21',
+            'debate_id': '1999-07-21_AgendaItem_5',
+            'debate_title': 'Statement by Mr Prodi, President-elect of the Commission',
+            'party': 'Group for the Technical Coordination and Defence of Indipendent Groups and Members (TGI)',
+            'sequence': 15,
+            'speaker': 'Francesco Enrico Speroni',
+            'speech': '''Mr President, as a Member of the Italian national Parliament for the\n(The Northern League for the Independence of Padania), I did not vote for Professor Prodi in Rome as I considered he would be completely useless as head of government. I was then proved right as he lost the vote of confidence of the Italian Parliament. Reckoning also that a Roman idiot would still be that stupid wherever he was, which, incidently, is reflected in the symbol on the list which bears his name for the election of this Parliament, I cannot for consistency\"s sake express my faith in the President of the Commission. As a native of the Po valley who is Italian only by passport, I am fortunately immune from the national Christian Democrat type of opportunism which brings Berlusconi together with Mastella and De Mita and sees in Prodi not the impartial President of the Commissioners uninfluenced by the States, but the lavish dispenser of favours to a wide and varied assortment of Southern Italian profiteers. Although I hold some of the Commissioners in high esteem, I recall the old mafioso Neapolitan saying: ‘A fish rots from the head downwards’ and I therefore have to express my negative opinion of the Prodi Presidency.''',
+            'source_language': 'it',
+            'url': 'http://purl.org/linkedpolitics/eu/plenary/1999-07-21-Speech-3-063'
         }] +
-        [{}] * 6 +  # skip ahead to last speech
+        [{}] +  # skip ahead to last speech
         [{
-            'id': '2000-10-03-Speech-2-007',
-            'date': '2000-10-03',
-            'debate_id': '2000-10-03_AgendaItem_1',
-            'debate_title': 'Approval of the Minutes of the previous sitting',
+            'id': '2017-07-06-Speech-4-146-000',
+            'date': '2017-07-06',
+            'debate_id': '2017-07-06_AgendaItem_13',
+            'debate_title': 'Composition of committees and delegations',
             'party': None,
-            'sequence': 5,
-            'source_language': 'fr',
-            'speaker': 'Nicole Fontaine',
-            'speech': "The Group of the Party of European Socialists has requested that the debate on the situation regarding the Middle East Peace Process, that was timetabled for Thursday afternoon, be closed with a motion for a resolution. I will now put this request to the vote.",
-            'source_language': 'fr',
-            'url': 'http://purl.org/linkedpolitics/eu/plenary/2000-10-03-Speech-2-007'
+            'sequence': 2,
+            'source_language': 'en',
+            'speaker': 'Ashley Fox',
+            'speech': '''Mr President, yesterday afternoon we had a lively debate, under Rule 153, on the subject of a single seat for this Parliament. Unfortunately, under that rule, it was not possible to have a resolution, but it was the clear will of this House that we bring forward a report to propose a treaty change. So, as Mr Weber and Mr Pittella are in their seats, could they please take note of the view of this House and, when the matter comes to the Conference of Presidents, could they please authorise that report?''',
+            'url': 'http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20170706-12:02:01-324'
         }],
-        'n_documents': 8
+        'n_documents': 3
     }
 ]
 

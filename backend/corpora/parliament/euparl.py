@@ -3,61 +3,79 @@ import os
 from typing import Tuple, Union
 
 from django.conf import settings
-from rdflib import Graph, Namespace
-from rdflib.namespace import DCTERMS, FOAF
+from rdflib import Graph, Namespace, URIRef
+from rdflib.namespace import DCTERMS, FOAF, RDFS, RDF as RDFNS
 from ianalyzer_readers.readers.rdf import RDFReader
-from ianalyzer_readers.extract import Backup, Combined, RDF
+from ianalyzer_readers.extract import Backup, Combined, Metadata, RDF
 
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
+EVENTS_METADATA = 'Events_and_structure.ttl'
 MP_METADATA = 'MembersOfParliament_background.ttl'
+SPEECHES = 'English.ttl'
 
-# Namespaces of Linked Politics (NB: the links themselves are dead)
+# Namespaces of Linked Politics (NB: the purl links resolve to dead sites)
 LP_EU = Namespace('http://purl.org/linkedpolitics/eu/plenary/')
 LPV_EU = Namespace('http://purl.org/linkedpolitics/vocabulary/eu/plenary/')
 LP = Namespace('http://purl.org/linkedpolitics/')
 LPV = Namespace('http://purl.org/linkedpolitics/vocabulary/')
 
-def get_identifier(input):
+def add_speaker_metadata(filename: str) -> dict:
+    ''' Parse all relevant metadata out of MembersOfParliament ttl to dict'''
+    speaker_dict = {}
+    speaker_graph = Graph()
+    speaker_graph.parse(filename)
+    speaker_subjects = speaker_graph.subjects(object=LPV.MemberOfParliament)
+    for speaker in speaker_subjects:
+        try:
+            name = list(speaker_graph.objects(speaker, FOAF.name))[0].value
+        except:
+            continue
+        party_list = []
+        speaker_functions = speaker_graph.objects(speaker, LPV.politicalFunction)
+        for function in speaker_functions:
+            function_type = speaker_graph.value(function, LPV.institution)
+            if speaker_graph.value(function_type, RDFNS.type) == LPV.EUParty:
+                party_labels = list(speaker_graph.objects(function_type, RDFS.label))
+                party_acronym = min(party_labels, key=len)
+                party_name = max(party_labels, key=len)
+                date_start = speaker_graph.value(function, LPV.beginning)
+                date_end = speaker_graph.value(function, LPV.end)
+                party_list.append({
+                    'party_acronym': party_acronym,
+                    'party_name': party_name,
+                    'date_start': date_start.value,
+                    'date_end': date_end.value
+                })
+        speaker_dict.update({speaker: {'name': name, 'parties': party_list}})
+    return speaker_dict
+
+def get_identifier(input: str) -> str:
     return input.split('/')[-1]
 
-def get_party(input: Tuple[str, str]) -> Union[str, None]:
-    ''' parse the MembersOfParliament external file and return the first political function
-        which meets the following conditions:
-    - the function should be a EUParty (only those have acronyms)
-    - the begin / end date should surround the speech's date
+def get_speaker(input: Tuple[URIRef, dict]) -> str:
+    (speaker, speaker_dict) = input
+    return speaker_dict.get(speaker).get('name')
 
-    Parameters:
-        input: a tuple of date and EU member node, result of Combined extractor
+def get_speaker_party(input: Tuple[str, datetime, dict]) -> str:
+    ''' look up the which EU party the speaker was part of at the date of their speech '''
+    (speaker, date, party_data) = input
+    party_list = party_data.get(speaker).get('parties')
+    return next((f"{p['party_name']} ({p['party_acronym']})" for p in party_list if (date >= p['date_start'] and date <= p['date_end'])))
 
-    Returns:
-        a string of the party acronym or `None`
-    '''
-    g = Graph()
-    g.parse(os.path.join(settings.PP_EUPARL_DATA, MP_METADATA))
-    date, person = input
-    functions = list(g.objects(person, LPV.politicalFunction))
-    for node in functions:
-        institution = list(g.objects(node, LPV.institution))
-        if not institution:
-            continue
-        party = list(g.objects(institution[0], LPV.acronym))
-        if party:
-            date_start = list(g.objects(node, LPV.beginning))[0].value
-            date_end = list(g.objects(node, LPV.end))[0].value
-            if date_start < date < date_end:
-                return party[0].value
-    return None
-
-def get_speech_index(input):
+def get_speech_index(input: Tuple[str, list]) -> int:
     ''' find index of speech in array of debate parts '''
     speech, speeches = input
     if not speech:
         return None
     return speeches.index(speech) + 1
 
-def get_uri(input):
+def get_speech_text(input: str) -> str:
+    ''' remove leading language information, e.g., `(IT)`'''
+    return input.split(') ')[-1]
+
+def get_uri(input: Union[URIRef, str]) -> str:
     ''' convert input from URIRef to string '''
     try:
         return input.n3().strip('<>')
@@ -80,10 +98,18 @@ class ParliamentEurope(Parliament, RDFReader):
     image = 'euparl.jpeg'
 
     def sources(self, **kwargs):
-        yield os.path.join(self.data_directory, 'EUParl.ttl')
+       metadata = {'speakers': add_speaker_metadata(os.path.join(self.data_directory, MP_METADATA))}
+       yield os.path.join(self.data_directory, SPEECHES), metadata
 
     def document_subjects(self, graph: Graph):
         return graph.subjects(object=LPV_EU.Speech)
+
+    def parse_graph_from_filename(self, filename: str) -> Graph:
+        ''' we combine the graphs in place, to keep memory load low '''
+        graph = Graph()
+        graph.parse(filename)
+        graph.parse(os.path.join(self.data_directory, EVENTS_METADATA))
+        return graph
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = RDF(
@@ -105,9 +131,10 @@ class ParliamentEurope(Parliament, RDFReader):
 
     party = field_defaults.party()
     party.extractor = Combined(
-        RDF(DCTERMS.date),
         RDF(LPV.speaker),
-        transform=get_party
+        RDF(DCTERMS.date),
+        Metadata('speakers'),
+        transform=get_speaker_party
     )
 
     sequence = field_defaults.sequence()
@@ -135,9 +162,10 @@ class ParliamentEurope(Parliament, RDFReader):
     )
 
     speaker = field_defaults.speaker()
-    speaker.extractor = RDF(
-        LPV.speaker,
-        FOAF.name
+    speaker.extractor = Combined(
+        RDF(LPV.speaker),
+        Metadata('speakers'),
+        transform=get_speaker
     )
 
     speech = field_defaults.speech(language='en')
@@ -147,7 +175,8 @@ class ParliamentEurope(Parliament, RDFReader):
         ),
         RDF(
             LPV.translatedText,
-        )
+        ),
+        transform=get_speech_text
     )
 
     speech_id = field_defaults.speech_id()
