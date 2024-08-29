@@ -215,7 +215,7 @@ export class MapComponent implements OnChanges {
                         "enter": {
                             "width": { "value": 3 },
                             "height": { "value": 3 },
-                            "fill": { "value": "red" },
+                            "fill": { "value": "#303F9F" },
                             "stroke": { "value": "grey" },
                             "tooltip": { "field": "properties.id" },
                             "href": { "signal": "'/document/' + corpusName + '/' + datum.properties.id" },
