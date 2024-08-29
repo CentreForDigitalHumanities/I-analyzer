@@ -40,11 +40,10 @@ class WordcloudView(APIView):
 
 class MapView(APIView):
     '''
-    Most frequent terms for a small batch of results
+    Retrieve documents with geo_field coordinates.
     '''
 
-    permission_classes = [IsAuthenticated,
-                          CanSearchCorpus, CanSearchTags]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'es_query', 'field'])
@@ -56,6 +55,22 @@ class MapView(APIView):
             logger.error(e)
             raise APIException(detail='could not generate geo data')
 
+
+class MapCentroidView(APIView):
+    '''
+    Retrieve the centroid of documents with a geo_field for a corpus.
+    '''
+
+    permission_classes = [CanSearchCorpus]
+
+    def post(self, request, *args, **kwargs):
+        check_json_keys(request, ['corpus', 'field'])
+        try:
+            center = tasks.get_geo_centroid(request.data)
+            return Response(center)
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='Could not retrieve geo centroid')
 
 class NgramView(APIView):
     '''
