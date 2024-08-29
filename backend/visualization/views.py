@@ -43,8 +43,7 @@ class MapView(APIView):
     Retrieve documents with geo_field coordinates.
     '''
 
-    permission_classes = [IsAuthenticated,
-                          CanSearchCorpus, CanSearchTags]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'es_query', 'field'])
@@ -62,7 +61,7 @@ class MapCentroidView(APIView):
     Retrieve the centroid of documents with a geo_field for a corpus.
     '''
 
-    permission_classes = [IsAuthenticated, CanSearchCorpus, CanSearchTags]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'field'])
