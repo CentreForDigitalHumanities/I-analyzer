@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import embed, { VisualizationSpec } from 'vega-embed';
 
@@ -40,22 +40,14 @@ export class MapComponent implements OnChanges {
     }
 
 
-    ngOnInit(): void {
+    ngOnChanges(changes: SimpleChanges) {
         if (this.readyToLoad) {
             this.loadMapCenter();
-        }
-    }
 
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (
-            this.readyToLoad &&
-            (changes.corpus || changes.visualizedField || changes.queryModel)
-        ) {
-            if (changes.queryModel) {
+            if ( changes.corpus || changes.visualizedField || changes.queryModel ) {
                 this.queryModel.update.subscribe(this.loadData.bind(this));
+                this.loadData();
             }
-            this.loadData();
         }
     }
 
