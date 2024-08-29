@@ -5,11 +5,10 @@ from typing import Tuple, Union
 from django.conf import settings
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import DCTERMS, FOAF, RDFS, RDF as RDFNS
-from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.extract import Backup, Combined, Metadata, RDF
 
 from addcorpus.es_mappings import keyword_mapping
-from addcorpus.python_corpora.corpus import FieldDefinition
+from addcorpus.python_corpora.corpus import FieldDefinition, RDFCorpusDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -95,7 +94,7 @@ def get_uri(input: Union[URIRef, str]) -> str:
     except:
         return input
 
-class ParliamentEurope(Parliament, RDFReader):
+class ParliamentEurope(Parliament, RDFCorpusDefinition):
     """
     Speeches of the European parliament, (originally in or translated to English),
     provided as Linked Open Data by the "Talk of Europe" project
