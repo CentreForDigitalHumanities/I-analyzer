@@ -8,6 +8,8 @@ from rdflib.namespace import DCTERMS, FOAF, RDFS, RDF as RDFNS
 from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.extract import Backup, Combined, Metadata, RDF
 
+from addcorpus.es_mappings import keyword_mapping
+from addcorpus.python_corpora.corpus import FieldDefinition
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -29,9 +31,11 @@ def add_speaker_metadata(filename: str) -> dict:
     speaker_subjects = speaker_graph.subjects(object=LPV.MemberOfParliament)
     for speaker in speaker_subjects:
         try:
-            name = list(speaker_graph.objects(speaker, FOAF.name))[0].value
+            name = speaker_graph.value(speaker, FOAF.name).value
         except:
             continue
+        country_node = speaker_graph.value(speaker, LPV.countryOfRepresentation)
+        country_name = speaker_graph.value(country_node, RDFS.label).value
         party_list = []
         speaker_functions = speaker_graph.objects(speaker, LPV.politicalFunction)
         for function in speaker_functions:
@@ -48,7 +52,12 @@ def add_speaker_metadata(filename: str) -> dict:
                     'date_start': date_start.value,
                     'date_end': date_end.value
                 })
-        speaker_dict.update({speaker: {'name': name, 'parties': party_list}})
+        speaker_dict.update({speaker: {
+            'name': name,
+            'country': country_name,
+            'parties': party_list
+            }
+        })
     return speaker_dict
 
 def get_identifier(input: str) -> str:
@@ -57,6 +66,10 @@ def get_identifier(input: str) -> str:
 def get_speaker(input: Tuple[URIRef, dict]) -> str:
     (speaker, speaker_dict) = input
     return speaker_dict.get(speaker).get('name')
+
+def get_speaker_country(input: Tuple[URIRef, dict]) -> str:
+    (speaker, speaker_dict) = input
+    return speaker_dict.get(speaker).get('country')
 
 def get_speaker_party(input: Tuple[str, datetime, dict]) -> str:
     ''' look up the which EU party the speaker was part of at the date of their speech '''
@@ -168,6 +181,18 @@ class ParliamentEurope(Parliament, RDFReader):
         transform=get_speaker
     )
 
+    speaker_country = FieldDefinition(
+        name='speaker_country',
+        display_name='Represented country',
+        description='The EU country the speaker represents',
+        es_mapping=keyword_mapping(),
+        extractor=Combined(
+            RDF(LPV.speaker),
+            Metadata('speakers'),
+            transform=get_speaker_country
+        )
+    )
+
     speech = field_defaults.speech(language='en')
     speech.extractor = Backup(
         RDF(
@@ -206,6 +231,7 @@ class ParliamentEurope(Parliament, RDFReader):
             self.sequence,
             self.source_language,
             self.speaker,
+            self.speaker_country,
             self.speech, self.speech_id,
             self.url
         ]
