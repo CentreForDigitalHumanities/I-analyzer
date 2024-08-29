@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService, NotificationService } from '../../../services';
+import { ApiService, NotificationService } from '@services';
 import { tap } from 'rxjs/operators';
-import { actionIcons } from '../../../shared/icons';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-delete-search-history',

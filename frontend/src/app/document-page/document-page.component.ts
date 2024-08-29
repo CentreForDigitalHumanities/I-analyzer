@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import { combineLatest } from 'rxjs';
-import { Corpus, FoundDocument } from '../models';
-import { CorpusService, ElasticSearchService } from '../services';
-import { makeContextParams } from '../utils/document-context';
-import { documentIcons } from '../shared/icons';
+import { Corpus, FoundDocument } from '@models';
+import { CorpusService, ElasticSearchService } from '@services';
+import { makeContextParams } from '@utils/document-context';
+import { documentIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
   selector: 'ia-document-page',

@@ -3,7 +3,7 @@ import { StoreSync } from '../store/store-sync';
 import { CorpusField } from './corpus';
 import { Store } from '../store/types';
 import { QueryModel } from './query';
-import { findByName } from '../utils/utils';
+import { findByName } from '@utils/utils';
 import * as _ from 'lodash';
 import { Observable, merge, of, timer } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';

@@ -2,9 +2,9 @@ import { Component, ElementRef, EventEmitter, Input, Output, OnChanges, OnInit, 
 import { BehaviorSubject } from 'rxjs';
 import embed, { VisualizationSpec } from 'vega-embed';
 
-import { Corpus, CorpusField, GeoDocument, GeoLocation, QueryModel } from '../../models';
-import { VisualizationService } from '../../services';
-import { showLoading } from '../../utils/utils';
+import { Corpus, CorpusField, GeoDocument, GeoLocation, QueryModel } from '@models';
+import { VisualizationService } from '@services';
+import { showLoading } from '@utils/utils';
 
 
 @Component({

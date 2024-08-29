@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { DocumentPageComponent } from '../document-page/document-page.component';
 import { ImageViewModule } from '../image-view/image-view.module';
@@ -10,7 +10,12 @@ import { DocumentPopupComponent } from './document-popup/document-popup.componen
 import { DialogModule } from 'primeng/dialog';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EntityLegendComponent } from './entity-legend/entity-legend.component';
-import { ElasticsearchHighlightPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } from '../shared/pipes';
+import {
+    ElasticsearchHighlightPipe,
+    GeoDataPipe,
+    ParagraphPipe,
+    SnippetPipe,
+} from '@shared/pipes';
 
 @NgModule({
     declarations: [

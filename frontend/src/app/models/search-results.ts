@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { APIQuery } from './search-requests';
-import { SortState } from './sort';
 import {
     AggregateTermFrequencyParameters,
     DateTermFrequencyParameters,
@@ -19,13 +18,6 @@ export interface SearchResults {
         relation: string;
     };
 }
-
-export interface ResultOverview {
-    queryText: string;
-    highlight?: number;
-    sort: SortState;
-    resultsCount: number;
-};
 
 export interface MostFrequentWordsResult {
     key: string;

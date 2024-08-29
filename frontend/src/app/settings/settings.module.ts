@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { SettingsComponent } from './settings.component';
 import { SearchHistorySettingsComponent } from './search-history-settings/search-history-settings.component';
 import { DeleteSearchHistoryComponent } from './search-history-settings/delete-search-history/delete-search-history.component';

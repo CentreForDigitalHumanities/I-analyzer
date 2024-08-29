@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { PageResultsParameters } from '../../models/page-results';
+import { PageResultsParameters } from '@models/page-results';
 
 @Component({
     selector: 'ia-pagination',

@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
-import { userIcons } from '../../shared/icons';
+import { userIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../../utils/app';
+import { pageTitle } from '@utils/app';
 
 interface RegisterErrors {
     non_field_errors?: string[];

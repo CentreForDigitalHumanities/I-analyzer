@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FoundDocument, Tag } from '../../models';
+import { FoundDocument, Tag } from '@models';
 import * as _ from 'lodash';
-import { formIcons, actionIcons } from '../../shared/icons';
+import { formIcons, actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-document-tags',

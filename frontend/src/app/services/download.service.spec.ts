@@ -4,7 +4,12 @@ import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { DownloadService } from './download.service';
 import { mockCorpus, mockField } from '../../mock-data/corpus';
-import { DownloadOptions, LimitedResultsDownloadParameters, QueryModel, SortState } from '../models';
+import {
+    DownloadOptions,
+    LimitedResultsDownloadParameters,
+    QueryModel,
+    SortState,
+} from '@models';
 
 describe('DownloadService', () => {
     let apiService: ApiService;
@@ -41,7 +46,8 @@ describe('DownloadService', () => {
         };
 
         spyOn(apiService, 'download').and.returnValue(Promise.resolve({}));
-        service.download(query.corpus, query, query.corpus.fields, size, route, sort, highlight, options);
+        const fieldNames = query.corpus.fields.map(field => field.name)
+        service.download(query.corpus, query, fieldNames, size, route, sort, highlight, options);
         const expectedBody: LimitedResultsDownloadParameters = {
             corpus: mockCorpus.name,
             fields: ['great_field', 'speech'],

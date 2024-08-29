@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ApiService } from '../services';
+import { ApiService } from '@services';
 import { CorpusDefinition } from './corpus-definition';
 import { ApiServiceMock } from '../../mock-data/api';
 import { mockCorpusDefinition } from '../../mock-data/corpus-definition';

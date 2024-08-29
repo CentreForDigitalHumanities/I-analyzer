@@ -2,12 +2,10 @@
 import {
     Component,
     ElementRef,
-    EventEmitter,
     HostListener,
     Input,
     OnChanges,
     OnDestroy,
-    Output,
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
@@ -15,14 +13,9 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { ShowError } from '../error/error.component';
-import {
-    QueryModel,
-    ResultOverview,
-    SearchResults,
-    User,
-} from '../models/index';
-import { PageResults, PageResultsParameters } from '../models/page-results';
-import { SearchService } from '../services';
+import { QueryModel, SearchResults, User } from '@models/index';
+import { PageResults, PageResultsParameters } from '@models/page-results';
+import { SearchService } from '@services';
 import { RouterStoreService } from '../store/router-store.service';
 
 const MAXIMUM_DISPLAYED = 10000;
@@ -45,9 +38,6 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     @Input()
     public user: User;
 
-    @Output()
-    public searched = new EventEmitter<ResultOverview>();
-
     public pageResults: PageResults;
 
     public isLoading = false;
@@ -56,8 +46,6 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
     public results: SearchResults;
 
     public resultsPerPage = 20;
-
-    public imgSrc: Uint8Array;
 
     error$: Observable<ShowError>;
 
@@ -82,14 +70,7 @@ export class SearchResultsComponent implements OnChanges, OnDestroy {
             this.error$ = this.pageResults.error$.pipe(map(this.parseError));
             this.pageResults.result$
                 .pipe(takeUntil(this.destroy$))
-                .subscribe((result) => {
-                    this.searched.emit({
-                        queryText: this.queryModel.queryText,
-                        sort: this.pageResults.state$.value.sort,
-                        highlight: this.pageResults.state$.value.highlight,
-                        resultsCount: result?.total,
-                    });
-                });
+                .subscribe();
         }
     }
 

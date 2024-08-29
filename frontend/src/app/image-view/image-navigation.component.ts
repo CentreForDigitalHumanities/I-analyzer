@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges } from '@angular/core';
-import { scanIcons } from '../shared/icons';
+import { scanIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-image-navigation',
