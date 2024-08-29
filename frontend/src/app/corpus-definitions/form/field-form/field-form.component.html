@@ -1,90 +1,68 @@
 <h1 class="title">Fields</h1>
-<form class="container is-readable" [formGroup]="fieldForm">
-
-    <div class="field">
-        <label class="label" for="display_name">Display name</label>
-        <div class="control">
-            <input class="input" type="text" name="display_name" formControlName="display_name" />
-            </div>
-    </div>
-    
-    <div class="field">
-        <label class="label" for="description">Description</label>
-        <div class="control">
-            <input class="input" type="text" name="description" formControlName="description" />
-        </div>
-    </div>
-    
-    <div class="field">
-        <label class="label" for="type">Type</label>
-        <div class="control">
-            <input class="input" type="text" name="type" formControlName="type" />
-        </div>
-    </div>
-
-    <div class="field">
-        <ng-container formGroupName="options">
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" name="search" formControlName="search" />Search
-                </label>
-            </div>
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" name="filter" formControlName="filter" />Filter
-                </label>
-            </div>
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" name="preview" formControlName="preview" />Preview
-                </label>
-            </div>
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" name="sort" formControlName="sort" />Sort
-                </label>
-            </div>
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" name="hidden" formControlName="hidden" />Hidden
-                </label>
-            </div>
-        </ng-container>
-        </div>
-        <div class="field">
-            <label class="label" for="type">Language</label>
-            <div class="control">
-                <input class="input" type="text" name="language" formControlName="language" />
-            </div>
-        </div>
-        
-        <!-- <div class="field">
-                                                            <label class="label" for="description">Description</label>
-                                                            <div class="control">
-                                                                <input class="input" type="text" name="description" formControlName="description" />
-                                                            </div>
-            <p class="help">Enter a description for your corpus.</p>
-        </div>
-
-        <div class="field">
-            <label class="label" for="category">Category</label>
-            <div class="control">
-                <input class="input" type="text" name="category" formControlName="category" />
-            </div>
-            <p class="help">Enter a category for your corpus.</p>
-        </div>
-
-        <div class="field is-grouped">
-            <div formGroupName="date_range">
+<form class="container is-readable" [formGroup]="fieldsForm" (ngSubmit)="onSubmit()">
+    <ng-container formArrayName="fields">
+        <div class="box" *ngFor="let field of fields.controls; let i=index" [formGroupName]="i">
+            <div class="field">
+                <label class="label" for="display_name">Display name</label>
                 <div class="control">
-                    <input class="input" type="number" name="min" formControlName="min" />
-                </div>
-                <div class="control">
-                    <input class="input" type="number" name="max" formControlName="max" />
+                    <input class="input" type="text" name="display_name" formControlName="display_name" />
                 </div>
             </div>
+
+            <div class="field">
+                <label class="label" for="description">Description</label>
+                <div class="control">
+                    <input class="input" type="text" name="description" formControlName="description" />
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="type">Type</label>
+                <div class="control">
+                    <p-dropdown [options]="fieldTypeOptions" formControlName="type" optionLabel="label" optionValue="value"
+                        placeholder="select type" />
+                    </div>
+                    </div>
+
+            <div class="field">
+                <ng-container formGroupName="options">
+                    <div class="control">
+                        <label class="checkbox">
+                            <input type="checkbox" name="search" formControlName="search" /> Search
+                            </label>
+                            </div>
+                            <div class="control">
+                                <label class="checkbox">
+                            <input type="checkbox" name="filter" formControlName="filter" /> Filter
+                            </label>
+                            </div>
+                            <div class="control">
+                                <label class="checkbox">
+                            <input type="checkbox" name="preview" formControlName="preview" /> Preview
+                            </label>
+                            </div>
+                            <div class="control">
+                                <label class="checkbox">
+                            <input type="checkbox" name="sort" formControlName="sort" /> Sort
+                            </label>
+                            </div>
+                            <div class="control">
+                                <label class="checkbox">
+                            <input type="checkbox" name="hidden" formControlName="hidden" /> Hidden
+                            </label>
+                            </div>
+                            </ng-container>
+                            </div>
+                            <div class="field">
+                                <label class="label" for="type">Language</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="language" formControlName="language" />
+                                </div>
+                            </div>
+
         </div>
-    </div> -->
+    </ng-container>
+
 
 
     <div class="field">

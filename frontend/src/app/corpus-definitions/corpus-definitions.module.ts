@@ -10,6 +10,8 @@ import { FieldFormComponent } from './form/field-form/field-form.component';
 import { StepsModule } from 'primeng/steps';
 import { CorpusFormComponent } from './form/corpus-form/corpus-form.component';
 import { UploadSampleComponent } from './form/upload-sample/upload-sample.component';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
     declarations: [
@@ -28,6 +30,12 @@ import { UploadSampleComponent } from './form/upload-sample/upload-sample.compon
         EditDefinitionComponent,
         CorpusFormComponent,
     ],
-    imports: [SharedModule, ReactiveFormsModule, StepsModule],
+    imports: [
+        SharedModule,
+        ReactiveFormsModule,
+        StepsModule,
+        MultiSelectModule,
+        DropdownModule,
+    ],
 })
 export class CorpusDefinitionsModule {}
