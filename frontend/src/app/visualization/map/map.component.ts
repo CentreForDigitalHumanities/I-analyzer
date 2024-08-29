@@ -1,8 +1,8 @@
-import { Component, ElementRef, EventEmitter, Input, Output, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import embed, { VisualizationSpec } from 'vega-embed';
 
-import { Corpus, CorpusField, GeoDocument, QueryModel } from '../../models';
+import { Corpus, CorpusField, GeoDocument, GeoLocation, QueryModel } from '../../models';
 import { VisualizationService } from '../../services';
 import { showLoading } from '../../utils/utils';
 
@@ -22,6 +22,7 @@ export class MapComponent implements OnChanges {
 
     @Output() mapError = new EventEmitter();
 
+    mapCenter: GeoLocation;
     results: GeoDocument[];
 
     isLoading$ = new BehaviorSubject<boolean>(false);
@@ -39,6 +40,13 @@ export class MapComponent implements OnChanges {
     }
 
 
+    ngOnInit(): void {
+        if (this.readyToLoad) {
+            this.loadMapCenter();
+        }
+    }
+
+
     ngOnChanges(changes: SimpleChanges) {
         if (
             this.readyToLoad &&
@@ -50,6 +58,16 @@ export class MapComponent implements OnChanges {
             this.loadData();
         }
     }
+
+
+    loadMapCenter() {
+        this.visualizationService.getGeoCentroid(this.visualizedField.name, this.corpus)
+            .then(centroid => {
+                this.mapCenter = centroid;
+            })
+            .catch(this.emitError.bind(this));
+    }
+
 
     loadData() {
         showLoading(
@@ -139,7 +157,7 @@ export class MapComponent implements OnChanges {
                     }]
                 },
                 {
-                    "name": "centerY", "value": 35,
+                    "name": "centerY", "value": this.mapCenter.location.lat,
                     "on": [{
                         "events": { "signal": "delta" },
                         "update": "clamp(angles[1] + delta[1], -60, 60)"
@@ -153,7 +171,7 @@ export class MapComponent implements OnChanges {
                     "type": "mercator",
                     "scale": { "signal": "scale" },
                     "rotate": [{ "signal": "rotateX" }, 0, 0],
-                    "center": [15, { "signal": "centerY" }],
+                    "center": [this.mapCenter.location.lon, { "signal": "centerY" }],
                     "translate": [{ "signal": "tx" }, { "signal": "ty" }],
                 }
             ],

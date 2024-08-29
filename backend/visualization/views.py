@@ -57,6 +57,22 @@ class MapView(APIView):
             raise APIException(detail='could not generate geo data')
 
 
+class MapCentroidView(APIView):
+    '''
+    Retrieve the centroid of a field in a corpus.
+    '''
+
+    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+
+    def post(self, request, *args, **kwargs):
+        check_json_keys(request, ['corpus', 'field'])
+        try:
+            center = tasks.get_geo_centroid(request.data)
+            return Response(center)
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='could not retrieve geo centroid')
+
 class NgramView(APIView):
     '''
     Schedule a task to retrieve ngrams containing the search term

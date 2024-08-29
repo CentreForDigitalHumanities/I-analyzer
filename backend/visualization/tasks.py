@@ -1,7 +1,7 @@
 from celery import chord, group, shared_task
 from django.conf import settings
 from visualization import wordcloud, ngram, term_frequency
-from es import download as es_download
+from es import download as es_download, search as es_search
 from api.api_query import api_query_to_es_query
 
 @shared_task()
@@ -41,6 +41,23 @@ def get_geo_data(request_json):
             geojson_features.append(feature)
 
     return geojson_features
+
+
+@shared_task()
+def get_geo_centroid(request_json):
+    corpus_name = request_json['corpus']
+    geo_field = request_json['field']
+    query_model = {
+        "aggs": {
+            "center": {
+                "geo_centroid": {
+                    "field": geo_field
+                }
+            }
+        }
+    }
+    result = es_search.search(corpus_name, query_model, size=0)
+    return es_search.aggregation_results(result)['center']
 
 
 @shared_task

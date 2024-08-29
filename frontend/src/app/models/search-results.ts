@@ -44,6 +44,13 @@ export interface GeoDocument {
     };
 }
 
+export interface GeoLocation {
+    location: {
+        lat: number;
+        lon: number;
+    };
+}
+
 export interface DateFrequencyPair {
     date: Date;
     doc_count: number;
