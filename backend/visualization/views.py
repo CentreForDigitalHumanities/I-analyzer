@@ -40,7 +40,7 @@ class WordcloudView(APIView):
 
 class MapView(APIView):
     '''
-    Most frequent terms for a small batch of results
+    Retrieve documents with geo_field coordinates.
     '''
 
     permission_classes = [IsAuthenticated,
@@ -59,7 +59,7 @@ class MapView(APIView):
 
 class MapCentroidView(APIView):
     '''
-    Retrieve the centroid of a field in a corpus.
+    Retrieve the centroid of documents with a geo_field for a corpus.
     '''
 
     permission_classes = [IsAuthenticated, CanSearchCorpus, CanSearchTags]
@@ -71,7 +71,7 @@ class MapCentroidView(APIView):
             return Response(center)
         except Exception as e:
             logger.error(e)
-            raise APIException(detail='could not retrieve geo centroid')
+            raise APIException(detail='Could not retrieve geo centroid')
 
 class NgramView(APIView):
     '''
