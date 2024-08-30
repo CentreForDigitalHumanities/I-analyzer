@@ -63,7 +63,7 @@
                             </ia-related-words>
 
                             <ia-word-similarity *ngIf="tab === 'wordsimilarity'"
-                                [corpus]="corpus" [queryText]="activeQuery"
+                                [corpus]="corpus"
                                 [asTable]="asTable" [palette]="palette"
                                 (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>
