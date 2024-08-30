@@ -28,6 +28,8 @@ import { VisualizationService } from '@services/visualization.service';
 import { showLoading } from '@utils/utils';
 import { takeUntil } from 'rxjs/operators';
 import { DateHistogramResult, TermsResult } from '@models/aggregation';
+import { ComparedQueries } from '@models/compared-queries';
+import { RouterStoreService } from '../../store/router-store.service';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -61,9 +63,10 @@ export abstract class BarchartDirective<
     @Input() palette: string[];
 
     @Input() frequencyMeasure: 'documents' | 'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents' | 'terms' = 'raw';
 
+    normalizer: 'raw' | 'percent' | 'documents' | 'terms' = 'raw';
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
+    comparedQueries: ComparedQueries;
 
     documentLimit = 1000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
@@ -73,8 +76,6 @@ export abstract class BarchartDirective<
     tableHeaders: FreqTableHeaders;
     tableData: any[];
 
-    /** list of query used by each series in te graph */
-    queries: string[] = [];
 
     /** Stores the key that can be used in a DataPoint object
      * to retrieve the y-axis value.
@@ -160,13 +161,16 @@ export abstract class BarchartDirective<
         public searchService: SearchService,
         public visualizationService: VisualizationService,
         public apiService: ApiService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private routerStoreService: RouterStoreService,
     ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
         chartDefault.elements.bar.hoverBackgroundColor = selectColor();
         chartDefault.plugins.tooltip.displayColors = false;
         chartDefault.plugins.tooltip.intersect = false;
+        this.comparedQueries = new ComparedQueries(this.routerStoreService);
+        this.comparedQueries.allQueries$.subscribe(this.updateQueries.bind(this));
     }
 
     get isLoading() {
@@ -194,6 +198,7 @@ export abstract class BarchartDirective<
     ngOnDestroy(): void {
         this.stopPolling$.next();
         this.destroy$.next(undefined);
+        this.comparedQueries.complete();
     }
 
     /** check whether input changes should force reloading the data */
@@ -230,8 +235,10 @@ export abstract class BarchartDirective<
     }
 
     initQueries(): void {
-        this.rawData = [this.newSeries(this.queryText)];
-        this.queries = [this.queryText];
+        this.rawData = [
+            this.newSeries(this.queryText),
+            ...this.comparedQueries.state$.value.compare.map(this.newSeries)
+        ];
     }
 
     /** if a chart is active, clear canvas and reset chart object */
@@ -245,13 +252,15 @@ export abstract class BarchartDirective<
 
     /** update the queries in the graph to the input array. Preserve results if possible, and kick off loading the rest. */
     updateQueries(queries: string[]) {
-        this.rawData = queries.map((queryText) => {
-            const existingSeries = this.rawData.find(
-                (series) => series.queryText === queryText
-            );
-            return existingSeries || this.newSeries(queryText);
-        });
-        this.prepareChart();
+        if (this.rawData) {
+            this.rawData = queries.map((queryText) => {
+                const existingSeries = this.rawData.find(
+                    (series) => series.queryText === queryText
+                );
+                return existingSeries || this.newSeries(queryText);
+            });
+            this.prepareChart();
+        }
     }
 
     /** make a blank series object */
@@ -262,14 +271,6 @@ export abstract class BarchartDirective<
             total_doc_count: 0,
             searchRatio: 1.0,
         };
-    }
-
-    /** Remove any additional queries from the BarchartOptions component.
-     * Only keep the original query */
-    clearAddedQueries() {
-        this.rawData = this.rawData.slice(0, 1);
-        this.queries = [this.queryText];
-        this.prepareChart();
     }
 
     /** Show a loading spinner and load data for the graph.
