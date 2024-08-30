@@ -1,9 +1,9 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
-import { DocumentView } from '../models/document-page';
+import { CorpusField, FoundDocument, Corpus, QueryModel } from '@models/index';
+import { DocumentView } from '@models/document-page';
 import * as _ from 'lodash';
-import { documentIcons, entityIcons } from '../shared/icons';
+import { documentIcons, entityIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-document-view',

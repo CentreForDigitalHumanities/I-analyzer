@@ -53,17 +53,18 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
 
 export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard],
+        canActivate: [CorpusGuard, forwardLegacyParamsGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
-        canActivate: [CorpusGuard],
+        canActivate: [CorpusGuard, forwardLegacyParamsGuard],
     },
     {
         path: 'info/:corpus',

@@ -1,13 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash';
-import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
+import {
+    Download,
+    DownloadOptions,
+    DownloadParameters,
+    DownloadType,
+    QueryModel,
+} from '@models';
+import {
+    ApiService,
+    CorpusService,
+    DownloadService,
+    NotificationService,
+} from '@services';
 import { HistoryDirective } from '../history.directive';
-import { findByName } from '../../utils/utils';
-import { actionIcons } from '../../shared/icons';
-import { downloadQueryModel, downloadQueryModels } from '../../utils/download-history';
+import { findByName } from '@utils/utils';
+import { actionIcons } from '@shared/icons';
+import {
+    downloadQueryModel,
+    downloadQueryModels,
+} from '@utils/download-history';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-download-history',

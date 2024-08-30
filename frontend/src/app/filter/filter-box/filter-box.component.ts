@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { QueryModel, SearchFilter } from '../../models';
-import { filterIcons } from '../../shared/icons';
+import { QueryModel, SearchFilter } from '@models';
+import { filterIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-filter-box',

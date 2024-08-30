@@ -13,12 +13,12 @@ import {
     distinctUntilChanged, mergeMap,
     takeUntil, tap
 } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { User, UserResponse } from '../models';
+import { environment } from '@environments/environment';
+import { User, UserResponse } from '@models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import * as _ from 'lodash';
-import { encodeUserData, parseUserData } from '../utils/user';
+import { encodeUserData, parseUserData } from '@utils/user';
 
 @Injectable({
     providedIn: 'root',

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { actionIcons } from '../../shared/icons';
+import { actionIcons } from '@shared/icons';
 
 @Component({
   selector: 'ia-full-data-button',

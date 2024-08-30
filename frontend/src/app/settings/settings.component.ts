@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-settings',

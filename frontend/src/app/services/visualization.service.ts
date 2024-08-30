@@ -4,13 +4,14 @@ import {
     Corpus,
     DateTermFrequencyParameters,
     GeoDocument,
+    GeoLocation,
     MostFrequentWordsResult,
     NGramRequestParameters,
     NgramParameters,
     QueryModel,
     TaskResult,
     TimeCategory,
-} from '../models';
+} from '@models';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
 
@@ -45,6 +46,14 @@ export class VisualizationService {
             field: fieldName,
         });
     }
+
+    public async getGeoCentroid(fieldName: string, corpus: Corpus):
+    Promise<GeoLocation> {
+    return this.apiService.geoCentroid({
+        corpus: corpus.name,
+        field: fieldName,
+    });
+}
 
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],

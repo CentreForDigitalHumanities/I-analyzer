@@ -4,9 +4,10 @@
         <fa-icon [icon]="scanIcons.prev" aria-hidden="true"></fa-icon>
     </button>
     <ng-container *ngFor="let pageNumber of buttonArray">
-        <a class="button is-small" [ngClass]="{'is-primary':pageNumber===page}" (click)="goToPage(pageNumber)">
+        <button class="button is-small" iaToggleButton [active]="pageNumber===page"
+            (click)="goToPage(pageNumber)">
             {{pageNumber}}
-        </a>
+    </button>
     </ng-container>
     <button id="nextButton" class="button is-small" (click)="nextPage()"
         aria-label="next page">

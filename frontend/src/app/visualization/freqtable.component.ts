@@ -1,8 +1,8 @@
 import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { saveAs } from 'file-saver';
-import { FreqTableHeader, FreqTableHeaders } from '../models';
-import { actionIcons } from '../shared/icons';
+import { FreqTableHeader, FreqTableHeaders } from '@models';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-freqtable',

@@ -2,6 +2,7 @@ import pytest
 from time import sleep
 
 from django.contrib.auth.models import Group
+import elasticsearch
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.models import Corpus
@@ -27,8 +28,11 @@ def es_ner_search_client(es_client, basic_mock_corpus, basic_corpus_public, inde
     """
     # add data from mock corpus
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    es_client.indices.put_mapping(index=corpus.configuration.es_index, properties={
-                                  "content:ner": {"type": "annotated_text"}})
+    try:
+        es_client.indices.put_mapping(index=corpus.configuration.es_index, properties={
+                                    "content:ner": {"type": "annotated_text"}})
+    except elasticsearch.BadRequestError:
+        pytest.skip('Annotated text plugin not installed')
 
     es_client.index(index=corpus.configuration.es_index, document={
         'id': 'my_identifier',

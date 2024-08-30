@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from django.http import HttpRequest
-from rest_framework.exceptions import NotFound, PermissionDenied, ParseError
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 from .models import Tag, TaggedDocument
 from .permissions import IsTagOwner
 from .serializers import TagSerializer
 from addcorpus.models import Corpus
-from addcorpus.permissions import CorpusAccessPermission
+from addcorpus.permissions import CanSearchCorpus
 
 def check_corpus_name(request: HttpRequest):
     '''
@@ -58,7 +58,7 @@ class TagViewSet(ModelViewSet):
         return Response(serializer.data)
 
 class DocumentTagsView(APIView):
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
         '''

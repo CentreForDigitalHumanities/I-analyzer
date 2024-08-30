@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnDestroy, Output } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, Subject, from, of } from 'rxjs';
 import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { actionIcons } from '../../shared/icons';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-definition-json-upload',
