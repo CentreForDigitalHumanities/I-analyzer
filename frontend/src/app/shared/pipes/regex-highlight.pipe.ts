@@ -18,7 +18,7 @@ export class RegexHighlightPipe implements PipeTransform {
         const highlightedText = parts.map(part => {
             const sanitizedText = this.sanitizedLineBreaks(part.substring, '<br />');
 
-            return part.isHit ? `<span class="highlight">${sanitizedText}</span>` : sanitizedText;
+            return part.isHit ? `<mark class="highlight">${sanitizedText}</mark>` : sanitizedText;
         }).join('');
 
         return this.sanitizer.bypassSecurityTrustHtml(highlightedText);
