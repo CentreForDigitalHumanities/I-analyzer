@@ -3,9 +3,9 @@ import {
     sortSettingsFromParams, sortSettingsToParams
 } from './params';
 import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
-import { SortState } from '../models';
+import { SortState } from '@models';
 import * as _ from 'lodash';
-import { PageParameters, PageResultsParameters } from '../models/page-results';
+import { PageParameters, PageResultsParameters } from '@models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {

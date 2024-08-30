@@ -1,7 +1,6 @@
 from datetime import datetime
 import os
-from os.path import join, splitext
-import locale
+from os.path import join
 import logging
 
 from django.conf import settings
@@ -34,13 +33,18 @@ def transform_content(soup):
                 page_text += paragraph_text + '\n\n'
     return page_text
 
+months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus',
+          'september', 'oktober', 'november', 'december']
+
 def transform_date(date_string):
+    day_string, month_string, year_string = date_string.split()
     try:
-        locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
-        date = datetime.strptime(date_string, '%d %B %Y').strftime('%Y-%m-%d')
-        locale.setlocale(locale.LC_ALL, '')
-        return date
-    except ValueError:
+        day = int(day_string)
+        month = next(i + 1 for i, month in enumerate(months) if month == month_string)
+        year = int(year_string)
+        date = datetime(year=year, month=month, day=day)
+        return date.strftime('%Y-%m-%d')
+    except:
         logger.error("Unable to get date from {}".format(date_string))
         return None
 

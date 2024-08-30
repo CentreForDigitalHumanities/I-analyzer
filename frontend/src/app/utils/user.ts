@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { User, UserResponse } from '../models';
+import { User, UserResponse } from '@models';
 
 /* Transforms backend user response to User object
 *

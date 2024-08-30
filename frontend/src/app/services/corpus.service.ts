@@ -3,10 +3,15 @@ import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
+import {
+    Corpus,
+    CorpusField,
+    DocumentContext,
+    SortDirection,
+    SortState,
+} from '@models/index';
 import { ApiRetryService } from './api-retry.service';
-import { AuthService } from './auth.service';
-import { findByName } from '../utils/utils';
+import { findByName } from '@utils/utils';
 import * as _ from 'lodash';
 
 @Injectable({
@@ -23,7 +28,6 @@ export class CorpusService {
 
     constructor(
         private apiRetryService: ApiRetryService,
-        private authService: AuthService
     ) {
         this.parseField = this.parseField.bind(this);
     }

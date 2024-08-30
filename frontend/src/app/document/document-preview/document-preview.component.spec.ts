@@ -4,7 +4,7 @@ import { DocumentPreviewComponent } from './document-preview.component';
 import { commonTestBed } from '../../common-test-bed';
 import { mockField } from '../../../mock-data/corpus';
 import { makeDocument } from '../../../mock-data/constructor-helpers';
-import { DocumentPage } from '../../models/document-page';
+import { DocumentPage } from '@models/document-page';
 
 describe('DocumentPreviewComponent', () => {
     let component: DocumentPreviewComponent;

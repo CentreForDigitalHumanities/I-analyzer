@@ -4,7 +4,12 @@ import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { DownloadService } from './download.service';
 import { mockCorpus, mockField } from '../../mock-data/corpus';
-import { DownloadOptions, LimitedResultsDownloadParameters, QueryModel, SortState } from '../models';
+import {
+    DownloadOptions,
+    LimitedResultsDownloadParameters,
+    QueryModel,
+    SortState,
+} from '@models';
 
 describe('DownloadService', () => {
     let apiService: ApiService;
@@ -63,8 +68,8 @@ describe('DownloadService', () => {
                 sort: [{ great_field: 'desc' }],
                 highlight: {
                     fragment_size: highlight,
-                    pre_tags: ['<span class="highlight">'],
-                    post_tags: ['</span>'],
+                    pre_tags: ['<mark class="highlight">'],
+                    post_tags: ['</mark>'],
                     order: 'score',
                     fields: [{ speech: {} }],
                 },

@@ -65,6 +65,16 @@ class PrettyChoiceField(serializers.ChoiceField):
         key = super().to_representation(value)
         return self.choices[key]
 
+    def to_internal_value(self, data):
+        # If the data provides a display name, get the corresponding key.
+        # The browsable API sends keys instead of labels; use the original data if no
+        # matching label is found.
+        value = next(
+            (key for (key, label) in self.choices.items() if label == data),
+            data
+        )
+        return super().to_internal_value(value)
+
 class CorpusConfigurationSerializer(serializers.ModelSerializer):
     fields = FieldSerializer(many=True, read_only=True)
     languages = serializers.ListField(child=LanguageField())
@@ -123,11 +133,18 @@ class DocumentationTemplateField(serializers.CharField):
 
 class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
-    content = DocumentationTemplateField()
+    index = serializers.IntegerField(source='page_index', read_only=True)
+    content = DocumentationTemplateField(read_only=True)
+    content_template = serializers.CharField(source='content')
+    corpus = serializers.SlugRelatedField(
+        source='corpus_configuration',
+        queryset=CorpusConfiguration.objects.all(),
+        slug_field='corpus__name',
+    )
 
     class Meta:
         model = CorpusDocumentationPage
-        fields = ['corpus_configuration', 'type', 'content']
+        fields = ['id', 'corpus', 'type', 'content', 'content_template', 'index']
 
 
 class JSONDefinitionField(serializers.Field):

@@ -5,7 +5,7 @@ import { ApiService } from './api.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { fakeNgramResult } from '../../mock-data/api';
 import { Subject, from, throwError } from 'rxjs';
-import { TaskResult, TasksOutcome } from '../models';
+import { TaskResult, TasksOutcome } from '@models';
 
 describe('ApiService', () => {
     let service: ApiService;

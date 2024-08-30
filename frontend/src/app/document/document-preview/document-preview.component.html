@@ -2,8 +2,10 @@
     <table class="table is-fullwidth">
         <ng-container *ngFor="let field of page.fields">
             <tr *ngIf="document.fieldValue(field)">
-                <th [iaBalloon]="field.description" iaBalloonPosition="left" iaBalloonLength="medium">
-                    {{field.displayName}}:
+                <th>
+                    <span [iaBalloon]="field.description" iaBalloonPosition="left" iaBalloonLength="medium">
+                        {{field.displayName}}:
+                    </span>
                 </th>
                 <td *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow"
                     [attr.lang]="document.language(field)">

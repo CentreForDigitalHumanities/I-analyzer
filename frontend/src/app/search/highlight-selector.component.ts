@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { actionIcons } from '../shared/icons';
-import { DEFAULT_HIGHLIGHT_SIZE, PageResults } from '../models/page-results';
+import { actionIcons } from '@shared/icons';
+import { DEFAULT_HIGHLIGHT_SIZE, PageResults } from '@models/page-results';
 import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 

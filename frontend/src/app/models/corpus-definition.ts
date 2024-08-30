@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ApiService } from '../services';
+import { ApiService } from '@services';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
 

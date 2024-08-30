@@ -1,5 +1,5 @@
 import { Observable, from, map } from 'rxjs';
-import { SearchService } from '../services';
+import { SearchService } from '@services';
 import { Store } from '../store/types';
 import { PageResultsParameters } from './page-results';
 import { QueryModel } from './query';

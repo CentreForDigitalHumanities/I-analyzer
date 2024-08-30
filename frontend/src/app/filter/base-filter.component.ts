@@ -1,9 +1,9 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 
-import { QueryModel } from '../models/index';
+import { QueryModel } from '@models/index';
 import { Subscription } from 'rxjs';
-import { FilterInterface } from '../models/base-filter';
+import { FilterInterface } from '@models/base-filter';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
