@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
 import re
 
+from addcorpus.models import Corpus
 from ianalyzer.elasticsearch import elasticsearch
 
 import logging
 logger = logging.getLogger('indexing')
 
 
-def alias(corpus_name, corpus_definition, clean=False):
+def alias(corpus: Corpus, clean=False):
     '''
     Script to create, update and remove aliases from ES
     '''
+    corpus_config = corpus.configuration
+    corpus_name = corpus.name
+    index_name = corpus_config.es_index
+    index_alias = corpus_config.es_alias
     client = elasticsearch(corpus_name)
 
-    alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
-    indices = client.indices.get(index='{}-*'.format(corpus_definition.es_index))
+    alias = index_alias if index_alias else index_name
+    indices = client.indices.get(index='{}-*'.format(index_name))
     highest_version = get_highest_version_number(indices, alias)
 
     actions = []
@@ -36,7 +41,7 @@ def alias(corpus_name, corpus_definition, clean=False):
         if is_highest_version and not is_aliased:
             logger.info('Adding alias `{}` for index `{}`'.format(alias, index_name))
             actions.append(
-                {'add': {'index': index_name, 'alias': alias }})
+                {'add': {'index': index_name, 'alias': alias}})
         elif is_highest_version and is_aliased:
             logger.info('Alias `{}` already exists for `{}`, skipping alias creation'.format(
                 alias, index_name))

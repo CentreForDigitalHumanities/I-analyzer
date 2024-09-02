@@ -1,12 +1,14 @@
 from datetime import datetime
+import json
+import logging
 
 from django.conf import settings
 import langcodes
 import requests
 
-from addcorpus.corpus import JSONCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
-import addcorpus.extract as extract
+import addcorpus.python_corpora.extract as extract
 from corpora.peaceportal.peaceportal import PeacePortal
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -45,23 +47,31 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     description = "Inscriptions and book entries documenting Jewish settlements in the Mediterranean"
     min_date = datetime(year=1, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
-    data_directory = getattr(settings, 'JMIG_DATA',
-                             'localhost:8100/api/records/')
+
+    data_directory = settings.JMIG_DATA_DIR
+    data_filepath = getattr(settings, 'JMIG_DATA', None)
+    data_url = getattr(settings, 'JMIG_DATA_URL', None)
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
-    description_page = 'jewish_migration.md'
     languages = ['en']
 
     category = 'inscription'
 
     def sources(self, start, end):
-        response = requests.get(self.data_directory)
-        list_of_sources = response.json()
+        if self.data_url:
+            response = requests.get(self.data_url)
+            list_of_sources = response.json()
+        elif self.data_filepath:
+            with open(self.data_filepath, 'r') as f:
+                list_of_sources = json.load(f)
+        else:
+            logging.getLogger('indexing').warning(
+                'No data filepath or URL provided.')
         for source in list_of_sources:
             yield source
 
-    
+
     def __init__(self):
         super().__init__()
         self._id.extractor = extract.JSON(key='source')
@@ -74,6 +84,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
         self.region.extractor = extract.JSON(key='region')
         self.settlement.extractor = extract.JSON(key='place_name')
         self.coordinates.extractor = extract.JSON(key='coordinates')
+        self.coordinates.visualizations = ['map']
         self.sex.extractor = extract.JSON(key='sex_deceased')
         self.iconography.extractor = extract.JSON(key='symbol')
         self.comments.extractor = extract.JSON(key='comments')

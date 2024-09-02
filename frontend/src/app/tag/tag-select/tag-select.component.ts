@@ -9,10 +9,10 @@ import {
 } from '@angular/core';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { Tag } from '../../models';
-import { TagService } from '../../services/tag.service';
+import { Tag } from '@models';
+import { TagService } from '@services/tag.service';
 import { takeUntil } from 'rxjs/operators';
-import { actionIcons, formIcons } from '../../shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-tag-select',
@@ -27,7 +27,7 @@ export class TagSelectComponent implements OnDestroy {
     @ViewChild('tagSelect') tagSelect: ElementRef;
 
     tags$: Observable<Tag[]>;
-    destroy$ = new Subject();
+    destroy$ = new Subject<void>();
 
     formIcons = formIcons;
     actionIcons = actionIcons;
@@ -66,7 +66,7 @@ export class TagSelectComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 }

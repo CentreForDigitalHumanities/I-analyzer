@@ -2,14 +2,13 @@ import logging
 import os
 
 from addcorpus.models import Corpus
-from addcorpus.permissions import (CorpusAccessPermission,
+from addcorpus.permissions import (CanSearchCorpus,
                                    corpus_name_from_request)
 from django.conf import settings
 from django.http.response import FileResponse
 from download import convert_csv, tasks
 from download.models import Download
 from download.serializers import DownloadSerializer
-from es import download as es_download
 from rest_framework.exceptions import (APIException, NotFound, ParseError,
                                        PermissionDenied)
 from rest_framework.permissions import IsAuthenticated
@@ -17,7 +16,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from api.utils import check_json_keys
-from api.api_query import api_query_to_es_query
 
 logger = logging.getLogger()
 
@@ -36,21 +34,17 @@ class ResultsDownloadView(APIView):
     Download search results up to 1.000 documents
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
-        max_size = 1000
-        size = request.data.get('es_query').pop('size', max_size)
-
-        if size > max_size:
-            raise ParseError(detail='Download failed: too many documents requested')
-
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
+            size = request.data.get('es_query').pop('size')
+            user = request.user if request.user.is_authenticated else None
             download = Download.objects.create(
-                download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
+                download_type='search_results', corpus=corpus, parameters=request.data, user=user)
             csv_path = tasks.make_download(request.data, download.id, size)
             directory, filename = os.path.split(csv_path)
             # Create download for download history
@@ -68,7 +62,7 @@ class ResultsDownloadTaskView(APIView):
     over 10.000 documents
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route'])
@@ -92,7 +86,7 @@ class FullDataDownloadTaskView(APIView):
     for a visualisation.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['visualization', 'parameters', 'corpus_name'])

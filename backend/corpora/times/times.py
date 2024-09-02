@@ -11,15 +11,18 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from addcorpus import extract, filters
-from addcorpus.corpus import (FieldDefinition, XMLCorpusDefinition, after,
+from addcorpus.python_corpora import extract
+from addcorpus.python_corpora.corpus import (FieldDefinition, XMLCorpusDefinition, after,
                               consolidate_start_end_years, string_contains,
                               until)
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
+from addcorpus.python_corpora import filters
 from corpora.times.times_scans import compose_absolute_image_path
 from django.conf import settings
 from media.media_url import media_url
+
+from ianalyzer_readers.xml_tag import Tag, ParentTag
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +37,7 @@ class Times(XMLCorpusDefinition):
     image = 'times.jpg'
     scan_image_type = getattr(settings, 'TIMES_SCAN_IMAGE_TYPE', 'image/png')
     description_page = 'times.md'
+    citation_page = 'citation.md'
     languages = ['en']
     category = 'periodical'
 
@@ -41,8 +45,8 @@ class Times(XMLCorpusDefinition):
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    tag_toplevel = 'issue'
-    tag_entry = 'article'
+    tag_toplevel = Tag('issue')
+    tag_entry = Tag('article')
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
@@ -115,7 +119,9 @@ class Times(XMLCorpusDefinition):
             description='Library where the microfilm is sourced',
             es_mapping=keyword_mapping(),
             extractor=extract.XML(
-                tag=['metadatainfo', 'sourceLibrary'], toplevel=True,
+                Tag('metadatainfo'),
+                Tag('sourceLibrary'),
+                toplevel=True,
                 applicable=after(1985)
             )
         ),
@@ -125,11 +131,13 @@ class Times(XMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             extractor=extract.Choice(
                 extract.XML(
-                    tag='ed', toplevel=True,
+                    Tag('ed'),
+                    toplevel=True,
                     applicable=until(1985)
                 ),
                 extract.XML(
-                    tag='ed', toplevel=True, multiple=True,
+                    Tag('ed'),
+                    toplevel=True, multiple=True,
                     applicable=after(1985)
                 )
             ),
@@ -141,7 +149,8 @@ class Times(XMLCorpusDefinition):
             es_mapping={'type': 'integer'},
             description='Source issue number.',
             extractor=extract.XML(
-                tag='is', toplevel=True,
+                Tag('is'),
+                toplevel=True,
                 # Hardcoded to ignore one particular issue with source data
                 transform=lambda x: (62226 if x == "6222662226" else int(x))
             ),
@@ -154,7 +163,8 @@ class Times(XMLCorpusDefinition):
             description='Volume number.',
             es_mapping=keyword_mapping(),
             extractor=extract.XML(
-                tag='volNum', toplevel=True,
+                Tag('volNum'),
+                toplevel=True,
                 applicable=after(1985)
             ),
             csv_core=True
@@ -168,7 +178,8 @@ class Times(XMLCorpusDefinition):
             sortable=True,
             description='Publication date as full string, as found in source file',
             extractor=extract.XML(
-                tag='da', toplevel=True
+                Tag('da'),
+                toplevel=True
             )
         ),
         FieldDefinition(
@@ -182,7 +193,7 @@ class Times(XMLCorpusDefinition):
                                                   'indicator is in this range.'
                                               )
                                               ),
-            extractor=extract.XML(tag='ocr', transform=float),
+            extractor=extract.XML(Tag('ocr'), transform=float),
             sortable=True
         ),
         FieldDefinition(
@@ -194,7 +205,7 @@ class Times(XMLCorpusDefinition):
                 'For issues that span more than 1 day.'
             ),
             extractor=extract.XML(
-                tag='tdate', toplevel=True,
+                Tag('tdate'), toplevel=True,
                 applicable=after(1985)
             )
         ),
@@ -204,7 +215,7 @@ class Times(XMLCorpusDefinition):
             description='Page count: number of images present in the issue.',
             es_mapping={'type': 'integer'},
             extractor=extract.XML(
-                tag='ip', toplevel=True, transform=int
+                Tag('ip'), toplevel=True, transform=int
             ),
             sortable=True
         ),
@@ -221,7 +232,9 @@ class Times(XMLCorpusDefinition):
                 option_count=2
             ),
             extractor=extract.XML(
-                tag=['..', 'pageid'], attribute='isPartOf',
+                ParentTag(),
+                Tag('pageid'),
+                attribute='isPartOf',
                 applicable=after(1985)
             )
         ),
@@ -230,7 +243,10 @@ class Times(XMLCorpusDefinition):
             display_name='Supplement title',
             description='Supplement title.',
             extractor=extract.XML(
-                tag=['..', 'pageid', 'supptitle'], multiple=True,
+                ParentTag(),
+                Tag('pageid'),
+                Tag('supptitle'),
+                multiple=True,
                 applicable=after(1985)
             ),
         ),
@@ -239,7 +255,10 @@ class Times(XMLCorpusDefinition):
             display_name='Supplement subtitle',
             description='Supplement subtitle.',
             extractor=extract.XML(
-                tag=['..', 'pageid', 'suppsubtitle'], multiple=True,
+                ParentTag(),
+                Tag('pageid'),
+                Tag('suppsubtitle'),
+                multiple=True,
                 applicable=after(1985)
             )
         ),
@@ -268,7 +287,7 @@ class Times(XMLCorpusDefinition):
             display_name='ID',
             description='Article identifier.',
             es_mapping=keyword_mapping(),
-            extractor=extract.XML(tag='id')
+            extractor=extract.XML(Tag('id'))
         ),
         FieldDefinition(
             name='ocr-relevant',
@@ -276,7 +295,7 @@ class Times(XMLCorpusDefinition):
             description='Whether OCR confidence level is relevant.',
             es_mapping={'type': 'boolean'},
             extractor=extract.XML(
-                tag='ocr', attribute='relevant',
+                Tag('ocr'), attribute='relevant',
                 transform=string_contains("yes"),
             )
         ),
@@ -288,7 +307,7 @@ class Times(XMLCorpusDefinition):
                 'where article starts.'
             ),
             es_mapping=keyword_mapping(),
-            extractor=extract.XML(tag='sc')
+            extractor=extract.XML(Tag('sc'))
         ),
         FieldDefinition(
             name='page',
@@ -296,8 +315,8 @@ class Times(XMLCorpusDefinition):
             description='Start page label, from source (1, 2, 17A, ...).',
             es_mapping=keyword_mapping(),
             extractor=extract.Choice(
-                extract.XML(tag='pa', applicable=until(1985)),
-                extract.XML(tag=['..', 'pa'], applicable=after(1985))
+                extract.XML(Tag('pa'), applicable=until(1985)),
+                extract.XML(ParentTag(), Tag('pa'), applicable=after(1985))
             )
         ),
         FieldDefinition(
@@ -309,7 +328,7 @@ class Times(XMLCorpusDefinition):
                 'of the article.'
             ),
             extractor=extract.XML(
-                tag='pc', transform=int
+                Tag('pc'), transform=int
             ),
             sortable=True
         ),
@@ -320,13 +339,13 @@ class Times(XMLCorpusDefinition):
             search_field_core=True,
             visualizations=['wordcloud'],
             description='Article title.',
-            extractor=extract.XML(tag='ti')
+            extractor=extract.XML(Tag('ti'))
         ),
         FieldDefinition(
             name='subtitle',
             display_name='Subtitle',
             description='Article subtitle.',
-            extractor=extract.XML(tag='ta', multiple=True),
+            extractor=extract.XML(Tag('ta'), multiple=True),
             search_field_core=True
         ),
         FieldDefinition(
@@ -334,7 +353,7 @@ class Times(XMLCorpusDefinition):
             display_name='Subheader',
             description='Article subheader (product dependent field).',
             extractor=extract.XML(
-                tag='subheader', multiple=True,
+                Tag('subheader'), multiple=True,
                 applicable=after(1985)
             )
         ),
@@ -345,11 +364,11 @@ class Times(XMLCorpusDefinition):
             es_mapping=keyword_mapping(True),
             extractor=extract.Choice(
                 extract.XML(
-                    tag='au', multiple=True,
+                    Tag('au'), multiple=True,
                     applicable=until(1985)
                 ),
                 extract.XML(
-                    tag='au_composed', multiple=True,
+                    Tag('au_composed'), multiple=True,
                     applicable=after(1985)
                 )
             ),
@@ -362,7 +381,7 @@ class Times(XMLCorpusDefinition):
             description='Credited as source.',
             es_mapping=keyword_mapping(True),
             extractor=extract.XML(
-                tag='altSource', multiple=True
+                Tag('altSource'), multiple=True
             )
         ),
         FieldDefinition(
@@ -375,7 +394,7 @@ class Times(XMLCorpusDefinition):
                 description='Accept only articles in these categories.',
                 option_count=25
             ),
-            extractor=extract.XML(tag='ct', multiple=True),
+            extractor=extract.XML(Tag('ct'), multiple=True),
             csv_core=True
         ),
         FieldDefinition(
@@ -394,11 +413,11 @@ class Times(XMLCorpusDefinition):
             ),
             extractor=extract.Choice(
                 extract.XML(
-                    tag='il', multiple=True,
+                    Tag('il'), multiple=True,
                     applicable=until(1985)
                 ),
                 extract.XML(
-                    tag='il', attribute='type', multiple=True,
+                    Tag('il'), attribute='type', multiple=True,
                     applicable=after(1985)
                 )
             ),
@@ -409,7 +428,8 @@ class Times(XMLCorpusDefinition):
             display_name='Content preamble',
             description='Raw OCR\'ed text (preamble).',
             extractor=extract.XML(
-                tag=['text', 'text.preamble'],
+                Tag('text'),
+                Tag('text.preamble'),
                 flatten=True
             )
         ),
@@ -418,7 +438,8 @@ class Times(XMLCorpusDefinition):
             display_name='Content heading',
             description='Raw OCR\'ed text (header).',
             extractor=extract.XML(
-                tag=['text', 'text.title'],
+                Tag('text'),
+                Tag('text.title'),
                 flatten=True
             )
         ),
@@ -432,9 +453,13 @@ class Times(XMLCorpusDefinition):
             results_overview=True,
             search_field_core=True,
             extractor=extract.XML(
-                tag=['text', 'text.cr'], multiple=True,
-                flatten=True
-            )
+                Tag('text'),
+                Tag('text.cr'),
+                multiple=True,
+                flatten=True,
+                transform='\n'.join,
+            ),
+            language='en',
         ),
     ]
 

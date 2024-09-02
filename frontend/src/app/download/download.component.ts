@@ -1,9 +1,32 @@
-import { Component, Input, OnChanges } from '@angular/core';
-
-import { DownloadService, NotificationService } from '../services/index';
-import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel, ResultOverview } from '../models/index';
-import { actionIcons } from '../shared/icons';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
+
+import { environment } from '@environments/environment';
+import {
+    AuthService,
+    DownloadService,
+    NotificationService,
+    SearchService,
+} from '@services/index';
+import {
+    Corpus,
+    CorpusField,
+    PendingDownload,
+    QueryModel,
+    SortState,
+} from '@models/index';
+import { actionIcons } from '@shared/icons';
+import { TotalResults } from '@models/total-results';
+import { SimpleStore } from '../store/simple-store';
+import { Observable, map } from 'rxjs';
+import { Router } from '@angular/router';
+import { pageResultsParametersToParams } from '@utils/params';
+import {
+    DEFAULT_HIGHLIGHT_SIZE,
+    PageResults,
+    PageResultsParameters,
+} from '@models/page-results';
+
 
 @Component({
     selector: 'ia-download',
@@ -13,10 +36,6 @@ import * as _ from 'lodash';
 export class DownloadComponent implements OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
-    @Input() public resultOverview: ResultOverview;
-    @Input() public hasLimitedResults: boolean;
-    @Input() public downloadLimit: string;
-    @Input() public route: string;
 
     public selectedCsvFields: CorpusField[];
     public availableCsvFields: CorpusField[];
@@ -27,9 +46,22 @@ export class DownloadComponent implements OnChanges {
 
     public pendingDownload: PendingDownload;
 
+    resultsConfig: PageResults;
+
     actionIcons = actionIcons;
 
-    private resultsCutoff = 1000;
+    downloadLimit: number;
+
+    canDownloadDirectly$: Observable<boolean>;
+
+    encodingOptions = ['utf-8', 'utf-16'];
+    encoding: 'utf-8' | 'utf-16' = 'utf-8';
+
+    totalResults: TotalResults;
+    downloadDisabled$: Observable<boolean>;
+
+    private directDownloadLimit: number = environment.directDownloadLimit;
+    private userDownloadLimit: number;
 
     private downloadsPageLink = {
         text: 'view downloads',
@@ -38,60 +70,61 @@ export class DownloadComponent implements OnChanges {
 
     constructor(
         private downloadService: DownloadService,
-        private notificationService: NotificationService
-    ) {}
-
-    get downloadDisabled(): boolean {
-        return !this.resultOverview || this.resultOverview.resultsCount === 0;
+        private notificationService: NotificationService,
+        private searchService: SearchService,
+        private authService: AuthService,
+        private router: Router,
+    ) {
+        this.userDownloadLimit = this.authService.getCurrentUser()?.downloadLimit;
+        this.downloadLimit = this.userDownloadLimit || this.directDownloadLimit;
     }
 
-    ngOnChanges() {
-        this.availableCsvFields = _.filter(this.corpus.fields, 'downloadable');
-        const highlight = this.resultOverview?.highlight;
-        // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
-        if (highlight !== undefined) {
-            this.availableCsvFields.push({
-                name: 'context',
-                description: `Query surrounded by ${highlight} characters`,
-                displayName: 'Query in context',
-                displayType: 'text_content',
-                csvCore: false,
-                hidden: false,
-                sortable: false,
-                primarySort: false,
-                searchable: false,
-                downloadable: true,
-                filterOptions: null,
-                mappingType: null,
-            } as unknown as CorpusField);
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.corpus) {
+            this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
+            this.selectedCsvFields = _.filter(this.corpus?.fields, 'csvCore');
+        }
+        if (changes.queryModel) {
+            this.totalResults?.complete();
+            this.resultsConfig?.complete();
+            this.totalResults = new TotalResults(
+                new SimpleStore(), this.searchService, this.queryModel
+            );
+            this.downloadDisabled$ = this.totalResults.result$.pipe(
+                map(result => result > 0)
+            );
+            this.canDownloadDirectly$ = this.totalResults.result$.pipe(
+                map(this.enableDirectDownload.bind(this))
+            );
+            this.resultsConfig = new PageResults(
+                new SimpleStore(), this.searchService, this.queryModel
+            );
         }
     }
 
-    /**
-     * called by download csv button. Large files are rendered in backend via Celery async task,
-     * and an email is sent with download link from backend
-     */
-    public chooseDownloadMethod() {
-        if (this.resultOverview.resultsCount < this.resultsCutoff) {
-            this.directDownload();
+    onHighlightChange(event): void {
+        if (event.target.checked) {
+            this.resultsConfig.setParams({ highlight: DEFAULT_HIGHLIGHT_SIZE });
         } else {
-            this.longDownload();
+            this.resultsConfig.setParams({ highlight: null });
         }
     }
 
     /** download short file directly */
-    public confirmDirectDownload(options: DownloadOptions) {
+    public confirmDirectDownload(): void {
+        const sort = this.resultsConfig.state$.value.sort;
+        const highlight = this.resultsConfig.state$.value.highlight;
         this.isDownloading = true;
         this.downloadService
             .download(
                 this.corpus,
                 this.queryModel,
-                this.getCsvFields(),
-                this.resultOverview.resultsCount,
-                this.route,
-                this.resultOverview.sort,
-                this.resultOverview.highlight,
-                options
+                this.getColumnNames(),
+                this.directDownloadLimit,
+                this.resultsRoute(this.queryModel, sort, highlight),
+                sort,
+                highlight,
+                { encoding: this.encoding }
             )
             .catch((error) => {
                 this.notificationService.showMessage(error);
@@ -102,25 +135,19 @@ export class DownloadComponent implements OnChanges {
             });
     }
 
-    public selectCsvFields(selection: CorpusField[]) {
-        this.selectedCsvFields = selection;
-    }
-
-    /** results can be downloaded directly: show menu to pick file options */
-    private directDownload() {
-        this.pendingDownload = { download_type: 'search_results' };
-    }
 
     /** start backend task to create csv file */
-    private longDownload() {
+    longDownload(): void {
+        const sort = this.resultsConfig.state$.value.sort;
+        const highlight = this.resultsConfig.state$.value.highlight;
         this.downloadService
             .downloadTask(
                 this.corpus,
                 this.queryModel,
-                this.getCsvFields(),
-                this.route,
-                this.resultOverview.sort,
-                this.resultOverview.highlight,
+                this.getColumnNames(),
+                this.resultsRoute(this.queryModel, sort, highlight),
+                sort,
+                highlight,
             )
             .then((results) => {
                 this.notificationService.showMessage(
@@ -134,11 +161,40 @@ export class DownloadComponent implements OnChanges {
             });
     }
 
-    private getCsvFields(): CorpusField[] {
+    private enableDirectDownload(totalResults: number): boolean {
+        const totalToDownload = _.min([totalResults, this.downloadLimit]);
+        return totalToDownload <= this.directDownloadLimit;
+    }
+
+    private getColumnNames(): string[] {
+        let selectedFields: CorpusField[];
         if (this.selectedCsvFields === undefined) {
-            return this.corpus.fields.filter((field) => field.csvCore);
+            selectedFields = this.corpus.fields.filter((field) => field.csvCore);
         } else {
-            return this.selectedCsvFields;
+            selectedFields = this.selectedCsvFields;
         }
+        const selected = _.map(selectedFields, 'name');
+        if (this.resultsConfig.state$.value.highlight) {
+            selected.push('context');
+        }
+        return selected;
+    }
+
+    /**
+     * Generate URL to view these results in the web interface
+     */
+    private resultsRoute(
+        queryModel: QueryModel, sort: SortState, highlight?: number
+    ): string {
+        const resultsParameters: PageResultsParameters = {sort, from: 0, size: 20, highlight };
+        const queryParams = {
+            ...queryModel.toQueryParams(),
+            ...pageResultsParametersToParams(resultsParameters, queryModel.corpus)
+        };
+        const tree = this.router.createUrlTree(
+            ['/search', queryModel.corpus.name],
+            { queryParams }
+        );
+        return tree.toString();
     }
 }

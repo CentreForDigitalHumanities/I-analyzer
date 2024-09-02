@@ -1,7 +1,7 @@
 from celery import chord, group, shared_task
 from django.conf import settings
 from visualization import wordcloud, ngram, term_frequency
-from es import download as es_download
+from es import download as es_download, search as es_search
 from api.api_query import api_query_to_es_query
 
 @shared_task()
@@ -11,6 +11,54 @@ def get_wordcloud_data(request_json):
     list_of_texts, _ = es_download.scroll(corpus_name, es_query, settings.WORDCLOUD_LIMIT)
     word_counts = wordcloud.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
     return word_counts
+
+
+@shared_task()
+def get_geo_data(request_json):
+    ''' Fetch all documents regardless of number of search results.
+    This should be fast enough for this operation.
+    '''
+    corpus_name = request_json['corpus']
+    geo_field = request_json['field']
+    es_query = api_query_to_es_query(request_json, corpus_name)
+    list_of_documents, _ = es_download.scroll(
+        corpus_name, es_query, source_includes=['id', geo_field])
+
+    # Convert documents to GeoJSON features
+    geojson_features = []
+    for doc in list_of_documents:
+        if doc['_source'][geo_field] is not None:
+            feature = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": doc['_source'][geo_field]['coordinates']
+                },
+                "properties": {
+                    "id": doc['_source']['id']
+                }
+            }
+            geojson_features.append(feature)
+
+    return geojson_features
+
+
+@shared_task()
+def get_geo_centroid(request_json):
+    corpus_name = request_json['corpus']
+    geo_field = request_json['field']
+    query_model = {
+        "aggs": {
+            "center": {
+                "geo_centroid": {
+                    "field": geo_field
+                }
+            }
+        }
+    }
+    result = es_search.search(corpus_name, query_model, size=0)
+    return es_search.aggregation_results(result)['center']
+
 
 @shared_task
 def get_ngram_data_bin(**kwargs):

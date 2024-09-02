@@ -1,22 +1,23 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
-import { CorpusService, DialogService, ParamService, } from '../services/index';
-import { ParamDirective } from '../param/param-directive';
-import { AuthService } from '../services/auth.service';
+import { Corpus, CorpusField, QueryModel, User } from '@models/index';
+import { CorpusService, DialogService } from '@services/index';
+
+import { AuthService } from '@services/auth.service';
 import { distinct, filter } from 'rxjs/operators';
-import { actionIcons, searchIcons } from '../shared/icons';
+import { actionIcons, searchIcons } from '@shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
+import { Title } from '@angular/platform-browser';
+import { SearchTab, SearchTabs } from './search-tabs';
 
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss'],
 })
-export class SearchComponent extends ParamDirective {
+export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection', { static: false })
     public searchSection: ElementRef;
 
@@ -24,22 +25,10 @@ export class SearchComponent extends ParamDirective {
 
     public corpus: Corpus;
 
-    /**
-     * The filters have been modified.
-     */
-    public isSearching: boolean;
-    public hasSearched: boolean;
-    /**
-     * Whether the total number of hits exceeds the download limit.
-     */
-    public hasLimitedResults = false;
-
     public user: User;
 
     searchIcons = searchIcons;
     actionIcons = actionIcons;
-
-    activeTab: string;
 
     public queryModel: QueryModel;
     /**
@@ -47,13 +36,11 @@ export class SearchComponent extends ParamDirective {
      */
     public queryText: string;
 
-    resultOverview: ResultOverview;
-
     public filterFields: CorpusField[] = [];
 
-    public showVisualization: boolean;
-
     public nullableParameters = [];
+
+    tabs: SearchTabs;
 
     protected corpusSubscription: Subscription;
 
@@ -67,12 +54,10 @@ export class SearchComponent extends ParamDirective {
         private authService: AuthService,
         private corpusService: CorpusService,
         private dialogService: DialogService,
-        paramService: ParamService,
-        route: ActivatedRoute,
-        router: Router,
         private routerStoreService: RouterStoreService,
+        private title: Title,
     ) {
-        super(route, router, paramService);
+        this.tabs = new SearchTabs(this.routerStoreService);
     }
 
     @HostListener('window:scroll', [])
@@ -82,8 +67,8 @@ export class SearchComponent extends ParamDirective {
             this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
-    async initialize(): Promise<void> {
-        this.user = await this.authService.getCurrentUserPromise();
+    ngOnInit() {
+        this.authService.getCurrentUserPromise().then(user => this.user = user);
         this.corpusSubscription = this.corpusService.currentCorpus
             .pipe(
                 filter((corpus) => !!corpus),
@@ -99,28 +84,10 @@ export class SearchComponent extends ParamDirective {
         }
     }
 
-    teardown() {
+    ngOnDestroy() {
         this.user = undefined;
         this.corpusSubscription.unsubscribe();
         this.queryModel.complete();
-    }
-
-    setStateFromParams(params: ParamMap) {
-        this.showVisualization = params.has('visualize') ? true : false;
-    }
-
-    /**
-     * Event triggered from search-results.component
-     *
-     * @param input
-     */
-    public onSearched(input: ResultOverview) {
-        this.isSearching = false;
-        this.hasSearched = true;
-        this.resultOverview = input;
-        this.hasLimitedResults =
-            this.user.downloadLimit &&
-            input.resultsCount > this.user.downloadLimit;
     }
 
     public showQueryDocumentation() {
@@ -131,9 +98,14 @@ export class SearchComponent extends ParamDirective {
         this.queryModel.setQueryText(this.queryText);
     }
 
+    onTabChange(tab: SearchTab) {
+        this.tabs.setParams({tab});
+    }
+
     private setCorpus(corpus: Corpus) {
         this.corpus = corpus;
         this.setQueryModel();
+        this.title.setTitle(`Search ${corpus.title} - I-analyzer`);
     }
 
     private setQueryModel() {

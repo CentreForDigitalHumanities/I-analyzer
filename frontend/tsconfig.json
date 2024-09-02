@@ -1,24 +1,27 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "downlevelIteration": true,
-    "importHelpers": true,
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2017",
-      "dom",
-      "dom.iterable",
-      
-    ],
-    "module": "esnext",
-    "baseUrl": "./"
+      "downlevelIteration": true,
+      "importHelpers": true,
+      "outDir": "../dist/out-tsc",
+      "sourceMap": true,
+      "declaration": false,
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "target": "ES2022",
+      "typeRoots": ["node_modules/@types"],
+      "lib": ["es2017", "dom", "dom.iterable"],
+      "module": "esnext",
+      "baseUrl": "src",
+      "paths": {
+          "@shared/*": ["app/shared/*"],
+          "@models": ["app/models"],
+          "@models/*": ["app/models/*"],
+          "@services": ["app/services"],
+          "@services/*": ["app/services/*"],
+          "@utils/*": ["app/utils/*"],
+          "@environments/*": ["environments/*"]
+      },
+      "useDefineForClassFields": false
   }
 }

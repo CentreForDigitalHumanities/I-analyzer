@@ -4,16 +4,16 @@ locations.
 '''
 import os
 from os.path import join, isfile, split, splitext
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 import re
-from io import BytesIO
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.extract import Combined, Metadata, XML
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import Combined, Metadata, XML
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from corpora.utils.constants import document_context
@@ -38,8 +38,8 @@ class Ecco(XMLCorpusDefinition):
     languages = ['en', 'fr', 'la', 'grc', 'de',  'it', 'cy', 'ga', 'gd']
     category = 'book'
 
-    tag_toplevel = 'pageContent'
-    tag_entry = 'page'
+    tag_toplevel = Tag('pageContent')
+    tag_entry = Tag('page')
 
     meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
 
@@ -92,7 +92,7 @@ class Ecco(XMLCorpusDefinition):
                             'Volume'
                         ]
 
-                        meta_dict = self.metadata_from_xml(
+                        meta_dict = self._metadata_from_xml(
                             full_path, tags=meta_tags)
                         meta_dict['id'] = record_id
                         meta_dict['category'] = category
@@ -154,8 +154,7 @@ class Ecco(XMLCorpusDefinition):
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
-                extractor=XML(tag='ocrText',
-                              flatten=True),
+                extractor=XML(Tag('ocrText'), flatten=True),
                 visualizations=['wordcloud']
             ),
             FieldDefinition(

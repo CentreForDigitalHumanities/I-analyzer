@@ -1,11 +1,16 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import * as _ from 'lodash';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
-import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
-import { AuthService, CorpusService, ParamService, WordmodelsService } from '../services';
+import { Title } from '@angular/platform-browser';
+import {
+    AuthService,
+    CorpusService,
+    ParamService,
+    WordmodelsService,
+} from '@services';
+import { visualizationIcons } from '@shared/icons';
+import { Corpus, QueryFeedback, WordInModelResult } from '@models';
 import { ParamDirective } from '../param/param-directive';
-import { visualizationIcons } from '../shared/icons';
 
 @Component({
     selector: 'ia-word-models',
@@ -17,7 +22,6 @@ export class WordModelsComponent extends ParamDirective {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    user: User;
     corpus: Corpus;
 
     queryText: string;
@@ -54,7 +58,8 @@ export class WordModelsComponent extends ParamDirective {
         paramService: ParamService,
         private corpusService: CorpusService,
         private authService: AuthService,
-        private wordModelsService: WordmodelsService
+        private wordModelsService: WordmodelsService,
+        private title: Title,
     ) {
         super(route, router, paramService);
     }
@@ -77,13 +82,12 @@ export class WordModelsComponent extends ParamDirective {
     }
 
     async initialize(): Promise<void> {
-        this.user = await this.authService.getCurrentUserPromise();
         this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
     }
 
     teardown() {}
 
-    setStateFromParams(params: Params) {
+    setStateFromParams(params: ParamMap) {
         const queryFromParams = params.get('query');
         if (queryFromParams !== this.activeQuery) {
             this.queryText = queryFromParams;
@@ -99,7 +103,7 @@ export class WordModelsComponent extends ParamDirective {
             this.queryFeedback = { status: 'success' };
         }
         if (params.has('show')) {
-            this.currentTab = params.get('show');
+            this.currentTab = params.get('show') as 'relatedwords' | 'wordsimilarity';
         } else {
             this.currentTab = 'relatedwords';
         }
@@ -108,6 +112,7 @@ export class WordModelsComponent extends ParamDirective {
     setCorpus(corpus: Corpus): void {
         if (corpus && (!this.corpus || this.corpus.name !== corpus.name)) {
             this.corpus = corpus;
+            this.title.setTitle(`Word models of ${corpus.title} - I-analyzer`);
         }
     }
 

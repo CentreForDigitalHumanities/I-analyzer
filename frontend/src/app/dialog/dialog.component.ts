@@ -3,8 +3,8 @@ import {Router} from '@angular/router';
 import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
-import { DialogService } from './../services/index';
-import { navIcons } from '../shared/icons';
+import { navIcons } from '@shared/icons';
+import { DialogService } from '@services';
 
 @Component({
   selector: 'ia-dialog',

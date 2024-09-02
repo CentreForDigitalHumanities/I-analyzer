@@ -1,10 +1,25 @@
 import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
-import { TagFilter } from '../models/tag-filter';
-import { PageParameters, PageResultsParameters, RESULTS_PER_PAGE } from '../models/page-results';
+import {
+    Corpus,
+    CorpusField,
+    FilterInterface,
+    QueryModel,
+    SearchFilter,
+    SortBy,
+    SortDirection,
+    SortState,
+} from '@models';
+import { TagFilter } from '@models/tag-filter';
+import {
+    PageParameters,
+    PageResultsParameters,
+    RESULTS_PER_PAGE,
+} from '@models/page-results';
 import { findByName } from './utils';
 import { SimpleStore } from '../store/simple-store';
+
+// general utility functions
 
 /** omit keys that mapp to null */
 export const omitNullParameters = (params: {[key: string]: any}): {[key: string]: any} => {
@@ -12,8 +27,20 @@ export const omitNullParameters = (params: {[key: string]: any}): {[key: string]
     return _.omit(params, nullKeys);
 };
 
+export const mergeParams = (current: Params, next: Params): Params =>
+    _.assign(_.clone(current), next);
+
+export const mergeAllParams = (values: Params[]): Params =>
+    _.reduce(values, mergeParams);
+
+// conversion between models and parameters
+
 export const queryFromParams = (params: Params): string =>
     params['query'];
+
+export const queryToParams = (queryText: string): Params => ({
+     query: queryText || null
+});
 
 export const searchFieldsFromParams = (params: Params, corpus: Corpus): CorpusField[] => {
     if (params['fields']) {
@@ -77,16 +104,16 @@ export const pageToParams = (state: PageParameters): Params => {
 
     if (page === 1) {
         return {
-            page: null,
+            p: null,
         };
     }
 
-    return {page};
+    return {p: page};
 };
 
 export const pageFromParams = (params: Params|undefined): PageParameters => {
-    if (params && params['page']) {
-        const page = _.toInteger(params['page']);
+    if (params && params['p']) {
+        const page = _.toInteger(params['p']);
         const size = RESULTS_PER_PAGE;
         const from = (page - 1) * size;
         return {from, size};

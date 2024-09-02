@@ -1,12 +1,12 @@
 import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-import { showLoading } from '../../utils/utils';
-import { Corpus, WordSimilarity } from '../../models';
-import { ParamService, WordmodelsService } from '../../services/index';
+import { showLoading } from '@utils/utils';
+import { Corpus, WordSimilarity } from '@models';
+import { ParamService, WordmodelsService } from '@services/index';
 import { ParamDirective } from '../../param/param-directive';
-import { formIcons } from '../../shared/icons';
+import { formIcons } from '@shared/icons';
 
 
 @Component({
@@ -26,7 +26,7 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
 
     isLoading$ = new BehaviorSubject<boolean>(false);
 
-    neighbours = 5;
+    neighbours: number = 5;
 
     timeIntervals: string[] = [];
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
@@ -60,8 +60,8 @@ export class RelatedWordsComponent extends ParamDirective implements OnChanges {
 
     teardown() {}
 
-    setStateFromParams(params: Params) {
-        this.neighbours = _.get(params, 'neighbours', 5);
+    setStateFromParams(params: ParamMap) {
+        this.neighbours = Number(params.get('neighbours'));
     }
 
     getData(): void {

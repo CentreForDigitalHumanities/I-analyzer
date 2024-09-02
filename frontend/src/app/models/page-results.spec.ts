@@ -1,5 +1,5 @@
 import { TestBed, inject, waitForAsync } from '@angular/core/testing';
-import { SearchService } from '../services/search.service';
+import { SearchService } from '@services/search.service';
 import { PageResults } from './page-results';
 import { QueryModel } from './query';
 import { mockCorpus, mockField } from '../../mock-data/corpus';

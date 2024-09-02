@@ -1,16 +1,20 @@
 import { Observable, combineLatest, from, of } from 'rxjs';
 import { QueryModel } from './query';
 import { map } from 'rxjs/operators';
-import { SearchService } from '../services';
+import { SearchService } from '@services';
 import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';
 import { SortBy, SortDirection, SortState } from './sort';
 import { Params } from '@angular/router';
 import { Store } from '../store/types';
-import { pageResultsParametersFromParams, pageResultsParametersToParams } from '../utils/params';
+import {
+    pageResultsParametersFromParams,
+    pageResultsParametersToParams,
+} from '@utils/params';
 
 export const RESULTS_PER_PAGE = 20;
+export const DEFAULT_HIGHLIGHT_SIZE = 200;
 
 export interface PageParameters {
     from: number;
@@ -38,9 +42,11 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         private searchService: SearchService,
         query: QueryModel,
     ) {
-        super(store, query, ['sort', 'highlight', 'page']);
-        this.sort$ = this.state$.pipe(map(p => p.sort));
-        this.highlight$ = this.state$.pipe(map(p => p.highlight));
+        super(store, query, ['sort', 'highlight', 'p']);
+        this.connectToStore();
+        this.getResults();
+        this.sort$ = this.state$.pipe(map(params => params.sort));
+        this.highlight$ = this.state$.pipe(map(params => params.highlight));
         this.from$ = this.state$.pipe(
             map(parameters => parameters.from + 1)
         );
@@ -75,13 +81,22 @@ export class PageResults extends Results<PageResultsParameters, DocumentPage> {
         );
     }
 
+    /**
+     * change the field by which results are sorted, and reset the sort direction and page
+     */
     setSortBy(value: SortBy) {
-        this.setParams({
-            sort: [value, 'desc'],
-            from: 0,
-        });
+        // check if the new value is actually different to avoid resetting the direction
+        // for nothing
+        const currentValue = this.state$.value.sort[0];
+        if (value?.name !== currentValue?.name) {
+            this.setParams({
+                sort: [value, 'desc'],
+                from: 0,
+            });
+        }
     }
 
+    /** change the sort direction and reset the page */
     setSortDirection(value: SortDirection) {
         const [sortBy, _] = this.state$.value.sort;
         this.setParams({

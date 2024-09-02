@@ -1,5 +1,8 @@
 import pytest
 
+def test_wm_documentation_view(admin_client, mock_corpus):
+    response = admin_client.get(f'/api/corpus/documentation/?corpus={mock_corpus}')
+    assert any(page['type'] == 'Word models'for page in response.data)
 
 def test_related_words_view(admin_client, mock_corpus):
 
@@ -24,19 +27,6 @@ def test_word_similarity_view(admin_client, mock_corpus):
         content_type='application/json'
     )
     assert response.status_code == 200
-
-
-def test_wm_documentation_view(admin_client, mock_corpus):
-    response = admin_client.get(
-        f'/api/wordmodels/documentation?corpus={mock_corpus}',
-        content_type='application/json'
-    )
-    assert response.status_code == 200
-
-    data = response.data
-    assert 'documentation' in data
-    assert data['documentation'] == 'Description for testing.\n'
-
 
 word_in_models_test_cases = [
     ('alice', True),

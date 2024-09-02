@@ -16,9 +16,11 @@ describe('TabsComponent', () => {
         component = fixture.componentInstance;
         component.tabs = [{
             label: 'First tab',
+            elementId: 'tab-1',
             id: 1
         }, {
             label: 'Second tab',
+            elementId: 'tab-2',
             id: 2
         }];
         fixture.detectChanges();
@@ -26,5 +28,14 @@ describe('TabsComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should produce slug tab IDs', () => {
+        const tabIdNumerical = 1;
+        const tabIdString = 'General Information';
+        expect(component.tabLinkId(tabIdNumerical)).toEqual('tab-1');
+        expect(component.tabLinkId(tabIdString)).toEqual(
+            'tab-general-information'
+        );
     });
 });

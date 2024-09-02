@@ -1,4 +1,5 @@
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
+from addcorpus.models import Corpus
 
 def corpus_from_api(client):
     '''
@@ -11,6 +12,7 @@ def corpus_from_api(client):
     useful when you have configured your settings with only one corpus.
     '''
 
+    Corpus.objects.all().delete()
     load_and_save_all_corpora()
 
     response = client.get('/api/corpus/')

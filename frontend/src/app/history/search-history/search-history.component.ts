@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Params, Router } from '@angular/router';
+import { Params } from '@angular/router';
 import * as _ from 'lodash';
-import { apiQueryToQueryModel, esQueryToQueryModel } from '../../utils/es-query';
-import { QueryDb } from '../../models/index';
-import { CorpusService, QueryService } from '../../services/index';
+import { apiQueryToQueryModel } from '@utils/es-query';
+import { QueryDb } from '@models/index';
+import { CorpusService, QueryService } from '@services/index';
 import { HistoryDirective } from '../history.directive';
-import { findByName } from '../../utils/utils';
-import { actionIcons } from '../../shared/icons';
+import { findByName } from '@utils/utils';
+import { actionIcons } from '@shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-search-history',
@@ -22,12 +24,14 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     constructor(
         corpusService: CorpusService,
         private queryService: QueryService,
-        private router: Router
+        private title: Title,
+
     ) {
         super(corpusService);
     }
 
     async ngOnInit() {
+        this.title.setTitle(pageTitle('Search history'));
         this.retrieveCorpora();
         this.queryService.retrieveQueries().then((searchHistory) => {
             const sortedQueries = this.sortByDate(searchHistory);

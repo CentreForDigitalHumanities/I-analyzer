@@ -2,9 +2,10 @@ import re
 from bs4 import BeautifulSoup
 import os
 from langcodes import standardize_tag, Language
+from typing import List
 
-from addcorpus.extract import Pass, Combined, CSV
 from copy import copy
+from addcorpus.python_corpora.extract import Pass, Combined, CSV
 
 # === METADATA EXTRACTION ===
 
@@ -180,12 +181,6 @@ def append_to_tag(soup, tag, padding):
         tag.append(padding)
 
     return soup
-
-def pad_content(node):
-    pad_cells = lambda n: append_to_tag(n, 'cell', ' ')
-    pad_linebreaks = lambda n: append_to_tag(n, 'lb', '\n')
-    return pad_cells(pad_linebreaks(node))
-
 def standardize_language_code(code):
     if code:
         return standardize_tag(code)
@@ -206,6 +201,15 @@ def language_name(code):
     ))
     return ', '.join(names)
 
+## ======== TEXT FORMATTING =============
+
+def pad_content(node):
+    pad_cells = lambda n: append_to_tag(n, 'cell', ' ')
+    pad_linebreaks = lambda n: append_to_tag(n, 'lb', '\n')
+    pad_cells(pad_linebreaks(node))
+    return [node]
+
+
 def get_ref(node):
     prev = node.find_all_previous('note')
     return len(prev) + 1
@@ -216,17 +220,21 @@ def insert_ref(node):
     '''
     ref = get_ref(node)
     node.insert(0, f'[{ref}] ')
-    return node
+    yield node
 
 def replace_notes_with_ref(node):
     '''
     Replaces all `<note>` tags in the a beautiful soup node with a reference, e.g. `[1]`
     '''
     new_node = copy(node) # make a copy to avoid altering the original document
-    tags = zip(node.find_all('note', recursive=True), new_node.find_all('note', recursive=True))
+    tags = zip(node.find_all('note'), new_node.find_all('note'))
 
     for old_tag, to_replace in tags:
         ref = get_ref(old_tag)
         to_replace.replace_with(f'[{ref}]')
 
-    return new_node
+    yield new_node
+
+def join_paragraphs(paragraphs: List[str]):
+    text = '\n'.join(paragraphs).strip()
+    return text if text else None

@@ -1,69 +1,90 @@
 from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer
-from rest_framework.response import Response
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
+from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
 from django.http.response import FileResponse
-from rest_framework.permissions import IsAuthenticated
-from addcorpus.permissions import CorpusAccessPermission, filter_user_corpora
+from addcorpus.permissions import (
+    CanSearchCorpus, corpus_name_from_request, IsCurator,
+    IsCuratorOrReadOnly)
 from rest_framework.exceptions import NotFound
-from addcorpus.models import Corpus
+from rest_framework import viewsets
+from addcorpus.models import Corpus, CorpusConfiguration, CorpusDocumentationPage
 
-class CorpusView(APIView):
+from django.conf import settings
+
+class CorpusView(viewsets.ReadOnlyModelViewSet):
     '''
     List all available corpora
     '''
 
-    permission_classes = (IsAuthenticated,)
+    serializer_class = CorpusSerializer
 
-    def get(self, request, *args, **kwargs):
-        corpora = Corpus.objects.filter(configuration__isnull=False)
-        filtered_corpora = filter_user_corpora(corpora, request.user)
-        serializer = CorpusSerializer(filtered_corpora, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return self.request.user.searchable_corpora()
 
 
-def send_corpus_file(corpus='', subdir='', filename=''):
+class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     '''
-    Returns a FileResponse for a file in the corpus directory.
-
-    E.g. arguments `(corpus='times', subdir='images', filename='times.jpeg')` will return the file
-    at `<location-of-times-definition>/images/times.jpeg`
+    Markdown documentation pages for corpora.
     '''
 
-    path = os.path.join(corpus_dir(corpus), subdir, filename)
+    permission_classes = [IsCuratorOrReadOnly]
+    serializer_class = CorpusDocumentationPageSerializer
 
-    if not os.path.isfile(path):
-        raise NotFound()
+    def get_queryset(self):
+        # curators are not limited to active corpora (to allow editing)
+        if self.request.user.is_staff:
+            corpora = Corpus.objects.all()
+        else:
+           corpora = self.request.user.searchable_corpora()
 
-    return FileResponse(open(path, 'rb'))
+        queried_corpus = self.request.query_params.get('corpus')
+        if queried_corpus:
+            corpora = corpora.filter(name=queried_corpus)
+
+        return CorpusDocumentationPage.objects.filter(
+            corpus_configuration__corpus__in=corpora
+        )
+
 
 class CorpusImageView(APIView):
     '''
     Return the image for a corpus.
     '''
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [CanSearchCorpus, IsCuratorOrReadOnly]
 
     def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='images', **kwargs)
+        corpus_name = corpus_name_from_request(request)
+        corpus_config = CorpusConfiguration.objects.get(corpus__name=corpus_name)
+        if corpus_config.image:
+            path = corpus_config.image.path
+        else:
+            path = settings.DEFAULT_CORPUS_IMAGE
 
-class CorpusDocumentationView(APIView):
-    '''
-    Return the documentation for a corpus
-    '''
+        return FileResponse(open(path, 'rb'))
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
-
-    def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='description', **kwargs)
 
 class CorpusDocumentView(APIView):
     '''
-    Return a document for a corpus - e.g. extra metadata.
+    Return a file for a corpus - e.g. extra metadata.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
-        return send_corpus_file(subdir='documents', **kwargs)
+        corpus = Corpus.objects.get(corpus_name_from_request(request))
+        if not corpus.has_python_definition:
+            raise NotFound()
+        path = os.path.join(corpus_dir(corpus.name), 'documents', kwargs['filename'])
+        if not os.path.isfile(path):
+            raise NotFound()
+        return FileResponse(open(path, 'rb'))
+
+
+class CorpusDefinitionViewset(viewsets.ModelViewSet):
+    permission_classes = [IsCurator]
+    serializer_class = CorpusJSONDefinitionSerializer
+
+    def get_queryset(self):
+        return Corpus.objects.filter(has_python_definition=False)

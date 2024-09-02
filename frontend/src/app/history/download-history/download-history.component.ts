@@ -1,11 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash';
-import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
+import {
+    Download,
+    DownloadOptions,
+    DownloadParameters,
+    DownloadType,
+    QueryModel,
+} from '@models';
+import {
+    ApiService,
+    CorpusService,
+    DownloadService,
+    NotificationService,
+} from '@services';
 import { HistoryDirective } from '../history.directive';
-import { findByName } from '../../utils/utils';
-import { actionIcons } from '../../shared/icons';
-import { downloadQueryModel, downloadQueryModels } from '../../utils/download-history';
+import { findByName } from '@utils/utils';
+import { actionIcons } from '@shared/icons';
+import {
+    downloadQueryModel,
+    downloadQueryModels,
+} from '@utils/download-history';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-download-history',
@@ -23,12 +39,14 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         private downloadService: DownloadService,
         private apiService: ApiService,
         corpusService: CorpusService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private title: Title,
     ) {
         super(corpusService);
     }
 
     ngOnInit(): void {
+        this.title.setTitle(pageTitle('Downloads'));
         this.retrieveCorpora();
         this.apiService.downloads()
             .then(downloadHistory => this.downloads = this.sortByDate(downloadHistory))
@@ -68,8 +86,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
             parameters.fields : [parameters[0].field_name];
         const corpus = findByName(this.corpora, download.corpus);
         const fields = fieldNames.map(fieldName =>
-            findByName(corpus.fields, fieldName).displayName
-        );
+            findByName(corpus.fields, fieldName)?.displayName
+        ).filter(_.negate(_.isUndefined));
         return _.join(fields, ', ');
     }
 

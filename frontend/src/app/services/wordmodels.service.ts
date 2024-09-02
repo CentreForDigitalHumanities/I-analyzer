@@ -5,7 +5,7 @@ import {
     RelatedWordsResults,
     WordInModelResult,
     WordSimilarity,
-} from '../models';
+} from '@models';
 
 @Injectable()
 export class WordmodelsService {
@@ -40,16 +40,6 @@ export class WordmodelsService {
     }): Promise<WordInModelResult> {
         return this.http
             .get<WordInModelResult>(this.wmApiRoute('word_in_models'), {
-                params: data,
-            })
-            .toPromise();
-    }
-
-    public wordModelsDocumentationRequest(data: {
-        corpus_name: string;
-    }): Promise<{ documentation: string }> {
-        return this.http
-            .get<{ documentation: string }>(this.wmApiRoute('documentation'), {
                 params: data,
             })
             .toPromise();

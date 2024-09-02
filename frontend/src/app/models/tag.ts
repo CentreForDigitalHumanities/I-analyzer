@@ -2,7 +2,11 @@ export interface Tag {
     id: number;
     name: string;
     description: string;
-    count: number;
+    count?: number;
+    corpus_counts?: {
+        corpus: string;
+        count: number;
+    }[];
 }
 
 export interface DocumentTagsResponse {

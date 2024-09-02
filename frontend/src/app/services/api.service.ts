@@ -6,16 +6,19 @@ import { interval, Observable } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
+    CorpusDocumentationPage,
     DateTermFrequencyParameters,
     DocumentTagsResponse,
     Download,
     DownloadOptions,
     FieldCoverage,
     FoundDocument,
+    GeoDocument,
+    GeoLocation,
     LimitedResultsDownloadParameters,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     QueryDb,
     ResultsDownloadParameters,
@@ -26,9 +29,13 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../models/index';
-import { environment } from '../../environments/environment';
+} from '@models/index';
+import { environment } from '@environments/environment';
 import * as _ from 'lodash';
+import {
+    APICorpusDefinition,
+    APIEditableCorpus,
+} from '@models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -108,11 +115,8 @@ export class ApiService {
     }
 
     // Tasks
-    public getTasksStatus(
-        tasks: TaskResult
-    ): Observable<TasksOutcome> {
-        return this.http
-            .post<TasksOutcome>('/api/task_status', tasks);
+    public getTasksStatus(tasks: TaskResult): Observable<TasksOutcome> {
+        return this.http.post<TasksOutcome>('/api/task_status', tasks);
     }
 
     public abortTasks(data: TaskResult): Promise<TaskSuccess> {
@@ -125,23 +129,32 @@ export class ApiService {
         return response.status === 'done';
     }
 
-
-    public pollTasks(ids: string[], stopPolling$: Observable<void>): Observable<TasksOutcome> {
-        return interval(5000)
-            .pipe(
-                takeUntil(stopPolling$),
-                switchMap((arg) =>
-                    this.getTasksStatus({ task_ids: ids })
-                ),
-                filter(this.tasksDone),
-                take(1)
-            );
+    public pollTasks(
+        ids: string[],
+        stopPolling$: Observable<void>
+    ): Observable<TasksOutcome> {
+        return interval(5000).pipe(
+            takeUntil(stopPolling$),
+            switchMap((arg) => this.getTasksStatus({ task_ids: ids })),
+            filter(this.tasksDone),
+            take(1)
+        );
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Promise<AggregateResult[]> {
+    public wordCloud(data: WordcloudParameters): Observable<MostFrequentWordsResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
-        return this.http.post<AggregateResult[]>(url, data).toPromise();
+        return this.http.post<MostFrequentWordsResult[]>(url, data);
+    }
+
+    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
+        const url = this.apiRoute(this.visApiURL, 'geo');
+        return this.http.post<GeoDocument[]>(url, data).toPromise();
+    }
+
+    public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {
+        const url = this.apiRoute(this.visApiURL, 'geo_centroid');
+        return this.http.post<GeoLocation>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
@@ -219,22 +232,41 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusdescription(data: {
-        filename: string;
-        corpus: string;
-    }): Promise<string> {
-        const url = this.apiRoute(
-            this.corpusApiUrl,
-            `documentation/${data.corpus}/${data.filename}`
-        );
+    public corpusDocumentationPages(corpus?: Corpus): Observable<CorpusDocumentationPage[]> {
+        const params = new URLSearchParams({corpus: corpus.name}).toString();
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/?${params}`);
+        return this.http.get<CorpusDocumentationPage[]>(url.toString());
+    }
 
-        return this.http
-            .get<string>(url, { responseType: 'text' as 'json' })
-            .toPromise();
+    public corpusDocumentationPage(pageID: number): Observable<CorpusDocumentationPage> {
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
+        return this.http.get<CorpusDocumentationPage>(url);
     }
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Corpus definitions
+
+    public corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        return this.http.get<APIEditableCorpus[]>('/api/corpus/definitions/');
+    }
+
+    public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
+        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
+    }
+
+    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    }
+
+    public deleteCorpus(corpusID: number): Observable<any> {
+        return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
     // Tagging
@@ -247,6 +279,16 @@ export class ApiService {
     public createTag(name: string, description?: string): Observable<Tag> {
         const url = this.apiRoute(this.tagApiUrl, 'tags/');
         return this.http.post<Tag>(url, { name, description });
+    }
+
+    public deleteTag(tag: Tag): Observable<null> {
+        const url = this.apiRoute(this.tagApiUrl, `tags/${tag.id}/`);
+        return this.http.delete<null>(url);
+    }
+
+    public patchTag(tagId: number, fields: Partial<Tag>): Observable<Tag> {
+        const url = this.apiRoute(this.tagApiUrl, `tags/${tagId}/`);
+        return this.http.patch<Tag>(url, fields);
     }
 
     public documentTags(

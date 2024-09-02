@@ -14,19 +14,18 @@
                 </div>
             </div>
             <div class="column is-3">
-                <img src="/api/corpus/image/{{corpus.name}}/{{corpus.image}}" alt="{{corpus.title}}">
+                <img src="/api/corpus/image/{{corpus.name}}" alt="{{corpus.title}}">
             </div>
         </div>
     </div>
 </section>
 
-<section class="section" style="padding-top: 0;" [class.is-loading]="!corpus">
+<section class="section" style="padding-top: 0;">
     <div class="container is-readable">
-        <ia-tabs>
-            <ng-template iaTabPanel *ngIf="corpus?.descriptionpage"
-                id="general" title="General information">
-                <div class="content" [class.is-loading]="!description"
-                    [innerHTML]="description"></div>
+        <ia-tabs *ngIf="documentation$ | async as documentation; else loading">
+            <ng-template iaTabPanel *ngFor="let page of documentation"
+                [id]="page.type" [title]="page.type">
+                <div class="content" [innerHTML]="renderMarkdown(page.content)"></div>
             </ng-template>
 
             <ng-template iaTabPanel *ngIf="corpus?.fields"
@@ -38,11 +37,10 @@
                 </div>
             </ng-template>
 
-            <ng-template iaTabPanel *ngIf="corpus?.word_models_present"
-                id="word_models" title="Word models">
-                <div class="content" [class.is-loading]="!wordModelDocumentation"
-                    [innerHTML]="wordModelDocumentation"></div>
-            </ng-template>
         </ia-tabs>
     </div>
 </section>
+
+<ng-template #loading>
+    <div class="is-loading" aria-label="loading documentation"></div>
+</ng-template>

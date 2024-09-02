@@ -6,9 +6,10 @@
     "types": []
   },
   "exclude": [
-    "test.ts",
-    "**/*.spec.ts",
-    "mock-data/*.ts",
-    "app/common-test-bed.ts"
+      "test.ts",
+      "**/*.spec.ts",
+      "mock-data/*.ts",
+      "app/common-test-bed.ts",
+      "environments/**/*.ts"
   ]
 }

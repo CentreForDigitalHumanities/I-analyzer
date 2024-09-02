@@ -2,9 +2,9 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { ConfirmationService } from 'primeng/api';
 
-import { FoundDocument, Corpus } from '../models';
-import { ApiService } from '../services';
-import { scanIcons, actionIcons, formIcons } from '../shared/icons';
+import { FoundDocument, Corpus } from '@models';
+import { ApiService } from '@services';
+import { scanIcons, actionIcons, formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-image-view',
@@ -43,8 +43,8 @@ export class ImageViewComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus) {
-            this.allowDownload = this.corpus.allow_image_download;
-            this.mediaType = this.corpus.scan_image_type;
+            this.allowDownload = this.corpus.allowImageDownload;
+            this.mediaType = this.corpus.scanImageType;
         }
         if (
             changes.document &&

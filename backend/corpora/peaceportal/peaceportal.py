@@ -2,11 +2,12 @@ from glob import glob
 import datetime
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.corpus import ParentCorpusDefinition
-from addcorpus.extract import XML
+from addcorpus.python_corpora.corpus import ParentCorpusDefinition
+from addcorpus.python_corpora.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
@@ -32,16 +33,10 @@ class PeacePortal(ParentCorpusDefinition):
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime.datetime(year=746, month=1, day=1)
-    image = 'bogus.jpg'
     category = 'inscription'
-    data_directory = 'bogus'
 
-    # Data overrides from .common.XMLCorpus
-    tag_entry = 'TEI'
+    tag_entry = Tag('TEI')
 
-    # New data members
-    non_xml_msg = 'Skipping non-XML file {}'
-    non_match_msg = 'Skipping XML file with nonmatching name {}'
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
     # el stands for modern Greek (1500-)
@@ -160,15 +155,12 @@ def clean_commentary(commentary):
     return ' '.join(commentary.split())
 
 
-def join_commentaries(commentaries):
+def join_commentaries(commentaries) -> str:
     '''
     Helper function to join the result of a Combined extractor
     into one string, separating items by a newline
     '''
-    results = []
-    for comm in commentaries:
-        if comm:
-            results.append(comm)
+    results = filter(None, commentaries)
     return "\n".join(results)
 
 
@@ -305,9 +297,8 @@ def transform_to_date_range(earliest, latest):
 def not_after_extractor(transform=True):
     ''' extractor for standard epidat format '''
     return XML(
-        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-             'history', 'origin', 'origDate', 'date'],
-        toplevel=False,
+        Tag('teiHeader'), Tag('fileDesc'), Tag('sourceDesc'), Tag('msDesc'),
+        Tag('history'), Tag('origin'), Tag('origDate'), Tag('date'),
         attribute='notAfter',
         transform=lambda x: transform_to_date(x, 'upper') if transform else x
     )
@@ -316,9 +307,8 @@ def not_after_extractor(transform=True):
 def not_before_extractor(transform=True):
     ''' extractor for standard epidat format '''
     return XML(
-        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-             'history', 'origin', 'origDate', 'date'],
-        toplevel=False,
+        Tag('teiHeader'), Tag('fileDesc'), Tag('sourceDesc'), Tag('msDesc'),
+        Tag('history'), Tag('origin'), Tag('origDate'), Tag('date'),
         attribute='notBefore',
         transform=lambda x: transform_to_date(x, 'lower') if transform else x
     )

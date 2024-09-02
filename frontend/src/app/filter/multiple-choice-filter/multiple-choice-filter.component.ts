@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 
 import * as _ from 'lodash';
 
+import { TermsAggregator, TermsResult } from '@models/aggregation';
+import { SearchService } from '@services';
+import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
-import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../../models';
-import { SearchService } from '../../services';
 
 @Component({
     selector: 'ia-multiple-choice-filter',
@@ -29,17 +30,20 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
     private async getOptions(): Promise<void> {
         if (this.filter && this.queryModel) {
             const optionCount = (this.filter.corpusField.filterOptions as MultipleChoiceFilterOptions).option_count;
-            const aggregator = { name: this.filter.corpusField.name, size: optionCount };
+            const aggregator = new TermsAggregator(this.filter.corpusField, optionCount);
             const queryModel = this.queryModel.clone();
             queryModel.filterForField(this.filter.corpusField).deactivate();
-            this.searchService.aggregateSearch(queryModel.corpus, queryModel, [aggregator]).then(
-                response => response.aggregations[this.filter.corpusField.name]).then(aggregations =>
-                    this.options = _.sortBy(
-                        aggregations.map(x => ({ label: x.key, value: x.key, doc_count: x.doc_count })),
-                        o => o.label
-                    )
-                ).catch(() => this.options = []);
 
+            const parseOption = (item: TermsResult) => ({
+                label: item.key, value: item.key, doc_count: item.doc_count
+            });
+            this.searchService.aggregateSearch(
+                queryModel.corpus, queryModel, aggregator
+            ).then(result =>
+                this.options = _.sortBy(result.map(parseOption), option => option.label)
+            ).catch(() =>
+                this.options = []
+            );
         }
     }
 }

@@ -1,9 +1,9 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-import { CorpusField, FoundDocument, Corpus, QueryModel } from '../models/index';
-import { DocumentView } from '../models/document-page';
+import { CorpusField, FoundDocument, Corpus, QueryModel } from '@models/index';
+import { DocumentView } from '@models/document-page';
 import * as _ from 'lodash';
-import { documentIcons } from '../shared/icons';
+import { documentIcons, entityIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-document-view',
@@ -24,7 +24,11 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public view: DocumentView;
 
+    @Input()
+    public showEntities: boolean;
+
     documentIcons = documentIcons;
+    entityIcons = entityIcons;
 
     /** active tab on opening */
     activeTab: string;
@@ -46,7 +50,7 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     get showScanTab() {
-        return !!this.corpus.scan_image_type;
+        return !!this.corpus.scanImageType;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -68,56 +72,11 @@ export class DocumentViewComponent implements OnChanges {
     }
 
     isUrlField(field: CorpusField) {
-        return field.name === 'url' || field.name.startsWith('url_');
+        return field.displayType === 'url';
     }
 
-    /**
-     * Checks if user has selected fields in the queryModel and whether current field is among them
-     * Used to check which fields need to be highlighted
-     */
-    selectedFieldsContain(field: CorpusField) {
-        if (this.queryModel && this.queryModel.searchFields && this.queryModel.searchFields.includes(field)) {
-            return true;
-        } else if (this.queryModel && !this.queryModel.searchFields) {
-            return true;  // if there are no selected fields, return true for all fields
-        } else {
-            return false;
-        }
+    isGeoPointField(field: CorpusField) {
+        return field.mappingType === 'geo_point';
     }
 
-    stripTags(htmlString: string){
-        const parseHTML= new DOMParser().parseFromString(htmlString, 'text/html');
-        return parseHTML.body.textContent || '';
-      }
-
-    formatInnerHtml(field: CorpusField) {
-        const fieldValue = this.document.fieldValues[field.name];
-
-        if (_.isEmpty(fieldValue)) {
-            return;
-        }
-
-        const highlighted = this.highlightedInnerHtml(field);
-        return this.addParagraphTags(highlighted);
-    }
-
-
-    highlightedInnerHtml(field: CorpusField) {
-        let highlighted = this.document.fieldValues[field.name];
-        if (this.document.highlight && this.document.highlight.hasOwnProperty(field.name) &&
-            this.selectedFieldsContain(field)) { // only apply highlights to selected search fields
-                for (const highlight of this.document.highlight[field.name]) {
-                    const stripped_highlight = this.stripTags(highlight);
-                    highlighted = highlighted.replace(stripped_highlight, highlight);
-                }
-                return highlighted;
-            } else {
-                return this.document.fieldValues[field.name];
-            }
-        }
-
-    addParagraphTags(content: string) {
-        const paragraphs = content.split('\n');
-        return paragraphs.map(p => `<p>${p}</p>`).join(' ');
-    }
 }

@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    GeoDocument,
+    GeoLocation,
+    MostFrequentWordsResult,
     NGramRequestParameters,
     NgramParameters,
     QueryModel,
     TaskResult,
     TimeCategory,
-} from '../models';
+} from '@models';
 import { ApiService } from './api.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +26,8 @@ export class VisualizationService {
     }
 
 
-    public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
-        Promise<AggregateResult[]> {
+    public getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+        Observable<MostFrequentWordsResult[]> {
         const query = queryModel.toAPIQuery();
         return this.apiService.wordCloud({
             ...query,
@@ -33,6 +36,24 @@ export class VisualizationService {
             size,
         });
     }
+
+    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
+        Promise<GeoDocument[]> {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.geoData({
+            ...query,
+            corpus: corpus.name,
+            field: fieldName,
+        });
+    }
+
+    public async getGeoCentroid(fieldName: string, corpus: Corpus):
+    Promise<GeoLocation> {
+    return this.apiService.geoCentroid({
+        corpus: corpus.name,
+        field: fieldName,
+    });
+}
 
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],

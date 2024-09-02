@@ -2,8 +2,8 @@ import pytest
 import os
 from bs4 import BeautifulSoup
 
-from addcorpus.load_corpus import load_corpus_definition
-from addcorpus.extract import XML
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.extract import XML
 from corpora.dbnl.utils import append_to_tag, index_by_id, which_unique, language_name
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -146,12 +146,12 @@ expected_docs = [
         'content': '\n'.join([
             'Register der Liedekens.',
             'A.',
-            'ACh gesalfde van den Heer. Pag. 30 ',
-            'Als Saul, en david den vyant in\'t velt. 41 ',
-            'Als ick de Son verhoogen sie. 184 ',
-            'Als hem de Son begeeft. 189 ',
-            'Als ick den Herfst aenschou. 194 ',
-            'Als in koelt, de nacht komt overkleeden 208 ',
+            'ACh gesalfde van den Heer. Pag. 30',
+            'Als Saul, en david den vyant in\'t velt. 41',
+            'Als ick de Son verhoogen sie. 184',
+            'Als hem de Son begeeft. 189',
+            'Als ick den Herfst aenschou. 194',
+            'Als in koelt, de nacht komt overkleeden 208',
             'Als van der meer op Eng\'le-vleug\'len vloog. 232',
         ])
     }, { # metadata-only book
@@ -195,6 +195,8 @@ def test_dbnl_extraction(dbnl_corpus):
     for actual, expected in zip(docs, expected_docs):
         # assert that actual is a superset of expected
         for key in expected:
+            if expected[key] != actual[key]:
+                print(key)
             assert expected[key] == actual[key]
         assert expected.items() <= actual.items()
 

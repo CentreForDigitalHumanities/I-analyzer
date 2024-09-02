@@ -2,10 +2,10 @@ import numpy as np
 
 import pytest
 
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.models import CorpusDocumentationPage
 from wordmodels.utils import load_word_models, word_in_models, transform_query
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
-from wordmodels.utils import load_wm_documentation
 
 def test_import(mock_corpus):
     corpus = load_corpus_definition(mock_corpus)
@@ -50,8 +50,11 @@ def test_word_in_models(mock_corpus):
         assert result == case['expected']
 
 def test_description_import(mock_corpus):
-    description = load_wm_documentation(mock_corpus)
-    assert description == 'Description for testing.\n'
+    page = CorpusDocumentationPage.objects.get(
+        corpus_configuration__corpus__name=mock_corpus,
+        type=CorpusDocumentationPage.PageType.WORDMODELS
+    )
+    assert page.content == 'Description for testing.\n'
 
 def test_query_transform(mock_corpus):
     corpus = load_corpus_definition(mock_corpus)

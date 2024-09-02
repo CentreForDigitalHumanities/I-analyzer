@@ -35,6 +35,7 @@ class VisualizationType(Enum):
     TERM_FREQUENCY = 'termfrequency'
     NGRAM = 'ngram'
     WORDCLOUD = 'wordcloud'
+    MAP = 'map'
 
 FORBIDDEN_FIELD_NAMES = [
     'query',
@@ -44,10 +45,22 @@ FORBIDDEN_FIELD_NAMES = [
     'visualize',
     'visualizedField',
     'normalize',
-    'ngramSettings'
+    'ngramSettings',
+    'scan',
+    'tab-scan'
+    'p',
+    'tags',
+    'context',
+    'tab',
 ]
 '''
-Field names that cannot be used because they are also query parameters in frontend routes.
+Field names that cannot be used because they interfere with other functionality.
 
-Using them would make routing ambiguous.
+This is usually because they are also query parameters in frontend routes, and using them
+would make routing ambiguous.
+
+`query` is also forbidden because it is a reserved column in CSV downloads. Likewise,
+`context` is forbidden because it's used in download requests.
+
+`scan` and `tab-scan` are added because they interfere with element IDs in the DOM.
 '''

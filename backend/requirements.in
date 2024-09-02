@@ -31,3 +31,5 @@ langcodes
 language_data
 flower
 ianalyzer_readers
+jsonschema
+Pillow

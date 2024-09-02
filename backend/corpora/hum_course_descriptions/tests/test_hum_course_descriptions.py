@@ -2,8 +2,8 @@ import os
 import pytest
 
 from corpora.utils_test import corpus_from_api
-from addcorpus.save_corpus import load_and_save_all_corpora
-from addcorpus.load_corpus import load_corpus_definition
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 
 here = os.path.abspath(os.path.dirname(__file__))
 

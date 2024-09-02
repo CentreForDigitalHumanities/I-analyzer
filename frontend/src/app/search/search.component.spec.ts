@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { commonTestBed } from '../common-test-bed';
 
 import { SearchComponent } from './search.component';
+
 
 describe('SearchComponent', () => {
     let component: SearchComponent;
@@ -21,4 +23,5 @@ describe('SearchComponent', () => {
     it('should be created', () => {
         expect(component).toBeTruthy();
     });
+
 });

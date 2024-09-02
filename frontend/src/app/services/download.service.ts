@@ -2,10 +2,17 @@ import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
-import { Corpus, CorpusField, DownloadOptions, LimitedResultsDownloadParameters, QueryModel, SortState } from '../models/index';
+import {
+    Corpus,
+    CorpusField,
+    DownloadOptions,
+    LimitedResultsDownloadParameters,
+    QueryModel,
+    SortState,
+} from '@models/index';
 import * as _ from 'lodash';
-import { resultsParamsToAPIQuery } from '../utils/es-query';
-import { PageResultsParameters } from '../models/page-results';
+import { resultsParamsToAPIQuery } from '@utils/es-query';
+import { PageResultsParameters } from '@models/page-results';
 
 @Injectable()
 export class DownloadService {
@@ -19,7 +26,7 @@ export class DownloadService {
     public async download(
         corpus: Corpus,
         queryModel: QueryModel,
-        fields: CorpusField[],
+        fieldNames: string[],
         requestedResults: number,
         route: string,
         sort: SortState,
@@ -38,7 +45,7 @@ export class DownloadService {
             {
                 ...query,
                 corpus: corpus.name,
-                fields: fields.map((field) => field.name),
+                fields: fieldNames,
                 route,
             },
             fileOptions
@@ -68,14 +75,13 @@ export class DownloadService {
     public async downloadTask(
         corpus: Corpus,
         queryModel: QueryModel,
-        fields:
-        CorpusField[],
+        fields: string[],
         route: string,
         sort: SortState,
         highlightFragmentSize: number
     ) {
         const query = queryModel.toAPIQuery();
-        return this.apiService.downloadTask({ corpus: corpus.name, ...query, fields: fields.map(field => field.name), route })
+        return this.apiService.downloadTask({ corpus: corpus.name, ...query, fields, route })
             .then(result => result)
             .catch(error => {
                 throw new Error(error.headers.message[0]);

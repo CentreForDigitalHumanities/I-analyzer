@@ -1,6 +1,4 @@
-import pytest
-
-from addcorpus.tests.mock_csv_corpus import MockCSVCorpus
+from corpora_test.basic.mock_csv_corpus import MockCSVCorpus
 import os
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -9,38 +7,43 @@ here = os.path.abspath(os.path.dirname(__file__))
 target_documents = [
     {
         'character': 'HAMLET',
-        'lines': ["Whither wilt thou lead me? Speak, I\'ll go no further."]
+        'line': "Whither wilt thou lead me? Speak, I\'ll go no further."
     },
     {
         'character': 'GHOST',
-        'lines': ["Mark me."]
+        'line': "Mark me."
     },
     {
         'character': 'HAMLET',
-        'lines': ["I will."]
+        'line': "I will."
     },
     {
         'character': 'GHOST',
-        'lines': [
-            "My hour is almost come,",
-            "When I to sulph\'rous and tormenting flames",
-            "Must render up myself."
-        ]
-    },
-    {
-        'character': 'HAMLET',
-        'lines': ["Alas, poor ghost!"]
+        'line': "My hour is almost come,",
     },
     {
         'character': 'GHOST',
-        'lines': [
-            "Pity me not, but lend thy serious hearing",
-            "To what I shall unfold."
-        ]
+        'line': "When I to sulph\'rous and tormenting flames",
+    },
+    {
+        'character': 'GHOST',
+        'line': "Must render up myself.",
     },
     {
         'character': 'HAMLET',
-        'lines': ["Speak, I am bound to hear."]
+        'line': "Alas, poor ghost!",
+    },
+    {
+        'character': 'GHOST',
+        'line': "Pity me not, but lend thy serious hearing",
+    },
+    {
+        'character': 'GHOST',
+        'line': "To what I shall unfold.",
+    },
+    {
+        'character': 'HAMLET',
+        'line': "Speak, I am bound to hear."
     },
 ]
 
@@ -48,7 +51,7 @@ target_documents = [
 def test_csv():
     corpus = MockCSVCorpus()
 
-    sources = list(corpus.sources(corpus.min_date, corpus.max_date))
+    sources = list(corpus.sources(start=corpus.min_date, end=corpus.max_date))
     assert len(sources) == 1 and sources[0][1] == {'filename': 'example.csv'}
 
     docs = corpus.source2dicts(sources[0])

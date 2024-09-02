@@ -1,9 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { RangeFilterData, RangeFilter } from '../../models';
+import { RangeFilterData, RangeFilter, QueryModel } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
 import { Subject, interval } from 'rxjs';
 import { debounce, takeUntil } from 'rxjs/operators';
+import { Aggregator, MaxAggregator, MinAggregator } from '@models/aggregation';
+import { SearchService } from '@services';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-range-filter',
@@ -18,6 +21,10 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
 
     private destroy$ = new Subject<void>();
 
+    constructor(private searchService: SearchService) {
+        super();
+    }
+
     ngOnInit(): void {
         this.sliderValue$.pipe(
             takeUntil(this.destroy$),
@@ -28,13 +35,17 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
     }
 
     onFilterSet(filter: RangeFilter): void {
-        this.min = filter.defaultData.min;
-        this.max = filter.defaultData.max;
+        this.fetchDefaultData(filter).then(data =>
+            filter.setDefaultData(data)
+        ).then(() => {
+            this.min = filter.defaultData.min;
+            this.max = filter.defaultData.max;
+        });
     }
 
     getFilterData(value: [number, number]): RangeFilterData {
@@ -44,4 +55,30 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> imple
         };
     }
 
+    private fetchDefaultData(filter: RangeFilter): Promise<RangeFilterData> {
+        return Promise.all(
+            [this.fetchMin(filter), this.fetchMax(filter)]
+        ).then(([min, max]) => ({min, max}));
+    }
+
+    private fetchMin(filter: RangeFilter): Promise<number> {
+        if (!_.isUndefined(filter.defaultData.min)) {
+            return Promise.resolve(filter.defaultData.min);
+        }
+        return this.fetchAggregation(new MinAggregator(filter.corpusField));
+    }
+
+    private fetchMax(filter: RangeFilter): Promise<number> {
+        if (!_.isUndefined(filter.defaultData.max)) {
+            return Promise.resolve(filter.defaultData.max);
+        }
+        return this.fetchAggregation(new MaxAggregator(filter.corpusField));
+    }
+
+    private fetchAggregation<Result>(aggregator: Aggregator<Result>): Promise<Result> {
+        const queryModel = new QueryModel(this.queryModel.corpus);
+        return this.searchService.aggregateSearch(
+            queryModel.corpus, queryModel, aggregator
+        );
+    }
 }
