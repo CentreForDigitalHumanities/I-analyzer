@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AdHocFilter, } from '../../models';
+import { AdHocFilter } from '@models';
 import { BaseFilterComponent } from './../base-filter.component';
 
 @Component({

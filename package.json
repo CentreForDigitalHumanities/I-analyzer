@@ -1,6 +1,6 @@
 {
   "name": "i-analyzer",
-  "version": "5.9.0",
+  "version": "5.12.0",
   "license": "MIT",
   "scripts": {
     "postinstall": "yarn install-back && yarn install-front",
@@ -31,7 +31,11 @@
     "watch-front-p": "yarn front yarn watch",
     "start-back-p": "cd backend && python manage.py runserver --settings production --insecure --pythonpath ..",
     "start-p": "yarn static-p && yarn watch-front-p & yarn start-back-p",
-    "celery": "yarn back celery -A ianalyzer.celery"
+    "celery": "yarn back celery -A ianalyzer.celery",
+    "patch": "yarn version --patch --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
+    "minor": "yarn version --minor --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
+    "major": "yarn version --major --no-commit-hooks --no-git-tag-version && yarn update-citation && yarn fyarn prebuild",
+    "update-citation": "python $PWD/update_citation.py"
   },
   "private": true,
   "devDependencies": {},

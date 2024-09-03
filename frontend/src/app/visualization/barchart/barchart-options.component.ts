@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
-import { Normalizer, ChartType, ChartParameters } from '../../models';
-import { ParamService } from '../../services';
+import { Normalizer, ChartType, ChartParameters } from '@models';
+import { ParamService } from '@services';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -23,13 +23,10 @@ export class BarchartOptionsComponent
 
     @Output() chartParameters = new EventEmitter<ChartParameters>();
     @Output() queriesChanged = new EventEmitter<string[]>();
-    @Output() clearQueries = new EventEmitter<void>();
 
     currentNormalizer: Normalizer;
 
     currentChartType: ChartType = 'bar';
-
-    public queries: string[] = [];
 
     showEdit = false;
 
@@ -38,24 +35,12 @@ export class BarchartOptionsComponent
     constructor(
         route: ActivatedRoute,
         router: Router,
-        paramService: ParamService
+        paramService: ParamService,
     ) {
         super(route, router, paramService);
     }
 
-    get showTermFrequency(): boolean {
-        return _.some(this.queries);
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryText) {
-            if (this.queryText) {
-                this.queries = [this.queryText];
-            } else {
-                this.queries = [];
-            }
-        }
-
         if (
             changes.showTokenCountOption &&
             changes.showTokenCountOption.currentValue &&
@@ -86,6 +71,9 @@ export class BarchartOptionsComponent
     teardown() {}
 
     setStateFromParams(params: ParamMap) {
+        // show term comparison editor if there are terms in the route ;
+        // don't hide the editor if already displayed
+        this.showEdit = this.showEdit || params.has('compareTerms');
         if (params.has('normalize')) {
             this.currentNormalizer = params.get('normalize') as Normalizer;
         } else {
@@ -101,17 +89,10 @@ export class BarchartOptionsComponent
     }
 
     updateQueries(queries: string[]) {
-        this.queries = queries;
-        if (this.queries.length === 1 && this.queries[0] === this.queryText) {
+        if (_.isEqual(queries, [this.queryText])) {
             this.showEdit = false;
         }
-        this.queriesChanged.emit(this.queries);
+        this.queriesChanged.emit(queries);
     }
 
-    signalClearQueries() {
-        this.queries = [this.queryText];
-        this.showEdit = false;
-        this.setParams({ visualizeTerm: null });
-        this.clearQueries.emit();
-    }
 }

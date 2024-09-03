@@ -3,12 +3,12 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@services/auth.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { userIcons } from '../shared/icons';
-import { pageTitle } from '../utils/app';
+import { environment } from '@environments/environment';
+import { userIcons } from '@shared/icons';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-login',

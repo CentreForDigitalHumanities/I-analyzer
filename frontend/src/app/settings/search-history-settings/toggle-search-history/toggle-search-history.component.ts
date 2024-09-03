@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService, NotificationService } from '../../../services';
+import { AuthService, NotificationService } from '@services';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 

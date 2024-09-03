@@ -8,8 +8,8 @@ import {
     DialogService,
     SearchService,
     VisualizationService,
-} from '../services';
-import { SharedModule } from '../shared/shared.module';
+} from '@services';
+import { SharedModule } from '@shared/shared.module';
 import { BarchartOptionsComponent } from './barchart/barchart-options.component';
 import { HistogramComponent } from './barchart/histogram.component';
 import { TermComparisonEditorComponent } from './barchart/term-comparison-editor/term-comparison-editor.component';
