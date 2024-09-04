@@ -54,6 +54,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     data_url = getattr(settings, 'JMIG_DATA_URL', None)
     data_api_key = getattr(settings, 'JMIG_DATA_API_KEY', None)
 
+    es_alias = getattr(settings, 'JMIG_ALIAS', None)
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
     languages = ['en']
