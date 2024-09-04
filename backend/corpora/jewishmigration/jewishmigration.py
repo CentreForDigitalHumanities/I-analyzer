@@ -5,6 +5,7 @@ import logging
 from django.conf import settings
 import langcodes
 import requests
+from requests.auth import HTTPBasicAuth
 
 from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
@@ -51,6 +52,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     data_directory = settings.JMIG_DATA_DIR
     data_filepath = getattr(settings, 'JMIG_DATA', None)
     data_url = getattr(settings, 'JMIG_DATA_URL', None)
+    data_api_key = getattr(settings, 'JMIG_DATA_API_KEY', None)
 
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
@@ -60,7 +62,11 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     def sources(self, start, end):
         if self.data_url:
-            response = requests.get(self.data_url)
+            if self.data_api_key:
+                auth = HTTPBasicAuth('apikey', self.data_api_key)
+                response = requests.get(self.data_url, auth=auth)
+            else:
+                response = requests.get(self.data_url)
             list_of_sources = response.json()
         elif self.data_filepath:
             with open(self.data_filepath, 'r') as f:
