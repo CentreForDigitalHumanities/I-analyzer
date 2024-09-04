@@ -64,7 +64,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     def sources(self, start, end):
         if self.data_url:
             if self.data_api_key:
-                auth = HTTPBasicAuth('apikey', self.data_api_key)
+                auth = HTTPBasicAuth('Token', self.data_api_key)
                 response = requests.get(self.data_url, auth=auth)
             else:
                 response = requests.get(self.data_url)
