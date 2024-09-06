@@ -5,7 +5,6 @@ import logging
 from django.conf import settings
 import langcodes
 import requests
-from requests.auth import HTTPBasicAuth
 
 from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
