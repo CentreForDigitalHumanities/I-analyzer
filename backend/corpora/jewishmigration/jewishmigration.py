@@ -63,7 +63,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     def sources(self, start, end):
         if self.data_url:
             if self.data_api_key:
-                headers = {'Authorization': f'Token {self.api_key}'}
+                headers = {"Authorization": f"Token {self.data_api_key}"}
                 response = requests.get(self.data_url, headers=headers)
             else:
                 response = requests.get(self.data_url)
@@ -76,7 +76,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 'No data filepath or URL provided.')
         for source in list_of_sources:
             yield source
-
 
     def __init__(self):
         super().__init__()
