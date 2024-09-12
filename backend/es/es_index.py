@@ -132,17 +132,15 @@ def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
         settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
 
     # Do bulk operation
-    try:
-        for success, info in es_helpers.streaming_bulk(
-            client,
-            actions,
-            chunk_size=corpus_server["chunk_size"],
-            max_chunk_bytes=corpus_server["max_chunk_bytes"],
-        ):
-            if not success:
-                logger.error(f"FAILED INDEX: {info}")
-    except Exception as e:
-        logger.warning(e)
+    for success, info in es_helpers.streaming_bulk(
+        client,
+        actions,
+        chunk_size=corpus_server["chunk_size"],
+        max_chunk_bytes=corpus_server["max_chunk_bytes"],
+        raise_on_exception=False,
+    ):
+        if not success:
+            logger.error(f"FAILED INDEX: {info}")
 
 
 def perform_indexing(
