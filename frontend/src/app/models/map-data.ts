@@ -1,4 +1,4 @@
-import { Observable, forkJoin, of } from 'rxjs';
+import { Observable, forkJoin, of, share } from 'rxjs';
 import { Results } from './results';
 import { GeoDocument, GeoLocation } from './search-results';
 import { Params } from '@angular/router';
@@ -21,8 +21,6 @@ interface MapData {
 
 
 export class MapDataResults extends Results<MapDataParameters, MapData> {
-    private mapCenter: GeoLocation | null = null;
-
     constructor(
         store: Store,
         query: QueryModel,
@@ -39,9 +37,7 @@ export class MapDataResults extends Results<MapDataParameters, MapData> {
             return of({ geoDocuments: [], mapCenter: null });
         }
 
-        const getGeoCentroid$ = this.mapCenter
-            ? of(this.mapCenter)
-            : this.visualizationService.getGeoCentroid(field.name, this.query.corpus);
+        const mapCenter$ = this.visualizationService.getGeoCentroid(field.name, this.query.corpus).pipe(share());
 
         return forkJoin({
             geoDocuments: this.visualizationService.getGeoData(
@@ -49,7 +45,7 @@ export class MapDataResults extends Results<MapDataParameters, MapData> {
                 this.query,
                 this.query.corpus
             ),
-            mapCenter: getGeoCentroid$
+            mapCenter: mapCenter$
         });
     }
 
