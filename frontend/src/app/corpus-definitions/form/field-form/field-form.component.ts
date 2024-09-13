@@ -1,10 +1,9 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
     APICorpusDefinitionField,
     CorpusDefinition,
 } from '@models/corpus-definition';
-import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ISO639Languages } from '../constants';
@@ -24,7 +23,7 @@ export class FieldFormComponent {
 
     fieldTypeOptions: MenuItem[] = [
         { label: 'text (content)', value: 'text_content' },
-        { label: 'text (metadata)', value: 'text_content' },
+        { label: 'text (metadata)', value: 'text_metadata' },
         { label: 'number (integer)', value: 'integer' },
         { label: 'number (decimal)', value: 'float' },
         { label: 'date', value: 'date' },
@@ -32,10 +31,7 @@ export class FieldFormComponent {
 
     languageOptions = ISO639Languages;
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private corpusDefService: CorpusDefinitionService
-    ) {}
+    constructor() {}
 
     get fields(): FormArray {
         return this.fieldsForm.get('fields') as FormArray;
