@@ -20,8 +20,7 @@ export class DefinitionsOverviewComponent {
     }
 
     delete(corpus: APIEditableCorpus) {
-        this.apiService.deleteCorpus(corpus.id).subscribe((response) => {
-            console.log(response);
+        this.apiService.deleteCorpus(corpus.id).subscribe(() => {
             this.corpora$ = this.apiService.corpusDefinitions();
         });
     }

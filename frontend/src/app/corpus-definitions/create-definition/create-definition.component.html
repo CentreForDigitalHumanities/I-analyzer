@@ -33,7 +33,7 @@
                     </div>
                 </form>
             </ng-template>
-        
+
             <!-- Upload JSON -->
             <ng-template iaTabPanel id="uploadJSONTab" title="Upload a JSON definition">
                 <p class="block">
@@ -46,7 +46,7 @@
                         </div>
 
                     <div class="block" *ngIf="corpus.isComplete()">
-                        <button class="button is-primary" type="submit" (click)="saveCorpus()">
+                        <button class="button is-primary" type="submit" (click)="saveCorpus(true)">
                             <span class="icon" aria-hidden="true">
                                 <fa-icon [icon]="formIcons.confirm"></fa-icon>
                             </span>

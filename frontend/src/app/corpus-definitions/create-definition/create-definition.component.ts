@@ -51,19 +51,18 @@ export class CreateDefinitionComponent {
         this.saveCorpus();
     }
 
-    saveCorpus() {
+    saveCorpus(asImport: boolean = false) {
         this.error = undefined;
-        this.corpus.save().subscribe(
-            (result: APIEditableCorpus) => {
-                this.router.navigate([
-                    '/corpus-definitions',
-                    'form',
-                    result.id,
-                ]);
+        this.corpus.save().subscribe({
+            next: (result: APIEditableCorpus) => {
+                const nextRoute = asImport
+                    ? ['/corpus-definitions']
+                    : ['/corpus-definitions', 'form', result.id];
+                this.router.navigate(nextRoute);
             },
-            (err: HttpErrorResponse) => {
+            error: (err: HttpErrorResponse) => {
                 this.error = err;
-            }
-        );
+            },
+        });
     }
 }
