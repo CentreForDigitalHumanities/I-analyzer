@@ -1,26 +1,43 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
+import * as _ from 'lodash';
+import { MenuItem } from 'primeng/api';
+import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import {
     APICorpusDefinition,
     APICorpusDefinitionField,
     CorpusDefinition,
 } from '../models/corpus-definition';
-import { MenuItem } from 'primeng/api';
-import * as _ from 'lodash';
-import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 
 @Injectable()
-export class CorpusDefinitionService {
+export class CorpusDefinitionService implements OnDestroy {
     corpus$ = new BehaviorSubject<CorpusDefinition | undefined>(undefined);
+    destroy$ = new Subject<void>();
 
     steps$ = new BehaviorSubject<MenuItem[]>([
         { label: 'Corpus information' },
-        { label: 'Sample data', disabled: false },
-        { label: 'Define fields', disabled: false },
+        { label: 'Sample data', disabled: true },
+        { label: 'Define fields', disabled: true },
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
-    constructor(private slugify: SlugifyPipe) {}
+    constructor(private slugify: SlugifyPipe) {
+        this.corpus$
+            .pipe(takeUntil(this.destroy$), filter(_.negate(_.isUndefined)))
+            .subscribe({
+                next: (corpus) =>
+                    corpus.definitionUpdated$
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe({
+                            next: () => this.setSteps(this.corpus$.value),
+                        }),
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
 
     public toggleStep(stepIndex: number) {
         const newValue = this.steps$.value;
@@ -110,5 +127,15 @@ export class CorpusDefinitionService {
     private updateCorpus(updatedCorpus: CorpusDefinition) {
         this.setCorpus(updatedCorpus);
         this.corpus$.value.save();
+    }
+
+    private setSteps(corpus: CorpusDefinition) {
+        if (!_.isEmpty(corpus.definition.fields)) {
+            const newValue = this.steps$.value.map((step) => ({
+                ...step,
+                disabled: false,
+            }));
+            this.steps$.next(_.cloneDeep(newValue));
+        }
     }
 }
