@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval, Observable } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
@@ -302,6 +302,23 @@ export class ApiService {
             `/api/corpus/datafiles/`,
             formData
         );
+    }
+
+    public deleteDataFile(dataFile: CorpusDataFile): Observable<null> {
+        const url = `/api/corpus/datafiles/${dataFile.id}/`;
+        return this.http.delete<null>(url);
+    }
+
+    public listDataFiles(
+        corpusId: number,
+        samples: boolean = false
+    ): Observable<CorpusDataFile[]> {
+        const params = new HttpParams()
+            .set('corpus', corpusId)
+            .set('samples', samples);
+        return this.http.get<CorpusDataFile[]>('/api/corpus/datafiles/', {
+            params: params,
+        });
     }
 
     public getDataFileInfo(dataFile: CorpusDataFile): Observable<DataFileInfo> {

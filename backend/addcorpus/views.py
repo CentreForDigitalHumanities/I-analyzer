@@ -104,7 +104,17 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
     serializer_class = CorpusDataFileSerializer
 
     def get_queryset(self):
-        return CorpusDataFile.objects.all()
+        queryset = CorpusDataFile.objects.all()
+
+        corpus = self.request.query_params.get('corpus')
+        if corpus:
+            queryset = queryset.filter(corpus=corpus)
+
+        samples = self.request.query_params.get('samples', False)
+        if samples:
+            queryset = queryset.filter(is_sample=True)
+
+        return queryset.order_by('created')
 
     @action(detail=True, methods=['get'])
     def info(self, request, pk):

@@ -1,15 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-    APICorpusDefinition,
-    APICorpusDefinitionField,
-    CorpusDefinition,
-    DataFileInfo,
-} from '@models/corpus-definition';
+import { Corpus } from '@models';
+import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
 import { ApiService } from '@services';
-import { actionIcons } from '@shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
-import { BehaviorSubject, from, of, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+    BehaviorSubject,
+    distinctUntilChanged,
+    filter,
+    map,
+    of,
+    Subject,
+    switchMap,
+    takeUntil,
+} from 'rxjs';
 
 @Component({
     selector: 'ia-upload-sample',
@@ -18,8 +23,10 @@ import { BehaviorSubject, from, of, Subject, switchMap, takeUntil } from 'rxjs';
 })
 export class UploadSampleComponent implements OnInit, OnDestroy {
     actionIcons = actionIcons;
+    formIcons = formIcons;
 
     file$ = new BehaviorSubject<File | undefined>(undefined);
+    dataFile: CorpusDataFile;
     fileInfo$ = new Subject<DataFileInfo>();
     error$ = new BehaviorSubject<Error | undefined>(undefined);
     destroy$ = new Subject<void>();
@@ -36,9 +43,27 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
+        this.apiService
+            .listDataFiles(this.corpusDefService.corpus$.value.id, true)
+            .pipe(
+                map(_.head),
+                filter(_.negate(_.isUndefined)),
+                switchMap((dataFile: CorpusDataFile) => {
+                    this.dataFile = dataFile;
+                    return this.apiService.getDataFileInfo(dataFile);
+                })
+            )
+            .subscribe({
+                next: (info) => {
+                    this.fileInfo$.next(info);
+                },
+                error: (err) => this.error$.next(err),
+            });
+
         this.fileInfo$
             .pipe(
                 takeUntil(this.destroy$),
+                distinctUntilChanged(_.isEqual),
                 switchMap((info: DataFileInfo) => {
                     const fields = _.map(info, (dtype, colName) =>
                         this.corpusDefService.makeDefaultField(dtype, colName)
@@ -65,9 +90,10 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
             .createDataFile(corpusId, file)
             .pipe(
                 takeUntil(this.destroy$),
-                switchMap((dataFile) =>
-                    this.apiService.getDataFileInfo(dataFile)
-                )
+                switchMap((dataFile) => {
+                    this.dataFile = dataFile;
+                    return this.apiService.getDataFileInfo(dataFile);
+                })
             )
             .subscribe({
                 next: (info) => {
@@ -80,6 +106,16 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     onSubmit() {
         this.corpusDefService.toggleStep(2);
         this.corpusDefService.activateStep(2);
+    }
+
+    resetFields() {
+        this.apiService.deleteDataFile(this.dataFile).subscribe({
+            next: () => {
+                this.corpusDefService.setFields([]);
+                this.fileInfo$.next(undefined);
+            },
+            error: console.error,
+        });
     }
 
     ngOnDestroy(): void {

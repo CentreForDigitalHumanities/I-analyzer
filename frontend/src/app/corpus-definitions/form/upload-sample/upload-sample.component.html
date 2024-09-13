@@ -10,7 +10,25 @@
     </ul>
 </div>
 
-<form (ngSubmit)="onSubmit()">
+<ng-template #resetMenu>
+    <div class="field is-grouped">
+        <button class="button is-danger" (click)="resetFields()">
+            <span class="icon" aria-hidden="true">
+                <fa-icon [icon]="formIcons.reset"></fa-icon>
+            </span>
+            <span>Reset</span>
+        </button>
+        <button class="button is-primary" (click)="onSubmit()">
+            <span class="icon" aria-hidden="true">
+                <fa-icon [icon]="actionIcons.next"></fa-icon>
+            </span>
+            <span>Next</span>
+        </button>
+    </div>
+</ng-template>
+
+
+<form *ngIf="(fileInfo$ | async) === undefined || (fileInfo$ | async) === null; else resetMenu">
     <div class="field">
         <label class="label">Delimiter</label>
         <div class="control">
@@ -56,4 +74,7 @@
         An error occurred when reading the file: {{error.message}}
     </div>
 </div>
+
+
 </form>
+
