@@ -21,6 +21,9 @@ import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions
 import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
+import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
+import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
+import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
@@ -29,6 +32,7 @@ import { DialogComponent } from './dialog/dialog.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
 import { DocumentModule } from './document/document.module';
 import { FooterComponent } from './footer/footer.component';
+import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryModule } from './history/history.module';
 import { SearchHistoryComponent } from './history/search-history/index';
@@ -53,20 +57,17 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
-import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
-import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
 
 export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard],
+        canActivate: [CorpusGuard, forwardLegacyParamsGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
-        canActivate: [CorpusGuard],
+        canActivate: [CorpusGuard, forwardLegacyParamsGuard],
     },
     {
         path: 'info/:corpus',

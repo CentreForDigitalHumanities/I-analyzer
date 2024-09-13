@@ -98,8 +98,8 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
     return {
         highlight: {
             fragment_size: highlightSize,
-            pre_tags: ['<span class="highlight">'],
-            post_tags: ['</span>'],
+            pre_tags: ['<mark class="highlight">'],
+            post_tags: ['</mark>'],
             order: 'score',
             fields: highlightFields.map((field) =>
                 field.displayType === 'text_content' &&

@@ -68,8 +68,8 @@ describe('DownloadService', () => {
                 sort: [{ great_field: 'desc' }],
                 highlight: {
                     fragment_size: highlight,
-                    pre_tags: ['<span class="highlight">'],
-                    post_tags: ['</span>'],
+                    pre_tags: ['<mark class="highlight">'],
+                    post_tags: ['</mark>'],
                     order: 'score',
                     fields: [{ speech: {} }],
                 },

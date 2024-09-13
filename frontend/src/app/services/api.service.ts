@@ -16,6 +16,7 @@ import {
     FieldCoverage,
     FoundDocument,
     GeoDocument,
+    GeoLocation,
     LimitedResultsDownloadParameters,
     MostFrequentWordsResult,
     NGramRequestParameters,
@@ -152,6 +153,11 @@ export class ApiService {
     public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
         const url = this.apiRoute(this.visApiURL, 'geo');
         return this.http.post<GeoDocument[]>(url, data).toPromise();
+    }
+
+    public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {
+        const url = this.apiRoute(this.visApiURL, 'geo_centroid');
+        return this.http.post<GeoLocation>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
