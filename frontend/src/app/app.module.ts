@@ -156,14 +156,6 @@ export const appRoutes: Routes = [
                 component: CorpusFormComponent,
             },
             {
-                path: 'metaform',
-                component: MetaFormComponent,
-            },
-            {
-                path: 'fieldform',
-                component: FieldFormComponent,
-            },
-            {
                 path: '',
                 component: DefinitionsOverviewComponent,
             },
