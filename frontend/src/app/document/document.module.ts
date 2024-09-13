@@ -11,7 +11,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EntityLegendComponent } from './entity-legend/entity-legend.component';
 import { EntityToggleComponent } from './entity-toggle/entity-toggle.component';
-import { ElasticsearchHighlightPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } from '../shared/pipes';
+import { ElasticsearchHighlightPipe, EntityPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } from '../shared/pipes';
 
 @NgModule({
     declarations: [
@@ -23,6 +23,7 @@ import { ElasticsearchHighlightPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } f
         EntityLegendComponent,
         EntityToggleComponent,
         ElasticsearchHighlightPipe,
+        EntityPipe,
         GeoDataPipe,
         ParagraphPipe,
         SnippetPipe
