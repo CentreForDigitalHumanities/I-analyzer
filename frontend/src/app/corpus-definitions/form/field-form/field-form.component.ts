@@ -63,13 +63,11 @@ export class FieldFormComponent {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log(this.fieldTypeOptions);
         if (changes.corpus) {
             this.corpus.definitionUpdated$
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     () =>
-                        // this.fieldForm.patchValue(this.corpus.definition.meta)
                         (this.fieldsForm.controls.fields = new FormArray(
                             this.corpus.definition.fields.map(
                                 this.makeFieldFormgroup

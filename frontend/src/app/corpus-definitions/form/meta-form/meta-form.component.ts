@@ -18,6 +18,19 @@ import { CorpusDefinition } from '../../../models/corpus-definition';
 export class MetaFormComponent implements OnChanges, OnDestroy {
     @Input() corpus: CorpusDefinition;
 
+    categories = [
+        { value: 'parliament', label: 'Parliamentary debates' },
+        { value: 'periodical', label: 'Newspapers and other periodicals' },
+        { value: 'finance', label: 'Financial reports' },
+        { value: 'ruling', label: 'Court rulings' },
+        { value: 'review', label: 'Online reviews' },
+        { value: 'inscription', label: 'Funerary inscriptions' },
+        { value: 'oration', label: 'Orations' },
+        { value: 'book', label: 'Books' },
+        { value: 'informative', label: 'Informative' },
+        { value: undefined, label: 'Other' },
+    ];
+
     metaForm = this.formBuilder.group({
         title: [''],
         description: [''],

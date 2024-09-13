@@ -20,17 +20,17 @@
         <div class="field">
             <label class="label" for="category">Category</label>
             <div class="control">
-                <input class="input" type="text" name="category" formControlName="category" />
+            <p-dropdown [options]="categories" formControlName="category" placeholder="select category" />
             </div>
         </div>
 
         <div class="field is-grouped">
             <div formGroupName="date_range">
-                <label class="label" for="category">Start date</label>
+                <label class="label" for="min">Start date</label>
                 <div class="control">
                     <input class="input" type="text" name="min" formControlName="min" />
                 </div>
-                <label class="label" for="category">End date</label>
+                <label class="label" for="max">End date</label>
                 <div class="control">
                     <input class="input" type="text" name="max" formControlName="max" />
                 </div>
