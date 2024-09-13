@@ -7,6 +7,7 @@ import {
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
+import { ISO639Languages } from '../constants';
 
 @Component({
     selector: 'ia-field-form',
@@ -28,6 +29,8 @@ export class FieldFormComponent {
         { label: 'number (decimal)', value: 'float' },
         { label: 'date', value: 'date' },
     ];
+
+    languageOptions = ISO639Languages;
 
     constructor(
         private formBuilder: FormBuilder,

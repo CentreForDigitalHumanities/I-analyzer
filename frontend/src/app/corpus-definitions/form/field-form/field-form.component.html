@@ -54,9 +54,9 @@
                             </ng-container>
                             </div>
                             <div class="field">
-                                <label class="label" for="type">Language</label>
                                 <div class="control">
-                                    <input class="input" type="text" name="language" formControlName="language" />
+                                <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name" optionValue="code"
+                                    placeholder="select language" [filter]="true" />
                                 </div>
                             </div>
 
