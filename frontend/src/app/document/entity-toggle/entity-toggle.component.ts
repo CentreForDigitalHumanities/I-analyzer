@@ -12,8 +12,11 @@ import { DialogService } from '../../services';
 export class EntityToggleComponent {
     actionIcons = actionIcons;
     toggleNER = output<Boolean>();
+    toggleLabel: string;
 
-    constructor(private dialogService: DialogService) {}
+    constructor(private dialogService: DialogService) {
+        this.toggleLabel = 'ner-toggle';
+    }
 
     public showNamedEntityDocumentation() {
         this.dialogService.showManualPage('namedentities');

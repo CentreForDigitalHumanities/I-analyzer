@@ -3,4 +3,4 @@
         <fa-icon [icon]="actionIcons.helpAlt" aria-label="help"></fa-icon>
     </span>
 </button>
-<em>Show named entities<ia-toggle (toggled)="toggleNER.emit($event)"></ia-toggle></em>
+<em [id]="toggleLabel">Show named entities<ia-toggle (toggled)="toggleNER.emit($event)" [toggleLabel]="toggleLabel"></ia-toggle></em>
