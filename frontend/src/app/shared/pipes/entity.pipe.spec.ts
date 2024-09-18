@@ -1,4 +1,4 @@
-import { FieldEntities } from 'src/app/models';
+import { FieldEntities } from '../../models';
 import { EntityPipe } from './entity.pipe';
 
 describe('EntityPipe', () => {
@@ -16,9 +16,9 @@ describe('EntityPipe', () => {
     it('adds mark tags to named entity annotations', ()=> {
         const pipe = new EntityPipe();
         const output = pipe.transform(mockInput.slice(1,2));
-        expect(output).toContain('<mark>');
+        expect(output).toContain('<mark ');
         expect(output).toContain('</mark>');
-        expect(output).toContain('<svg>');
+        expect(output).toContain('<svg ');
         expect(output).toContain('</svg>');
     });
 
