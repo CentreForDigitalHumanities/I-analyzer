@@ -37,4 +37,11 @@ describe('ParagraphPipe', () => {
         expect(output).toEqual(expected);
     });
 
+    it('ignores multiple linebreaks', () => {
+        const input = '\nSome text.\n\n\nAnd some more text.\n\n';
+        const output = pipe.transform(input);
+        const expected = '<p>Some text.</p><p>And some more text.</p>'
+        expect(output).toEqual(expected);
+    });
+
 });
