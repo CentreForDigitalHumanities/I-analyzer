@@ -2,15 +2,24 @@
 
 import * as _ from 'lodash';
 import {
-    BooleanQuery, Corpus, CorpusField, EsFilter, EsSearchClause, FilterInterface, MatchAll,
+    BooleanQuery,
+    Corpus,
+    CorpusField,
+    EsFilter,
+    EsSearchClause,
+    FilterInterface,
+    MatchAll,
     QueryModel,
-    SimpleQueryString, SortBy, SortDirection } from '../models';
-import { EsQuery } from '../models';
+    SimpleQueryString,
+    SortBy,
+    SortDirection,
+} from '@models';
+import { EsQuery } from '@models';
 import { findByName } from './utils';
-import { SearchFilter } from '../models/field-filter';
-import { APIQuery } from '../models/search-requests';
-import { TagFilter } from '../models/tag-filter';
-import { PageResultsParameters } from '../models/page-results';
+import { SearchFilter } from '@models/field-filter';
+import { APIQuery } from '@models/search-requests';
+import { TagFilter } from '@models/tag-filter';
+import { PageResultsParameters } from '@models/page-results';
 import { DeepPartial } from 'chart.js/dist/types/utils';
 import { SimpleStore } from '../store/simple-store';
 
@@ -89,8 +98,8 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
     return {
         highlight: {
             fragment_size: highlightSize,
-            pre_tags: ['<span class="highlight">'],
-            post_tags: ['</span>'],
+            pre_tags: ['<mark class="highlight">'],
+            post_tags: ['</mark>'],
             order: 'score',
             fields: highlightFields.map((field) =>
                 field.displayType === 'text_content' &&

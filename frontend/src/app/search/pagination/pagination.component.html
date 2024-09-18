@@ -8,14 +8,11 @@
         <li *ngIf="currentPages[0]>2">
             <span class="pagination-ellipsis">&hellip;</span>
         </li>
-        <li>
-            <button [ngClass]="{'is-current': currentPage===currentPages[0]}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</button>
-        </li>
-        <li>
-            <button [ngClass]="{'is-current': currentPage===currentPages[1]}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</button>
-        </li>
-        <li *ngIf="totalResults>resultsPerPage*2">
-            <button [ngClass]="{'is-current': currentPage===currentPages[2]}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</button>
+        <li *ngFor="let page of currentPages">
+            <button iaToggleButton [active]="currentPage===page"
+                activeClass="is-current" class="pagination-link"
+                (click)="loadResults(page)">{{page}}
+            </button>
         </li>
         <li *ngIf="currentPages[2]<totalPages-1">
             <span class="pagination-ellipsis">&hellip;</span>

@@ -51,7 +51,9 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     data_directory = settings.JMIG_DATA_DIR
     data_filepath = getattr(settings, 'JMIG_DATA', None)
     data_url = getattr(settings, 'JMIG_DATA_URL', None)
+    data_api_key = getattr(settings, 'JMIG_DATA_API_KEY', None)
 
+    es_alias = getattr(settings, 'JMIG_ALIAS', None)
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
     languages = ['en']
@@ -60,7 +62,11 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     def sources(self, start, end):
         if self.data_url:
-            response = requests.get(self.data_url)
+            if self.data_api_key:
+                headers = {"Authorization": f"Token {self.data_api_key}"}
+                response = requests.get(self.data_url, headers=headers)
+            else:
+                response = requests.get(self.data_url)
             list_of_sources = response.json()
         elif self.data_filepath:
             with open(self.data_filepath, 'r') as f:
@@ -70,7 +76,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 'No data filepath or URL provided.')
         for source in list_of_sources:
             yield source
-
 
     def __init__(self):
         super().__init__()

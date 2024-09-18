@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CorpusField } from '../../models';
+import { CorpusField } from '@models';
 import * as _ from 'lodash';
 
 @Component({

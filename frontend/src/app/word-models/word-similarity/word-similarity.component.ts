@@ -1,19 +1,20 @@
-import { Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { showLoading } from '../../utils/utils';
-import { Corpus, WordSimilarity } from '../../models';
-import { WordmodelsService } from '../../services';
+import { RouterStoreService } from '../../store/router-store.service';
+import { ComparedQueries } from '@models/compared-queries';
+import { showLoading } from '@utils/utils';
+import { Corpus, WordSimilarity } from '@models';
+import { WordmodelsService } from '@services';
 
 @Component({
     selector: 'ia-word-similarity',
     templateUrl: './word-similarity.component.html',
     styleUrls: ['./word-similarity.component.scss'],
 })
-export class WordSimilarityComponent implements OnChanges {
+export class WordSimilarityComponent implements OnChanges, OnDestroy {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
 
-    @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
     @Input() palette: string[];
@@ -23,18 +24,32 @@ export class WordSimilarityComponent implements OnChanges {
     isLoading$ = new BehaviorSubject<boolean>(false);
 
     comparisonTermLimit = Infinity;
-    comparisonTerms: string[] = [];
+
+    comparedQueries: ComparedQueries;
 
     results: WordSimilarity[][];
     timeIntervals: string[];
 
     data: WordSimilarity[];
 
-    constructor(private wordModelsService: WordmodelsService) {}
+    constructor(
+        private wordModelsService: WordmodelsService,
+        private routerStoreService: RouterStoreService) {
+            this.comparedQueries = new ComparedQueries(this.routerStoreService);
+            this.comparedQueries.allQueries$.subscribe(this.onTermsUpdate.bind(this))
+        }
 
     @HostBinding('class.is-loading')
     get isLoading() {
         return this.isLoading$.value;
+    }
+
+    get queryText(): string {
+        return this.comparedQueries.state$.value.primary;
+    }
+
+    get comparisonTerms(): string[] {
+        return this.comparedQueries.state$.value.compare;
     }
 
     get tableFileName(): string {
@@ -43,7 +58,7 @@ export class WordSimilarityComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (
-            (changes.queryText || changes.corpus) &&
+            (changes.corpus) &&
             this.comparisonTerms.length
         ) {
             this.getData();
@@ -54,9 +69,16 @@ export class WordSimilarityComponent implements OnChanges {
         }
     }
 
-    updateComparisonTerms(terms: string[] = []) {
-        this.comparisonTerms = terms;
-        this.getData();
+    ngOnDestroy(): void {
+        this.comparedQueries.complete();
+    }
+
+    onTermsUpdate() {
+        if (this.corpus && this.comparisonTerms.length >= 1) {
+            this.getData();
+        } else {
+            this.clearData();
+        }
     }
 
     getData(): void {
@@ -74,6 +96,12 @@ export class WordSimilarityComponent implements OnChanges {
         )
             .then(this.onDataLoaded.bind(this))
             .catch(this.onError.bind(this));
+    }
+
+    clearData() {
+        this.results = undefined;
+        this.timeIntervals = undefined;
+        this.data = undefined;
     }
 
     getTimePoints(points: WordSimilarity[]) {

@@ -17,7 +17,12 @@
                     </tr>
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValue(field)">
-                            <th [iaBalloon]="field.description" iaBalloonPosition="up" iaBalloonLength="medium">{{field.displayName}}</th>
+                            <th>
+                                <span [iaBalloon]="field.description"
+                                    iaBalloonPosition="up" iaBalloonLength="medium">
+                                    {{field.displayName}}
+                                </span>
+                            </th>
                             <td *ngIf="!isUrlField(field) && !isGeoPointField(field)"
                                 data-test-field-value
                                 [attr.lang]="document.language(field)"

@@ -17,6 +17,7 @@ import { TabPanelDirective } from './tabs/tab-panel.directive';
 import { TabsComponent } from './tabs/tabs.component';
 import { ToggleComponent } from './toggle/toggle.component';
 import { SlugifyPipe } from './pipes/slugify.pipe';
+import { ToggleButtonDirective } from './toggle-button.directive';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { SlugifyPipe } from './pipes/slugify.pipe';
         TabPanelDirective,
         ToggleComponent,
         SlugifyPipe,
+        ToggleButtonDirective,
     ],
     exports: [
         // shared components
@@ -36,6 +38,7 @@ import { SlugifyPipe } from './pipes/slugify.pipe';
         ScrollToDirective,
         TabsComponent,
         TabPanelDirective,
+        ToggleButtonDirective,
 
         // shared modules
         BrowserAnimationsModule,

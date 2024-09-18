@@ -5,10 +5,10 @@ import * as _ from 'lodash';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { FilterInterface, QueryModel } from '../models/index';
-import { filterIcons } from '../shared/icons';
-import { AuthService } from '../services/auth.service';
-import { isTagFilter } from '../models/tag-filter';
+import { FilterInterface, QueryModel } from '@models/index';
+import { filterIcons } from '@shared/icons';
+import { AuthService } from '@services/auth.service';
+import { isTagFilter } from '@models/tag-filter';
 
 @Component({
     selector: 'ia-filter-manager',
