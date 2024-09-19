@@ -1,8 +1,10 @@
 from datetime import datetime
+from itertools import chain
 import os
 from typing import Tuple, Union
 
 from django.conf import settings
+from langcodes import standardize_tag, Language
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import DCTERMS, FOAF, RDFS, RDF as RDFNS
 from ianalyzer_readers.extract import Backup, Combined, Metadata, RDF
@@ -62,6 +64,11 @@ def add_speaker_metadata(filename: str) -> dict:
 def get_identifier(input: str) -> str:
     return input.split('/')[-1]
 
+
+def language_name(lang_code: str) -> str:
+    return Language.make(language=standardize_tag(lang_code)).display_name()
+
+
 def get_speaker(input: Tuple[URIRef, dict]) -> str:
     (speaker, speaker_dict) = input
     return speaker_dict.get(speaker).get('name')
@@ -110,11 +117,19 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
     image = 'euparl.jpeg'
 
     def sources(self, **kwargs):
-       metadata = {'speakers': add_speaker_metadata(os.path.join(self.data_directory, MP_METADATA))}
-       yield os.path.join(self.data_directory, SPEECHES), metadata
+        metadata = {
+            "speakers": add_speaker_metadata(
+                os.path.join(self.data_directory, MP_METADATA)
+            )
+        }
+        yield os.path.join(self.data_directory, SPEECHES), metadata
 
     def document_subjects(self, graph: Graph):
-        return graph.subjects(object=LPV_EU.Speech)
+        """return all subjects which have either translated or spoken text"""
+        return chain(
+            graph.subjects(predicate=LPV.translatedText),
+            graph.subjects(predicate=LPV.spokenText),
+        )
 
     def parse_graph_from_filename(self, filename: str) -> Graph:
         ''' we combine the graphs in place, to keep memory load low '''
@@ -169,9 +184,7 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
     source_language.display_name = 'Source language'
     source_language.description = 'Original language of the speech'
     source_language.search_filter.description = 'Search only in speeches in the selected source languages',
-    source_language.extractor = RDF(
-        DCTERMS.language
-    )
+    source_language.extractor = RDF(DCTERMS.language, transform=language_name)
 
     speaker = field_defaults.speaker()
     speaker.extractor = Combined(
