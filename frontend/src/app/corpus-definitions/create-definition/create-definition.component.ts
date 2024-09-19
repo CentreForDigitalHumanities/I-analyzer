@@ -41,6 +41,7 @@ export class CreateDefinitionComponent {
             name: this.slugify.transform(this.newCorpusTitle),
             meta: {
                 title: this.newCorpusTitle,
+                languages: [],
             },
             fields: [],
             source_data: {

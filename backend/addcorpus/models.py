@@ -203,7 +203,6 @@ class CorpusConfiguration(models.Model):
         ),
         help_text='languages used in the content of the corpus (from most to least frequent)',
         blank=True,
-        null=True,
     )
     min_date = models.DateField(
         help_text='earliest date for the data in the corpus',
