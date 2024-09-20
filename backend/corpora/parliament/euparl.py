@@ -109,7 +109,7 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
     title = 'People & Parliament (European Parliament)'
     description = "Speeches from the European Parliament (EP)"
     min_date = datetime(year=1999, month=7, day=20)
-    max_data = datetime(year=2017, month=7, day=6)
+    max_date = datetime(year=2017, month=7, day=6)
     data_directory = settings.PP_EUPARL_DATA
     es_index = getattr(settings, 'PP_EUPARL_INDEX', 'parliament-euparl')
     languages = ['en']
@@ -150,7 +150,7 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
         DCTERMS.title
     )
 
-    date = field_defaults.date()
+    date = field_defaults.date(min_date, max_date)
     date.extractor = RDF(
         DCTERMS.date,
         transform=lambda x: x.strftime('%Y-%m-%d')
