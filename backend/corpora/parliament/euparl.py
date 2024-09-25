@@ -81,7 +81,13 @@ def get_speaker_party(input: Tuple[str, datetime, dict]) -> str:
     ''' look up the which EU party the speaker was part of at the date of their speech '''
     (speaker, date, party_data) = input
     party_list = party_data.get(speaker).get('parties')
-    return next((f"{p['party_name']} ({p['party_acronym']})" for p in party_list if (date >= p['date_start'] and date <= p['date_end'])))
+    return next(
+        (
+            f"{p['party_name'].value} ({p['party_acronym'].value})"
+            for p in party_list
+            if (date >= p["date_start"] and date <= p["date_end"])
+        )
+    )
 
 def get_speech_index(input: Tuple[str, list]) -> int:
     ''' find index of speech in array of debate parts '''
@@ -165,18 +171,10 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
     )
 
     sequence = field_defaults.sequence()
-    sequence.extractor = (
-        Combined(
-            RDF(
-                None
-            ),
-            RDF(
-                DCTERMS.isPartOf,
-                DCTERMS.hasPart,
-                multiple=True
-            ),
-            transform=get_speech_index
-        )
+    sequence.extractor = Combined(
+        RDF(),
+        RDF(DCTERMS.isPartOf, DCTERMS.hasPart, multiple=True),
+        transform=get_speech_index,
     )
 
     source_language = field_defaults.language()
@@ -217,22 +215,10 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
     )
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = RDF(
-        None,
-        transform=get_identifier
-    )
+    speech_id.extractor = RDF(transform=get_identifier)
 
     url = field_defaults.url()
-    url.extractor = Backup(
-        RDF(
-            LPV.videoURI,
-            transform=get_uri
-        ),
-        RDF(
-            None,
-            transform=get_uri
-        )
-    )
+    url.extractor = Backup(RDF(LPV.videoURI, transform=get_uri), RDF(transform=get_uri))
 
     def __init__(self):
         self.fields = [
