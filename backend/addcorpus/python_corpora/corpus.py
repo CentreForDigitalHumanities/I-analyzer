@@ -14,6 +14,7 @@ from ianalyzer_readers.readers.core import Reader, Field
 from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.readers.csv import CSVReader
 from ianalyzer_readers.readers.html import HTMLReader
+from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.readers.xlsx import XLSXReader
 
 from addcorpus.python_corpora.filters import Filter
@@ -339,6 +340,11 @@ class JSONCorpusDefinition(CorpusDefinition):
         }
 
         yield field_dict
+
+class RDFCorpusDefinition(CorpusDefinition, RDFReader):
+    '''
+    A RDFCorpus is any corpus that extracts its data from Linked Data files.
+    '''
 
 # Fields ######################################################################
 
