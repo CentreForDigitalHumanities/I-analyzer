@@ -1,6 +1,5 @@
 from datetime import datetime
 from itertools import chain
-import logging
 import os
 from typing import Tuple, Union
 
@@ -26,8 +25,7 @@ LP = Namespace('http://purl.org/linkedpolitics/')
 LPV = Namespace('http://purl.org/linkedpolitics/vocabulary/')
 
 def add_speaker_metadata(filename: str) -> dict:
-    ''' Parse all relevant metadata out of MembersOfParliament ttl to dict'''
-    logger = logging.getLogger("indexing")
+    """Parse all relevant metadata out of MembersOfParliament ttl to dict"""
     speaker_dict = {}
     speaker_graph = Graph()
     speaker_graph.parse(filename)
@@ -36,7 +34,7 @@ def add_speaker_metadata(filename: str) -> dict:
         try:
             name = speaker_graph.value(speaker, FOAF.name).value
         except AttributeError:
-            logger.info(f"Cannot find name of speaker subject {speaker}")
+            # We cannot find the name of the speaker subject
             continue
         country_node = speaker_graph.value(speaker, LPV.countryOfRepresentation)
         country_name = speaker_graph.value(country_node, RDFS.label).value
