@@ -1,6 +1,7 @@
 from allauth.account.models import EmailConfirmationHMAC
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from dj_rest_auth.registration.views import RegisterView
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from djangosaml2.views import LogoutView
 from .serializers import CustomUserDetailsSerializer
+from .throttles import RegistrationRateThrottle
 
 
 def redirect_confirm(request, key):
@@ -51,3 +53,6 @@ class UserViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CustomUserDetailsSerializer
 
+class ThrottledRegisterView(RegisterView):
+    throttle_scope = 'registration'
+    throttle_classes = [RegistrationRateThrottle]
