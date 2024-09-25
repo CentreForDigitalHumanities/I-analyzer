@@ -18,7 +18,7 @@ from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch
-from .es_alias import alias, get_new_version_number
+from .es_alias import alias, get_current_index_name, get_new_version_number
 import datetime
 
 import logging
@@ -50,7 +50,13 @@ def _make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
     }
 
 
-def create(client: Elasticsearch, corpus: Corpus, add: bool = False, clear: bool = False, prod: bool = False):
+def create(
+    client: Elasticsearch,
+    corpus: Corpus,
+    add: bool = False,
+    clear: bool = False,
+    prod: bool = False,
+) -> str:
     '''
     Initialise an ElasticSearch index.
     '''
@@ -59,8 +65,8 @@ def create(client: Elasticsearch, corpus: Corpus, add: bool = False, clear: bool
     es_mapping = _make_es_mapping(corpus_config)
 
     if add:
-        # we add document to existing index - skip creation.
-        return None
+        # we add document to existing index - skip creation, return current index
+        return get_current_index_name(corpus_config, client)
 
     if clear:
         logger.info('Attempting to clean old index...')
@@ -93,6 +99,7 @@ def create(client: Elasticsearch, corpus: Corpus, add: bool = False, clear: bool
             settings=settings,
             mappings=es_mapping,
         )
+        return index_name
     except RequestError as e:
         if 'already_exists' not in e.error:
             # ignore that the index already exist,
@@ -100,13 +107,18 @@ def create(client: Elasticsearch, corpus: Corpus, add: bool = False, clear: bool
             raise
 
 
-def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
+def populate(
+    client: Elasticsearch,
+    corpus: Corpus,
+    versioned_index_name: str,
+    start=None,
+    end=None,
+):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
     corpus_config = corpus.configuration
     corpus_name = corpus.name
-    index_name = corpus_config.es_index
     reader = make_reader(corpus)
 
     logger.info('Attempting to populate index...')
@@ -121,11 +133,12 @@ def populate(client: Elasticsearch, corpus: Corpus, start=None, end=None):
     # can be sent to ElasticSearch in bulk
     actions = (
         {
-            '_op_type': 'index',
-            '_index': index_name,
-            '_id': doc.get('id'),
-            '_source': doc
-        } for doc in docs
+            "_op_type": "index",
+            "_index": versioned_index_name,
+            "_id": doc.get("id"),
+            "_source": doc,
+        }
+        for doc in docs
     )
 
     corpus_server = settings.SERVERS[
@@ -176,26 +189,23 @@ def perform_indexing(
     logger.info('retry on timeout: {}'.format(
         vars(client).get('_retry_on_timeout'))
     )
-    create(client, corpus, add, clear, prod)
+    versioned_index_name = create(client, corpus, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
 
     if mappings_only:
         logger.info('Created index `{}` with mappings only.'.format(index_name))
         return
 
-    populate(client, corpus, start=start, end=end)
+    populate(client, corpus, versioned_index_name, start=start, end=end)
 
     logger.info('Finished indexing `{}` to index `{}`.'.format(
         corpus_name, index_name))
 
     if prod:
-        logger.info('Updating settings for index `{}`'.format(
-            index_name))
+        logger.info("Updating settings for index `{}`".format(versioned_index_name))
         client.indices.put_settings(
-            settings={'number_of_replicas': 1},
-            index=index_name
+            settings={"number_of_replicas": 1}, index=versioned_index_name
         )
         if rollover:
-            logger.info('Adjusting alias for index  `{}`'.format(
-                index_name))
+            logger.info("Adjusting alias for index  `{}`".format(versioned_index_name))
             alias(corpus)  # not deleting old index, so we can roll back
