@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { PALETTES } from '../../../utils/select-color';
-import { visualizationIcons } from '../../../shared/icons';
+import { PALETTES } from '@utils/select-color';
+import { visualizationIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-palette-select',

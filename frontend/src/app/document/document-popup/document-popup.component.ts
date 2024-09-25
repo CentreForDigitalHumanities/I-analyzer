@@ -1,10 +1,14 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { DocumentFocus, DocumentPage, DocumentView } from '../../models/document-page';
+import {
+    DocumentFocus,
+    DocumentPage,
+    DocumentView,
+} from '@models/document-page';
 import { takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { FoundDocument, QueryModel } from '../../models';
+import { FoundDocument, QueryModel } from '@models';
 import { Subject } from 'rxjs';
-import { documentIcons, actionIcons, corpusIcons } from '../../shared/icons';
+import { actionIcons, documentIcons } from '../../shared/icons';
 
 @Component({
     selector: 'ia-document-popup',

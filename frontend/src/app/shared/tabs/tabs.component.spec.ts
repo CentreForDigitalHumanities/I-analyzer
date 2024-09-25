@@ -16,9 +16,11 @@ describe('TabsComponent', () => {
         component = fixture.componentInstance;
         component.tabs = [{
             label: 'First tab',
+            elementId: 'tab-1',
             id: 1
         }, {
             label: 'Second tab',
+            elementId: 'tab-2',
             id: 2
         }];
         fixture.detectChanges();

@@ -19,7 +19,7 @@ def group_without_access():
 
 @pytest.fixture
 def test_corpus(group_with_access):
-    corpus = Corpus.objects.create(name='test-corpus')
+    corpus = Corpus.objects.create(name='test-corpus', active=True)
     corpus.groups.add(group_with_access)
     corpus.save()
     yield corpus

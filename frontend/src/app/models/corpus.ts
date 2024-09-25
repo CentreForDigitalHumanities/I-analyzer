@@ -150,6 +150,9 @@ export class CorpusField {
 }
 
 export interface CorpusDocumentationPage {
+    id: number;
+    corpus: string;
     type: string;
     content: string;
+    index?: number;
 }

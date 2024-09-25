@@ -1,12 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { CorpusField, FoundDocument } from '../../models';
 @Pipe({
     name: 'geoData'
 })
 export class GeoDataPipe implements PipeTransform {
-    constructor(private sanitizer: DomSanitizer) {
-    }
 
     /**
      * Transforms GeoJSON data

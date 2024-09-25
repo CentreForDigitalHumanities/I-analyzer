@@ -1,7 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { Notification, NotificationService } from '../services/notification.service';
+import {
+    Notification,
+    NotificationService,
+} from '@services/notification.service';
 
 const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['class']} = {
     info: 'is-info',

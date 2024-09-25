@@ -1,16 +1,31 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 
-import { environment } from '../../environments/environment';
-import { AuthService, DownloadService, NotificationService, SearchService } from '../services/index';
-import { Corpus, CorpusField, PendingDownload, QueryModel, SortState } from '../models/index';
-import { actionIcons } from '../shared/icons';
-import { TotalResults } from '../models/total-results';
+import { environment } from '@environments/environment';
+import {
+    AuthService,
+    DownloadService,
+    NotificationService,
+    SearchService,
+} from '@services/index';
+import {
+    Corpus,
+    CorpusField,
+    PendingDownload,
+    QueryModel,
+    SortState,
+} from '@models/index';
+import { actionIcons } from '@shared/icons';
+import { TotalResults } from '@models/total-results';
 import { SimpleStore } from '../store/simple-store';
 import { Observable, map } from 'rxjs';
 import { Router } from '@angular/router';
-import { pageResultsParametersToParams } from '../utils/params';
-import { DEFAULT_HIGHLIGHT_SIZE, PageResults, PageResultsParameters } from '../models/page-results';
+import { pageResultsParametersToParams } from '@utils/params';
+import {
+    DEFAULT_HIGHLIGHT_SIZE,
+    PageResults,
+    PageResultsParameters,
+} from '@models/page-results';
 
 
 @Component({
