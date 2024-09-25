@@ -18,7 +18,7 @@ from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch
-from .es_alias import alias, get_new_version_number
+from .es_alias import alias, get_current_index_name, get_new_version_number
 import datetime
 
 import logging
@@ -65,8 +65,8 @@ def create(
     es_mapping = _make_es_mapping(corpus_config)
 
     if add:
-        # we add document to existing index - skip creation.
-        return None
+        # we add document to existing index - skip creation, return current index
+        return get_current_index_name(corpus_config, client)
 
     if clear:
         logger.info('Attempting to clean old index...')
