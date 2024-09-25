@@ -148,8 +148,10 @@ def populate(
     for success, info in es_helpers.streaming_bulk(
         client,
         actions,
-        chunk_size=corpus_server['chunk_size'],
-        max_chunk_bytes=corpus_server['max_chunk_bytes'],
+        chunk_size=corpus_server["chunk_size"],
+        max_chunk_bytes=corpus_server["max_chunk_bytes"],
+        raise_on_exception=False,
+        raise_on_error=False,
     ):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
