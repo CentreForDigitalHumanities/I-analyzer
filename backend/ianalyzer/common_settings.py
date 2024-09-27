@@ -98,6 +98,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ACCOUNT_USER_DISPLAY = lambda user: user.username.replace(".", "\u2024")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

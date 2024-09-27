@@ -48,8 +48,6 @@ PROXY_FRONTEND = None
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
-ACCOUNT_USER_DISPLAY = lambda user: user.username.replace(".", "\u2024")
-
 SITE_NAME = 'IANALYZER'
 HOST = 'localhost:8000'
 
