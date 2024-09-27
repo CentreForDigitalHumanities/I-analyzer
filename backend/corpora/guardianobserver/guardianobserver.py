@@ -42,6 +42,7 @@ class GuardianObserver(XMLCorpusDefinition):
     scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
     languages = ['en']
     category = 'periodical'
+    word_model_path = getattr(settings, "GO_WM", None)
 
     @property
     def es_settings(self):
@@ -243,7 +244,6 @@ class GuardianObserver(XMLCorpusDefinition):
             "fileSize": sizeof_fmt(getsize(join(self.data_directory, image_path)))
         }
         return {'media': image_urls, 'info': pdf_info}
-
 
     def get_media(self, request_args):
         '''
