@@ -1,5 +1,12 @@
 import warnings
 
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.constraints import UniqueConstraint
+
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
     validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
@@ -12,15 +19,10 @@ from addcorpus.validation.creation import (
 )
 from addcorpus.validation.indexing import (validate_essential_fields,
     validate_has_configuration, validate_language_field, validate_has_data_directory)
-from addcorpus.validation.publishing import (validate_default_sort,
-    validate_ngram_has_date_field)
-from django.contrib import admin
-from django.contrib.auth.models import Group
-from django.contrib.postgres.fields import ArrayField
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.db.models.constraints import UniqueConstraint
-
+from addcorpus.validation.publishing import (
+    validate_default_sort,
+    validate_ngram_has_date_field,
+)
 from ianalyzer.elasticsearch import elasticsearch
 
 MAX_LENGTH_NAME = 126
@@ -264,14 +266,15 @@ class CorpusConfiguration(models.Model):
 
     @property
     def has_named_entities(self):
-        client = elasticsearch(self.es_index)
+        from es.search import total_hits
+
+        client = elasticsearch(self.corpus.name)
         try:
-            mapping = client.indices.get_mapping(
-                index=self.es_index)
-            # in production, the index name can be different from the object's es_index value
-            index_name = list(mapping.keys())[0]
-            fields = mapping[index_name].get('mappings', {}).get('properties', {}).keys()
-            if any(field.endswith(':ner') for field in fields):
+            # we check if any fields exist for filtering named entities
+            ner_exists = client.search(
+                index=self.es_index, query={"exists": {"field": "ner:*"}}, size=0
+            )
+            if total_hits(ner_exists):
                 return True
         except:
             return False
