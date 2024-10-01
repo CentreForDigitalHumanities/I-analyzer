@@ -89,6 +89,7 @@ export class CorpusDefinitionService implements OnDestroy {
             },
         };
         switch (dtype) {
+            case 'boolean':
             case 'float':
             case 'integer': {
                 field.options = {

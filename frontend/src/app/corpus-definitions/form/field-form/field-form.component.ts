@@ -38,6 +38,11 @@ export class FieldFormComponent {
         { label: 'number (integer)', value: 'integer' },
         { label: 'number (decimal)', value: 'float' },
         { label: 'date', value: 'date' },
+        {
+            label: 'boolean',
+            value: 'boolean',
+            tooltip: 'True/false field. Can be used to filter.',
+        },
     ];
 
     languageOptions = ISO639Languages;
