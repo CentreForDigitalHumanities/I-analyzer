@@ -51,8 +51,12 @@ export class FieldFormComponent {
                 hidden: new FormControl(),
             }),
             language: new FormControl(),
+            // hidden in the form, but included to ease syncing model with form
+            name: new FormControl(),
+            extract: new FormGroup({
+                column: new FormControl(),
+            }),
         });
-
         fg.patchValue(field);
 
         return fg;
@@ -79,7 +83,7 @@ export class FieldFormComponent {
     }
 
     onSubmit(): void {
-        const newFields = this.fields as unknown as APICorpusDefinitionField[];
+        const newFields = this.fields.value as APICorpusDefinitionField[];
         this.corpus.definition.fields =
             newFields as CorpusDefinition['definition']['fields'];
         this.corpus.save().subscribe({
