@@ -22,9 +22,11 @@
                     <p-dropdown [options]="fieldTypeOptions" formControlName="type" optionLabel="label" optionValue="value"
                         placeholder="select type" />
                     </div>
+                    <p *ngIf="helpText(field) as help" class="help">{{help}}</p>
                     </div>
 
             <div class="field">
+                <label class="label" for="options">Options</label>
                 <ng-container formGroupName="options">
                     <div class="control">
                         <label class="checkbox">

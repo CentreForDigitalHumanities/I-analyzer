@@ -7,6 +7,7 @@ import {
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
 import { ISO639Languages } from '../constants';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-field-form',
@@ -22,8 +23,18 @@ export class FieldFormComponent {
     });
 
     fieldTypeOptions: MenuItem[] = [
-        { label: 'text (content)', value: 'text_content' },
-        { label: 'text (metadata)', value: 'text_metadata' },
+        {
+            label: 'text (content)',
+            value: 'text_content',
+            tooltip:
+                'Main document text. Can consist of multiple paragraphs. Can be used to search.',
+        },
+        {
+            label: 'text (metadata)',
+            value: 'text_metadata',
+            tooltip:
+                'Metadata text. Limited to a single paragraph. Can be used to filter and/or search.',
+        },
         { label: 'number (integer)', value: 'integer' },
         { label: 'number (decimal)', value: 'float' },
         { label: 'date', value: 'date' },
@@ -60,6 +71,13 @@ export class FieldFormComponent {
         fg.patchValue(field);
 
         return fg;
+    }
+
+    helpText(field: FormGroup): string | undefined {
+        const fieldType = field.get('type').value;
+        return _.find(this.fieldTypeOptions, {
+            value: fieldType,
+        }).tooltip;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
