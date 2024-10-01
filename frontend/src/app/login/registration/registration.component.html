@@ -1,7 +1,7 @@
 <section class="section">
     <div class="columns is-centered">
 
-        <div *ngIf="!registrationSucceeded && !serverError">
+        <div *ngIf="!registrationSucceeded && !serverErrorCode">
             <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm">
                 <div class="container is-login">
                     <h1 class="title">I-Analyzer sign-up</h1>
@@ -113,7 +113,10 @@
             <p>Please follow the instructions in this email to complete your registration. </p>
         </div>
 
-        <div class="notification is-danger container" *ngIf=serverError>
+        <div class="notification is-danger container" *ngIf="serverErrorCode === 429">
+            <p>Too many requests. Try again later.</p>
+        </div>
+        <div class="notification is-danger container" *ngIf="![0, 429].includes(serverErrorCode)">
             <p>A problem occurred on our side. Please contact the Digital Humanities Lab (<b>digitalhumanities [at] uu [dot] nl</b>), so that we can fix it for you.</p>
         </div>
     </div>
