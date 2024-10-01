@@ -26,14 +26,16 @@ export class FieldFormComponent {
         {
             label: 'text (content)',
             value: 'text_content',
-            tooltip:
+            helpText:
                 'Main document text. Can consist of multiple paragraphs. Can be used to search.',
+            hasLanguage: true,
         },
         {
             label: 'text (metadata)',
             value: 'text_metadata',
-            tooltip:
+            helpText:
                 'Metadata text. Limited to a single paragraph. Can be used to filter and/or search.',
+            hasLanguage: true,
         },
         { label: 'number (integer)', value: 'integer' },
         { label: 'number (decimal)', value: 'float' },
@@ -41,7 +43,7 @@ export class FieldFormComponent {
         {
             label: 'boolean',
             value: 'boolean',
-            tooltip: 'True/false field. Can be used to filter.',
+            helpText: 'True/false field. Can be used to filter.',
         },
     ];
 
@@ -78,11 +80,10 @@ export class FieldFormComponent {
         return fg;
     }
 
-    helpText(field: FormGroup): string | undefined {
+    getFieldProperty(field: FormGroup, prop: string) {
         const fieldType = field.get('type').value;
-        return _.find(this.fieldTypeOptions, {
-            value: fieldType,
-        }).tooltip;
+        const option = _.find(this.fieldTypeOptions, { value: fieldType });
+        return option[prop];
     }
 
     ngOnChanges(changes: SimpleChanges): void {
