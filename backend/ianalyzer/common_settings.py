@@ -79,6 +79,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication'
     ],
     'DEFAULT_THROTTLE_RATES': {
+        'password': '3/minute',
         'registration': '5/minute',
     }
 }

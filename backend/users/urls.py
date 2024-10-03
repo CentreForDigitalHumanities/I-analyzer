@@ -1,7 +1,14 @@
 from django.urls import include, path, re_path
 from dj_rest_auth.registration.views import VerifyEmailView
 
-from .views import KeyInfoView, redirect_confirm, redirect_reset, SamlLogoutView, ThrottledRegisterView
+from .views import (
+    KeyInfoView,
+    redirect_confirm,
+    redirect_reset,
+    SamlLogoutView,
+    ThrottledPasswordResetView,
+    ThrottledRegisterView
+)
 
 urlpatterns = [
     # registration
@@ -12,6 +19,7 @@ urlpatterns = [
     path('account-confirm-email/', VerifyEmailView.as_view(),
          name='account_email_verification_sent'),
     # password reset
+    path('password/reset/', ThrottledPasswordResetView.as_view(), name='rest_password_reset'),
     path('password-reset/<uidb64>/<token>/',
          redirect_reset, name='password_reset_confirm'),
     # generic routes
