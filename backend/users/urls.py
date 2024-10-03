@@ -12,7 +12,7 @@ from .views import (
 
 urlpatterns = [
     # registration
-    path('registration/', ThrottledRegisterView.as_view(), name='rest_registration'),
+    path('registration/', ThrottledRegisterView.as_view(), name='rest_register'),
     re_path(r'registration/account-confirm-email/(?P<key>.+)/',
             redirect_confirm, name='account_confirm_email'),
     path('registration/key-info/', KeyInfoView.as_view(), name='key-info'),
