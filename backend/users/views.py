@@ -12,7 +12,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from djangosaml2.views import LogoutView
 from .serializers import CustomUserDetailsSerializer
-from .throttles import UserRateThrottle
+from .throttles import PasswordResetRateThrottle, RegistrationRateThrottle
 
 
 def redirect_confirm(request, key):
@@ -57,8 +57,8 @@ class UserViewSet(ModelViewSet):
 
 class ThrottledPasswordResetView(PasswordResetView):
     throttle_scope = 'password'
-    throttle_classes = [UserRateThrottle]
+    throttle_classes = [PasswordResetRateThrottle]
 
 class ThrottledRegisterView(RegisterView):
     throttle_scope = 'registration'
-    throttle_classes = [UserRateThrottle]
+    throttle_classes = [RegistrationRateThrottle]
