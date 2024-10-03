@@ -20,7 +20,7 @@ import { AppComponent } from './app.component';
 import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
 import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
-import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
+import { DefinitionInOutComponent } from './corpus-definitions/definition-in-out/definition-in-out.component';
 import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
 import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
 import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
@@ -148,11 +148,11 @@ export const appRoutes: Routes = [
                 component: CreateDefinitionComponent,
             },
             {
-                path: 'edit/:corpusID',
-                component: EditDefinitionComponent,
+                path: 'io/:corpusID',
+                component: DefinitionInOutComponent,
             },
             {
-                path: 'form/:corpusID',
+                path: 'edit/:corpusID',
                 component: CorpusFormComponent,
             },
             {

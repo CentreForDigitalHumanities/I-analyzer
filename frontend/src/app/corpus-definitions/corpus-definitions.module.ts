@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { DefinitionsOverviewComponent } from './definitions-overview/definitions-overview.component';
 import { SharedModule } from '@shared/shared.module';
 import { CreateDefinitionComponent } from './create-definition/create-definition.component';
-import { EditDefinitionComponent } from './edit-definition/edit-definition.component';
+import { DefinitionInOutComponent } from './definition-in-out/definition-in-out.component';
 import { DefinitionJsonUploadComponent } from './definition-json-upload/definition-json-upload.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MetaFormComponent } from './form/meta-form/meta-form.component';
@@ -17,7 +17,7 @@ import { DropdownModule } from 'primeng/dropdown';
     declarations: [
         CreateDefinitionComponent,
         DefinitionsOverviewComponent,
-        EditDefinitionComponent,
+        DefinitionInOutComponent,
         DefinitionJsonUploadComponent,
         MetaFormComponent,
         CorpusFormComponent,
@@ -27,7 +27,7 @@ import { DropdownModule } from 'primeng/dropdown';
     exports: [
         CreateDefinitionComponent,
         DefinitionsOverviewComponent,
-        EditDefinitionComponent,
+        DefinitionInOutComponent,
         CorpusFormComponent,
     ],
     imports: [
