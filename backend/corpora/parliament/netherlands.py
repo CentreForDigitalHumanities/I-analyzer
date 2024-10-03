@@ -9,7 +9,14 @@ from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousTag, Transform
 import bs4
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice, Order
-from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
+from corpora.parliament.utils.parlamint import (
+    extract_all_party_data,
+    extract_people_data,
+    extract_role_data,
+    party_attribute_extractor,
+    person_attribute_extractor,
+    speech_ner,
+)
 from corpora.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 from corpora.utils.constants import document_context
@@ -29,7 +36,6 @@ def format_role(role):
         return role.upper()
     else:
         return role.title() if type(role) == str else role
-
 
 
 def format_house(house):
@@ -126,7 +132,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
 
-        #old data
+        # old data
         for xml_file in glob('{}/*.xml'.format(self.data_directory)):
             period_match = re.search(r'[0-9]{8}', xml_file)
             if period_match:
@@ -155,7 +161,6 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             for year in range(start.year, end.year):
                 for xml_file in glob('{}/{}/*.xml'.format(self.data_directory_recent, year)):
                     yield xml_file, metadata
-
 
     country = field_defaults.country()
     country.extractor = Constant(
@@ -333,7 +338,6 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     )
     party.language = 'nl'
 
-
     party_id = field_defaults.party_id()
     party_id.extractor = Choice(
         XML(
@@ -397,6 +401,8 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
         Constant(value='ParlaMINT')
     )
 
+    speech_ner = parlamint.speech_ner()
+
     def __init__(self):
         self.fields = [
             self.country, self.date,
@@ -409,4 +415,3 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             self.party, self.party_id, self.party_full,
             self.page, self.url, self.sequence
         ]
-

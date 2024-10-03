@@ -1,5 +1,7 @@
-from addcorpus.python_corpora.extract import XML, Combined, Metadata
+from ianalyzer_readers.reader.extract import XML, Combined, Metadata
 from bs4.element import NavigableString
+
+from addcorpus.python_corpora.corpus import FieldDefinition
 
 def clean_value(value):
     if type(value) == str or type(value) == NavigableString:
@@ -107,4 +109,14 @@ def party_attribute_extractor(attribute):
         person_attribute_extractor('party_id'),
         Metadata('parties'),
         transform = metadata_attribute_transform_func(attribute),
+    )
+
+
+def speech_ner(annotated_data_dir):
+    return FieldDefinition(
+        name="speech:ner",
+        hidden=True,
+        es_mapping={"type": "annotated_text"},
+        searchable=True,
+        extractor=XML(attribute="xml:id", transform=read_),
     )
