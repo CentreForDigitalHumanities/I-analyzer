@@ -51,7 +51,9 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
     data_directory = settings.JMIG_DATA_DIR
     data_filepath = getattr(settings, 'JMIG_DATA', None)
     data_url = getattr(settings, 'JMIG_DATA_URL', None)
+    data_api_key = getattr(settings, 'JMIG_DATA_API_KEY', None)
 
+    es_alias = getattr(settings, 'JMIG_ALIAS', None)
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
     image = 'jewish_inscriptions.jpg'
     languages = ['en']
@@ -60,7 +62,11 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     def sources(self, start, end):
         if self.data_url:
-            response = requests.get(self.data_url)
+            if self.data_api_key:
+                headers = {"Authorization": f"Token {self.data_api_key}"}
+                response = requests.get(self.data_url, headers=headers)
+            else:
+                response = requests.get(self.data_url)
             list_of_sources = response.json()
         elif self.data_filepath:
             with open(self.data_filepath, 'r') as f:
@@ -70,7 +76,6 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 'No data filepath or URL provided.')
         for source in list_of_sources:
             yield source
-
 
     def __init__(self):
         super().__init__()
@@ -93,61 +98,63 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
             key='transcription')
         extra_fields = [
             FieldDefinition(
-                name='script',
-                display_name='Script',
-                description='Which alphabet the source was written in',
+                name="script",
+                display_name="Script",
+                description="Which alphabet the source was written in",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='scripts'),
+                extractor=extract.JSON(key="scripts"),
+                visualizations=["resultscount"],
             ),
             FieldDefinition(
-                name='site_type',
-                display_name='Site Type',
-                description='Type of site where evidence for settlement was found',
+                name="site_type",
+                display_name="Site Type",
+                description="Type of site where evidence for settlement was found",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='site_type')
+                extractor=extract.JSON(key="site_type"),
             ),
             FieldDefinition(
-                name='inscription_type',
-                display_name='Inscription type',
-                description='Type of inscription',
+                name="inscription_type",
+                display_name="Inscription type",
+                description="Type of inscription",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='inscription_type')
+                extractor=extract.JSON(key="inscription_type"),
             ),
             FieldDefinition(
-                name='period',
-                display_name='Period',
-                description='Period in which the inscription was made',
+                name="period",
+                display_name="Period",
+                description="Period in which the inscription was made",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='period')
+                extractor=extract.JSON(key="period"),
             ),
             FieldDefinition(
-                name='estimated_centuries',
-                display_name='Estimated Centuries',
-                description='Estimate of centuries in which the inscription was made',
+                name="estimated_centuries",
+                display_name="Estimated Centuries",
+                description="Estimate of centuries in which the inscription was made",
                 es_mapping=int_mapping(),
                 extractor=extract.JSON(
-                    key='estimated_centuries', transform=transform_centuries)
+                    key="estimated_centuries", transform=transform_centuries
+                ),
             ),
             FieldDefinition(
-                name='inscription_count',
-                display_name='Inscription count',
-                description='Number of inscriptions',
+                name="inscription_count",
+                display_name="Inscription count",
+                description="Number of inscriptions",
                 es_mapping=int_mapping(),
-                extractor=extract.JSON(key='inscriptions_count')
+                extractor=extract.JSON(key="inscriptions_count"),
             ),
             FieldDefinition(
-                name='religious_profession',
-                display_name='Religious profession',
-                description='Religious profession of deceased',
+                name="religious_profession",
+                display_name="Religious profession",
+                description="Religious profession of deceased",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='religious_profession')
+                extractor=extract.JSON(key="religious_profession"),
             ),
             FieldDefinition(
-                name='sex_dedicator',
-                display_name='Gender dedicator',
-                description='Gender of the dedicator',
+                name="sex_dedicator",
+                display_name="Gender dedicator",
+                description="Gender of the dedicator",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key='sex_dedicator')
-            )
+                extractor=extract.JSON(key="sex_dedicator"),
+            ),
         ]
         self.fields = [*exclude_fields_without_extractor(self.fields), *extra_fields]

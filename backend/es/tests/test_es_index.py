@@ -66,3 +66,18 @@ def test_mismatch_corpus_index_names(mock_corpus, corpus_definition, es_index_cl
 def test_db_only_corpus(json_mock_corpus, es_client, index_json_mock_corpus):
     res = es_client.count(index=json_mock_corpus.configuration.es_index)
     assert res.get('count') == 10
+
+
+def test_indexing_with_version(mock_corpus, corpus_definition, es_index_client):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    perform_indexing(
+        corpus,
+        START,
+        END,
+        mappings_only=False,
+        add=False,
+        clear=False,
+        prod=True,
+        rollover=True,
+    )
+    assert es_index_client.indices.exists(index="times-test-1") == True
