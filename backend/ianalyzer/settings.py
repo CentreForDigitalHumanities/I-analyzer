@@ -48,9 +48,6 @@ PROXY_FRONTEND = None
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
-
-# ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
-
 SITE_NAME = 'IANALYZER'
 HOST = 'localhost:8000'
 
