@@ -4,7 +4,8 @@ import embed, { VisualizationSpec } from 'vega-embed';
 
 import { Corpus, CorpusField, GeoDocument, GeoLocation, QueryModel } from '@models';
 import { VisualizationService } from '@services';
-import { showLoading } from '@utils/utils';
+import { MapDataResults } from '@models/map-data';
+import { RouterStoreService } from 'app/store/router-store.service';
 
 
 @Component({
@@ -22,12 +23,15 @@ export class MapComponent implements OnChanges {
 
     @Output() mapError = new EventEmitter();
 
-    mapCenter: GeoLocation;
+    mapCenter: GeoLocation | null;
     results: GeoDocument[];
 
     isLoading$ = new BehaviorSubject<boolean>(false);
 
+    private mapDataResults: MapDataResults;
+
     constructor(
+        private routerStoreService: RouterStoreService,
         private visualizationService: VisualizationService
     ) { }
 
@@ -42,41 +46,33 @@ export class MapComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.readyToLoad) {
-            this.loadMapCenter();
 
-            if ( changes.corpus || changes.visualizedField || changes.queryModel ) {
-                this.queryModel.update.subscribe(this.loadData.bind(this));
-                this.loadData();
+            if (changes.corpus || changes.visualizedField || changes.queryModel) {
+                this.mapDataResults?.complete();
+
+                this.mapDataResults = new MapDataResults(
+                    this.routerStoreService,
+                    this.queryModel,
+                    this.visualizationService
+                );
+
+                this.mapDataResults.result$.subscribe(data => {
+                    this.results = data.geoDocuments;
+                    this.mapCenter = data.mapCenter;
+                    this.renderChart();
+                });
+
+
+                this.mapDataResults.error$.subscribe(error => this.emitError(error));
             }
         }
     }
 
 
-    loadMapCenter() {
-        this.visualizationService.getGeoCentroid(this.visualizedField.name, this.corpus)
-            .then(centroid => {
-                this.mapCenter = centroid;
-            })
-            .catch(this.emitError.bind(this));
+    ngOnDestroy(): void {
+        this.mapDataResults?.complete();
     }
 
-
-    loadData() {
-        showLoading(
-            this.isLoading$,
-            this.visualizationService
-                .getGeoData(
-                    this.visualizedField.name,
-                    this.queryModel,
-                    this.corpus,
-                )
-                .then(geoData => {
-                    this.results = geoData;
-                    this.renderChart();
-                })
-                .catch(this.emitError.bind(this))
-        );
-    }
 
     getVegaSpec(): VisualizationSpec {
         // Returns a Vega map specification
