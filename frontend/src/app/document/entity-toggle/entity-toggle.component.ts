@@ -5,7 +5,6 @@ import { DialogService } from '../../services';
 
 @Component({
   selector: 'ia-entity-toggle',
-  imports: [],
   templateUrl: './entity-toggle.component.html',
   styleUrl: './entity-toggle.component.scss'
 })

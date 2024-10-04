@@ -1,7 +1,7 @@
 <section class="section">
     <div class="columns is-centered">
 
-        <div *ngIf="!registrationSucceeded && !serverError">
+        <div *ngIf="!registrationSucceeded && !serverErrorCode">
             <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm">
                 <div class="container is-login">
                     <h1 class="title">I-Analyzer sign-up</h1>
@@ -24,7 +24,7 @@
                     <div class="field">
                         <label class="label" for="email">Email</label>
                         <p class="control has-icons-left">
-                            <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" />
+                            <input class="input" type="email" name="email" ngModel #email="ngModel" required email/>
                             <span class="icon is-left">
                                 <fa-icon [icon]="userIcons.email" aria-hidden="true"></fa-icon>
                             </span>
@@ -32,7 +32,7 @@
                         <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
                             Email is required.
                         </div>
-                        <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors?.pattern && email.touched">
+                        <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors && email.touched">
                             Please enter a valid email address.
                         </div>
                         <div class="notification is-danger" *ngIf="errors?.email">
@@ -113,7 +113,10 @@
             <p>Please follow the instructions in this email to complete your registration. </p>
         </div>
 
-        <div class="notification is-danger container" *ngIf=serverError>
+        <div class="notification is-danger container" *ngIf="serverErrorCode === 429">
+            <p>Too many requests. Try again later.</p>
+        </div>
+        <div class="notification is-danger container" *ngIf="![0, 429].includes(serverErrorCode)">
             <p>A problem occurred on our side. Please contact the Digital Humanities Lab (<b>digitalhumanities [at] uu [dot] nl</b>), so that we can fix it for you.</p>
         </div>
     </div>
