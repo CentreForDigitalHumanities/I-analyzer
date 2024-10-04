@@ -21,7 +21,8 @@ class MockResponse(object):
     def json(self):
         return self.mock_content
 
-def mock_get(_dummy_path):
+
+def mock_get(_dummy_path, headers=None):
     return MockResponse(mock_content=[
         {
             "source": "Le Bohec 1981 n. 71",
