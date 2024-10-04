@@ -1,4 +1,4 @@
-import { Observable, forkJoin, of } from 'rxjs';
+import { map, of, Observable, switchMap, withLatestFrom  } from 'rxjs';
 import { Results } from './results';
 import { GeoDocument, GeoLocation } from './search-results';
 import { Params } from '@angular/router';
@@ -21,7 +21,7 @@ interface MapData {
 
 
 export class MapDataResults extends Results<MapDataParameters, MapData> {
-    private mapCenter: GeoLocation | null = null;
+    private mapCenter$: Observable<GeoLocation>;
 
     constructor(
         store: Store,
@@ -30,6 +30,13 @@ export class MapDataResults extends Results<MapDataParameters, MapData> {
     ) {
         super(store, query, ['visualizedField']);
         this.connectToStore();
+        this.mapCenter$ = this.state$.pipe(
+            map(state => state.field),
+            switchMap(field => field
+                ? this.visualizationService.getGeoCentroid(field.name, this.query.corpus)
+                : of(null)
+            )
+        );
         this.getResults();
     }
 
@@ -39,18 +46,19 @@ export class MapDataResults extends Results<MapDataParameters, MapData> {
             return of({ geoDocuments: [], mapCenter: null });
         }
 
-        const getGeoCentroid$ = this.mapCenter
-            ? of(this.mapCenter)
-            : this.visualizationService.getGeoCentroid(field.name, this.query.corpus);
+        const geoDocuments$ = this.visualizationService.getGeoData(
+            field.name,
+            this.query,
+            this.query.corpus
+        );
 
-        return forkJoin({
-            geoDocuments: this.visualizationService.getGeoData(
-                field.name,
-                this.query,
-                this.query.corpus
-            ),
-            mapCenter: getGeoCentroid$
-        });
+        return geoDocuments$.pipe(
+            withLatestFrom(this.mapCenter$),
+            map(([geoDocuments, mapCenter]) => ({
+                geoDocuments,
+                mapCenter
+            }))
+        );
     }
 
     protected stateToStore(state: MapDataParameters): Params {
