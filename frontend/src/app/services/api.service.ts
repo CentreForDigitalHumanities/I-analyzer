@@ -152,9 +152,9 @@ export class ApiService {
         return this.http.post<GeoDocument[]>(url, data);
     }
 
-    public geoCentroid(data: {corpus: string, field: string}): Observable<GeoLocation> {
+    public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {
         const url = this.apiRoute(this.visApiURL, 'geo_centroid');
-        return this.http.post<GeoLocation>(url, data);
+        return this.http.post<GeoLocation>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {

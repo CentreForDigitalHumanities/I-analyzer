@@ -23,7 +23,7 @@ export class MapComponent implements OnChanges {
 
     @Output() mapError = new EventEmitter();
 
-    mapCenter: GeoLocation;
+    mapCenter: GeoLocation | null;
     results: GeoDocument[];
 
     isLoading$ = new BehaviorSubject<boolean>(false);

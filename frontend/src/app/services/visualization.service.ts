@@ -47,8 +47,8 @@ export class VisualizationService {
         });
     }
 
-    public getGeoCentroid(fieldName: string, corpus: Corpus):
-    Observable<GeoLocation> {
+    public async getGeoCentroid(fieldName: string, corpus: Corpus):
+    Promise<GeoLocation> {
     return this.apiService.geoCentroid({
         corpus: corpus.name,
         field: fieldName,
