@@ -1,4 +1,4 @@
- from datetime import datetime
+from datetime import datetime
 
 from addcorpus.python_corpora.corpus import FieldDefinition
 from addcorpus.python_corpora.filters import DateFilter, MultipleChoiceFilter
