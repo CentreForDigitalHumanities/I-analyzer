@@ -127,7 +127,7 @@ class ParliamentIrelandOld(CSVCorpusDefinition):
     speaker_constituency = field_defaults.speaker_constituency()
     speaker_constituency.extractor = CSV('const_name')
 
-    speech = field_defaults.speech()
+    speech = field_defaults.speech(language="en")
     speech.extractor = CSV(
         'speech',
         multiple=True,
@@ -148,7 +148,6 @@ class ParliamentIrelandOld(CSVCorpusDefinition):
 
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant('1919-2013')
-
 
     fields = [
         date,
