@@ -15,7 +15,7 @@ on:
       - 'dependabot/**'
     paths:
       - 'backend/**'
-      - '.github/workflows/backend*'
+      - '.github/workflows/backend-test.yml'
       - 'docker-compose.yaml'
 
 jobs:
@@ -27,5 +27,4 @@ jobs:
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data
-        docker compose pull elasticsearch
-        docker compose --env-file .env-ci run --rm backend pytest
+        docker compose --env-file .env-ci run --build backend pytest

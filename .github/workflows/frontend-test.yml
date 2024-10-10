@@ -15,7 +15,7 @@ on:
       - 'dependabot/**'
     paths:
       - 'frontend/**'
-      - '.github/workflows/frontend*'
+      - '.github/workflows/frontend-test.yml'
       - 'docker-compose.yaml'
 
 jobs:
@@ -26,4 +26,4 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run frontend unit tests
       run: |
-        docker compose --env-file .env-ci run --rm frontend yarn test
+        docker compose --env-file .env-ci run --build frontend yarn test
