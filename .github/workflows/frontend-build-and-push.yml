@@ -8,6 +8,7 @@ on:
         - closed
       paths:
         - frontend/yarn.lock
+        - 'docker-compose.yaml'
 
 jobs:
   if_merged:

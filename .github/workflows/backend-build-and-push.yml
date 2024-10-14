@@ -8,6 +8,7 @@ on:
         - closed
       paths:
         - backend/requirements.txt
+        - 'docker-compose.yaml'
 
 jobs:
   if_merged:
