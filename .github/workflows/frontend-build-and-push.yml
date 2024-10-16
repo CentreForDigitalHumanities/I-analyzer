@@ -30,6 +30,6 @@ jobs:
       with:
         context: frontend/.
         push: true
-        tags: ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
-        cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
+        tags: ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
+        cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
         cache-to: type=inline

@@ -25,16 +25,16 @@ jobs:
           with:
             context: frontend/.
             push: true
-            tags: ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
-            cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-frontend:latest
+            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
+            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
             cache-to: type=inline
         - name: Build backend image, using cache from Github registry
           uses: docker/build-push-action@v6
           with:
             context: backend/.
             push: true
-            tags: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
-            cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
+            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
+            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
             cache-to: type=inline
         - name: Build Elasticsearch image, using cache from Github registry
           uses: docker/build-push-action@v6
@@ -42,6 +42,6 @@ jobs:
             context: .
             dockerfile: DockerfileElastic
             push: true
-            tags: ghcr.io/uudigitalhumanitieslab/ianalyzer-elasticsearch:latest
-            cache-from: type=registry,ref=ghcr.io/uudigitalhumanitieslab/ianalyzer-elasticsearch:latest
+            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
+            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
             cache-to: type=inline

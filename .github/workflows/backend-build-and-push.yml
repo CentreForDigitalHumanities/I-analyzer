@@ -30,4 +30,4 @@ jobs:
       with:
         context: backend/.
         push: true
-        tags: ghcr.io/uudigitalhumanitieslab/ianalyzer-backend:latest
+        tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
