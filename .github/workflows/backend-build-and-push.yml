@@ -1,6 +1,7 @@
 name: Backend build and push after merge of requirements.txt
 
 on:
+    workflow_dispatch:
     pull_request:
       branches:
         - develop

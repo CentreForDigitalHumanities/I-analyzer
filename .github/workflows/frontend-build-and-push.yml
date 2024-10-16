@@ -1,6 +1,7 @@
 name: Frontend build and push after merge of yarn.lock
 
 on:
+    workflow_dispatch:
     pull_request:
       branches:
         - develop
