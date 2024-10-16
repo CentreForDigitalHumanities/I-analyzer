@@ -1,4 +1,4 @@
-# This workflow will run frontend tests on the `ianalyzer-frontend:latest` image
+# This workflow will build the frontend container and then run tests; it will only be triggered when yarn.lock changes
 
 name: Frontend unit tests
 
@@ -6,16 +6,12 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'develop'
-      - 'master'
       - 'feature/**'
       - 'bugfix/**'
       - 'hotfix/**'
-      - 'release/**'
       - 'dependabot/**'
     paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend-test.yml'
+      - frontend/yarn.lock
       - 'docker-compose.yaml'
 
 jobs:
