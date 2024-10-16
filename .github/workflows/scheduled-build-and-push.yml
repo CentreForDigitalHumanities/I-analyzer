@@ -41,7 +41,7 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             context: .
-            dockerfile: DockerfileElastic
+            file: DockerfileElastic
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
             cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
