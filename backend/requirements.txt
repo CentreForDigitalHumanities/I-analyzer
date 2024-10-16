@@ -132,7 +132,7 @@ h11==0.14.0
     #   wsproto
 humanize==4.9.0
     # via flower
-ianalyzer-readers==0.2.1
+ianalyzer-readers @ git+https://github.com/UUDigitalHumanitieslab/ianalyzer-readers/@feature/source-as-bytes
     # via -r requirements.in
 idna==3.4
     # via
