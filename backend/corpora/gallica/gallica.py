@@ -54,7 +54,9 @@ class Gallica(XMLCorpusDefinition):
                     content_response = requests.get(
                         f"{self.data_url}/ark:/12148/{ark}.texteBrut"
                     )
-                    parsed_content = BeautifulSoup(content_response.content, "html")
+                    parsed_content = BeautifulSoup(
+                        content_response.content, "lxml-html"
+                    )
                     yield (
                         source_response.content,
                         {"content": parsed_content},

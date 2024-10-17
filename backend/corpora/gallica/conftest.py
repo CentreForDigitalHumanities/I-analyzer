@@ -32,3 +32,4 @@ def mock_response(url: str) -> MockResponse:
     elif url.endswith("texteBrut"):
         filename = os.path.join(here, "tests", "data", "figaro", "RoughText.html")
     return MockResponse(filename)
+
