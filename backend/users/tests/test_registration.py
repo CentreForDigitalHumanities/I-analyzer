@@ -3,6 +3,7 @@ import random
 import re
 import string
 
+from django.core.cache import cache
 from django.urls import reverse
 from allauth.account.models import EmailAddress
 from rest_framework import status
@@ -58,6 +59,7 @@ def test_register_throttling(client, throttle_settings):
     Test that the ThrottledRegisterView returns a 429 error
     after exceeding the allowed number of registration attempts.
     """
+    cache.clear() # Clear cache to reset rest_registration count
     # client = drf_client
     # Check throttle rate settings are applied
     registration_rate = throttle_settings.REST_FRAMEWORK.get(
