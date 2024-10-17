@@ -112,11 +112,11 @@ def party_attribute_extractor(attribute):
     )
 
 
-def speech_ner(annotated_data_dir):
+def speech_ner():
     return FieldDefinition(
         name="speech:ner",
         hidden=True,
         es_mapping={"type": "annotated_text"},
         searchable=True,
-        extractor=XML(attribute="xml:id", transform=read_),
+        extractor=XML(attribute="xml:id"),
     )

@@ -361,7 +361,7 @@ class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant(value="PoliticalMashup")
 
-    # speech_ner = parlamint.speech_ner()
+    speech_ner = speech_ner()
 
 
 class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
