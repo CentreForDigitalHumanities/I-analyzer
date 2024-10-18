@@ -1,7 +1,9 @@
 from ianalyzer_readers.reader.extract import XML, Combined, Metadata
 from bs4.element import NavigableString
 
+from addcorpus.es_mappings import keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 
 def clean_value(value):
     if type(value) == str or type(value) == NavigableString:
@@ -109,6 +111,19 @@ def party_attribute_extractor(attribute):
         person_attribute_extractor('party_id'),
         Metadata('parties'),
         transform = metadata_attribute_transform_func(attribute),
+    )
+
+
+def ner_keyword_field(entity: str):
+    return FieldDefinition(
+        name=f"ner:{entity}",
+        display_name=f"Named Entity: {entity.capitalize()}"
+        searchable=True,
+        es_mapping=keyword_mapping(enable_full_text_search=True),
+        search_filter=MultipleChoiceFilter(
+            description=f"Select only speeches which contain this {entity} entity",
+            option_count=100,
+        ),
     )
 
 

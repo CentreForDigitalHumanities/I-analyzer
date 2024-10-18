@@ -13,6 +13,7 @@ from corpora.parliament.utils.parlamint import (
     extract_all_party_data,
     extract_people_data,
     extract_role_data,
+    ner_keyword_field,
     party_attribute_extractor,
     person_attribute_extractor,
     speech_ner,
@@ -362,6 +363,10 @@ class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
     source_archive.extractor = Constant(value="PoliticalMashup")
 
     speech_ner = speech_ner()
+    ner_person = ner_keyword_field("person")
+    ner_location = ner_keyword_field("location")
+    ner_organization = ner_keyword_field("organization")
+    ner_misc = ner_keyword_field("misc")
 
 
 class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
