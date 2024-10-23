@@ -108,10 +108,11 @@ class ParliamentNetherlandsNew(Parliament, XMLCorpusDefinition):
     languages = ["nl"]
 
     category = "parliament"
+    data_directory = settings.PP_NL_RECENT_DATA
     document_context = document_context()
 
     def sources(self, start: datetime, end: datetime):
-        soup = load_nl_recent_metadata(self.data_directory_recent)
+        soup = load_nl_recent_metadata(self.data_directory)
         role_data = extract_role_data(soup)
         party_data = extract_all_party_data(soup)
         person_data = extract_people_data(soup)
@@ -223,6 +224,7 @@ class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
 
     tag_toplevel = Tag("root")
     tag_entry = Tag("speech")
+    data_directory = settings.PP_NL_DATA
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -378,8 +380,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year=1815, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
-    data_directory = settings.PP_NL_DATA
-    data_directory_recent = settings.PP_NL_RECENT_DATA
+    data_directory = settings.PP_NL_RECENT_DATA
     word_model_path = getattr(settings, "PP_NL_WM", None)
 
     es_index = getattr(settings, "PP_NL_INDEX", "parliament-netherlands")
