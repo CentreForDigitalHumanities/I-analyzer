@@ -284,9 +284,13 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "page": None,
                 "url": None,
                 "sequence": 1,
+                "ner:location": [],
+                "ner:miscellaneous": [],
+                "ner:organization": ["Economische Zaken"],
+                "ner:person": [],
             }
         ],
-        "n_documents": 98,
+        "n_documents": 2,
         "start": datetime(2015, 1, 1),
     },
     {

@@ -1,8 +1,9 @@
+from string import punctuation
 from typing import Iterable
 
 from ianalyzer_readers.extract import XML, Combined, Metadata
 from ianalyzer_readers.xml_tag import Tag
-from bs4.element import NavigableString
+from bs4.element import NavigableString, Tag as Node
 
 from addcorpus.es_mappings import keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition
@@ -117,6 +118,23 @@ def party_attribute_extractor(attribute):
     )
 
 
+def get_entity_shorthand(entity: str):
+    if entity == "location":
+        return "LOC"
+    elif entity == "miscellaneous":
+        return "MISC"
+    elif entity == "organization":
+        return "ORG"
+    else:
+        return "PER"
+
+
+def get_entity_list(extracted_data: tuple[str, dict], entity: str) -> list[str]:
+    speech_id, metadata = extracted_data
+    shorthand = get_entity_shorthand(entity)
+    return list(set(metadata.get(speech_id).get(shorthand)))
+
+
 def ner_keyword_field(entity: str):
     return FieldDefinition(
         name=f"ner:{entity}",
@@ -126,6 +144,11 @@ def ner_keyword_field(entity: str):
         search_filter=MultipleChoiceFilter(
             description=f"Select only speeches which contain this {entity} entity",
             option_count=100,
+        ),
+        extractor=Combined(
+            XML(attribute="xml:id"),
+            Metadata("ner"),
+            transform=lambda x: get_entity_list(x, entity),
         ),
     )
 
@@ -144,7 +167,17 @@ def detokenize_parlamint(tokens: Iterable[str]) -> str:
     return output[:-1]
 
 
-def format_annotated_text(element) -> str:
+def format_annotated_segment(element: Node) -> str:
+    """For each <seg> tag, extract the annotations indicated by <name>"""
+    annotations = element.find_all("name")
+    formatted_annotations = [format_annotated_text(anno) for anno in annotations]
+    return "".join(formatted_annotations)
+
+
+def format_annotated_text(element: Node) -> str:
+    """For each <name> tag, format the annotation in Elasticsearch's annotated_text format,
+    and embed it in the text extracted from adjoining <w> and <pc> tags
+    """
     output = ""
     tokens = [el.extract() for el in element.find_previous_siblings(["w", "pc"])]
     output += detokenize_parlamint(reversed(tokens))
@@ -157,8 +190,8 @@ def format_annotated_text(element) -> str:
     if not element.find_next_sibling("name"):
         # after last annotation, add remaining text
         remaining_text = detokenize_parlamint(element.find_next_siblings(["w", "pc"]))
-        if len(remaining_text) > 1:
-            # remaining text is more than just punctuation, add whitespace
+        if remaining_text[0] not in punctuation:
+            # remaining text does not start with punctuation: add whitespace
             output += " "
         output += remaining_text
     return output
@@ -171,9 +204,14 @@ def speech_ner():
         es_mapping={"type": "annotated_text"},
         searchable=True,
         extractor=XML(
-            Tag("name"),
+            Tag("seg"),
             multiple=True,
-            extract_soup_func=format_annotated_text,
-            transform=lambda x: " ".join(x),
+            extract_soup_func=format_annotated_segment,
+            transform=lambda x: "\n".join(x),
         ),
     )
+
+
+def extract_speech(segment: Node) -> str:
+    text_nodes = segment.find_all(["w", "pc"])
+    return detokenize_parlamint(text_nodes)

@@ -16,7 +16,7 @@ from corpora.parliament.utils.parlamint import (
     ner_keyword_field,
     party_attribute_extractor,
     person_attribute_extractor,
-    detokenize_parlamint,
+    extract_speech,
     speech_ner,
 )
 from corpora.utils.formatting import format_page_numbers
@@ -104,6 +104,21 @@ def get_sequence_recent(id):
         return int(match.group(1))
 
 
+def extract_named_entities(xml_file: str) -> dict:
+    with open(xml_file) as f:
+        soup = bs4.BeautifulSoup(f)
+    speeches = soup.find_all("u")
+    output = dict()
+    for speech in speeches:
+        annotations_dict = {"LOC": list(), "MISC": list(), "ORG": list(), "PER": list()}
+        annotations = speech.find_all("name")
+        for annotation in annotations:
+            annotated = " ".join([word.string for word in annotation.find_all("w")])
+            annotations_dict[annotation["type"]].append(annotated)
+        output[speech["xml:id"]] = annotations_dict
+    return output
+
+
 class ParliamentNetherlandsNew(XMLCorpusDefinition):
     min_date = datetime(year=2015, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
@@ -126,6 +141,7 @@ class ParliamentNetherlandsNew(XMLCorpusDefinition):
         }
         for year in range(start.year, end.year):
             for xml_file in glob("{}/{}/*.xml".format(self.data_directory, year)):
+                metadata["ner"] = extract_named_entities(xml_file)
                 yield xml_file, metadata
 
     country = field_defaults.country()
@@ -181,10 +197,9 @@ class ParliamentNetherlandsNew(XMLCorpusDefinition):
     speech = field_defaults.speech(language="nl")
     speech.extractor = XML(
         Tag("seg"),
-        Tag(["w", "pc"]),
         multiple=True,
-        extract_soup_func=lambda x: x,
-        transform=detokenize_parlamint,
+        extract_soup_func=extract_speech,
+        transform=lambda x: "\n".join(x),
     )
 
     speech_id = field_defaults.speech_id()
