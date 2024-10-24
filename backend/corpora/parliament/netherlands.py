@@ -1,14 +1,14 @@
 from datetime import datetime
 from glob import glob
 import logging
-from bs4 import BeautifulSoup
 from os.path import join
+
+import bs4
 from django.conf import settings
 from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousTag, TransformTag
 
-import bs4
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice, Order
+from addcorpus.python_corpora.extract import XML, Constant, Combined, Order
 from corpora.parliament.utils.parlamint import (
     extract_all_party_data,
     extract_people_data,
@@ -16,6 +16,7 @@ from corpora.parliament.utils.parlamint import (
     ner_keyword_field,
     party_attribute_extractor,
     person_attribute_extractor,
+    detokenize_parlamint,
     speech_ner,
 )
 from corpora.utils.formatting import format_page_numbers
@@ -28,7 +29,7 @@ logger = logging.getLogger('indexing')
 
 def load_nl_recent_metadata(directory):
     with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
-        soup = BeautifulSoup(f.read(), 'xml')
+        soup = bs4.BeautifulSoup(f.read(), "xml")
     return soup
 
 
@@ -79,6 +80,11 @@ def format_party(data):
         id = id[5:]
     return id
 
+
+def is_word(w: str) -> bool:
+    return not w in punctuation
+
+
 def get_party_full(speech_node):
     party_ref = speech_node.attrs.get(':party-ref')
     if not party_ref:
@@ -101,7 +107,7 @@ def get_sequence_recent(id):
         return int(match.group(1))
 
 
-class ParliamentNetherlandsNew(Parliament, XMLCorpusDefinition):
+class ParliamentNetherlandsNew(XMLCorpusDefinition):
 
     tag_toplevel = Tag("TEI")
     tag_entry = Tag("u")
@@ -122,9 +128,7 @@ class ParliamentNetherlandsNew(Parliament, XMLCorpusDefinition):
             "persons": person_data,
         }
         for year in range(start.year, end.year):
-            for xml_file in glob(
-                "{}/{}/*.xml".format(self.data_directory_recent, year)
-            ):
+            for xml_file in glob("{}/{}/*.xml".format(self.data_directory, year)):
                 yield xml_file, metadata
 
     country = field_defaults.country()
@@ -172,7 +176,7 @@ class ParliamentNetherlandsNew(Parliament, XMLCorpusDefinition):
 
     topic = field_defaults.topic()
     topic.extractor = XML(
-        Tag("note"),
+        Tag("head"),
         toplevel=True,
     )
     topic.language = "nl"
@@ -180,8 +184,10 @@ class ParliamentNetherlandsNew(Parliament, XMLCorpusDefinition):
     speech = field_defaults.speech(language="nl")
     speech.extractor = XML(
         Tag("seg"),
+        Tag(["w", "pc"]),
         multiple=True,
-        flatten=True,
+        extract_soup_func=lambda x: x,
+        transform=detokenize_parlamint,
     )
 
     speech_id = field_defaults.speech_id()
@@ -216,8 +222,39 @@ class ParliamentNetherlandsNew(Parliament, XMLCorpusDefinition):
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant(value="ParlaMINT")
 
+    speech_ner = speech_ner()
+    ner_per = ner_keyword_field("person")
+    ner_loc = ner_keyword_field("location")
+    ner_org = ner_keyword_field("organization")
+    ner_misc = ner_keyword_field("miscellaneous")
 
-class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
+    fields = [
+        chamber,
+        country,
+        date,
+        debate_id,
+        debate_title,
+        topic,
+        speech,
+        speech_id,
+        speaker,
+        speaker_id,
+        speaker_gender,
+        role,
+        party,
+        party_id,
+        party_full,
+        sequence,
+        source_archive,
+        speech_ner,
+        ner_loc,
+        ner_misc,
+        ner_org,
+        ner_per,
+    ]
+
+
+class ParliamentNetherlandsOld(XMLCorpusDefinition):
     """
     Class for indexing Dutch parliamentary data from the Political Mashup archive
     """
@@ -237,7 +274,7 @@ class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
                 start_year = int(period[:4])
 
                 if start_year >= start.year and start_year < end.year:
-                    yield xml_file
+                    yield xml_file, {}
             else:
                 message = "File {} is not indexed, because the filename has no recognisable date".format(
                     xml_file
@@ -288,11 +325,7 @@ class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
     topic.language = "nl"
 
     speech = field_defaults.speech(language="nl")
-    speech.extractor = XML(
-        Tag("p"),
-        multiple=True,
-        flatten=True,
-    )
+    speech.extractor = XML(Tag("p"), multiple=True, transform=lambda x: "\n".join(x))
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(attribute="id")
@@ -364,11 +397,25 @@ class ParliamentNetherlandsOld(Parliament, XMLCorpusDefinition):
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant(value="PoliticalMashup")
 
-    speech_ner = speech_ner()
-    ner_person = ner_keyword_field("person")
-    ner_location = ner_keyword_field("location")
-    ner_organization = ner_keyword_field("organization")
-    ner_misc = ner_keyword_field("misc")
+    fields = [
+        date,
+        country,
+        chamber,
+        debate_title,
+        debate_id,
+        topic,
+        role,
+        sequence,
+        source_archive,
+        speech,
+        speech_id,
+        speaker,
+        speaker_id,
+        party,
+        party_full,
+        page,
+        url,
+    ]
 
 
 class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
@@ -436,6 +483,12 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     source_archive = field_defaults.source_archive()
     url = field_defaults.url()
 
+    speech_ner = speech_ner()
+    ner_per = ner_keyword_field("person")
+    ner_loc = ner_keyword_field("location")
+    ner_org = ner_keyword_field("organization")
+    ner_misc = ner_keyword_field("miscellaneous")
+
     def __init__(self):
         self.fields = [
             self.chamber,
@@ -457,4 +510,9 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
             self.speech_id,
             self.topic,
             self.url,
+            self.speech_ner,
+            self.ner_loc,
+            self.ner_misc,
+            self.ner_org,
+            self.ner_per,
         ]

@@ -1,4 +1,5 @@
-from ianalyzer_readers.reader.extract import XML, Combined, Metadata
+from ianalyzer_readers.extract import XML, Combined, Metadata
+from ianalyzer_readers.xml_tag import Tag
 from bs4.element import NavigableString
 
 from addcorpus.es_mappings import keyword_mapping
@@ -117,7 +118,7 @@ def party_attribute_extractor(attribute):
 def ner_keyword_field(entity: str):
     return FieldDefinition(
         name=f"ner:{entity}",
-        display_name=f"Named Entity: {entity.capitalize()}"
+        display_name=f"Named Entity: {entity.capitalize()}",
         searchable=True,
         es_mapping=keyword_mapping(enable_full_text_search=True),
         search_filter=MultipleChoiceFilter(
@@ -127,11 +128,39 @@ def ner_keyword_field(entity: str):
     )
 
 
+def detokenize_parlamint(tokens: list[str]) -> str:
+    output = [
+        f" {token.string}" if i != 0 and token.name != "pc" else token.string
+        for i, token in enumerate(tokens)
+    ]
+    return "".join(output)
+
+
+def format_annotated_text(element) -> str:
+    output = ""
+    tokens = [el.extract() for el in element.find_previous_siblings(["w", "pc"])]
+    output += detokenize_parlamint(reversed(tokens))
+    if len(output):
+        output += " "
+    annotated = element.find_all("w")
+    formatted = " ".join([a.string for a in annotated])
+    output += f"[{formatted}]({element['type']})"
+    if not element.find_next_sibling("name"):
+        next_text = detokenize_parlamint(element.find_next_siblings(["w", "pc"]))
+        output += f" {next_text}"
+    return output
+
+
 def speech_ner():
     return FieldDefinition(
         name="speech:ner",
         hidden=True,
         es_mapping={"type": "annotated_text"},
         searchable=True,
-        extractor=XML(attribute="xml:id"),
+        extractor=XML(
+            Tag("name"),
+            multiple=True,
+            extract_soup_func=format_annotated_text,
+            transform=lambda x: " ".join(x),
+        ),
     )
