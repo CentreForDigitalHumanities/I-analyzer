@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from ianalyzer_readers.extract import XML, Combined, Metadata
 from ianalyzer_readers.xml_tag import Tag
 from bs4.element import NavigableString
@@ -128,26 +130,37 @@ def ner_keyword_field(entity: str):
     )
 
 
-def detokenize_parlamint(tokens: list[str]) -> str:
-    output = [
-        f" {token.string}" if i != 0 and token.name != "pc" else token.string
-        for i, token in enumerate(tokens)
-    ]
-    return "".join(output)
+def detokenize_parlamint(tokens: Iterable[str]) -> str:
+    """Detokenize the content of `w` and `pc` tags in the ParlaMint XML
+    The `join="right"` attribute indicates that there should not be whitespace after the word
+    """
+    output = ""
+    for token in tokens:
+        if token.get("join") != "right":
+            output += f"{token.string} "
+        else:
+            output += token.string
+    # do not include the last character (always whitespace) in the output
+    return output[:-1]
 
 
 def format_annotated_text(element) -> str:
     output = ""
     tokens = [el.extract() for el in element.find_previous_siblings(["w", "pc"])]
     output += detokenize_parlamint(reversed(tokens))
-    if len(output):
-        output += " "
     annotated = element.find_all("w")
     formatted = " ".join([a.string for a in annotated])
+    if output:
+        # if there is preceding text, add whitespace prior to annotation
+        output += " "
     output += f"[{formatted}]({element['type']})"
     if not element.find_next_sibling("name"):
-        next_text = detokenize_parlamint(element.find_next_siblings(["w", "pc"]))
-        output += f" {next_text}"
+        # after last annotation, add remaining text
+        remaining_text = detokenize_parlamint(element.find_next_siblings(["w", "pc"]))
+        if len(remaining_text) > 1:
+            # remaining text is more than just punctuation, add whitespace
+            output += " "
+        output += remaining_text
     return output
 
 
