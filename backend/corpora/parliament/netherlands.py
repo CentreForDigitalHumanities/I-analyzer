@@ -20,6 +20,7 @@ from corpora.parliament.utils.parlamint import (
     speech_ner,
 )
 from corpora.utils.formatting import format_page_numbers
+from corpora.utils.filter_sources import in_date_range
 from corpora.parliament.parliament import Parliament
 from corpora.utils.constants import document_context
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -81,10 +82,6 @@ def format_party(data):
     return id
 
 
-def is_word(w: str) -> bool:
-    return not w in punctuation
-
-
 def get_party_full(speech_node):
     party_ref = speech_node.attrs.get(':party-ref')
     if not party_ref:
@@ -108,16 +105,16 @@ def get_sequence_recent(id):
 
 
 class ParliamentNetherlandsNew(XMLCorpusDefinition):
+    min_date = datetime(year=2015, month=1, day=1)
+    max_date = datetime(year=2022, month=12, day=31)
+    data_directory = settings.PP_NL_RECENT_DATA
 
     tag_toplevel = Tag("TEI")
     tag_entry = Tag("u")
-    languages = ["nl"]
-
-    category = "parliament"
-    data_directory = settings.PP_NL_RECENT_DATA
-    document_context = document_context()
 
     def sources(self, start: datetime, end: datetime):
+        if not in_date_range(self, start, end):
+            return []
         soup = load_nl_recent_metadata(self.data_directory)
         role_data = extract_role_data(soup)
         party_data = extract_all_party_data(soup)
@@ -258,6 +255,8 @@ class ParliamentNetherlandsOld(XMLCorpusDefinition):
     """
     Class for indexing Dutch parliamentary data from the Political Mashup archive
     """
+    min_date = datetime(year=1815, month=1, day=1)
+    max_date = datetime(year=2014, month=12, day=31)
 
     tag_toplevel = Tag("root")
     tag_entry = Tag("speech")
@@ -266,7 +265,9 @@ class ParliamentNetherlandsOld(XMLCorpusDefinition):
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
 
-        # old data
+        if not in_date_range(self, start, end):
+            return []
+
         for xml_file in glob("{}/*.xml".format(self.data_directory)):
             period_match = re.search(r"[0-9]{8}", xml_file)
             if period_match:
@@ -427,6 +428,11 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year=1815, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
+
+    languages = ["nl"]
+    category = "parliament"
+    document_context = document_context()
+
     data_directory = settings.PP_NL_RECENT_DATA
     word_model_path = getattr(settings, "PP_NL_WM", None)
 

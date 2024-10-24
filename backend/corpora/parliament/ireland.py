@@ -13,14 +13,9 @@ from addcorpus.python_corpora.extract import Constant, CSV, XML, Metadata, Combi
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
+from corpora.utils.filter_sources import in_date_range
 import corpora.parliament.utils.parlamint as parlamint
 
-
-def in_date_range(corpus, start, end):
-    start_date = start or corpus.min_date
-    end_date = end or corpus.max_date
-
-    return start_date <= corpus.max_date and end_date >= corpus.min_date
 
 def format_mininster_role(position, department):
     '''Format 1919-2013 minister positions analogous to the 2014-2020 positions'''
