@@ -80,9 +80,9 @@ def extract_person_data(node):
     gender = node.sex['value'].strip() if node.sex else None
 
     #get org id
-    is_party_node = lambda node: node.name in ['affliation', 'affiliation'] and node.has_attr('ref') and 'party' in node['ref']
-    party_nodes = node.find_all(is_party_node)
-    party_ids = [party_node['ref'] if party_node else None for party_node in party_nodes]
+    is_org_node = lambda node: node.name in ['affliation', 'affiliation'] and node.has_attr('ref')
+    org_nodes = node.find_all(is_org_node)
+    org_ids = [org_node['ref'] if org_node else None for org_node in org_nodes]
     birth_date = node.birth['when'] if node.birth else None
     birth_year = int(birth_date[:4]) if birth_date else None
     birthplace = node.birth.placeName.text.strip() if node.birth and node.birth.placeName else None
@@ -98,8 +98,8 @@ def extract_person_data(node):
         'name': name,
         'role': role,
         'gender': gender,
-        'party_ids': party_ids,
-        'party_nodes': party_nodes,
+        'org_ids': org_ids,
+        'org_nodes': org_nodes,  # unsure about this still: might be a bit of a memory leak to store the nodes in the metadata
         'birth_year': birth_year,
         'birthplace': birthplace,
         'wikimedia': wikimedia_uri,
@@ -162,19 +162,29 @@ def organisation_attribute_extractor(attribute):
         transform = metadata_attribute_transform_func(attribute),
     )
 
+def node_is_current(node, date):
+    if node and date:
+        start_date = node.get('from', None)
+        end_date = node.get('to', None)
+        if (start_date and end_date and start_date <= date <= end_date) or \
+        (start_date and start_date <= date) or \
+        (end_date and end_date >= date):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 def transform_current_party_id(data):
     id, persons, date = data
     current_parties = []
-    party_nodes = persons[id]['party_nodes']
+    is_party_node = lambda node: 'party' in node['ref']
+    party_nodes = [node for node in persons[id]['org_nodes'] if node and is_party_node(node)]
     if len(party_nodes) == 0:
         return 'NA'
 
     for node in party_nodes:
-        start_date = node.get('from', None)
-        end_date = node.get('to', None)
-        if start_date and end_date and start_date <= date <= end_date:
-            current_parties.append(node['ref'])
-        elif start_date and start_date <= date or end_date and end_date >= date:
+        if node_is_current(node, date):
             current_parties.append(node['ref'])
 
     if len(current_parties) == 1:
@@ -183,4 +193,3 @@ def transform_current_party_id(data):
         return party_nodes[-1].get('ref', 'NA')
     else:
         return current_parties[-1] #return the last org in the list since that is usually the most recent one.
-

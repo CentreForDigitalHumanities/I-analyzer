@@ -14,7 +14,7 @@ from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice, Or
 from addcorpus.es_mappings import keyword_mapping
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
-from corpora.parliament.utils.parlamint_v4 import extract_all_org_data, extract_people_data, person_attribute_extractor, current_party_id_extractor, organisation_attribute_extractor, POLITICAL_ORIENTATIONS
+from corpora.parliament.utils.parlamint_v4 import extract_all_org_data, extract_people_data, person_attribute_extractor, current_party_id_extractor, organisation_attribute_extractor, POLITICAL_ORIENTATIONS, node_is_current
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
@@ -39,6 +39,19 @@ def transform_political_orientation(full_string):
     else:
         return None
 
+def transform_parliamentary_role(data):
+    org_nodes, date = data
+    for node in org_nodes:
+        if node['ref'] == '#TBMM' and node['role'] == 'member' and node_is_current(node, date):
+            return 'MP'
+
+def transform_ministerial_role(data):
+    org_nodes, date = data
+    for node in org_nodes:
+        if '#mstr.' in node['ref'] and node['role'] == 'head' and node_is_current(node, date):
+            for child_node in node.children:
+                if child_node.name == 'roleName' and child_node.get('xml:lang') == 'en':
+                    return child_node.text.strip()
 
 
 
@@ -148,6 +161,19 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
         searchable=False,
     )
 
+    parliamentary_role = field_defaults.parliamentary_role()
+    parliamentary_role.extractor = Combined(
+        person_attribute_extractor('org_nodes'),
+        Metadata('date'),
+        transform=transform_parliamentary_role
+    )
+    ministerial_role = field_defaults.ministerial_role()
+    ministerial_role.extractor = Combined(
+        person_attribute_extractor('org_nodes'),
+        Metadata('date'),
+        transform=transform_ministerial_role
+    )
+
     current_party_id = field_defaults.party_id()
     current_party_id.extractor = current_party_id_extractor()
 
@@ -177,7 +203,7 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     current_party_political_orientation.extractor = Pass(
         organisation_attribute_extractor('political_orientation'),
         transform=transform_political_orientation
-        )
+    )
 
 
     def __init__(self):
@@ -195,6 +221,8 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.speaker_birthplace,
             self.speaker_wikimedia,
             self.speaker_twitter,
+            self.parliamentary_role,
+            self.ministerial_role,
             self.current_party_id,
             self.current_party,
             self.current_party_full,
