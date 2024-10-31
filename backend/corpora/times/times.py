@@ -102,6 +102,7 @@ class Times(XMLCorpusDefinition):
             es_mapping={"type": "date", "format": "yyyy-MM-dd"},
             hidden=True,
             visualizations=["resultscount", "termfrequency"],
+            sortable=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -165,7 +166,6 @@ class Times(XMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             csv_core=True,
             results_overview=True,
-            sortable=True,
             description="Publication date as full string, as found in source file",
             extractor=extract.XML(Tag("da"), toplevel=True),
         ),
