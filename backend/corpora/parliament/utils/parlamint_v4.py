@@ -82,9 +82,16 @@ def extract_person_data(node):
     #get org id
     is_party_node = lambda node: node.name in ['affliation', 'affiliation'] and node.has_attr('ref') and 'party' in node['ref']
     party_nodes = node.find_all(is_party_node)
-    party_ids = [party_node['ref'] if party_node else None for party_node in party_nodes]  # TODO add logic to filter active organisations
+    party_ids = [party_node['ref'] if party_node else None for party_node in party_nodes]
     birth_date = node.birth['when'] if node.birth else None
     birth_year = int(birth_date[:4]) if birth_date else None
+    birthplace = node.birth.placeName.text.strip() if node.birth and node.birth.placeName else None
+
+    wikimedia_uri_node = node.find('idno', type='URI', subtype='wikimedia')
+    wikimedia_uri = wikimedia_uri_node.text if wikimedia_uri_node else None
+
+    twitter_uri_node = node.find('idno', type='URI', subtype='twitter')
+    twitter_uri = twitter_uri_node.text if twitter_uri_node else None
 
     return {
         'id': id,
@@ -94,6 +101,9 @@ def extract_person_data(node):
         'party_ids': party_ids,
         'party_nodes': party_nodes,
         'birth_year': birth_year,
+        'birthplace': birthplace,
+        'wikimedia': wikimedia_uri,
+        'twitter': twitter_uri,
     }
 
 def extract_people_data(soup):

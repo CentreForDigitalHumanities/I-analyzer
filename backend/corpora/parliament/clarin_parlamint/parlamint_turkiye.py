@@ -94,8 +94,8 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             toplevel=True
     )
 
-    speech_id = field_defaults.speech_id()
-    speech_id.extractor = XML(
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = XML(
             attribute='xml:id',
             toplevel=True,
     )
@@ -120,6 +120,33 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
 
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = person_attribute_extractor('id')
+
+    speaker_gender = field_defaults.speaker_gender()
+    speaker_gender.extractor = person_attribute_extractor('gender')
+
+    speaker_birth_year = field_defaults.speaker_birth_year()
+    speaker_birth_year.extractor = person_attribute_extractor('birth_year')
+
+    speaker_birthplace = field_defaults.speaker_birthplace()
+    speaker_birthplace.extractor = person_attribute_extractor('birthplace')
+
+    speaker_wikimedia = FieldDefinition(
+        name = 'speaker_wikimedia',
+        display_name= 'Speaker Wikipedia',
+        display_type='url',
+        description='URL to Wikimedia page of the speaker',
+        es_mapping=keyword_mapping(),
+        searchable=False,
+    )
+
+    speaker_twitter = FieldDefinition(
+        name = 'speaker_twitter',
+        display_name= 'Speaker Twitter',
+        display_type='url',
+        description='URL to Twitter page of the speaker',
+        es_mapping=keyword_mapping(),
+        searchable=False,
+    )
 
     current_party_id = field_defaults.party_id()
     current_party_id.extractor = current_party_id_extractor()
@@ -155,7 +182,7 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
 
     def __init__(self):
         self.fields = [
-            self.speech_id,
+            self.debate_id,
             self.country,
             self.date,
             self.speech,
@@ -163,6 +190,11 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.sequence,
             self.speaker,
             self.speaker_id,
+            self.speaker_gender,
+            self.speaker_birth_year,
+            self.speaker_birthplace,
+            self.speaker_wikimedia,
+            self.speaker_twitter,
             self.current_party_id,
             self.current_party,
             self.current_party_full,
