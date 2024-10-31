@@ -3,16 +3,18 @@ from datetime import datetime
 from glob import glob
 from os.path import join
 from bs4 import BeautifulSoup
+import re
 
 
 
 from django.conf import settings
 
-from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice, Order, Metadata
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice, Order, Metadata, Pass
+from addcorpus.es_mappings import keyword_mapping
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
-from corpora.parliament.utils.parlamint_v4 import extract_all_party_data, extract_people_data, person_attribute_extractor
+from corpora.parliament.utils.parlamint_v4 import extract_all_org_data, extract_people_data, person_attribute_extractor, current_party_id_extractor, organisation_attribute_extractor, POLITICAL_ORIENTATIONS
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
@@ -29,7 +31,14 @@ def get_persons_metadata(directory):
 def get_orgs_metadata(directory):
     with open(join(directory, 'ParlaMint-TR-listOrg.xml'), 'rb') as f:
         soup = BeautifulSoup(f.read(), 'xml')
-    return extract_all_party_data(soup)
+    return extract_all_org_data(soup)
+
+def transform_political_orientation(full_string):
+    if full_string and '#orientation.' in full_string:
+        return POLITICAL_ORIENTATIONS[full_string.split('.')[1]]
+    else:
+        return None
+
 
 
 
@@ -60,12 +69,13 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
         orgs_metadata = get_orgs_metadata(self.data_directory)
         metadata = {
             'persons': persons_metadata,
-            'organisations': orgs_metadata
+            'organisations': orgs_metadata,
         }
 
         ## Then collect metadata that is applicable to the current file and find the paths to each xml file
         for year in range(start.year, end.year):
             for xml_file in glob('{}/{}/*.xml'.format(self.data_directory, year)):
+                metadata['date'] = re.search(r"\d{4}-\d{2}-\d{2}", xml_file).group()
                 yield xml_file, metadata
                 ##### Keep looking at NL for metadata harvest tips
 
@@ -84,8 +94,8 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             toplevel=True
     )
 
-    debate_id = field_defaults.debate_id()
-    debate_id.extractor = XML(
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = XML(
             attribute='xml:id',
             toplevel=True,
     )
@@ -111,16 +121,53 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = person_attribute_extractor('id')
 
+    current_party_id = field_defaults.party_id()
+    current_party_id.extractor = current_party_id_extractor()
+
+    current_party = field_defaults.party()
+    current_party.extractor = organisation_attribute_extractor('name')
+
+    current_party_full = field_defaults.party_full()
+    current_party_full.extractor = organisation_attribute_extractor('full_name')
+
+    current_party_wiki = FieldDefinition(
+        name='party_wiki_url',
+        display_name='Wikimedia URL',
+        display_type='url',
+        description='URL to Wikimedia page of the party',
+        es_mapping=keyword_mapping(),
+        searchable=False,
+    )
+    current_party_wiki.extractor = organisation_attribute_extractor('wikimedia')
+
+    current_party_political_orientation = FieldDefinition(
+        name='political_orientation',
+        display_name='Political Orientation',
+        description="Political leaning according to the ParlaMint team",
+        es_mapping=keyword_mapping(),
+        searchable=False
+    )
+    current_party_political_orientation.extractor = Pass(
+        organisation_attribute_extractor('political_orientation'),
+        transform=transform_political_orientation
+        )
+
+
     def __init__(self):
         self.fields = [
-            self.debate_id,
+            self.speech_id,
             self.country,
             self.date,
             self.speech,
             self.speech_id,
             self.sequence,
             self.speaker,
-
+            self.speaker_id,
+            self.current_party_id,
+            self.current_party,
+            self.current_party_full,
+            self.current_party_wiki,
+            self.current_party_political_orientation
         ]
 
 
