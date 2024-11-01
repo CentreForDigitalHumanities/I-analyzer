@@ -9,6 +9,10 @@ def elasticsearch(corpus_name):
     server_name = settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')
     server_config = settings.SERVERS[server_name]
 
+    return client_from_config(server_config)
+
+
+def client_from_config(server_config):
     node = {'host': server_config['host'],
             'port': int(server_config['port']),
             'scheme': 'http'
