@@ -6,6 +6,43 @@ from datetime import datetime
 from addcorpus import models as corpus_models
 from ianalyzer.elasticsearch import client_from_config
 
+class Server(models.Model):
+    '''
+    Represents an elasticsearch server that is configured in the project.
+    '''
+
+    name = models.CharField(
+        max_length=128,
+        unique=True,
+        help_text='name of the server in the project settings',
+    )
+
+    active = models.BooleanField(
+        default=True,
+        help_text='whether the server is currently included in project settings; '
+            'servers can be set to inactive rather than deleted to prevent data loss',
+    )
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def configuration(self):
+        '''
+        Configuration of the server in project settings.
+        '''
+        if self.active:
+            return settings.SERVERS[self.name]
+
+    def client(self):
+        '''
+        Elasticsearch client for the server
+        '''
+        config = self.configuration
+        if config:
+            return client_from_config(self.configuration)
+
+
 
 class Index(models.Model):
     '''
