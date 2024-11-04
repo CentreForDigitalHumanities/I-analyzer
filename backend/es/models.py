@@ -10,6 +10,12 @@ from ianalyzer.elasticsearch import client_from_config
 class Server(models.Model):
     '''
     Represents an elasticsearch server that is configured in the project.
+
+    The data in this model should not be edited directly, as it should be synchronised
+    with the project settings.
+
+    After updating the project settings, the Server model can be updated with the
+    `update_index_metadata` command in django-admin.
     '''
 
     name = models.CharField(
@@ -64,6 +70,20 @@ class Server(models.Model):
 class Index(models.Model):
     '''
     Represents an index that is discovered in Elasticsearch.
+
+    The data in this model is retrieved from Elasticsearch; it should not be edited
+    directly. The exception is that you may delete inactive indices (see below).
+
+    To bring index metadata up to date, use the `update_index_metadata` command in
+    django-admin, or the "update index metadata" action in the admin site.
+
+    If an index is saved but can't be accessed, `available` will be set to `False`. This
+    is preferable over deleting the object, to prevent data loss from temporary outages.
+    An index may be freely deleted from the database if you are not expecting to regain
+    access to it. (Usually because the index was deleted in Elasticsearch.)
+
+    Note that to query the current lsit of indices, you will need to filter
+    `available=True`.
     '''
 
     class Meta:
