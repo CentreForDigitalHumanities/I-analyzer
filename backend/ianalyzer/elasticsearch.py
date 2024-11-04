@@ -4,7 +4,10 @@ from django.conf import settings
 
 def elasticsearch(corpus_name):
     '''
-    Create ElasticSearch instance with default configuration.
+    Create ElasticSearch instance for a corpus.
+
+    If multiple Elasticsearch servers are configured in the project, the server is
+    selected based on the CORPUS_SERVER_NAMES setting.
     '''
     server_name = settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')
     server_config = settings.SERVERS[server_name]
@@ -13,6 +16,9 @@ def elasticsearch(corpus_name):
 
 
 def client_from_config(server_config):
+    '''
+    Create an Elasticsearch instance from server configuration
+    '''
     node = {'host': server_config['host'],
             'port': int(server_config['port']),
             'scheme': 'http'
