@@ -1,7 +1,25 @@
 from django.conf import settings
 
 from ianalyzer.elasticsearch import client_from_config
-from es.models import Index
+from es.models import Server, Index
+
+def update_server_table_from_settings():
+    '''
+    Updates Server data based on project settings
+
+    - Stores any configured servers that were not already in the database
+    - If a stored server is absent in the settings, it is set to inactive
+    - Servers in settings are set to active
+    '''
+
+    deactivate = Server.objects.exclude(name__in=settings.SERVERS.keys())
+    deactivate.update(active=False)
+
+    for name in settings.SERVERS.keys():
+        server, _ = Server.objects.get_or_create(name=name)
+        server.active = True
+        server.save()
+
 
 def fetch_index_data():
     not_found = Index.objects.all()
