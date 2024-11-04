@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.db.models import QuerySet
+from typing import Optional
 
 from es.models import Server, Index
 
@@ -20,27 +22,37 @@ def update_server_table_from_settings():
         server.save()
 
 
-def fetch_index_metadata():
+def fetch_index_metadata(queryset: Optional[QuerySet[Server]] = None):
     '''
-    Fetches index metadata from Elasticsearch and updates Index table accordingly.
+    Fetche index metadata from Elasticsearch and updates Index table accordingly.
 
-    If an index is stored in the table but not found in index discovery, its `available`
-    field is set to `False`.
+    If a queryset is provided, the update is only ran for the selected servers. Otherwise,
+    it will be ran for all servers.
+
+    If a stored index is not found in index discovery, its `available` field is set to
+    `False`. This also happens if the server is not active or the client cannot connect
+    to it.
     '''
-    not_found = Index.objects.all()
 
-    for server in Server.objects.filter(active=True):
-        client = server.client()
-        indices = client.indices.get(index='_all')
+    queryset = queryset or Server.objects.all()
 
-        for name, info in indices.items():
-            index, created = Index.objects.get_or_create(
-                name=name,
-                server=server,
-            )
-            index.available = True
-            index.save()
+    for server in queryset:
+        stored = Index.objects.filter(server=server)
 
-            not_found = not_found.exclude(id=index.id)
+        if server.active and server.can_connect():
+            client = server.client()
 
-    not_found.update(available=False)
+            discovered = client.indices.get(index='_all')
+
+            for name in discovered.keys():
+                index, _created = Index.objects.get_or_create(
+                    name=name,
+                    server=server,
+                )
+                index.available = True
+                index.save()
+
+            not_discovered = stored.exclude(name__in=discovered.keys())
+            not_discovered.update(available=False)
+        else:
+            stored.update(available=False)
