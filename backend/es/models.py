@@ -35,30 +35,54 @@ class Index(models.Model):
             return f'{self.name} ({self.server})'
 
     def settings(self) -> Optional[Dict]:
+        '''
+        Index settings in Elasticsearch
+
+        This method makes a request to Elasticsearch to fetch index metadata.
+        '''
         client = self.client()
         if client:
             response = client.indices.get_settings(index=self.name)
             return response[self.name]['settings']
 
     def mappings(self) -> Optional[Dict]:
+        '''
+        Configured mappings in Elasticsearch.
+
+        This method makes a request to Elasticsearch to fetch index metadata.
+        '''
         client = self.client()
         if client:
             response = client.indices.get_mapping(index=self.name)
             return response[self.name]['mappings']
 
     def aliases(self) -> Optional[List[str]]:
+        '''
+        Aliases assigned to the index.
+
+        This method makes a request to Elasticsearch to fetch index metadata.
+        '''
         client = self.client()
         if client:
             response = client.indices.get_alias(index=self.name)
             return list(response[self.name]['aliases'].keys())
 
     def creation_date(self) -> Optional[datetime]:
+        '''
+        Creation date of the index
+
+
+        This method makes a request to Elasticsearch to fetch index metadata.
+        '''
         settings = self.settings()
         if settings:
             timestamp = int(settings['index']['creation_date'])
             return datetime.fromtimestamp(timestamp/1000)
 
     def client(self):
+        '''
+        Returns an Elasticsearch client for the index
+        '''
         if self.available:
             config = settings.SERVERS[self.server]
             return client_from_config(config)
