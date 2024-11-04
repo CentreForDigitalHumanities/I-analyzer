@@ -1,9 +1,10 @@
 from django.contrib import admin
-from es import models
+from es import models, sync
 
 class ServerAdmin(admin.ModelAdmin):
     readonly_fields = ['configuration', 'can_connect']
     list_display = ['name', 'active']
+    actions = ['update_index_metadata']
 
     def has_add_permission(self, request):
         # disable creating servers manually
@@ -18,6 +19,12 @@ class ServerAdmin(admin.ModelAdmin):
         if obj and obj.active:
             return False
         return super().has_delete_permission(request, obj)
+
+    @admin.action(description='Update index metadata for selected servers')
+    def update_index_metadata(self, request, queryset):
+        sync.fetch_index_metadata(queryset)
+
+
 
 class IndexAdmin(admin.ModelAdmin):
     readonly_fields = ['aliases', 'settings',  'mappings', 'creation_date']
