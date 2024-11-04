@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from typing import Optional, Dict, List
 from datetime import datetime
+from elasticsearch import Elasticsearch
 
 from addcorpus import models as corpus_models
 from ianalyzer.elasticsearch import client_from_config
@@ -34,14 +35,30 @@ class Server(models.Model):
         if self.active:
             return settings.SERVERS[self.name]
 
-    def client(self):
+
+    def client(self) -> Optional[Elasticsearch]:
         '''
         Elasticsearch client for the server
         '''
         config = self.configuration
         if config:
-            return client_from_config(self.configuration)
+            return client_from_config(config)
 
+
+    def can_connect(self) -> bool:
+        '''
+        Try to connect to the Elasticsearch server.
+
+        Returns a boolean, indicating if the connection succeeds.
+        '''
+        client = self.client()
+        if not client:
+            return False
+        try:
+            client.info()
+        except:
+            return False
+        return True
 
 
 class Index(models.Model):
