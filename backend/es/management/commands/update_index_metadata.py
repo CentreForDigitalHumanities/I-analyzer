@@ -16,6 +16,6 @@ class Command(BaseCommand):
         sync.update_server_table_from_settings()
 
         self.stdout.write('Fetching index metadata from Elasticsearch...')
-        sync.fetch_index_data()
+        sync.fetch_index_metadata()
 
         self.stdout.write('Finished updating server and index metadata')

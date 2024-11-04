@@ -1,6 +1,5 @@
 from django.conf import settings
 
-from ianalyzer.elasticsearch import client_from_config
 from es.models import Server, Index
 
 def update_server_table_from_settings():
@@ -21,10 +20,16 @@ def update_server_table_from_settings():
         server.save()
 
 
-def fetch_index_data():
+def fetch_index_metadata():
+    '''
+    Fetches index metadata from Elasticsearch and updates Index table accordingly.
+
+    If an index is stored in the table but not found in index discovery, its `available`
+    field is set to `False`.
+    '''
     not_found = Index.objects.all()
 
-    for server in Server.objects.all():
+    for server in Server.objects.filter(active=True):
         client = server.client()
         indices = client.indices.get(index='_all')
 
