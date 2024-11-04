@@ -1,4 +1,3 @@
-import elasticsearch.helpers as es_helpers
 from django.conf import settings
 from ianalyzer.elasticsearch import elasticsearch
 
@@ -14,7 +13,7 @@ def update_index(corpus, corpus_definition, query_model):
     (defines which fields should be updated with which value)
     in the corpus definition class
     '''
-    client = get_client(corpus)
+    client = elasticsearch(corpus)
     scroll_timeout, scroll_size = get_es_settings(corpus, corpus_definition)
     results = client.search(
         index=corpus,
@@ -40,7 +39,7 @@ def update_index(corpus, corpus_definition, query_model):
 
 
 def update_by_query(corpus, corpus_definition, query_generator):
-    client = get_client(corpus)
+    client = elasticsearch(corpus)
     scroll_timeout, scroll_size = get_es_settings(corpus, corpus_definition)
     for query_model in query_generator:
         response = client.update_by_query(
@@ -56,16 +55,13 @@ def update_by_query(corpus, corpus_definition, query_generator):
 
 def update_document(corpus, doc, update_body, client=None):
     if not client:
-        client = get_client(corpus)
+        client = elasticsearch(corpus)
     doc_id = doc.get('_id', doc.get('id', None))
     if not doc_id:
         logger.info("failed to update the following document: {}".format(doc))
         return None
     client.update(index=corpus, id=doc_id, body=update_body)
 
-
-def get_client(corpus):
-    return elasticsearch(corpus)
 
 
 def get_es_settings(corpus, corpus_definition):
