@@ -140,5 +140,4 @@ class Index(models.Model):
         Returns an Elasticsearch client for the index
         '''
         if self.available:
-            config = settings.SERVERS[self.server]
-            return client_from_config(config)
+            return self.server.client()
