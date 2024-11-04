@@ -1,7 +1,7 @@
 from time import sleep
 
 from es.es_index import perform_indexing
-from es.fetch import fetch_index_data
+from es.sync import fetch_index_data
 from es.models import Index
 from addcorpus.models import Corpus
 
