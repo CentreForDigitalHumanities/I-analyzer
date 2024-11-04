@@ -71,11 +71,13 @@ class Index(models.Model):
 
     name = models.CharField(
         max_length=corpus_models.MAX_LENGTH_NAME + 8,
-        help_text='name of the index in elasticsearch (including version number)'
+        help_text='name of the index in elasticsearch'
     )
-    server = models.CharField(
-        default='default',
-        help_text='key of the elasticsearch server in the project settings'
+    server = models.ForeignKey(
+        to=Server,
+        related_name='indices',
+        on_delete=models.CASCADE,
+        help_text='server on which the index is found',
     )
     available = models.BooleanField(
         help_text='whether the index is currently available on elasticsearch',

@@ -24,14 +24,14 @@ def update_server_table_from_settings():
 def fetch_index_data():
     not_found = Index.objects.all()
 
-    for server_name, conf in settings.SERVERS.items():
-        client = client_from_config(conf)
+    for server in Server.objects.all():
+        client = server.client()
         indices = client.indices.get(index='_all')
 
         for name, info in indices.items():
             index, created = Index.objects.get_or_create(
                 name=name,
-                server=server_name,
+                server=server,
             )
             index.available = True
             index.save()
