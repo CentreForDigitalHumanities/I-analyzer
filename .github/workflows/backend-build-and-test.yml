@@ -1,20 +1,17 @@
-# This workflow will run backend tests using the `ianalyzer-backend:latest` image
+# This workflow will build the backend container and then run tests; it will only be triggered when requirements change
 
-name: Backend unit tests
+name: Build backend and run unit tests
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - 'develop'
-      - 'master'
       - 'feature/**'
       - 'bugfix/**'
       - 'hotfix/**'
-      - 'release/**'
+      - 'dependabot/**'
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend-test.yml'
+      - 'backend/requirements.txt'
       - 'docker-compose.yaml'
 
 jobs:
@@ -26,4 +23,4 @@ jobs:
     - name: Run backend tests
       run: |
         sudo mkdir -p /ci-data
-        docker compose --env-file .env-ci run backend pytest
+        docker compose --env-file .env-ci run --build backend pytest
