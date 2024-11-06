@@ -5,8 +5,6 @@ from os.path import join
 from bs4 import BeautifulSoup
 import re
 
-
-
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
@@ -58,12 +56,9 @@ def transform_speaker_constituency(data):
     for node in org_nodes:
         if node['ref'] == '#TBMM' and node['role'] == 'member' and node_is_current(node, date):
             if "#constituency-TR." in node['ana']:
-                return node['ana'].split('#constituency-TR.')[1]
+                return node['ana'].split('#constituency-TR.')[1] if node['ana'].split('#constituency-TR.')[1] else None
             else:
                 return 'Constituency unknown'
-
-
-
 
 class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     '''
@@ -246,5 +241,4 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.current_party_political_orientation,
             self.speaker_constituency
         ]
-
 
