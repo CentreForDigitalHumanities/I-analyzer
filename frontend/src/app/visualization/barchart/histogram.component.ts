@@ -41,19 +41,16 @@ export class HistogramComponent
      * used in document requests.
      */
     getAggregator(): TermsAggregator {
-        let size = 0;
-
-        if (!this.visualizedField.filterOptions) {
-            return new TermsAggregator(this.visualizedField, 100);
-        }
+        let size = 100;
 
         const filterOptions = this.visualizedField.filterOptions;
         if (filterOptions.name === 'MultipleChoiceFilter') {
             size = (filterOptions as MultipleChoiceFilterOptions).option_count;
         } else if (filterOptions.name === 'RangeFilter') {
-            size =
+            const filterRange =
                 (filterOptions as RangeFilterOptions).upper -
                 (filterOptions as RangeFilterOptions).lower;
+            size = _.max([size, filterRange])
         }
         return new TermsAggregator(this.visualizedField, size);
     }
