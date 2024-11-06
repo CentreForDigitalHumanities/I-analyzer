@@ -53,6 +53,16 @@ def transform_ministerial_role(data):
                 if child_node.name == 'roleName' and child_node.get('xml:lang') == 'en':
                     return child_node.text.strip()
 
+def transform_speaker_constituency(data):
+    org_nodes, date = data
+    for node in org_nodes:
+        if node['ref'] == '#TBMM' and node['role'] == 'member' and node_is_current(node, date):
+            if "#constituency-TR." in node['ana']:
+                return node['ana'].split('#constituency-TR.')[1]
+            else:
+                return 'Constituency unknown'
+
+
 
 
 class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
@@ -205,6 +215,12 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
         transform=transform_political_orientation
     )
 
+    speaker_constituency = field_defaults.speaker_constituency()
+    speaker_constituency.extractor = Combined(
+        person_attribute_extractor('org_nodes'),
+        Metadata('date'),
+        transform=transform_speaker_constituency
+    )
 
     def __init__(self):
         self.fields = [
@@ -227,7 +243,8 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.current_party,
             self.current_party_full,
             self.current_party_wiki,
-            self.current_party_political_orientation
+            self.current_party_political_orientation,
+            self.speaker_constituency
         ]
 
 
