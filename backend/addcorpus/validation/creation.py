@@ -4,15 +4,19 @@ This module defines functions to check if a corpus can be saved to the database
 
 import mimetypes
 import os
+import re
 import warnings
+
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+from langcodes import tag_is_valid
 
 from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
                                  VisualizationType)
-from addcorpus.python_corpora.filters import \
-    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
-from django.core.exceptions import ValidationError
+from addcorpus.python_corpora.filters import (
+    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS,
+)
 from addcorpus.es_mappings import primary_mapping_type
-from langcodes import tag_is_valid
 
 
 def supports_full_text_search(es_mapping):
@@ -129,11 +133,38 @@ def validate_name_is_not_a_route_parameter(value):
         )
 
 
-def validate_ner_suffix(es_mapping: dict, name: str):
-    if es_mapping != MappingType.ANNOTATED_TEXT.value and name.endswith(":ner"):
+def validate_custom_slug(slug: str):
+    """
+    reject names which contain characters other than colons, hyphens, underscores or alphanumeric
+    """
+    slug_re = re.compile(r"^[\w:-]+$")
+    if not slug_re.match(slug):
         raise ValidationError(
-            f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
+            f"{slug} is not valid: it should consist of no other characters than letters, numbers, underscores, hyphens or colons"
         )
+
+
+def validate_ner_slug(es_mapping: dict, name: str):
+    """
+    Checks if colons are in field name, will raise ValidationError if the field does not meet the following requirements:
+    - starts with `ner:` prefix and is a keyword field
+    - ends with `:ner` suffix and is an annotated_text field
+    """
+    if ":" in name:
+        if name.endswith(":ner"):
+            if es_mapping != MappingType.ANNOTATED_TEXT.value:
+                raise ValidationError(
+                    f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
+        )
+        elif name.startswith("ner:"):
+            if es_mapping != MappingType.KEYWORD.value:
+                raise ValidationError(
+                    f"{name} cannot be used as a field name: the prefix `ner:` is reserved for Named Entity keyword fields"
+                )
+        else:
+            raise ValidationError(
+                f"{name} cannot be used as a field name: colons are reserved for special (named entity related) fields"
+            )
 
 
 def mapping_can_be_searched(es_mapping):

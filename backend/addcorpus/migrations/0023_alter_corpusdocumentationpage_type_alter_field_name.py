@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 max_length=126,
                 validators=[
                     addcorpus.validation.creation.validate_name_is_not_a_route_parameter,
-                    addcorpus.validation.creation.validate_ner_suffix,
+                    addcorpus.validation.creation.validate_ner_slug,
                 ],
             ),
         ),
