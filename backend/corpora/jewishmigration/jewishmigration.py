@@ -9,6 +9,7 @@ import requests
 from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
 import addcorpus.python_corpora.extract as extract
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.peaceportal.peaceportal import PeacePortal
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -27,19 +28,6 @@ def transform_language(language_array):
             continue
     return output
 
-
-def transform_centuries(century_array):
-    ''' transform each item of the century array to integer
-    abort if values such as "unknown" appear in the array '''
-    if not century_array:
-        return None
-    output = []
-    for item in century_array:
-        try:
-            output.append(int(item))
-        except:
-            return None
-    return output
 
 class JewishMigration(PeacePortal, JSONCorpusDefinition):
     ''' Class for indexing Jewish Migration data '''
@@ -130,9 +118,11 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 name="estimated_centuries",
                 display_name="Estimated Centuries",
                 description="Estimate of centuries in which the inscription was made",
-                es_mapping=int_mapping(),
-                extractor=extract.JSON(
-                    key="estimated_centuries", transform=transform_centuries
+                es_mapping=keyword_mapping(),
+                extractor=extract.JSON(key="estimated_centuries"),
+                search_filter=MultipleChoiceFilter(
+                    description="Search only within these estimated centuries.",
+                    option_count=4,
                 ),
             ),
             FieldDefinition(
