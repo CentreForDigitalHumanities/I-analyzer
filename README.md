@@ -1,7 +1,7 @@
 # I-analyzer
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8064133.svg)](https://doi.org/10.5281/zenodo.8064133)
-[![Actions Status](https://github.com/UUDigitalHumanitiesLab/I-analyzer/workflows/Unit%20tests/badge.svg)](https://github.com/UUDigitalHumanitiesLab/I-analyzer/actions)
+[![Actions Status](https://github.com/CentreForDigitalHumanities/I-analyzer/workflows/Unit%20tests/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions)
 
 > "The great text mining tool that obviates all others."
 > — Julian Gonggrijp
@@ -41,7 +41,7 @@ If you wish to cite material that you accessed through I-analyzer, or you are no
 
 ## Contact
 
-For questions, small feature suggestions, and bug reports, feel free to [create an issue](https://github.com/UUDigitalHumanitieslab/I-analyzer/issues/new/choose). If you don't have a Github account, you can also [contact the Centre for Digital Humanities](https://cdh.uu.nl/contact/).
+For questions, small feature suggestions, and bug reports, feel free to [create an issue](https://github.com/CentreForDigitalHumanities/I-analyzer/issues/new/choose). If you don't have a Github account, you can also [contact the Centre for Digital Humanities](https://cdh.uu.nl/contact/).
 
 If you want to add a new corpus to I-analyzer, or have an idea for a project, please [contact the Centre for Digital Humanities](https://cdh.uu.nl/contact/) rather than making an issue, so we can discuss the possibilities with you.
 
