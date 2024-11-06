@@ -12,13 +12,31 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='corpusdocumentationpage',
-            name='type',
-            field=models.CharField(choices=[('general', 'General information'), ('citation', 'Citation'), ('license', 'License'), ('terms_of_service', 'Terms of service'), ('wordmodels', 'Word models')], default='general', help_text='the type of documentation', max_length=16),
+            model_name="corpusdocumentationpage",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("general", "General information"),
+                    ("citation", "Citation"),
+                    ("license", "License"),
+                    ("terms_of_service", "Terms of service"),
+                    ("wordmodels", "Word models"),
+                ],
+                default="general",
+                help_text="the type of documentation",
+                max_length=16,
+            ),
         ),
         migrations.AlterField(
-            model_name='field',
-            name='name',
-            field=models.SlugField(help_text='internal name for the field', max_length=126, validators=[addcorpus.validation.creation.validate_name_is_not_a_route_parameter, addcorpus.validation.creation.validate_name_has_no_ner_suffix]),
+            model_name="field",
+            name="name",
+            field=models.SlugField(
+                help_text="internal name for the field",
+                max_length=126,
+                validators=[
+                    addcorpus.validation.creation.validate_name_is_not_a_route_parameter,
+                    addcorpus.validation.creation.validate_ner_suffix,
+                ],
+            ),
         ),
     ]

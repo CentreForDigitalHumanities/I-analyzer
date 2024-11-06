@@ -15,17 +15,23 @@ from addcorpus.es_mappings import primary_mapping_type
 from langcodes import tag_is_valid
 
 
-
 def supports_full_text_search(es_mapping):
-    is_text = primary_mapping_type(es_mapping) == MappingType.TEXT.value
     has_text_multifield = 'text' in es_mapping.get('fields', {})
-    return is_text or has_text_multifield
+    return _is_text(es_mapping) or has_text_multifield
+
+
+def _is_text(es_mapping):
+    return primary_mapping_type(es_mapping) in [
+        MappingType.TEXT.value,
+        MappingType.ANNOTATED_TEXT.value,
+    ]
+
 
 def is_geo_field(es_mapping):
     return primary_mapping_type(es_mapping) == MappingType.GEO_POINT.value
 
 def supports_aggregation(es_mapping):
-    return primary_mapping_type(es_mapping) != MappingType.TEXT.value
+    return not _is_text(es_mapping)
 
 def validate_language_code(value):
     '''
@@ -123,11 +129,12 @@ def validate_name_is_not_a_route_parameter(value):
         )
 
 
-def validate_name_has_no_ner_suffix(value):
-    if value.endswith(':ner'):
+def validate_ner_suffix(es_mapping: dict, name: str):
+    if es_mapping != MappingType.ANNOTATED_TEXT.value and name.endswith(":ner"):
         raise ValidationError(
-            f'{value} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields'
+            f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
         )
+
 
 def mapping_can_be_searched(es_mapping):
     '''
