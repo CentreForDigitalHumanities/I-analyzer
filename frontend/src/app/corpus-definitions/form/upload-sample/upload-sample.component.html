@@ -35,7 +35,7 @@
             <div class="select">
                 <select (change)="onDelimiterChange($event)">
                     <option *ngFor="let option of delimiterOptions" [value]="option.value"
-                        [selected]="option.value===((corpusDefService.corpus$|async).definition.source_data.options?.delimiter || ',')">
+                        [selected]="option.value===((corpusDefService.corpus$|async)?.definition.source_data.options?.delimiter || ',')">
                         {{option.label}}</option>
                 </select>
             </div>

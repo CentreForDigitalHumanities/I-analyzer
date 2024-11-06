@@ -131,7 +131,7 @@ export class CorpusDefinitionService implements OnDestroy {
     }
 
     private setSteps(corpus: CorpusDefinition) {
-        if (!_.isEmpty(corpus.definition.fields)) {
+        if (!_.isEmpty(corpus?.definition?.fields)) {
             const newValue = this.steps$.value.map((step) => ({
                 ...step,
                 disabled: false,
