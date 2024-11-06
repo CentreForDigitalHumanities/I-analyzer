@@ -33,7 +33,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     public isLoading: boolean;
 
     public registrationSucceeded: boolean;
-    public serverError = false;
+    public serverErrorCode: number = 0;
 
     public isModalActive = false;
 
@@ -88,8 +88,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         if (errorResponse.status === 400) {
             this.errors = errorResponse.error;
         } else {
-            this.serverError = true;
+            this.serverErrorCode = errorResponse.status;
         }
     }
 }
-

@@ -37,8 +37,8 @@ export class VisualizationService {
         });
     }
 
-    public async getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
-        Promise<GeoDocument[]> {
+    public getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
+        Observable<GeoDocument[]> {
         const query = queryModel.toAPIQuery();
         return this.apiService.geoData({
             ...query,
