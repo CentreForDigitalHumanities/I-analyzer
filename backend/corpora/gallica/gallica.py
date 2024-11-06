@@ -19,7 +19,8 @@ def get_content(content: BeautifulSoup) -> str:
     """Return text content in the parsed HTML file from the `texteBrut` request
     This is contained in the first <p> element after the first <hr> element.
     """
-    return content.find("hr").find_next_sibling("p").string
+    text_nodes = content.find("hr").find_next_siblings("p")
+    return "".join([node.get_text() for node in text_nodes])
 
 
 class Gallica(XMLCorpusDefinition):
