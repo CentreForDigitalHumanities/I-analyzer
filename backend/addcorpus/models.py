@@ -321,7 +321,7 @@ class Field(models.Model):
     name = models.CharField(
         max_length=MAX_LENGTH_NAME,
         validators=[validate_name_is_not_a_route_parameter, validate_custom_slug],
-        help_text="internal name for the field",
+        help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
         to=CorpusConfiguration,
