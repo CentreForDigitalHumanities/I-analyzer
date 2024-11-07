@@ -8,7 +8,6 @@ import re
 import warnings
 
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from langcodes import tag_is_valid
 
 from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
@@ -152,12 +151,12 @@ def validate_ner_slug(es_mapping: dict, name: str):
     """
     if ":" in name:
         if name.endswith(":ner"):
-            if es_mapping != MappingType.ANNOTATED_TEXT.value:
+            if primary_mapping_type(es_mapping) != MappingType.ANNOTATED_TEXT.value:
                 raise ValidationError(
                     f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
         )
         elif name.startswith("ner:"):
-            if es_mapping != MappingType.KEYWORD.value:
+            if primary_mapping_type(es_mapping) != MappingType.KEYWORD.value:
                 raise ValidationError(
                     f"{name} cannot be used as a field name: the prefix `ner:` is reserved for Named Entity keyword fields"
                 )
