@@ -25,12 +25,12 @@ class ServerAdmin(admin.ModelAdmin):
         sync.fetch_index_metadata(queryset)
 
 
-
 class IndexAdmin(admin.ModelAdmin):
     readonly_fields = ['aliases', 'settings',  'mappings', 'creation_date']
     list_display = ['name', 'server', 'available']
     search_fields = ['name']
     list_filter = ['server', 'available']
+    actions = ['update_availability']
 
     def has_change_permission(self, request, obj=None):
         # disable editing
@@ -41,6 +41,12 @@ class IndexAdmin(admin.ModelAdmin):
         if obj and obj.available:
             return False
         return super().has_delete_permission(request, obj)
+
+
+    @admin.action(description='Update availability')
+    def update_availability(self, request, queryset):
+        for index in queryset:
+            sync.update_availability(index)
 
 
 admin.site.register(models.Server, ServerAdmin)

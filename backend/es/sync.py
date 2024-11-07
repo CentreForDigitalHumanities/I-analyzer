@@ -56,3 +56,20 @@ def fetch_index_metadata(queryset: Optional[QuerySet[Server]] = None):
             not_discovered.update(available=False)
         else:
             stored.update(available=False)
+
+
+def update_availability(index: Index):
+    client = index.server.client()
+
+    if index.server.active:
+        try:
+            response = client.indices.exists(index=index.name)
+            available = response.body
+        except:
+            available = False
+    else:
+        available = False
+
+    index.available = available
+    index.save()
+
