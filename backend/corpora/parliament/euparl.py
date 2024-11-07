@@ -194,17 +194,17 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
     )
 
     speaker_country = FieldDefinition(
-        name="speaker_country",
-        display_name="Represented country",
-        description="The EU country the speaker represents",
+        name='speaker_country',
+        display_name='Represented country',
+        description='The EU country the speaker represents',
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
-            description="Search in speeches of speakers from specific countries",
+            description='Search in speeches of speakers from specific countries',
             option_count=50,
         ),
-        visualizations=["resultscount", "termfrequency"],
+        visualizations=['resultscount', 'termfrequency'],
         extractor=Combined(
-            RDF(LPV.speaker), Metadata("speakers"), transform=get_speaker_country
+            RDF(LPV.speaker), Metadata('speakers'), transform=get_speaker_country
         ),
     )
 
