@@ -15,6 +15,6 @@ export const environment = {
     runInIFrame: false,
     directDownloadLimit: 1000,
     version,
-    sourceUrl: 'https://github.com/UUDigitalHumanitieslab/I-analyzer/',
+    sourceUrl: 'https://github.com/CentreForDigitalHumanities/I-analyzer/',
     logos: undefined,
 };
