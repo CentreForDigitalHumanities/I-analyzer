@@ -32,10 +32,6 @@ class IndexAdmin(admin.ModelAdmin):
     search_fields = ['name']
     list_filter = ['server', 'available']
 
-    def has_add_permission(self, request):
-        # disable creating indices manually
-        return False
-
     def has_change_permission(self, request, obj=None):
         # disable editing
         return False

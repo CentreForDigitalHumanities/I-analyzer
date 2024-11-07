@@ -12,7 +12,8 @@ class Server(models.Model):
     Represents an elasticsearch server that is configured in the project.
 
     The data in this model should not be edited directly, as it should be synchronised
-    with the project settings.
+    with the project settings. However, an inactive server may be deleted if it is no
+    longer relevant.
 
     After updating the project settings, the Server model can be updated with the
     `update_index_metadata` command in django-admin.
@@ -69,21 +70,26 @@ class Server(models.Model):
 
 class Index(models.Model):
     '''
-    Represents an index that is discovered in Elasticsearch.
+    Refers to an Elasticsearch index
 
-    The data in this model is retrieved from Elasticsearch; it should not be edited
-    directly. The exception is that you may delete inactive indices (see below).
+    Indices may not currently be available on Elasticsearch; an item in the table just
+    records a server and a name as a point of reference. The `available` field indicates
+    whether this index is actually found on the server right now.
 
     To bring index metadata up to date, use the `update_index_metadata` command in
     django-admin, or the "update index metadata" action in the admin site.
 
-    If an index is saved but can't be accessed, `available` will be set to `False`. This
-    is preferable over deleting the object, to prevent data loss from temporary outages.
-    An index may be freely deleted from the database if you are not expecting to regain
-    access to it. (Usually because the index was deleted in Elasticsearch.)
+    Indices may be marked unavailable because they have been deleted, because the server
+    can't be accessed. Administrators may also create Index objects for an index does
+    not exist yet, which can be referenced in an IndexTask.
 
-    Note that to query the current lsit of indices, you will need to filter
-    `available=True`.
+    Note that to query the current list of indices in Elasticsearch, you will need to
+    filter objects where `available == True`.
+
+    Unavailable indices are not automatically deleted to prevent data loss, especially
+    from temporary outages. But an Index may be freely deleted if you are not expecting
+    to regain access to it (usually because it was deleted in Elasticsearch), and have
+    no IndexJobs scheduled to create it.
     '''
 
     class Meta:
@@ -101,7 +107,7 @@ class Index(models.Model):
     )
     available = models.BooleanField(
         help_text='whether the index is currently available on elasticsearch',
-        default=True,
+        default=False,
     )
 
     def __str__(self):
