@@ -24,7 +24,7 @@ class Figaro(Gallica):
     max_date = datetime(year=1953, month=12, day=31)
     corpus_ark = "cb34355551z"
     category = "newspaper"
-    image = "figaro.png"
+    image = "figaro.jpg"
 
     contributor = FieldDefinition(
         name="contributor",
