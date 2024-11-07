@@ -101,4 +101,4 @@ def geo_mapping():
 
 
 def annotated_text_mapping():
-    return {"type": "annotated_text"}
+    return {'type': 'annotated_text'}

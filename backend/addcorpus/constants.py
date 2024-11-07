@@ -26,7 +26,7 @@ class MappingType(Enum):
     FLOAT = 'float'
     BOOLEAN = 'boolean'
     GEO_POINT = 'geo_point'
-    ANNOTATED_TEXT = "annotated_text"
+    ANNOTATED_TEXT = 'annotated_text'
 
 
 class VisualizationType(Enum):
