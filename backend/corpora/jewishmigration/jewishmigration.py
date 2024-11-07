@@ -124,6 +124,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                     description="Search only within these estimated centuries.",
                     option_count=4,
                 ),
+                visualizations=["resultscount"],
             ),
             FieldDefinition(
                 name="inscription_count",
