@@ -1,6 +1,12 @@
 import pytest
 from addcorpus.models import Field
-from addcorpus.es_mappings import int_mapping, text_mapping, keyword_mapping
+from addcorpus.es_mappings import (
+    annotated_text_mapping,
+    date_mapping,
+    int_mapping,
+    text_mapping,
+    keyword_mapping,
+)
 from addcorpus.validation.creation import *
 
 def test_validate_mimetype():
@@ -22,11 +28,11 @@ def test_validate_ner_slug():
     with pytest.raises(ValidationError):
         validate_ner_slug({}, "some:ner_inslug")
     with pytest.raises(ValidationError):
-        validate_ner_slug(MappingType.KEYWORD.value, "slug:ner")
-    validate_ner_slug(MappingType.ANNOTATED_TEXT.value, "slug:ner")
+        validate_ner_slug(keyword_mapping(), "slug:ner")
+    validate_ner_slug(annotated_text_mapping(), "slug:ner")
     with pytest.raises(ValidationError):
-        validate_ner_slug(MappingType.DATE.value, "ner:slug")
-    validate_ner_slug(MappingType.KEYWORD.value, "ner:slug")
+        validate_ner_slug(date_mapping(), "ner:slug")
+    validate_ner_slug(keyword_mapping(), "ner:slug")
 
 
 def test_validate_es_mapping():
