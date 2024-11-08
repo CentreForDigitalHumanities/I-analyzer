@@ -1,7 +1,10 @@
 from time import sleep
+from elasticsearch import Elasticsearch
 
 from es.es_index import perform_indexing
-from es.sync import update_server_table_from_settings, fetch_index_metadata
+from es.sync import (
+    update_server_table_from_settings, fetch_index_metadata, update_availability
+)
 from es.models import Index, Server
 from addcorpus.models import Corpus
 
@@ -45,3 +48,30 @@ def test_fetch_index_data(db, es_client, basic_mock_corpus, index_basic_mock_cor
     fetch_index_metadata()
     index.refresh_from_db()
     assert index.available
+
+
+def test_update_index_availability(db, es_client: Elasticsearch, test_index_cleanup):
+    name = 'test-index-availability-1'
+    es_client.indices.create(index=name)
+
+    update_server_table_from_settings()
+    fetch_index_metadata()
+
+    index = Index.objects.get(server__name='default', name=name)
+
+    # case: index is available
+    update_availability(index)
+    assert index.available
+
+    # case: index is not available
+    es_client.indices.delete(index=name)
+    update_availability(index)
+    assert not index.available
+
+    # case: index is not available, but its name matches the alias of another index
+    es_client.indices.create(
+        index='test-index-availability-2',
+        aliases={ name: {} },
+    )
+    update_availability(index)
+    assert not index.available

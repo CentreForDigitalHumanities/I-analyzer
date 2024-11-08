@@ -58,13 +58,17 @@ def fetch_index_metadata(queryset: Optional[QuerySet[Server]] = None):
             stored.update(available=False)
 
 
-def update_availability(index: Index):
-    client = index.server.client()
-
+def update_availability(index: Index) -> None:
+    '''
+    Update the available field of an index by requesting metadata from Elasticsearch
+    '''
     if index.server.active:
+        client = index.server.client()
         try:
-            response = client.indices.exists(index=index.name)
-            available = response.body
+            response = client.indices.get(index=index.name)
+            # check whether the response actually contains an index by this name
+            # and is not matching an alias
+            available = index.name in response.keys()
         except:
             available = False
     else:
