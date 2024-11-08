@@ -26,7 +26,7 @@ class ServerAdmin(admin.ModelAdmin):
 
 
 class IndexAdmin(admin.ModelAdmin):
-    readonly_fields = ['aliases', 'settings',  'mappings', 'creation_date']
+    readonly_fields = ['available', 'aliases', 'settings',  'mappings', 'creation_date']
     list_display = ['name', 'server', 'available']
     search_fields = ['name']
     list_filter = ['server', 'available']
