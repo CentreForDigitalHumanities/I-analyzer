@@ -17,9 +17,15 @@ from addcorpus.es_settings import es_settings
 from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.reader import make_reader
-from ianalyzer.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
 from .es_alias import alias, get_current_index_name, get_new_version_number
 import datetime
+from indexing.models import (
+    IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
+    RemoveAliasTask, AddAliasTask, UpdateSettingsTask
+)
+from es.sync import update_server_table_from_settings
+from es.models import Server, Index
 
 import logging
 logger = logging.getLogger('indexing')
@@ -156,6 +162,89 @@ def populate(
         if not success:
             logger.error(f"FAILED INDEX: {info}")
 
+
+def create_job(
+    corpus: Corpus,
+    start: Optional[datetime.date] = None,
+    end: Optional[datetime.date] = None,
+    mappings_only: bool = False,
+    add: bool = False,
+    clear: bool = False,
+    prod: bool = False,
+    rollover: bool = False,
+    update: bool = False,
+) -> IndexJob:
+        job = IndexJob.objects.create(corpus=corpus)
+
+        update_server_table_from_settings()
+        server_name = server_for_corpus(corpus.name)
+        server = Server.objects.get(name=server_name)
+        client = elasticsearch(corpus.name)
+        base_name = corpus.configuration.es_index
+
+        if prod:
+            alias = corpus.configuration.es_alias or corpus.configuration.es_index
+            if add or update:
+                versioned_name = get_current_index_name(corpus.configuration, client)
+            else:
+                next_version = get_new_version_number(client, alias, base_name)
+                versioned_name = f'{base_name}-{next_version}'
+
+            index, _ = Index.objects.get_or_create(
+                server=server, name=versioned_name
+            )
+
+            UpdateSettingsTask.objects.create(
+                job=job,
+                index=index,
+                settings={"number_of_replicas": 1},
+            )
+
+            if rollover:
+                for index_name in client.indices.get_alias(name=alias):
+                    aliased_index, _ = Index.objects.get_or_create(
+                        server=server,
+                        name=index_name,
+                    )
+                    RemoveAliasTask.objects.create(
+                        job=job,
+                        index=aliased_index,
+                        alias=alias,
+                    )
+                AddAliasTask.objects.create(
+                    job=job,
+                    index=index,
+                    alias=alias,
+                )
+        else:
+            index, _ = Index.objects.get_or_create(
+                server=server, name=base_name
+            )
+
+        if not add or update:
+            CreateIndexTask.objects.create(
+                job=job,
+                index=index,
+                delete_existing=clear,
+            )
+
+        if not mappings_only or update:
+            PopulateIndexTask.objects.create(
+                job=job,
+                index=index,
+                document_min_date=start,
+                document_max_date=end,
+            )
+
+        if update:
+            UpdateIndexTask.objects.create(
+                job=job,
+                index=index,
+                document_min_date=start,
+                document_max_date=end,
+            )
+
+        return job
 
 def perform_indexing(
     corpus: Corpus,
