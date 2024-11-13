@@ -138,6 +138,13 @@ def populate(task: PopulateIndexTask):
             logger.error(f"FAILED INDEX: {info}")
 
 
+def update_index_settings(task: UpdateSettingsTask):
+    client = task.client()
+    client.indices.put_settings(
+        settings=task.settings, index=task.index.name
+    )
+
+
 @transaction.atomic
 def create_indexing_job(
     corpus: Corpus,
@@ -279,9 +286,7 @@ def perform_indexing(
 
     for task in job.updatesettingstasks.all():
         logger.info("Updating settings for index `{}`".format(task.index.name))
-        client.indices.put_settings(
-            settings={"number_of_replicas": 1}, index=task.index.name
-        )
+        update_index_settings(task)
 
     if job.addaliastasks.exists():
         versioned_index_name = job.addaliastasks.first().index.name
