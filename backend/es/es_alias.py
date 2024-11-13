@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import re
+from django.db import transaction
 
 from addcorpus.models import Corpus, CorpusConfiguration
 from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
@@ -9,6 +10,7 @@ from indexing.models import IndexJob, DeleteIndexTask, RemoveAliasTask, AddAlias
 import logging
 logger = logging.getLogger('indexing')
 
+@transaction.atomic
 def create_alias_job(corpus: Corpus, clean=False) -> IndexJob:
     job = IndexJob.objects.create(corpus=corpus)
 

@@ -12,6 +12,7 @@ import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
 from django.conf import settings
+from django.db import transaction
 
 from addcorpus.es_settings import es_settings
 from addcorpus.models import Corpus, CorpusConfiguration
@@ -163,6 +164,7 @@ def populate(
             logger.error(f"FAILED INDEX: {info}")
 
 
+@transaction.atomic
 def create_indexing_job(
     corpus: Corpus,
     start: Optional[datetime.date] = None,
@@ -185,7 +187,9 @@ def create_indexing_job(
         if prod:
             alias = corpus.configuration.es_alias or corpus.configuration.es_index
             if add or update:
-                versioned_name = get_current_index_name(corpus.configuration, client)
+                versioned_name = get_current_index_name(
+                    corpus.configuration, client
+                )
             else:
                 next_version = get_new_version_number(client, alias, base_name)
                 versioned_name = f'{base_name}-{next_version}'
@@ -245,6 +249,8 @@ def create_indexing_job(
             )
 
         return job
+
+
 
 def perform_indexing(
     corpus: Corpus,
