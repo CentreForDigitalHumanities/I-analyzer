@@ -11,6 +11,7 @@ from ianalyzer_readers.extract import Backup, Combined, Metadata, RDF
 
 from addcorpus.es_mappings import keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition, RDFCorpusDefinition
+from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -197,11 +198,14 @@ class ParliamentEurope(Parliament, RDFCorpusDefinition):
         display_name='Represented country',
         description='The EU country the speaker represents',
         es_mapping=keyword_mapping(),
+        search_filter=MultipleChoiceFilter(
+            description='Search in speeches of speakers from specific countries',
+            option_count=50,
+        ),
+        visualizations=['resultscount', 'termfrequency'],
         extractor=Combined(
-            RDF(LPV.speaker),
-            Metadata('speakers'),
-            transform=get_speaker_country
-        )
+            RDF(LPV.speaker), Metadata('speakers'), transform=get_speaker_country
+        ),
     )
 
     speech = field_defaults.speech(language='en')
