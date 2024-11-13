@@ -190,7 +190,7 @@ def create_indexing_job(
             server=server, name=base_name
         )
 
-    if not add or update:
+    if not (add or update):
         CreateIndexTask.objects.create(
             job=job,
             index=index,
@@ -198,7 +198,7 @@ def create_indexing_job(
             delete_existing=clear,
         )
 
-    if not mappings_only or update:
+    if not (mappings_only or update):
         PopulateIndexTask.objects.create(
             job=job,
             index=index,
