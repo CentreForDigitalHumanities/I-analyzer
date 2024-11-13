@@ -77,7 +77,6 @@ def es_alias_client(db, es_server, es_client, mock_corpus):
         job=job,
         index=index,
         delete_existing=True,
-        production_settings=True,
     )
     es_index.create(create_task)
     es_client.indices.create(index='times-test-2')
