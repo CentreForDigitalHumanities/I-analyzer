@@ -95,26 +95,19 @@ def create(task: CreateIndexTask):
     return index_name
 
 
-def populate(
-    client: Elasticsearch,
-    corpus: Corpus,
-    versioned_index_name: str,
-    start=None,
-    end=None,
-):
+def populate(task: PopulateIndexTask):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
-    corpus_config = corpus.configuration
-    corpus_name = corpus.name
-    reader = make_reader(corpus)
+    corpus_config = task.corpus.configuration
+    reader = make_reader(task.corpus)
 
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
     files = reader.sources(
-        start=start or corpus_config.min_date,
-        end=end or corpus_config.max_date)
+        start=task.document_min_date or corpus_config.min_date,
+        end=task.document_max_date or corpus_config.max_date)
     docs = reader.documents(files)
 
     # Each source document is decorated as an indexing operation, so that it
@@ -122,22 +115,22 @@ def populate(
     actions = (
         {
             "_op_type": "index",
-            "_index": versioned_index_name,
+            "_index": task.index.name,
             "_id": doc.get("id"),
             "_source": doc,
         }
         for doc in docs
     )
 
-    corpus_server = settings.SERVERS[
-        settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
+    server_config = task.index.server.configuration
 
     # Do bulk operation
+    client = task.client()
     for success, info in es_helpers.streaming_bulk(
         client,
         actions,
-        chunk_size=corpus_server["chunk_size"],
-        max_chunk_bytes=corpus_server["max_chunk_bytes"],
+        chunk_size=server_config["chunk_size"],
+        max_chunk_bytes=server_config["max_chunk_bytes"],
         raise_on_exception=False,
         raise_on_error=False,
     ):
@@ -279,7 +272,7 @@ def perform_indexing(
         return
 
     for task in job.populateindextasks.all():
-        populate(client, corpus, task.index.name, start=start, end=end)
+        populate(task)
 
     logger.info('Finished indexing `{}` to index `{}`.'.format(
         corpus_name, index_name))
