@@ -57,61 +57,42 @@ def _make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
     }
 
 
-def create(
-    client: Elasticsearch,
-    corpus: Corpus,
-    add: bool = False,
-    clear: bool = False,
-    prod: bool = False,
-) -> str:
-    '''
-    Initialise an ElasticSearch index.
-    '''
-    corpus_config = corpus.configuration
-    index_name = corpus_config.es_index
+def create(task: CreateIndexTask):
+    client = task.client()
+
+    corpus_config = task.corpus.configuration
+    index_name = task.index.name
     es_mapping = _make_es_mapping(corpus_config)
 
-    if add:
-        # we add document to existing index - skip creation, return current index
-        return get_current_index_name(corpus_config, client)
+    if client.indices.exists(index=index_name):
+        if task.delete_existing:
+            logger.info('Attempting to clean old index...')
+            client.indices.delete(
+                index=index_name, ignore=[400, 404])
+        else:
+            logger.error(
+                'Index `{}` already exists. Do you need to add an alias for it or '
+                'perhaps delete it?'.format(index_name)
+            )
+            raise Exception('index already exists')
 
-    if clear:
-        logger.info('Attempting to clean old index...')
-        client.indices.delete(
-            index=index_name, ignore=[400, 404])
+    settings = _make_es_settings(task.corpus)
 
-    settings = _make_es_settings(corpus)
-
-    if prod:
-        logger.info('Using a versioned index name')
-        alias = corpus_config.es_alias if corpus_config.es_alias else index_name
-        index_name = "{}-{}".format(
-            index_name, get_new_version_number(client, alias, index_name))
-        if client.indices.exists(index=index_name):
-            logger.error('Index `{}` already exists. Do you need to add an alias for it or perhaps delete it?'.format(
-                index_name))
-            sys.exit(1)
-
+    if task.production_settings:
         logger.info('Adding prod settings to index')
         settings['index'].update({
             'number_of_replicas': 0,
             'number_of_shards': 5
         })
 
-    logger.info('Attempting to create index `{}`...'.format(
-        index_name))
-    try:
-        client.indices.create(
-            index=index_name,
-            settings=settings,
-            mappings=es_mapping,
-        )
-        return index_name
-    except RequestError as e:
-        if 'already_exists' not in e.error:
-            # ignore that the index already exist,
-            # raise any other errors.
-            raise
+    logger.info('Attempting to create index `{}`...'.format(index_name))
+
+    client.indices.create(
+        index=task.index.name,
+        settings=settings,
+        mappings=es_mapping,
+    )
+    return index_name
 
 
 def populate(
@@ -287,23 +268,29 @@ def perform_indexing(
     logger.info('retry on timeout: {}'.format(
         vars(client).get('_retry_on_timeout'))
     )
-    versioned_index_name = create(client, corpus, add, clear, prod)
+
+    for task in job.createindextasks.all():
+        create(task)
+
     client.cluster.health(wait_for_status='yellow')
 
     if mappings_only:
         logger.info('Created index `{}` with mappings only.'.format(index_name))
         return
 
-    populate(client, corpus, versioned_index_name, start=start, end=end)
+    for task in job.populateindextasks.all():
+        populate(client, corpus, task.index.name, start=start, end=end)
 
     logger.info('Finished indexing `{}` to index `{}`.'.format(
         corpus_name, index_name))
 
-    if prod:
-        logger.info("Updating settings for index `{}`".format(versioned_index_name))
+    for task in job.updatesettingstasks.all():
+        logger.info("Updating settings for index `{}`".format(task.index.name))
         client.indices.put_settings(
-            settings={"number_of_replicas": 1}, index=versioned_index_name
+            settings={"number_of_replicas": 1}, index=task.index.name
         )
-        if rollover:
-            logger.info("Adjusting alias for index  `{}`".format(versioned_index_name))
-            alias(corpus)  # not deleting old index, so we can roll back
+
+    if job.addaliastasks.exists():
+        versioned_index_name = job.addaliastasks.first().index.name
+        logger.info("Adjusting alias for index  `{}`".format(versioned_index_name))
+        alias(corpus)

@@ -8,11 +8,12 @@ from elasticsearch import Elasticsearch
 
 from ianalyzer.elasticsearch import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index as index
+from es import es_index as index, sync
 from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from es.models import Server
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -110,6 +111,13 @@ def es_client():
         pytest.skip('Cannot connect to elasticsearch server')
 
     return client
+
+
+@pytest.fixture()
+def es_server(db, settings) -> Server:
+    sync.update_server_table_from_settings()
+    return Server.objects.get(name='default')
+
 
 @pytest.fixture()
 def basic_mock_corpus() -> str:
