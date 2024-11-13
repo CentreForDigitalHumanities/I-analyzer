@@ -163,7 +163,7 @@ def populate(
             logger.error(f"FAILED INDEX: {info}")
 
 
-def create_job(
+def create_indexing_job(
     corpus: Corpus,
     start: Optional[datetime.date] = None,
     end: Optional[datetime.date] = None,

@@ -5,7 +5,7 @@ from django.core.management import BaseCommand
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
 from addcorpus.models import Corpus
-from es.es_index import perform_indexing
+from es.es_index import perform_indexing, create_indexing_job
 from es.es_update import update_index, update_by_query
 
 class Command(BaseCommand):
@@ -95,6 +95,11 @@ class Command(BaseCommand):
                 'Example call: flask es times -s 1785-01-01 -e 2010-12-31'
             )
             raise
+
+        job = create_indexing_job(
+            corpus_object, start_index, end_index, mappings_only, add, delete, prod,
+            rollover, update
+        )
 
         if update:
             try:
