@@ -16,60 +16,72 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'corpus',
-            help='''Sets which corpus should be indexed. Use the name provided in settings.py''',
+            help='''Sets which corpus should be indexed. This should match the "name"
+                field in the database. For Python corpora, this field is based on the
+                name in settings.py''',
         )
 
         parser.add_argument(
             '--start', '-s',
-            help='''The date where indexing should start.
-            The input format is YYYY-MM-DD.
-            If not set, indexing will start from corpus minimum date.'''
+            help='''Minimum date to select documents. The input format is YYYY-MM-DD.
+            Optional. Only has effect for Python corpora which implement date selection
+            in their sources() method. No effect in combination with --mappings-only.'''
         )
 
         parser.add_argument(
             '--end', '-e',
-            help='''The date where indexing should end
-            The input format is YYYY-MM-DD.
-            If not set, indexing will stop at corpus maximum date.'''
+            help='''Maximum date to select documents. The input format is YYYY-MM-DD.
+            Optional. Only has effect for Python corpora which implement date selection
+            in their sources() method. No effect in combination with --mappings-only.'''
         )
 
         parser.add_argument(
             '--delete', '-d',
             action='store_true',
-            help='Delete the index before indexing'
+            help='''If this job is set to create an index that already exists, delete
+                it instead of raising an exception. No effect in combination with
+                --add.'''
         )
 
         parser.add_argument(
             '--update', '-u',
             action='store_true',
-            help='Update an index (add / change fields in documents)'
+            help='''Run an update script defined in the corpus definition (to add/change
+                field values in documents). Only available for Python corpora. This
+                will also skip index creation and population.'''
         )
 
         parser.add_argument(
             '--mappings-only', '-m',
             action='store_true',
-            help='''Only create the index with mappings
-            without adding data to it. This is useful e.g. before a remote reindex.'''
+            help='''Only create the index with mappings without adding data to it. This
+                is useful e.g. before a remote reindex. No effect in combination with
+                --update.'''
         )
 
         parser.add_argument(
             '--add', '-a',
             action='store_true',
-            help='''Add documents to an existing index, i.e., skip index creation'''
+            help='''Skip index creation. Documents will be added to the existing index
+                for the corpus. No effect in combination with --update.'''
         )
 
         parser.add_argument(
             '--prod', '-p',
             action='store_true',
-            help='''Specifies that this is NOT a local indexing operation.
-            This influences index settings in particular'''
+            help='''Specifies that this is NOT a local indexing operation. This
+                will affect index settings. The script will also generate a versioned
+                name for the index, which requires an alias to be linked to the
+                corpus.'''
         )
 
         parser.add_argument(
             '--rollover', '-r',
             action='store_true',
-            help='''Specifies that the alias of the index should be adjusted.
-            (Only applicable in combination with --prod)'''
+            help='''Specifies that the alias of the index should be moved to this version
+                after populating the index. Only applicable in combination with --prod.
+                Note that you can also move the alias with the separate "alias"
+                command after indexing is complete.'''
         )
 
     def handle(self, corpus, start=None, end=None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
@@ -91,14 +103,14 @@ class Command(BaseCommand):
 
         except Exception:
             logging.critical(
-                'Incorrect data format '
-                'Example call: flask es times -s 1785-01-01 -e 2010-12-31'
+                'Incorrect data format; dates must be YYYY-MM-DD. '
+                'Example call: python manage.py index times -s 1785-01-01 -e 2010-12-31'
             )
             raise
 
         if rollover and not prod:
             logging.warning(
-                'rollover flag is set but prod flag not set -- no effect')
+                '--rollover flag is set but --prod flag not set; no effect.')
 
 
         job = create_indexing_job(
