@@ -4,14 +4,10 @@
 Script to index the data into ElasticSearch.
 '''
 
-import sys
 from typing import Dict, Optional
-
-from elasticsearch import Elasticsearch
+import datetime
+import logging
 import elasticsearch.helpers as es_helpers
-from elasticsearch.exceptions import RequestError
-
-from django.conf import settings
 from django.db import transaction
 
 from addcorpus.es_settings import es_settings
@@ -20,10 +16,9 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
 from .es_alias import (
-    alias, get_current_index_name, get_new_version_number,
+    get_current_index_name, get_new_version_number,
     add_alias, remove_alias, delete_index
 )
-import datetime
 from indexing.models import (
     IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
     RemoveAliasTask, AddAliasTask, UpdateSettingsTask
@@ -32,7 +27,6 @@ from es.sync import update_server_table_from_settings
 from es.models import Server, Index
 from es.es_update import run_update_task
 
-import logging
 logger = logging.getLogger('indexing')
 
 
