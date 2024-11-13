@@ -14,7 +14,7 @@ def elasticsearch(corpus_name):
 
     return client_from_config(server_config)
 
-def server_for_corpus(corpus_name):
+def server_for_corpus(corpus_name) -> str:
     return settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')
 
 

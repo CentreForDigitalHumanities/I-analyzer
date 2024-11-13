@@ -1,8 +1,7 @@
 from django.core.management import BaseCommand
 
 from addcorpus.models import Corpus
-from addcorpus.python_corpora.load_corpus import load_corpus_definition
-from es.es_alias import alias
+from es.es_alias import alias, create_alias_job
 
 class Command(BaseCommand):
     help = '''
@@ -27,4 +26,5 @@ class Command(BaseCommand):
 
     def handle(self, corpus, clean=False, **options):
         corpus_obj = Corpus.objects.get(name=corpus)
+        create_alias_job(corpus_obj, clean)
         alias(corpus_obj, clean)
