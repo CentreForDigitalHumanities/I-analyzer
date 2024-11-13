@@ -205,16 +205,17 @@ def create_indexing_job(
             )
 
             if rollover:
-                for index_name in client.indices.get_alias(name=alias):
-                    aliased_index, _ = Index.objects.get_or_create(
-                        server=server,
-                        name=index_name,
-                    )
-                    RemoveAliasTask.objects.create(
-                        job=job,
-                        index=aliased_index,
-                        alias=alias,
-                    )
+                if client.indices.exists_alias(name=alias):
+                    for index_name in client.indices.get_alias(name=alias):
+                        aliased_index, _ = Index.objects.get_or_create(
+                            server=server,
+                            name=index_name,
+                        )
+                        RemoveAliasTask.objects.create(
+                            job=job,
+                            index=aliased_index,
+                            alias=alias,
+                        )
                 AddAliasTask.objects.create(
                     job=job,
                     index=index,
@@ -254,6 +255,7 @@ def create_indexing_job(
 
 
 def perform_indexing(
+    job: IndexJob,
     corpus: Corpus,
     start: Optional[datetime.date] = None,
     end: Optional[datetime.date] = None,
