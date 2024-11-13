@@ -18,6 +18,7 @@ class IndexJob(models.Model):
     )
     created = models.DateTimeField(
         auto_now_add=True,
+        help_text='time when the job was created',
     )
 
 
@@ -125,6 +126,7 @@ class UpdateSettingsTask(IndexTask):
     settings = models.JSONField(
         blank=True,
         default=dict,
+        help_text='settings to push',
     )
 
     def __str__(self):
