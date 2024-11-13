@@ -214,7 +214,7 @@ def create_indexing_job(
             document_max_date=end,
         )
 
-    if prod:
+    if prod and not (add or update):
         UpdateSettingsTask.objects.create(
             job=job,
             index=index,
