@@ -229,6 +229,7 @@ def create_indexing_job(
             CreateIndexTask.objects.create(
                 job=job,
                 index=index,
+                production_settings=prod,
                 delete_existing=clear,
             )
 

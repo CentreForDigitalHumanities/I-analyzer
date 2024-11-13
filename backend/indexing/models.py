@@ -1,6 +1,8 @@
 from django.db import models
 from itertools import chain
+from elasticsearch import Elasticsearch
 
+from ianalyzer.elasticsearch import elasticsearch
 from addcorpus.models import Corpus
 from es.models import Index
 
@@ -41,12 +43,19 @@ class IndexTask(models.Model):
     def corpus(self) -> Corpus:
         return self.job.corpus
 
+    def client(self) -> Elasticsearch:
+        return elasticsearch(self.corpus.name)
+
 
 class CreateIndexTask(IndexTask):
     '''
     Create a new index based on corpus settings.
     '''
 
+    production_settings = models.BooleanField(
+        default=False,
+        help_text='configure index settings for a production environment',
+    )
     delete_existing = models.BooleanField(
         default=False,
         help_text='if an index by this name already exists, delete it, instead of '
