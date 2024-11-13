@@ -85,6 +85,29 @@ def alias(corpus: Corpus, clean=False):
     logger.info('Done updating aliases')
 
 
+def add_alias(task: AddAliasTask):
+    client = task.client()
+    client.indices.put_alias(
+        index=task.index.name,
+        name=task.alias
+    )
+
+
+def remove_alias(task: RemoveAliasTask):
+    client = task.client()
+    client.indices.delete_alias(
+        index=task.index.name,
+        name=task.alias
+    )
+
+
+def delete_index(task: DeleteIndexTask):
+    client = task.client()
+    client.indices.delete(
+        index=task.index.name,
+    )
+
+
 def get_current_index_name(corpus: CorpusConfiguration, client) -> str:
     """get the name of the current corpus' associated index"""
     alias = corpus.es_alias or corpus.es_index
