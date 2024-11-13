@@ -242,19 +242,13 @@ def create_indexing_job(
 def perform_indexing(job: IndexJob):
     job.corpus.validate_ready_to_index()
 
-    corpus_config = job.corpus.configuration
     corpus_name = job.corpus.name
-    index_name = corpus_config.es_index
 
-    logger.info('Started indexing `{}` on index {}'.format(
-        corpus_name,
-        index_name
-    ))
+    logger.info(f'Started index job: {job}')
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
     logger.info('max_retries: {}'.format(vars(client).get('_max_retries')))
-
     logger.info('retry on timeout: {}'.format(
         vars(client).get('_retry_on_timeout'))
     )
@@ -264,8 +258,10 @@ def perform_indexing(job: IndexJob):
 
         if not job.populateindextasks.exists() or job.updateindextasks.exists():
             logger.info(f'Created index `{task.index.name}` with mappings only.')
+        else:
+            logger.info(f'Created index `{task.index.name}`')
 
-    client.cluster.health(wait_for_status='yellow')
+        client.cluster.health(wait_for_status='yellow')
 
     for task in job.populateindextasks.all():
         populate(task)
