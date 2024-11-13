@@ -19,7 +19,10 @@ from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
-from .es_alias import alias, get_current_index_name, get_new_version_number
+from .es_alias import (
+    alias, get_current_index_name, get_new_version_number,
+    add_alias, remove_alias, delete_index
+)
 import datetime
 from indexing.models import (
     IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
@@ -272,23 +275,28 @@ def perform_indexing(
     for task in job.createindextasks.all():
         create(task)
 
-    client.cluster.health(wait_for_status='yellow')
+        if not job.populateindextasks.exists() or job.updateindextasks.exists():
+            logger.info(f'Created index `{task.index.name}` with mappings only.')
 
-    if mappings_only:
-        logger.info('Created index `{}` with mappings only.'.format(index_name))
-        return
+    client.cluster.health(wait_for_status='yellow')
 
     for task in job.populateindextasks.all():
         populate(task)
-
-    logger.info('Finished indexing `{}` to index `{}`.'.format(
-        corpus_name, index_name))
+        logger.info('Finished indexing `{}` to index `{}`.'.format(
+            corpus_name, task.index.name))
 
     for task in job.updatesettingstasks.all():
         logger.info("Updating settings for index `{}`".format(task.index.name))
         update_index_settings(task)
 
-    if job.addaliastasks.exists():
-        versioned_index_name = job.addaliastasks.first().index.name
-        logger.info("Adjusting alias for index  `{}`".format(versioned_index_name))
-        alias(corpus)
+    for task in job.removealiastasks.all():
+        logger.info(f'Removing alias `{task.alias}` for index `{task.index.name}`')
+        remove_alias(task)
+
+    for task in job.addaliastasks.all():
+        logger.info(f'Adding alias `{task.alias}` for index `{task.index.name}`')
+        add_alias(task)
+
+    for task in job.deleteindextasks.all():
+        logger.info(f'Deleting index {task.index.name}')
+        delete_index(task)
