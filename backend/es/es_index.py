@@ -161,85 +161,107 @@ def create_indexing_job(
     rollover: bool = False,
     update: bool = False,
 ) -> IndexJob:
-        job = IndexJob.objects.create(corpus=corpus)
+    '''
+    Create an IndexJob to index a corpus.
 
-        update_server_table_from_settings()
-        server_name = server_for_corpus(corpus.name)
-        server = Server.objects.get(name=server_name)
-        client = elasticsearch(corpus.name)
-        base_name = corpus.configuration.es_index
+    Depending on parameters, this job may include creating an new index, adding documents,
+    running an update script, and rolling over the alias. Parameters are described
+    in detail in the documentation for the `index` command.
+    '''
+    job = IndexJob.objects.create(corpus=corpus)
 
-        if prod:
-            alias = corpus.configuration.es_alias or corpus.configuration.es_index
-            if add or update:
-                versioned_name = get_current_index_name(
-                    corpus.configuration, client
+    update_server_table_from_settings()
+    server_name = server_for_corpus(corpus.name)
+    server = Server.objects.get(name=server_name)
+    client = elasticsearch(corpus.name)
+    base_name = corpus.configuration.es_index
+
+    # tasks below are added in order of execution for readability
+
+    if prod:
+        alias = corpus.configuration.es_alias or corpus.configuration.es_index
+        if add or update:
+            versioned_name = get_current_index_name(
+                corpus.configuration, client
+            )
+        else:
+            next_version = get_new_version_number(client, alias, base_name)
+            versioned_name = f'{base_name}-{next_version}'
+
+        index, _ = Index.objects.get_or_create(
+            server=server, name=versioned_name
+        )
+    else:
+        index, _ = Index.objects.get_or_create(
+            server=server, name=base_name
+        )
+
+    if not add or update:
+        CreateIndexTask.objects.create(
+            job=job,
+            index=index,
+            production_settings=prod,
+            delete_existing=clear,
+        )
+
+    if not mappings_only or update:
+        PopulateIndexTask.objects.create(
+            job=job,
+            index=index,
+            document_min_date=start,
+            document_max_date=end,
+        )
+
+    if update:
+        UpdateIndexTask.objects.create(
+            job=job,
+            index=index,
+            document_min_date=start,
+            document_max_date=end,
+        )
+
+    if prod:
+        UpdateSettingsTask.objects.create(
+            job=job,
+            index=index,
+            settings={"number_of_replicas": 1},
+        )
+
+    if prod and rollover:
+        if client.indices.exists_alias(name=alias):
+            for index_name in client.indices.get_alias(name=alias):
+                aliased_index, _ = Index.objects.get_or_create(
+                    server=server,
+                    name=index_name,
                 )
-            else:
-                next_version = get_new_version_number(client, alias, base_name)
-                versioned_name = f'{base_name}-{next_version}'
-
-            index, _ = Index.objects.get_or_create(
-                server=server, name=versioned_name
-            )
-
-            UpdateSettingsTask.objects.create(
-                job=job,
-                index=index,
-                settings={"number_of_replicas": 1},
-            )
-
-            if rollover:
-                if client.indices.exists_alias(name=alias):
-                    for index_name in client.indices.get_alias(name=alias):
-                        aliased_index, _ = Index.objects.get_or_create(
-                            server=server,
-                            name=index_name,
-                        )
-                        RemoveAliasTask.objects.create(
-                            job=job,
-                            index=aliased_index,
-                            alias=alias,
-                        )
-                AddAliasTask.objects.create(
+                RemoveAliasTask.objects.create(
                     job=job,
-                    index=index,
+                    index=aliased_index,
                     alias=alias,
                 )
-        else:
-            index, _ = Index.objects.get_or_create(
-                server=server, name=base_name
-            )
+        AddAliasTask.objects.create(
+            job=job,
+            index=index,
+            alias=alias,
+        )
 
-        if not add or update:
-            CreateIndexTask.objects.create(
-                job=job,
-                index=index,
-                production_settings=prod,
-                delete_existing=clear,
-            )
-
-        if not mappings_only or update:
-            PopulateIndexTask.objects.create(
-                job=job,
-                index=index,
-                document_min_date=start,
-                document_max_date=end,
-            )
-
-        if update:
-            UpdateIndexTask.objects.create(
-                job=job,
-                index=index,
-                document_min_date=start,
-                document_max_date=end,
-            )
-
-        return job
+    return job
 
 
 
 def perform_indexing(job: IndexJob):
+    '''
+    Run an IndexJob by running all related tasks.
+
+    Tasks are run per type. The order of types is:
+    - `CreateIndexTask`
+    - `PopulateIndexTask`
+    - `UpdateIndexTask`
+    - `UpdateSettingsTask`
+    - `RemoveAliasTask`
+    - `AddAliasTask`
+    - `DeleteIndexTask`
+    '''
     job.corpus.validate_ready_to_index()
 
     corpus_name = job.corpus.name

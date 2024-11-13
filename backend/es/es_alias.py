@@ -12,6 +12,10 @@ logger = logging.getLogger('indexing')
 
 @transaction.atomic
 def create_alias_job(corpus: Corpus, clean=False) -> IndexJob:
+    '''
+    Create a job to move the alias of a corpus to the index with the highest version
+    '''
+
     job = IndexJob.objects.create(corpus=corpus)
 
     corpus_config = corpus.configuration
@@ -43,6 +47,9 @@ def create_alias_job(corpus: Corpus, clean=False) -> IndexJob:
 
 
 def add_alias(task: AddAliasTask):
+    '''
+    Add an alias to an Elasticsearch index, as defined by an AddAliasTask
+    '''
     client = task.client()
     client.indices.put_alias(
         index=task.index.name,
@@ -51,6 +58,9 @@ def add_alias(task: AddAliasTask):
 
 
 def remove_alias(task: RemoveAliasTask):
+    '''
+    Remove an alias from an Elasticsearch index, as defined by a RemoveAliasTask
+    '''
     client = task.client()
     client.indices.delete_alias(
         index=task.index.name,
@@ -59,6 +69,9 @@ def remove_alias(task: RemoveAliasTask):
 
 
 def delete_index(task: DeleteIndexTask):
+    '''
+    Delete an Elasticsearch index, as defined by a DeleteIndexTask
+    '''
     client = task.client()
     client.indices.delete(
         index=task.index.name,
