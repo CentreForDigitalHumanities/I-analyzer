@@ -1,5 +1,4 @@
 from django.db import models
-from itertools import chain
 from elasticsearch import Elasticsearch
 
 from ianalyzer.elasticsearch import elasticsearch
@@ -7,15 +6,20 @@ from addcorpus.models import Corpus
 from es.models import Index
 
 class IndexJob(models.Model):
+    '''
+    Represents a collection of index-related tasks that are carried out together.
+    '''
+
     corpus = models.ForeignKey(
         to=Corpus,
         on_delete=models.CASCADE,
-        help_text='corpus for which the job is created; task may use the corpus '
-            'to determine metadata or extract documents',
+        help_text='corpus for which the job is created; tasks may use the corpus '
+            'to determine index configuration or extract documents',
     )
     created = models.DateTimeField(
         auto_now_add=True,
     )
+
 
 
     def __str__(self):
@@ -23,6 +27,10 @@ class IndexJob(models.Model):
 
 
 class IndexTask(models.Model):
+    '''
+    Abstract model for index-related tasks.
+    '''
+
     class Meta:
         abstract = True
 
@@ -124,6 +132,9 @@ class UpdateSettingsTask(IndexTask):
 
 
 class RemoveAliasTask(IndexTask):
+    '''
+    Remove an alias from an index
+    '''
     alias = models.CharField(
         max_length=128,
         help_text='alias to remove'
@@ -134,6 +145,9 @@ class RemoveAliasTask(IndexTask):
 
 
 class AddAliasTask(IndexTask):
+    '''
+    Add an alias to an index
+    '''
     alias = models.CharField(
         max_length=128,
         help_text='alias to assign'
