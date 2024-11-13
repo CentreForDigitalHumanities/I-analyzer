@@ -2,6 +2,7 @@ from django.core.management import BaseCommand
 
 from addcorpus.models import Corpus
 from es.es_alias import alias, create_alias_job
+from es.es_index import perform_indexing
 
 class Command(BaseCommand):
     help = '''
@@ -26,5 +27,5 @@ class Command(BaseCommand):
 
     def handle(self, corpus, clean=False, **options):
         corpus_obj = Corpus.objects.get(name=corpus)
-        create_alias_job(corpus_obj, clean)
-        alias(corpus_obj, clean)
+        job = create_alias_job(corpus_obj, clean)
+        perform_indexing(job)
