@@ -127,8 +127,7 @@ class Command(BaseCommand):
                 logging.critical(e)
                 raise
         else:
-            perform_indexing(job, corpus_object, start_index, end_index,
-                             mappings_only, add, delete, prod, rollover)
+            perform_indexing(job)
 
     def _corpus_object(self, corpus_name):
         load_all_corpus_definitions()

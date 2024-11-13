@@ -43,7 +43,7 @@ def test_fetch_index_data(db, es_client, basic_mock_corpus, index_basic_mock_cor
 
     # restore index
     job = create_indexing_job(corpus)
-    perform_indexing(job, corpus)
+    perform_indexing(job)
     sleep(1)
 
     fetch_index_metadata()

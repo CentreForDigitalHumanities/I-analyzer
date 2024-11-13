@@ -20,9 +20,7 @@ def test_prod_flag(mock_corpus, es_index_client, corpus_definition, prod, name, 
         corpus, START, END,
         mappings_only=True, add=False, clear=False, prod=prod, rollover=False,
     )
-    perform_indexing(
-        job, corpus, START, END,
-        mappings_only=True, add=False, clear=False, prod=prod, rollover=False)
+    perform_indexing(job)
 
     assert es_index_client.indices.exists(index=name)
     assert es_index_client.indices.get_settings(index=name).get(
@@ -36,9 +34,7 @@ def test_mappings_only_flag(mock_corpus, es_index_client, corpus_definition, map
         corpus, START, END,
         mappings_only=mappings_only, add=False, clear=False, prod=False, rollover=False,
     )
-    perform_indexing(
-        job, corpus, START, END,
-        mappings_only=mappings_only, add=False, clear=False, prod=False, rollover=False)
+    perform_indexing(job)
     sleep(1)
     res = es_index_client.count(index='times-test*')
     assert res.get('count') == expected
@@ -50,20 +46,14 @@ def test_add_clear(db, mock_corpus, es_index_client):
         corpus, START, END,
         mappings_only=True, add=False, clear=False, prod=False, rollover=False,
     )
-    perform_indexing(
-        job, corpus, START, END,
-        mappings_only=True, add=False, clear=False, prod=False, rollover=False
-    )
+    perform_indexing(job)
     res = es_index_client.count(index='times-test*')
     assert res.get('count') == 0
     job = create_indexing_job(
         corpus, START, END,
         mappings_only=False, add=True, clear=False, prod=False, rollover=False,
     )
-    perform_indexing(
-        job, corpus, START, END,
-        mappings_only=False, add=True, clear=False, prod=False, rollover=False
-    )
+    perform_indexing(job)
     sleep(1)
     res = es_index_client.count(index='times-test*')
     assert res.get('count') == 2
@@ -71,10 +61,7 @@ def test_add_clear(db, mock_corpus, es_index_client):
         corpus, START, END,
         mappings_only=True, add=False, clear=True, prod=False, rollover=False,
     )
-    perform_indexing(
-        job, corpus, START, END,
-        mappings_only=True, add=False, clear=True, prod=False, rollover=False
-    )
+    perform_indexing(job)
     res = es_index_client.count(index='times-test*')
     assert res.get('count') == 0
 
@@ -100,15 +87,5 @@ def test_indexing_with_version(mock_corpus, corpus_definition, es_index_client):
         prod=True,
         rollover=True,
     )
-    perform_indexing(
-        job,
-        corpus,
-        START,
-        END,
-        mappings_only=False,
-        add=False,
-        clear=False,
-        prod=True,
-        rollover=True,
-    )
+    perform_indexing(job)
     assert es_index_client.indices.exists(index="times-test-1") == True

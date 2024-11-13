@@ -238,21 +238,11 @@ def create_indexing_job(
 
 
 
-def perform_indexing(
-    job: IndexJob,
-    corpus: Corpus,
-    start: Optional[datetime.date] = None,
-    end: Optional[datetime.date] = None,
-    mappings_only: bool = False,
-    add: bool = False,
-    clear: bool = False,
-    prod: bool = False,
-    rollover: bool = False,
-):
-    corpus.validate_ready_to_index()
+def perform_indexing(job: IndexJob):
+    job.corpus.validate_ready_to_index()
 
-    corpus_config = corpus.configuration
-    corpus_name = corpus.name
+    corpus_config = job.corpus.configuration
+    corpus_name = job.corpus.name
     index_name = corpus_config.es_index
 
     logger.info('Started indexing `{}` on index {}'.format(

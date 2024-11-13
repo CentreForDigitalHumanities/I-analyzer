@@ -164,7 +164,7 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
         job = index.create_indexing_job(corpus)
-        index.perform_indexing(job, corpus)
+        index.perform_indexing(job)
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
 
