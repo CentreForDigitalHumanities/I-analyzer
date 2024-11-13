@@ -5,6 +5,7 @@ from django.db import transaction
 from addcorpus.models import Corpus, CorpusConfiguration
 from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
 from es.models import Server, Index
+from es.sync import update_server_table_from_settings
 from indexing.models import IndexJob, DeleteIndexTask, RemoveAliasTask, AddAliasTask
 
 import logging
@@ -20,6 +21,7 @@ def create_alias_job(corpus: Corpus, clean=False) -> IndexJob:
 
     corpus_config = corpus.configuration
     corpus_name = corpus.name
+    update_server_table_from_settings()
     server = Server.objects.get(name=server_for_corpus(corpus_name))
     index_name = corpus_config.es_index
     index_alias = corpus_config.es_alias
