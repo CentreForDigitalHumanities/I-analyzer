@@ -96,6 +96,11 @@ class Command(BaseCommand):
             )
             raise
 
+        if rollover and not prod:
+            logging.warning(
+                'rollover flag is set but prod flag not set -- no effect')
+
+
         job = create_indexing_job(
             corpus_object, start_index, end_index, mappings_only, add, delete, prod,
             rollover, update

@@ -260,10 +260,6 @@ def perform_indexing(
         index_name
     ))
 
-    if rollover and not prod:
-        logger.warning(
-            'rollover flag is set but prod flag not set -- no effect')
-
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
     logger.info('max_retries: {}'.format(vars(client).get('_max_retries')))
