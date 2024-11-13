@@ -30,6 +30,7 @@ from indexing.models import (
 )
 from es.sync import update_server_table_from_settings
 from es.models import Server, Index
+from es.es_update import run_update_task
 
 import logging
 logger = logging.getLogger('indexing')
@@ -270,6 +271,9 @@ def perform_indexing(job: IndexJob):
         populate(task)
         logger.info('Finished indexing `{}` to index `{}`.'.format(
             corpus_name, task.index.name))
+
+    for task in job.updateindextasks.all():
+        run_update_task(task)
 
     for task in job.updatesettingstasks.all():
         logger.info("Updating settings for index `{}`".format(task.index.name))

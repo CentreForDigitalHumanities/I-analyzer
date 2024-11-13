@@ -106,28 +106,7 @@ class Command(BaseCommand):
             rollover, update
         )
 
-        if update:
-            try:
-                if corpus_definition.update_body():
-                    update_index(
-                        corpus,
-                        corpus_definition,
-                        corpus_definition.update_query(
-                            min_date=start_index.strftime('%Y-%m-%d'),
-                            max_date=end_index.strftime('%Y-%m-%d')
-                    ))
-                elif corpus_definition.update_script():
-                    update_by_query(
-                        corpus, corpus_definition, corpus_definition.update_script()
-                    )
-                else:
-                    logging.critical("Cannot update without update_body or update_script")
-                    return None
-            except Exception as e:
-                logging.critical(e)
-                raise
-        else:
-            perform_indexing(job)
+        perform_indexing(job)
 
     def _corpus_object(self, corpus_name):
         load_all_corpus_definitions()
