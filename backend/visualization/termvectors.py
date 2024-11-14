@@ -97,7 +97,7 @@ def analyze_query_component(component_text, index, field, es_client):
         # for single-word tokens, add exceptions for wildcard and fuzzy match
         # everything outside quotes is passed per word
 
-        wildcard_match = re.search('\*$', component_text)
+        wildcard_match = re.search(r'\*$', component_text)
         if wildcard_match:
             return [tokens[0] + '.*'] # return re with wildcard
 

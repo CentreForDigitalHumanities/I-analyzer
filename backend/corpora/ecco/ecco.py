@@ -41,7 +41,7 @@ class Ecco(XMLCorpusDefinition):
     tag_toplevel = Tag('pageContent')
     tag_entry = Tag('page')
 
-    meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
+    meta_pattern = re.compile(r'^\d+\_DocMetadata\.xml$')
 
     @property
     def es_settings(self):
