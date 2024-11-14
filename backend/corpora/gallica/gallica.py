@@ -25,6 +25,13 @@ def get_content(content: BeautifulSoup) -> str:
     return "".join([node.get_text() for node in text_nodes])
 
 
+def get_publication_id(identifier: str) -> str:
+    try:
+        return identifier.split("/")[-1]
+    except:
+        return None
+
+
 class Gallica(XMLCorpusDefinition):
 
     languages = ["fr"]
@@ -117,7 +124,7 @@ class Gallica(XMLCorpusDefinition):
             display_name="Publication ID",
             description="Identifier of the publication on Gallica",
             es_mapping=keyword_mapping(),
-            extractor=XML(Tag("dc:identifier"), transform=lambda x: x.split("/")[-1]),
+            extractor=XML(Tag("dc:identifier"), transform=get_publication_id),
             csv_core=True,
         )
 
