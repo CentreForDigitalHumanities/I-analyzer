@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from bs4 import BeautifulSoup
 from ianalyzer_readers.xml_tag import Tag
@@ -14,6 +15,7 @@ from addcorpus.es_mappings import (
     main_content_mapping,
 )
 
+logger = logging.getLogger('indexing')
 
 def get_content(content: BeautifulSoup) -> str:
     """Return text content in the parsed HTML file from the `texteBrut` request
@@ -27,12 +29,12 @@ class Gallica(XMLCorpusDefinition):
 
     languages = ["fr"]
     data_url = "https://gallica.bnf.fr"
-    corpus_ark = ""
+    corpus_id = ""  # each corpus on Gallica has an "ark" id
 
     def sources(self, start: datetime, end: datetime):
         # obtain list of ark numbers
         response = requests.get(
-            f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_ark}/date"
+            f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date"
         )
         year_soup = BeautifulSoup(response.content, "xml")
         years = [
@@ -41,20 +43,36 @@ class Gallica(XMLCorpusDefinition):
             if int(year.string) >= start.year and int(year.string) <= end.year
         ]
         for year in years:
-            response = requests.get(
-                f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_ark}/date&date={year}"
-            )
-            ark_soup = BeautifulSoup(response.content, "xml")
-            ark_numbers = [issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")]
+            try:
+                response = requests.get(
+                    f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_ark}/date&date={year}"
+                )
+                ark_soup = BeautifulSoup(response.content, "xml")
+                ark_numbers = [
+                    issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")
+                ]
+            except ConnectionError:
+                logger.warning(f"Connection error when processing year {year}")
+                break
 
             for ark in ark_numbers:
-                source_response = requests.get(
-                    f"{self.data_url}/services/OAIRecord?ark={ark}"
-                )
-                if source_response:
-                    content_response = requests.get(
-                        f"{self.data_url}/ark:/12148/{ark}.texteBrut"
+                try:
+                    source_response = requests.get(
+                        f"{self.data_url}/services/OAIRecord?ark={ark}"
                     )
+                except ConnectionError:
+                    logger.warning(f"Connection error encountered in issue {ark}")
+                    break
+
+                if source_response:
+                    try:
+                        content_response = requests.get(
+                            f"{self.data_url}/ark:/12148/{ark}.texteBrut"
+                        )
+                    except ConnectionError:
+                        logger.warning(
+                            f"Connection error when fetching full text of issue {ark}"
+                        )
                     parsed_content = BeautifulSoup(
                         content_response.content, "lxml-html"
                     )
