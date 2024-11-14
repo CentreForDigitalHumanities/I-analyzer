@@ -46,6 +46,7 @@ The values in the dictionary give specifications.
 - `'bulk_timeout'`: Timeout of ES bulk operation
 - `'scroll_timeout'`: Time before scroll results time out
 - `'scroll_page_size'`: Number of results per scroll page
+- `'index_prefix'` (optional): For database-only corpora, this setting can be used to add a prefix to the names of indices created on this server. For example, you can set this to `'ianalyzer'` to generate index names like `'ianalyzer-times'`, `'ianalyzer-dutchnewspapers'`, etc. Does not affect corpora with Python definitions.
 
 ### API key
 

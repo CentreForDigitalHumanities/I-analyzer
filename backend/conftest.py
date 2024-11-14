@@ -6,8 +6,7 @@ import requests
 from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
 
-from addcorpus.json_corpora.import_json import import_json_corpus
-from ianalyzer.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index as index
 from django.conf import settings
@@ -102,7 +101,8 @@ def es_client():
     Initialise an elasticsearch client for the default elasticsearch cluster. Skip if no connection can be made.
     """
 
-    client = elasticsearch('small-mock-corpus') # based on settings_test.py, this corpus will use cluster 'default'
+    client = client_from_config(settings.SERVERS['default'])
+
     # check if client is available, else skip test
     try:
         client.info()
