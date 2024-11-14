@@ -3,9 +3,12 @@ from django.conf import settings
 from typing import Optional, Dict, List
 from datetime import datetime
 from elasticsearch import Elasticsearch
+import logging
 
 from addcorpus import models as corpus_models
 from ianalyzer.elasticsearch import client_from_config
+
+logger = logging.getLogger()
 
 class Server(models.Model):
     '''
@@ -63,7 +66,8 @@ class Server(models.Model):
             return False
         try:
             client.info()
-        except:
+        except Exception as e:
+            logging.error(e)
             return False
         return True
 
