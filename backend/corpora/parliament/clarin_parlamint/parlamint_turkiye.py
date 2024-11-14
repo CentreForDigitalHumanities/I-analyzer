@@ -8,7 +8,7 @@ import re
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined, Choice, Order, Metadata, Pass
+from addcorpus.python_corpora.extract import XML, Constant, Combined, Order, Metadata, Pass
 from addcorpus.es_mappings import keyword_mapping
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
@@ -16,7 +16,7 @@ from corpora.parliament.utils.parlamint_v4 import extract_all_org_data, extract_
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
-from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousTag, TransformTag
+from ianalyzer_readers.xml_tag import Tag
 
 logger = logging.getLogger('indexing')
 
@@ -95,7 +95,6 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             for xml_file in glob('{}/{}/*.xml'.format(self.data_directory, year)):
                 metadata['date'] = re.search(r"\d{4}-\d{2}-\d{2}", xml_file).group()
                 yield xml_file, metadata
-                ##### Keep looking at NL for metadata harvest tips
 
     country = field_defaults.country()
     country.extractor = Constant(
