@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
 
 import {
     Corpus,
@@ -68,7 +68,7 @@ export class CorpusService {
             return this.corporaPromise;
         } else {
             this.corporaPromise = this.apiRetryService
-                .requireLogin((api) => api.corpus().toPromise())
+                .requireLogin((api) => lastValueFrom(api.corpus()))
                 .then((data) => this.parseCorpusList(data));
             return this.corporaPromise;
         }
