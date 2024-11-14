@@ -52,7 +52,7 @@ class Gallica(XMLCorpusDefinition):
         for year in years:
             try:
                 response = requests.get(
-                    f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_ark}/date&date={year}"
+                    f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date&date={year}"
                 )
                 ark_soup = BeautifulSoup(response.content, "xml")
                 ark_numbers = [
