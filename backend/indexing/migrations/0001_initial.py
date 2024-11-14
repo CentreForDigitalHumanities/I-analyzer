@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('es', '0002_alter_index_available'),
+        ('es', '0001_initial'),
         ('addcorpus', '0023_alter_corpusdocumentationpage_type_alter_field_name'),
     ]
 
