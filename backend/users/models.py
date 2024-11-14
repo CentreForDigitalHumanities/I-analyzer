@@ -33,7 +33,7 @@ class CustomUser(django_auth_models.AbstractUser):
         if self.is_superuser:
             return Corpus.objects.filter(active=True)
 
-        return Corpus.objects.filter(active=True, groups__user=self)
+        return Corpus.objects.filter(active=True, groups__user=self).distinct()
 
 
 class AnoymousProfile(object):
