@@ -88,13 +88,7 @@ def analyze_query(query_text, index, field, es_client = None):
     return nonempty
 
 def analyze_query_component(component_text, index, field, es_client):
-    analyzed = es_client.indices.analyze(
-        index = index,
-        body={
-            'text': component_text,
-            'field': field,
-        },
-    )
+    analyzed = es_client.indices.analyze(index=index, text=component_text, field=field)
 
     tokens = [token['token'] for token in analyzed['tokens']]
 

@@ -8,7 +8,7 @@ from corpora_test.large.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPEC
 here = os.path.abspath(os.path.dirname(__file__))
 
 class MockIndex(object):
-    def analyze(self, index, body):
+    def analyze(self, **kwargs):
         return {'tokens': [{'token': 'test'}]}
 
 class MockClient(object):
