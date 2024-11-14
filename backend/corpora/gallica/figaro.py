@@ -19,11 +19,13 @@ def join_issue_strings(issue_description: Union[list[str], None]) -> Union[str, 
 
 
 class Figaro(Gallica):
-    description = "Le Figaro (newspaper), 1854-1953"
+    title = "Le Figaro"
+    description = "Newspaper archive, 1854-1953"
     min_date = datetime(year=1854, month=1, day=1)
     max_date = datetime(year=1953, month=12, day=31)
     corpus_id = "cb34355551z"
-    category = "newspaper"
+    category = "periodical"
+    es_index = getattr(settings, 'FIGARO_INDEX', 'figaro')
     image = "figaro.jpg"
 
     contributor = FieldDefinition(

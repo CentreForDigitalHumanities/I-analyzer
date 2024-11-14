@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+from time import sleep
 
 from bs4 import BeautifulSoup
 from ianalyzer_readers.xml_tag import Tag
@@ -14,6 +15,7 @@ from addcorpus.es_mappings import (
     date_mapping,
     main_content_mapping,
 )
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
@@ -38,6 +40,12 @@ class Gallica(XMLCorpusDefinition):
     data_url = "https://gallica.bnf.fr"
     corpus_id = ""  # each corpus on Gallica has an "ark" id
 
+    @property
+    def es_settings(self):
+        return es_settings(
+            self.languages[:1], stopword_analysis=True, stemming_analysis=True
+        )
+
     def sources(self, start: datetime, end: datetime):
         # obtain list of ark numbers
         response = requests.get(
@@ -58,6 +66,7 @@ class Gallica(XMLCorpusDefinition):
                 ark_numbers = [
                     issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")
                 ]
+                sleep(2)
             except ConnectionError:
                 logger.warning(f"Connection error when processing year {year}")
                 break
@@ -67,6 +76,7 @@ class Gallica(XMLCorpusDefinition):
                     source_response = requests.get(
                         f"{self.data_url}/services/OAIRecord?ark={ark}"
                     )
+                    sleep(2)
                 except ConnectionError:
                     logger.warning(f"Connection error encountered in issue {ark}")
                     break
@@ -76,6 +86,7 @@ class Gallica(XMLCorpusDefinition):
                         content_response = requests.get(
                             f"{self.data_url}/ark:/12148/{ark}.texteBrut"
                         )
+                        sleep(10)
                     except ConnectionError:
                         logger.warning(
                             f"Connection error when fetching full text of issue {ark}"
@@ -92,6 +103,8 @@ class Gallica(XMLCorpusDefinition):
         return FieldDefinition(
             name="content",
             description="Content of publication",
+            display_name="Content",
+            display_type="text_content",
             es_mapping=main_content_mapping(
                 token_counts=True,
                 stopword_analysis=True,
