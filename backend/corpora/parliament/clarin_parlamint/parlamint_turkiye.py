@@ -72,7 +72,7 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     data_directory = settings.PARLAMINT_TURKIYE_DATA
     es_index = getattr(settings, 'PARLAMINT_TURKIYE_ES_INDEX', 'parlamint-turkiye')
     image = 'turkiye.jpg'
-    # description_page = 'parlamint_turkiye.md'
+    description_page = 'parlamint_turkiye.md'
 
     tag_toplevel = Tag('TEI')
     tag_entry = Tag('u')
