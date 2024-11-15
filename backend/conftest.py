@@ -198,6 +198,9 @@ def add_mock_python_corpora_to_db(db, media_dir):
     # add python mock corpora to the database at the start of each test
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', message="Corpus has no 'id' field")
+        warnings.filterwarnings(
+            'ignore', message='.* text search for keyword fields without text analysis'
+        )
         load_and_save_all_corpora()
 
 

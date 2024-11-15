@@ -139,7 +139,7 @@ def mapping_can_be_searched(es_mapping):
 
     if primary_mapping_type(es_mapping) == MappingType.KEYWORD.value:
         warnings.warn(
-            'It is strongly discouraged to use text search for keyword fields without'
+            'It is strongly discouraged to use text search for keyword fields without '
             'text analysis. Consider adding a text multifield or using a filter instead.'
         )
         return True
