@@ -17,7 +17,7 @@
                             <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
                                 Email is required.
                             </div>
-                            <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors?.pattern && email.touched">
+                            <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors && email.touched">
                                 Please enter a valid email address.
                             </div>
                             <div *ngIf="showMessage && message" class="notification" [ngClass]="{'is-danger': !success, 'is-success': success}">{{message}}</div>

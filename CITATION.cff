@@ -15,7 +15,7 @@ authors:
 identifiers:
   - type: doi
     value: 10.5281/zenodo.8064133
-repository-code: 'https://github.com/UUDigitalHumanitieslab/I-analyzer'
+repository-code: 'https://github.com/CentreForDigitalHumanities/I-analyzer'
 url: 'https://ianalyzer.hum.uu.nl'
 abstract: >-
   I-analyzer is a tool for exploring corpora (large
@@ -35,5 +35,5 @@ keywords:
   - elasticsearch
   - natural language processing
 license: MIT
-version: 5.11.0
-date-released: '2024-08-08'
+version: 5.14.0
+date-released: '2024-11-06'

@@ -1,0 +1,26 @@
+# This workflow will build the backend container and then run tests; it will only be triggered when requirements change
+
+name: Build backend and run unit tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+      - 'dependabot/**'
+    paths:
+      - 'backend/requirements.txt'
+      - 'docker-compose.yaml'
+
+jobs:
+  backend-test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run backend tests
+      run: |
+        sudo mkdir -p /ci-data
+        docker compose --env-file .env-ci run --build backend pytest

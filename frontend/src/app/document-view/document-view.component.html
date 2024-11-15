@@ -45,16 +45,8 @@
                 <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
                     <div *ngIf="showEntities && document.entityAnnotations$ | async as annotations ; else showHighlights" class="content"
                         [attr.lang]="document.language(field)">
-                        <div *ngIf="annotations[field.name]; else plainText">
-                            <span *ngFor="let textSegment of annotations[field.name]">
-                                <mark *ngIf="textSegment.entity !== 'flat'; else unannotatedText" [className]="'entity-'+textSegment.entity">
-                                    {{textSegment.text}}
-                                    <fa-icon [icon]="entityIcons[textSegment.entity]" [title]="textSegment.entity" class="entity-icon"></fa-icon>
-                                </mark>
-                                <ng-template #unannotatedText>
-                                    {{textSegment.text | paragraph}}
-                                </ng-template>
-                            </span>
+                        <div *ngIf="annotations[field.name]; else plainText"
+                            [innerHtml]="annotations[field.name] | entity | paragraph">
                         </div>
                         <ng-template #plainText>
                             <div [innerHtml]="document.fieldValues[field.name] | paragraph"></div>
