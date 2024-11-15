@@ -28,6 +28,7 @@ def test_saved_corpora(db):
     assert CorpusConfiguration.objects.filter(
         corpus__has_python_definition=True).count() == len(configured)
 
+@pytest.mark.filterwarnings("ignore:Corpus has no 'id' field")
 def test_no_errors_when_saving_corpora(db, capsys):
     # try running the save function
     # sys.stdout/stderr needs to be passed explicitly for capture to work
@@ -54,6 +55,7 @@ def test_saving_broken_corpus(db, basic_mock_corpus):
     assert not corpus.active
     assert corpus.has_python_definition
 
+@pytest.mark.filterwarnings("ignore:Corpus has no 'id' field")
 def test_remove_corpus_from_settings(db, settings, basic_mock_corpus):
     corpus = Corpus.objects.get(name=basic_mock_corpus)
     assert corpus.active
@@ -94,6 +96,7 @@ def test_save_field_definition(db, basic_mock_corpus, deactivated_corpus):
         assert field
         assert field.name == field_def.name
 
+@pytest.mark.filterwarnings("ignore:Corpus has no 'id' field")
 def test_save_corpus_purity(db, basic_mock_corpus):
     '''
     Test that saved corpus configurations only depend
