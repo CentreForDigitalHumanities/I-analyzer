@@ -104,7 +104,7 @@ def teacher_extractor(role):
     )
 
 class CourseStaffMetadata(XLSXCorpusDefinition):
-    data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
+    data_directory = settings.UU_COURSE_DESCRIPTIONS_DATA
 
     def sources(self, **kwargs):
         path = os.path.join(self.data_directory, 'docenten_cursussen2023GW.xlsx')
