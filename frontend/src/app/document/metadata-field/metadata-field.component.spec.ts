@@ -1,23 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MetadataFieldComponent } from './metadata-field.component';
+import { commonTestBed } from 'app/common-test-bed';
 
 describe('MetadataFieldComponent', () => {
-  let component: MetadataFieldComponent;
-  let fixture: ComponentFixture<MetadataFieldComponent>;
+    let component: MetadataFieldComponent;
+    let fixture: ComponentFixture<MetadataFieldComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MetadataFieldComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(MetadataFieldComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(async () => {
+        await commonTestBed().testingModule.compileComponents();
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        fixture = TestBed.createComponent(MetadataFieldComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });
