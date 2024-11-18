@@ -4,13 +4,31 @@ from django.conf import settings
 import re
 from django.utils.html import strip_tags
 from langdetect import detect
-import glob
 
 from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
 from addcorpus.python_corpora.extract import CSV, Combined, Pass, Constant, Metadata
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from addcorpus.serializers import LanguageField
+
+FACULTIES = {
+    'BETA': 'Betawetenschappen',
+    'GW': 'Geesteswetenschappen',
+    'DGK': 'Diergeneeskunde',
+    'GEO': 'Geowetenschappen',
+    'GNK': 'Geneeskunde',
+    'HC': 'Honours College',
+    'IVLOS': 'Interfacultair Instituut voor Lerarenopleiding, Onderwijsontwikkeling en Studievaardigheden',
+    'JCU': 'Junior College Utrecht',
+    'RA': 'Roosevelt Academy',
+    'REBO': 'Recht, Economie, Bestuur en Organisatie',
+    'SW': 'Sociale Wetenschappen',
+    'UC': 'University College',
+    'UU': 'Utrecht University',
+}
+
+def format_faculty(value):
+    return FACULTIES.get(value, value)
 
 def filter_label(label):
     def get_content_with_label(data):
@@ -208,7 +226,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='faculty',
             display_name='Faculty',
-            extractor=CSV('FACULTEIT'),
+            extractor=CSV('FACULTEIT', transform=format_faculty),
             es_mapping=keyword_mapping(),
         ),
         FieldDefinition(

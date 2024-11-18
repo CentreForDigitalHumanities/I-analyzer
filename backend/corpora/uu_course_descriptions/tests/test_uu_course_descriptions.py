@@ -32,7 +32,7 @@ target_docs = [{
     'type': 'CURSUS',
     'department': 'CDH',
     'department_description': 'Digitale Geesteswetenschappen',
-    'faculty': 'GW',
+    'faculty': 'Geesteswetenschappen',
     'contact': 'A. de Tester',
     'teacher': 'B. Test',
     'program_coordinator': None,
