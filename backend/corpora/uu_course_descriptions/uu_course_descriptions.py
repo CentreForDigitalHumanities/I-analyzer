@@ -4,6 +4,7 @@ from django.conf import settings
 import re
 from django.utils.html import strip_tags
 from langdetect import detect
+from ianalyzer_readers.readers.xlsx import XLSXReader
 
 from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
@@ -119,7 +120,7 @@ def teacher_extractor(role):
         transform=get_teacher_names,
     )
 
-class CourseStaffMetadata(XLSXCorpusDefinition):
+class CourseStaffReader(XLSXReader):
     data_directory = settings.UU_COURSE_DESCRIPTIONS_DATA
 
     def sources(self, **kwargs):
@@ -169,7 +170,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         yield path, { 'teacher_roles': teacher_roles }
 
     def _extract_teacher_data(self):
-        reader = CourseStaffMetadata()
+        reader = CourseStaffReader()
         roles = reader.documents()
         return list(roles)
 
