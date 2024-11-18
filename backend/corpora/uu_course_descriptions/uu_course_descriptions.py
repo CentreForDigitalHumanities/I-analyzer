@@ -94,8 +94,8 @@ def language_name(language_code):
 
 
 def filter_teacher_roles(data):
-    course_id, role, all_roles = data
-    select = lambda row: row['course_id'] == course_id and row['role'] == role
+    course_id, roles, all_roles = data
+    select = lambda row: row['course_id'] == course_id and row['role'] in roles
     filtered = list(filter(select, all_roles))
     return filtered
 
@@ -109,11 +109,11 @@ def format_names(names):
     full_names = map(format_name, names)
     return '; '.join(full_names)
 
-def teacher_extractor(role):
+def staff_extractor(*roles):
     return Pass(
         Combined(
             CSV('CURSUS'),
-            Constant(role),
+            Constant(roles),
             Metadata('teacher_roles'),
             transform=filter_teacher_roles,
         ),
@@ -233,37 +233,46 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='contact',
             display_name='Contact',
-            extractor=teacher_extractor('CONTACTPERSOON'),
+            extractor=staff_extractor('CONTACTPERSOON'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='coordinator',
             display_name='Coordinator',
-            extractor=teacher_extractor('COORDINATOR'),
+            extractor=staff_extractor('COORDINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='course_coordinator',
             display_name='Course coordinator',
-            extractor=teacher_extractor('CURSUSCOORDINAT'),
+            extractor=staff_extractor('CURSUSCOORDINAT', 'COORDINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='program_coordinator',
             display_name='Program coordinator',
-            extractor=teacher_extractor('OPLEIDINGSCOORD'),
+            extractor=staff_extractor('OPLEIDINGSCOORD'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='min_coordinator',
             display_name='Min coordinator',
-            extractor=teacher_extractor('MINCOORDINATOR'),
+            extractor=staff_extractor('MINCOORDINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='teacher',
             display_name='Teacher',
-            extractor=teacher_extractor('DOCENT'),
+            extractor=staff_extractor(
+                'DOCENT', 'DOCENT_RES', 'DOC_GEEN_RES', 'DOC_INZAGE', 'DOC_MELDING',
+                'CURSUSASSISTENT',
+            ),
+            es_mapping=keyword_mapping(enable_full_text_search=True)
+        ),
+        FieldDefinition(
+            name='examinator',
+            display_name='Examinator',
+            extractor=staff_extractor('EXAMINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
