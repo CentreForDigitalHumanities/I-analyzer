@@ -135,17 +135,17 @@ class CourseStaffMetadata(XLSXCorpusDefinition):
         ),
     ]
 
-class HumCourseDescriptions(XLSXCorpusDefinition):
-    title = 'Humanities Course Descriptions'
-    description = 'Courses taught in the UU Humanities faculty in 2023'
+class UUCourseDescriptions(XLSXCorpusDefinition):
+    title = 'Utrecht University Course Descriptions'
+    description = 'Courses taught at Utrecht University in 2023-2024'
     category = 'informative'
     min_date = datetime(2022, 9, 1)
     max_date = datetime(2023, 8, 31)
     image = 'uu_logo_cropped.jpg'
     languages = ['nl', 'en', 'de', 'fr', 'es', 'it']
-    es_index =  getattr(settings, 'HUM_COURSE_DESCRIPTIONS_INDEX', 'hum_course_descriptions')
+    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_INDEX', 'uu_course_descriptions')
 
-    data_directory = settings.HUM_COURSE_DESCRIPTIONS_DATA
+    data_directory = settings.UU_COURSE_DESCRIPTIONS_DATA
 
     def sources(self, *args, **kwargs):
         teacher_roles = self._extract_teacher_data()

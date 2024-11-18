@@ -8,15 +8,15 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 here = os.path.abspath(os.path.dirname(__file__))
 
 @pytest.fixture()
-def hum_course_descriptions_settings(settings, db):
+def uu_course_descriptions_settings(settings, db):
     settings.CORPORA = {
-        'hum_course_descriptions': os.path.join(here, '../hum_course_descriptions.py')
+        'uu_course_descriptions': os.path.join(here, '../uu_course_descriptions.py')
     }
-    settings.HUM_COURSE_DESCRIPTIONS_DATA = os.path.join(here, 'data')
+    settings.UU_COURSE_DESCRIPTIONS_DATA = os.path.join(here, 'data')
 
-def test_hum_course_descriptions_model(hum_course_descriptions_settings, db, admin_client):
+def test_uu_course_descriptions_model(uu_course_descriptions_settings, db, admin_client):
     corpus = corpus_from_api(admin_client)
-    assert corpus['title'] == 'Humanities Course Descriptions'
+    assert corpus['title'] == 'Utrecht University Course Descriptions'
 
 description = '''- Stap 1 cursusinvoer door contactpersonen; Van dinsdag 1 december t/m vrijdag 15 januari
 - Stap 2 controle cursusinvoer door opleidings- en programma coördinatoren; van maandag 18 januari t/m vrijdag 29 januari
@@ -47,9 +47,9 @@ target_docs = [{
 }]
 
 
-def test_hum_course_descriptions_extraction(hum_course_descriptions_settings):
+def test_uu_course_descriptions_extraction(uu_course_descriptions_settings):
     load_and_save_all_corpora()
-    corpus = load_corpus_definition('hum_course_descriptions')
+    corpus = load_corpus_definition('uu_course_descriptions')
     assert corpus
 
     docs = list(corpus.documents())
