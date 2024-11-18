@@ -12,6 +12,7 @@ import { DocumentPreviewComponent } from './document-preview/document-preview.co
 import { EntityLegendComponent } from './entity-legend/entity-legend.component';
 import { EntityToggleComponent } from './entity-toggle/entity-toggle.component';
 import { ElasticsearchHighlightPipe, EntityPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } from '../shared/pipes';
+import { MetadataFieldComponent } from './metadata-field/metadata-field.component';
 
 @NgModule({
     declarations: [
@@ -22,11 +23,12 @@ import { ElasticsearchHighlightPipe, EntityPipe, GeoDataPipe, ParagraphPipe, Sni
         DocumentPreviewComponent,
         EntityLegendComponent,
         EntityToggleComponent,
+        MetadataFieldComponent,
         ElasticsearchHighlightPipe,
         EntityPipe,
         GeoDataPipe,
         ParagraphPipe,
-        SnippetPipe
+        SnippetPipe,
     ],
     imports: [
         DialogModule,

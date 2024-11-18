@@ -1,0 +1,11 @@
+<ng-container *ngIf="field">
+    <div *ngIf="!isUrlField(field) && !isGeoPointField(field)"
+        [innerHtml]="field | elasticsearchHighlight:document | paragraph">
+    </div>
+    <ng-container *ngIf="isGeoPointField(field)">
+        {{field | geoData:document}}
+    </ng-container>
+    <ng-container *ngIf="isUrlField(field)">
+        <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
+    </ng-container>
+</ng-container>
