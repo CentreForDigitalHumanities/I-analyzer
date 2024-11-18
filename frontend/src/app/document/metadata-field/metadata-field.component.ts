@@ -10,11 +10,4 @@ export class MetadataFieldComponent {
     @Input() field: CorpusField;
     @Input() document: FoundDocument;
 
-    isUrlField(field: CorpusField) {
-        return field.displayType === 'url';
-    }
-
-    isGeoPointField(field: CorpusField) {
-        return field.mappingType === 'geo_point';
-    }
 }
