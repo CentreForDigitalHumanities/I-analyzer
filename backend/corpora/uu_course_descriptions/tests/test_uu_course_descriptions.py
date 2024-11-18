@@ -18,30 +18,25 @@ def test_uu_course_descriptions_model(uu_course_descriptions_settings, db, admin
     corpus = corpus_from_api(admin_client)
     assert corpus['title'] == 'Utrecht University Course Descriptions'
 
-description = '''- Stap 1 cursusinvoer door contactpersonen; Van dinsdag 1 december t/m vrijdag 15 januari
-- Stap 2 controle cursusinvoer door opleidings- en programma coördinatoren; van maandag 18 januari t/m vrijdag 29 januari
-- Stap 3 controle cursusinvoer door onderwijscoördinatoren van maandag 1 februari t/m donderdag 18 februari (en door OWS)
-- Consolidatie vrijdag 19 februari 2021.
-Wat een leuk proces is dit toch!
-:-)'''
+goal = '''- Begrijpen van de functie van testen in software.- Het kunnen schrijven van unittest functies op basis van een specificatie- Het kunnen toepassen van een test-driven workflow bij het oplossen van bugs'''
+description = '''In deze cursus leren studenten de basis van testen in softwareontwikkeling.In de hoorcolleges wordt ingegaan op de motivatie om te testen, en leren studenten over de integratie van testen in een development-workflow.In practica leren studenten om zelf tests te schrijven aan de hand van praktische opdrachten.'''
 
 target_docs = [{
-    'id': '202100017',
-    'academic_year': 2023,
-    'name': 'Dummy; TEST 3',
+    'id': 100000001,
+    'academic_year': 2024,
+    'name': 'Inleiding software testen',
     'type': 'CURSUS',
-    'department': 'ONB',
-    'description': 'Onbekend',
+    'department': 'CDH',
+    'description': 'Digitale Geesteswetenschappen',
     'faculty': 'GW',
-    'contact': 'L. Tax',
-    'teacher': 'L. Tax',
-    'program_coordinator': 'L. Tax',
+    'contact': 'A. de Tester',
+    'teacher': 'B. Test',
+    'program_coordinator': None,
     'course_coordinator': None,
     'min_coordinator': None,
     'coordinator': None,
-    'goal': '',
+    'goal': goal,
     'content': description,
-    'level': 'Bachelor 2',
     'language_code': 'nl',
     'language': 'Dutch',
 }]
@@ -53,5 +48,6 @@ def test_uu_course_descriptions_extraction(uu_course_descriptions_settings):
     assert corpus
 
     docs = list(corpus.documents())
-    assert len(docs) == 1
-    assert docs == target_docs
+    assert len(docs) == 3
+    for expected, target in zip(docs, target_docs):
+        assert expected == target
