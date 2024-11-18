@@ -16,7 +16,7 @@
                         </td>
                     </tr>
                     <ng-container *ngFor="let field of propertyFields">
-                        <tr *ngIf="document.fieldValue(field)">
+                        <tr *ngIf="document.hasValue(field)">
                             <th>
                                 <span [iaBalloon]="field.description"
                                     iaBalloonPosition="up" iaBalloonLength="medium">
