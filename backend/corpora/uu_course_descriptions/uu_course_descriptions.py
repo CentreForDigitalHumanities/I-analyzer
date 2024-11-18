@@ -4,6 +4,7 @@ from django.conf import settings
 import re
 from django.utils.html import strip_tags
 from langdetect import detect
+import glob
 
 from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
@@ -107,7 +108,7 @@ class CourseStaffMetadata(XLSXCorpusDefinition):
     data_directory = settings.UU_COURSE_DESCRIPTIONS_DATA
 
     def sources(self, **kwargs):
-        path = os.path.join(self.data_directory, 'docenten_cursussen2023GW.xlsx')
+        path = os.path.join(self.data_directory, '2024_docenten.xlsx')
         yield path
 
     field_entry = 'ROL'
@@ -149,7 +150,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
 
     def sources(self, *args, **kwargs):
         teacher_roles = self._extract_teacher_data()
-        path = os.path.join(self.data_directory, 'doel_inhoud_cursussen2023GW.xlsx')
+        path = os.path.join(self.data_directory, '2024_doel_inhoud.xlsx')
         yield path, { 'teacher_roles': teacher_roles }
 
     def _extract_teacher_data(self):
