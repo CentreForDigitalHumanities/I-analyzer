@@ -197,8 +197,8 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
-            name='description',
-            display_name='Description',
+            name='department_description',
+            display_name='Deparment description',
             extractor=CSV('OMSCHRIJVING'),
             es_mapping=keyword_mapping(enable_full_text_search=True),
         ),
