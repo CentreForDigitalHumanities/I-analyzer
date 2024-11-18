@@ -18,8 +18,12 @@ def test_uu_course_descriptions_model(uu_course_descriptions_settings, db, admin
     corpus = corpus_from_api(admin_client)
     assert corpus['title'] == 'Utrecht University Course Descriptions'
 
-goal = '''- Begrijpen van de functie van testen in software.- Het kunnen schrijven van unittest functies op basis van een specificatie- Het kunnen toepassen van een test-driven workflow bij het oplossen van bugs'''
-description = '''In deze cursus leren studenten de basis van testen in softwareontwikkeling.In de hoorcolleges wordt ingegaan op de motivatie om te testen, en leren studenten over de integratie van testen in een development-workflow.In practica leren studenten om zelf tests te schrijven aan de hand van praktische opdrachten.'''
+goal = '''- Begrijpen van de functie van testen in software.
+- Het kunnen schrijven van unittest functies op basis van een specificatie
+- Het kunnen toepassen van een test-driven workflow bij het oplossen van bugs'''
+description = '''In deze cursus leren studenten de basis van testen in softwareontwikkeling.
+In de hoorcolleges wordt ingegaan op de motivatie om te testen, en leren studenten over de integratie van testen in een development-workflow.
+In practica leren studenten om zelf tests te schrijven aan de hand van praktische opdrachten.'''
 
 target_docs = [{
     'id': 100000001,
