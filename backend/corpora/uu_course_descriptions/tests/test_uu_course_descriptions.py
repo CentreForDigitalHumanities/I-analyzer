@@ -27,7 +27,7 @@ target_docs = [{
     'name': 'Inleiding software testen',
     'type': 'CURSUS',
     'department': 'CDH',
-    'description': 'Digitale Geesteswetenschappen',
+    'department_description': 'Digitale Geesteswetenschappen',
     'faculty': 'GW',
     'contact': 'A. de Tester',
     'teacher': 'B. Test',
