@@ -29,6 +29,9 @@ def html_to_text(content):
         (r'<style.*</style>', ''),
         (r'&nbsp;', ' '),
         (r'<li>', '<li>- '),
+        (r'</li>', '</li>\n'),
+        (r'<br />', '<br />\n'),
+        (r'</p>', '</p>\n'),
     ]
 
     for pattern, repl in html_replacements:
