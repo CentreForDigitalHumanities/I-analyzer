@@ -70,12 +70,6 @@ def detect_language(content):
 def language_name(language_code):
     return LanguageField().to_representation(language_code)
 
-def get_level(course_id):
-    level = course_id[2]
-    if level in ['1', '2', '3']:
-        return f'Bachelor {level}'
-    else:
-        return 'Master'
 
 def filter_teacher_roles(data):
     course_id, role, all_roles = data
@@ -183,16 +177,6 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=text_mapping(),
             results_overview=True,
             search_field_core=True,
-            csv_core=True,
-        ),
-        FieldDefinition(
-            name='level',
-            display_name='Level',
-            extractor=CSV('CURSUS', transform=get_level),
-            es_mapping=keyword_mapping(),
-            results_overview=True,
-            search_filter=MultipleChoiceFilter(),
-            visualizations=['resultscount', 'termfrequency'],
             csv_core=True,
         ),
         FieldDefinition(
