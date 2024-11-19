@@ -210,47 +210,48 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
-            name='department',
-            display_name='Coordinating department',
-            extractor=CSV('COORDINEREND_ONDERDEEL'),
+            name='faculty',
+            display_name='Faculty',
+            extractor=CSV('FACULTEIT', transform=format_faculty),
             es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+        ),
+        FieldDefinition(
+            name='department_description',
+            display_name='Department',
+            description='Coordinating department for the course',
+            extractor=CSV('OMSCHRIJVING'),
+            es_mapping=keyword_mapping(enable_full_text_search=True),
             results_overview=True,
             search_filter=MultipleChoiceFilter(option_count=100),
             visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
-            name='department_description',
-            display_name='Deparment description',
-            extractor=CSV('OMSCHRIJVING'),
-            es_mapping=keyword_mapping(enable_full_text_search=True),
-        ),
-        FieldDefinition(
-            name='faculty',
-            display_name='Faculty',
-            extractor=CSV('FACULTEIT', transform=format_faculty),
+            name='department',
+            display_name='Department (abbreviation)',
+            description='Abbreviated name of the coordinating department',
+            extractor=CSV('COORDINEREND_ONDERDEEL'),
             es_mapping=keyword_mapping(),
         ),
         FieldDefinition(
             name='contact',
             display_name='Contact',
+            description='Name of the contact person for the course',
             extractor=staff_extractor('CONTACTPERSOON'),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
-        ),
-        FieldDefinition(
-            name='coordinator',
-            display_name='Coordinator',
-            extractor=staff_extractor('COORDINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='course_coordinator',
             display_name='Course coordinator',
+            description='Name of the course coordinator',
             extractor=staff_extractor('CURSUSCOORDINAT', 'COORDINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
         FieldDefinition(
             name='program_coordinator',
             display_name='Program coordinator',
+            description='Coordinator of the program in which the course is taught',
             extractor=staff_extractor('OPLEIDINGSCOORD'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
@@ -262,7 +263,8 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         ),
         FieldDefinition(
             name='teacher',
-            display_name='Teacher',
+            display_name='Teachers',
+            description='Teachers involved in the course',
             extractor=staff_extractor(
                 'DOCENT', 'DOCENT_RES', 'DOC_GEEN_RES', 'DOC_INZAGE', 'DOC_MELDING',
                 'CURSUSASSISTENT',
@@ -272,6 +274,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='examinator',
             display_name='Examinator',
+            description='Examinator for the course',
             extractor=staff_extractor('EXAMINATOR'),
             es_mapping=keyword_mapping(enable_full_text_search=True)
         ),
@@ -303,6 +306,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='goal',
             display_name='Course goal',
+            description='Description of the goals for the course',
             extractor=content_extractor('DOEL'),
             es_mapping=main_content_mapping(token_counts=True),
             display_type='text_content',
@@ -314,6 +318,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='content',
             display_name='Course content',
+            description='Description of the contents of the course',
             extractor=content_extractor('INHOUD'),
             es_mapping=main_content_mapping(token_counts=True),
             display_type='text_content',
