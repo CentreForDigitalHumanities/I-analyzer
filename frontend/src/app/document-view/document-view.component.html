@@ -16,21 +16,16 @@
                         </td>
                     </tr>
                     <ng-container *ngFor="let field of propertyFields">
-                        <tr *ngIf="document.fieldValue(field)">
+                        <tr *ngIf="document.hasValue(field)">
                             <th>
                                 <span [iaBalloon]="field.description"
                                     iaBalloonPosition="up" iaBalloonLength="medium">
                                     {{field.displayName}}
                                 </span>
                             </th>
-                            <td *ngIf="!isUrlField(field) && !isGeoPointField(field)"
-                                data-test-field-value
-                                [attr.lang]="document.language(field)"
-                                [innerHtml]="field | elasticsearchHighlight:document | paragraph">
-                            </td>
-                            <td *ngIf="isGeoPointField(field)">{{field | geoData:document}}</td>
-                            <td *ngIf="isUrlField(field)">
-                                <a href={{document.fieldValue(field)}} target="_blank">{{document.fieldValue(field)}}</a>
+                            <td [attr.lang]="document.language(field)"
+                                data-test-field-value>
+                                <ia-metadata-field [field]="field" [document]="document" />
                             </td>
                         </tr>
                     </ng-container>
