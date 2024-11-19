@@ -51,6 +51,7 @@ def html_to_text(content):
         (r'</li>', '</li>\n'),
         (r'<br />', '<br />\n'),
         (r'</p>', '</p>\n'),
+        (r'_x000D_', ' '), # excel quirk
     ]
 
     for pattern, repl in html_replacements:
@@ -79,6 +80,9 @@ def all_content_extractor():
     )
 
 def detect_language(content):
+    if len(content) < 50:
+        return
+
     try:
         detected = detect(content)
         if detected == 'af':
