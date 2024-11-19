@@ -25,25 +25,45 @@ description = '''In deze cursus leren studenten de basis van testen in softwareo
 In de hoorcolleges wordt ingegaan op de motivatie om te testen, en leren studenten over de integratie van testen in een development-workflow.
 In practica leren studenten om zelf tests te schrijven aan de hand van praktische opdrachten.'''
 
-target_docs = [{
-    'id': 100000001,
-    'academic_year': 2024,
-    'name': 'Inleiding software testen',
-    'type': 'CURSUS',
-    'department': 'CDH',
-    'department_description': 'Digitale Geesteswetenschappen',
-    'faculty': 'Geesteswetenschappen',
-    'contact': 'A. de Tester',
-    'teacher': 'B. Test',
-    'program_coordinator': None,
-    'course_coordinator': None,
-    'min_coordinator': None,
-    'coordinator': None,
-    'goal': goal,
-    'content': description,
-    'language_code': 'nl',
-    'language': 'Dutch',
-}]
+target_docs = [
+    {
+        'id': 100000001,
+        'academic_year': 2024,
+        'name': 'Inleiding software testen',
+        'type': 'CURSUS',
+        'department': 'CDH',
+        'department_description': 'Digitale Geesteswetenschappen',
+        'faculty': 'Geesteswetenschappen',
+        'contact': ['A. de Tester'],
+        'teacher': ['B. Test'],
+        'examinator': None,
+        'program_coordinator': None,
+        'course_coordinator': None,
+        'min_coordinator': None,
+        'goal': goal,
+        'content': description,
+        'language_code': 'nl',
+        'language': 'Dutch',
+    }, {
+        'id': 100000002,
+        'academic_year': 2024,
+        'name': 'Test-driven development',
+        'type': 'CURSUS',
+        'department': 'CDH',
+        'department_description': 'Digitale Geesteswetenschappen',
+        'faculty': 'Geesteswetenschappen',
+        'contact': ['C. van Testen'],
+        'teacher': ['D. Testing', 'E. Tester'],
+        'examinator': None,
+        'program_coordinator': None,
+        'course_coordinator': None,
+        'min_coordinator': None,
+        'goal': '',
+        'content': '',
+        'language_code': None,
+        'language': 'Unknown',
+    }
+]
 
 
 def test_uu_course_descriptions_extraction(uu_course_descriptions_settings):

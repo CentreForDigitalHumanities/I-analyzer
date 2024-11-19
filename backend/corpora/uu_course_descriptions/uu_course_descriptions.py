@@ -107,7 +107,7 @@ def get_teacher_names(rows):
 def format_names(names):
     format_name = lambda parts: ' '.join(filter(None, parts))
     full_names = map(format_name, names)
-    return '; '.join(full_names)
+    return list(full_names)
 
 def staff_extractor(*roles):
     return Pass(
