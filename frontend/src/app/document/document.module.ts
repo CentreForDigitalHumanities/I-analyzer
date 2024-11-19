@@ -19,6 +19,7 @@ import { GeoDataPipe } from './pipes/geo-data.pipe';
 import { EntityPipe } from './pipes/entity.pipe';
 import { ParagraphPipe } from './pipes/paragraph.pipe';
 import { SnippetPipe } from './pipes/snippet.pipe';
+import { ContentFieldComponent } from './content-field/content-field.component';
 
 @NgModule({
     declarations: [
@@ -37,6 +38,7 @@ import { SnippetPipe } from './pipes/snippet.pipe';
         SnippetPipe,
         ContentFieldPreviewComponent,
         KeywordPipe,
+        ContentFieldComponent,
     ],
     imports: [
         DialogModule,
