@@ -251,26 +251,30 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             description='Name of the contact person for the course',
             extractor=staff_extractor('CONTACTPERSOON'),
             es_mapping=keyword_mapping(enable_full_text_search=True),
+            downloadable=False,
         ),
         FieldDefinition(
             name='course_coordinator',
             display_name='Course coordinator',
             description='Name of the course coordinator',
             extractor=staff_extractor('CURSUSCOORDINAT', 'COORDINATOR'),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            downloadable=False,
         ),
         FieldDefinition(
             name='program_coordinator',
             display_name='Program coordinator',
             description='Coordinator of the program in which the course is taught',
             extractor=staff_extractor('OPLEIDINGSCOORD'),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            downloadable=False,
         ),
         FieldDefinition(
             name='min_coordinator',
             display_name='Min coordinator',
             extractor=staff_extractor('MINCOORDINATOR'),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            downloadable=False,
         ),
         FieldDefinition(
             name='teacher',
@@ -280,14 +284,16 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
                 'DOCENT', 'DOCENT_RES', 'DOC_GEEN_RES', 'DOC_INZAGE', 'DOC_MELDING',
                 'CURSUSASSISTENT',
             ),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            downloadable=False,
         ),
         FieldDefinition(
             name='examinator',
             display_name='Examinator',
             description='Examinator for the course',
             extractor=staff_extractor('EXAMINATOR'),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            downloadable=False,
         ),
         FieldDefinition(
             name='language',
