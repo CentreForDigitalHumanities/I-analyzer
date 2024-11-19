@@ -236,11 +236,21 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=keyword_mapping(),
         ),
         FieldDefinition(
+            name='block',
+            display_name='Block',
+            description='Block (quartermester) in which the course starts',
+            extractor=CSV('AANVANGSBLOK'),
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+            visualization_sort='key',
+        ),
+        FieldDefinition(
             name='contact',
             display_name='Contact',
             description='Name of the contact person for the course',
             extractor=staff_extractor('CONTACTPERSOON'),
-            es_mapping=keyword_mapping(enable_full_text_search=True)
+            es_mapping=keyword_mapping(enable_full_text_search=True),
         ),
         FieldDefinition(
             name='course_coordinator',
