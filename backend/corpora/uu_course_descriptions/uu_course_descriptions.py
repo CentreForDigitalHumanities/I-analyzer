@@ -28,9 +28,6 @@ FACULTIES = {
     'UU': 'Utrecht University',
 }
 
-def format_faculty(value):
-    return FACULTIES.get(value, value)
-
 def filter_label(label):
     def get_content_with_label(data):
         labels, contents = data
@@ -217,7 +214,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='faculty',
             display_name='Faculty',
-            extractor=CSV('FACULTEIT', transform=format_faculty),
+            extractor=CSV('FACULTEIT', transform=FACULTIES.get),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(),
             visualizations=['resultscount', 'termfrequency'],
