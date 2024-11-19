@@ -11,10 +11,14 @@ import { DialogModule } from 'primeng/dialog';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EntityLegendComponent } from './entity-legend/entity-legend.component';
 import { EntityToggleComponent } from './entity-toggle/entity-toggle.component';
-import { ElasticsearchHighlightPipe, EntityPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } from '../shared/pipes';
 import { MetadataFieldComponent } from './metadata-field/metadata-field.component';
 import { ContentFieldPreviewComponent } from './content-field-preview/content-field-preview.component';
 import { KeywordPipe } from './pipes/keyword.pipe';
+import { ElasticsearchHighlightPipe } from './pipes/elasticsearch-highlight.pipe';
+import { GeoDataPipe } from './pipes/geo-data.pipe';
+import { EntityPipe } from './pipes/entity.pipe';
+import { ParagraphPipe } from './pipes/paragraph.pipe';
+import { SnippetPipe } from './pipes/snippet.pipe';
 
 @NgModule({
     declarations: [
