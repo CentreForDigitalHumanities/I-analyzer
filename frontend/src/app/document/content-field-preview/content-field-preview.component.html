@@ -10,7 +10,7 @@
     </ng-container>
     <ng-template #unhighlightedRow>
         <div class="break-word"
-            [innerHtml]="document.fieldValue(field) | snippet">
+            [innerHtml]="document.fieldValue(field) | snippet:250">
         </div>
     </ng-template>
 </ng-container>
