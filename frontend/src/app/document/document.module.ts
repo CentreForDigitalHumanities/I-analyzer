@@ -46,12 +46,8 @@ import { SnippetPipe } from './pipes/snippet.pipe';
         TagModule,
     ], exports: [
         DocumentPreviewComponent,
-        DocumentViewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,
-        EntityLegendComponent,
-        EntityToggleComponent,
-        SearchRelevanceComponent,
     ]
 })
 export class DocumentModule { }
