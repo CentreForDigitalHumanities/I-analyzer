@@ -14,6 +14,7 @@ import { EntityToggleComponent } from './entity-toggle/entity-toggle.component';
 import { ElasticsearchHighlightPipe, EntityPipe, GeoDataPipe, ParagraphPipe, SnippetPipe } from '../shared/pipes';
 import { MetadataFieldComponent } from './metadata-field/metadata-field.component';
 import { ContentFieldPreviewComponent } from './content-field-preview/content-field-preview.component';
+import { KeywordPipe } from './pipes/keyword.pipe';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { ContentFieldPreviewComponent } from './content-field-preview/content-fi
         ParagraphPipe,
         SnippetPipe,
         ContentFieldPreviewComponent,
+        KeywordPipe,
     ],
     imports: [
         DialogModule,
