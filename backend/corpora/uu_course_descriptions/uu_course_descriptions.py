@@ -236,9 +236,9 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             es_mapping=keyword_mapping(),
         ),
         FieldDefinition(
-            name='block',
-            display_name='Block',
-            description='Block (quartermester) in which the course starts',
+            name='term',
+            display_name='Term',
+            description='Term in which the course is taught',
             extractor=CSV('AANVANGSBLOK'),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(),
