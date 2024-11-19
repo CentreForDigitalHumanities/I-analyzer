@@ -210,6 +210,14 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
+            name='faculty',
+            display_name='Faculty',
+            extractor=CSV('FACULTEIT', transform=format_faculty),
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+        ),
+        FieldDefinition(
             name='department',
             display_name='Coordinating department',
             extractor=CSV('COORDINEREND_ONDERDEEL'),
@@ -220,15 +228,9 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         ),
         FieldDefinition(
             name='department_description',
-            display_name='Deparment description',
+            display_name='Department description',
             extractor=CSV('OMSCHRIJVING'),
             es_mapping=keyword_mapping(enable_full_text_search=True),
-        ),
-        FieldDefinition(
-            name='faculty',
-            display_name='Faculty',
-            extractor=CSV('FACULTEIT', transform=format_faculty),
-            es_mapping=keyword_mapping(),
         ),
         FieldDefinition(
             name='contact',
@@ -277,7 +279,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         ),
         FieldDefinition(
             name='language',
-            display_name='Language',
+            display_name='Description language',
             extractor=Pass(
                     Pass(
                     all_content_extractor(),
