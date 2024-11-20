@@ -99,7 +99,9 @@ mycorpus/
   └ mycorpus.jpg
 ```
 
-The image can be any image file. Documentation pages must be markdown files. See [corpus documentation](/documentation/Corpus-documentation.md) for more information about writing documentation.
+The image can be any image file. Add a license file in the same folder: `mycorpus.jpg` should be next to `mycorpus.jpg.license`, which describes copyright/licence info. For an example, see the [licence information for the Rechtspraak corpus image](/backend/corpora/rechtspraak/images/rechtspraak.jpg.license). If the image has a licence that requires attribution, also include an attribution statement in the corpus description page.
+
+Documentation pages must be markdown files. See [corpus documentation](/documentation/Corpus-documentation.md) for more information about writing documentation.
 
 ## Definining fields
 
