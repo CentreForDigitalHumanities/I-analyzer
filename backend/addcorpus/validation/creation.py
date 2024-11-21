@@ -132,7 +132,7 @@ def validate_name_is_not_a_route_parameter(value):
         )
 
 
-def validate_custom_slug(slug: str):
+def validate_field_name_permissible_characters(slug: str):
     """
     reject names which contain characters other than colons, hyphens, underscores or alphanumeric
     """

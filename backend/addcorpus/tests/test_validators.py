@@ -16,10 +16,10 @@ def test_validate_mimetype():
         validate_mimetype('nonsense')
 
 
-def test_validate_custom_slug():
-    validate_custom_slug("valid:slug")
+def test_validate_field_name_permissible_characters():
+    validate_field_name_permissible_characters("valid:slug")
     with pytest.raises(ValidationError):
-        validate_custom_slug("some invalid slug!")
+        validate_field_name_permissible_characters("some invalid slug!")
 
 
 def test_validate_ner_slug():

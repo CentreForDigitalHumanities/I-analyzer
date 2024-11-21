@@ -14,7 +14,7 @@ from addcorpus.validation.creation import (
     validate_implication,
     validate_language_code,
     validate_mimetype,
-    validate_custom_slug,
+    validate_field_name_permissible_characters,
     validate_name_is_not_a_route_parameter,
     validate_ner_slug,
     validate_search_filter,
@@ -320,7 +320,10 @@ VISUALIZATION_SORT_OPTIONS = [
 class Field(models.Model):
     name = models.CharField(
         max_length=MAX_LENGTH_NAME,
-        validators=[validate_name_is_not_a_route_parameter, validate_custom_slug],
+        validators=[
+            validate_name_is_not_a_route_parameter,
+            validate_field_name_permissible_characters,
+        ],
         help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
