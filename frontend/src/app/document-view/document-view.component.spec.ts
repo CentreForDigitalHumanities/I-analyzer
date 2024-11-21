@@ -34,8 +34,8 @@ describe('DocumentViewComponent', () => {
         expect(component.propertyFields).toEqual([mockField]);
         const debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));
         expect(debug.length).toEqual(1); // number of fields
-        const element = debug[0].nativeElement;
-        expect(element.textContent).toBe('Hello world!');
+        const element = debug[0].nativeElement as Element;
+        expect(element.textContent.trim()).toBe('Hello world!');
     });
 
     it('should create tabs', () => {

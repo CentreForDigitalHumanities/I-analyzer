@@ -1,0 +1,17 @@
+<ng-container *ngIf="field && document">
+    <ng-container *ngIf="document.highlight && document.highlight[field.name];
+        else unhighlightedRow">
+        <ng-container *ngFor="let highlight of document.highlight[field.name];
+            last as isLast">
+            <div ngPreserveWhitespaces style="word-break:break-word"
+                [innerHtml]="highlight">
+            </div>
+            <hr *ngIf="!isLast">
+        </ng-container>
+    </ng-container>
+    <ng-template #unhighlightedRow>
+        <div style="word-break:break-word"
+            [innerHtml]="document.fieldValue(field) | snippet">
+        </div>
+    </ng-template>
+</ng-container>

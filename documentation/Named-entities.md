@@ -15,10 +15,10 @@ If the main content field is called `speech`, the field containing named entity 
 ```
 
 Moreover, an enriched corpus should contain the following keyword fields:
-- `ner:person`
-- `ner:location`
-- `ner:organization`
-- `ner:miscellaneous`
+- `person:ner-kw`
+- `location:ner-kw`
+- `organization:ner-kw`
+- `miscellaneous:ner-kw`
 These can be used to search or filter (to be implemented).
 
 ## Enriching a corpus with named entities
