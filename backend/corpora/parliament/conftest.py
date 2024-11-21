@@ -272,6 +272,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "debate_id": "ParlaMint-NL_2017-01-31-tweedekamer-23",
                 "topic": 'Rapport "Welvaart in kaart"',
                 "speech": "Ik heet de minister van Economische Zaken van harte welkom.",
+                "speech:ner": "Ik heet de minister van [Economische Zaken](ORG) van harte welkom.",
                 "id": "ParlaMint-NL_2017-01-31-tweedekamer-23.u1",
                 "speaker": "Khadija Arib",
                 "speaker_id": "#KhadijaArib",
@@ -283,9 +284,13 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "page": None,
                 "url": None,
                 "sequence": 1,
+                "location:ner-kw": [],
+                "miscellaneous:ner-kw": [],
+                "organization:ner-kw": ["Economische Zaken"],
+                "person:ner-kw": [],
             }
         ],
-        "n_documents": 98,
+        "n_documents": 2,
         "start": datetime(2015, 1, 1),
     },
     {
