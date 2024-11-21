@@ -144,7 +144,7 @@ def get_entity_list(extracted_data: tuple[str, dict], entity: str) -> list[str]:
 
 def ner_keyword_field(entity: str):
     return FieldDefinition(
-        name=f"ner:{entity}",
+        name=f"{entity}:ner-kw",
         display_name=f"Named Entity: {entity.capitalize()}",
         searchable=True,
         es_mapping=keyword_mapping(enable_full_text_search=True),

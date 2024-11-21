@@ -146,8 +146,8 @@ def validate_field_name_permissible_characters(slug: str):
 def validate_ner_slug(es_mapping: dict, name: str):
     """
     Checks if colons are in field name, will raise ValidationError if the field does not meet the following requirements:
-    - starts with `ner:` prefix and is a keyword field
     - ends with `:ner` suffix and is an annotated_text field
+    - ends with `:ner-kw` suffix and is a keyword field
     """
     if ":" in name:
         if name.endswith(":ner"):
@@ -155,10 +155,10 @@ def validate_ner_slug(es_mapping: dict, name: str):
                 raise ValidationError(
                     f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
         )
-        elif name.startswith("ner:"):
+        elif name.endswith(":ner-kw"):
             if primary_mapping_type(es_mapping) != MappingType.KEYWORD.value:
                 raise ValidationError(
-                    f"{name} cannot be used as a field name: the prefix `ner:` is reserved for Named Entity keyword fields"
+                    f"{name} cannot be used as a field name: the suffix `:ner-kw` is reserved for Named Entity keyword fields"
                 )
         else:
             raise ValidationError(

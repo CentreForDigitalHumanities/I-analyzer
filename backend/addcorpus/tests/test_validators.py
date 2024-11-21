@@ -31,8 +31,8 @@ def test_validate_ner_slug():
         validate_ner_slug(keyword_mapping(), "slug:ner")
     validate_ner_slug(annotated_text_mapping(), "slug:ner")
     with pytest.raises(ValidationError):
-        validate_ner_slug(date_mapping(), "ner:slug")
-    validate_ner_slug(keyword_mapping(), "ner:slug")
+        validate_ner_slug(date_mapping(), "slug:ner-kw")
+    validate_ner_slug(keyword_mapping(), "slug:ner-kw")
 
 
 def test_validate_es_mapping():

@@ -279,7 +279,7 @@ class CorpusConfiguration(models.Model):
         try:
             # we check if any fields exist for filtering named entities
             ner_exists = client.search(
-                index=self.es_index, query={"exists": {"field": "ner:*"}}, size=0
+                index=self.es_index, query={"exists": {"field": "*:ner-kw"}}, size=0
             )
             if total_hits(ner_exists):
                 return True
