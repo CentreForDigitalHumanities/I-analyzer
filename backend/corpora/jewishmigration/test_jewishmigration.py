@@ -113,15 +113,12 @@ EXPECTED_DOCUMENT = {
     "region": "Africa Proconsularis ",
     "coordinates": {
         "type": "Point",
-        "coordinates": [
-            36.36811466666666,
-            6.613302666666667
-        ]
+        "coordinates": [36.36811466666666, 6.613302666666667],
     },
     "site_type": "Inscription",
     "inscription_type": "Epitaph",
     "period": "II AD",
-    "estimated_centuries": [2, 3],
+    "estimated_centuries": ['2', '3'],
     "inscription_count": 1,
     "religious_profession": "",
     "sex_dedicator": "",
@@ -129,7 +126,7 @@ EXPECTED_DOCUMENT = {
     "iconography": "",
     "comments": "",
     "transcription": "",
-    "transcription_en": "To the shadows of the underworld Julia Victoria the Jewess(?) CV"
+    "transcription_en": "To the shadows of the underworld Julia Victoria the Jewess(?) CV",
 }
 
 @pytest.fixture

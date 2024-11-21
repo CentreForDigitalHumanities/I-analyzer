@@ -71,12 +71,4 @@ export class DocumentViewComponent implements OnChanges {
         return _.first(this.contentFields)['name'];
     }
 
-    isUrlField(field: CorpusField) {
-        return field.displayType === 'url';
-    }
-
-    isGeoPointField(field: CorpusField) {
-        return field.mappingType === 'geo_point';
-    }
-
 }

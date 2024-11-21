@@ -113,7 +113,7 @@ LOGGING = {
         "indexing": {
             "handlers": ["console"],
             "level": "INFO",
-            "propragate": True
+            "propagate": False
         }
     },
 }
