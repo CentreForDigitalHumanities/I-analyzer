@@ -113,7 +113,7 @@ class BlankXML:
     def __enter__(self):
         # create an xml that will generate one "spoonful", i.e. one document
         # but no actual content
-        soup = BeautifulSoup('<TEI.2><div type="chapter"></div></TEI.2>', 'lxml-xml')
+        soup = BeautifulSoup('<TEI.2><div type="chapter"></div></TEI.2>', 'xml')
         with open(self.filename, 'w') as file:
             file.write(soup.prettify())
 
