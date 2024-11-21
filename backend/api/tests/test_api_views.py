@@ -1,8 +1,8 @@
-from datetime import datetime
 from addcorpus.models import Corpus
 from rest_framework.status import is_success
 from api.models import Query
 from visualization.query import MATCH_ALL
+from django.utils import timezone
 
 def test_search_history_view(admin_user, admin_client):
     # get search history
@@ -18,8 +18,8 @@ def test_delete_search_history(auth_client, auth_user, db):
         user=auth_user,
         corpus=corpus,
         query_json = {'es_query': MATCH_ALL},
-        started=datetime.now(),
-        completed=datetime.now(),
+        started=timezone.now(),
+        completed=timezone.now(),
         total_results=10,
         transferred=10,
         aborted=False,
