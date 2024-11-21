@@ -269,7 +269,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "date": "2017-01-31",
                 "chamber": "Tweede Kamer",
                 "debate_title": "Report of the meeting of the Dutch Lower House, Meeting 46, Session 23 (2017-01-31)",
-                "debate_id": "ParlaMint-NL_2017-01-31-tweedekamer-23.ana",
+                "debate_id": "ParlaMint-NL_2017-01-31-tweedekamer-23",
                 "topic": 'Rapport "Welvaart in kaart"',
                 "speech": "Ik heet de minister van Economische Zaken van harte welkom.",
                 "speech:ner": "Ik heet de minister van [Economische Zaken](ORG) van harte welkom.",

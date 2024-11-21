@@ -183,8 +183,7 @@ class ParliamentNetherlandsNew(XMLCorpusDefinition):
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = XML(
-        attribute="xml:id",
-        toplevel=True,
+        attribute="xml:id", toplevel=True, transform=lambda x: x.split('.')[0]
     )
 
     topic = field_defaults.topic()
