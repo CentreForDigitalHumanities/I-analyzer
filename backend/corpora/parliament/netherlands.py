@@ -30,7 +30,7 @@ logger = logging.getLogger('indexing')
 
 def load_nl_recent_metadata(directory):
     with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
-        soup = bs4.BeautifulSoup(f.read(), "xml")
+        soup = bs4.BeautifulSoup(f.read(), 'xml')
     return soup
 
 
@@ -108,7 +108,7 @@ def extract_named_entities(xml_file: str) -> dict:
     '''Extract the named entities from the xml file, and save them, ordered by speech id,
     in a dictionary, which will be used to populate the NER keyword fields'''
     with open(xml_file) as f:
-        soup = bs4.BeautifulSoup(f)
+        soup = bs4.BeautifulSoup(f, 'xml')
     speeches = soup.find_all("u")
     output = dict()
     for speech in speeches:

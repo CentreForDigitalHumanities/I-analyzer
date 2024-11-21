@@ -55,7 +55,7 @@ annotated_xml = """
 
 
 def test_detokenize_parlamint():
-    soup = BeautifulSoup(annotated_xml)
+    soup = BeautifulSoup(annotated_xml, 'xml')
     tokens = soup.find_all(["w", "pc"])
     assert (
         detokenize_parlamint(tokens)
@@ -64,7 +64,7 @@ def test_detokenize_parlamint():
 
 
 def test_format_annotated_text():
-    soup = BeautifulSoup(annotated_xml)
+    soup = BeautifulSoup(annotated_xml, 'xml')
     annotations = soup.find_all("name")
     annotated_text = [format_annotated_text(annotation) for annotation in annotations]
     assert (
@@ -104,7 +104,7 @@ xml_annotation_start = """
 
 
 def test_starts_with_annotation():
-    soup = BeautifulSoup(xml_annotation_start)
+    soup = BeautifulSoup(xml_annotation_start, 'xml')
     annotations = soup.find_all("name")
     annotated_text = [format_annotated_text(annotation) for annotation in annotations]
     assert (
@@ -133,7 +133,7 @@ xml_annotation_end = """
 
 
 def test_ends_with_annotation():
-    soup = BeautifulSoup(xml_annotation_end)
+    soup = BeautifulSoup(xml_annotation_end, 'xml')
     annotations = soup.find_all("name")
     annotated_text = [format_annotated_text(annotation) for annotation in annotations]
     assert (
@@ -183,7 +183,7 @@ xml_multiple_annotations = """
 
 
 def test_multiple_annotations():
-    soup = BeautifulSoup(xml_multiple_annotations)
+    soup = BeautifulSoup(xml_multiple_annotations, 'xml')
     annotations = soup.find_all("name")
     annotated_text = [format_annotated_text(annotation) for annotation in annotations]
     assert (

@@ -244,6 +244,11 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                         "Boorsma, wegens verblijf buitenslands.",
                     ]
                 ),
+                'speech:ner': None,
+                'organization:ner-kw': None,
+                'miscellaneous:ner-kw': None,
+                'person:ner-kw': None,
+                'location:ner-kw': None,
                 "id": "nl.proc.ob.d.h-ek-19992000-493-493.1.5.1",
                 "source_archive": "PoliticalMashup",
                 "speaker": "De voorzitter Jurgens",
@@ -256,6 +261,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "page": "493",
                 "url": "https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf",
                 "sequence": 1,
+                'source_archive': 'PoliticalMashup',
             }
         ],
         "n_documents": 4,
@@ -284,6 +290,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "page": None,
                 "url": None,
                 "sequence": 1,
+                'source_archive': 'ParlaMINT',
                 "location:ner-kw": [],
                 "miscellaneous:ner-kw": [],
                 "organization:ner-kw": ["Economische Zaken"],
