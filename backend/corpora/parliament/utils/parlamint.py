@@ -130,6 +130,13 @@ def get_entity_shorthand(entity: str):
 
 
 def get_entity_list(extracted_data: tuple[str, dict], entity: str) -> list[str]:
+    '''collect all named entities for the processed speech and this category
+
+    Parameters:
+        extracted_data: tuple of the speech id and the metadata dictionary
+        entity: string of the entity class (location /misc / organization / person)
+
+    '''
     speech_id, metadata = extracted_data
     shorthand = get_entity_shorthand(entity)
     return list(set(metadata.get(speech_id).get(shorthand)))

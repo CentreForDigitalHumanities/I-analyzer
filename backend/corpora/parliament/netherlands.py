@@ -105,6 +105,8 @@ def get_sequence_recent(id):
 
 
 def extract_named_entities(xml_file: str) -> dict:
+    '''Extract the named entities from the xml file, and save them, ordered by speech id,
+    in a dictionary, which will be used to populate the NER keyword fields'''
     with open(xml_file) as f:
         soup = bs4.BeautifulSoup(f)
     speeches = soup.find_all("u")
