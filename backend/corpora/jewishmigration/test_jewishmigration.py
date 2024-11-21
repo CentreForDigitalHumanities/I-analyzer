@@ -154,7 +154,8 @@ def jm_client(es_client, jm_corpus):
     Returns an elastic search client for the mock corpus.
     """
     # add data from mock corpus
-    es_index.create(es_client, jm_corpus, False, True, False)
+    job = es_index.create_indexing_job(jm_corpus, mappings_only=True, clear=True)
+    es_index.perform_indexing(job)
 
     # ES is "near real time", so give it a second before we start searching the index
     sleep(1)

@@ -3,7 +3,7 @@ Define filters - constraints on the search - to be presented to the user and
 passed through to ElasticSearch.
 '''
 
-from datetime import datetime
+from datetime import datetime, date
 from addcorpus.constants import MappingType
 
 class Filter(object):
@@ -24,7 +24,7 @@ class Filter(object):
         search_dict = {'name': name}
         for key, value in self.__dict__.items():
             if key == 'search_filter' or key != 'field':
-                if type(value) == datetime:
+                if isinstance(value, datetime) or isinstance(value, date):
                     search_dict[key] = value.isoformat()
                 else:
                     search_dict[key] = value

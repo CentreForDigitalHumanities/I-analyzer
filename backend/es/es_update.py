@@ -1,10 +1,38 @@
 from django.conf import settings
+
+from addcorpus.python_corpora.corpus import CorpusDefinition
 from ianalyzer.elasticsearch import elasticsearch
+from indexing.models import UpdateIndexTask
+from addcorpus.python_corpora.load_corpus import load_corpus_definition
 
 import logging
 logger = logging.getLogger('indexing')
 
-def update_index(corpus, corpus_definition, query_model):
+def run_update_task(task: UpdateIndexTask) -> None:
+    if not task.corpus.has_python_definition:
+        raise Exception('Cannot update: corpus has no Python definition')
+
+    corpus_definition = load_corpus_definition(task.corpus.name)
+
+    if corpus_definition.update_body():
+        min_date = task.document_min_date or task.corpus.configuration.min_date
+        max_date = task.document_max_date or task.corpus.configuration.min_date
+        update_index(
+            task.corpus.name,
+            corpus_definition,
+            corpus_definition.update_query(
+                min_date=min_date.strftime('%Y-%m-%d'),
+                max_date=max_date.strftime('%Y-%m-%d')
+        ))
+    elif corpus_definition.update_script():
+        update_by_query(
+            task.corpus.name, corpus_definition, corpus_definition.update_script()
+        )
+    else:
+        raise Exception("Cannot update without update_body or update_script")
+
+
+def update_index(corpus: str, corpus_definition: CorpusDefinition, query_model):
     ''' update information for fields in the index
     requires the definition of the functions
     - update_query
@@ -38,7 +66,7 @@ def update_index(corpus, corpus_definition, query_model):
         logger.info("Updated {} of {} documents".format(hits, total_hits))
 
 
-def update_by_query(corpus, corpus_definition, query_generator):
+def update_by_query(corpus: str, corpus_definition: CorpusDefinition, query_generator):
     client = elasticsearch(corpus)
     scroll_timeout, scroll_size = get_es_settings(corpus, corpus_definition)
     for query_model in query_generator:
@@ -53,7 +81,7 @@ def update_by_query(corpus, corpus_definition, query_generator):
             logger.info('No documents updated for query {}'.format(query_model))
 
 
-def update_document(corpus, doc, update_body, client=None):
+def update_document(corpus: str, doc, update_body, client=None):
     if not client:
         client = elasticsearch(corpus)
     doc_id = doc.get('_id', doc.get('id', None))
@@ -64,7 +92,7 @@ def update_document(corpus, doc, update_body, client=None):
 
 
 
-def get_es_settings(corpus, corpus_definition):
+def get_es_settings(corpus: str, corpus_definition):
     """ Get the settings for the scroll request.
     Return:
     - scroll_timeout

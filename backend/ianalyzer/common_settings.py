@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'api',
     'es',
     'corpora',
+    'indexing',
     'visualization',
     'download',
     'wordmodels',
