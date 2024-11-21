@@ -89,8 +89,8 @@ def test_save_field_definition(db, basic_mock_corpus, deactivated_corpus):
 
     corpus_conf.fields.all().delete()
 
-    for field_def in corpus_def.fields:
-        field = _save_field_in_database(field_def, corpus_conf)
+    for index, field_def in enumerate(corpus_def.fields):
+        field = _save_field_in_database(field_def, corpus_conf, index)
         assert field
         assert field.name == field_def.name
 
