@@ -4,4 +4,6 @@ This dataset contains all courses taught at Utrecht University in 2024-2025. You
 
 Please be advised that the dataset includes the names of the teachers for each course; to respect the privacy of UU employees, handle these with discretion. Sharing this dataset with personal names is restricted under Dutch privacy law.
 
+### Image attribution
+
 The image used for this corpus was taken by Steven Lek ([available on Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Academiegebouw_Utrecht_University.JPG)) and is licensed under the [Creative Commons Attribution Share-Alike 4.0 International licence](https://creativecommons.org/licenses/by-sa/4.0/deed.en).
