@@ -154,11 +154,11 @@ class CourseStaffReader(XLSXReader):
     ]
 
 class UUCourseDescriptions(XLSXCorpusDefinition):
-    title = 'Utrecht University Course Descriptions'
-    description = 'Courses taught at Utrecht University in 2024-2025'
+    title = 'All faculties'
+    description = 'All courses taught at Utrecht University in 2024-2025'
     category = 'informative'
-    min_date = datetime(2022, 9, 1)
-    max_date = datetime(2023, 8, 31)
+    min_date = datetime(2024, 9, 1)
+    max_date = datetime(2025, 8, 31)
     image = 'Academiegebouw_Utrecht_University.JPG'
     description_page = 'description.md'
     languages = ['nl', 'en', 'de', 'fr', 'es', 'it']
