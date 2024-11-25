@@ -25,7 +25,7 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             context: frontend/.
-            file: Dockerfile.base
+            file: frontend/Dockerfile.base
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
             cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
@@ -34,7 +34,7 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             context: backend/.
-            file: Dockerfile.base
+            file: backend/Dockerfile.base
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
             cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
