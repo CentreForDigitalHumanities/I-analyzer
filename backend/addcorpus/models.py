@@ -9,13 +9,20 @@ from django.db.models.constraints import UniqueConstraint
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
-    validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
+    validate_es_mapping,
+    validate_field_language,
+    validate_implication,
+    validate_language_code,
     validate_mimetype,
-    validate_name_is_not_a_route_parameter, validate_name_has_no_ner_suffix,
-    validate_search_filter, validate_search_filter_with_mapping,
+    validate_name_is_not_a_route_parameter,
+    validate_name_has_no_ner_suffix,
+    validate_search_filter,
+    validate_search_filter_with_mapping,
     validate_searchable_field_has_full_text_search,
-    validate_sort_configuration, validate_visualizations_with_mapping,
+    validate_sort_configuration,
+    validate_visualizations_with_mapping,
     validate_source_data_directory,
+    validate_source_data_url,
 )
 from addcorpus.validation.indexing import (validate_essential_fields,
     validate_has_configuration, validate_language_field, validate_has_data_directory)
@@ -238,6 +245,12 @@ class CorpusConfiguration(models.Model):
         validators=[validate_source_data_directory],
         blank=True,
         help_text='path to directory containing source data files',
+    )
+    data_url = models.CharField(
+        max_length=200,
+        validators=[validate_source_data_url],
+        blank=True,
+        help_text='remote url containing source data files',
     )
     source_data_delimiter = models.CharField(
         max_length=1,

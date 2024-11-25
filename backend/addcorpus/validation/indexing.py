@@ -90,16 +90,11 @@ def validate_has_data_directory(corpus):
     if not config.data_directory and not config.data_url:
         raise CorpusNotIndexableError('Missing data directory or url')
 
-    if corpus.data_dircetory and not os.path.isdir(config.data_directory):
+    if config.data_directory and not os.path.isdir(config.data_directory):
         raise CorpusNotIndexableError('Configured data directory does not exist.')
 
-    if corpus.data_url:
-        headers = {}
-        if corpus.data_api_key:
-            headers = {"Authorization": f"Token {corpus.data_api_key}"}
+    if config.data_url:
         try:
-            requests.get(corpus.data_url, headers=headers)
+            _response = requests.get(config.data_url)
         except ConnectionError:
-            raise CorpusNotIndexableError(
-                'Cannot connect to the configured data url. Do you need to provide an API key?'
-            )
+            raise CorpusNotIndexableError('Cannot connect to the configured data url.')

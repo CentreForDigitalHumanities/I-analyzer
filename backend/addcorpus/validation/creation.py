@@ -6,14 +6,16 @@ import mimetypes
 import os
 import warnings
 
+from django.core.exceptions import ValidationError
+from langcodes import tag_is_valid
+import requests
+
 from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
                                  VisualizationType)
-from addcorpus.python_corpora.filters import \
-    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
-from django.core.exceptions import ValidationError
+from addcorpus.python_corpora.filters import (
+    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS,
+)
 from addcorpus.es_mappings import primary_mapping_type
-from langcodes import tag_is_valid
-
 
 
 def supports_full_text_search(es_mapping):
@@ -195,3 +197,11 @@ def validate_sort_configuration(sort_config):
 def validate_source_data_directory(value):
     if value and not os.path.isdir(value):
         raise ValidationError(f'{value} is not a directory')
+
+
+def validate_source_data_url(value):
+    if value:
+        try:
+            requests.get(value)
+        except:
+            raise ValidationError(f'cannot connect to url {value}')
