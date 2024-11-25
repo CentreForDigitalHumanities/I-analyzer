@@ -79,7 +79,8 @@ services:
     image: redis:latest
     restart: unless-stopped
   celery:
-    image: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
+    build:
+      context: ./backend
     environment:
       CELERY_BROKER: $CELERY_BROKER
       SQL_DATABASE: $SQL_DATABASE
