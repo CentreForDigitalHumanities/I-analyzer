@@ -4,14 +4,7 @@ name: Backend unit tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'develop'
-      - 'master'
-      - 'feature/**'
-      - 'bugfix/**'
-      - 'hotfix/**'
-      - 'release/**'
+  pull_request:
     paths:
       - 'backend/**'
       - '.github/workflows/backend-test.yml'

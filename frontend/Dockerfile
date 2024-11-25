@@ -1,10 +1,4 @@
-# base image
-FROM docker.io/library/node:18-alpine
-
-RUN apk update && apk add --no-cache --virtual .gyp python3 make g++
-# Install Chrome
-RUN apk add chromium
-ENV CHROME_BIN='/usr/bin/chromium-browser'
+FROM ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
 
 # create directory frontend on container
 WORKDIR /frontend
