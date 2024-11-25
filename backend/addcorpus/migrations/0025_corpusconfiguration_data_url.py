@@ -7,13 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('addcorpus', '0023_alter_corpusdocumentationpage_type_alter_field_name'),
+        ('addcorpus', '0024_remove_field_name_ner_validator'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='corpusconfiguration',
             name='data_url',
-            field=models.CharField(blank=True, help_text='remote url containing source data files', max_length=200, validators=[addcorpus.validation.creation.validate_source_data_url]),
+            field=models.CharField(
+                blank=True,
+                help_text='remote url containing source data files',
+                max_length=200,
+                validators=[addcorpus.validation.creation.validate_source_data_url],
+            ),
         ),
     ]
