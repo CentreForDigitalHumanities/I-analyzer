@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 IGNORE_KEYS = ['size', 'scroll', 'from', 'aggs']
 'Keys that should be ignored when comparing if two queries are identical'
@@ -20,7 +21,7 @@ def should_save_query(user, api_query):
     return True
 
 def recent_queries(user):
-    one_hour_ago = datetime.today() - timedelta(hours = 1)
+    one_hour_ago = timezone.now() - timedelta(hours = 1)
     return user.queries.filter(
         completed__gte=one_hour_ago
     )

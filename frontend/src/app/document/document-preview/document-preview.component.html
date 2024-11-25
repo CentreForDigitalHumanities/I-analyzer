@@ -1,25 +1,20 @@
 <ng-container *ngIf="page && document">
     <table class="table is-fullwidth">
         <ng-container *ngFor="let field of page.fields">
-            <tr *ngIf="document.fieldValue(field)">
+            <tr *ngIf="document.hasValue(field)">
                 <th>
                     <span [iaBalloon]="field.description" iaBalloonPosition="left" iaBalloonLength="medium">
                         {{field.displayName}}:
                     </span>
                 </th>
-                <td *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow"
-                    [attr.lang]="document.language(field)">
-                    <ng-container *ngFor="let highlight of document.highlight[field.name]">
-                        <div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div>
-                        <hr *ngIf="highlight !== document.highlight[field.name][document.highlight[field.name].length-1]">
+                <td [attr.lang]="document.language(field)">
+                    <ng-container *ngIf="field.displayType == 'text_content'; else metadataField">
+                        <ia-content-field-preview [field]="field" [document]="document" />
                     </ng-container>
+                    <ng-template #metadataField>
+                        <ia-metadata-field [field]="field" [document]="document" />
+                    </ng-template>
                 </td>
-                <ng-template #unhighlightedRow>
-                    <td style="word-break:break-word"
-                        [attr.lang]="document.language(field)"
-                        [innerHtml]="document.fieldValue(field) | snippet">
-                    </td>
-                </ng-template>
             </tr>
         </ng-container>
     </table>

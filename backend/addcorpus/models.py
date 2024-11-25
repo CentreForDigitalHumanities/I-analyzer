@@ -14,8 +14,9 @@ from addcorpus.validation.creation import (
     validate_implication,
     validate_language_code,
     validate_mimetype,
+    validate_field_name_permissible_characters,
     validate_name_is_not_a_route_parameter,
-    validate_name_has_no_ner_suffix,
+    validate_ner_slug,
     validate_search_filter,
     validate_search_filter_with_mapping,
     validate_searchable_field_has_full_text_search,
@@ -285,7 +286,7 @@ class CorpusConfiguration(models.Model):
         try:
             # we check if any fields exist for filtering named entities
             ner_exists = client.search(
-                index=self.es_index, query={"exists": {"field": "ner:*"}}, size=0
+                index=self.es_index, query={"exists": {"field": "*:ner-kw"}}, size=0
             )
             if total_hits(ner_exists):
                 return True
@@ -324,10 +325,12 @@ VISUALIZATION_SORT_OPTIONS = [
 
 
 class Field(models.Model):
-    name = models.SlugField(
+    name = models.CharField(
         max_length=MAX_LENGTH_NAME,
-        validators=[validate_name_is_not_a_route_parameter,
-                    validate_name_has_no_ner_suffix],
+        validators=[
+            validate_name_is_not_a_route_parameter,
+            validate_field_name_permissible_characters,
+        ],
         help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
@@ -439,6 +442,7 @@ class Field(models.Model):
 
     def clean(self):
         validate_searchable_field_has_full_text_search(self.es_mapping, self.searchable)
+        validate_ner_slug(self.es_mapping, self.name)
 
         if self.search_filter:
             validate_search_filter_with_mapping(self.es_mapping, self.search_filter)

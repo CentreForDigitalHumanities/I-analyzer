@@ -1,9 +1,9 @@
 '''
 This module defines functions to check if a corpus is ready for indexing.
 '''
-import os
-import requests
+
 import warnings
+import os
 
 from addcorpus.validation.creation import primary_mapping_type
 
@@ -87,8 +87,10 @@ def validate_has_data_directory(corpus):
         return
 
     config = corpus.configuration
-    if not config.data_directory and not config.data_url:
-        raise CorpusNotIndexableError('Missing data directory or url')
+    if not config.data_directory:
+        raise CorpusNotIndexableError(
+            'Missing data directory'
+        )
 
     if config.data_directory and not os.path.isdir(config.data_directory):
         raise CorpusNotIndexableError('Configured data directory does not exist.')

@@ -1,0 +1,16 @@
+<ng-container *ngIf="field" [ngSwitch]="field.displayType">
+    <div *ngSwitchCase="'text'"
+        [innerHtml]="field | elasticsearchHighlight:document | paragraph">
+    </div>
+    <ng-container *ngSwitchCase="'geo_point'">
+        {{ field | geoData:document }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'url'">
+        <a href={{document.fieldValue(field)}} target="_blank">
+            {{document.fieldValue(field)}}
+        </a>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+        {{ document.fieldValue(field) }}
+    </ng-container>
+</ng-container>

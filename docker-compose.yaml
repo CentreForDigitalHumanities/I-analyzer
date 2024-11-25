@@ -13,7 +13,6 @@ services:
     volumes:
       - ianalyzer-db:/var/lib/postgresql/data/
   backend:
-    image: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
     build:
       context: ./backend
     depends_on:
@@ -40,7 +39,6 @@ services:
         target: /corpora
     command: bash -c "python manage.py migrate && python manage.py loadcorpora && python manage.py runserver 0.0.0.0:8000"
   frontend:
-    image: ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
     build:
       context: ./frontend
     ports:
@@ -54,7 +52,6 @@ services:
         target: /frontend/build
     command: sh -c "yarn prebuild && yarn start-docker"
   elasticsearch:
-    image: ghcr.io/centrefordigitalhumanities/ianalyzer-elastic:latest
     build:
       context: .
       dockerfile: DockerfileElastic
@@ -82,7 +79,8 @@ services:
     image: redis:latest
     restart: unless-stopped
   celery:
-    image: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
+    build:
+      context: ./backend
     environment:
       CELERY_BROKER: $CELERY_BROKER
       SQL_DATABASE: $SQL_DATABASE

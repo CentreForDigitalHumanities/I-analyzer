@@ -73,7 +73,7 @@ defusedxml==0.7.1
     #   djangosaml2
     #   pysaml2
     #   python3-openid
-dj-rest-auth[with-social,with_social]==4.0.1
+dj-rest-auth[with_social]==4.0.1
     # via -r requirements.in
 django==4.2.16
     # via
@@ -132,7 +132,7 @@ h11==0.14.0
     #   wsproto
 humanize==4.9.0
     # via flower
-ianalyzer-readers==0.2.2
+ianalyzer-readers==0.2.1
     # via -r requirements.in
 idna==3.4
     # via
@@ -185,7 +185,6 @@ numpy==1.24.4
     #   fst-pso
     #   fuzzytm
     #   gensim
-    #   miniful
     #   pandas
     #   pyfume
     #   scikit-learn
@@ -249,9 +248,7 @@ pygments==2.16.1
     #   rich
     #   seleniumbase
 pyjwt[crypto]==2.8.0
-    # via
-    #   django-allauth
-    #   pyjwt
+    # via django-allauth
 pynose==1.4.8
     # via seleniumbase
 pyopenssl==23.2.0
@@ -260,7 +257,7 @@ pyotp==2.9.0
     # via seleniumbase
 pyparsing==3.1.2
     # via rdflib
-pypdf2==3.0.1
+pypdf==5.1.0
     # via -r requirements.in
 pysaml2==7.3.1
     # via djangosaml2
@@ -338,7 +335,6 @@ scipy==1.10.1
     # via
     #   fuzzytm
     #   gensim
-    #   miniful
     #   pyfume
     #   scikit-learn
     #   simpful
@@ -403,7 +399,9 @@ trio-websocket==0.10.3
     #   selenium
     #   seleniumbase
 typing-extensions==4.7.1
-    # via asgiref
+    # via
+    #   asgiref
+    #   pypdf
 tzdata==2023.3
     # via
     #   celery

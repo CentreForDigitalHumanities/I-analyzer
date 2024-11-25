@@ -26,7 +26,7 @@ def client_from_config(server_config):
     kwargs = {
         'max_retries': 15,
         'retry_on_timeout': True,
-        'timeout': 60
+        'request_timeout': 60
     }
     if server_config.get('certs_location') and server_config.get('api_key'):
         # settings to connect via SSL are present
