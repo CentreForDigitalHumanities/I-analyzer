@@ -6,6 +6,5 @@ WORKDIR /frontend
 COPY package.json yarn.lock /frontend/
 # install frontend libraries on container
 RUN yarn
-RUN apk del .gyp
 # add all configuration files
 COPY angular.json tsconfig.json karma.conf.js proxy.conf.docker.json /frontend/
