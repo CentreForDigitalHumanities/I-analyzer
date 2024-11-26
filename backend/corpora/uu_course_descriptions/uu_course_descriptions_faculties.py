@@ -27,3 +27,14 @@ class UUCourseDescriptionsBETA(UUCourseDescriptions):
     def source2dicts(self, source):
         all_docs = super().source2dicts(source)
         return filter(faculty_filter('BETA'), all_docs)
+
+class UUCourseDescriptionsREBO(UUCourseDescriptions):
+    title = 'Faculty of Law, Economics and Governance'
+    description = 'Courses taught at the Faculty of Law, Economics, and Governance in 2024-2025'
+    image = 'uu_rebo.jpg'
+    languages = ['nl', 'en']
+    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_REBO_INDEX', 'uu_course_descriptions_rebo')
+
+    def source2dicts(self, source):
+        all_docs = super().source2dicts(source)
+        return filter(faculty_filter('REBO'), all_docs)
