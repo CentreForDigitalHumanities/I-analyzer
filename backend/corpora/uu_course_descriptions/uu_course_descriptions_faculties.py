@@ -1,89 +1,90 @@
-from django.conf import settings
+from typing import Callable
+from ianalyzer_readers.readers.core import Document
+from ianalyzer_readers.extract import CSV
 
+from addcorpus.es_mappings import keyword_mapping
+from addcorpus.python_corpora.corpus import FieldDefinition
 from corpora.uu_course_descriptions.uu_course_descriptions import UUCourseDescriptions, FACULTIES
 
-def faculty_filter(faculty):
+def _faculty_filter(faculty: str) -> Callable[[Document], bool]:
     return lambda doc: doc['faculty'] == FACULTIES[faculty]
 
 
-class UUCourseDescriptionsBETA(UUCourseDescriptions):
+_faculty_field = FieldDefinition(
+    name='faculty',
+    display_name='Faculty',
+    extractor=CSV('FACULTEIT', transform=FACULTIES.get),
+    es_mapping=keyword_mapping(),
+)
+'''Adjusted version of the faculty field that does not use a search filter or
+visualisation'''
+
+
+class _UUCourseDescriptionsFaculty(UUCourseDescriptions):
+    faculty_code = None
+    description_page = None
+
+    def source2dicts(self, source):
+        all_docs = super().source2dicts(source)
+        return filter(_faculty_filter(self.faculty_code.upper()), all_docs)
+
+    @property
+    def es_index(self):
+        return super().es_index + '_' + self.faculty_code
+
+    @property
+    def image(self):
+        return f'uu_{self.faculty_code}.jpg'
+
+    fields = [
+        field if field.name != 'faculty' else _faculty_field
+        for field in UUCourseDescriptions.fields
+    ]
+
+
+class UUCourseDescriptionsBETA(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Science'
     description = 'Courses taught at the Faculty of Science in 2024-2025'
-    image = 'uu_beta.jpg'
     languages = ['nl', 'en']
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_BETA_INDEX', 'uu_course_descriptions_beta')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('BETA'), all_docs)
+    faculty_code = 'beta'
 
 
-class UUCourseDescriptionsDGK(UUCourseDescriptions):
+class UUCourseDescriptionsDGK(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Vetinary Medicine'
     description = 'Courses taught at the Faculty of Vetinary Medicine in 2024-2025'
-    image = 'uu_dgk.jpg'
     languages = ['nl', 'en']
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_REBO_INDEX', 'uu_course_descriptions_dgk')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('DGK'), all_docs)
+    faculty_code = 'dgk'
 
 
-class UUCourseDescriptionsGEO(UUCourseDescriptions):
+class UUCourseDescriptionsGEO(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Geosciences'
     description = 'Courses taught at the Faculty of Geosciences in 2024-2025'
-    image = 'uu_dgk.jpg'
     languages = ['nl', 'en']
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_GEO_INDEX', 'uu_course_descriptions_geo')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('GEO'), all_docs)
+    faculty_code = 'geo'
 
 
-class UUCourseDescriptionsGNK(UUCourseDescriptions):
+class UUCourseDescriptionsGNK(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Medicine - UMC Utrecht'
     description = 'Courses taught at the Faculty of Medicine and UMC Utrecht in 2024-2025'
-    image = 'uu_gnk.jpg'
     languages = ['nl', 'en']
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_GNK_INDEX', 'uu_course_descriptions_gnk')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('GNK'), all_docs)
+    faculty_code = 'gnk'
 
 
-class UUCourseDescriptionsGW(UUCourseDescriptions):
+class UUCourseDescriptionsGW(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Humanities'
     description = 'Courses taught at the Faculty of Humanities in 2024-2025'
-    image = 'uu_gw.jpg'
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_GW_INDEX', 'uu_course_descriptions_gw')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('GW'), all_docs)
+    faculty_code = 'gw'
 
 
-class UUCourseDescriptionsREBO(UUCourseDescriptions):
+class UUCourseDescriptionsREBO(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Law, Economics and Governance'
     description = 'Courses taught at the Faculty of Law, Economics, and Governance in 2024-2025'
-    image = 'uu_rebo.jpg'
     languages = ['nl', 'en']
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_REBO_INDEX', 'uu_course_descriptions_rebo')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('REBO'), all_docs)
+    faculty_code = 'rebo'
 
 
-class UUCourseDescriptionsSW(UUCourseDescriptions):
+class UUCourseDescriptionsSW(_UUCourseDescriptionsFaculty):
     title = 'Faculty of Social and Behavioural Sciences'
     description = 'Courses taught at the Faculty of Social and Behavioural Sciences in 2024-2025'
-    image = 'uu_sw.jpg'
     languages = ['nl', 'en']
-    es_index =  getattr(settings, 'UU_COURSE_DESCRIPTIONS_SW_INDEX', 'uu_course_descriptions_sw')
-
-    def source2dicts(self, source):
-        all_docs = super().source2dicts(source)
-        return filter(faculty_filter('SW'), all_docs)
+    faculty_code = 'sw'
