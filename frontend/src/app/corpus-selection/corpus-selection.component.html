@@ -11,16 +11,22 @@
         <h1 class="title">
             Welcome
         </h1>
-        <h2 class="subtitle">
+
+        <p class="subtitle">
             Select a corpus to search through
-        </h2>
+        </p>
 
-        <hr>
+        <ng-container *ngIf="showCorpusFilters; else spacer">
+            <hr>
 
-        <div class="block">
-            <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
-        </div>
+            <div class="block">
+                <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
+            </div>
+        </ng-container>
 
+        <ng-template #spacer>
+            <div style="margin-bottom: 3rem;"></div>
+        </ng-template>
 
         <div class="block" *ngFor="let item of displayItems">
             <ia-corpus-selector [corpus]="item"></ia-corpus-selector>
