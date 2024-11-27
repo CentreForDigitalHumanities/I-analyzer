@@ -29,7 +29,7 @@ import re
 logger = logging.getLogger('indexing')
 
 def load_nl_recent_metadata(directory):
-    with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
+    with open(join(directory, 'ParlaMint-NL.ana.xml'), 'rb') as f:
         soup = bs4.BeautifulSoup(f.read(), 'xml')
     return soup
 
