@@ -5,6 +5,7 @@ import re
 from django.utils.html import strip_tags
 from langdetect import detect
 from ianalyzer_readers.readers.xlsx import XLSXReader
+from typing import Mapping, Callable
 
 from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
@@ -27,6 +28,31 @@ FACULTIES = {
     'UC': 'University College',
     'UU': 'Utrecht University',
 }
+
+EXAM_GOALS = {
+    'BA': 'Bachelor',
+    'MA': 'Master',
+    'PM': 'Pre-master',
+    '-':  None,
+}
+
+LEVELS = {
+    1: 'Bachelor 1',
+    2: 'Bachelor 2',
+    3: 'Bachelor 3',
+    'M': 'Master',
+    'H1': 'Honours 1',
+    'H2': 'Honours 2',
+    'H3': 'Honours 3',
+    'HB': 'Honours Bachelor',
+    'HM': 'Honours Master',
+    'B': None, # A / B are used as test values
+    'A': None,
+    '-': None,
+}
+
+def get_from(mapping: Mapping) -> Callable:
+    return lambda value: mapping.get(value, value)
 
 def filter_label(label):
     def get_content_with_label(data):
@@ -204,19 +230,36 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             csv_core=True,
         ),
         FieldDefinition(
+            name='faculty',
+            display_name='Faculty',
+            extractor=CSV('FACULTEIT', transform=get_from(FACULTIES)),
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+        ),
+        FieldDefinition(
+            name='exam_goal',
+            display_name='Exam goal',
+            description='',
+            extractor=CSV('EXAMENDOEL', transform=get_from(EXAM_GOALS)),
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+        ),
+        FieldDefinition(
+            name='level',
+            display_name='Level',
+            extractor=CSV('CATEGORIE', transform=get_from(LEVELS)),
+            es_mapping=keyword_mapping(),
+            search_filter=MultipleChoiceFilter(),
+            visualizations=['resultscount', 'termfrequency'],
+        ),
+        FieldDefinition(
             name='type',
             display_name='Course type',
             extractor=CSV('CURSUSTYPE'),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(option_count=100),
-            visualizations=['resultscount', 'termfrequency'],
-        ),
-        FieldDefinition(
-            name='faculty',
-            display_name='Faculty',
-            extractor=CSV('FACULTEIT', transform=FACULTIES.get),
-            es_mapping=keyword_mapping(),
-            search_filter=MultipleChoiceFilter(),
             visualizations=['resultscount', 'termfrequency'],
         ),
         FieldDefinition(
@@ -263,27 +306,12 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             downloadable=False,
         ),
         FieldDefinition(
-            name='program_coordinator',
-            display_name='Program coordinator',
-            description='Coordinator of the program in which the course is taught',
-            extractor=staff_extractor('OPLEIDINGSCOORD'),
-            es_mapping=keyword_mapping(enable_full_text_search=True),
-            downloadable=False,
-        ),
-        FieldDefinition(
-            name='min_coordinator',
-            display_name='Min coordinator',
-            extractor=staff_extractor('MINCOORDINATOR'),
-            es_mapping=keyword_mapping(enable_full_text_search=True),
-            downloadable=False,
-        ),
-        FieldDefinition(
             name='teacher',
             display_name='Teachers',
             description='Teachers involved in the course',
             extractor=staff_extractor(
                 'DOCENT', 'DOCENT_RES', 'DOC_GEEN_RES', 'DOC_INZAGE', 'DOC_MELDING',
-                'CURSUSASSISTENT',
+                'CURSUSASSISTENT', 'D_ONDERTEK_OWC',
             ),
             es_mapping=keyword_mapping(enable_full_text_search=True),
             downloadable=False,
