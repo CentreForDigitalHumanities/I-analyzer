@@ -16,7 +16,7 @@ def uu_course_descriptions_settings(settings, db):
 
 def test_uu_course_descriptions_model(uu_course_descriptions_settings, db, admin_client):
     corpus = corpus_from_api(admin_client)
-    assert corpus['title'] == 'Utrecht University Course Descriptions'
+    assert corpus['title'] == 'All faculties'
 
 goal = '''- Begrijpen van de functie van testen in software.
 - Het kunnen schrijven van unittest functies op basis van een specificatie
@@ -35,12 +35,12 @@ target_docs = [
         'department_description': 'Digitale Geesteswetenschappen',
         'faculty': 'Geesteswetenschappen',
         'term': 1,
+        'exam_goal': 'Bachelor',
+        'level': 'Bachelor 1',
         'contact': ['A. de Tester'],
         'teacher': ['B. Test'],
         'examinator': None,
-        'program_coordinator': None,
         'course_coordinator': None,
-        'min_coordinator': None,
         'goal': goal,
         'content': description,
         'language_code': 'nl',
@@ -54,12 +54,12 @@ target_docs = [
         'department_description': 'Digitale Geesteswetenschappen',
         'faculty': 'Geesteswetenschappen',
         'term': 2,
+        'level': 'Bachelor 2',
+        'exam_goal': 'Bachelor',
         'contact': ['C. van Testen'],
         'teacher': ['D. Testing', 'E. Tester'],
         'examinator': None,
-        'program_coordinator': None,
         'course_coordinator': None,
-        'min_coordinator': None,
         'goal': '',
         'content': '',
         'language_code': None,
