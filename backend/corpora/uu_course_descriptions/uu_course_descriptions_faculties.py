@@ -1,3 +1,9 @@
+'''
+Defines faculty-specific variations of the UU course descriptions corpus
+
+Each faculty corpus is a separate corpus with its own index.
+'''
+
 from typing import Callable
 from ianalyzer_readers.readers.core import Document
 from ianalyzer_readers.extract import CSV
@@ -5,9 +11,6 @@ from ianalyzer_readers.extract import CSV
 from addcorpus.es_mappings import keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition
 from corpora.uu_course_descriptions.uu_course_descriptions import UUCourseDescriptions, FACULTIES
-
-def _faculty_filter(faculty: str) -> Callable[[Document], bool]:
-    return lambda doc: doc['faculty'] == FACULTIES[faculty]
 
 
 _faculty_field = FieldDefinition(
@@ -19,14 +22,24 @@ _faculty_field = FieldDefinition(
 '''Adjusted version of the faculty field that does not use a search filter or
 visualisation'''
 
+def _faculty_filter(faculty: str) -> Callable[[Document], bool]:
+    '''Returns a function that can be used to filter documents by the given faculty'''
+    return lambda doc: doc['faculty'] == FACULTIES[faculty.upper()]
+
 
 class _UUCourseDescriptionsFaculty(UUCourseDescriptions):
+    '''
+    Parent class for faculty-specific corpora
+    '''
+
     faculty_code = None
+    '''The abbreviated name of the faculty'''
+
     description_page = None
 
     def source2dicts(self, source):
         all_docs = super().source2dicts(source)
-        return filter(_faculty_filter(self.faculty_code.upper()), all_docs)
+        return filter(_faculty_filter(self.faculty_code), all_docs)
 
     @property
     def es_index(self):
