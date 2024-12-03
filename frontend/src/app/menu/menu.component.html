@@ -11,7 +11,12 @@
         <div class="navbar-brand">
             <a class="navbar-item" [routerLink]="['/home']">
                 <img src="/assets/logo.png" aria-hidden="true" width="50" height="50">
-                I-ANALYZER
+                <span *ngIf="showIAnalyzerInBrand">
+                    I-analyzer &nbsp; - &nbsp;
+                </span>
+                <span [class.app-name-secondary]="showIAnalyzerInBrand">
+                    {{appName}}
+                </span>
             </a>
 
             <a  role="button" tabindex="0"
