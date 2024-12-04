@@ -10,7 +10,7 @@ from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinitio
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
 from addcorpus.python_corpora.extract import CSV, Combined, Pass, Constant, Metadata
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
-from uu_course_descriptions.utils import html_to_text, language_name, detect_language
+from corpora.uu_course_descriptions.utils import html_to_text, language_name, detect_language
 
 def filter_label(label):
     def get_content_with_label(data):
