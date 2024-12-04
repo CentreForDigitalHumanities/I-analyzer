@@ -7,7 +7,7 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('addcorpus', '0024_remove_field_name_ner_validator'),
+        ('addcorpus', '0025_alter_field_options_field_position_alter_field_name'),
     ]
 
     operations = [
