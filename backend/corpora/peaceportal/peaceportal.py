@@ -11,6 +11,7 @@ from addcorpus.python_corpora.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
+
 class PeacePortal(ParentCorpusDefinition):
     '''
     Base class for corpora in the PEACE portal.
