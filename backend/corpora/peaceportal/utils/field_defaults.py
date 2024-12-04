@@ -21,7 +21,6 @@ def source_database():
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Search only within these databases.',
-            option_count=4,
         ),
         csv_core=True
     )
