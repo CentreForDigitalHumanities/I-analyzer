@@ -419,12 +419,18 @@ class Field(models.Model):
         blank=True,
         help_text='column name in CSV source files from which to extract this field',
     )
+    position = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="Field's position within the configuration (order)"
+    )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['corpus_configuration', 'name'],
                                 name='unique_name_for_corpus')
         ]
+        ordering = ["position"]
 
     @property
     def is_main_content(self) -> bool:
