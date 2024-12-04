@@ -57,6 +57,10 @@ class Corpus(models.Model):
         help_text='whether the configuration of this corpus is determined by a Python '
             'module (some features are only available for Python-based corpora)',
     )
+    date_created = models.DateField(
+        auto_now_add=True,
+        help_text='date on which the corpus was added to the database',
+    )
 
     @property
     def configuration_obj(self) -> models.Model:
