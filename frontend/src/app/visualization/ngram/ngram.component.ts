@@ -1,5 +1,4 @@
 import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
@@ -16,17 +15,19 @@ import {
 import {
     ApiService,
     NotificationService,
-    ParamService,
     VisualizationService,
 } from '@services';
-import { ParamDirective } from '../../param/param-directive';
+
+import { StoreSync } from '../../store/store-sync';
+import { RouterStoreService } from 'app/store/router-store.service';
+
 
 @Component({
     selector: 'ia-ngram',
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss'],
 })
-export class NgramComponent extends ParamDirective implements OnChanges {
+export class NgramComponent extends StoreSync<NgramParameters> implements OnChanges {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
 
     @Input() queryModel: QueryModel;
@@ -38,6 +39,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     @Output() ngramError = new EventEmitter<string>();
 
     @ViewChild('chart-container') chartContainer: ElementRef;
+
+    keysInStore = ['ngramSettings'];
 
     allDateFields: CorpusField[];
     dateField: CorpusField;
@@ -100,11 +103,9 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         private apiService: ApiService,
         private visualizationService: VisualizationService,
         private notificationService: NotificationService,
-        route: ActivatedRoute,
-        router: Router,
-        paramService: ParamService
+        store: RouterStoreService,
     ) {
-        super(route, router, paramService);
+        super(store);
         this.currentParameters = new NgramParameters(
             this.sizeOptions[0].value,
             this.positionsOptions[0].value,
@@ -170,9 +171,14 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         this.stopPolling$.next();
     }
 
-    setStateFromParams(params: ParamMap) {
-        this.setParameters(params);
-        this.loadGraph();
+    storeToState(params): NgramParameters {
+        return params['ngramSettings'] as NgramParameters
+    }
+
+    stateToStore(state: NgramParameters) {
+        return {
+            ngramSettings: state || null
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
