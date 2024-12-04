@@ -5,15 +5,12 @@ Defines a corpus for course descriptions in the Humanities faculty in 2023
 from datetime import datetime
 import os
 from django.conf import settings
-import re
-from django.utils.html import strip_tags
-from langdetect import detect
 
 from addcorpus.python_corpora.corpus import FieldDefinition, XLSXCorpusDefinition
 from addcorpus.es_mappings import text_mapping, main_content_mapping, keyword_mapping, int_mapping
 from addcorpus.python_corpora.extract import CSV, Combined, Pass, Constant, Metadata
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
-from addcorpus.serializers import LanguageField
+from uu_course_descriptions.utils import html_to_text, language_name, detect_language
 
 def filter_label(label):
     def get_content_with_label(data):
@@ -26,21 +23,6 @@ def filter_label(label):
         return '\n'.join(filter(None, filtered_content))
 
     return get_content_with_label
-
-def html_to_text(content):
-    html_replacements = [
-        (r'<style.*</style>', ''),
-        (r'&nbsp;', ' '),
-        (r'<li>', '<li>- '),
-    ]
-
-    for pattern, repl in html_replacements:
-        content = re.sub(pattern, repl, content, flags=re.DOTALL)
-
-    plain = strip_tags(content)
-
-    stripped_lines = '\n'.join(filter(None, map(str.strip, plain.splitlines())))
-    return stripped_lines.strip()
 
 def content_extractor(label):
     return Pass(
@@ -58,20 +40,6 @@ def all_content_extractor():
         content_extractor('INHOUD'),
         transform='\n'.join
     )
-
-def detect_language(content):
-    try:
-        detected = detect(content)
-        if detected == 'af':
-            # dutch is sometimes mistaken for afrikaans
-            # but we know afrikaans is never actually used in this corpus
-            return 'nl'
-        return detected
-    except:
-        pass
-
-def language_name(language_code):
-    return LanguageField().to_representation(language_code)
 
 def get_level(course_id):
     level = course_id[2]
@@ -145,7 +113,7 @@ class HumCourseDescriptions(XLSXCorpusDefinition):
     category = 'informative'
     min_date = datetime(2022, 9, 1)
     max_date = datetime(2023, 8, 31)
-    image = 'uu_logo_cropped.jpg'
+    image = 'uu_gw.jpg'
     languages = ['nl', 'en', 'de', 'fr', 'es', 'it']
     es_index =  getattr(settings, 'HUM_COURSE_DESCRIPTIONS_INDEX', 'hum_course_descriptions')
 
