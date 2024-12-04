@@ -20,6 +20,8 @@ import { actionIcons } from '../icons';
 import { DropdownService } from './dropdown.service';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+let nextID = 0;
+
 @Component({
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
@@ -45,6 +47,10 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
 
     actionIcons = actionIcons;
 
+
+    id = nextID++;
+    open$ = this.dropdownService.open$;
+
     private blur$ = new Subject<void>();
     private destroy$ = new Subject<void>();
     private onChangeSubscription?: Subscription;
@@ -63,6 +69,14 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     @HostBinding('class.is-active')
     get isActive(): boolean {
         return this.dropdownService.open$.value;
+    }
+
+    get triggerID(): string {
+        return `dropdown-trigger-${this.id}`;
+    }
+
+    get menuID(): string {
+        return `dropdown-menu-${this.id}`;
     }
 
     @HostListener('document:click', ['$event'])
@@ -122,9 +136,8 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
 
     focusOnFirstItem(event: KeyboardEvent) {
         event.preventDefault();
-        if (this.dropdownService.open$.value) {
-            this.dropdownService.focusShift$.next(1);
-        }
+        this.dropdownService.open$.next(true);
+        this.dropdownService.focusShift$.next(1);
     }
 
 }

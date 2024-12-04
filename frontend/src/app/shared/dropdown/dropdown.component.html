@@ -1,6 +1,10 @@
 <div class="dropdown-trigger">
-    <button class="button" aria-haspopup="true"
-        aria-controls="dropdownMenu" id="dropdownTrigger"
+    <button class="button"
+        aria-haspopup="listbox"
+        role="combobox"
+        [attr.aria-controls]="menuID"
+        [attr.aria-expanded]="open$ | async"
+        [id]="triggerID"
         [disabled]="disabled"
         (click)="toggleDropdown()"
         (keydown.arrowdown)="focusOnFirstItem($event)"
@@ -13,8 +17,10 @@
         </span>
     </button>
 </div>
-<div class="dropdown-menu" role="menu"
-    id="dropdownTrigger" aria-labelledby="dropdownMenu">
+<div class="dropdown-menu"
+    role="listbox"
+    [id]="menuID"
+    [attr.aria-labelledby]="triggerID">
     <div class="dropdown-content">
         <ng-content select="[iaDropdownMenu]"></ng-content>
     </div>
