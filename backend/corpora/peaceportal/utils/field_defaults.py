@@ -207,7 +207,7 @@ def country():
         description="Country where the inscription was found.",
         es_mapping=keyword_mapping(True),
         search_filter=MultipleChoiceFilter(
-            description="Search only within these countries.", option_count=5
+            description="Search only within these countries.", option_count=50
         ),
         visualizations=["resultscount"],
         results_overview=True,
@@ -221,7 +221,7 @@ def settlement():
         description="The settlement where the inscription was found.",
         es_mapping=keyword_mapping(True),
         search_filter=MultipleChoiceFilter(
-            description="Search only within these settlements.", option_count=29
+            description="Search only within these settlements.", option_count=50
         ),
         visualizations=["resultscount"],
     )
@@ -234,7 +234,7 @@ def region():
         description="The region where the inscription was found.",
         es_mapping=keyword_mapping(True),
         search_filter=MultipleChoiceFilter(
-            description="Search only within these regions.", option_count=29
+            description="Search only within these regions.", option_count=50
         ),
         visualizations=["resultscount"],
     )
@@ -256,7 +256,7 @@ def material():
         description="Type of material the inscription is written on.",
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
-            description="Search only within these material types.", option_count=39
+            description="Search only within these material types.", option_count=50
         ),
         visualization_type="resultscount",
     )
@@ -279,7 +279,7 @@ def language():
         description="Language of the inscription.",
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
-            description="Search only within these languages.", option_count=10
+            description="Search only within these languages.", option_count=50
         ),
         csv_core=True,
         visualizations=["resultscount"],
