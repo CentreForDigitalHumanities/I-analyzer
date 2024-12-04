@@ -3,7 +3,8 @@
 Typical usage looks like this:
 
 ```html
-<ia-dropdown (onChange)="selection = $event">
+<label id="lucky-number-id">Lucky number</label>
+<ia-dropdown (onChange)="selection = $event" labelledBy="lucky-number-id">
     <span iaDropdownLabel>{{selection}}</span>
     <div iaDropdownMenu>
         <a iaDropdownItem [value]="3">
@@ -21,7 +22,8 @@ Typical usage looks like this:
 You can insert other content into the dropdown menu:
 
 ```html
-<ia-dropdown (onChange)="value = $event">
+<label id="lucky-number-id">Lucky number</label>
+<ia-dropdown (onChange)="value = $event" labelledBy="lucky-number-id">
     <span iaDropdownLabel>{{value}}</span>
     <div iaDropdownMenu>
         <a iaDropdownItem [value]="3">
@@ -51,5 +53,6 @@ The dropdown component supports:
 
 - `[value]` input: this sets the selected value in the menu - use this to set the value from the parent component.
 - `[disabled]` input: if `true`, this disables the entire menu.
+- `[labelledBy]` input: sets the ID of the element labelling the dropdown. This is required to make the dropdown accessible.
 - `(onChanges)` output: emits all changes to the selected value, including when it is set through input. If you only want to listen to UI events, use `(onSelect)` on the individual items instead.
 

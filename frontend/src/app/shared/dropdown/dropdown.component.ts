@@ -39,7 +39,9 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
 
     @Input() value: any;
     @Input() disabled: boolean;
-    @Input() ariaLabelledBy: string;
+
+    /** ID of the element labelling the dropdown */
+    @Input() labelledBy: string;
 
     @Output()
     public onChange = new EventEmitter<T>();

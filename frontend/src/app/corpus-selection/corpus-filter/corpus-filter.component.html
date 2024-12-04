@@ -4,7 +4,7 @@
             <label class="label" id="label-language">Language</label>
             <div class="control">
                 <ia-dropdown name="language" [formControl]="form.controls.language"
-                    ariaLabelledBy="label-language">
+                    labelledBy="label-language">
                     <span iaDropdownLabel>{{form.controls.language.value || 'Any'}}</span>
                     <div iaDropdownMenu>
                         <a iaDropdownItem [value]="null">Any</a>
@@ -20,7 +20,7 @@
             <label class="label" id="label-category">Type of data</label>
             <div class="control">
                 <ia-dropdown name="category" [formControl]="form.controls.category"
-                    ariaLabelledBy="label-category">
+                    labelledBy="label-category">
                     <span iaDropdownLabel>{{form.controls.category.value || 'Any'}}</span>
                     <div iaDropdownMenu>
                         <a iaDropdownItem [value]="null">Any</a>
