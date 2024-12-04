@@ -9,7 +9,6 @@ import {
     QueryModel,
     CorpusField,
     NgramResults,
-    NgramParameters,
     SuccessfulTask,
 } from '@models';
 import {
@@ -18,8 +17,8 @@ import {
     VisualizationService,
 } from '@services';
 
-import { StoreSync } from '../../store/store-sync';
-import { RouterStoreService } from 'app/store/router-store.service';
+import { RouterStoreService } from '../../store/router-store.service';
+import { NgramParameters, NgramSettings } from '@models/ngram';
 
 
 @Component({
@@ -27,7 +26,7 @@ import { RouterStoreService } from 'app/store/router-store.service';
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss'],
 })
-export class NgramComponent extends StoreSync<NgramParameters> implements OnChanges {
+export class NgramComponent implements OnChanges {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
 
     @Input() queryModel: QueryModel;
@@ -88,10 +87,9 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
     tasksToCancel: string[];
 
     resultsCache: { [parameters: string]: any } = {};
-    currentParameters: NgramParameters;
-    lastParameters: NgramParameters;
+    ngramParameters: NgramParameters;
+    changedSettings: NgramSettings;
     parametersChanged = false;
-    ngramSettings: string[];
     dataHasLoaded: boolean;
     isLoading = false;
 
@@ -105,62 +103,55 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
         private notificationService: NotificationService,
         store: RouterStoreService,
     ) {
-        super(store);
-        this.currentParameters = new NgramParameters(
-            this.sizeOptions[0].value,
-            this.positionsOptions[0].value,
-            this.freqCompensationOptions[0].value,
-            'none',
-            this.maxDocumentsOptions[0].value,
-            this.numberOfNgramsOptions[0].value,
-            'date'
+        this.ngramParameters = new NgramParameters(
+            store,
         );
     }
 
     get currentSizeOption() {
-        if (this.currentParameters) {
+        if (this.ngramParameters) {
             return this.sizeOptions.find(
-                (item) => item.value === this.currentParameters.size
+                (item) => item.value === this.ngramParameters.state$.value.size
             );
         }
     }
 
     get currentPositionsOption() {
-        if (this.currentParameters) {
+        if (this.ngramParameters) {
             return this.positionsOptions.find(
-                (item) => item.value === this.currentParameters.positions
+                (item) => item.value === this.ngramParameters.state$.value.positions
             );
         }
     }
 
     get currentFreqCompensationOption() {
-        if (this.currentParameters) {
+        if (this.ngramParameters) {
             return this.freqCompensationOptions.find(
-                (item) => item.value === this.currentParameters.freqCompensation
+                (item) => item.value === this.ngramParameters.state$.value.freqCompensation
             );
         }
     }
 
     get currentAnalysisOption() {
-        if (this.currentParameters) {
+        if (this.ngramParameters) {
             return this.analysisOptions.find(
-                (item) => item.value === this.currentParameters.analysis
+                (item) => item.value === this.ngramParameters.state$.value.analysis
             );
         }
     }
 
     get currentMaxDocumentsOption() {
-        if (this.currentParameters) {
+        if (this.ngramParameters) {
             return this.maxDocumentsOptions.find(
-                (item) => item.value === this.currentParameters.maxDocuments
+                (item) => item.value === this.ngramParameters.state$.value.maxDocuments
             );
         }
     }
 
     get currentNumberOfNgramsOption() {
-        if (this.currentParameters) {
+        if (this.ngramParameters) {
             return this.numberOfNgramsOptions.find(
-                (item) => item.value === this.currentParameters.numberOfNgrams
+                (item) => item.value === this.ngramParameters.state$.value.numberOfNgrams
             );
         }
     }
@@ -171,16 +162,6 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
         this.stopPolling$.next();
     }
 
-    storeToState(params): NgramParameters {
-        return params['ngramSettings'] as NgramParameters
-    }
-
-    stateToStore(state: NgramParameters) {
-        return {
-            ngramSettings: state || null
-        }
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.visualizedField) {
             this.resultsCache = {};
@@ -188,7 +169,6 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
                 (field) => field.mappingType === 'date'
             );
             this.dateField = this.allDateFields[0];
-            this.currentParameters.dateField = this.dateField.name;
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [
                     { label: 'None', value: 'none' },
@@ -207,32 +187,27 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
             } else {
                 this.analysisOptions = undefined;
             }
+            this.ngramParameters.setParams({dateField: this.dateField.name});
         }
 
-        if (this.currentParameters) {
+        if (this.ngramParameters.state$.value) {
             this.loadGraph();
         }
-    }
 
-    setParameters(params: Params) {
-        const ngramSettings = params.get('ngramSettings');
-        if (ngramSettings) {
-            this.currentParameters.fromRouteParam(ngramSettings);
-        }
     }
 
     loadGraph() {
         this.isLoading = true;
         this.dataHasLoaded = false;
-        this.lastParameters = _.clone(this.currentParameters);
-        const cachedResult = this.getCachedResult(this.currentParameters);
+        this.changedSettings = _.clone(this.ngramParameters.state$.value);
+        const cachedResult = this.getCachedResult(this.ngramParameters);
 
         if (cachedResult) {
             this.onDataLoaded(cachedResult);
         } else {
             this.visualizationService.getNgramTasks(
                 this.queryModel, this.corpus, this.visualizedField.name,
-                this.currentParameters).then(
+                this.ngramParameters.state$.value).then(
                     response => {
                         this.tasksToCancel = response.task_ids;
                         // tasksToCancel contains ids of the parent task and its subtasks
@@ -279,12 +254,12 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
     }
 
     cacheResult(result: any, params: NgramParameters): void {
-        const key = params.toRouteParam();
+        const key = params.getCurrentRouterState();
         this.resultsCache[key] = result;
     }
 
     getCachedResult(params: NgramParameters): any {
-        const key = params.toRouteParam();
+        const key = params.getCurrentRouterState();
         if (_.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
@@ -295,11 +270,10 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
         this.positionsOptions = ['any']
             .concat(['first', 'second', 'third', 'fourth'].slice(0, size))
             .map((item) => ({ value: item, label: item }));
-        this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
     onParameterChange(parameter: string, value: any) {
-        this.currentParameters[parameter] = value;
+        _.assign(this.changedSettings, {[parameter]: value});
 
         if (parameter === 'size' && value) {
             this.setPositionsOptions(value);
@@ -310,17 +284,13 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
     }
 
     cancelChanges() {
-        this.setPositionsOptions(this.lastParameters.size);
-        this.currentParameters = this.lastParameters;
         this.parametersChanged = false;
     }
 
     confirmChanges() {
         this.isLoading = true;
         this.parametersChanged = false;
-        this.setParams({
-            ngramSettings: this.currentParameters.toRouteParam(),
-        });
+        this.ngramParameters.setParams(this.changedSettings);
     }
 
     formatValue(value: number): string {
@@ -344,7 +314,7 @@ export class NgramComponent extends StoreSync<NgramParameters> implements OnChan
             this.corpus,
             this.queryModel,
             this.visualizedField.name,
-            this.currentParameters
+            this.ngramParameters.state$.value
         );
         this.apiService
             .requestFullData({

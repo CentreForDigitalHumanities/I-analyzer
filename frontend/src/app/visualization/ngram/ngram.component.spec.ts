@@ -9,6 +9,7 @@ import { NgramComponent } from './ngram.component';
 import { ApiService } from '@services';
 import { ApiServiceMock } from '../../../mock-data/api';
 import { Subject } from 'rxjs';
+import { NgramSettings } from '@models/ngram';
 
 describe('NgramComponent', () => {
   let component: NgramComponent;
@@ -44,6 +45,19 @@ describe('NgramComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should initialize ngramParameters with default values', () => {
+    const defaultSettings = {
+        size: 2,
+        positions: 'any',
+        freqCompensation: false,
+        analysis: 'none',
+        maxDocuments: 50,
+        numberOfNgrams: 10,
+        dateField: 'date'
+    } as NgramSettings;
+    expect(component.ngramParameters.state$.value).toEqual(defaultSettings);
+  })
 
   it('should stop polling and abort running tasks when changing settings', () => {
     const dropdown = fixture.debugElement.query(By.css('ia-dropdown'));
