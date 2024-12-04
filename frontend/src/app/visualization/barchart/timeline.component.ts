@@ -2,16 +2,22 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { QueryModel, TimelineSeries, TimelineDataPoint,
+import {
+    QueryModel,
+    TimelineSeries,
+    TimelineDataPoint,
     TimeCategory,
     DateFilterData,
-} from '../../models/index';
+} from '@models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
-import { selectColor } from '../../utils/select-color';
-import { showLoading } from '../../utils/utils';
-import { DateHistogramAggregator, DateHistogramResult } from '../../models/aggregation';
+import { selectColor } from '@utils/select-color';
+import { showLoading } from '@utils/utils';
+import {
+    DateHistogramAggregator,
+    DateHistogramResult,
+} from '@models/aggregation';
 
 
 @Component({

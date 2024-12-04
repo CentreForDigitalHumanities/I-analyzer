@@ -4,28 +4,37 @@ This module defines functions to check if a corpus can be saved to the database
 
 import mimetypes
 import os
+import re
 import warnings
+
+from django.core.exceptions import ValidationError
+from langcodes import tag_is_valid
 
 from addcorpus.constants import (FORBIDDEN_FIELD_NAMES, MappingType,
                                  VisualizationType)
-from addcorpus.python_corpora.filters import \
-    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS
-from django.core.exceptions import ValidationError
+from addcorpus.python_corpora.filters import (
+    VALID_MAPPINGS as VALID_SEARCH_FILTER_MAPPINGS,
+)
 from addcorpus.es_mappings import primary_mapping_type
-from langcodes import tag_is_valid
-
 
 
 def supports_full_text_search(es_mapping):
-    is_text = primary_mapping_type(es_mapping) == MappingType.TEXT.value
     has_text_multifield = 'text' in es_mapping.get('fields', {})
-    return is_text or has_text_multifield
+    return _is_text(es_mapping) or has_text_multifield
+
+
+def _is_text(es_mapping):
+    return primary_mapping_type(es_mapping) in [
+        MappingType.TEXT.value,
+        MappingType.ANNOTATED_TEXT.value,
+    ]
+
 
 def is_geo_field(es_mapping):
     return primary_mapping_type(es_mapping) == MappingType.GEO_POINT.value
 
 def supports_aggregation(es_mapping):
-    return primary_mapping_type(es_mapping) != MappingType.TEXT.value
+    return not _is_text(es_mapping)
 
 def validate_language_code(value):
     '''
@@ -122,6 +131,41 @@ def validate_name_is_not_a_route_parameter(value):
             f'{value} cannot be used as a field name, because it is also a route parameter'
         )
 
+
+def validate_field_name_permissible_characters(slug: str):
+    """
+    reject names which contain characters other than colons, hyphens, underscores or alphanumeric
+    """
+    slug_re = re.compile(r"^[\w:-]+$")
+    if not slug_re.match(slug):
+        raise ValidationError(
+            f"{slug} is not valid: it should consist of no other characters than letters, numbers, underscores, hyphens or colons"
+        )
+
+
+def validate_ner_slug(es_mapping: dict, name: str):
+    """
+    Checks if colons are in field name, will raise ValidationError if the field does not meet the following requirements:
+    - ends with `:ner` suffix and is an annotated_text field
+    - ends with `:ner-kw` suffix and is a keyword field
+    """
+    if ":" in name:
+        if name.endswith(":ner"):
+            if primary_mapping_type(es_mapping) != MappingType.ANNOTATED_TEXT.value:
+                raise ValidationError(
+                    f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
+        )
+        elif name.endswith(":ner-kw"):
+            if primary_mapping_type(es_mapping) != MappingType.KEYWORD.value:
+                raise ValidationError(
+                    f"{name} cannot be used as a field name: the suffix `:ner-kw` is reserved for Named Entity keyword fields"
+                )
+        else:
+            raise ValidationError(
+                f"{name} cannot be used as a field name: colons are reserved for special (named entity related) fields"
+            )
+
+
 def mapping_can_be_searched(es_mapping):
     '''
     Verify if a mapping is appropriate for searching
@@ -132,7 +176,7 @@ def mapping_can_be_searched(es_mapping):
 
     if primary_mapping_type(es_mapping) == MappingType.KEYWORD.value:
         warnings.warn(
-            'It is strongly discouraged to use text search for keyword fields without'
+            'It is strongly discouraged to use text search for keyword fields without '
             'text analysis. Consider adding a text multifield or using a filter instead.'
         )
         return True

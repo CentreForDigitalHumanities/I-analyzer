@@ -1,12 +1,12 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
-import { User } from '../models/index';
-import { environment } from '../../environments/environment';
-import { AuthService } from '../services/auth.service';
+import { User } from '@models/index';
+import { environment } from '@environments/environment';
+import { AuthService } from '@services/auth.service';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { navIcons, userIcons } from '../shared/icons';
+import { navIcons, userIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-menu',

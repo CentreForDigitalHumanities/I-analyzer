@@ -29,6 +29,7 @@ export class Corpus {
         public wordModelsPresent: boolean,
         public languages: string[],
         public category: string,
+        public hasNamedEntities: boolean,
         public documentContext?: DocumentContext,
         public newHighlight?: boolean,
         public defaultSort?: SortState,
@@ -58,7 +59,7 @@ export interface DocumentContext {
 
 
 export type FieldDisplayType =
-    'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean' | 'url';
+    'text_content' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean' | 'url' | 'geo_point';
 
 /** Corpus field info as sent by the backend api */
 export interface ApiCorpusField {
@@ -149,6 +150,9 @@ export class CorpusField {
 }
 
 export interface CorpusDocumentationPage {
+    id: number;
+    corpus: string;
     type: string;
     content: string;
+    index?: number;
 }

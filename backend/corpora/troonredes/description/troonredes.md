@@ -3,3 +3,5 @@ Troonredes (throne speeches) are the speeches from the throne that formally mark
 Missing years: in 1940-1944 no speech was written.
 
 The transcripts are provided by [troonredes.nl](https://www.troonredes.nl).
+
+The transcripts were enriched with named entities using the [the TextMiNER library](https://github.com/CentreForDigitalHumanities/TextMiNER).

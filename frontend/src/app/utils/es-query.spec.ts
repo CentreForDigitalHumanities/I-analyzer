@@ -5,10 +5,10 @@ import {
     makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification,
     resultsParamsToAPIQuery
 } from './es-query';
-import { QueryModel } from '../models';
-import { PageResultsParameters } from '../models/page-results';
-import { APIQuery } from '../models/search-requests';
-import { isTagFilter } from '../models/tag-filter';
+import { QueryModel } from '@models';
+import { PageResultsParameters } from '@models/page-results';
+import { APIQuery } from '@models/search-requests';
+import { isTagFilter } from '@models/tag-filter';
 
 describe('es-query utils', () => {
     it('should make a simple query string clause', () => {
@@ -49,8 +49,8 @@ describe('es-query utils', () => {
         expect(makeHighlightSpecification(mockCorpus3, 'test', 100)).toEqual({
             highlight: {
                 fragment_size: 100,
-                pre_tags: ['<span class="highlight">'],
-                post_tags: ['</span>'],
+                pre_tags: ['<mark class="highlight">'],
+                post_tags: ['</mark>'],
                 order: 'score',
                 fields: [{speech: {}}]
             }

@@ -7,6 +7,10 @@ from addcorpus.python_corpora.save_corpus import (_save_field_in_database,
     load_and_save_all_corpora, _save_or_skip_corpus
 )
 
+pytestmark = [
+    pytest.mark.filterwarnings("ignore:Corpus has no 'id' field"),
+    pytest.mark.filterwarnings('ignore:.* text search for keyword fields without text analysis')
+]
 
 def test_saved_corpora(db):
     '''

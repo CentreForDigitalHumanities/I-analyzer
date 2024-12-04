@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { DialogService, NotificationService } from '../../services';
+import { DialogService, NotificationService } from '@services';
 import * as htmlToImage from 'html-to-image';
-import { PALETTES } from '../../utils/select-color';
-import { actionIcons } from '../../shared/icons';
+import { PALETTES } from '@utils/select-color';
+import { actionIcons } from '@shared/icons';
 
 @Component({
   selector: 'ia-visualization-footer',

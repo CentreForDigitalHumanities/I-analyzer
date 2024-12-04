@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
 import { APIQuery } from './search-requests';
-import { SortState } from './sort';
 import {
     AggregateTermFrequencyParameters,
     DateTermFrequencyParameters,
@@ -20,13 +19,6 @@ export interface SearchResults {
     };
 }
 
-export interface ResultOverview {
-    queryText: string;
-    highlight?: number;
-    sort: SortState;
-    resultsCount: number;
-};
-
 export interface MostFrequentWordsResult {
     key: string;
     doc_count: number;
@@ -34,8 +26,18 @@ export interface MostFrequentWordsResult {
 
 
 export interface GeoDocument {
-    id: string;
-    coordinates: {
+    type: string; // e.g. 'Feature'
+    geometry: {
+        type: string; // e.g. 'Point'
+        coordinates: [number, number]; // [longitude, latitude]
+    };
+    properties: {
+        id: string;
+    };
+}
+
+export interface GeoLocation {
+    location: {
         lat: number;
         lon: number;
     };
@@ -81,6 +83,14 @@ export type WordInModelResult = {
 export interface QueryFeedback {
     status: 'not in model'|'success'|'error'|'multiple words'|'empty';
     similarTerms?: string[];
+}
+
+export interface FieldEntities {
+    [entityType: string] : string
+}
+
+export interface NamedEntitiesResult {
+    [fieldName: string]: FieldEntities[]
 }
 
 export interface TaskResult { task_ids: string[] };

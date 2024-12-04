@@ -11,8 +11,8 @@ It's recommended that you use [git-flow to make releases](https://danielkummer.g
 
 Check if anything ought to be included with the new release:
 
-- Check [open pull requests](https://github.com/UUDigitalHumanitieslab/I-analyzer/pulls)
-- Check [issues labelled "bug"](https://github.com/UUDigitalHumanitieslab/I-analyzer/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+- Check [open pull requests](https://github.com/CentreForDigitalHumanities/I-analyzer/pulls)
+- Check [issues labelled "bug"](https://github.com/CentreForDigitalHumanities/I-analyzer/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 - Check project boards that keep track of a release cycle. If issues or PRs are scheduled for this release, wait until they are closed or move them to the next release cycle.
 
 Discuss open pull requests, known bugs, and scheduled issues with your fellow developers. If you agree that the develop branch is release-ready, move on to the next step.
@@ -23,13 +23,14 @@ Determine if your release is a major, minor, or patch release to figure out the 
 
 Start a new branch for your releases. Use `git flow release start x.x.x` or `git flow hotfix start x.x.x`.
 
-Update the version number in `package.json`.
+
+Use the `yarn [major|minor|patch]` command to update the version number in `package.json`. This also updates the `CITATION.cff` file with the new version number and release date.
 
 ## Check if everything works
 
 In your local environment, start up elasticsearch and run backend tests with `yarn test-back`. Run frontend tests with `yarn test-front`.
 
-Publish the release branch with `git flow release publish x.x.x`. The push will trigger the [release workflow](https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/.github/workflows/release.yaml) to update the version number and release date in `CITATION.cff`. Deploy on the test or acc server. Check that everything works as intended.
+Publish the release branch with `git flow release publish x.x.x`. Deploy on the test or acc server. Check that everything works as intended.
 
 ## Publish the release
 

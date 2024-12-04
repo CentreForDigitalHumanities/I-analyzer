@@ -11,6 +11,7 @@ from os.path import join, getsize
 from datetime import datetime
 from zipfile import ZipFile
 from io import BytesIO
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
@@ -41,12 +42,13 @@ class GuardianObserver(XMLCorpusDefinition):
     scan_image_type = getattr(settings, 'GO_SCAN_IMAGE_TYPE', 'application/pdf')
     languages = ['en']
     category = 'periodical'
+    word_model_path = getattr(settings, "GO_WM", None)
 
     @property
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    tag_toplevel = 'Record'
+    tag_toplevel = Tag('Record')
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
@@ -70,115 +72,112 @@ class GuardianObserver(XMLCorpusDefinition):
 
     fields = [
         FieldDefinition(
-            name='date',
-            display_name='Publication Date',
-            description='Publication date, parsed to yyyy-MM-dd format',
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            name="date",
+            display_name="Publication Date",
+            description="Publication date, parsed to yyyy-MM-dd format",
+            es_mapping={"type": "date", "format": "yyyy-MM-dd"},
             hidden=True,
-            visualizations=['resultscount', 'termfrequency'],
+            visualizations=["resultscount", "termfrequency"],
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
-                )
+                    "Accept only articles with publication date in this range."
+                ),
             ),
             extractor=extract.XML(
-                tag='NumericPubDate', toplevel=True,
-                transform=lambda x: '{y}-{m}-{d}'.format(y=x[:4],m=x[4:6],d=x[6:])
+                Tag("NumericPubDate"),
+                transform=lambda x: "{y}-{m}-{d}".format(y=x[:4], m=x[4:6], d=x[6:]),
             ),
             sortable=True,
         ),
         FieldDefinition(
-            name='date-pub',
+            name="date-pub",
             es_mapping=keyword_mapping(),
-            display_name='Publication Date',
+            display_name="Publication Date",
             csv_core=True,
             results_overview=True,
-            description='Publication date as full string, as found in source file',
-            extractor=extract.XML(
-                tag='AlphaPubDate', toplevel=True
-            )
+            description="Publication date as full string, as found in source file",
+            extractor=extract.XML(Tag("AlphaPubDate")),
         ),
         FieldDefinition(
-            name='id',
+            name="id",
             es_mapping=keyword_mapping(),
-            display_name='ID',
-            description='Article identifier.',
-            extractor=extract.XML(tag='RecordID', toplevel=True)
+            display_name="ID",
+            description="Article identifier.",
+            extractor=extract.XML(Tag("RecordID")),
         ),
         FieldDefinition(
-            name='pub_id',
+            name="pub_id",
             es_mapping=keyword_mapping(),
-            display_name='Publication ID',
-            description='Publication identifier',
-            extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
+            display_name="Publication ID",
+            description="Publication identifier",
+            extractor=extract.XML(Tag("PublicationID")),
         ),
         FieldDefinition(
-            name='page',
+            name="page",
             es_mapping=keyword_mapping(),
-            display_name='Page',
-            description='Start page label, from source (1, 2, 17A, ...).',
-            extractor=extract.XML(tag='StartPage', toplevel=True)
+            display_name="Page",
+            description="Start page label, from source (1, 2, 17A, ...).",
+            extractor=extract.XML(Tag("StartPage")),
         ),
         FieldDefinition(
-            name='title',
-            display_name='Title',
+            name="title",
+            display_name="Title",
             search_field_core=True,
-            visualizations=['wordcloud'],
-            description='Article title.',
-            extractor=extract.XML(tag='RecordTitle', toplevel=True)
+            visualizations=["wordcloud"],
+            description="Article title.",
+            extractor=extract.XML(Tag("RecordTitle")),
         ),
         FieldDefinition(
-            name='source-paper',
+            name="source-paper",
             es_mapping=keyword_mapping(True),
-            display_name='Source paper',
-            description='Credited as source.',
-            extractor=extract.XML(tag='Title', toplevel=True, recursive=True),
+            display_name="Source paper",
+            description="Credited as source.",
+            extractor=extract.XML(Tag("Title")),
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles from these source papers.',
-                option_count=5
+                description="Accept only articles from these source papers.",
+                option_count=5,
             ),
         ),
         FieldDefinition(
-            name='place',
+            name="place",
             mapping=keyword_mapping(True),
-            display_name='Place',
-            description='Place in which the article was published',
-            extractor=extract.XML(tag='Qualifier', toplevel=True, recursive=True)
+            display_name="Place",
+            description="Place in which the article was published",
+            extractor=extract.XML(Tag("Qualifier")),
         ),
         FieldDefinition(
-            name='author',
+            name="author",
             mapping=keyword_mapping(True),
-            display_name='Author',
-            description='Article author',
-            extractor=extract.XML(tag='PersonName', toplevel=True, recursive=True)
+            display_name="Author",
+            description="Article author",
+            extractor=extract.XML(Tag("PersonName")),
         ),
         FieldDefinition(
-            name='category',
-            visualizations=['resultscount', 'termfrequency'],
-            display_name='Category',
-            description='Article subject categories.',
-            es_mapping={'type': 'keyword'},
+            name="category",
+            visualizations=["resultscount", "termfrequency"],
+            display_name="Category",
+            description="Article subject categories.",
+            es_mapping={"type": "keyword"},
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these categories.',
-                option_count=19
+                description="Accept only articles in these categories.", option_count=19
             ),
-            extractor=extract.XML(tag='ObjectType', toplevel=True),
-            csv_core=True
+            extractor=extract.XML(Tag("ObjectType")),
+            csv_core=True,
         ),
         FieldDefinition(
-            name='content',
-            es_mapping=main_content_mapping(True, True, True, 'en'),
-            display_name='Content',
-            display_type='text_content',
-            visualizations=['wordcloud'],
-            description='Raw OCR\'ed text (content).',
+            name="content",
+            es_mapping=main_content_mapping(True, True, True, "en"),
+            display_name="Content",
+            display_type="text_content",
+            visualizations=["wordcloud", "ngram"],
+            description="Raw OCR'ed text (content).",
             results_overview=True,
             search_field_core=True,
-            extractor=extract.XML(tag='FullText', toplevel=True, flatten=True),
-            language='en',
-        )
+            extractor=extract.XML(Tag("FullText"), flatten=True),
+            language="en",
+        ),
     ]
 
     document_context = {
@@ -244,7 +243,6 @@ class GuardianObserver(XMLCorpusDefinition):
             "fileSize": sizeof_fmt(getsize(join(self.data_directory, image_path)))
         }
         return {'media': image_urls, 'info': pdf_info}
-
 
     def get_media(self, request_args):
         '''

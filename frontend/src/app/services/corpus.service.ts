@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
 
-import { Corpus, CorpusField, DocumentContext, SortDirection, SortState } from '../models/index';
+import {
+    Corpus,
+    CorpusField,
+    DocumentContext,
+    SortDirection,
+    SortState,
+} from '@models/index';
 import { ApiRetryService } from './api-retry.service';
-import { AuthService } from './auth.service';
-import { findByName } from '../utils/utils';
+import { findByName } from '@utils/utils';
 import * as _ from 'lodash';
 
 @Injectable({
@@ -23,7 +28,6 @@ export class CorpusService {
 
     constructor(
         private apiRetryService: ApiRetryService,
-        private authService: AuthService
     ) {
         this.parseField = this.parseField.bind(this);
     }
@@ -64,7 +68,7 @@ export class CorpusService {
             return this.corporaPromise;
         } else {
             this.corporaPromise = this.apiRetryService
-                .requireLogin((api) => api.corpus().toPromise())
+                .requireLogin((api) => lastValueFrom(api.corpus()))
                 .then((data) => this.parseCorpusList(data));
             return this.corporaPromise;
         }
@@ -89,6 +93,7 @@ export class CorpusService {
             data.word_models_present,
             data.languages,
             data.category,
+            data.has_named_entities,
             this.parseDocumentContext(data.document_context, allFields),
             data.new_highlight,
             this.parseDefaultSort(data.default_sort, allFields),

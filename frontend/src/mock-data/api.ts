@@ -2,8 +2,10 @@ import * as _ from 'lodash';
 import { Observable, Subject, from, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
-import { CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
+import { Corpus, CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
 import { LimitedResultsDownloadParameters } from '../app/models/search-results';
+import { mockCorpusDefinition } from './corpus-definition';
+import { APIEditableCorpus } from '../app/models/corpus-definition';
 
 export const fakeNgramResult = {
     words: [
@@ -71,10 +73,13 @@ export class ApiServiceMock {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
     }
 
-    public corpusDocumentation(): Observable<CorpusDocumentationPage[]> {
+    public corpusDocumentationPages(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
         return of([{
+            id: 1,
+            corpus: corpus.name,
             type: 'General',
-            content: 'Example of _documentation_.'
+            content: 'Example of _documentation_.',
+            index: 1,
         }]);
     }
 
@@ -92,5 +97,24 @@ export class ApiServiceMock {
 
     userTags() {
         return of([]);
+    }
+
+    corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        const data = [{ id: 1, active: false, definition: mockCorpusDefinition }];
+        return of(data);
+    }
+
+    corpusDefinition(id: number): Observable<APIEditableCorpus> {
+        const data = { id, active: false, definition: mockCorpusDefinition };
+        return of(data);
+    }
+
+    createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        const result = _.merge({ id: 1 }, data);
+        return of(result);
+    }
+
+    updateCorpus(_id: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return of(data);
     }
 }

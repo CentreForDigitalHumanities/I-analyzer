@@ -1,13 +1,6 @@
-# Base image
-FROM docker.io/library/python:3.9
-# Setting this means stdout and stderr streams are sent to terminal in real time
-ENV PYTHONUNBUFFERED 1
-# Get required libraries for xmlsec
-RUN apt-get -y update
-RUN apt-get install -y pkg-config libxml2-dev libxmlsec1-dev libxmlsec1-openssl default-libmysqlclient-dev
+FROM ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
 
 RUN pip install --upgrade pip
-RUN pip install pip-tools
 # make a directory in the container
 WORKDIR /backend
 # copy requirements from the host system to the directory in the container

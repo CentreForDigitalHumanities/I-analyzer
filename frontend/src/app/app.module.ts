@@ -17,12 +17,16 @@ import {
 
 import { AboutComponent } from './about/about.component';
 import { AppComponent } from './app.component';
+import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
+import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
+import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
+import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { CorpusGuard } from './corpus.guard';
 import { DialogComponent } from './dialog/dialog.component';
-import { DocumentPageComponent } from './document-page/document-page.component';
+import { DocumentPageComponent } from './document/document-page/document-page.component';
 import { DocumentModule } from './document/document.module';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
@@ -49,17 +53,18 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
 
 export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [CorpusGuard],
+        canActivate: [CorpusGuard, forwardLegacyParamsGuard],
     },
     {
         path: 'word-models/:corpus',
         component: WordModelsComponent,
-        canActivate: [CorpusGuard],
+        canActivate: [CorpusGuard, forwardLegacyParamsGuard],
     },
     {
         path: 'info/:corpus',
@@ -132,6 +137,24 @@ export const appRoutes: Routes = [
         canActivate: [LoggedOnGuard],
     },
     {
+        path: 'corpus-definitions',
+        canActivate: [LoggedOnGuard],
+        children: [
+            {
+                path: 'new',
+                component: CreateDefinitionComponent,
+            },
+            {
+                path: 'edit/:corpusID',
+                component: EditDefinitionComponent,
+            },
+            {
+                path: '',
+                component: DefinitionsOverviewComponent,
+            },
+        ]
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
@@ -156,6 +179,7 @@ export const imports: any[] = [
     SharedModule,
     // Feature Modules
     CorpusModule,
+    CorpusDefinitionsModule,
     CorpusSelectionModule,
     DialogModule,
     DocumentModule,

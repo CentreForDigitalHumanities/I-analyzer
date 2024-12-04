@@ -1,5 +1,11 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { Download, PendingDownload, DownloadOptions, TermFrequencyParameters, TermFrequencyDownloadParameters } from '../../models';
+import {
+    Download,
+    PendingDownload,
+    DownloadOptions,
+    TermFrequencyParameters,
+    TermFrequencyDownloadParameters,
+} from '@models';
 
 @Component({
     selector: 'ia-download-options',

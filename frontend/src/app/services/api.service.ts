@@ -16,6 +16,7 @@ import {
     FieldCoverage,
     FoundDocument,
     GeoDocument,
+    GeoLocation,
     LimitedResultsDownloadParameters,
     MostFrequentWordsResult,
     NGramRequestParameters,
@@ -28,9 +29,13 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../models/index';
-import { environment } from '../../environments/environment';
+} from '@models/index';
+import { environment } from '@environments/environment';
 import * as _ from 'lodash';
+import {
+    APICorpusDefinition,
+    APIEditableCorpus,
+} from '@models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -142,9 +147,14 @@ export class ApiService {
         return this.http.post<MostFrequentWordsResult[]>(url, data);
     }
 
-    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
+    public geoData(data: WordcloudParameters): Observable<GeoDocument[]> {
         const url = this.apiRoute(this.visApiURL, 'geo');
-        return this.http.post<GeoDocument[]>(url, data).toPromise();
+        return this.http.post<GeoDocument[]>(url, data);
+    }
+
+    public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {
+        const url = this.apiRoute(this.visApiURL, 'geo_centroid');
+        return this.http.post<GeoLocation>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
@@ -222,16 +232,41 @@ export class ApiService {
     }
 
     // Corpus
-    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
-        const url = this.apiRoute(
-            this.corpusApiUrl,
-            `documentation/${corpusName}/`
-        );
-        return this.http.get<CorpusDocumentationPage[]>(url);
+    public corpusDocumentationPages(corpus?: Corpus): Observable<CorpusDocumentationPage[]> {
+        const params = new URLSearchParams({corpus: corpus.name}).toString();
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/?${params}`);
+        return this.http.get<CorpusDocumentationPage[]>(url.toString());
+    }
+
+    public corpusDocumentationPage(pageID: number): Observable<CorpusDocumentationPage> {
+        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
+        return this.http.get<CorpusDocumentationPage>(url);
     }
 
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
+    }
+
+    // Corpus definitions
+
+    public corpusDefinitions(): Observable<APIEditableCorpus[]> {
+        return this.http.get<APIEditableCorpus[]>('/api/corpus/definitions/');
+    }
+
+    public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
+        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
+    }
+
+    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    }
+
+    public deleteCorpus(corpusID: number): Observable<any> {
+        return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
     // Tagging

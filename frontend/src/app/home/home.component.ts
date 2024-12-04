@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
-import { Corpus } from '../models/corpus';
-import { CorpusService } from '../services/index';
-import { showLoading } from '../utils/utils';
-import { environment } from '../../environments/environment';
+import { Corpus } from '@models/corpus';
+import { CorpusService } from '@services/index';
+import { showLoading } from '@utils/utils';
+import { environment } from '@environments/environment';
 
 @Component({
     selector: 'ia-home',

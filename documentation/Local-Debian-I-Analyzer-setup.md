@@ -110,4 +110,4 @@ Chrome / chromedriver seems to be needed as well?
 
 If using LXD, login as the user you created: `lxc exec IAnalyzer -- su --login yourname`
 
-Now follow the installation as described in the [README](https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/README.md).
+Now follow the installation as described in the [README](https://github.com/CentreForDigitalHumanities/I-analyzer/blob/develop/README.md).

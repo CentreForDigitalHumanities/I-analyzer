@@ -7,6 +7,7 @@ from os.path import join, isfile, split, splitext
 from datetime import datetime
 import logging
 import re
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
@@ -37,10 +38,10 @@ class Ecco(XMLCorpusDefinition):
     languages = ['en', 'fr', 'la', 'grc', 'de',  'it', 'cy', 'ga', 'gd']
     category = 'book'
 
-    tag_toplevel = 'pageContent'
-    tag_entry = 'page'
+    tag_toplevel = Tag('pageContent')
+    tag_entry = Tag('page')
 
-    meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
+    meta_pattern = re.compile(r'^\d+\_DocMetadata\.xml$')
 
     @property
     def es_settings(self):
@@ -137,7 +138,6 @@ class Ecco(XMLCorpusDefinition):
                 extractor=Metadata('fullTitle'),
                 es_mapping={'type': 'keyword'},
                 results_overview=True,
-                search_field_core=True,
                 csv_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description="Accept only pages from these books",
@@ -153,8 +153,7 @@ class Ecco(XMLCorpusDefinition):
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
-                extractor=XML(tag='ocrText',
-                              flatten=True),
+                extractor=XML(Tag('ocrText'), flatten=True),
                 visualizations=['wordcloud']
             ),
             FieldDefinition(
@@ -180,7 +179,6 @@ class Ecco(XMLCorpusDefinition):
                 results_overview=True,
                 csv_core=True,
                 extractor=Metadata('author'),
-                search_field_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages by these authors.',
                     option_count=1000

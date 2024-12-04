@@ -6,7 +6,7 @@ from visualization import tasks
 import logging
 from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
-from addcorpus.permissions import CorpusAccessPermission
+from addcorpus.permissions import CanSearchCorpus
 from tag.permissions import CanSearchTags
 from visualization.field_stats import report_coverage
 from addcorpus.permissions import corpus_name_from_request
@@ -20,7 +20,7 @@ class WordcloudView(APIView):
     Most frequent terms for a small batch of results
     '''
 
-    permission_classes = [CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'es_query', 'field', 'size'])
@@ -40,11 +40,10 @@ class WordcloudView(APIView):
 
 class MapView(APIView):
     '''
-    Most frequent terms for a small batch of results
+    Retrieve documents with geo_field coordinates.
     '''
 
-    permission_classes = [IsAuthenticated,
-                          CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['corpus', 'es_query', 'field'])
@@ -57,12 +56,28 @@ class MapView(APIView):
             raise APIException(detail='could not generate geo data')
 
 
+class MapCentroidView(APIView):
+    '''
+    Retrieve the centroid of documents with a geo_field for a corpus.
+    '''
+
+    permission_classes = [CanSearchCorpus]
+
+    def post(self, request, *args, **kwargs):
+        check_json_keys(request, ['corpus', 'field'])
+        try:
+            center = tasks.get_geo_centroid(request.data)
+            return Response(center)
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='Could not retrieve geo centroid')
+
 class NgramView(APIView):
     '''
     Schedule a task to retrieve ngrams containing the search term
     '''
 
-    permission_classes = [CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, [
@@ -86,7 +101,7 @@ class DateTermFrequencyView(APIView):
     compared by a date field
     '''
 
-    permission_classes = [CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(
@@ -114,7 +129,7 @@ class AggregateTermFrequencyView(APIView):
     compared by a keyword field
     '''
 
-    permission_classes = [CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(
@@ -141,7 +156,7 @@ class FieldCoverageView(APIView):
     Get the coverage of each field in a corpus
     '''
 
-    permission_classes = [CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
         corpus = corpus_name_from_request(request)

@@ -1,16 +1,20 @@
 import { Observable, combineLatest, from, of } from 'rxjs';
 import { QueryModel } from './query';
 import { map } from 'rxjs/operators';
-import { SearchService } from '../services';
+import { SearchService } from '@services';
 import { SearchResults } from './search-results';
 import { Results } from './results';
 import { DocumentPage } from './document-page';
 import { SortBy, SortDirection, SortState } from './sort';
 import { Params } from '@angular/router';
 import { Store } from '../store/types';
-import { pageResultsParametersFromParams, pageResultsParametersToParams } from '../utils/params';
+import {
+    pageResultsParametersFromParams,
+    pageResultsParametersToParams,
+} from '@utils/params';
 
 export const RESULTS_PER_PAGE = 20;
+export const DEFAULT_HIGHLIGHT_SIZE = 200;
 
 export interface PageParameters {
     from: number;

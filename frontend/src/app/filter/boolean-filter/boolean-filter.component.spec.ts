@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { mockCorpus3, mockField } from '../../../mock-data/corpus';
 
 import { commonTestBed } from '../../common-test-bed';
-import { BooleanFilter, QueryModel } from '../../models';
+import { BooleanFilter, QueryModel } from '@models';
 import { BooleanFilterComponent } from './boolean-filter.component';
 import { By } from '@angular/platform-browser';
 

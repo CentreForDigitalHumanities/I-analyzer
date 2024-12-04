@@ -6,20 +6,17 @@ import re
 from bs4 import BeautifulSoup
 import json
 import csv
+from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
 
 from addcorpus.python_corpora.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
 from addcorpus.python_corpora.extract import Constant, CSV, XML, Metadata, Combined, Backup
+from addcorpus.es_mappings import main_content_mapping
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
+from corpora.utils.filter_sources import in_date_range
 import corpora.parliament.utils.parlamint as parlamint
 
-
-def in_date_range(corpus, start, end):
-    start_date = start or corpus.min_date
-    end_date = end or corpus.max_date
-
-    return start_date <= corpus.max_date and end_date >= corpus.min_date
 
 def format_mininster_role(position, department):
     '''Format 1919-2013 minister positions analogous to the 2014-2020 positions'''
@@ -148,7 +145,6 @@ class ParliamentIrelandOld(CSVCorpusDefinition):
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant('1919-2013')
 
-
     fields = [
         date,
         country,
@@ -246,8 +242,6 @@ def extract_number_from_id(id):
     if match:
         return int(match.group(0))
 
-def find_topic_heading(speech_node):
-    return speech_node.find_previous_sibling('heading')
 
 def get_debate_id(filename):
     name, _ = os.path.splitext(filename)
@@ -319,8 +313,8 @@ class ParliamentIrelandNew(XMLCorpusDefinition):
     min_date = datetime(year=2014, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
 
-    tag_toplevel = 'debate'
-    tag_entry = 'speech'
+    tag_toplevel = Tag('debate')
+    tag_entry = Tag('speech')
 
     def sources(self, start, end):
         if in_date_range(self, start, end):
@@ -359,9 +353,8 @@ class ParliamentIrelandNew(XMLCorpusDefinition):
 
     date = field_defaults.date()
     date.extractor = XML(
-        tag = 'docDate',
+        Tag('docDate'),
         attribute = 'date',
-        recursive = True,
         toplevel = True,
     )
 
@@ -388,7 +381,7 @@ class ParliamentIrelandNew(XMLCorpusDefinition):
 
     speech = field_defaults.speech()
     speech.extractor = XML(
-        'p',
+        Tag('p'),
         multiple = True,
         transform = strip_and_join_paragraphs,
     )
@@ -402,7 +395,7 @@ class ParliamentIrelandNew(XMLCorpusDefinition):
 
     topic = field_defaults.topic()
     topic.extractor = XML(
-        transform_soup_func = find_topic_heading,
+        PreviousSiblingTag('heading'),
         extract_soup_func = lambda node : node.text,
     )
 
@@ -497,17 +490,8 @@ class ParliamentIreland(Parliament, CorpusDefinition):
     speaker_id = field_defaults.speaker_id()
     speaker_constituency = field_defaults.speaker_constituency()
 
-    speech = field_defaults.speech()
     # no language-specific analysers since the corpus is mixed-language
-    speech.es_mapping = {
-        "type" : "text",
-        "fields": {
-            "length": {
-                "type":     "token_count",
-                "analyzer": "standard"
-            }
-        }
-    }
+    speech = field_defaults.speech()
 
     speech_id = field_defaults.speech_id()
     topic = field_defaults.topic()

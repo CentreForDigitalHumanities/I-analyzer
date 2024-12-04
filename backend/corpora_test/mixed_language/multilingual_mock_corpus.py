@@ -42,7 +42,8 @@ class MultilingualMockCorpus(CSVCorpusDefinition):
     language = FieldDefinition(
         name = 'language',
         es_mapping = keyword_mapping(),
-        extractor = CSV('language')
+        extractor = CSV('language'),
+        searchable=False,
     )
 
     fields = [content, language]

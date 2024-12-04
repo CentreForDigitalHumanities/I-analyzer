@@ -52,7 +52,7 @@
                         (onChange)="onParameterChange('freqCompensation', $event.value)">
                         <span iaDropdownLabel>{{currentFreqCompensationOption?.label}}</span>
                         <div iaDropdownMenu>
-                            <a *ngFor="let option of positionsOptions"
+                            <a *ngFor="let option of freqCompensationOptions"
                                 iaDropdownItem [value]="option">
                                 {{option.label}}
                             </a>

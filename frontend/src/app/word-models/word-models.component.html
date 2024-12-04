@@ -1,6 +1,6 @@
 <ia-corpus-header [corpus]="corpus" currentPage="word-models"></ia-corpus-header>
 
-<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}">
     <div class="container is-readable">
         <form class="block">
             <div class="field has-addons">
@@ -34,13 +34,21 @@
                                 <div class="field has-addons">
                                     <!-- Buttons for switching between table and graphical representation -->
                                     <div class="control">
-                                        <button class="button" [class.is-primary]="!asTable" (click)="asTable = false">
-                                            <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
+                                        <button class="button" iaToggleButton
+                                            [active]="!asTable"
+                                            (click)="asTable = false"
+                                            aria-label="view chart">
+                                            <fa-icon [icon]="visualizationIcons.chart"
+                                                aria-hidden="true" />
                                         </button>
                                     </div>
                                     <div class="control">
-                                        <button class="button" [class.is-primary]="asTable" (click)="asTable = true">
-                                            <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
+                                        <button class="button" iaToggleButton
+                                            [active]="asTable"
+                                            (click)="asTable = true"
+                                            aria-label="view table">
+                                            <fa-icon [icon]="visualizationIcons.table"
+                                                aria-hidden="true" />
                                         </button>
                                     </div>
                                 </div>
@@ -55,7 +63,7 @@
                             </ia-related-words>
 
                             <ia-word-similarity *ngIf="tab === 'wordsimilarity'"
-                                [corpus]="corpus" [queryText]="activeQuery"
+                                [corpus]="corpus"
                                 [asTable]="asTable" [palette]="palette"
                                 (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, CorpusConfiguration
 from ianalyzer.elasticsearch import elasticsearch
 
 import logging
@@ -51,6 +51,13 @@ def alias(corpus: Corpus, clean=False):
     logger.info('Done updating aliases')
 
 
+def get_current_index_name(corpus: CorpusConfiguration, client) -> str:
+    """get the name of the current corpus' associated index"""
+    alias = corpus.es_alias or corpus.es_index
+    indices = client.indices.get(index="{}".format(alias))
+    return max(sorted(indices.keys()))
+
+
 def get_new_version_number(client, alias, current_index=None):
     '''
     Get version number for a new versioned index (e.g. `indexname-1`).
@@ -98,6 +105,7 @@ def get_highest_version_number(indices, current_index=None):
     if type(indices) is list:
         raise RuntimeError('`indices` should not be list')
     versions = [extract_version(index_name, current_index) for index_name in indices.keys()]
-    if len(versions):
+    try:
         return max([v for v in versions if v is not None])
-    return 0
+    except:
+        return 0
