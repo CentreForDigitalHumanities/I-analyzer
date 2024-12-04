@@ -1,3 +1,7 @@
+'''
+Defines a corpus for course descriptions in the Humanities faculty in 2023
+'''
+
 from datetime import datetime
 import os
 from django.conf import settings
