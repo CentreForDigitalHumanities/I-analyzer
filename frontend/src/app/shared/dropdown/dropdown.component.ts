@@ -138,7 +138,8 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     focusOnFirstItem(event: KeyboardEvent) {
         event.preventDefault();
         this.dropdownService.open$.next(true);
-        this.dropdownService.focusShift$.next(1);
+        // focus on the first item - use setTimeout to wait until the menu is opened
+        setTimeout(() => this.dropdownService.focusShift$.next(1));
     }
 
 }
