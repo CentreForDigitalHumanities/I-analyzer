@@ -4,6 +4,7 @@
         role="combobox"
         [attr.aria-controls]="menuID"
         [attr.aria-expanded]="open$ | async"
+        [attr.aria-labelledby]="ariaLabelledBy"
         [id]="triggerID"
         [disabled]="disabled"
         (click)="toggleDropdown()"
