@@ -42,6 +42,9 @@ class PeacePortal(ParentCorpusDefinition):
     # el stands for modern Greek (1500-)
     languages = ['en', 'de', 'nl', 'he', 'la', 'el']
 
+    # placeholder data directory
+    data_directory = ''
+
     @property
     def es_settings(self):
         return es_settings(self.languages, stopword_analysis=True,
