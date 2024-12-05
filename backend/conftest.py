@@ -14,6 +14,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from rest_framework.test import APIClient
+
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -227,3 +229,19 @@ def json_mock_corpus(db, json_corpus_definition) -> Corpus:
     corpus.configuration.save()
 
     return corpus
+
+
+@pytest.fixture
+def drf_client():
+    return APIClient()
+
+
+@pytest.fixture
+def throttle_settings(settings):
+    settings.REST_FRAMEWORK.update({
+        'DEFAULT_THROTTLE_RATES': {
+            'password': '2/minute',
+            'registration': '2/minute',
+        }
+    })
+    return settings
