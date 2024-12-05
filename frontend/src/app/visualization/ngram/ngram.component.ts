@@ -106,7 +106,7 @@ export class NgramComponent implements OnChanges {
         this.ngramParameters = new NgramParameters(
             store,
         );
-        this.currentSettings = this.ngramParameters.state$.value;
+        this.currentSettings = _.clone(this.ngramParameters.state$.value);
     }
 
     get currentSizeOption() {
@@ -186,15 +186,14 @@ export class NgramComponent implements OnChanges {
     loadGraph() {
         this.isLoading = true;
         this.dataHasLoaded = false;
-        this.currentSettings = _.clone(this.ngramParameters.state$.value);
-        const cachedResult = this.getCachedResult(this.ngramParameters);
+        const cachedResult = this.getCachedResult();
 
         if (cachedResult) {
             this.onDataLoaded(cachedResult);
         } else {
             this.visualizationService.getNgramTasks(
                 this.queryModel, this.corpus, this.visualizedField.name,
-                this.ngramParameters.state$.value).then(
+                this.currentSettings).then(
                     response => {
                         this.tasksToCancel = response.task_ids;
                         // tasksToCancel contains ids of the parent task and its subtasks
@@ -224,6 +223,7 @@ export class NgramComponent implements OnChanges {
     onDataLoaded(result: NgramResults) {
         this.dataHasLoaded = true;
         this.currentResults = result;
+        this.cacheResult(result);
         this.tableData = this.makeTableData(result);
         this.isLoading = false;
     }
@@ -240,14 +240,16 @@ export class NgramComponent implements OnChanges {
         );
     }
 
-    cacheResult(result: any, params: NgramParameters): void {
-        const key = params.getCurrentRouterState();
-        this.resultsCache[key] = result;
+    cacheResult(result: any): void {
+        const key = this.ngramParameters.getCurrentRouterState();
+        if (key) {
+            this.resultsCache[key] = result;
+        }
     }
 
-    getCachedResult(params: NgramParameters): any {
-        const key = params.getCurrentRouterState();
-        if (_.has(this.resultsCache, key)) {
+    getCachedResult(): any {
+        const key = this.ngramParameters.getCurrentRouterState();
+        if (key && _.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
     }
@@ -278,6 +280,7 @@ export class NgramComponent implements OnChanges {
         this.isLoading = true;
         this.parametersChanged = false;
         this.ngramParameters.setParams(this.currentSettings);
+        this.loadGraph();
     }
 
     formatValue(value: number): string {
