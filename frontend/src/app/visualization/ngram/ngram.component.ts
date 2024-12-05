@@ -88,7 +88,7 @@ export class NgramComponent implements OnChanges {
 
     resultsCache: { [parameters: string]: any } = {};
     ngramParameters: NgramParameters;
-    changedSettings: NgramSettings;
+    currentSettings: NgramSettings;
     parametersChanged = false;
     dataHasLoaded: boolean;
     isLoading = false;
@@ -106,12 +106,13 @@ export class NgramComponent implements OnChanges {
         this.ngramParameters = new NgramParameters(
             store,
         );
+        this.currentSettings = this.ngramParameters.state$.value;
     }
 
     get currentSizeOption() {
         if (this.ngramParameters) {
             return this.sizeOptions.find(
-                (item) => item.value === this.ngramParameters.state$.value.size
+                (item) => item.value === this.currentSettings.size
             );
         }
     }
@@ -119,7 +120,7 @@ export class NgramComponent implements OnChanges {
     get currentPositionsOption() {
         if (this.ngramParameters) {
             return this.positionsOptions.find(
-                (item) => item.value === this.ngramParameters.state$.value.positions
+                (item) => item.value === this.currentSettings.positions
             );
         }
     }
@@ -127,7 +128,7 @@ export class NgramComponent implements OnChanges {
     get currentFreqCompensationOption() {
         if (this.ngramParameters) {
             return this.freqCompensationOptions.find(
-                (item) => item.value === this.ngramParameters.state$.value.freqCompensation
+                (item) => item.value === this.currentSettings.freqCompensation
             );
         }
     }
@@ -135,7 +136,7 @@ export class NgramComponent implements OnChanges {
     get currentAnalysisOption() {
         if (this.ngramParameters) {
             return this.analysisOptions.find(
-                (item) => item.value === this.ngramParameters.state$.value.analysis
+                (item) => item.value === this.currentSettings.analysis
             );
         }
     }
@@ -143,7 +144,7 @@ export class NgramComponent implements OnChanges {
     get currentMaxDocumentsOption() {
         if (this.ngramParameters) {
             return this.maxDocumentsOptions.find(
-                (item) => item.value === this.ngramParameters.state$.value.maxDocuments
+                (item) => item.value === this.currentSettings.maxDocuments
             );
         }
     }
@@ -151,7 +152,7 @@ export class NgramComponent implements OnChanges {
     get currentNumberOfNgramsOption() {
         if (this.ngramParameters) {
             return this.numberOfNgramsOptions.find(
-                (item) => item.value === this.ngramParameters.state$.value.numberOfNgrams
+                (item) => item.value === this.currentSettings.numberOfNgrams
             );
         }
     }
@@ -199,7 +200,7 @@ export class NgramComponent implements OnChanges {
     loadGraph() {
         this.isLoading = true;
         this.dataHasLoaded = false;
-        this.changedSettings = _.clone(this.ngramParameters.state$.value);
+        this.currentSettings = _.clone(this.ngramParameters.state$.value);
         const cachedResult = this.getCachedResult(this.ngramParameters);
 
         if (cachedResult) {
@@ -273,7 +274,7 @@ export class NgramComponent implements OnChanges {
     }
 
     onParameterChange(parameter: string, value: any) {
-        _.assign(this.changedSettings, {[parameter]: value});
+        _.assign(this.currentSettings, {[parameter]: value});
 
         if (parameter === 'size' && value) {
             this.setPositionsOptions(value);
@@ -290,7 +291,7 @@ export class NgramComponent implements OnChanges {
     confirmChanges() {
         this.isLoading = true;
         this.parametersChanged = false;
-        this.ngramParameters.setParams(this.changedSettings);
+        this.ngramParameters.setParams(this.currentSettings);
     }
 
     formatValue(value: number): string {
