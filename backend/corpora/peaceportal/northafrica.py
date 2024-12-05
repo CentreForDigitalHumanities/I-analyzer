@@ -1,11 +1,14 @@
+
+import datetime
 import os
-from typing import List, Tuple
+import re
+from typing import List, Optional, Tuple, Union
 
 from addcorpus.es_mappings import main_content_mapping, text_mapping
 from addcorpus.python_corpora.corpus import (FieldDefinition,
                                              XLSXCorpusDefinition)
 from addcorpus.python_corpora.extract import CSV, Constant
-from corpora.peaceportal.peaceportal import PeacePortal
+from corpora.peaceportal.peaceportal import PeacePortal, transform_to_date_range
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 from django.conf import settings
 
@@ -28,9 +31,24 @@ def convert_names(value) -> List[str]:
     return [name.strip() for name in value.split(';')]
 
 
+def convert_ages(value: Union[str, int]) -> List[int]:
+    if isinstance(value, int):
+        return value
+    split_ages = value.strip().split(';')
+    result = []
+    for age_string in split_ages:
+        try:
+            result.append(int(age_string.strip()))
+        except ValueError:
+            pass
+    return result
+
+
 def convert_languages(value: str) -> List[str]:
-    return [lang.strip().replace('?', '').replace('(', '').replace(')', '')
-            for lang in value.strip().split(';')]
+    expected_languages = ['greek', 'latin', 'hebrew', 'semitic']
+    languages = [lang.strip().replace('(', '').replace(')', '')
+                 for lang in value.strip().split(';')]
+    return [lang if lang.lower() in expected_languages else 'Unknown' for lang in languages]
 
 
 def convert_language_codes(value: str) -> List[str]:
@@ -41,6 +59,17 @@ def convert_language_codes(value: str) -> List[str]:
         'Semitic': 'sem'
     }
     return [codes.get(lang, 'Unknown') for lang in convert_languages(value)]
+
+
+def convert_dating(value: str) -> Optional[Tuple[int, int]]:
+    '''Extract a date range if possible, otherwise use global minimum and maximum'''
+    dating_pattern = r'(\d+)\-(\d+)'
+    match = re.match(dating_pattern, value)
+    if match:
+        date_range = transform_to_date_range(datetime.date(year=int(match.group(1)), month=1, day=1),
+                                             datetime.date(year=int(match.group(2)), month=12, day=31))
+        return date_range
+    return transform_to_date_range(None, None)  # Use defaults
 
 
 def format_comments(values: Tuple):
@@ -60,25 +89,31 @@ class PeaceportalNorthAfrica(PeacePortal, XLSXCorpusDefinition):
     data_directory = settings.PEACEPORTAL_NORTHAFRICA_DATA
     es_index = getattr(
         settings, 'PEACEPORTAL_NORTHAFRICA_ES_INDEX', 'peaceportal-northafrica')
-    title = 'Jewish Funerary Inscriptions from North Africa'
+    title = 'Jewish Epitaphs from North Africa-Carthage'
 
     def __init__(self):
         super().__init__()
         self.source_database.extractor = Constant(
-            value='Jewish Funerary Inscriptions from North Africa'
+            value='Jewish Epitaphs from North Africa-Carthage'
         )
 
         self._id.extractor = CSV(
             'ID', transform=lambda id: f'NorthAfrica_{id}')
         self.transcription.extractor = CSV('Inscription')
+
+        # Combine not before and not after information into date range
+        self.date.extractor = CSV('Dating', transform=convert_dating)
+
         self.names.extractor = CSV('Names ', transform=convert_names)
         self.sex.extractor = CSV('Sex', transform=convert_sex)
+        self.age.extractor = CSV('Age', transform=convert_ages)
+
         remarks_about_age = FieldDefinition(
             name='age_remarks',
             display_name='Remarks about age',
             description='Remarks about the age of the buried person(s)',
             es_mapping=text_mapping(),
-            extractor=CSV('Remarks about Age', transform=convert_none)
+            extractor=CSV('Remarks about Age', transform=convert_none),
         )
         self.fields.append(remarks_about_age)
         self.country.extractor = CSV('Country')
@@ -131,5 +166,5 @@ class PeaceportalNorthAfrica(PeacePortal, XLSXCorpusDefinition):
 
     def sources(self, *args, **kwargs):
         path = os.path.join(self.data_directory,
-                            'Database of Jewish epitaphs - North Africa-Carthage - For DH Lab.xlsx')
+                            'Jewish Epitaphs from North Africa-Carthage.xlsx')
         yield path
