@@ -110,56 +110,42 @@ export class NgramComponent implements OnChanges {
     }
 
     get currentSizeOption() {
-        if (this.ngramParameters) {
-            return this.sizeOptions.find(
-                (item) => item.value === this.currentSettings.size
-            );
-        }
+        return this.sizeOptions.find(
+            (item) => item.value === this.currentSettings.size
+        );
     }
 
     get currentPositionsOption() {
-        if (this.ngramParameters) {
-            return this.positionsOptions.find(
-                (item) => item.value === this.currentSettings.positions
-            );
-        }
+        return this.positionsOptions.find(
+            (item) => item.value === this.currentSettings.positions
+        );
     }
 
     get currentFreqCompensationOption() {
-        if (this.ngramParameters) {
-            return this.freqCompensationOptions.find(
-                (item) => item.value === this.currentSettings.freqCompensation
-            );
-        }
+        return this.freqCompensationOptions.find(
+            (item) => item.value === this.currentSettings.freqCompensation
+        );
     }
 
     get currentAnalysisOption() {
-        if (this.ngramParameters) {
-            return this.analysisOptions.find(
-                (item) => item.value === this.currentSettings.analysis
-            );
-        }
+        return this.analysisOptions.find(
+            (item) => item.value === this.currentSettings.analysis
+        );
     }
 
     get currentMaxDocumentsOption() {
-        if (this.ngramParameters) {
-            return this.maxDocumentsOptions.find(
-                (item) => item.value === this.currentSettings.maxDocuments
-            );
-        }
+        return this.maxDocumentsOptions.find(
+            (item) => item.value === this.currentSettings.maxDocuments
+        );
     }
 
     get currentNumberOfNgramsOption() {
-        if (this.ngramParameters) {
-            return this.numberOfNgramsOptions.find(
-                (item) => item.value === this.currentSettings.numberOfNgrams
-            );
-        }
+        return this.numberOfNgramsOptions.find(
+            (item) => item.value === this.currentSettings.numberOfNgrams
+        );
     }
 
-    initialize() {}
-
-    teardown(): void {
+    ngOnDestroy(): void {
         this.stopPolling$.next();
     }
 
