@@ -11,11 +11,11 @@ Celery is used for
 
 ## Running celery
 
-See the repository readme for installation instructions. For development, it is possible to run I-analyzer without celery if you are not intending to use any of the functions listed above.
+See [first-time setup](./First-time-setup.md) for installation instructions. For development, it is possible to run I-analyzer without celery if you are not intending to use any of the functions listed above.
 
 ### Redis
 
-Celery uses [redis](https://www.redis.io/) as a backend for task data. Start Redis by running `redis-server` in a terminal.
+Celery uses [redis](https://www.redis.io/) as a backend for task data. After installing prerequistes, start Redis by running `redis-server` in a terminal.
 
 If you wish to run Redis from a non-default hostname and/or port, or pick which database to use, specify this in your `/backend/ianalyzer/settings_local.py` as
 
@@ -61,7 +61,7 @@ Then open `localhost:5555` in your browser to see the flower interface.
 ## Developing with celery
 
 - The arguments and outputs for celery tasks must be JSON-serialisable. For example, a task function can have a user ID string as an argument, but not a `CustomUser` object.
-- Use `group` to run tasks in parallel and `chain` to run tasks in series.
+- Use `group` to run tasks in parallel and `chain` to run tasks in series. You can use groups in chains, chains in groups, chains in chains, etc.
 - You can use flower (see above) for an overview of your celery tasks. Note that groups and chains are not tasks themselves, and will not show up as tasks on Flower.
 - For easier debugging and testing, keep your tasks simple and outfactor complicated functionality to 'normal' functions.
 
