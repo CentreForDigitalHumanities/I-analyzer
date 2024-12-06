@@ -73,7 +73,7 @@ defusedxml==0.7.1
     #   djangosaml2
     #   pysaml2
     #   python3-openid
-dj-rest-auth[with_social]==4.0.1
+dj-rest-auth[with-social,with_social]==4.0.1
     # via -r requirements.in
 django==4.2.16
     # via
@@ -185,6 +185,7 @@ numpy==1.24.4
     #   fst-pso
     #   fuzzytm
     #   gensim
+    #   miniful
     #   pandas
     #   pyfume
     #   scikit-learn
@@ -335,6 +336,7 @@ scipy==1.10.1
     # via
     #   fuzzytm
     #   gensim
+    #   miniful
     #   pyfume
     #   scikit-learn
     #   simpful
@@ -381,7 +383,7 @@ threadpoolctl==3.2.0
     # via scikit-learn
 tomli==2.0.1
     # via pytest
-tornado==6.4.1
+tornado==6.4.2
     # via
     #   django-livereload-server
     #   flower
