@@ -66,10 +66,11 @@ Many different parts of the application have *something* to do with the route an
 
 To handle route synchronisation, models can extend the [`StoreSync` class](/frontend/src/app/store/store-sync.ts.ts). Objects in this class connect to a `Store` that will keep track of their parameters.
 
-A "store" is essentially an abstraction for "a place that stores information". The query parameters in the route are a type of store, but an object in memory can also function as a store. Different types of stores are explained in in more detail below. As an abstract concept, it has two important properties:
+A "store" is essentially an abstraction for "a place that stores information". The query parameters in the route are a type of store, but an object in memory can also function as a store. Different types of stores are explained in in more detail below. As an abstract concept, it has a few important properties:
 
 - It is a [key-value store](https://en.wikipedia.org/wiki/Key%E2%80%93value_database). A model will always work with specific keys in the store, and ignore everything else.
 - Multiple models can be connected to the same store, allowing each model to store some information in it. This describes the behaviour we want to implement: multiple parts of the application synchronising their state with the route parameters.
+- Because the store construction is primarily designed for route parameters, the *values* in the store are typically short and simple. They're parameters, not data. This isn't enforced on a technical level, but it's useful in understanding how stores are used.
 
 If two models connect to the same store but their parameters do not overlap, they will act independently. If their parameters overlap, the state of those parameters will be synchronised between the models.
 
@@ -177,6 +178,22 @@ If a model does use the route, it may make sense that the model is tracking *som
 
 In practice, models often use the `RouterStoreService` when they are being used in components, but in a unit test, you substitute the `SimpleStore` for an easier setup.
 
-However, some models, like the `QueryModel`, are used with both store types. The `QueryModel` is instantiated with the `RouterStoreService` when it concerns the main query made by the user. But if we want to construct a query to generate a link, run a request with an extra filter, etc., we can instantiate a query model with the `SimpleStore`, which will not be synchronised with the route.
+However, some models, like the `QueryModel`, are used with both store types during runtime. The `QueryModel` is instantiated with the `RouterStoreService` when it concerns the main query made by the user. But if we want to construct a query to generate a link, run a request with an extra filter, etc., we can instantiate a query model with the `SimpleStore`, which will not be synchronised with the route.
 
 This is an important reason why stores are separated from models, instead of being built into them.
+
+## Testing store-synced models
+
+As mentioned above, `StoreSync` models are typically instantiated with the `RouterStoreService` during runtime, but you can use the `SimpleStore` during testing.  The [tests for the `SearchTabs` model](../frontend/src/app/search/search-tabs.spec.ts) are a minimal example of such tests.
+
+Examples of tests:
+
+- For a possible `state`, assert that `model.storeToState(model.stateToStore(state))` equals `state`.
+- Initialise the model with an empty store and check the initial state.
+- Initialise the model with a non-empty store and check the initial state. This simulates loading the page from a link with query parameters.
+- Try calling a method of the model that should update the state, and check the effect.
+- Update the store directly, and check that the model reflects it. This simulates what happens when the user uses back/forward navigation in the browser, or another model updating the same parameter. (The latter is not always applicable, but the former is.)
+
+The purpose of these tests is to verify the model's conversion between its internal state and the store, and the ways in which the model is meant to react to changes in the parameters.
+
+For an individual model, you do *not* need to test the core logic of the `StoreSync` and `Store` classes, such as whether the model actually ignores other keys in the store, or whether `SimpleStore` and `RouterStoreService` are compatible. (Those classes have their own unit tests; feel free to expand those, of course.)
