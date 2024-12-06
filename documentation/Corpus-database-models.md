@@ -25,7 +25,7 @@ Python definitions can be loaded into the database with the `loadcorpora` Django
 
 This command will parse any configured python corpora and save a database representation for them. If the python corpus cannot be loaded, the `Corpus` object will still exist in the database, but it will be inactive.
 
-If a corpus by the same name already exists in the database, the command will completely overwrite its `CorpusConfiguration` and `Field` instances. This means that, aside from adjusting permissions, changing the database representation of a corpus with a Python definition is always temporary. If you want to make permanent changes to the corpus, adjust the Python definition and run `loadcorpora` again.
+If a corpus by the same name already exists in the database, the command will completely overwrite its `CorpusConfiguration` and `Field` instances. This means that changing the database representation of a corpus with a Python definition is always temporary (except for adjusting permissions). If you want to make permanent changes to the corpus, adjust the Python definition and run `loadcorpora` again.
 
 ## Corpus visibility
 
@@ -46,4 +46,4 @@ Removing a corpus from the settings will not delete the `Corpus` object. It has 
 
 Since the underlying `Corpus` is not actually deleted, related search history, downloads, tags, and permissions will be preserved. If you reinstate the corpus in settings, all of these will function as before.
 
-At this point, you can also remove the `Corpus` object completely, which will remove all related data.
+At this point, you can activate the corpus again and use it as a database-only corpus, or you can remove the `Corpus` object completely, which will remove all related data.
