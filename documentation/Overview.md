@@ -9,9 +9,9 @@ The backend has three core responsibilities:
 - communication with Elasticsearch
 - analysis tasks
 
-### Modules
+### Packages
 
-The backend consists of the following modules:
+The backend consists of the following packages:
 
 - `es`: core functionality for working with elasticsearch
 - `addcorpus`: models and core functionality for corpus definitions
@@ -26,7 +26,7 @@ The backend consists of the following modules:
 - `corpora_test`: corpus definitions for unit tests
 - `ianalyzer`: central project app
 
-The following graph defines a rough map of the dependencies between modules.
+The following graph defines a rough map of the dependencies between packages.
 
 ```mermaid
 graph TD;

@@ -53,6 +53,6 @@ The release notes should include:
 
 ## Deploy on production
 
-Check your list of configuration changes and update the deployment module, if needed.
+Check your list of configuration changes and update the deployment configuration, if needed.
 
 Deploy the `master` branch on the production server.
