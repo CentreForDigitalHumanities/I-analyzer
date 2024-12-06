@@ -6,7 +6,7 @@ This file describes how to configure project settings in Django.
 
 We keep different settings files to handle different environments.
 
-`settings.py` is the default settings file in a development file. The version in the repository is replaced in our deployment setup. This means that what you write here will affect all development environments, but not production environments. Developers can override settings in their own environment using `settings_local`, but this is a good place for sensible defaults.
+`settings.py` is the default settings file in a development setting. The version in the repository is replaced in our deployment setup. This means that what you write here will affect all development environments, but not production environments. Developers can override settings in their own environment using `settings_local`, but this is a good place for sensible defaults.
 
 `common_settings.py` is intended for "universal" project settings that apply in both production and development servers. It is imported by `settings.py` on both development and production.
 
@@ -52,9 +52,7 @@ The values in the dictionary give specifications.
 
 By default, an elasticsearch server will have security features enabled; you can turn this off for a local development server (see [first-time setup](./First-time-setup.md)). Otherwise, the server configuration must specify an API key.
 
-Create an API key for the server: see [creating an API key](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html). Note down the `'id'` and `'api_key'` values of the response.
-
-Add the following values to the configuration:
+To create an API key for the server, see [creating an API key](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html). Note down the `'id'` and `'api_key'` values of the response. Add the following values to the configuration:
 
 - `'certs_location'`: Fill in the following path: `{your_elasticsearch_directory}/config/certs/http_ca.crt`
 - `'api_id'`: the ID of the API key
@@ -66,6 +64,8 @@ Add the following values to the configuration:
 If you name one of the servers `'default'`, it will act as the default for all corpora. This is especially recommended if you have only one server.
 
 If you don't assign a default server this way, the server for each corpus must be configured explicitly in `CORPUS_SERVER_NAMES` (see below).
+
+Unit tests for the backend will assume that there is a default server configured and use that one. Unit tests can create tests indices (always named `test-*`), which will be deleted during teardown.
 
 ### `CORPORA`
 
@@ -79,7 +79,7 @@ CORPORA = {
 }
 ```
 
-The key of the corpus must match the name of the corpus class. This match is not case-sensitive, and your key may include extra non-alphabetic characters (they will be ignored when matching). For example, `'times'` is a valid key for the `Times` class. It will usually match the filename as well, but this is not strictly necessary.
+The key of the corpus must match the name of the corpus class. This match is not case-sensitive, and your key may include extra non-alphabetic characters (they will be ignored when matching). For example, `'times'` is a valid key for the `Times` class, and so is `'TIMES_1'`. It will usually match the filename as well, but this is not strictly necessary.
 
 ### `CORPUS_SERVER_NAMES`
 

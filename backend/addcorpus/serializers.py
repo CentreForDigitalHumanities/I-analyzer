@@ -186,7 +186,9 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
         configuration_data = definition_data.pop('configuration')
         fields_data = configuration_data.pop('fields')
 
-        corpus = Corpus(pk=instance.pk, **definition_data)
+        corpus = Corpus(
+            pk=instance.pk, date_created=instance.date_created, **definition_data
+        )
         corpus.save()
 
         configuration, _ = CorpusConfiguration.objects.get_or_create(corpus=corpus)
