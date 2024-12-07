@@ -28,3 +28,7 @@ Political alignment: Centre-left; British republicanism
 ### Availability
 
 The Guardian/Observer corpus is published by [ProQuest](https://en.wikipedia.org/wiki/ProQuest) and is only available to members of Utrecht University.
+
+### Image attribution
+
+The image used for this corpus was created by Michael Brunton-Spall ([image source](https://www.flickr.com/photos/27778872@N08/5084043824)) and is shared under a [Creative Commons Attribution 2.0 licence](https://creativecommons.org/licenses/by/2.0/).
