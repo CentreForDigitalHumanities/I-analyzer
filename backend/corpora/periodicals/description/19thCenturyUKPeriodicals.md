@@ -123,3 +123,7 @@ The corpus includes the following 91 titles:
 ### Availability
 
 This corpus is published by [Gale](https://en.wikipedia.org/wiki/Gale_(publisher)) and is only available to members of Utrecht University.
+
+### Image attribution
+
+The image used for this corpus was created by James Valentine ([image source](https://commons.wikimedia.org/wiki/File:Fleet_Street._By_James_Valentine_c.1890..jpg)) and is in the public domain.
