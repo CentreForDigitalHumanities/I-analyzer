@@ -29,7 +29,14 @@ def map_col(col: pd.Series) -> str:
 
 
 def is_date_col(col: pd.Series) -> bool:
-    mask = col.transform(is_date)
+    '''Check if a column only contains dates or missing values
+    Converts empty strings to None because they are non picked up by `isna()`
+    '''
+    non_null = col.replace('', None)
+    non_null = non_null[~non_null.isna()]
+    if non_null.empty:
+        return False
+    mask = non_null.transform(is_date)
     return mask.all()
 
 
