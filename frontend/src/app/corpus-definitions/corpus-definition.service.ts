@@ -59,7 +59,7 @@ export class CorpusDefinitionService implements OnDestroy {
             _.isUndefined(sourceDataOpts) ||
             sourceDataOpts.delimiter !== delimiter
         ) {
-            let updatedCorpus = _.clone(this.corpus$.value);
+            let updatedCorpus = _.cloneDeep(this.corpus$.value);
             updatedCorpus.definition.source_data.options = {
                 delimiter: delimiter,
             };
@@ -68,7 +68,7 @@ export class CorpusDefinitionService implements OnDestroy {
     }
 
     public setFields(fields: APICorpusDefinitionField[]) {
-        let updatedCorpus = _.clone(this.corpus$.value);
+        let updatedCorpus = _.cloneDeep(this.corpus$.value);
         updatedCorpus.definition.fields = fields;
         this.updateCorpus(updatedCorpus);
     }
