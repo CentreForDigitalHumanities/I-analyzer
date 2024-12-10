@@ -1,3 +1,4 @@
+import os
 import warnings
 
 from django.contrib import admin
@@ -178,10 +179,13 @@ class CorpusConfiguration(models.Model):
         max_length=64,
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
+        blank=True,
+        null=True
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
+        null=True,
         help_text='short description of the corpus',
     )
     document_context = models.JSONField(
@@ -211,6 +215,7 @@ class CorpusConfiguration(models.Model):
             blank=True,
         ),
         help_text='languages used in the content of the corpus (from most to least frequent)',
+        blank=True,
     )
     min_date = models.DateField(
         help_text='earliest date for the data in the corpus',
@@ -514,3 +519,18 @@ class CorpusDocumentationPage(models.Model):
                 name='unique_documentation_type_for_corpus'
             )
         ]
+
+
+class CorpusDataFile(models.Model):
+    def upload_path(self, filename):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}', filename)
+
+    corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=upload_path,
+                            help_text='file containing corpus data')
+    is_sample = models.BooleanField(
+        default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.file.name}'
