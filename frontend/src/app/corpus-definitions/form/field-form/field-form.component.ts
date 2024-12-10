@@ -6,8 +6,9 @@ import {
 } from '@models/corpus-definition';
 import { MenuItem } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
-import { ISO639Languages } from '../constants';
 import * as _ from 'lodash';
+
+import { ISO6393Languages } from '../constants';
 
 @Component({
     selector: 'ia-field-form',
@@ -47,7 +48,7 @@ export class FieldFormComponent {
         },
     ];
 
-    languageOptions = ISO639Languages;
+    languageOptions = ISO6393Languages;
 
     constructor() {}
 

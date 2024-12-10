@@ -57,7 +57,7 @@
                         <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
                             <div class="control">
                     <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name" optionValue="code"
-                        placeholder="select language (optional)" [filter]="true" />
+                        placeholder="select language (optional)" [filter]="true" [virtualScroll]="true" [virtualScrollItemSize]="10" [showClear]="true"/>
                     </div>
                     </div>
 
