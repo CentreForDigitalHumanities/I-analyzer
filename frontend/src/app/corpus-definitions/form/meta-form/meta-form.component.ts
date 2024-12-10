@@ -9,6 +9,7 @@ import { FormBuilder } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { CorpusDefinition } from '../../../models/corpus-definition';
+import { ISO6393Languages } from '../constants';
 
 @Component({
     selector: 'ia-meta-form',
@@ -43,6 +44,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     });
 
     destroy$ = new Subject<void>();
+
+    languageOptions = ISO6393Languages;
 
     constructor(
         private formBuilder: FormBuilder,
