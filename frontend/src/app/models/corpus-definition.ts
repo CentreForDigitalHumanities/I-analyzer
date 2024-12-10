@@ -3,6 +3,8 @@ import { ApiService } from '@services';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 
+export type Delimiter = ',' | ';' | '\t';
+
 export interface CorpusDataFile {
     id?: number;
     corpusID: number;
@@ -57,7 +59,7 @@ export interface APICorpusDefinition {
     source_data: {
         type: 'csv';
         options?: {
-            delimiter?: ',' | ';' | '\t';
+            delimiter?: Delimiter;
         };
     };
     fields: APICorpusDefinitionField[];

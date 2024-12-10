@@ -4,9 +4,9 @@ import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
 import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import {
-    APICorpusDefinition,
     APICorpusDefinitionField,
     CorpusDefinition,
+    Delimiter,
 } from '../models/corpus-definition';
 
 @Injectable()
@@ -53,9 +53,7 @@ export class CorpusDefinitionService implements OnDestroy {
         this.corpus$.next(corpus);
     }
 
-    public setDelimiter(
-        delimiter: APICorpusDefinition['source_data']['options']['delimiter']
-    ): void {
+    public setDelimiter(delimiter: Delimiter): void {
         let sourceDataOpts = this.corpus$.value.definition.source_data.options;
         if (
             _.isUndefined(sourceDataOpts) ||
