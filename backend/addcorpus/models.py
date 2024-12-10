@@ -506,7 +506,7 @@ class CorpusDataFile(models.Model):
     file = models.FileField(upload_to=upload_path,
                             help_text='file containing corpus data')
     is_sample = models.BooleanField(
-        default=False, help_text='this file reflects only part of the total data, for use in creating the corpus definition')
+        default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -301,7 +301,7 @@ export class ApiService {
         file: File
     ): Observable<CorpusDataFile> {
         const formData: FormData = new FormData();
-        formData.append('file', file, 'newFile.csv');
+        formData.append('file', file, file.name);
         formData.append('corpus', String(corpusId));
         formData.append('is_sample', 'True');
         return this.http.post<CorpusDataFile>(

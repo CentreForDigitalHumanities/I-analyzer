@@ -1,6 +1,7 @@
 import {
     IconDefinition as RegularIconDefinition,
     faClock,
+    faFileCode,
     faNewspaper,
 } from '@fortawesome/free-regular-svg-icons';
 import {
@@ -94,7 +95,7 @@ export const actionIcons: Icons = {
     less: faMinus,
     prev: faArrowLeft,
     next: faArrowRight,
-    inOut: faArrowRightArrowLeft,
+    inOut: faFileCode,
     link: faLink,
     dropdown: faAngleDown,
     dropup: faAngleUp,
