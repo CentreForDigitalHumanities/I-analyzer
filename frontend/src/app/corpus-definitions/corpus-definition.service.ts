@@ -39,10 +39,10 @@ export class CorpusDefinitionService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    public toggleStep(stepIndex: number) {
-        const newValue = this.steps$.value;
+    public toggleStepDisabled(stepIndex: number) {
+        const newValue = _.cloneDeep(this.steps$.value);
         newValue[stepIndex].disabled = !newValue[stepIndex].disabled;
-        this.steps$.next(_.cloneDeep(newValue));
+        this.steps$.next(newValue);
     }
 
     public activateStep(index: number) {

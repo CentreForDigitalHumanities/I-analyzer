@@ -70,7 +70,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
             next: () => {
-                this.corpusDefService.toggleStep(1);
+                this.corpusDefService.toggleStepDisabled(1);
                 this.corpusDefService.activateStep(1);
             },
             error: console.error,

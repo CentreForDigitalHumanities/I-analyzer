@@ -104,7 +104,7 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     }
 
     onSubmit() {
-        this.corpusDefService.toggleStep(2);
+        this.corpusDefService.toggleStepDisabled(2);
         this.corpusDefService.activateStep(2);
     }
 
