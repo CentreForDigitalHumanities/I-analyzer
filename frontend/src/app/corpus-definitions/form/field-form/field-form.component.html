@@ -28,38 +28,38 @@
             <div class="field">
                 <label class="label" for="options">Options</label>
                 <ng-container formGroupName="options">
-                    <div class="control">
+                    <div *ngIf="field.get('type').value === 'text_content' || field.get('type').value === 'text_metadata' " class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="search" formControlName="search" /> Search
                             <p class="help">Enable full-text search for this field.</p>
-                            </label>
-                            </div>
-                            <div *ngIf="field.get('type').value !== 'text_content' " class="control">
-                                <label class="checkbox">
+                        </label>
+                        </div>
+                        <div *ngIf="field.get('type').value !== 'text_content' " class="control">
+                            <label class="checkbox">
                             <input type="checkbox" name="filter" formControlName="filter" /> Filter
                             <p class="help">Enable filtering on values in this field.</p>
-                            </label>
-                            </div>
-                            <div class="control">
-                                <label class="checkbox">
+                        </label>
+                        </div>
+                        <div class="control">
+                            <label class="checkbox">
                             <input type="checkbox" name="preview" formControlName="preview" /> Preview
                             <p class="help">Show this field in the results overview.</p>
-                            </label>
-                            </div>
-                            <div class="control">
-                                <label class="checkbox">
+                        </label>
+                        </div>
+                    <div *ngIf="field.get('type').value !== 'text_content' " class="control">
+                        <label class="checkbox">
                             <input type="checkbox" name="sort" formControlName="sort" /> Sort
                             <p class="help">Enable sorting on values of this field.</p>
-                            </label>
-                            </div>
-                            </ng-container>
-                            </div>
-                            <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
-                                <div class="control">
-                                <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name" optionValue="code"
-                                    placeholder="select language (optional)" [filter]="true" />
-                                </div>
-                            </div>
+                        </label>
+                        </div>
+                        </ng-container>
+                        </div>
+                        <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
+                            <div class="control">
+                    <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name" optionValue="code"
+                        placeholder="select language (optional)" [filter]="true" />
+                    </div>
+                    </div>
 
         </div>
     </ng-container>
