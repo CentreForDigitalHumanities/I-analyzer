@@ -21,8 +21,13 @@ class InlineDatafileAdmin(admin.StackedInline):
     extra = 0
 
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['configuration', 'ready_to_index', 'ready_to_publish']
-    fields = ['name', 'groups', 'configuration', 'has_python_definition', 'ready_to_index', 'ready_to_publish', 'active']
+    readonly_fields = [
+        'configuration', 'ready_to_index', 'ready_to_publish', 'date_created',
+    ]
+    fields = [
+        'name', 'groups', 'configuration', 'date_created', 'has_python_definition',
+        'ready_to_index', 'ready_to_publish', 'active',
+    ]
     list_display = ['name', 'active']
     list_filter = ['groups', 'active']
     inlines = [InlineDatafileAdmin]

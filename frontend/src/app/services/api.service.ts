@@ -150,9 +150,9 @@ export class ApiService {
         return this.http.post<MostFrequentWordsResult[]>(url, data);
     }
 
-    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
+    public geoData(data: WordcloudParameters): Observable<GeoDocument[]> {
         const url = this.apiRoute(this.visApiURL, 'geo');
-        return this.http.post<GeoDocument[]>(url, data).toPromise();
+        return this.http.post<GeoDocument[]>(url, data);
     }
 
     public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {

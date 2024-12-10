@@ -4,10 +4,10 @@ from addcorpus.es_mappings import date_mapping, date_estimate_mapping
 from addcorpus.python_corpora.corpus import transform_to_date_range
 
 
-def test_date_filter(es_client):
+def test_date_filter(es_client, test_index_cleanup):
     ''' test that both a date and a date_range field can be queried in the same way'''
-    date_name = 'mock-date-corpus'
-    date_range_name = 'mock-date-range-corpus'
+    date_name = 'test-date-corpus'
+    date_range_name = 'test-date-range-corpus'
     es_client.indices.create(
         index=date_name,
         mappings={
@@ -31,7 +31,7 @@ def test_date_filter(es_client):
         'date': transform_to_date_range('1980-01-01', '1983-12-31')
     })
     sleep(1)
-    response = es_client.search(index='mock-date*', query={
+    response = es_client.search(index='test-date*', query={
         'range': {
             'date': {
                 'gte': '1900-12-31',
@@ -42,6 +42,3 @@ def test_date_filter(es_client):
         }
     })
     assert len(response['hits']['hits']) == 2
-    es_client.indices.delete(
-        index=[date_name, date_range_name]
-    )

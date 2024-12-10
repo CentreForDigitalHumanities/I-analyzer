@@ -29,7 +29,7 @@ import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { CorpusGuard } from './corpus.guard';
 import { DialogComponent } from './dialog/dialog.component';
-import { DocumentPageComponent } from './document-page/document-page.component';
+import { DocumentPageComponent } from './document/document-page/document-page.component';
 import { DocumentModule } from './document/document.module';
 import { FooterComponent } from './footer/footer.component';
 import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';

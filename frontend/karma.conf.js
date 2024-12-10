@@ -19,7 +19,7 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, 'coverage'), reports: [ 'html', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
-    
+
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
@@ -32,7 +32,7 @@ module.exports = function (config) {
           base: 'Chrome',
           flags: [
             '--headless',
-            // '--disable-gpu', this might not be needed http://cvuorinen.net/2017/05/running-angular-tests-in-headless-chrome/
+            '--disable-gpu',
             // Without a remote debugging port, Google Chrome exits immediately.
             '--remote-debugging-port=9222',
             '--no-sandbox'

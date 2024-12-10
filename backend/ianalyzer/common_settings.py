@@ -77,7 +77,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-    ]
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'password': '3/minute',
+        'registration': '5/minute',
+    }
 }
 
 # Password validation
@@ -98,6 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ACCOUNT_USER_DISPLAY = lambda user: user.username.replace(".", "\u2024")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -107,8 +112,6 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Amsterdam'
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

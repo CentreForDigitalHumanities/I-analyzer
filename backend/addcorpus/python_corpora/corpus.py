@@ -14,6 +14,7 @@ from ianalyzer_readers.readers.core import Reader, Field
 from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.readers.csv import CSVReader
 from ianalyzer_readers.readers.html import HTMLReader
+from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.readers.xlsx import XLSXReader
 
 from addcorpus.python_corpora.filters import Filter
@@ -77,6 +78,23 @@ class CorpusDefinition(Reader):
         See addcorpus.constants.CATEGORIES for options
         '''
         raise NotImplementedError('CorpusDefinition missing category')
+
+    '''
+    Directory where source data is located
+    If neither `data_directory` nor `data_url` is set to valid paths, this corpus cannot be indexed
+    '''
+    data_directory = None
+
+    '''
+    URL where source data is located
+    If neither `data_directory` nor `data_url` is set to valid paths, this corpus cannot be indexed
+    '''
+    data_url = None
+
+    '''
+    If connecting to the data URL requires and API key, it needs to be set here
+    '''
+    data_api_key = None
 
     @property
     def es_index(self):
@@ -339,6 +357,11 @@ class JSONCorpusDefinition(CorpusDefinition):
         }
 
         yield field_dict
+
+class RDFCorpusDefinition(CorpusDefinition, RDFReader):
+    '''
+    A RDFCorpus is any corpus that extracts its data from Linked Data files.
+    '''
 
 # Fields ######################################################################
 

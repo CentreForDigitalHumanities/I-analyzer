@@ -29,7 +29,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
     serializer_class = CorpusSerializer
 
     def get_queryset(self):
-        return self.request.user.searchable_corpora()
+        return self.request.user.searchable_corpora().order_by('-date_created')
 
 
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):

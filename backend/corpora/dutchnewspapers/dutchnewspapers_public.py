@@ -96,7 +96,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                     if extension != '.xml':
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
-                    #def_match = self.definition_pattern.match(name)
+                    # def_match = self.definition_pattern.match(name)
                     article_match = self.article_pattern.match(name)
                     if article_match:
                         parts = name.split("_")
@@ -130,189 +130,187 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
         'issue'
     )
 
-
     @property
     def fields(self):
-        return [FieldDefinition(
-            name="url",
-            display_name="Delpher URL",
-            description="Link to record on Delpher",
-            display_type='url',
-            es_mapping=keyword_mapping(),
-            extractor=XML(
-                lambda metadata: Tag('recordIdentifier', string=metadata['id']),
-                SiblingTag('identifier'),
-                external_file=True
-            )
-        ),
-        FieldDefinition(
-            name='date',
-            display_name='Date',
-            description='Publication date.',
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            results_overview=True,
-            csv_core=True,
-            visualizations=['resultscount', 'termfrequency'],
-            search_filter=filters.DateFilter(
-                self.min_date,
-                self.max_date,
-                description=(
-                    'Accept only articles with publication date in this range.'
-                )
+        return [
+            FieldDefinition(
+                name="url",
+                display_name="Delpher URL",
+                description="Link to record on Delpher",
+                display_type="url",
+                es_mapping=keyword_mapping(),
+                extractor=XML(
+                    lambda metadata: Tag("recordIdentifier", string=metadata["id"]),
+                    SiblingTag("identifier"),
+                    external_file=True,
+                ),
             ),
-            extractor=Metadata('date')
-        ),
-        FieldDefinition(
-            name='ocr',
-            display_name='OCR confidence',
-            description='OCR confidence level.',
-            es_mapping={'type': 'float'},
-            search_filter=filters.RangeFilter(0, 100,
-                                              description=(
-                                                  'Accept only articles for which the Opitical Character Recognition confidence '
-                                                  'indicator is in this range.'
-                                              )
-                                              ),
-            extractor=XML(
-                Tag('OCRConfidencelevel'),
-                external_file=True,
-                transform=lambda x: float(x)*100
+            FieldDefinition(
+                name="date",
+                display_name="Date",
+                description="Publication date.",
+                es_mapping={"type": "date", "format": "yyyy-MM-dd"},
+                results_overview=True,
+                csv_core=True,
+                visualizations=["resultscount", "termfrequency"],
+                search_filter=filters.DateFilter(
+                    self.min_date,
+                    self.max_date,
+                    description=(
+                        "Accept only articles with publication date in this range."
+                    ),
+                ),
+                extractor=Metadata("date"),
             ),
-            sortable=True
-        ),
-        FieldDefinition(
-            name='newspaper_title',
-            display_name='Newspaper title',
-            description='Title of the newspaper',
-            results_overview=True,
-            search_field_core=True,
-            es_mapping={'type': 'keyword'},
-            visualizations=['resultscount', 'termfrequency'],
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these newspapers.',
-                option_count=len(self.papers)
+            FieldDefinition(
+                name="ocr",
+                display_name="OCR confidence",
+                description="OCR confidence level.",
+                es_mapping={"type": "float"},
+                search_filter=filters.RangeFilter(
+                    0,
+                    100,
+                    description=(
+                        "Accept only articles for which the Opitical Character Recognition confidence "
+                        "indicator is in this range."
+                    ),
+                ),
+                extractor=XML(
+                    Tag("OCRConfidencelevel"),
+                    external_file=True,
+                    transform=lambda x: float(x) * 100,
+                ),
+                sortable=True,
             ),
-            extractor=Metadata('title')
-        ),
-        FieldDefinition(
-            name='version_of',
-            display_name='Version of',
-            description='The newspaper is a version of this newspaper.',
-            es_mapping={'type': 'keyword'},
-            extractor=Metadata('isVersionOf')
-        ),
-        FieldDefinition(
-            name='issue_number',
-            display_name='Issue number',
-            description='Issue number of the newspaper',
-            csv_core=True,
-            es_mapping={'type': 'integer'},
-            extractor=Metadata('issuenumber')
-        ),
-        FieldDefinition(
-            name='category',
-            display_name='Category',
-            description='Whether the item is an article, advertisment, etc.',
-            csv_core=True,
-            es_mapping={'type': 'keyword'},
-            extractor=XML(
-                lambda metadata: Tag('recordIdentifier', string=metadata['id']),
-                SiblingTag('subject'),
-                external_file=True
+            FieldDefinition(
+                name="newspaper_title",
+                display_name="Newspaper title",
+                description="Title of the newspaper",
+                results_overview=True,
+                es_mapping={"type": "keyword"},
+                visualizations=["resultscount", "termfrequency"],
+                search_filter=filters.MultipleChoiceFilter(
+                    description="Accept only articles in these newspapers.",
+                    option_count=len(self.papers),
+                ),
+                extractor=Metadata("title"),
             ),
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these categories.',
-                option_count=2,
+            FieldDefinition(
+                name="version_of",
+                display_name="Version of",
+                description="The newspaper is a version of this newspaper.",
+                es_mapping={"type": "keyword"},
+                extractor=Metadata("isVersionOf"),
             ),
-        ),
-        FieldDefinition(
-            name='circulation',
-            display_name='Circulation',
-            description='The area in which the newspaper was distributed.',
-            es_mapping={'type': 'keyword'},
-            csv_core=True,
-            extractor=Metadata('spatial'),
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles appearing in specific areas.',
-                option_count=7
+            FieldDefinition(
+                name="issue_number",
+                display_name="Issue number",
+                description="Issue number of the newspaper",
+                csv_core=True,
+                es_mapping={"type": "integer"},
+                extractor=Metadata("issuenumber"),
             ),
-        ),
-        FieldDefinition(
-            name='publisher',
-            display_name='Publisher',
-            description='Publisher',
-            es_mapping=keyword_mapping(),
-            search_field_core=True,
-            extractor=Metadata('publisher')
-        ),
-        FieldDefinition(
-            name='language',
-            display_name='Language',
-            description='language',
-            es_mapping={'type': 'keyword'},
-            extractor=Metadata('language')
-        ),
-        FieldDefinition(
-            name='article_title',
-            display_name='Article title',
-            description='Article title',
-            results_overview=True,
-            search_field_core=True,
-            extractor=XML(Tag('title'), flatten=True, toplevel=True)
-        ),
-        FieldDefinition(
-            name='id',
-            display_name='ID',
-            description='Unique identifier of the entry.',
-            extractor=Metadata('id')
-        ),
-        FieldDefinition(
-            name='source',
-            display_name='Source',
-            description='Library or archive which keeps the hard copy of this newspaper.',
-            es_mapping={'type': 'keyword'},
-            extractor=Metadata('source')
-        ),
-        FieldDefinition(
-            name='pub_place',
-            display_name='Publication Place',
-            description='Where the newspaper was published',
-            es_mapping={'type': 'keyword'},
-            extractor=Metadata('pub_place')
-        ),
-        FieldDefinition(
-            name='temporal',
-            display_name='Edition',
-            description='Newspaper edition for the given date',
-            results_overview=True,
-            csv_core=True,
-            es_mapping={'type': 'keyword'},
-            visualizations=['resultscount', 'termfrequency'],
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers which appeared as a given edition.',
-                option_count=3,
+            FieldDefinition(
+                name="category",
+                display_name="Category",
+                description="Whether the item is an article, advertisment, etc.",
+                csv_core=True,
+                es_mapping={"type": "keyword"},
+                extractor=XML(
+                    lambda metadata: Tag("recordIdentifier", string=metadata["id"]),
+                    SiblingTag("subject"),
+                    external_file=True,
+                ),
+                search_filter=filters.MultipleChoiceFilter(
+                    description="Accept only articles in these categories.",
+                    option_count=2,
+                ),
             ),
-            extractor=Metadata('temporal')
-        ),
-        FieldDefinition(
-            name='content',
-            display_name='Content',
-            display_type='text_content',
-            description='Text content.',
-            es_mapping=main_content_mapping(True, True, True, 'nl'),
-            results_overview=True,
-            search_field_core=True,
-            extractor=XML(
-                Tag('p'),
-                multiple=True,
-                flatten=True,
-                toplevel=True,
-                transform='\n'.join,
+            FieldDefinition(
+                name="circulation",
+                display_name="Circulation",
+                description="The area in which the newspaper was distributed.",
+                es_mapping={"type": "keyword"},
+                csv_core=True,
+                extractor=Metadata("spatial"),
+                search_filter=filters.MultipleChoiceFilter(
+                    description="Accept only articles appearing in specific areas.",
+                    option_count=7,
+                ),
             ),
-            visualizations=["wordcloud"],
-            language='nl',
-        ),
-    ]
-
-
-
+            FieldDefinition(
+                name="publisher",
+                display_name="Publisher",
+                description="Publisher",
+                es_mapping=keyword_mapping(),
+                extractor=Metadata("publisher"),
+            ),
+            FieldDefinition(
+                name="language",
+                display_name="Language",
+                description="language",
+                es_mapping={"type": "keyword"},
+                extractor=Metadata("language"),
+            ),
+            FieldDefinition(
+                name="article_title",
+                display_name="Article title",
+                description="Article title",
+                results_overview=True,
+                search_field_core=True,
+                searchable=True,
+                extractor=XML(Tag("title"), flatten=True, toplevel=True),
+            ),
+            FieldDefinition(
+                name="id",
+                display_name="ID",
+                description="Unique identifier of the entry.",
+                extractor=Metadata("id"),
+            ),
+            FieldDefinition(
+                name="source",
+                display_name="Source",
+                description="Library or archive which keeps the hard copy of this newspaper.",
+                es_mapping={"type": "keyword"},
+                extractor=Metadata("source"),
+            ),
+            FieldDefinition(
+                name="pub_place",
+                display_name="Publication Place",
+                description="Where the newspaper was published",
+                es_mapping={"type": "keyword"},
+                extractor=Metadata("pub_place"),
+            ),
+            FieldDefinition(
+                name="temporal",
+                display_name="Edition",
+                description="Newspaper edition for the given date",
+                results_overview=True,
+                csv_core=True,
+                es_mapping={"type": "keyword"},
+                visualizations=["resultscount", "termfrequency"],
+                search_filter=filters.MultipleChoiceFilter(
+                    description="Accept only articles in newspapers which appeared as a given edition.",
+                    option_count=3,
+                ),
+                extractor=Metadata("temporal"),
+            ),
+            FieldDefinition(
+                name="content",
+                display_name="Content",
+                display_type="text_content",
+                description="Text content.",
+                es_mapping=main_content_mapping(True, True, True, "nl"),
+                results_overview=True,
+                search_field_core=True,
+                extractor=XML(
+                    Tag("p"),
+                    multiple=True,
+                    flatten=True,
+                    toplevel=True,
+                    transform="\n".join,
+                ),
+                visualizations=["wordcloud", "ngram"],
+                language="nl",
+            ),
+        ]
