@@ -34,7 +34,7 @@
                             <p class="help">Enable full-text search for this field.</p>
                             </label>
                             </div>
-                            <div class="control">
+                            <div *ngIf="field.get('type').value !== 'text_content' " class="control">
                                 <label class="checkbox">
                             <input type="checkbox" name="filter" formControlName="filter" /> Filter
                             <p class="help">Enable filtering on values in this field.</p>
