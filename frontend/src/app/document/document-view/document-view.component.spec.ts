@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import * as _ from 'lodash';
-import { mockCorpus, mockField } from '../../mock-data/corpus';
+import { mockCorpus, mockField } from '../../../mock-data/corpus';
 
-import { commonTestBed } from '../common-test-bed';
+import { commonTestBed } from '../../common-test-bed';
 
 import { DocumentViewComponent } from './document-view.component';
-import { makeDocument } from '../../mock-data/constructor-helpers';
+import { makeDocument } from '../../../mock-data/constructor-helpers';
 
 describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;

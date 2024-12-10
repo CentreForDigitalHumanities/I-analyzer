@@ -58,7 +58,8 @@ class SmallMockCorpus(CSVCorpusDefinition):
     genre = FieldDefinition(
         name = 'genre',
         es_mapping = keyword_mapping(),
-        extractor = CSV('genre')
+        extractor = CSV('genre'),
+        searchable=False,
     )
 
     fields = [date, title_field, content, genre]
