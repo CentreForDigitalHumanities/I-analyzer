@@ -14,12 +14,14 @@
     </div>
 </div>
 <ng-container [ngSwitch]="activeStep$ | async">
-    <div *ngSwitchCase="0" class="section">
-        <div class="container is-readable"><ia-meta-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" /></div>
+    <div class="section">
+        <div class="container is-readable">
+            <ng-container *ngSwitchCase="0"><ia-meta-form *ngIf="corpus$ | async as corpus"
+                    [corpus]="corpus" /></ng-container>
+            <ia-upload-sample *ngSwitchCase="1" />
+            <ng-container *ngSwitchCase="2"><ia-field-form *ngIf="corpus$ | async as corpus"
+                    [corpus]="corpus" /></ng-container>
+    
+        </div>
     </div>
-    <div *ngSwitchCase="1" class="section">
-        <div class="container is-readable"><ia-upload-sample /></div>
-    </div>
-    <div *ngSwitchCase="2" class="section">
-        <div class="container is-readable"><ia-field-form *ngIf="corpus$ | async as corpus" [corpus]="corpus" /></div>
-    </div>
+</ng-container>
