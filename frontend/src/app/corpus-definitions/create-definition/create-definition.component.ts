@@ -58,7 +58,7 @@ export class CreateDefinitionComponent {
             next: (result: APIEditableCorpus) => {
                 const nextRoute = asImport
                     ? ['/corpus-definitions']
-                    : ['/corpus-definitions', 'form', result.id];
+                    : ['/corpus-definitions', 'edit', result.id];
                 this.router.navigate(nextRoute);
             },
             error: (err: HttpErrorResponse) => {

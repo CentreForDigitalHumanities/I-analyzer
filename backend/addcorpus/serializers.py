@@ -1,12 +1,14 @@
-from rest_framework import serializers
 from typing import Dict
 
-from addcorpus.models import Corpus, CorpusConfiguration, CorpusDataFile, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
-from langcodes import Language, standardize_tag
 from addcorpus.documentation import render_documentation_context
 from addcorpus.json_corpora.export_json import export_json_corpus
 from addcorpus.json_corpora.import_json import import_json_corpus
+from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
+                              CorpusDocumentationPage, Field)
+from django.core.files import File
+from langcodes import Language, standardize_tag
+from rest_framework import serializers
 
 
 class NonEmptyJSONField(serializers.JSONField):
@@ -216,7 +218,17 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
         return corpus
 
 
+class DataFileField(serializers.FileField):
+    def to_representation(self, value: File) -> Dict:
+        return value.name
+
+    def to_internal_value(self, data):
+        return super().to_internal_value(data)
+
+
 class CorpusDataFileSerializer(serializers.ModelSerializer):
+    file = DataFileField()
+
     class Meta:
         model = CorpusDataFile
-        fields = '__all__'
+        fields = ('id', 'corpus', 'file', 'created', 'is_sample')
