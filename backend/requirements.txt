@@ -75,7 +75,7 @@ defusedxml==0.7.1
     #   python3-openid
 dj-rest-auth[with-social,with_social]==4.0.1
     # via -r requirements.in
-django==4.2.16
+django==4.2.17
     # via
     #   -r requirements.in
     #   dj-rest-auth
@@ -132,7 +132,7 @@ h11==0.14.0
     #   wsproto
 humanize==4.9.0
     # via flower
-ianalyzer-readers==0.2.1
+ianalyzer-readers==0.2.2
     # via -r requirements.in
 idna==3.4
     # via
