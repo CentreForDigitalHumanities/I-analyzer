@@ -55,7 +55,6 @@ describe('NgramComponent', () => {
     component.visualizedField = {name: 'speech'} as any;
     component.asTable = false;
     component.palette = ['yellow', 'blue'];
-    spyOn(component.ngramParameters, 'getCurrentRouterState').and.returnValue(cacheKey);
     fixture.detectChanges();
   });
 

@@ -23,10 +23,14 @@ export class NgramParameters extends StoreSync<NgramSettings> {
         this.connectToStore();
     }
 
-    stateToStore(state: NgramSettings): Params {
-        return { ngramSettings: [`s:${state.size}`,`p:${state.positions}`,`c:${state.freqCompensation}`,
+    stringifyNgramSettings(state: NgramSettings): string {
+        return [`s:${state.size}`,`p:${state.positions}`,`c:${state.freqCompensation}`,
             `a:${state.analysis}`,`m:${state.maxDocuments}`,`n:${state.numberOfNgrams}`,
-            `f:${state.dateField}`].join(',') }
+            `f:${state.dateField}`].join(',')
+    }
+
+    stateToStore(state: NgramSettings): Params {
+        return { ngramSettings: this.stringifyNgramSettings(state)}
     }
 
     storeToState(params: Params): NgramSettings {
@@ -56,9 +60,5 @@ export class NgramParameters extends StoreSync<NgramSettings> {
     findSetting(abbreviation: string, stringComponents: string[]): string | undefined{
         const setting = stringComponents.find(s => s[0] === abbreviation);
         return setting.split(':')[1];
-    }
-
-    getCurrentRouterState(): string {
-        return _.get(this.store.currentParams(), 'ngramSettings');
     }
 }

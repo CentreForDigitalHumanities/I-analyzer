@@ -242,14 +242,14 @@ export class NgramComponent implements OnChanges {
     }
 
     cacheResult(result: any): void {
-        const key = this.ngramParameters.getCurrentRouterState();
+        const key = this.ngramParameters.stringifyNgramSettings(this.currentSettings);
         if (key) {
             this.resultsCache[key] = result;
         }
     }
 
     getCachedResult(): any {
-        const key = this.ngramParameters.getCurrentRouterState();
+        const key = this.ngramParameters.stringifyNgramSettings(this.currentSettings);
         if (key && _.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
@@ -281,9 +281,9 @@ export class NgramComponent implements OnChanges {
     }
 
     confirmChanges() {
+        this.ngramParameters.setParams(this.currentSettings);
         this.isLoading = true;
         this.parametersChanged = false;
-        this.ngramParameters.setParams(this.currentSettings);
         this.loadGraph();
     }
 
