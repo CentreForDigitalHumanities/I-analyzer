@@ -20,7 +20,7 @@ import { EntityService } from './services/entity.service';
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 import { VisualizationService } from './services/visualization.service';
-import { visualizationServiceMock } from '../mock-data/visualization';
+import { VisualizationServiceMock } from '../mock-data/visualization';
 import { TagService } from './services/tag.service';
 import { TagServiceMock } from '../mock-data/tag';
 import { RouterStoreService } from './store/router-store.service';
@@ -72,7 +72,7 @@ export const commonTestBed = () => {
         },
         {
             provide: VisualizationService,
-            useValue: new visualizationServiceMock(),
+            useValue: new VisualizationServiceMock(),
         },
         {
             provide: TagService,
