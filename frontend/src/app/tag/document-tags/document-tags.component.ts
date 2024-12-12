@@ -29,13 +29,15 @@ export class DocumentTagsComponent implements OnChanges {
 
     addTag(tag: Tag) {
         this.document.addTag(tag);
+        this.closeAddNew();
     }
 
     removeTag(tag: Tag) {
         this.document.removeTag(tag);
+        this.closeAddNew();
     }
 
-    cancelAddNew() {
+    closeAddNew() {
         this.showAddNew = false;
         setTimeout(() => this.toggleAddNewButton.nativeElement.focus());
     }

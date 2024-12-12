@@ -14,7 +14,7 @@
 
     <div class="control">
         <ng-container *ngIf="showAddNew; else toggleAddNew">
-            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="cancelAddNew()" />
+            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="closeAddNew()" />
         </ng-container>
 
         <ng-template #toggleAddNew>
