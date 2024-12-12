@@ -147,6 +147,7 @@ export class NgramComponent implements OnChanges {
 
     ngOnDestroy(): void {
         this.stopPolling$.next();
+        this.ngramParameters.complete();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -262,6 +263,9 @@ export class NgramComponent implements OnChanges {
     }
 
     onParameterChange(parameter: string, value: any) {
+        if (_.get(this.currentSettings, parameter) === value) {
+            return;
+        }
         _.assign(this.currentSettings, {[parameter]: value});
 
         if (parameter === 'size' && value) {

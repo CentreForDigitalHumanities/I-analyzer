@@ -19,6 +19,15 @@ describe('NgramComponent', () => {
   let apiService: ApiServiceMock;
   let visualizationService: VisualizationService;
   let cacheKey = 's:2,p:any,c:false,a:none,m:50,n:10,f:date';
+  let defaultSettings = {
+    size: 2,
+    positions: 'any',
+    freqCompensation: false,
+    analysis: 'none',
+    maxDocuments: 50,
+    numberOfNgrams: 10,
+    dateField: 'date'
+  } as NgramSettings;
 
   beforeEach(waitForAsync(() => {
     commonTestBed().testingModule.compileComponents();
@@ -55,16 +64,13 @@ describe('NgramComponent', () => {
   });
 
   it('should initialize ngramParameters with default values', () => {
-    const defaultSettings = {
-        size: 2,
-        positions: 'any',
-        freqCompensation: false,
-        analysis: 'none',
-        maxDocuments: 50,
-        numberOfNgrams: 10,
-        dateField: 'date'
-    } as NgramSettings;
     expect(component.ngramParameters.state$.value).toEqual(defaultSettings);
+  });
+
+  it('should not abort tasks when `onParameterChange` is triggered during initialization', () => {
+    spyOn(component.stopPolling$, 'next');
+    component.onParameterChange('size', 2);
+    expect(component.stopPolling$.next).not.toHaveBeenCalled();
   })
 
   it('should stop polling and abort running tasks when changing settings', () => {
@@ -73,9 +79,9 @@ describe('NgramComponent', () => {
         const eventObj = { parameter: 'size', value };
         dropdown.triggerEventHandler('onChange', eventObj);
     };
-    spyOn(fixture.componentInstance.stopPolling$, 'next');
+    spyOn(component.stopPolling$, 'next');
     changeSizeDropdown(10);
-    expect(fixture.componentInstance.stopPolling$.next).toHaveBeenCalled();
+    expect(component.stopPolling$.next).toHaveBeenCalled();
     component.dataHasLoaded = false; // fake working response
     expect(component.tasksToCancel).toBeUndefined();
   });
