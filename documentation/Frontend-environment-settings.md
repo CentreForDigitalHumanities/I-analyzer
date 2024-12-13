@@ -90,3 +90,9 @@ interface Logo {
     width: number, // width of the image in pixels
 }
 ```
+
+### `showCorpusFilters`
+
+Type: boolean
+
+By default, the corpus selection menu will allow users to filter corpora based on their category, time period, and language. If the server has a very small number of corpora, or the corpora are very similar, you can use this this setting to hide the filters.
