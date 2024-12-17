@@ -25,6 +25,7 @@ import { TagService } from './services/tag.service';
 import { TagServiceMock } from '../mock-data/tag';
 import { RouterStoreService } from './store/router-store.service';
 import { SimpleStore } from './store/simple-store';
+import { CorpusDefinitionService } from './corpus-definitions/corpus-definition.service';
 
 export const commonTestBed = () => {
     const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
@@ -81,6 +82,9 @@ export const commonTestBed = () => {
         {
             provide: RouterStoreService,
             useValue: new SimpleStore()
+        },
+        {
+            provide: CorpusDefinitionService,
         }
     );
 
