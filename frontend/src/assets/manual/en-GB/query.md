@@ -27,6 +27,18 @@ By default the search will combine all terms using `OR`. This means that when yo
 ### Be Careful with Spaces
 Adding or removing a space can change the results of your query. For example search for `+- term` is different than searching for `+-term`. It might be necessary to escape a space (also by placing a `\` in front of it).
 
+### Advanced options to search for combinations of words
+The Elasticsearch query syntax also allows fuzzy matches on a *word* level. This can be used to construct queries in which two words should appear no more than _n_ words apart. For instance,
+>"interest balance"\~5
+
+would find all documents in which the terms "interest" is followed by "balance", separated by no more than 5 words.
+
+You can also query for both orders. The following query means: find all documents in which "interest" is followed by "balance", OR vice versa, separated by no more than 5 words:
+
+>"interest balance"\~5 "balance interest"\~5
+
+Note that for stemmed text fields (see section "Stemming" below), this could also lead to hits containing phrases such as "interesting balance".
+
 ### Examples of Search Results
 
 Illustrating the differences when searching for different combinations of `bank` and `assets`.
@@ -47,6 +59,7 @@ Illustrating the differences when searching for different combinations of `bank`
 | `bank~1` | 76241 hits (compare with just bank) |
 | `"the bank is"` | 24 hits |
 | `"the bank is" ~1`| 32 hits |
+| `"interest balance"~5 "balance interest"~5` | 285 hits |
 
 ## Stemming
 
