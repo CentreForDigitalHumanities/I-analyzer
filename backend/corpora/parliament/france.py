@@ -17,7 +17,7 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     min_date = datetime(year=1881, month=1, day=1)
     data_directory = settings.PP_FR_DATA
     es_index = getattr(settings, 'PP_FR_INDEX', 'parliament-france')
-    image = 'france.jpeg'
+    image = 'france.jpg'
     languages = ['fr']
     description_page = 'france.md'
     word_model_path = getattr(settings, 'PP_FR_WM', None)
