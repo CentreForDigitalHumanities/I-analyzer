@@ -51,8 +51,9 @@ describe('NgramComponent', () => {
     component.stopPolling$ = new Subject();
     component.queryModel = queryModel;
     component.corpus = MockCorpusResponse[0] as any;
-    component.visualizedField = {name: 'speech'} as any;
+    component.visualizedField = {name: 'speech'} as any; 
     component.dateField = {name: 'date'} as any;
+    component.allDateFields = [component.dateField];
     component.asTable = false;
     component.palette = ['yellow', 'blue'];
     fixture.detectChanges();
