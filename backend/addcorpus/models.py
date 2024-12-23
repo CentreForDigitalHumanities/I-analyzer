@@ -57,6 +57,10 @@ class Corpus(models.Model):
         help_text='whether the configuration of this corpus is determined by a Python '
             'module (some features are only available for Python-based corpora)',
     )
+    date_created = models.DateField(
+        auto_now_add=True,
+        help_text='date on which the corpus was added to the database',
+    )
 
     @property
     def configuration_obj(self) -> models.Model:
@@ -419,12 +423,18 @@ class Field(models.Model):
         blank=True,
         help_text='column name in CSV source files from which to extract this field',
     )
+    position = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="Field's position within the configuration (order)"
+    )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['corpus_configuration', 'name'],
                                 name='unique_name_for_corpus')
         ]
+        ordering = ["position"]
 
     @property
     def is_main_content(self) -> bool:

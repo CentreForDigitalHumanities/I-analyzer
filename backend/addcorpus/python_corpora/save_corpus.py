@@ -72,8 +72,8 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         configuration.__setattr__(attr, value)
 
 def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
-    for field in corpus_definition.fields:
-        _save_field_in_database(field, configuration)
+    for index, field in enumerate(corpus_definition.fields):
+        _save_field_in_database(field, configuration, position=index)
 
     for field in configuration.fields.exclude(name__in=corpus_definition.fieldnames):
         field.delete()
@@ -84,7 +84,7 @@ def _field_pk(name: str, configuration: CorpusConfiguration):
     except Field.DoesNotExist:
         return None
 
-def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
+def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration, position: int):
     attributes_to_copy = [
         'name', 'display_name', 'display_type',
         'description', 'results_overview',
@@ -104,6 +104,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
         pk=_field_pk(field_definition.name, configuration),
         corpus_configuration=configuration,
         search_filter=filter_definition,
+        position=position,
         **copy_attributes,
     )
 
