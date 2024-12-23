@@ -151,12 +151,14 @@ export class NgramComponent implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel || changes.visualizedField) {
-            this.resultsCache = {};
+        if (changes.corpus) {
             this.allDateFields = this.corpus.fields.filter(
                 (field) => field.mappingType === 'date'
             );
             this.dateField = this.allDateFields[0];
+        }
+        if (changes.queryModel || changes.visualizedField) {
+            this.resultsCache = {};
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [
                     { label: 'None', value: 'none' },
@@ -175,7 +177,6 @@ export class NgramComponent implements OnChanges {
             } else {
                 this.analysisOptions = undefined;
             }
-            this.ngramParameters.setParams({dateField: this.dateField.name});
         }
 
         if (this.ngramParameters.state$.value) {
@@ -194,7 +195,7 @@ export class NgramComponent implements OnChanges {
         } else {
             this.visualizationService.getNgramTasks(
                 this.queryModel, this.corpus, this.visualizedField.name,
-                this.currentSettings).then(
+                this.currentSettings, this.dateField.name).then(
                     response => {
                         this.tasksToCancel = response.task_ids;
                         // tasksToCancel contains ids of the parent task and its subtasks
@@ -308,7 +309,8 @@ export class NgramComponent implements OnChanges {
             this.corpus,
             this.queryModel,
             this.visualizedField.name,
-            this.ngramParameters.state$.value
+            this.ngramParameters.state$.value,
+            this.dateField.name
         );
         this.apiService
             .requestFullData({

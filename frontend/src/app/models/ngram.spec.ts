@@ -12,9 +12,8 @@ describe('NgramParameters', ()=> {
         analysis: 'clean',
         maxDocuments: 100,
         numberOfNgrams: 20,
-        dateField: 'releaseDate'
     } as NgramSettings;
-    const testParams = {ngramSettings: 's:3,p:first,c:true,a:clean,m:100,n:20,f:releaseDate'}
+    const testParams = {ngramSettings: 's:3,p:first,c:true,a:clean,m:100,n:20'}
 
     beforeEach(() => {
         ngramParameters = new NgramParameters(store);
@@ -38,7 +37,6 @@ describe('NgramParameters', ()=> {
             analysis: 'none',
             maxDocuments: 50,
             numberOfNgrams: 10,
-            dateField: 'date'
         } as NgramSettings;
         const state = ngramParameters.storeToState({irrelevant: 'parameter'})
         expect(state).toEqual(defaultSettings);

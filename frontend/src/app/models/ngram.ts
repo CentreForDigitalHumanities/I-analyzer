@@ -11,7 +11,6 @@ export interface NgramSettings {
     analysis: string;
     maxDocuments: number;
     numberOfNgrams: number;
-    dateField: string;
 }
 
 export class NgramParameters extends StoreSync<NgramSettings> {
@@ -25,8 +24,7 @@ export class NgramParameters extends StoreSync<NgramSettings> {
 
     stringifyNgramSettings(state: NgramSettings): string {
         return [`s:${state.size}`,`p:${state.positions}`,`c:${state.freqCompensation}`,
-            `a:${state.analysis}`,`m:${state.maxDocuments}`,`n:${state.numberOfNgrams}`,
-            `f:${state.dateField}`].join(',')
+            `a:${state.analysis}`,`m:${state.maxDocuments}`,`n:${state.numberOfNgrams}`].join(',')
     }
 
     stateToStore(state: NgramSettings): Params {
@@ -43,7 +41,6 @@ export class NgramParameters extends StoreSync<NgramSettings> {
                 analysis: this.findSetting('a', stringComponents),
                 maxDocuments: parseInt(this.findSetting('m', stringComponents), 10),
                 numberOfNgrams: parseInt(this.findSetting('n', stringComponents), 10),
-                dateField: this.findSetting('f', stringComponents)
             }
         }
         return {
@@ -53,7 +50,6 @@ export class NgramParameters extends StoreSync<NgramSettings> {
             analysis: 'none',
             maxDocuments: 50,
             numberOfNgrams: 10,
-            dateField: 'date'
         } as NgramSettings;
     }
 

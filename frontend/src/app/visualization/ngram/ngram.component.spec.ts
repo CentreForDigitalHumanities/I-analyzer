@@ -18,7 +18,7 @@ describe('NgramComponent', () => {
   let fixture: ComponentFixture<NgramComponent>;
   let apiService: ApiServiceMock;
   let visualizationService: VisualizationService;
-  let cacheKey = 's:2,p:any,c:false,a:none,m:50,n:10,f:date';
+  let cacheKey = 's:2,p:any,c:false,a:none,m:50,n:10';
   let defaultSettings = {
     size: 2,
     positions: 'any',
@@ -26,7 +26,6 @@ describe('NgramComponent', () => {
     analysis: 'none',
     maxDocuments: 50,
     numberOfNgrams: 10,
-    dateField: 'date'
   } as NgramSettings;
 
   beforeEach(waitForAsync(() => {
@@ -53,6 +52,7 @@ describe('NgramComponent', () => {
     component.queryModel = queryModel;
     component.corpus = MockCorpusResponse[0] as any;
     component.visualizedField = {name: 'speech'} as any;
+    component.dateField = {name: 'date'} as any;
     component.asTable = false;
     component.palette = ['yellow', 'blue'];
     fixture.detectChanges();
