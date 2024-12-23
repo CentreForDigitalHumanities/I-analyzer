@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from ianalyzer_readers.xml_tag import Tag
 from ianalyzer_readers.extract import Metadata, XML
 import requests
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.python_corpora.corpus import FieldDefinition
@@ -39,6 +40,7 @@ class Gallica(XMLCorpusDefinition):
     languages = ["fr"]
     data_url = "https://gallica.bnf.fr"
     corpus_id = ""  # each corpus on Gallica has an "ark" id
+    n_retries = 5
 
     @property
     def es_settings(self):
@@ -51,53 +53,66 @@ class Gallica(XMLCorpusDefinition):
         response = requests.get(
             f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date"
         )
-        year_soup = BeautifulSoup(response.content, "xml")
-        years = [
-            year.string
-            for year in year_soup.find_all("year")
-            if int(year.string) >= start.year and int(year.string) <= end.year
-        ]
+        if response.status_code == 200:
+            year_soup = BeautifulSoup(response.content, "xml")
+            years = [
+                year.string
+                for year in year_soup.find_all("year")
+                if int(year.string) >= start.year and int(year.string) <= end.year
+            ]
         for year in years:
-            try:
-                response = requests.get(
-                    f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date&date={year}"
-                )
-                ark_soup = BeautifulSoup(response.content, "xml")
-                ark_numbers = [
-                    issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")
-                ]
-                sleep(2)
-            except ConnectionError:
-                logger.warning(f"Connection error when processing year {year}")
-                break
+            for _n in range(self.n_retries):
+                sleep(30)
+                try:
+                    response = requests.get(
+                        f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date&date={year}"
+                    )
+                    if response.status_code == 200:
+                        ark_soup = BeautifulSoup(response.content, "xml")
+                        ark_numbers = [
+                            issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")
+                        ]
+                        break
+                except RequestsConnectionError:
+                    logger.warning(
+                        f"Connection error when processing year {year}, going to sleep"
+                    )
+                    continue
 
             for ark in ark_numbers:
-                try:
-                    source_response = requests.get(
-                        f"{self.data_url}/services/OAIRecord?ark={ark}"
-                    )
-                    sleep(2)
-                except ConnectionError:
-                    logger.warning(f"Connection error encountered in issue {ark}")
-                    break
-
-                if source_response:
+                for _n in range(self.n_retries):
+                    sleep(30)
+                    try:
+                        source_response = requests.get(
+                            f"{self.data_url}/services/OAIRecord?ark={ark}"
+                        )
+                        if source_response.status_code == 200:
+                            break
+                    except RequestsConnectionError:
+                        logger.warning(
+                            f"Connection error encountered in issue {ark}, going to sleep"
+                        )
+                        continue
+                for _n in range(self.n_retries):
+                    sleep(30)
                     try:
                         content_response = requests.get(
                             f"{self.data_url}/ark:/12148/{ark}.texteBrut"
                         )
-                        sleep(10)
-                    except ConnectionError:
+                        if content_response.status_code == 200:
+                            parsed_content = BeautifulSoup(
+                                content_response.content, "lxml-html"
+                            )
+                            break
+                    except RequestsConnectionError:
                         logger.warning(
-                            f"Connection error when fetching full text of issue {ark}"
+                            f"Connection error when fetching full text of issue {ark}, going to sleep"
                         )
-                    parsed_content = BeautifulSoup(
-                        content_response.content, "lxml-html"
-                    )
-                    yield (
-                        source_response.content,
-                        {"content": parsed_content},
-                    )
+                        continue
+                yield (
+                    source_response.content,
+                    {"content": parsed_content},
+                )
 
     def content(self):
         return FieldDefinition(
