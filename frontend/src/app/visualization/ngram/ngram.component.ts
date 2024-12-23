@@ -243,17 +243,26 @@ export class NgramComponent implements OnChanges {
     }
 
     cacheResult(result: any): void {
-        const key = this.ngramParameters.stringifyNgramSettings(this.currentSettings);
+        const key = this.concatenateDateField(this.ngramParameters.stringifyNgramSettings(this.currentSettings));
         if (key) {
             this.resultsCache[key] = result;
         }
     }
 
     getCachedResult(): any {
-        const key = this.ngramParameters.stringifyNgramSettings(this.currentSettings);
+        const key = this.concatenateDateField(this.ngramParameters.stringifyNgramSettings(this.currentSettings));
         if (key && _.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
+    }
+
+    concatenateDateField(key: string): string {
+        // add the date field to the resultsCache key: it is currently not handled by ngramParameters 
+        // TO DO: this is a workaround, remove if ngramParameters are implemented to handle date field
+        if (this.allDateFields.length) {
+            key.concat(`f:${this.dateField.name}`)
+        }
+        return key
     }
 
     setPositionsOptions(size) {
