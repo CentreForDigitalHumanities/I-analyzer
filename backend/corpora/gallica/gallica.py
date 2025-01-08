@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import os.path as op
 from time import sleep
 
 from bs4 import BeautifulSoup
@@ -41,6 +42,9 @@ class Gallica(XMLCorpusDefinition):
     data_url = "https://gallica.bnf.fr"
     corpus_id = ""  # each corpus on Gallica has an "ark" id
     n_retries = 5
+    data_directory = op.dirname(
+        op.abspath(__file__)
+    )  # make sure that all corpora have a data_directory assigned
 
     @property
     def es_settings(self):
