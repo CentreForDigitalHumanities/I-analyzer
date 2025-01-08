@@ -115,18 +115,19 @@ def extract_people_data(soup):
 
 def extract_role_data(soup):
     role_nodes = soup.find('encodingDesc').find_all('category')
-
-    # return dict that maps IDs to terms
-    # data contains duplicate role IDs
-    # go through data in reverse order
-    # so earlier (more general) terms overwrite later (more specific) ones
-
+    # return dict that maps IDs to terms data contains duplicate role IDs
+    # go through data in reverse order so earlier (more general) terms 
+    # overwrite later (more specific) ones
     return {
         node['xml:id']: node.find('term').text.strip()
         for node in reversed(role_nodes)
     }
 
 def metadata_attribute_transform_func(attribute):
+    """
+    Creates a transformation function that extracts and cleans a specific 
+    attribute from a collection.
+    """
     def get_attribute(which, collection):
         if which and collection and which in collection:
             value = collection[which][attribute]
@@ -163,6 +164,8 @@ def organisation_attribute_extractor(attribute):
     )
 
 def node_is_current(node, date):
+    """Checks if the node is current at the given date
+    i.e. if the date is between the from and to dates of the node"""
     if node and date:
         start_date = node.get('from', None)
         end_date = node.get('to', None)
