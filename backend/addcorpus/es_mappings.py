@@ -92,13 +92,11 @@ def float_mapping():
         'type': 'float'
     }
 
-
 def bool_mapping():
     return {'type': 'boolean'}
 
 def geo_mapping():
     return {'type': 'geo_point'}
 
-
 def annotated_text_mapping():
-    return {'type': 'annotated_text'}
+    return {'type': 'text', 'index': False}
