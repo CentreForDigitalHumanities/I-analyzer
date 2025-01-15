@@ -19,4 +19,5 @@ export const environment = {
     version,
     sourceUrl: 'https://github.com/CentreForDigitalHumanities/I-analyzer/',
     logos: undefined,
+    showCorpusFilters: true,
 };
