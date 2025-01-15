@@ -37,6 +37,9 @@ LEVELS = {
     1: 'Bachelor 1',
     2: 'Bachelor 2',
     3: 'Bachelor 3',
+    '1': 'Bachelor 1',
+    '2': 'Bachelor 2',
+    '3': 'Bachelor 3',
     'M': 'Master',
     'H1': 'Honours 1',
     'H2': 'Honours 2',
@@ -48,7 +51,11 @@ LEVELS = {
     '-': None,
 }
 
-def get_from(mapping: Mapping) -> Callable:
+def get_from_mapping_or_return(mapping: Mapping) -> Callable:
+    '''
+    Returns a function that will look up a value in the provided mapping, and return the
+    input value if it is not included.
+    '''
     return lambda value: mapping.get(value, value)
 
 def filter_label(label):
@@ -193,7 +200,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='faculty',
             display_name='Faculty',
-            extractor=CSV('FACULTEIT', transform=get_from(FACULTIES)),
+            extractor=CSV('FACULTEIT', transform=get_from_mapping_or_return(FACULTIES)),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(),
             visualizations=['resultscount', 'termfrequency'],
@@ -202,7 +209,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
             name='exam_goal',
             display_name='Exam goal',
             description='',
-            extractor=CSV('EXAMENDOEL', transform=get_from(EXAM_GOALS)),
+            extractor=CSV('EXAMENDOEL', transform=get_from_mapping_or_return(EXAM_GOALS)),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(),
             visualizations=['resultscount', 'termfrequency'],
@@ -210,7 +217,7 @@ class UUCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='level',
             display_name='Level',
-            extractor=CSV('CATEGORIE', transform=get_from(LEVELS)),
+            extractor=CSV('CATEGORIE', transform=get_from_mapping_or_return(LEVELS)),
             es_mapping=keyword_mapping(),
             search_filter=MultipleChoiceFilter(),
             visualizations=['resultscount', 'termfrequency'],
