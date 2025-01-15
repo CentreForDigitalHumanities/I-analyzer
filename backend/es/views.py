@@ -120,8 +120,8 @@ class NamedEntitySearchView(APIView):
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
         fields = self.find_named_entity_fields(client, index)
-        query = self.construct_named_entity_query(fields, document_id)
-        response = client.search(index=index, query=query, fields=fields)
+        query = self.construct_named_entity_query(document_id)
+        response = client.search(index=index, query=query)
         results = hits(response)
         annotations = {}
         response = {}
@@ -139,7 +139,7 @@ class NamedEntitySearchView(APIView):
         field_names = fields.keys()
         return [name for name in field_names if name.endswith(':ner')]
 
-    def construct_named_entity_query(self, fields: list[str], document_id: str) -> dict:
+    def construct_named_entity_query(self, document_id: str) -> dict:
         """construct a query in which the document_id is obligatory, and any of the :ner-kw fields is present"""
         return {
             "bool": {
