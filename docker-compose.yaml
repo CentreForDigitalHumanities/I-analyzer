@@ -1,6 +1,6 @@
 services:
   db:
-    image: docker.io/library/postgres
+    image: docker.io/library/postgres:17
     environment:
       - POSTGRES_DB=${SQL_DATABASE}
       - POSTGRES_USER=${SQL_USER}

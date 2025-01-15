@@ -98,5 +98,6 @@ def bool_mapping():
 def geo_mapping():
     return {'type': 'geo_point'}
 
-def annotated_text_mapping():
+
+def non_indexed_text_mapping():
     return {'type': 'text', 'index': False}

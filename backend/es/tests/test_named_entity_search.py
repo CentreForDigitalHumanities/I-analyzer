@@ -13,18 +13,13 @@ def test_construct_ner_query():
     query = viewset.construct_named_entity_query(fields, 'my_identifier')
     expected = {
         "bool": {
-            "must": [
-                {
-                    "term": {
-                        "id": "my_identifier"
-                    }
-                },
-                {
-                    "terms": {
-                        "content:ner": ["LOC", "PER", "ORG", "MISC"]
-                    }
-                }
-            ]
+            "must": {"term": {"id": "my_identifier"}},
+            "should": [
+                {"exists": {"field": "location:ner-kw"}},
+                {"exists": {"field": "miscellaneous:ner-kw"}},
+                {"exists": {"field": "organization:ner-kw"}},
+                {"exists": {"field": "person:ner-kw"}},
+            ],
         }
     }
     assert query == expected
