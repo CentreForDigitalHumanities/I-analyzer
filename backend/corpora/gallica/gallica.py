@@ -65,8 +65,8 @@ class Gallica(XMLCorpusDefinition):
                 if int(year.string) >= start.year and int(year.string) <= end.year
             ]
         for year in years:
-            for _n in range(self.n_retries):
-                sleep(30)
+            for retry in range(self.n_retries):
+                sleep(retry * 10)
                 try:
                     response = requests.get(
                         f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date&date={year}"
@@ -79,13 +79,13 @@ class Gallica(XMLCorpusDefinition):
                         break
                 except RequestsConnectionError:
                     logger.warning(
-                        f"Connection error when processing year {year}, going to sleep"
+                        f"Connection error when processing year {year}, going to sleep for {retry * 10} seconds"
                     )
                     continue
 
             for ark in ark_numbers:
-                for _n in range(self.n_retries):
-                    sleep(30)
+                for retry in range(self.n_retries):
+                    sleep(retry * 10)
                     try:
                         source_response = requests.get(
                             f"{self.data_url}/services/OAIRecord?ark={ark}"
@@ -94,11 +94,11 @@ class Gallica(XMLCorpusDefinition):
                             break
                     except RequestsConnectionError:
                         logger.warning(
-                            f"Connection error encountered in issue {ark}, going to sleep"
+                            f"Connection error encountered in issue {ark}, going to sleep for {retry * 10} seconds"
                         )
                         continue
-                for _n in range(self.n_retries):
-                    sleep(30)
+                for retry in range(self.n_retries):
+                    sleep(retry * 10)
                     try:
                         content_response = requests.get(
                             f"{self.data_url}/ark:/12148/{ark}.texteBrut"
@@ -110,7 +110,7 @@ class Gallica(XMLCorpusDefinition):
                             break
                     except RequestsConnectionError:
                         logger.warning(
-                            f"Connection error when fetching full text of issue {ark}, going to sleep"
+                            f"Connection error when fetching full text of issue {ark}, going to sleep for {retry * 10} seconds"
                         )
                         continue
                 yield (
