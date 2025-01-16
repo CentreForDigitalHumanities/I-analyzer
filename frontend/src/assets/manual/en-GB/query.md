@@ -17,8 +17,8 @@ The search method supports the following operators:
 | `-` | means NOT (NOT assets) |
 | `"` | allows the search for an entire phrase “the assets of the bank” |
 | `*` | a wildcard for any number of characters, e.g. `bank*` will match _banking_, _banks_, _banked_, etc. The wildcard isnly allowed at the end of a word, and cannot be used with phrases (between `"` quotes). |
-| `~N` | Describes fuzzy search. When placed after a term this signifies how many characters are allowed to differ. So `bank~1` also matches _bang_, _sank_, _dank_ etc. |
-| `~N` | When placed after a phrase, this signifies how many *words* may differ |
+| `~N` | Describes fuzzy search. When placed after a term this signifies how many characters are allowed to differ. These can be insertions, deletions, substitutions or swapping of characters. So `bank~1` also matches _bang_, _sank_, _dank_, _bark_, _bakn_ etc. |
+| `~N` | When placed after a phrase, this signifies how many *words* may differ. These can be insertions, deletions, substitutions or swapping of words. |
 
 Symbols such as `|` and `+` are reserved characters. If you want to search for text containing these characters then they should be escaped by prefixing them with `\`. For example, `bank + assets` matches documents with both _bank_ and _assets_, and `bank \+ assets` will search for either _bank_, the plus sign, or _assets_.
 
@@ -26,6 +26,18 @@ By default the search will combine all terms using `OR`. This means that when yo
 
 ### Be Careful with Spaces
 Adding or removing a space can change the results of your query. For example search for `+- term` is different than searching for `+-term`. It might be necessary to escape a space (also by placing a `\` in front of it).
+
+### Advanced options to search for combinations of words
+The Elasticsearch query syntax also allows fuzzy matches on a *word* level. This can be used to construct queries in which two words should appear no more than _n_ words apart. For instance,
+>"interest balance"\~5
+
+would find all documents in which the terms "interest" is followed by "balance", separated by no more than 5 words.
+
+You can also query for both orders. The following query means: find all documents in which "interest" is followed by "balance", OR vice versa, separated by no more than 5 words:
+
+>"interest balance"\~5 "balance interest"\~5
+
+Note that for stemmed text fields (see section "Stemming" below), this could also lead to hits containing phrases such as "interesting balance".
 
 ### Examples of Search Results
 
@@ -45,8 +57,9 @@ Illustrating the differences when searching for different combinations of `bank`
 | `asset*`| 910 hits |
 | `*asset` | There were no results to your query. |
 | `bank~1` | 76241 hits (compare with just bank) |
-| `"the bank is"` | 24 hits |
-| `"the bank is" ~1`| 32 hits |
+| `"assets of the bank"` | 3 hits |
+| `"assets of the bank" ~2`| 10 hits |
+| `"assets bank"~5 "bank assets"~5` | 350 hits |
 
 ## Stemming
 
