@@ -17,8 +17,8 @@ The search method supports the following operators:
 | `-` | means NOT (NOT assets) |
 | `"` | allows the search for an entire phrase “the assets of the bank” |
 | `*` | a wildcard for any number of characters, e.g. `bank*` will match _banking_, _banks_, _banked_, etc. The wildcard isnly allowed at the end of a word, and cannot be used with phrases (between `"` quotes). |
-| `~N` | Describes fuzzy search. When placed after a term this signifies how many characters are allowed to differ. So `bank~1` also matches _bang_, _sank_, _dank_ etc. |
-| `~N` | When placed after a phrase, this signifies how many *words* may differ |
+| `~N` | Describes fuzzy search. When placed after a term this signifies how many characters are allowed to differ. These can be insertions, deletions, substitutions or swapping of characters. So `bank~1` also matches _bang_, _sank_, _dank_, _bark_, _bakn_ etc. |
+| `~N` | When placed after a phrase, this signifies how many *words* may differ. These can be insertions, deletions, substitutions or swapping of words. |
 
 Symbols such as `|` and `+` are reserved characters. If you want to search for text containing these characters then they should be escaped by prefixing them with `\`. For example, `bank + assets` matches documents with both _bank_ and _assets_, and `bank \+ assets` will search for either _bank_, the plus sign, or _assets_.
 
@@ -57,9 +57,9 @@ Illustrating the differences when searching for different combinations of `bank`
 | `asset*`| 910 hits |
 | `*asset` | There were no results to your query. |
 | `bank~1` | 76241 hits (compare with just bank) |
-| `"the bank is"` | 24 hits |
-| `"the bank is" ~1`| 32 hits |
-| `"interest balance"~5 "balance interest"~5` | 285 hits |
+| `"assets of the bank"` | 3 hits |
+| `"assets of the bank" ~2`| 10 hits |
+| `"assets bank"~5 "bank assets"~5` | 350 hits |
 
 ## Stemming
 
