@@ -8,8 +8,10 @@ from rest_framework.exceptions import APIException
 from addcorpus.permissions import CanSearchCorpus
 from api.save_query import should_save_query
 from addcorpus.models import Corpus
+from addcorpus.permissions import corpus_config_from_request
 from api.models import Query
 from api.api_query import api_query_to_es_query
+from es.es_alias import get_current_index_name
 from es.search import get_index, total_hits, hits
 from ianalyzer.elasticsearch import elasticsearch
 from tag.permissions import CanSearchTags
@@ -115,10 +117,10 @@ class NamedEntitySearchView(APIView):
     permission_classes = [CanSearchCorpus]
 
     def get(self, request, *args, **kwargs):
-        corpus_name = kwargs.get('corpus')
+        corpus_config = corpus_config_from_request(request)
         document_id = kwargs.get('id')
-        client = elasticsearch(corpus_name)
-        index = get_index(corpus_name)
+        client = elasticsearch(corpus_config.corpus.name)
+        index = get_current_index_name(corpus_config, client)
         fields = self.find_named_entity_fields(client, index)
         query = self.construct_named_entity_query(document_id)
         response = client.search(index=index, query=query)
