@@ -20,7 +20,15 @@
     <div class="field">
         <label class="label" for="category">Category</label>
         <div class="control">
-            <p-dropdown [options]="categories" formControlName="category" placeholder="select category" />
+            <ia-dropdown formControlName="category">
+                <span iaDropdownLabel>{{currentCategoryLabel}}</span>
+                <div iaDropdownMenu>
+                    <a *ngFor="let category of categories"
+                        iaDropdownItem [value]="category.value">
+                        {{category.label}}
+                    </a>
+                </div>
+            </ia-dropdown>
         </div>
         </div>
 
