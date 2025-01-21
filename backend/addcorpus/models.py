@@ -228,7 +228,7 @@ class CorpusConfiguration(models.Model):
         default=DEFAULT_MIN_YEAR,
     )
     max_year = models.IntegerField(
-        help_text='lastest year for the data in the corpus',
+        help_text='latest year for the data in the corpus',
         default=default_max_year,
     )
     scan_image_type = models.CharField(
