@@ -32,19 +32,19 @@
         </div>
         </div>
 
-    <div class="field is-grouped">
-        <div formGroupName="date_range">
-            <label class="label" for="min">Start date</label>
+    <div class="field">
+        <div class="field is-grouped" formGroupName="date_range">
             <div class="control">
-                <input class="input" type="date" name="min" formControlName="min" />
+                <label class="label" for="min">Start year</label>
+                <input class="input" type="number" step="10" name="min" formControlName="min" />
             </div>
-            <label class="label" for="max">End date</label>
             <div class="control">
-                <input class="input" type="date" name="max" formControlName="max" />
+                <label class="label" for="max">End year</label>
+                <input class="input" type="number" step="10" name="max" formControlName="max" />
             </div>
-            <p class="help">Enter the earliest and latest date in your corpus in YYYY-MM-DD format. This is only an indication for
-                users, no exact year is required.</p>
         </div>
+        <p class="help">Enter the earliest and latest year in your corpus. This is only an indication for
+            users, no exact year is required.</p>
     </div>
 
     <div class="field">
