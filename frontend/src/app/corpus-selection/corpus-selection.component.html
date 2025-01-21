@@ -17,14 +17,16 @@
 
         <hr>
 
-        <div class="block">
-            <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
-        </div>
+        <ng-container *ngIf="items">
+            <div class="block">
+                <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
+            </div>
 
 
-        <div class="block" *ngFor="let item of displayItems">
-            <ia-corpus-selector [corpus]="item"></ia-corpus-selector>
-        </div>
+            <div class="block" *ngFor="let item of displayItems">
+                <ia-corpus-selector [corpus]="item"></ia-corpus-selector>
+            </div>
+        </ng-container>
 
     </div>
 </section>

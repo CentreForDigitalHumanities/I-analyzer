@@ -1,12 +1,12 @@
-<form>
+<form [formGroup]="form">
     <div class="columns">
         <div class="column field">
             <label class="label">Language</label>
             <div class="control">
-                <ia-dropdown name="language" (onChange)="selectedLanguage.next($event)">
-                    <span iaDropdownLabel>{{selectedLanguage.value || 'Any'}}</span>
+                <ia-dropdown name="language" [formControl]="form.controls.language">
+                    <span iaDropdownLabel>{{form.controls.language.value || 'Any'}}</span>
                     <div iaDropdownMenu>
-                        <a iaDropdownItem [value]="undefined">Any</a>
+                        <a iaDropdownItem [value]="null">Any</a>
                         <a *ngFor="let language of languages"
                             iaDropdownItem [value]="language">
                             {{language}}
@@ -18,10 +18,10 @@
         <div class="column field">
             <label class="label">Type of data</label>
             <div class="control">
-                <ia-dropdown name="category" (onChange)="selectedCategory.next($event)">
-                    <span iaDropdownLabel>{{selectedCategory.value || 'Any'}}</span>
+                <ia-dropdown name="category" [formControl]="form.controls.category">
+                    <span iaDropdownLabel>{{form.controls.category.value || 'Any'}}</span>
                     <div iaDropdownMenu>
-                        <a iaDropdownItem [value]="undefined">Any</a>
+                        <a iaDropdownItem [value]="null">Any</a>
                         <a *ngFor="let category of categories"
                             iaDropdownItem [value]="category">
                             {{category}}
@@ -35,23 +35,23 @@
             <div class="control">
                 <div class="columns">
                     <div class="column">
-                        <ia-date-picker unit="year" [(subject)]="selectedMinDate"
-                            [minDate]="minDate" [maxDate]="maxDate"
-                            [default]="minDate"></ia-date-picker>
+                        <input class="input"
+                            type="number" step="1" [min]="minYear" [max]="maxYear"
+                            [formControl]="form.controls.minYear">
                     </div>
                     <div class="column is-narrow">
                         -
                     </div>
                     <div class="column">
-                        <ia-date-picker unit="year" [(subject)]="selectedMaxDate"
-                        [minDate]="minDate" [maxDate]="maxDate"
-                        [default]="maxDate"></ia-date-picker>
+                        <input class="input"
+                            type="number" step="1" [min]="minYear" [max]="maxYear"
+                            [formControl]="form.controls.maxYear">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div *ngIf="canReset | async" class="block" style="text-align: right;">
+    <div *ngIf="canReset$ | async" class="block" style="text-align: right;">
         <button class="button" type="reset" (click)="reset()">
             <span class="icon"><fa-icon [icon]="formIcons.reset"></fa-icon></span>
             <span>Reset</span>
