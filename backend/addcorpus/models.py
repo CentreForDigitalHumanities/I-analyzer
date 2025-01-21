@@ -217,11 +217,11 @@ class CorpusConfiguration(models.Model):
         help_text='languages used in the content of the corpus (from most to least frequent)',
         blank=True,
     )
-    min_date = models.DateField(
-        help_text='earliest date for the data in the corpus',
+    min_year = models.IntegerField(
+        help_text='earliest year for the data in the corpus',
     )
-    max_date = models.DateField(
-        help_text='latest date for the data in the corpus',
+    max_year = models.IntegerField(
+        help_text='lastest year for the data in the corpus',
     )
     scan_image_type = models.CharField(
         max_length=64,
