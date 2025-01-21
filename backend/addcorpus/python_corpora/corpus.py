@@ -297,9 +297,6 @@ class CorpusDefinition(Reader):
             if filename:
                 return os.path.join(directory, filename)
 
-    def __str__(self):
-        return self.__class__.__name__
-
 
 class ParentCorpusDefinition(CorpusDefinition):
     ''' A class from which other corpus definitions can inherit.

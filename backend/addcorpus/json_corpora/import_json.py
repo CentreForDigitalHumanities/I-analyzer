@@ -1,11 +1,11 @@
-from typing import List, Dict, Iterable, Optional, Union
+from typing import List, Dict, Iterable
 
 from addcorpus.models import Field
 from addcorpus.json_corpora.utils import get_path
 from addcorpus import es_mappings
 from addcorpus.constants import VisualizationType
 from django.conf import settings
-from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER, DEFAULT_MAX_YEAR, DEFAULT_MIN_YEAR
+from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER
 
 def import_json_corpus(data: Dict) -> Dict:
     name = get_path(data, 'name')
@@ -29,10 +29,8 @@ def _parse_configuration(data: Dict) -> Dict:
         'category': get_path(data, 'meta', 'category'),
         'es_index': create_index_name(get_path(data, 'name')),
         'languages': get_path(data, 'meta', 'languages'),
-        'min_year': _parse_year(
-            get_path(data, 'meta', 'date_range', 'min'), DEFAULT_MIN_YEAR),
-        'max_year': _parse_year(
-            get_path(data, 'meta', 'date_range', 'max'), DEFAULT_MAX_YEAR),
+        'min_year': get_path(data, 'meta', 'date_range', 'min'),
+        'max_year': get_path(data, 'meta', 'date_range', 'max'),
         'default_sort': get_path(
             data, 'options', 'default_sort') or {},
         'language_field': get_path(
@@ -43,12 +41,6 @@ def _parse_configuration(data: Dict) -> Dict:
             data, 'source_data', 'options', 'delimiter') or DEFAULT_CSV_DELIMITER,
         'fields': _import_fields(data),
     }
-
-
-def _parse_year(value: Optional[Union[int, float]], fallback: Optional[int]):
-    if value is None:
-        return fallback
-    return int(value)
 
 
 def _import_fields(data: Dict) -> List[Dict]:
