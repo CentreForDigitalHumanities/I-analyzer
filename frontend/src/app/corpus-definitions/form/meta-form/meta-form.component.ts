@@ -55,7 +55,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     get currentCategoryLabel(): string {
         const value = this.metaForm.controls.category.value;
         const item = this.categories.find(item => item.value == value);
-        return item.label;
+        return item?.label;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
