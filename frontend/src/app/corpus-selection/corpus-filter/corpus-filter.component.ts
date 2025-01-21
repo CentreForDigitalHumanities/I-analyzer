@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Corpus } from '@models';
 import { Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
@@ -34,22 +35,15 @@ export class CorpusFilterComponent implements OnInit {
 
     canReset$: Observable<boolean>;
 
-    constructor() { }
+    constructor(private destroyRef: DestroyRef) { }
 
     get minYear(): number {
-        if (this.corpora) {
-            const years = this.corpora.map(corpus => corpus.minYear);
-            return _.min(years);
-        }
+        return _.min(this.corpora.map(corpus => corpus.minYear));
     }
 
     get maxYear(): number {
-        if (this.corpora) {
-            const years = this.corpora.map(corpus => corpus.maxYear);
-            return _.max(years);
-        }
+        return _.max(this.corpora.map(corpus => corpus.maxYear));
     }
-
 
     get languages(): string[] {
         return this.collectOptions('languages');
@@ -64,41 +58,33 @@ export class CorpusFilterComponent implements OnInit {
             language: new FormControl<string>(null),
             category: new FormControl<string>(null),
             minYear: new FormControl<number>(
-                this.minYear, { nonNullable: true}
+                this.minYear, { nonNullable: true }
             ),
             maxYear: new FormControl<number>(
-                this.maxYear, { nonNullable: true}
+                this.maxYear, { nonNullable: true }
             ),
         });
 
         const value$ = this.form.valueChanges.pipe(
             map(() => this.form.getRawValue()),
+            takeUntilDestroyed(this.destroyRef),
             share(),
         );
-
-        value$.subscribe(
-            this.filterCorpora.bind(this)
-        );
-
+        value$.subscribe(this.filterCorpora.bind(this));
         this.canReset$ = value$.pipe(
-            map(this.canReset.bind(this)),
-        )
+            map(this.canReset.bind(this))
+        );
     }
 
     collectOptions(property): string[] {
-        const values = _.flatMap(
-            this.corpora || [],
-            property
-        ) as string[];
+        const values = _.flatMap(this.corpora, property) as string[];
         return _.uniq(values).sort();
     }
 
     filterCorpora(state: FilterState): void {
-        if (this.corpora) {
-            const filter = this.corpusFilter(state);
-            const filtered = this.corpora.filter(filter);
-            this.filtered.next(filtered);
-        }
+        const filter = this.corpusFilter(state);
+        const filtered = this.corpora.filter(filter);
+        this.filtered.next(filtered);
     }
 
     corpusFilter(state: FilterState): ((a: Corpus) => boolean) {
@@ -120,16 +106,9 @@ export class CorpusFilterComponent implements OnInit {
     }
 
     canReset(state: FilterState): boolean {
-        return !_.every([
-            _.isNull(state.language),
-            _.isNull(state.category),
-            state.minYear == this.minYear,
-            state.maxYear == this.maxYear,
-        ]);
+        const defaultState = {
+            language: null, category: null, minYear: this.minYear, maxYear: this.maxYear
+        };
+        return !_.isEqual(state, defaultState);
     }
-
-    reset() {
-        this.form.reset();
-    }
-
 }
