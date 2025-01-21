@@ -1,6 +1,8 @@
 import os
 from django.db import transaction
 from django.core.files.images import ImageFile
+from datetime import date, datetime
+
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
@@ -27,6 +29,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
     configuration = CorpusConfiguration(pk=pk, corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
+    _import_corpus_date_range(corpus_definition, configuration)
     configuration.save()
     configuration.full_clean()
 
@@ -53,8 +56,6 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'es_alias',
         'es_index',
         'languages',
-        'min_date',
-        'max_date',
         'scan_image_type',
         'title',
         'word_models_present',
@@ -70,6 +71,27 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
 
     for attr, value in defined.items():
         configuration.__setattr__(attr, value)
+
+def _import_corpus_date_range(definition: CorpusDefinition, configuration: CorpusConfiguration):
+    '''
+    Sets the `min_year` and `max_year` attributes on a CorpusConfiguration based on
+    (respectively) the `min_date` and `max_date` attributes of the CorpusDefinition.
+    '''
+
+    if isinstance(definition.min_date, datetime) or isinstance(definition.min_date, date):
+        configuration.min_year = definition.min_date.year
+    elif isinstance(definition.min_date, int):
+        configuration.min_year = definition.min_date
+    else:
+        raise TypeError(f'Corpus {definition} has invalid type for min_date attribute: {type(definition.min_date)}')
+
+    if isinstance(definition.max_date, datetime) or isinstance(definition.max_date, date):
+        configuration.max_year = definition.max_date.year
+    elif isinstance(definition.max_date, int):
+        configuration.max_year = definition.max_date
+    else:
+        raise TypeError(f'Corpus {definition} has invalid type for max_date attribute: {type(definition.max_date)}')
+
 
 def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     for index, field in enumerate(corpus_definition.fields):
