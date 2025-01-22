@@ -5,6 +5,7 @@ import pytest
 import requests
 from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
+import warnings
 
 from ianalyzer.elasticsearch import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
@@ -163,8 +164,10 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
     corpus = Corpus.objects.get(name=corpus_name)
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
-        job = index.create_indexing_job(corpus)
-        index.perform_indexing(job)
+        with warnings.catch_warnings():
+            job = index.create_indexing_job(corpus)
+            index.perform_indexing(job)
+
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
 
@@ -202,7 +205,12 @@ def index_json_mock_corpus(db, es_client: Elasticsearch, json_mock_corpus: Corpu
 @pytest.fixture(autouse=True)
 def add_mock_python_corpora_to_db(db, media_dir):
     # add python mock corpora to the database at the start of each test
-    load_and_save_all_corpora()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', message="Corpus has no 'id' field")
+        warnings.filterwarnings(
+            'ignore', message='.* text search for keyword fields without text analysis'
+        )
+        load_and_save_all_corpora()
 
 
 @pytest.fixture()

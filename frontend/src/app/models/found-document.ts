@@ -125,6 +125,14 @@ export class FoundDocument {
         );
     }
 
+    hasValue(field: CorpusField): boolean {
+        const value = this.fieldValue(field);
+        if (_.isNumber(value) || _.isBoolean(value)) {
+            return true;
+        }
+        return !_.isEmpty(value);
+    }
+
     private fetchAnnotatedEntities(): Observable<{[fieldName: string]: FieldEntities[]}> {
         return this.entityService.getDocumentEntities(this.corpus, this.id);
     }

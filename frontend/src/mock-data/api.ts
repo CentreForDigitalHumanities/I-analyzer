@@ -5,7 +5,7 @@ import { mockUserResponse } from './user';
 import { Corpus, CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
 import { LimitedResultsDownloadParameters } from '../app/models/search-results';
 import { mockCorpusDefinition } from './corpus-definition';
-import { APIEditableCorpus } from '../app/models/corpus-definition';
+import { APIEditableCorpus, CorpusDataFile } from '../app/models/corpus-definition';
 
 export const fakeNgramResult = {
     words: [
@@ -116,5 +116,9 @@ export class ApiServiceMock {
 
     updateCorpus(_id: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
         return of(data);
+    }
+
+    listDataFiles(): Observable<CorpusDataFile[]> {
+        return of([]);
     }
 }

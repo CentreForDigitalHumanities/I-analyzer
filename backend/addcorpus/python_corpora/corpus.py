@@ -79,6 +79,23 @@ class CorpusDefinition(Reader):
         '''
         raise NotImplementedError('CorpusDefinition missing category')
 
+    '''
+    Directory where source data is located
+    If neither `data_directory` nor `data_url` is set to valid paths, this corpus cannot be indexed
+    '''
+    data_directory = None
+
+    '''
+    URL where source data is located
+    If neither `data_directory` nor `data_url` is set to valid paths, this corpus cannot be indexed
+    '''
+    data_url = None
+
+    '''
+    If connecting to the data URL requires and API key, it needs to be set here
+    '''
+    data_api_key = None
+
     @property
     def es_index(self):
         '''

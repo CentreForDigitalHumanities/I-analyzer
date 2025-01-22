@@ -7,6 +7,10 @@ from addcorpus.python_corpora.save_corpus import (_save_field_in_database,
     load_and_save_all_corpora, _save_or_skip_corpus
 )
 
+pytestmark = [
+    pytest.mark.filterwarnings("ignore:Corpus has no 'id' field"),
+    pytest.mark.filterwarnings('ignore:.* text search for keyword fields without text analysis')
+]
 
 def test_saved_corpora(db):
     '''
@@ -89,8 +93,8 @@ def test_save_field_definition(db, basic_mock_corpus, deactivated_corpus):
 
     corpus_conf.fields.all().delete()
 
-    for field_def in corpus_def.fields:
-        field = _save_field_in_database(field_def, corpus_conf)
+    for index, field_def in enumerate(corpus_def.fields):
+        field = _save_field_in_database(field_def, corpus_conf, index)
         assert field
         assert field.name == field_def.name
 
