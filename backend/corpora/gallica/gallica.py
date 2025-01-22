@@ -124,6 +124,8 @@ class Gallica(XMLCorpusDefinition):
             description="Content of publication",
             display_name="Content",
             display_type="text_content",
+            results_overview=True,
+            search_field_core=True,
             es_mapping=main_content_mapping(
                 token_counts=True,
                 stopword_analysis=True,
@@ -131,6 +133,7 @@ class Gallica(XMLCorpusDefinition):
                 language=self.languages[0],
             ),
             extractor=Metadata("content", transform=get_content),
+            visualizations=['wordcloud', 'ngram'],
         )
 
     def date(self, min_date: datetime, max_date: datetime):
