@@ -28,7 +28,7 @@ jobs:
             file: frontend/Dockerfile.base
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
-            platforms: linux/arm64
+            platforms: linux/amd64,linux/arm64
         - name: Build backend image
           uses: docker/build-push-action@v6
           with:
@@ -36,5 +36,5 @@ jobs:
             file: backend/Dockerfile.base
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
-            platforms: linux/arm64
+            platforms: linux/amd64,linux/arm64
 
