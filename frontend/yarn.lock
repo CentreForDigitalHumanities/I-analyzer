@@ -1760,6 +1760,11 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.1.1"
 
+"@freearhey/iso-639-3@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@freearhey/iso-639-3/-/iso-639-3-1.0.0.tgz#c746066246d9fa442521377345c53fb46f788f7b"
+  integrity sha512-K4xgPkCktQakQcYv8WuV8gFWAWrAaTrQEVgr/KVdE8k10KL9QmYVw+8Qb9WbtpMr2VXDz5pDwIAEINU5KlnlAg==
+
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.14.tgz#d78e481a039f7566ecc9660b4ea7fe6b1fec442b"

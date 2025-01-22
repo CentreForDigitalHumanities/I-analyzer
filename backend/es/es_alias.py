@@ -54,7 +54,7 @@ def alias(corpus: Corpus, clean=False):
 def get_current_index_name(corpus: CorpusConfiguration, client) -> str:
     """get the name of the current corpus' associated index"""
     alias = corpus.es_alias or corpus.es_index
-    indices = client.indices.get(index="{}".format(alias))
+    indices = client.indices.get(index=alias)
     return max(sorted(indices.keys()))
 
 
