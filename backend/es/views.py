@@ -137,8 +137,7 @@ class NamedEntitySearchView(APIView):
 
     def find_named_entity_fields(self, client, index: str) -> list[str]:
         mapping = client.indices.get_mapping(index=index)
-        index_name = list(mapping.keys())[0]
-        fields = mapping[index_name]['mappings']['properties']
+        fields = mapping[index]['mappings']['properties']
         field_names = fields.keys()
         return [name for name in field_names if name.endswith(':ner')]
 
