@@ -1,0 +1,57 @@
+<h1 class="title">Corpus Metadata</h1>
+<p class="subtitle">Provide some basic information about your corpus</p>
+<form (ngSubmit)="onSubmit()" [formGroup]="metaForm">
+
+    <div class="field">
+        <label class="label" for="title">Title</label>
+        <div class="control">
+            <input class="input" type="text" name="title" formControlName="title" />
+        </div>
+        <p class="help">Enter a short, clear title for your corpus.</p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="description">Description</label>
+        <div class="control">
+            <input class="input" type="text" name="description" formControlName="description" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="category">Category</label>
+        <div class="control">
+            <p-dropdown [options]="categories" formControlName="category" placeholder="select category" />
+        </div>
+        </div>
+
+    <div class="field is-grouped">
+        <div formGroupName="date_range">
+            <label class="label" for="min">Start date</label>
+            <div class="control">
+                <input class="input" type="date" name="min" formControlName="min" />
+            </div>
+            <label class="label" for="max">End date</label>
+            <div class="control">
+                <input class="input" type="date" name="max" formControlName="max" />
+            </div>
+            <p class="help">Enter the earliest and latest date in your corpus in YYYY-MM-DD format. This is only an indication for
+                users, no exact year is required.</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="languages">Languages</label>
+        <div class="control">
+            <p-multiSelect [options]="languageOptions" formControlName="languages" optionLabel="name" optionValue="code"
+                placeholder="select languages (optional)" [virtualScroll]="true" display="chip" [virtualScrollItemSize]="10"
+                [showClear]="true" />
+        </div>
+        <p class="help">All or the most important languages occuring in your corpus</p>
+    </div>
+
+    <div class="field">
+        <p class="control">
+            <button class="button is-primary">Next</button>
+        </p>
+    </div>
+</form>

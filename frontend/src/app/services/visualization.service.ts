@@ -7,13 +7,13 @@ import {
     GeoLocation,
     MostFrequentWordsResult,
     NGramRequestParameters,
-    NgramParameters,
     QueryModel,
     TaskResult,
     TimeCategory,
 } from '@models';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
+import { NgramSettings } from '@models/ngram';
 
 @Injectable({
   providedIn: 'root'
@@ -96,7 +96,8 @@ export class VisualizationService {
         corpus: Corpus,
         queryModel: QueryModel,
         field: string,
-        params: NgramParameters
+        params: NgramSettings,
+        dateField: string
     ): NGramRequestParameters {
         const query = queryModel.toAPIQuery();
         return {
@@ -109,7 +110,7 @@ export class VisualizationService {
             subfield: params.analysis,
             max_size_per_interval: params.maxDocuments,
             number_of_ngrams: params.numberOfNgrams,
-            date_field: params.dateField
+            date_field: dateField
         };
     }
 
@@ -121,8 +122,8 @@ export class VisualizationService {
         return this.apiService.getDateTermFrequency(params);
     }
 
-    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramParameters): Promise<TaskResult> {
-        const ngramRequestParams = this.makeNgramRequestParameters(corpus, queryModel, field, params);
+    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramSettings, dateField: string): Promise<TaskResult> {
+        const ngramRequestParams = this.makeNgramRequestParameters(corpus, queryModel, field, params, dateField);
         return this.apiService.ngramTasks(ngramRequestParams);
     }
 

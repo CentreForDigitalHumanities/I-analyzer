@@ -39,12 +39,3 @@ jobs:
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
             cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
             cache-to: type=inline
-        - name: Build Elasticsearch image, using cache from Github registry
-          uses: docker/build-push-action@v6
-          with:
-            context: .
-            file: DockerfileElastic
-            push: true
-            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
-            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
-            cache-to: type=inline
