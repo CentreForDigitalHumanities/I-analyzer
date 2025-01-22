@@ -22,7 +22,7 @@ class Figaro(Gallica):
     title = "Le Figaro"
     description = "Newspaper archive, 1854-1953"
     min_date = datetime(year=1854, month=1, day=1)
-    max_date = datetime(year=1953, month=12, day=31)
+    max_date = datetime(year=1954, month=12, day=31)
     corpus_id = "cb34355551z"
     category = "periodical"
     es_index = getattr(settings, 'FIGARO_INDEX', 'figaro')
