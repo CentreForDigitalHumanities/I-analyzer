@@ -187,6 +187,10 @@ body {
             border-color: rgb(184, 184, 184) !important;
         }
     }
+
+    li.p-multiselect-item {
+        min-height: 1.5rem;
+    }
 }
 
 .is-round{
