@@ -81,28 +81,19 @@ export class CorpusFilterComponent implements OnInit {
         return _.uniq(values).sort();
     }
 
-    filterCorpora(state: FilterState): void {
-        const filter = this.corpusFilter(state);
-        const filtered = this.corpora.filter(filter);
+    filterCorpora(filter: FilterState): void {
+        const filtered = this.corpora.filter(this.corpusFilter(filter));
         this.filtered.next(filtered);
     }
 
-    corpusFilter(state: FilterState): ((a: Corpus) => boolean) {
-        return (corpus) => {
-            if (state.language && !corpus.languages.includes(state.language)) {
-                return false;
-            }
-            if (state.category && corpus.category !== state.category) {
-                return false;
-            }
-            if (state.minYear && corpus.maxYear < state.minYear) {
-                return false;
-            }
-            if (state.maxYear && corpus.minYear > state.maxYear) {
-                return false;
-            }
-            return true;
-        };
+    corpusFilter(filter: FilterState): ((a: Corpus) => boolean) {
+        return (corpus) =>
+            !_.some([
+                (filter.language && !corpus.languages.includes(filter.language)),
+                (filter.category && corpus.category !== filter.category),
+                (filter.minYear !== null && corpus.maxYear < filter.minYear),
+                (filter.maxYear !== null && corpus.minYear > filter.maxYear),
+            ]);
     }
 
     canReset(state: FilterState): boolean {
