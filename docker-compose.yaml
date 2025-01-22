@@ -52,7 +52,7 @@ services:
         target: /frontend/build
     command: sh -c "yarn prebuild && yarn start-docker"
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.3
     environment:
       - node.name=ianalyzer-node
       - discovery.type=single-node
