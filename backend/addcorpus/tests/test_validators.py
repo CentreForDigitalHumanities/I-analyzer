@@ -1,7 +1,7 @@
 import pytest
 from addcorpus.models import Field
 from addcorpus.es_mappings import (
-    annotated_text_mapping,
+    non_indexed_text_mapping,
     date_mapping,
     int_mapping,
     text_mapping,
@@ -29,7 +29,7 @@ def test_validate_ner_slug():
         validate_ner_slug({}, "some:ner_inslug")
     with pytest.raises(ValidationError):
         validate_ner_slug(keyword_mapping(), "slug:ner")
-    validate_ner_slug(annotated_text_mapping(), "slug:ner")
+    validate_ner_slug(non_indexed_text_mapping(), "slug:ner")
     with pytest.raises(ValidationError):
         validate_ner_slug(date_mapping(), "slug:ner-kw")
     validate_ner_slug(keyword_mapping(), "slug:ner-kw")
