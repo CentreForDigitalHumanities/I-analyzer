@@ -6,8 +6,8 @@
         "languages": ["en"],
         "category": "book",
         "date_range": {
-            "min": "1500-01-01",
-            "max": "1700-12-31"
+            "min": 1500,
+            "max": 1700
         }
     },
     "source_data": {

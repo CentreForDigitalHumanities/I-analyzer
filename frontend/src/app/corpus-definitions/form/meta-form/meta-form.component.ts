@@ -52,6 +52,12 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         private corpusDefService: CorpusDefinitionService
     ) {}
 
+    get currentCategoryLabel(): string {
+        const value = this.metaForm.controls.category.value;
+        const item = this.categories.find(item => item.value == value);
+        return item?.label;
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
             this.corpus.definitionUpdated$
