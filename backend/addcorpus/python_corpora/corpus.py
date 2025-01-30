@@ -516,7 +516,12 @@ def after(year):
     return f
 
 
-def consolidate_start_end_years(start, end, min_date, max_date):
+def consolidate_start_end_years(
+        start: Union[datetime, date, int],
+        end: Union[datetime, date, int],
+        min_date: datetime,
+        max_date: datetime
+):
     ''' given a start and end date provided by the user, make sure
     - that start is not before end
     - that start is not before min_date (corpus variable)
@@ -524,8 +529,13 @@ def consolidate_start_end_years(start, end, min_date, max_date):
     '''
     if isinstance(start, int):
         start = datetime(year=start, month=1, day=1)
+    elif isinstance(start, date):
+        start = datetime(year=start.year, month=start.month, day=start.day)
     if isinstance(end, int):
         end = datetime(year=end, month=12, day=31)
+    elif isinstance(end, date):
+        end = datetime(year=end.year, month=end.month, day=end.day)
+
     if start > end:
         tmp = start
         start = end

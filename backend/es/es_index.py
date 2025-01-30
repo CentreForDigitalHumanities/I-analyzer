@@ -4,24 +4,29 @@
 Script to index the data into ElasticSearch.
 '''
 
-import sys
-from typing import Dict, Optional
-
-from elasticsearch import Elasticsearch
+from typing import Dict, Optional, Tuple
+import datetime
+import logging
 import elasticsearch.helpers as es_helpers
-from elasticsearch.exceptions import RequestError
-
-from django.conf import settings
+from django.db import transaction
 
 from addcorpus.es_settings import es_settings
 from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.reader import make_reader
-from ianalyzer.elasticsearch import elasticsearch
-from .es_alias import alias, get_current_index_name, get_new_version_number
-import datetime
+from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
+from .es_alias import (
+    get_current_index_name, get_new_version_number,
+    add_alias, remove_alias, delete_index, indices_with_alias
+)
+from indexing.models import (
+    IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
+    RemoveAliasTask, AddAliasTask, UpdateSettingsTask
+)
+from es.sync import update_server_table_from_settings
+from es.models import Server, Index
+from es.es_update import run_update_task
 
-import logging
 logger = logging.getLogger('indexing')
 
 
@@ -50,80 +55,55 @@ def _make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
     }
 
 
-def create(
-    client: Elasticsearch,
-    corpus: Corpus,
-    add: bool = False,
-    clear: bool = False,
-    prod: bool = False,
-) -> str:
-    '''
-    Initialise an ElasticSearch index.
-    '''
-    corpus_config = corpus.configuration
-    index_name = corpus_config.es_index
+def create(task: CreateIndexTask):
+    client = task.client()
+
+    corpus_config = task.corpus.configuration
+    index_name = task.index.name
     es_mapping = _make_es_mapping(corpus_config)
 
-    if add:
-        # we add document to existing index - skip creation, return current index
-        return get_current_index_name(corpus_config, client)
+    if client.indices.exists(index=index_name, allow_no_indices=False):
+        if task.delete_existing:
+            logger.info('Attempting to clean old index...')
+            client.indices.delete(index=index_name, allow_no_indices=False)
+        else:
+            logger.error(
+                'Index `{}` already exists. Do you need to add an alias for it or '
+                'perhaps delete it?'.format(index_name)
+            )
+            raise Exception('index already exists')
 
-    if clear:
-        logger.info('Attempting to clean old index...')
-        client.indices.delete(
-            index=index_name, ignore=[400, 404])
+    settings = _make_es_settings(task.corpus)
 
-    settings = _make_es_settings(corpus)
-
-    if prod:
-        logger.info('Using a versioned index name')
-        alias = corpus_config.es_alias if corpus_config.es_alias else index_name
-        index_name = "{}-{}".format(
-            index_name, get_new_version_number(client, alias, index_name))
-        if client.indices.exists(index=index_name):
-            logger.error('Index `{}` already exists. Do you need to add an alias for it or perhaps delete it?'.format(
-                index_name))
-            sys.exit(1)
-
+    if task.production_settings:
         logger.info('Adding prod settings to index')
         settings['index'].update({
             'number_of_replicas': 0,
             'number_of_shards': 5
         })
 
-    logger.info('Attempting to create index `{}`...'.format(
-        index_name))
-    try:
-        client.indices.create(
-            index=index_name,
-            settings=settings,
-            mappings=es_mapping,
-        )
-        return index_name
-    except RequestError as e:
-        if 'already_exists' not in e.error:
-            # ignore that the index already exist,
-            # raise any other errors.
-            raise
+    logger.info('Attempting to create index `{}`...'.format(index_name))
+
+    client.indices.create(
+        index=task.index.name,
+        settings=settings,
+        mappings=es_mapping,
+    )
+    return index_name
 
 
-def populate(
-    client: Elasticsearch,
-    corpus: Corpus,
-    versioned_index_name: str,
-    start=None,
-    end=None,
-):
+def populate(task: PopulateIndexTask):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
-    corpus_name = corpus.name
-    reader = make_reader(corpus)
+    reader = make_reader(task.corpus)
 
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
-    files = reader.sources(start=start, end=end)
+    files = reader.sources(
+        start=task.document_min_date,
+        end=task.document_max_date)
     docs = reader.documents(files)
 
     # Each source document is decorated as an indexing operation, so that it
@@ -131,22 +111,22 @@ def populate(
     actions = (
         {
             "_op_type": "index",
-            "_index": versioned_index_name,
+            "_index": task.index.name,
             "_id": doc.get("id"),
             "_source": doc,
         }
         for doc in docs
     )
 
-    corpus_server = settings.SERVERS[
-        settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
+    server_config = task.index.server.configuration
 
     # Do bulk operation
+    client = task.client()
     for success, info in es_helpers.streaming_bulk(
         client,
         actions,
-        chunk_size=corpus_server["chunk_size"],
-        max_chunk_bytes=corpus_server["max_chunk_bytes"],
+        chunk_size=server_config["chunk_size"],
+        max_chunk_bytes=server_config["max_chunk_bytes"],
         raise_on_exception=False,
         raise_on_error=False,
     ):
@@ -154,7 +134,17 @@ def populate(
             logger.error(f"FAILED INDEX: {info}")
 
 
-def perform_indexing(
+def update_index_settings(task: UpdateSettingsTask):
+    client = task.client()
+    client.indices.put_settings(
+        settings=task.settings,
+        index=task.index.name,
+        allow_no_indices=False,
+    )
+
+
+@transaction.atomic
+def create_indexing_job(
     corpus: Corpus,
     start: Optional[datetime.date] = None,
     end: Optional[datetime.date] = None,
@@ -163,46 +153,160 @@ def perform_indexing(
     clear: bool = False,
     prod: bool = False,
     rollover: bool = False,
-):
-    corpus.validate_ready_to_index()
+    update: bool = False,
+) -> IndexJob:
+    '''
+    Create an IndexJob to index a corpus.
 
-    corpus_config = corpus.configuration
-    corpus_name = corpus.name
-    index_name = corpus_config.es_index
+    Depending on parameters, this job may include creating an new index, adding documents,
+    running an update script, and rolling over the alias. Parameters are described
+    in detail in the documentation for the `index` command.
+    '''
+    create_new = not (add or update)
 
-    logger.info('Started indexing `{}` on index {}'.format(
-        corpus_name,
-        index_name
-    ))
+    update_server_table_from_settings()
 
-    if rollover and not prod:
-        logger.warning(
-            'rollover flag is set but prod flag not set -- no effect')
+    job = IndexJob.objects.create(corpus=corpus)
+    server = _server_for_job(job)
+    index, alias = _index_and_alias_for_job(job, prod, create_new)
+
+    if create_new:
+        CreateIndexTask.objects.create(
+            job=job,
+            index=index,
+            production_settings=prod,
+            delete_existing=clear,
+        )
+
+    if not (mappings_only or update):
+        PopulateIndexTask.objects.create(
+            job=job,
+            index=index,
+            document_min_date=start,
+            document_max_date=end,
+        )
+
+    if update:
+        UpdateIndexTask.objects.create(
+            job=job,
+            index=index,
+            document_min_date=start,
+            document_max_date=end,
+        )
+
+    if prod and create_new:
+        UpdateSettingsTask.objects.create(
+            job=job,
+            index=index,
+            settings={"number_of_replicas": 1},
+        )
+
+    if prod and rollover:
+        for aliased_index in indices_with_alias(server, alias):
+            RemoveAliasTask.objects.create(
+                job=job,
+                index=aliased_index,
+                alias=alias,
+            )
+        AddAliasTask.objects.create(
+            job=job,
+            index=index,
+            alias=alias,
+        )
+
+    return job
+
+
+def _server_for_job(job: IndexJob):
+    server_name = server_for_corpus(job.corpus.name)
+    server = Server.objects.get(name=server_name)
+    return server
+
+
+def _index_and_alias_for_job(job: IndexJob, prod: bool, create_new: bool) -> Tuple[Index, str]:
+    corpus = job.corpus
+    server = _server_for_job(job)
+    client = elasticsearch(corpus.name)
+    base_name = corpus.configuration.es_index
+
+    if prod:
+        alias = corpus.configuration.es_alias or corpus.configuration.es_index
+        if create_new:
+            next_version = get_new_version_number(client, alias, base_name)
+            versioned_name = f'{base_name}-{next_version}'
+        else:
+            versioned_name = get_current_index_name(
+                corpus.configuration, client
+            )
+
+        index, _ = Index.objects.get_or_create(
+            server=server, name=versioned_name
+        )
+    else:
+        alias = None
+        index, _ = Index.objects.get_or_create(
+            server=server, name=base_name
+        )
+
+    return index, alias
+
+
+def perform_indexing(job: IndexJob):
+    '''
+    Run an IndexJob by running all related tasks.
+
+    Tasks are run per type. The order of types is:
+    - `CreateIndexTask`
+    - `PopulateIndexTask`
+    - `UpdateIndexTask`
+    - `UpdateSettingsTask`
+    - `RemoveAliasTask`
+    - `AddAliasTask`
+    - `DeleteIndexTask`
+    '''
+    job.corpus.validate_ready_to_index()
+
+    corpus_name = job.corpus.name
+
+    logger.info(f'Started index job: {job}')
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
     logger.info('max_retries: {}'.format(vars(client).get('_max_retries')))
-
     logger.info('retry on timeout: {}'.format(
         vars(client).get('_retry_on_timeout'))
     )
-    versioned_index_name = create(client, corpus, add, clear, prod)
-    client.cluster.health(wait_for_status='yellow')
 
-    if mappings_only:
-        logger.info('Created index `{}` with mappings only.'.format(index_name))
-        return
+    for task in job.createindextasks.all():
+        create(task)
 
-    populate(client, corpus, versioned_index_name, start=start, end=end)
+        if not job.populateindextasks.exists() or job.updateindextasks.exists():
+            logger.info(f'Created index `{task.index.name}` with mappings only.')
+        else:
+            logger.info(f'Created index `{task.index.name}`')
 
-    logger.info('Finished indexing `{}` to index `{}`.'.format(
-        corpus_name, index_name))
+        client.cluster.health(wait_for_status='yellow')
 
-    if prod:
-        logger.info("Updating settings for index `{}`".format(versioned_index_name))
-        client.indices.put_settings(
-            settings={"number_of_replicas": 1}, index=versioned_index_name
-        )
-        if rollover:
-            logger.info("Adjusting alias for index  `{}`".format(versioned_index_name))
-            alias(corpus)  # not deleting old index, so we can roll back
+    for task in job.populateindextasks.all():
+        populate(task)
+        logger.info('Finished indexing `{}` to index `{}`.'.format(
+            corpus_name, task.index.name))
+
+    for task in job.updateindextasks.all():
+        run_update_task(task)
+
+    for task in job.updatesettingstasks.all():
+        logger.info("Updating settings for index `{}`".format(task.index.name))
+        update_index_settings(task)
+
+    for task in job.removealiastasks.all():
+        logger.info(f'Removing alias `{task.alias}` for index `{task.index.name}`')
+        remove_alias(task)
+
+    for task in job.addaliastasks.all():
+        logger.info(f'Adding alias `{task.alias}` for index `{task.index.name}`')
+        add_alias(task)
+
+    for task in job.deleteindextasks.all():
+        logger.info(f'Deleting index {task.index.name}')
+        delete_index(task)
