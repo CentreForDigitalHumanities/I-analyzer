@@ -25,21 +25,23 @@ class Command(BaseCommand):
             '--start', '-s',
             help='''Minimum date to select documents. The input format is YYYY-MM-DD.
             Optional. Only has effect for Python corpora which implement date selection
-            in their sources() method. No effect in combination with --mappings-only.'''
+            in their sources() method. Cannot be used in combination with
+            --mappings-only.'''
         )
 
         parser.add_argument(
             '--end', '-e',
             help='''Maximum date to select documents. The input format is YYYY-MM-DD.
             Optional. Only has effect for Python corpora which implement date selection
-            in their sources() method. No effect in combination with --mappings-only.'''
+            in their sources() method. Cannot be used  in combination with
+            --mappings-only.'''
         )
 
         parser.add_argument(
             '--delete', '-d',
             action='store_true',
             help='''If this job is set to create an index that already exists, delete
-                it instead of raising an exception. No effect in combination with
+                it instead of raising an exception. Cannot be used in combination with
                 --add.'''
         )
 
@@ -48,14 +50,15 @@ class Command(BaseCommand):
             action='store_true',
             help='''Run an update script defined in the corpus definition (to add/change
                 field values in documents). Only available for Python corpora. This
-                will also skip index creation and population.'''
+                will also skip index creation and population. Cannot be used in
+                combination with --add, --delete, or --mappings-only'''
         )
 
         parser.add_argument(
             '--mappings-only', '-m',
             action='store_true',
             help='''Only create the index with mappings without adding data to it. This
-                is useful e.g. before a remote reindex. No effect in combination with
+                is useful e.g. before a remote reindex. Cannot be used in combination with
                 --update.'''
         )
 
@@ -63,7 +66,7 @@ class Command(BaseCommand):
             '--add', '-a',
             action='store_true',
             help='''Skip index creation. Documents will be added to the existing index
-                for the corpus. No effect in combination with --update.'''
+                for the corpus. Cannot be used in combination with --update.'''
         )
 
         parser.add_argument(
@@ -90,6 +93,10 @@ class Command(BaseCommand):
 
         corpus_definition = load_corpus_definition(corpus)
 
+        self._validate_arguments(
+            start, end, add, delete, update, mappings_only, prod, rollover
+        )
+
         try:
             if start:
                 start_index = datetime.strptime(start, '%Y-%m-%d')
@@ -108,17 +115,60 @@ class Command(BaseCommand):
             )
             raise
 
-        if rollover and not prod:
-            logging.warning(
-                '--rollover flag is set but --prod flag not set; no effect.')
-
-
         job = create_indexing_job(
             corpus_object, start_index, end_index, mappings_only, add, delete, prod,
             rollover, update
         )
 
         perform_indexing(job)
+
+    def _validate_arguments(
+        self,
+        start=None,
+        end=None,
+        add=False,
+        delete=False,
+        update=False,
+        mappings_only=False,
+        prod=False,
+        rollover=False,
+    ):
+        if (start or end) and mappings_only:
+            raise ValueError(
+                '--start cannot be used in combination with --mappings_only. Start/end '
+                'date determine data selection when populating or updating the index.'
+            )
+
+        if add and delete:
+            raise ValueError(
+                '--add and --delete cannot be used together. You must either delete the '
+                'existing index or add to it.'
+            )
+
+        if update and mappings_only:
+            raise ValueError(
+                '--update cannot be used in combination with --mappings_only. Updates '
+                'scripts are intended to be run on a populated index.'
+            )
+
+        if update and add:
+            raise ValueError(
+                '--update cannot be used in combination with --add. Update scripts are '
+                'always applied to an existing index.'
+            )
+
+        if update and delete:
+            raise ValueError(
+                '--update cannot be used in combination with --delete. You cannot update '
+                'and index after deleting it.'
+            )
+
+        if rollover and not prod:
+            raise ValueError(
+                '--rollover can only be used in combination with --prod. Alias rollover '
+                'is only applicable with versioned indices.'
+            )
+
 
     def _corpus_object(self, corpus_name):
         load_all_corpus_definitions()
