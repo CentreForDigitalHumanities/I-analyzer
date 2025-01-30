@@ -13,7 +13,7 @@ def mock_client(es_index_client):
     return es_index_client
 
 
-@pytest.mark.parametrize("prod, name, shards", [(True, "times-test-1", '5'), (False, "times-test", '1')])
+@pytest.mark.parametrize("prod, name, shards", [(True, "test-times-1", '5'), (False, "test-times", '1')])
 def test_prod_flag(mock_corpus, es_index_client, corpus_definition, prod, name, shards):
     corpus = Corpus.objects.get(name=mock_corpus)
     job = create_indexing_job(
@@ -36,7 +36,7 @@ def test_mappings_only_flag(mock_corpus, es_index_client, corpus_definition, map
     )
     perform_indexing(job)
     sleep(1)
-    res = es_index_client.count(index='times-test*')
+    res = es_index_client.count(index='test-times*')
     assert res.get('count') == expected
 
 
@@ -47,7 +47,7 @@ def test_add_clear(db, mock_corpus, es_index_client):
         mappings_only=True, add=False, clear=False, prod=False, rollover=False,
     )
     perform_indexing(job)
-    res = es_index_client.count(index='times-test*')
+    res = es_index_client.count(index='test-times*')
     assert res.get('count') == 0
     job = create_indexing_job(
         corpus, START, END,
@@ -55,14 +55,14 @@ def test_add_clear(db, mock_corpus, es_index_client):
     )
     perform_indexing(job)
     sleep(1)
-    res = es_index_client.count(index='times-test*')
+    res = es_index_client.count(index='test-times*')
     assert res.get('count') == 2
     job = create_indexing_job(
         corpus, START, END,
         mappings_only=True, add=False, clear=True, prod=False, rollover=False,
     )
     perform_indexing(job)
-    res = es_index_client.count(index='times-test*')
+    res = es_index_client.count(index='test-times*')
     assert res.get('count') == 0
 
 
@@ -88,4 +88,4 @@ def test_indexing_with_version(mock_corpus, corpus_definition, es_index_client):
         rollover=True,
     )
     perform_indexing(job)
-    assert es_index_client.indices.exists(index="times-test-1") == True
+    assert es_index_client.indices.exists(index="test-times-1") == True
