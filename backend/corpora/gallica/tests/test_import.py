@@ -1,7 +1,9 @@
 from datetime import datetime
+import time
+
 import requests
 
-from conftest import mock_response
+from conftest import mock_response, mock_sleep
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 
 
@@ -21,6 +23,7 @@ target_documents = [
 
 def test_gallica_import(monkeypatch, gallica_corpus_settings):
     monkeypatch.setattr(requests, "get", mock_response)
+    monkeypatch.setattr(time, "sleep", mock_sleep)
     corpus_def = load_corpus_definition("figaro")
     sources = corpus_def.sources(
         start=datetime(year=1930, month=1, day=1),

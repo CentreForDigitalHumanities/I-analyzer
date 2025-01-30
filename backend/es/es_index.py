@@ -117,16 +117,13 @@ def populate(
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
-    corpus_config = corpus.configuration
     corpus_name = corpus.name
     reader = make_reader(corpus)
 
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
-    files = reader.sources(
-        start=start or corpus_config.min_date,
-        end=end or corpus_config.max_date)
+    files = reader.sources(start=start, end=end)
     docs = reader.documents(files)
 
     # Each source document is decorated as an indexing operation, so that it
