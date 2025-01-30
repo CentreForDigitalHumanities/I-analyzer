@@ -43,7 +43,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     es_alias = getattr(settings, 'JMIG_ALIAS', None)
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
-    image = 'jewish_inscriptions.jpg'
+    image = 'jewishmigration.jpg'
     languages = ['en']
 
     category = 'inscription'
