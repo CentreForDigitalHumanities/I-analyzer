@@ -8,6 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 @pytest.fixture()
 def gallica_corpus_settings(settings):
     settings.CORPORA = {
+        "caricature": os.path.join(here, "caricature.py"),
         "figaro": os.path.join(here, "figaro.py"),
     }
 
@@ -26,16 +27,20 @@ class MockResponse(object):
         return 200
 
 
-def mock_response(url: str) -> MockResponse:
-    if url.endswith("date"):
-        filename = os.path.join(here, "tests", "data", "figaro", "Years.xml")
-    elif "&" in url:
-        filename = os.path.join(here, "tests", "data", "figaro", "Issues.xml")
-    elif "?" in url:
-        filename = os.path.join(here, "tests", "data", "figaro", "OAIRecord.xml")
-    elif url.endswith("texteBrut"):
-        filename = os.path.join(here, "tests", "data", "figaro", "RoughText.html")
-    return MockResponse(filename)
+class MockResponseFactory(object):
+    def __init__(self, corpus_name: str):
+        self.filepath = os.path.join(here, "tests", "data", corpus_name)
+
+    def mock_response(self, url: str) -> MockResponse:
+        if url.endswith("date"):
+            filename = os.path.join(self.filepath, "Years.xml")
+        elif "&" in url:
+            filename = os.path.join(self.filepath, "Issues.xml")
+        elif "?" in url:
+            filename = os.path.join(self.filepath, "OAIRecord.xml")
+        elif url.endswith("texteBrut"):
+            filename = os.path.join(self.filepath, "RoughText.html")
+        return MockResponse(filename)
 
 
 def mock_sleep(seconds: int):
