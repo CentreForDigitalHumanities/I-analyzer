@@ -79,14 +79,16 @@
                 <div class="control">
                     <button class="button" type="button" aria-label="move up"
                         iaBalloon="move field up"
-                        [disabled]="isFirst">
+                        [disabled]="isFirst"
+                        (click)="moveField(i, field, -1)">
                         <fa-icon [icon]="directionIcons.up" aria-hidden="true" />
                     </button>
                 </div>
                 <div class="control">
                     <button class="button" type="button" aria-label="move down"
                         iaBalloon="move field down"
-                        [disabled]="isLast">
+                        [disabled]="isLast"
+                        (click)="moveField(i, field, +1)">
                         <fa-icon [icon]="directionIcons.down" aria-hidden="true" />
                     </button>
                 </div>

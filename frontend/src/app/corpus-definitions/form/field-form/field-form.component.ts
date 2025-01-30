@@ -116,12 +116,16 @@ export class FieldFormComponent {
         this.corpus.definition.fields =
             newFields as CorpusDefinition['definition']['fields'];
         this.corpus.save().subscribe({
-            next: console.log,
             error: console.error,
         });
     }
 
     fieldControlTrackBy(_index: number, field: FormControl) {
         return field.get('extract').get('column').value as string;
+    }
+
+    moveField(index: number, field: FormControl, delta: number) {
+        this.fields.removeAt(index);
+        this.fields.insert(index + delta, field);
     }
 }
