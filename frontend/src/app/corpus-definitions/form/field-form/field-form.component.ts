@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, SimpleChanges } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
     APICorpusDefinitionField,
@@ -9,6 +9,7 @@ import { Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
 import { ISO6393Languages } from '../constants';
+import { actionIcons, directionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-field-form',
@@ -50,7 +51,12 @@ export class FieldFormComponent {
 
     languageOptions = ISO6393Languages;
 
-    constructor() {}
+    actionIcons = actionIcons;
+    directionIcons = directionIcons;
+
+    constructor(
+        private el: ElementRef<HTMLElement>,
+    ) {}
 
     get fields(): FormArray {
         return this.fieldsForm.get('fields') as FormArray;
@@ -112,8 +118,34 @@ export class FieldFormComponent {
         this.corpus.definition.fields =
             newFields as CorpusDefinition['definition']['fields'];
         this.corpus.save().subscribe({
-            next: console.log,
             error: console.error,
         });
+    }
+
+    /** identifier for a field control
+     *
+     * includes the index as an argument so this can be used as a TrackByFunction
+     */
+    fieldControlName(index: number, field: FormControl) {
+        return field.get('extract').get('column').value as string;
+    }
+
+    moveField(index: number, field: FormControl, delta: number): void {
+        this.fields.removeAt(index);
+        this.fields.insert(index + delta, field);
+
+        // after change detection, restore focus to the button
+        setTimeout(() => this.focusOnMoveControl(index, field, delta));
+    }
+
+    moveControlID(index: number, field: FormControl, delta: number): string {
+        const label = delta > 0 ? 'movedown' : 'moveup';
+        return label + '-' + this.fieldControlName(index, field);
+    }
+
+    focusOnMoveControl(index: number, field: FormControl, delta: number): void {
+        const selector = '#' + this.moveControlID(index, field, delta);
+        const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
+        button.focus();
     }
 }

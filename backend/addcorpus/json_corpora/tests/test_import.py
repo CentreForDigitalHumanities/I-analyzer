@@ -2,6 +2,7 @@ from addcorpus.json_corpora.import_json import _parse_field
 from addcorpus.models import Field, Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
 from addcorpus.models import Corpus, CorpusConfiguration
+from addcorpus.json_corpora.export_json import export_json_corpus
 
 def test_json_corpus_import(db, json_mock_corpus, json_corpus_definition):
     json_mock_corpus.delete()
@@ -74,6 +75,20 @@ def test_serializer_update(db, json_corpus_definition, json_mock_corpus: Corpus)
     assert serializer.is_valid()
     serializer.update(json_mock_corpus, serializer.validated_data)
     assert Field.objects.filter(corpus_configuration__corpus=json_mock_corpus).count() == 1
+
+def test_serializer_update_field_order(db, json_corpus_definition, json_mock_corpus: Corpus):
+    # send corpus with reverse field order
+    data = {
+        'definition': json_corpus_definition,
+        'active': True,
+    }
+    data['definition']['fields'] = list(reversed(data['definition']['fields']))
+    serializer = CorpusJSONDefinitionSerializer(data=data)
+    assert serializer.is_valid()
+    serializer.update(json_mock_corpus, serializer.validated_data)
+
+    json_mock_corpus.refresh_from_db()
+    assert export_json_corpus(json_mock_corpus) == data['definition']
 
 
 def test_parse_content_field(content_field_json):
@@ -194,4 +209,3 @@ def test_parse_geo_field(geo_field_json):
     assert field.hidden == False
     assert field.sortable == False
     assert field.searchable == False
-

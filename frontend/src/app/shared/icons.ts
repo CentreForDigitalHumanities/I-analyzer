@@ -58,6 +58,8 @@ import {
     faUser,
     faArrowsUpDown,
     faArrowRightArrowLeft,
+    faArrowUp,
+    faArrowDown,
 } from '@fortawesome/free-solid-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
@@ -81,6 +83,13 @@ export const navIcons: Icons = {
     admin: faCogs,
     downloads: faDownload,
     tags: faTags,
+};
+
+export const directionIcons: Icons = {
+    up: faArrowUp,
+    down: faArrowDown,
+    left: faArrowLeft,
+    right: faArrowRight,
 };
 
 export const actionIcons: Icons = {

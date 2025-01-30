@@ -1,7 +1,11 @@
 <h1 class="title">Fields</h1>
 <form class="container is-readable" [formGroup]="fieldsForm" (ngSubmit)="onSubmit()">
     <ng-container formArrayName="fields">
-        <div class="box" *ngFor="let field of fields.controls; let i=index" [formGroupName]="i">
+        <div class="box"
+            *ngFor="let field of fields.controls;
+                index as i; first as isFirst; last as isLast;
+                trackBy: fieldControlName"
+            [formGroupName]="i">
             <div class="field">
                 <label class="label" for="column_name">Column name</label>
                 <div class="control">
@@ -71,6 +75,33 @@
                 </div>
             </div>
 
+            <div class="field is-grouped" style="justify-content: end;">
+                <div class="control">
+                    <!-- the first "move down" and the last "move up" button are disabled;
+                        this is done with CSS/ARIA/javascript rather than the "disabled"
+                        attribute, so the control can stay focused when the user moves
+                        the field to the first/last position.
+                    -->
+                    <button class="button" type="button" aria-label="move up"
+                        [id]="moveControlID(i, field, -1)"
+                        iaBalloon="move field up"
+                        [attr.aria-disabled]="isFirst"
+                        [class.is-disabled]="isFirst"
+                        (click)="isFirst || moveField(i, field, -1)">
+                        <fa-icon [icon]="directionIcons.up" aria-hidden="true" />
+                    </button>
+                </div>
+                <div class="control">
+                    <button class="button" type="button" aria-label="move down"
+                        [id]="moveControlID(i, field, +1)"
+                        iaBalloon="move field down"
+                        [attr.aria-disabled]="isLast"
+                        [class.is-disabled]="isLast"
+                        (click)="isLast || moveField(i, field, +1)">
+                        <fa-icon [icon]="directionIcons.down" aria-hidden="true" />
+                    </button>
+                </div>
+            </div>
         </div>
     </ng-container>
 
@@ -78,7 +109,7 @@
 
     <div class="field">
         <p class="control">
-            <button class="button is-primary">Save changes</button>
+            <button class="button is-primary" type="submit">Save changes</button>
         </p>
     </div>
 </form>
