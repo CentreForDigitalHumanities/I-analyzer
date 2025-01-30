@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 import os.path as op
 from time import sleep
+from typing import Union
 
 from bs4 import BeautifulSoup
 from ianalyzer_readers.xml_tag import Tag
@@ -32,8 +33,13 @@ def get_content(content: BeautifulSoup) -> str:
 def get_publication_id(identifier: str) -> str:
     try:
         return identifier.split("/")[-1]
-    except:
+    except IndexError:
         return None
+
+
+def join_issue_strings(issue_description: Union[list[str], None]) -> Union[str, None]:
+    if issue_description:
+        return "".join(issue_description[:2])
 
 
 class Gallica(XMLCorpusDefinition):
@@ -136,6 +142,15 @@ class Gallica(XMLCorpusDefinition):
             visualizations=['wordcloud', 'ngram'],
         )
 
+    def contributor(self):
+        return FieldDefinition(
+            name="contributor",
+            display_name="Contributors",
+            description="Persons who contributed to this periodical",
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            extractor=XML(Tag("dc:contributor"), multiple=True),
+        )
+
     def date(self, min_date: datetime, max_date: datetime):
         return FieldDefinition(
             name="date",
@@ -161,6 +176,27 @@ class Gallica(XMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             extractor=XML(Tag("dc:identifier"), transform=get_publication_id),
             csv_core=True,
+        )
+
+    def issue(self):
+        return FieldDefinition(
+            name="issue",
+            description="Issue description",
+            es_mapping=keyword_mapping(),
+            extractor=XML(
+                Tag("dc:description"), multiple=True, transform=join_issue_strings
+            ),
+        )
+
+    def publisher(self):
+        return FieldDefinition(
+            name="publisher",
+            display_name="Publisher",
+            description="Publisher of this periodical",
+            es_mapping=keyword_mapping(),
+            extractor=XML(
+                Tag("dc:publisher"), multiple=True, transform=lambda x: "".join(x)
+            ),
         )
 
     def url(self):

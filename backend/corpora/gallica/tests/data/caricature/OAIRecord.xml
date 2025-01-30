@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<results ResultsGenerationSearchTime="0:00:00.009" countResults="1" resultType="CVOAIRecordSearchService" searchTime="">
+<visibility_rights>all</visibility_rights>
+<notice>
+<record>
+<header>
+<identifier>oai:bnf.fr:gallica/ark:/12148/bpt6k1048832g</identifier>
+<datestamp>2024-10-18</datestamp>
+<setSpec>gallica:theme:0:07</setSpec>
+<setSpec>gallica:typedoc:periodiques:fascicules</setSpec>
+</header>
+<metadata>
+<oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+<dc:identifier>https://gallica.bnf.fr/ark:/12148/bpt6k1048832g</dc:identifier>
+<dc:date>1830-11-04</dc:date>
+<dc:description>04 novembre 1830</dc:description>
+<dc:description>1830/11/04 (T1,N1).</dc:description>
+<dc:description/>
+<dc:title>La Caricature morale, politique et littéraire / A. Audibert, rédacteur en chef ; [directeur : Ch. Philipon]</dc:title>
+<dc:contributor>Philipon, Charles (1800-1862). Directeur de publication</dc:contributor>
+<dc:contributor>Audibert, Auguste (18..?-1832). Rédacteur</dc:contributor>
+<dc:contributor>Desnoyers, Louis (1802-1868). Rédacteur</dc:contributor>
+<dc:contributor>Gonzalès, Emmanuel (1815-1887). Directeur de publication</dc:contributor>
+<dc:contributor>Huart, Louis (1813-1865). Rédacteur</dc:contributor>
+<dc:publisher>Aubert (Paris)</dc:publisher>
+<dc:publisher>[s.n.][s.n.] (Paris)</dc:publisher>
+<dc:type xml:lang="fre">texte</dc:type>
+<dc:type xml:lang="eng">text</dc:type>
+<dc:type xml:lang="fre">publication en série imprimée</dc:type>
+<dc:type xml:lang="eng">printed serial</dc:type>
+<dc:language>fre</dc:language>
+<dc:relation>Notice du catalogue : http://catalogue.bnf.fr/ark:/12148/cb344523348</dc:relation>
+<dc:source>Bibliothèque nationale de France, département Réserve des livres rares, RES FOL-LC2-2828, Z-1643-1646</dc:source>
+<dc:rights xml:lang="fre">domaine public</dc:rights>
+<dc:rights xml:lang="eng">public domain</dc:rights>
+<dc:relation>http://gallica.bnf.fr/ark:/12148/cb344523348/date</dc:relation>
+<dc:format>Nombre total de vues :  4371</dc:format>
+</oai_dc:dc>
+</metadata>
+</record>
+</notice>
+<provenance>bnf.fr</provenance>
+<sdewey>07</sdewey>
+<dewey>0</dewey>
+<source>Bibliothèque nationale de France, département Réserve des livres rares, RES FOL-LC2-2828, Z-1643-1646</source>
+<typedoc>fascicule</typedoc>
+<nqamoyen>87.66</nqamoyen>
+<mode_indexation>text</mode_indexation>
+<title>La Caricature morale, politique et littéraire / A. Audibert, rédacteur en chef ; [directeur : Ch. Philipon]</title>
+<date nbIssue="1">1830-11-04</date>
+<first_indexation_date>16/09/2013</first_indexation_date>
+<streamable>false</streamable>
+<listBibVirt>
+<label>gallica</label>
+</listBibVirt>
+</results>

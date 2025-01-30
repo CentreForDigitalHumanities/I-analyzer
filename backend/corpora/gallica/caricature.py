@@ -8,9 +8,20 @@ from corpora.gallica.gallica import Gallica
 class Caricature(Gallica):
     title = "La Caricature"
     description = "Satirical periodical, 1830-1843"
-    min_date = datetime(year=1854, month=1, day=1)
-    max_date = datetime(year=1954, month=12, day=31)
+    min_date = datetime(year=1830, month=1, day=1)
+    max_date = datetime(year=1843, month=12, day=31)
     corpus_id = "cb344523348"
     category = "periodical"
     es_index = getattr(settings, 'CARICATURE_INDEX', 'caricature')
     image = "caricature.jpg"
+
+    def __init__(self):
+        self.fields = [
+            self.content(),
+            self.contributor(),
+            self.date(self.min_date, self.max_date),
+            self.identifier(),
+            self.issue(),
+            self.publisher(),
+            self.url(),
+        ]
