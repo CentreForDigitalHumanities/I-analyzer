@@ -2,7 +2,9 @@
 <form class="container is-readable" [formGroup]="fieldsForm" (ngSubmit)="onSubmit()">
     <ng-container formArrayName="fields">
         <div class="box"
-            *ngFor="let field of fields.controls; let i=index; first as isFirst; last as isLast"
+            *ngFor="let field of fields.controls;
+                index as i; first as isFirst; last as isLast;
+                trackBy: fieldControlTrackBy"
             [formGroupName]="i">
             <div class="field">
                 <label class="label" for="column_name">Column name</label>

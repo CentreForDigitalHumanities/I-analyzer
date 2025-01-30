@@ -120,4 +120,8 @@ export class FieldFormComponent {
             error: console.error,
         });
     }
+
+    fieldControlTrackBy(_index: number, field: FormControl) {
+        return field.get('extract').get('column').value as string;
+    }
 }
