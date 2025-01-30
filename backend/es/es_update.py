@@ -30,7 +30,7 @@ def run_update_task(task: UpdateIndexTask) -> None:
             task.corpus.name, corpus_definition, corpus_definition.update_script()
         )
     else:
-        raise Exception("Cannot update without update_body or update_script")
+        raise RuntimeError("Cannot update without update_body or update_script")
 
 
 def update_index(corpus: str, corpus_definition: CorpusDefinition, query_model):
