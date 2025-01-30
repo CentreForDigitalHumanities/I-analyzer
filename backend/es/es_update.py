@@ -4,13 +4,14 @@ from addcorpus.python_corpora.corpus import CorpusDefinition
 from ianalyzer.elasticsearch import elasticsearch
 from indexing.models import UpdateIndexTask
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
+from addcorpus.exceptions import PythonDefinitionRequired
 
 import logging
 logger = logging.getLogger('indexing')
 
 def run_update_task(task: UpdateIndexTask) -> None:
     if not task.corpus.has_python_definition:
-        raise Exception('Cannot update: corpus has no Python definition')
+        raise PythonDefinitionRequired(task.corpus, 'Update task not applicable')
 
     corpus_definition = load_corpus_definition(task.corpus.name)
 
