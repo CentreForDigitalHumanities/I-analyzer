@@ -7,7 +7,9 @@ Script to index the data into ElasticSearch.
 from typing import Dict, Optional
 import datetime
 import logging
+import warnings
 import elasticsearch.helpers as es_helpers
+from elasticsearch.exceptions import NotFoundError
 from django.db import transaction
 
 from addcorpus.es_settings import es_settings
@@ -65,8 +67,7 @@ def create(task: CreateIndexTask):
     if client.indices.exists(index=index_name):
         if task.delete_existing:
             logger.info('Attempting to clean old index...')
-            client.indices.delete(
-                index=index_name, ignore=[400, 404])
+            client.indices.delete(index=index_name)
         else:
             logger.error(
                 'Index `{}` already exists. Do you need to add an alias for it or '
