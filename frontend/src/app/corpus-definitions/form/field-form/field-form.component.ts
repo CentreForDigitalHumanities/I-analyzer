@@ -9,6 +9,7 @@ import { Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
 import { ISO6393Languages } from '../constants';
+import { actionIcons, directionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-field-form',
@@ -49,6 +50,9 @@ export class FieldFormComponent {
     ];
 
     languageOptions = ISO6393Languages;
+
+    actionIcons = actionIcons;
+    directionIcons = directionIcons;
 
     constructor() {}
 
