@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, SimpleChanges } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
     APICorpusDefinitionField,
@@ -54,7 +54,9 @@ export class FieldFormComponent {
     actionIcons = actionIcons;
     directionIcons = directionIcons;
 
-    constructor() {}
+    constructor(
+        private el: ElementRef<HTMLElement>,
+    ) {}
 
     get fields(): FormArray {
         return this.fieldsForm.get('fields') as FormArray;
@@ -124,8 +126,21 @@ export class FieldFormComponent {
         return field.get('extract').get('column').value as string;
     }
 
-    moveField(index: number, field: FormControl, delta: number) {
+    moveField(index: number, field: FormControl, delta: number): void {
         this.fields.removeAt(index);
         this.fields.insert(index + delta, field);
+
+        setTimeout(() => this.focusOnMoveControl(index, field, delta));
+    }
+
+    focusOnMoveControl(index: number, field: FormControl, delta: number): void {
+        const fieldID = this.fieldControlTrackBy(index + delta, field);
+        const label = delta > 0 ? 'movedown' : 'moveup';
+        const selector = '#' + label + '-' + fieldID;
+        const button = this.el.nativeElement.querySelector<HTMLButtonElement>(
+            selector
+        );
+        button.focus();
+
     }
 }
