@@ -64,10 +64,10 @@ def create(task: CreateIndexTask):
     index_name = task.index.name
     es_mapping = _make_es_mapping(corpus_config)
 
-    if client.indices.exists(index=index_name):
+    if client.indices.exists(index=index_name, allow_no_indices=False):
         if task.delete_existing:
             logger.info('Attempting to clean old index...')
-            client.indices.delete(index=index_name)
+            client.indices.delete(index=index_name, allow_no_indices=False)
         else:
             logger.error(
                 'Index `{}` already exists. Do you need to add an alias for it or '
@@ -139,7 +139,9 @@ def populate(task: PopulateIndexTask):
 def update_index_settings(task: UpdateSettingsTask):
     client = task.client()
     client.indices.put_settings(
-        settings=task.settings, index=task.index.name
+        settings=task.settings,
+        index=task.index.name,
+        allow_no_indices=False,
     )
 
 
