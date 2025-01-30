@@ -1,11 +1,13 @@
 from datetime import datetime
 import logging
+import os.path as op
 from time import sleep
 
 from bs4 import BeautifulSoup
 from ianalyzer_readers.xml_tag import Tag
 from ianalyzer_readers.extract import Metadata, XML
 import requests
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.python_corpora.corpus import FieldDefinition
@@ -39,6 +41,10 @@ class Gallica(XMLCorpusDefinition):
     languages = ["fr"]
     data_url = "https://gallica.bnf.fr"
     corpus_id = ""  # each corpus on Gallica has an "ark" id
+    n_retries = 5
+    data_directory = op.dirname(
+        op.abspath(__file__)
+    )  # make sure that all corpora have a data_directory assigned
 
     @property
     def es_settings(self):
@@ -51,53 +57,66 @@ class Gallica(XMLCorpusDefinition):
         response = requests.get(
             f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date"
         )
-        year_soup = BeautifulSoup(response.content, "xml")
-        years = [
-            year.string
-            for year in year_soup.find_all("year")
-            if int(year.string) >= start.year and int(year.string) <= end.year
-        ]
+        if response.status_code == 200:
+            year_soup = BeautifulSoup(response.content, "xml")
+            years = [
+                year.string
+                for year in year_soup.find_all("year")
+                if int(year.string) >= start.year and int(year.string) <= end.year
+            ]
         for year in years:
-            try:
-                response = requests.get(
-                    f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date&date={year}"
-                )
-                ark_soup = BeautifulSoup(response.content, "xml")
-                ark_numbers = [
-                    issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")
-                ]
-                sleep(2)
-            except ConnectionError:
-                logger.warning(f"Connection error when processing year {year}")
-                break
+            for retry in range(self.n_retries):
+                sleep(retry * 10)
+                try:
+                    response = requests.get(
+                        f"{self.data_url}/services/Issues?ark=ark:/12148/{self.corpus_id}/date&date={year}"
+                    )
+                    if response.status_code == 200:
+                        ark_soup = BeautifulSoup(response.content, "xml")
+                        ark_numbers = [
+                            issue_tag["ark"] for issue_tag in ark_soup.find_all("issue")
+                        ]
+                        break
+                except RequestsConnectionError:
+                    logger.warning(
+                        f"Connection error when processing year {year}, going to sleep for {retry * 10} seconds"
+                    )
+                    continue
 
             for ark in ark_numbers:
-                try:
-                    source_response = requests.get(
-                        f"{self.data_url}/services/OAIRecord?ark={ark}"
-                    )
-                    sleep(2)
-                except ConnectionError:
-                    logger.warning(f"Connection error encountered in issue {ark}")
-                    break
-
-                if source_response:
+                for retry in range(self.n_retries):
+                    sleep(retry * 10)
+                    try:
+                        source_response = requests.get(
+                            f"{self.data_url}/services/OAIRecord?ark={ark}"
+                        )
+                        if source_response.status_code == 200:
+                            break
+                    except RequestsConnectionError:
+                        logger.warning(
+                            f"Connection error encountered in issue {ark}, going to sleep for {retry * 10} seconds"
+                        )
+                        continue
+                for retry in range(self.n_retries):
+                    sleep(retry * 10)
                     try:
                         content_response = requests.get(
                             f"{self.data_url}/ark:/12148/{ark}.texteBrut"
                         )
-                        sleep(10)
-                    except ConnectionError:
+                        if content_response.status_code == 200:
+                            parsed_content = BeautifulSoup(
+                                content_response.content, "lxml-html"
+                            )
+                            break
+                    except RequestsConnectionError:
                         logger.warning(
-                            f"Connection error when fetching full text of issue {ark}"
+                            f"Connection error when fetching full text of issue {ark}, going to sleep for {retry * 10} seconds"
                         )
-                    parsed_content = BeautifulSoup(
-                        content_response.content, "lxml-html"
-                    )
-                    yield (
-                        source_response.content,
-                        {"content": parsed_content},
-                    )
+                        continue
+                yield (
+                    source_response.content,
+                    {"content": parsed_content},
+                )
 
     def content(self):
         return FieldDefinition(
@@ -105,6 +124,8 @@ class Gallica(XMLCorpusDefinition):
             description="Content of publication",
             display_name="Content",
             display_type="text_content",
+            results_overview=True,
+            search_field_core=True,
             es_mapping=main_content_mapping(
                 token_counts=True,
                 stopword_analysis=True,
@@ -112,6 +133,7 @@ class Gallica(XMLCorpusDefinition):
                 language=self.languages[0],
             ),
             extractor=Metadata("content", transform=get_content),
+            visualizations=['wordcloud', 'ngram'],
         )
 
     def date(self, min_date: datetime, max_date: datetime):

@@ -1,4 +1,3 @@
-from datetime import date
 from addcorpus.json_corpora.import_json import _parse_field
 from addcorpus.models import Field, Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
@@ -24,8 +23,8 @@ def test_json_corpus_import(db, json_mock_corpus, json_corpus_definition):
     assert config.description == 'Example corpus'
     assert config.languages == ['en']
     assert config.category == 'book'
-    assert config.min_date == date(1500, 1, 1)
-    assert config.max_date == date(1700, 12, 31)
+    assert config.min_year == 1500
+    assert config.max_year == 1700
     assert config.source_data_delimiter == ','
     assert config.es_index == 'test-example'
 

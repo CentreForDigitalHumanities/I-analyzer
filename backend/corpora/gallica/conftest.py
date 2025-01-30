@@ -21,6 +21,10 @@ class MockResponse(object):
         with open(self.mock_content_file, "r") as f:
             return f.read()
 
+    @property
+    def status_code(self):
+        return 200
+
 
 def mock_response(url: str) -> MockResponse:
     if url.endswith("date"):
@@ -33,3 +37,6 @@ def mock_response(url: str) -> MockResponse:
         filename = os.path.join(here, "tests", "data", "figaro", "RoughText.html")
     return MockResponse(filename)
 
+
+def mock_sleep(seconds: int):
+    pass

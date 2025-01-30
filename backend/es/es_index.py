@@ -97,15 +97,14 @@ def populate(task: PopulateIndexTask):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
-    corpus_config = task.corpus.configuration
     reader = make_reader(task.corpus)
 
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
     files = reader.sources(
-        start=task.document_min_date or corpus_config.min_date,
-        end=task.document_max_date or corpus_config.max_date)
+        start=task.document_min_date,
+        end=task.document_max_date)
     docs = reader.documents(files)
 
     # Each source document is decorated as an indexing operation, so that it

@@ -49,16 +49,20 @@ class CorpusDefinition(Reader):
         raise NotImplementedError('CorpusDefinition missing description')
 
     @property
-    def min_date(self):
+    def min_date(self) -> Union[datetime, date, int]:
         '''
         Minimum timestamp for data files.
+
+        Can be a datetime, date, or integer (representing the year).
         '''
         raise NotImplementedError('CorpusDefinition missing min_date')
 
     @property
-    def max_date(self):
+    def max_date(self) -> Union[datetime, date, int]:
         '''
         Maximum timestamp for data files.
+
+        Can be a datetime, date, or integer (representing the year).
         '''
         raise NotImplementedError('CorpusDefinition missing max_date')
 
