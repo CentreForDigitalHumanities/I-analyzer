@@ -122,7 +122,11 @@ export class FieldFormComponent {
         });
     }
 
-    fieldControlTrackBy(_index: number, field: FormControl) {
+    /** identifier for a field control
+     *
+     * includes the index as an argument so this can be used as a TrackByFunction
+     */
+    fieldControlName(index: number, field: FormControl) {
         return field.get('extract').get('column').value as string;
     }
 
@@ -130,17 +134,18 @@ export class FieldFormComponent {
         this.fields.removeAt(index);
         this.fields.insert(index + delta, field);
 
+        // after change detection, restore focus to the button
         setTimeout(() => this.focusOnMoveControl(index, field, delta));
     }
 
-    focusOnMoveControl(index: number, field: FormControl, delta: number): void {
-        const fieldID = this.fieldControlTrackBy(index + delta, field);
+    moveControlID(index: number, field: FormControl, delta: number): string {
         const label = delta > 0 ? 'movedown' : 'moveup';
-        const selector = '#' + label + '-' + fieldID;
-        const button = this.el.nativeElement.querySelector<HTMLButtonElement>(
-            selector
-        );
-        button.focus();
+        return label + '-' + this.fieldControlName(index, field);
+    }
 
+    focusOnMoveControl(index: number, field: FormControl, delta: number): void {
+        const selector = '#' + this.moveControlID(index, field, delta);
+        const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
+        button.focus();
     }
 }

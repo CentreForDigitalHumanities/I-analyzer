@@ -4,7 +4,7 @@
         <div class="box"
             *ngFor="let field of fields.controls;
                 index as i; first as isFirst; last as isLast;
-                trackBy: fieldControlTrackBy"
+                trackBy: fieldControlName"
             [formGroupName]="i">
             <div class="field">
                 <label class="label" for="column_name">Column name</label>
@@ -77,8 +77,13 @@
 
             <div class="field is-grouped" style="justify-content: end;">
                 <div class="control">
+                    <!-- the first "move down" and the last "move up" button are disabled;
+                        this is done with CSS/ARIA/javascript rather than the "disabled"
+                        attribute, so the control can stay focused when the user moves
+                        the field to the first/last position.
+                    -->
                     <button class="button" type="button" aria-label="move up"
-                        id="moveup-{{fieldControlTrackBy(i, field)}}"
+                        [id]="moveControlID(i, field, -1)"
                         iaBalloon="move field up"
                         [attr.aria-disabled]="isFirst"
                         [class.is-disabled]="isFirst"
@@ -88,7 +93,7 @@
                 </div>
                 <div class="control">
                     <button class="button" type="button" aria-label="move down"
-                        id="movedown-{{fieldControlTrackBy(i, field)}}"
+                        [id]="moveControlID(i, field, +1)"
                         iaBalloon="move field down"
                         [attr.aria-disabled]="isLast"
                         [class.is-disabled]="isLast"
