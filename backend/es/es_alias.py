@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import re
 from django.db import transaction
+from elasticsearch import Elasticsearch
+from typing import Generator
 
 from addcorpus.models import Corpus, CorpusConfiguration
-from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
+from ianalyzer.elasticsearch import elasticsearch, server_for_corpus, client_from_config
 from es.models import Server, Index
 from es.sync import update_server_table_from_settings
 from indexing.models import IndexJob, DeleteIndexTask, RemoveAliasTask, AddAliasTask
@@ -138,3 +140,14 @@ def get_highest_version_number(indices, current_index=None):
         return max([v for v in versions if v is not None])
     except:
         return 0
+
+
+def indices_with_alias(server: Server, alias: str) -> Generator[Index, None, None]:
+    client = client_from_config(server.configuration)
+    if client.indices.exists_alias(name=alias):
+        for index_name in client.indices.get_alias(name=alias):
+            aliased_index, _ = Index.objects.get_or_create(
+                server=server,
+                name=index_name,
+            )
+            yield aliased_index

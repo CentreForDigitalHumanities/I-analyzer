@@ -4,12 +4,10 @@
 Script to index the data into ElasticSearch.
 '''
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 import datetime
 import logging
-import warnings
 import elasticsearch.helpers as es_helpers
-from elasticsearch.exceptions import NotFoundError
 from django.db import transaction
 
 from addcorpus.es_settings import es_settings
@@ -19,7 +17,7 @@ from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
 from .es_alias import (
     get_current_index_name, get_new_version_number,
-    add_alias, remove_alias, delete_index
+    add_alias, remove_alias, delete_index, indices_with_alias
 )
 from indexing.models import (
     IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
@@ -164,35 +162,15 @@ def create_indexing_job(
     running an update script, and rolling over the alias. Parameters are described
     in detail in the documentation for the `index` command.
     '''
-    job = IndexJob.objects.create(corpus=corpus)
+    create_new = not (add or update)
 
     update_server_table_from_settings()
-    server_name = server_for_corpus(corpus.name)
-    server = Server.objects.get(name=server_name)
-    client = elasticsearch(corpus.name)
-    base_name = corpus.configuration.es_index
 
-    # tasks below are added in order of execution for readability
+    job = IndexJob.objects.create(corpus=corpus)
+    server = _server_for_job(job)
+    index, alias = _index_and_alias_for_job(job, prod, create_new)
 
-    if prod:
-        alias = corpus.configuration.es_alias or corpus.configuration.es_index
-        if add or update:
-            versioned_name = get_current_index_name(
-                corpus.configuration, client
-            )
-        else:
-            next_version = get_new_version_number(client, alias, base_name)
-            versioned_name = f'{base_name}-{next_version}'
-
-        index, _ = Index.objects.get_or_create(
-            server=server, name=versioned_name
-        )
-    else:
-        index, _ = Index.objects.get_or_create(
-            server=server, name=base_name
-        )
-
-    if not (add or update):
+    if create_new:
         CreateIndexTask.objects.create(
             job=job,
             index=index,
@@ -216,7 +194,7 @@ def create_indexing_job(
             document_max_date=end,
         )
 
-    if prod and not (add or update):
+    if prod and create_new:
         UpdateSettingsTask.objects.create(
             job=job,
             index=index,
@@ -224,17 +202,12 @@ def create_indexing_job(
         )
 
     if prod and rollover:
-        if client.indices.exists_alias(name=alias):
-            for index_name in client.indices.get_alias(name=alias):
-                aliased_index, _ = Index.objects.get_or_create(
-                    server=server,
-                    name=index_name,
-                )
-                RemoveAliasTask.objects.create(
-                    job=job,
-                    index=aliased_index,
-                    alias=alias,
-                )
+        for aliased_index in indices_with_alias(server, alias):
+            RemoveAliasTask.objects.create(
+                job=job,
+                index=aliased_index,
+                alias=alias,
+            )
         AddAliasTask.objects.create(
             job=job,
             index=index,
@@ -243,6 +216,39 @@ def create_indexing_job(
 
     return job
 
+
+def _server_for_job(job: IndexJob):
+    server_name = server_for_corpus(job.corpus.name)
+    server = Server.objects.get(name=server_name)
+    return server
+
+
+def _index_and_alias_for_job(job: IndexJob, prod: bool, create_new: bool) -> Tuple[Index, str]:
+    corpus = job.corpus
+    server = _server_for_job(job)
+    client = elasticsearch(corpus.name)
+    base_name = corpus.configuration.es_index
+
+    if prod:
+        alias = corpus.configuration.es_alias or corpus.configuration.es_index
+        if create_new:
+            next_version = get_new_version_number(client, alias, base_name)
+            versioned_name = f'{base_name}-{next_version}'
+        else:
+            versioned_name = get_current_index_name(
+                corpus.configuration, client
+            )
+
+        index, _ = Index.objects.get_or_create(
+            server=server, name=versioned_name
+        )
+    else:
+        alias = None
+        index, _ = Index.objects.get_or_create(
+            server=server, name=base_name
+        )
+
+    return index, alias
 
 
 def perform_indexing(job: IndexJob):
