@@ -3,6 +3,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
     name: 'paragraph',
+    standalone: false
 })
 export class ParagraphPipe implements PipeTransform {
     constructor(private domSanitizer: DomSanitizer) {}

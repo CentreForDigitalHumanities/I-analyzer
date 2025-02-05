@@ -9,14 +9,17 @@
       "projectType": "application",
       "architect": {
           "build": {
-              "builder": "@angular-devkit/build-angular:browser",
+              "builder": "@angular-devkit/build-angular:application",
               "options": {
                   "baseHref": "/",
-                  "outputPath": "dist",
+                  "outputPath": {
+                    "base": "dist"
+                  },
                   "index": "src/index.html",
-                  "main": "src/main.ts",
                   "tsConfig": "src/tsconfig.app.json",
-                  "polyfills": "src/polyfills.ts",
+                  "polyfills": [
+                    "src/polyfills.ts"
+                  ],
                   "assets": ["src/assets"],
                   "styles": [
                       "node_modules/primeicons/primeicons.css",
@@ -26,9 +29,7 @@
                   ],
                   "scripts": [],
                   "aot": false,
-                  "vendorChunk": true,
                   "extractLicenses": false,
-                  "buildOptimizer": false,
                   "sourceMap": true,
                   "optimization": false,
                   "namedChunks": true,
@@ -40,7 +41,8 @@
                       "smoothscroll-polyfill",
                       "file-saver",
                       "pdfjs-dist"
-                  ]
+                  ],
+                  "browser": "src/main.ts"
               },
               "configurations": {
                   "production": {
@@ -50,8 +52,6 @@
                       "namedChunks": false,
                       "aot": true,
                       "extractLicenses": true,
-                      "vendorChunk": false,
-                      "buildOptimizer": true,
                       "fileReplacements": [
                           {
                               "replace": "src/environments/environment.ts",
@@ -66,8 +66,6 @@
                       "namedChunks": false,
                       "aot": true,
                       "extractLicenses": true,
-                      "vendorChunk": false,
-                      "buildOptimizer": true,
                       "fileReplacements": [
                           {
                               "replace": "src/environments/environment.ts",

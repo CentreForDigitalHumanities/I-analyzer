@@ -7,7 +7,8 @@ import { actionIcons } from '@shared/icons';
 @Component({
     selector: 'ia-definition-json-upload',
     templateUrl: './definition-json-upload.component.html',
-    styleUrls: ['./definition-json-upload.component.scss']
+    styleUrls: ['./definition-json-upload.component.scss'],
+    standalone: false
 })
 export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
     @Input() reset: Observable<void>;

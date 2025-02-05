@@ -31,6 +31,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
             multi: true,
         },
     ],
+    standalone: false
 })
 export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor  {
     @HostBinding('class') classes = 'dropdown';

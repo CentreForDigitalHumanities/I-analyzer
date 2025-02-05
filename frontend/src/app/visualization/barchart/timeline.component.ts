@@ -25,6 +25,7 @@ import {
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss'],
+    standalone: false
 })
 export class TimelineComponent
     extends BarchartDirective<DateHistogramResult, TimelineDataPoint>

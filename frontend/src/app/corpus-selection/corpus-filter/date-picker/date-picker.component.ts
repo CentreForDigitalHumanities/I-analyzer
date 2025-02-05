@@ -4,9 +4,10 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  selector: 'ia-date-picker',
-  templateUrl: './date-picker.component.html',
-  styleUrls: ['./date-picker.component.scss']
+    selector: 'ia-date-picker',
+    templateUrl: './date-picker.component.html',
+    styleUrls: ['./date-picker.component.scss'],
+    standalone: false
 })
 export class DatePickerComponent {
     @Input() @Output() subject: BehaviorSubject<Date> = new BehaviorSubject<Date>(undefined);

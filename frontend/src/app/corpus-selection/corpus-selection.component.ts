@@ -10,7 +10,8 @@ import { actionIcons } from '@shared/icons';
 @Component({
     selector: 'ia-corpus-selection',
     templateUrl: './corpus-selection.component.html',
-    styleUrls: ['./corpus-selection.component.scss']
+    styleUrls: ['./corpus-selection.component.scss'],
+    standalone: false
 })
 export class CorpusSelectionComponent implements OnInit {
     @Input()

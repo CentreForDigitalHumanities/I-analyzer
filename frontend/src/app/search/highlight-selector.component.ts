@@ -6,9 +6,10 @@ import * as _ from 'lodash';
 
 
 @Component({
-  selector: 'ia-highlight-selector',
-  templateUrl: './highlight-selector.component.html',
-  styleUrls: ['./highlight-selector.component.scss']
+    selector: 'ia-highlight-selector',
+    templateUrl: './highlight-selector.component.html',
+    styleUrls: ['./highlight-selector.component.scss'],
+    standalone: false
 })
 export class HighlightSelectorComponent {
     @Input() pageResults: PageResults;

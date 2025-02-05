@@ -5,7 +5,8 @@ import { filterIcons } from '@shared/icons';
 @Component({
     selector: 'ia-filter-box',
     templateUrl: './filter-box.component.html',
-    styleUrls: ['./filter-box.component.scss']
+    styleUrls: ['./filter-box.component.scss'],
+    standalone: false
 })
 export class FilterBoxComponent {
     @Input() filter: SearchFilter;

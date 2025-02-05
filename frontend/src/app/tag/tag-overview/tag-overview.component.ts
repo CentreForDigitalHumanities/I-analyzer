@@ -13,6 +13,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-tag-overview',
     templateUrl: './tag-overview.component.html',
     styleUrls: ['./tag-overview.component.scss'],
+    standalone: false
 })
 export class TagOverviewComponent implements OnInit {
     tags$ = this.tagService.tags$;

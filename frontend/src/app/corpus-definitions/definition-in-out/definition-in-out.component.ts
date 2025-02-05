@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     selector: 'ia-definition-in-out',
     templateUrl: './definition-in-out.component.html',
     styleUrls: ['./definition-in-out.component.scss'],
+    standalone: false
 })
 export class DefinitionInOutComponent {
     actionIcons = actionIcons;

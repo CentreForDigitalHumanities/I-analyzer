@@ -11,6 +11,7 @@ import { WordmodelsService } from '@services';
     selector: 'ia-word-similarity',
     templateUrl: './word-similarity.component.html',
     styleUrls: ['./word-similarity.component.scss'],
+    standalone: false
 })
 export class WordSimilarityComponent implements OnChanges, OnDestroy {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning

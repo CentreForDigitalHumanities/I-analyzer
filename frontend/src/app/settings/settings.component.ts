@@ -5,7 +5,8 @@ import { pageTitle } from '@utils/app';
 @Component({
     selector: 'ia-settings',
     templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.scss']
+    styleUrls: ['./settings.component.scss'],
+    standalone: false
 })
 export class SettingsComponent implements OnInit {
 

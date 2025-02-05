@@ -15,6 +15,7 @@ import { actionIcons, directionIcons } from '@shared/icons';
     selector: 'ia-field-form',
     templateUrl: './field-form.component.html',
     styleUrl: './field-form.component.scss',
+    standalone: false
 })
 export class FieldFormComponent {
     @Input() corpus: CorpusDefinition;

@@ -8,6 +8,7 @@ import { actionIcons, navIcons } from '@shared/icons';
     selector: 'ia-manual-navigation',
     templateUrl: './manual-navigation.component.html',
     styleUrls: ['./manual-navigation.component.scss'],
+    standalone: false
 })
 export class ManualNavigationComponent implements OnInit {
     navIcons = navIcons;

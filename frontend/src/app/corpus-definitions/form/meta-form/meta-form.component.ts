@@ -15,6 +15,7 @@ import { ISO6393Languages } from '../constants';
     selector: 'ia-meta-form',
     templateUrl: './meta-form.component.html',
     styleUrl: './meta-form.component.scss',
+    standalone: false
 })
 export class MetaFormComponent implements OnChanges, OnDestroy {
     @Input() corpus: CorpusDefinition;

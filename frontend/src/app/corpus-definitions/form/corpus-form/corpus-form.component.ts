@@ -12,6 +12,7 @@ import { cloneDeep } from 'lodash';
     templateUrl: './corpus-form.component.html',
     styleUrl: './corpus-form.component.scss',
     providers: [CorpusDefinitionService],
+    standalone: false
 })
 export class CorpusFormComponent {
     steps$ = this.corpusDefService.steps$.asObservable();
