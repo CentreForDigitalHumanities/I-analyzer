@@ -6,8 +6,8 @@
         "languages": ["en", "es", "it", "pt", "fr",  "nl", "de", "ar", "af", "sv", ""],
         "category": "review",
         "date_range": {
-            "min": "2007-01-01",
-            "max": "2022-12-31"
+            "min": 2007,
+            "max": 2022
         }
     },
     "source_data": {

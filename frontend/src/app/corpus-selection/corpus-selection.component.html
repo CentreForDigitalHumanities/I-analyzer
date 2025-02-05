@@ -16,21 +16,22 @@
             Select a corpus to search through
         </p>
 
-        <ng-container *ngIf="showCorpusFilters; else spacer">
-            <hr>
+        <ng-container *ngIf="items">
+            <ng-container *ngIf="showCorpusFilters; else spacer">
+                <hr>
 
-            <div class="block">
-                <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
+                <div class="block">
+                    <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
+                </div>
+            </ng-container>
+            <ng-template #spacer>
+                <div style="margin-bottom: 3rem;"></div>
+            </ng-template>
+
+            <div class="block" *ngFor="let item of displayItems">
+                <ia-corpus-selector [corpus]="item"></ia-corpus-selector>
             </div>
         </ng-container>
-
-        <ng-template #spacer>
-            <div style="margin-bottom: 3rem;"></div>
-        </ng-template>
-
-        <div class="block" *ngFor="let item of displayItems">
-            <ia-corpus-selector [corpus]="item"></ia-corpus-selector>
-        </div>
 
         <p *ngIf="displayItems?.length == 0">
             <i>No corpora to display.</i>

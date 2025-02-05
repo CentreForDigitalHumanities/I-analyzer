@@ -1,9 +1,10 @@
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
-from addcorpus.models import Corpus
+from addcorpus.models import Corpus, CorpusConfiguration
 
-def corpus_name_from_request(request):
+
+def corpus_name_from_request(request: Request):
     '''
     Extract the corpus name from a request
     '''
@@ -22,6 +23,11 @@ def corpus_name_from_request(request):
         None
     )
     return corpus
+
+
+def corpus_config_from_request(request: Request) -> CorpusConfiguration:
+    corpus_name = corpus_name_from_request(request)
+    return CorpusConfiguration.objects.get(corpus__name=corpus_name)
 
 
 class CanSearchCorpus(permissions.BasePermission):

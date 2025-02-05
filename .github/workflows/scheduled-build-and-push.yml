@@ -21,30 +21,20 @@ jobs:
             registry: ghcr.io
             username: ${{ github.actor }}
             password: ${{ secrets.GITHUB_TOKEN }}
-        - name: Build frontend image, using cache from Github registry
+        - name: Build frontend image
           uses: docker/build-push-action@v6
           with:
             context: frontend/.
             file: frontend/Dockerfile.base
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
-            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-frontend:latest
-            cache-to: type=inline
-        - name: Build backend image, using cache from Github registry
+            platforms: linux/amd64,linux/arm64
+        - name: Build backend image
           uses: docker/build-push-action@v6
           with:
             context: backend/.
             file: backend/Dockerfile.base
             push: true
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
-            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
-            cache-to: type=inline
-        - name: Build Elasticsearch image, using cache from Github registry
-          uses: docker/build-push-action@v6
-          with:
-            context: .
-            file: DockerfileElastic
-            push: true
-            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
-            cache-from: type=registry,ref=ghcr.io/centrefordigitalhumanities/ianalyzer-elasticsearch:latest
-            cache-to: type=inline
+            platforms: linux/amd64,linux/arm64
+

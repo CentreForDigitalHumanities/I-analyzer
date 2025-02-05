@@ -9,11 +9,12 @@ import warnings
 
 from ianalyzer.elasticsearch import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index as index
+from es import es_index as index, sync
 from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from es.models import Server
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -112,6 +113,13 @@ def es_client():
 
     return client
 
+
+@pytest.fixture()
+def es_server(db, settings) -> Server:
+    sync.update_server_table_from_settings()
+    return Server.objects.get(name='default')
+
+
 @pytest.fixture()
 def basic_mock_corpus() -> str:
     return 'mock-csv-corpus'
@@ -157,8 +165,9 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
         with warnings.catch_warnings():
-            warnings.filterwarnings('ignore', message="Corpus has no 'id' field")
-            index.perform_indexing(corpus)
+            job = index.create_indexing_job(corpus)
+            index.perform_indexing(job)
+
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
 
