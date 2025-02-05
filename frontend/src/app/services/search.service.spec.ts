@@ -9,32 +9,32 @@ import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { QueryService } from './query.service';
 import { SearchService } from './search.service';
 import { SessionService } from './session.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { QueryModel } from '@models';
 import { mockCorpus } from '../../mock-data/corpus';
 import { AuthService } from './auth.service';
 import { AuthServiceMock } from '../../mock-data/auth';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SearchService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [
-                RouterTestingModule.withRoutes([]),
-                HttpClientTestingModule,
-            ],
-            providers: [
-                SearchService,
-                ApiRetryService,
-                { provide: AuthService, useValue: new AuthServiceMock() },
-                { provide: ApiService, useValue: new ApiServiceMock() },
-                {
-                    provide: ElasticSearchService,
-                    useValue: new ElasticSearchServiceMock(),
-                },
-                QueryService,
-                SessionService,
-            ],
-        });
+    imports: [RouterTestingModule.withRoutes([])],
+    providers: [
+        SearchService,
+        ApiRetryService,
+        { provide: AuthService, useValue: new AuthServiceMock() },
+        { provide: ApiService, useValue: new ApiServiceMock() },
+        {
+            provide: ElasticSearchService,
+            useValue: new ElasticSearchServiceMock(),
+        },
+        QueryService,
+        SessionService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
     });
 
     it('should be created', inject([SearchService], (service: SearchService) => {

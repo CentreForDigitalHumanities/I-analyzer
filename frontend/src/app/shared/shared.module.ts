@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXsrfConfiguration } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -19,8 +19,7 @@ import { ToggleComponent } from './toggle/toggle.component';
 import { SlugifyPipe } from './pipes/slugify.pipe';
 import { ToggleButtonDirective } from './toggle-button.directive';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
@@ -39,7 +38,6 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         TabsComponent,
         TabPanelDirective,
         ToggleButtonDirective,
-
         // shared modules
         BrowserAnimationsModule,
         BrowserModule,
@@ -48,17 +46,12 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
-        HttpClientModule,
-        HttpClientXsrfModule,
         RouterModule,
         TableModule,
         ToggleComponent,
-
         // Shared pipes
         SlugifyPipe,
-    ],
-    imports: [
-        BrowserAnimationsModule,
+    ], imports: [BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
         FormsModule,
@@ -66,13 +59,8 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         TableModule,
         DropdownModule,
         FontAwesomeModule,
-        HttpClientModule,
-        HttpClientXsrfModule.withOptions({
+        RouterModule], providers: [SlugifyPipe, provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
-        }),
-        RouterModule,
-    ],
-    providers: [SlugifyPipe],
-})
+        }))] })
 export class SharedModule {}

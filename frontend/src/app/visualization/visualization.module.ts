@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { ChipsModule } from 'primeng/chips';
@@ -25,9 +25,7 @@ import { WordcloudComponent } from './wordcloud/wordcloud.component';
 import { MapComponent } from './map/map.component';
 
 
-@NgModule({
-    providers: [ApiService, DialogService, SearchService, VisualizationService],
-    declarations: [
+@NgModule({ declarations: [
         TermComparisonEditorComponent,
         BarchartOptionsComponent,
         HistogramComponent,
@@ -42,18 +40,13 @@ import { MapComponent } from './map/map.component';
         PaletteSelectComponent,
         MapComponent,
     ],
-    imports: [
-        ChartModule,
-        SharedModule,
-        HttpClientModule,
-        ChipsModule,
-        DropdownModule,
-    ],
     exports: [
         TermComparisonEditorComponent,
         VisualizationFooterComponent,
         FreqtableComponent,
         VisualizationComponent,
-    ],
-})
+    ], imports: [ChartModule,
+        SharedModule,
+        ChipsModule,
+        DropdownModule], providers: [ApiService, DialogService, SearchService, VisualizationService, provideHttpClient(withInterceptorsFromDi())] })
 export class VisualizationModule {}
