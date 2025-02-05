@@ -6,6 +6,7 @@ import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
+import { environment } from '@environments/environment';
 
 
 import {
@@ -57,6 +58,7 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { MatomoModule, MatomoRouterModule } from 'ngx-matomo-client';
 
 export const appRoutes: Routes = [
     {
@@ -199,6 +201,16 @@ export const imports: any[] = [
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
+
+if ('matomo' in environment) {
+    imports.push(
+        MatomoModule.forRoot({
+            siteId: environment.matomo['siteId'],
+            trackerUrl: environment.matomo['url'],
+        }),
+        MatomoRouterModule,
+    );
+}
 
 export const providers: any[] = [
     ApiService,
