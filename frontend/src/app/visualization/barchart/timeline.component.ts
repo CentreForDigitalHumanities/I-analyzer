@@ -1,6 +1,8 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
+import { DateTime } from 'luxon';
+import 'chartjs-adapter-moment';
 
 import {
     QueryModel,
@@ -10,8 +12,7 @@ import {
     DateFilterData,
 } from '@models/index';
 import { BarchartDirective } from './barchart.directive';
-import * as moment from 'moment';
-import 'chartjs-adapter-moment';
+
 import { selectColor } from '@utils/select-color';
 import { showLoading } from '@utils/utils';
 import {
@@ -180,9 +181,8 @@ export class TimelineComponent
         const xLabel = this.visualizedField.displayName
             ? this.visualizedField.displayName
             : this.visualizedField.name;
-        const margin = moment.duration(1, this.currentTimeCategory);
-        const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
-        const xMax = moment(this.xDomain[1]).add(margin).toDate();
+        const xMin = DateTime(this.xDomain[0]).minus({[this.currentTimeCategory]: 1}).toJSDate();
+        const xMax = DateTime(this.xDomain[1]).plus({[this.currentTimeCategory]: 1}).toJSDate();
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
@@ -334,15 +334,15 @@ export class TimelineComponent
      * based on minimum and maximum dates on the x axis.
      */
     public calculateTimeCategory(min: Date, max: Date): TimeCategory {
-        const diff = moment.duration(moment(max).diff(moment(min)));
-        if (diff.asYears() >= this.scaleDownThreshold) {
-            return 'year';
-        } else if (diff.asMonths() >= this.scaleDownThreshold) {
-            return 'month';
-        } else if (diff.asWeeks() >= this.scaleDownThreshold) {
-            return 'week';
-        } else {
+        const diff = DateTime(max).diff(DateTime(min), 'days').toObject().get('days');
+        if (diff <= this.scaleDownThreshold) {
             return 'day';
+        } else if (diff <= this.scaleDownThreshold * 7) {
+            return 'week';
+        } else if (diff <= this.scaleDownThreshold * 30) {
+            return 'month';
+        } else {
+            return 'year';
         }
     }
 
@@ -418,17 +418,17 @@ export class TimelineComponent
         let dateFormat: string;
         switch (this.currentTimeCategory) {
             case 'year':
-                dateFormat = 'YYYY';
+                dateFormat = 'yyyy';
                 break;
             case 'month':
-                dateFormat = 'MMMM YYYY';
+                dateFormat = 'LLLL yyyy';
                 break;
             default:
-                dateFormat = 'YYYY-MM-DD';
+                dateFormat = 'yyyy-LL-dd';
                 break;
         }
 
-        return (date: Date) => moment(date).format(dateFormat);
+        return (date: Date) => DateTime(date).toFormat(dateFormat);
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering

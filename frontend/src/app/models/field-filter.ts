@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { DateTime } from 'luxon';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import {
@@ -137,14 +137,14 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
 
     private formatDate(date?: Date): string {
         if (date) {
-            return moment(date).format('YYYY-MM-DD');
+            return DateTime.fromJSDate(date).toFormat('yyyy-LL-dd');
         }
         return '';
     }
 
     private parseDate(dateString?: string): Date|undefined {
         if (dateString.length) {
-            return moment(dateString, 'YYYY-MM-DD').toDate();
+            return DateTime.fromISO(dateString).toJSDate();
         }
     }
 }

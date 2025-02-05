@@ -1,6 +1,6 @@
 import { Component, Input, Output } from '@angular/core';
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { DateTime } from 'luxon';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -25,9 +25,9 @@ export class DatePickerComponent {
         let valueAsDate: Date;
         if (typeof(value) == 'string') {
             const format = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
-            const m = moment(value, format);
-            if (m.isValid()) {
-                valueAsDate = m.toDate();
+            const m = DateTime.fromFormat(value, format);
+            if (m.isValid) {
+                valueAsDate = m.toJSDate();
             }
         } else {
             valueAsDate = value;
