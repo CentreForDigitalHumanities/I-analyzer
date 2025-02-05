@@ -16,6 +16,18 @@ Type: string
 
 The name of the application that should be shown to users. This is used in page titles and the like.
 
+### `navbarBrand`
+
+Type: `{ title: string, subtitle?: string, logo?: string, logoAlt?: string }`
+
+Specifies the look of the brand in the top navigation menu.
+
+You can specify a `title` and a `subtitle`, which will be shown as such. For example, `{ main: 'I-analyzer', secondary: 'Special Edition' }` will look something like "I-analyzer - *Special Edition*".
+
+The logo should be the url of the logo you want to show. This can just be an absolute path like `'/assets/logo.png'`, but you can use a full URL for external images.
+
+`logoAlt` sets alt text for the logo. If you leave this empty or undefined, the logo will be hidden from assistive technologies, which is appropriate if it is purely decorative.
+
 ### `aboutPage`
 
 Type: string

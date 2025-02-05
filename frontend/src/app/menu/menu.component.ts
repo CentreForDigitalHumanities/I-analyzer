@@ -16,7 +16,7 @@ import { navIcons, userIcons } from '@shared/icons';
 export class MenuComponent implements OnDestroy, OnInit {
     @ViewChild('userDropdown') userDropdown: ElementRef;
 
-    appName = environment.appName;
+    brand = environment.navbarBrand;
     adminUrl = environment.adminUrl;
 
     menuOpen$ = new BehaviorSubject<boolean>(false);
@@ -40,14 +40,6 @@ export class MenuComponent implements OnDestroy, OnInit {
         private router: Router,
         private route: ActivatedRoute
     ) {}
-
-    /**
-     * whether the brand should explicitly add "i-analyzer" to the app name; not
-     * necessary if the app name already includes "i-analyzer"
-     */
-    get showIAnalyzerInBrand() {
-        return ! this.appName.toLowerCase().includes('i-analyzer');
-    }
 
     ngOnDestroy() {
         this.destroy$.next(undefined);

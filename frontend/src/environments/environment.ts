@@ -9,6 +9,12 @@ import { version } from './version';
 export const environment = {
     production: false,
     appName: 'I-Analyzer',
+    navbarBrand: {
+        title: 'I-analyzer',
+        subtitle: undefined,
+        logo: '/assets/logo.png',
+        logoAlt: undefined,
+    },
     aboutPage: 'ianalyzer',
     apiUrl: '/api/',
     adminUrl: '/admin/',
