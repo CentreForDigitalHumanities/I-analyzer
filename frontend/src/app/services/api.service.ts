@@ -236,9 +236,9 @@ export class ApiService {
 
     // Corpus
     public corpusDocumentationPages(
-        corpus?: Corpus
+        corpusName?: string
     ): Observable<CorpusDocumentationPage[]> {
-        const params = new URLSearchParams({ corpus: corpus.name }).toString();
+        const params = new URLSearchParams({ corpus: corpusName }).toString();
         const url = this.apiRoute(
             this.corpusApiUrl,
             `documentation/?${params}`

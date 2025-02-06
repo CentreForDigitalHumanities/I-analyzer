@@ -2,16 +2,21 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
-import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import {
     APICorpusDefinitionField,
     CorpusDefinition,
     Delimiter,
 } from '../models/corpus-definition';
+import { CorpusDocumentationPage } from '@models';
+import { ApiService } from '@services';
 
 @Injectable()
 export class CorpusDefinitionService implements OnDestroy {
     corpus$ = new BehaviorSubject<CorpusDefinition | undefined>(undefined);
+
+    documentation$: Observable<CorpusDocumentationPage[]>;
+
     destroy$ = new Subject<void>();
 
     steps$ = new BehaviorSubject<MenuItem[]>([
@@ -22,7 +27,10 @@ export class CorpusDefinitionService implements OnDestroy {
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
-    constructor(private slugify: SlugifyPipe) {
+    constructor(
+        private slugify: SlugifyPipe,
+        private apiService: ApiService,
+    ) {
         this.corpus$
             .pipe(takeUntil(this.destroy$), filter(_.negate(_.isUndefined)))
             .subscribe({
@@ -33,6 +41,12 @@ export class CorpusDefinitionService implements OnDestroy {
                             next: () => this.setSteps(this.corpus$.value),
                         }),
             });
+
+        this.documentation$ = this.corpus$.pipe(
+            switchMap(corpus =>
+                this.apiService.corpusDocumentationPages(corpus.definition.name)
+            ),
+        )
     }
 
     ngOnDestroy(): void {
