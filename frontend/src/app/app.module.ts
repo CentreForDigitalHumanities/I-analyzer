@@ -59,6 +59,7 @@ import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component'
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
+import { MatomoConfig, matomoImports } from './routing/matomo';
 
 export const appRoutes: Routes = [
     {
@@ -203,24 +204,7 @@ export const imports: any[] = [
 ];
 
 if ('matomo' in environment) {
-    const removeQueryParams = (url: string) => url.replace(/\?.+$/, '');
-
-    const removeQueryParamsInterceptor: MatomoRouterInterceptorFn = (event: NavigationEnd) => {
-        const tracker = inject(MatomoTracker);
-
-        tracker.setReferrerUrl('');
-        tracker.setCustomUrl(removeQueryParams(event.urlAfterRedirects));
-    }
-
-    imports.push(
-        MatomoModule.forRoot({
-            siteId: environment.matomo['siteId'],
-            trackerUrl: environment.matomo['url'],
-        }),
-        MatomoRouterModule.forRoot({
-            interceptors: [removeQueryParamsInterceptor],
-        }),
-    );
+    imports.push(...matomoImports(environment.matomo as MatomoConfig));
 }
 
 export const providers: any[] = [
