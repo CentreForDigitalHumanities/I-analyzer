@@ -18,6 +18,7 @@ export class CorpusDefinitionService implements OnDestroy {
         { label: 'Corpus information' },
         { label: 'Sample data', disabled: true },
         { label: 'Define fields', disabled: true },
+        { label: 'Add documentation', disabled: true }
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
