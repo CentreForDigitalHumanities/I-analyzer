@@ -1,7 +1,7 @@
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
-import { inject, NgModule } from '@angular/core';
+import { inject, Injectable, NgModule } from '@angular/core';
 
-import { ExtraOptions, NavigationEnd, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, ExtraOptions, NavigationEnd, RouterModule, Routes } from '@angular/router';
 
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
@@ -58,7 +58,7 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { MatomoModule, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
+import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
 
 export const appRoutes: Routes = [
     {
@@ -203,12 +203,13 @@ export const imports: any[] = [
 ];
 
 if ('matomo' in environment) {
+    const removeQueryParams = (url: string) => url.replace(/\?.+$/, '');
+
     const removeQueryParamsInterceptor: MatomoRouterInterceptorFn = (event: NavigationEnd) => {
         const tracker = inject(MatomoTracker);
 
-        const url = event.urlAfterRedirects;
-        const withoutQueryParams = url.replace(/\?.+$/, '');
-        tracker.setCustomUrl(withoutQueryParams);
+        tracker.setReferrerUrl('');
+        tracker.setCustomUrl(removeQueryParams(event.urlAfterRedirects));
     }
 
     imports.push(
