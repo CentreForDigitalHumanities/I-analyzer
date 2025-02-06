@@ -10,7 +10,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 @pytest.fixture()
 def hum_course_descriptions_settings(settings, db):
     settings.CORPORA = {
-        'hum_course_descriptions': os.path.join(here, '../hum_course_descriptions.py')
+        'hum_course_descriptions': os.path.join(here, '../uu_course_descriptions_gw_2023.py')
     }
     settings.HUM_COURSE_DESCRIPTIONS_DATA = os.path.join(here, 'data')
 
