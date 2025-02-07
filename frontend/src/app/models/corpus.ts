@@ -22,8 +22,8 @@ export class Corpus {
         public description: string,
         public index: string,
         public fields: CorpusField[],
-        public minDate: Date,
-        public maxDate: Date,
+        public minYear: number,
+        public maxYear: number,
         public scanImageType: string,
         public allowImageDownload: boolean,
         public wordModelsPresent: boolean,
@@ -35,14 +35,6 @@ export class Corpus {
         public defaultSort?: SortState,
         public languageField?: CorpusField,
     ) { }
-
-    get minYear(): number {
-        return this.minDate.getFullYear();
-    }
-
-    get maxYear(): number {
-        return this.maxDate.getFullYear();
-    }
 
     get displayLanguages(): string {
         return this.languages.join(', ');

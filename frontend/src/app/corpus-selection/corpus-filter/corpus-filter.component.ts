@@ -1,9 +1,19 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Corpus } from '@models';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
-import { map } from 'rxjs/operators';
+import { map, share, } from 'rxjs/operators';
 import { formIcons } from '@shared/icons';
+import { FormControl, FormGroup } from '@angular/forms';
+
+interface FilterState {
+    language: string | null;
+    category: string | null;
+    minYear: number;
+    maxYear: number;
+}
+
 
 @Component({
     selector: 'ia-corpus-filter',
@@ -11,39 +21,29 @@ import { formIcons } from '@shared/icons';
     styleUrls: ['./corpus-filter.component.scss']
 })
 export class CorpusFilterComponent implements OnInit {
-    @Input() corpora: Corpus[];
+    @Input({required: true}) corpora!: Corpus[];
     @Output() filtered = new Subject<Corpus[]>();
 
-    selectedLanguage = new BehaviorSubject<string>(undefined);
-    selectedCategory = new BehaviorSubject<string>(undefined);
-    selectedMinDate = new BehaviorSubject<Date>(undefined);
-    selectedMaxDate = new BehaviorSubject<Date>(undefined);
-
-    selection: [BehaviorSubject<string>, BehaviorSubject<string>, BehaviorSubject<Date>, BehaviorSubject<Date>]
-         = [this.selectedLanguage, this.selectedCategory, this.selectedMinDate, this.selectedMaxDate];
-
-    canReset: Observable<boolean> = combineLatest(this.selection).pipe(
-        map(values => _.some(values, value => !_.isUndefined(value)))
-    );
+    form?: FormGroup<{
+        language: FormControl<string>;
+        category: FormControl<string>;
+        minYear: FormControl<number>;
+        maxYear: FormControl<number>;
+    }>;
 
     formIcons = formIcons;
 
-    constructor() { }
+    canReset$: Observable<boolean>;
 
-    get minDate(): Date {
-        if (this.corpora) {
-            const dates = this.corpora.map(corpus => corpus.minDate);
-            return _.min(dates);
-        }
+    constructor(private destroyRef: DestroyRef) { }
+
+    get minYear(): number {
+        return _.min(this.corpora.map(corpus => corpus.minYear));
     }
 
-    get maxDate(): Date {
-        if (this.corpora) {
-            const dates = this.corpora.map(corpus => corpus.maxDate);
-            return _.max(dates);
-        }
+    get maxYear(): number {
+        return _.max(this.corpora.map(corpus => corpus.maxYear));
     }
-
 
     get languages(): string[] {
         return this.collectOptions('languages');
@@ -54,45 +54,52 @@ export class CorpusFilterComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        combineLatest(this.selection).subscribe(values => this.filterCorpora(...values));
+        this.form = new FormGroup({
+            language: new FormControl<string>(null),
+            category: new FormControl<string>(null),
+            minYear: new FormControl<number>(
+                this.minYear, { nonNullable: true }
+            ),
+            maxYear: new FormControl<number>(
+                this.maxYear, { nonNullable: true }
+            ),
+        });
+
+        const value$ = this.form.valueChanges.pipe(
+            map(() => this.form.getRawValue()),
+            takeUntilDestroyed(this.destroyRef),
+            share(),
+        );
+        value$.subscribe(this.filterCorpora.bind(this));
+        this.canReset$ = value$.pipe(
+            map(this.canReset.bind(this))
+        );
     }
 
     collectOptions(property): string[] {
-        const values = _.flatMap(
-            this.corpora || [],
-            property
-        ) as string[];
+        const values = _.flatMap(this.corpora, property) as string[];
         return _.uniq(values).sort();
     }
 
-    filterCorpora(language?: string, category?: string, minDate?: Date, maxDate?: Date): void {
-        if (this.corpora) {
-            const filter = this.corpusFilter(language, category, minDate, maxDate);
-            const filtered = this.corpora.filter(filter);
-            this.filtered.next(filtered);
-        }
+    filterCorpora(filter: FilterState): void {
+        const filtered = this.corpora.filter(this.corpusFilter(filter));
+        this.filtered.next(filtered);
     }
 
-    corpusFilter(language?: string, category?: string, minDate?: Date, maxDate?: Date): ((a: Corpus) => boolean) {
-        return (corpus) => {
-            if (language && !corpus.languages.includes(language)) {
-                return false;
-            }
-            if (category && corpus.category !== category) {
-                return false;
-            }
-            if (minDate && corpus.maxDate < minDate) {
-                return false;
-            }
-            if (maxDate && corpus.minDate > maxDate) {
-                return false;
-            }
-            return true;
+    corpusFilter(filter: FilterState): ((a: Corpus) => boolean) {
+        return (corpus) =>
+            !_.some([
+                (filter.language && !corpus.languages.includes(filter.language)),
+                (filter.category && corpus.category !== filter.category),
+                (filter.minYear !== null && corpus.maxYear < filter.minYear),
+                (filter.maxYear !== null && corpus.minYear > filter.maxYear),
+            ]);
+    }
+
+    canReset(state: FilterState): boolean {
+        const defaultState = {
+            language: null, category: null, minYear: this.minYear, maxYear: this.maxYear
         };
+        return !_.isEqual(state, defaultState);
     }
-
-    reset() {
-        this.selection.forEach(subject => subject.next(undefined));
-    }
-
 }

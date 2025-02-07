@@ -50,12 +50,14 @@
                     "description": "The date range of the content",
                     "properties": {
                         "min": {
-                            "type": "string",
-                            "format": "date"
+                            "description": "minimum year",
+                            "type": "number",
+                            "multipleOf": 1
                         },
                         "max": {
-                            "type": "string",
-                            "format": "date"
+                            "description": "maximum year",
+                            "type": "number",
+                            "multipleOf": 1
                         }
                     }
                 }

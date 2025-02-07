@@ -99,3 +99,7 @@ a.dropdown-item[disabled] {
 .entity-miscellaneous {
     @include mark-entity($entity-miscellaneous);
 }
+
+.is-disabled {
+    @extend [disabled];
+}
