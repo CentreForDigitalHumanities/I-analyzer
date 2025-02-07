@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import chain
 
 from django.conf import settings
 
@@ -84,9 +85,11 @@ class Resistance(Gallica):
     image = "resistance.jpg"
 
     def sources(self, start, end):
+        papers = []
         for pub_id in self.publication_ids:
             self.corpus_id = pub_id
-            super().sources(start, end)
+            papers.append(super().sources(start, end))
+        return chain.from_iterable(papers)
 
     def __init__(self):
         self.fields = [
@@ -95,6 +98,6 @@ class Resistance(Gallica):
             self.date(self.min_date, self.max_date),
             self.identifier(),
             self.issue(),
-            self.title(),
+            self.periodical_title(),
             self.url(),
         ]

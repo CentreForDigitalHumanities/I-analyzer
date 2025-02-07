@@ -188,6 +188,15 @@ class Gallica(XMLCorpusDefinition):
             ),
         )
 
+    def periodical_title(self):
+        return FieldDefinition(
+            name="title",
+            display_name="Title",
+            description="Full title of the journal",
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            extractor=XML(Tag("dc:title")),
+        )
+
     def publisher(self):
         return FieldDefinition(
             name="publisher",
@@ -197,15 +206,6 @@ class Gallica(XMLCorpusDefinition):
             extractor=XML(
                 Tag("dc:publisher"), multiple=True, transform=lambda x: "".join(x)
             ),
-        )
-
-    def title(self):
-        return FieldDefinition(
-            name="title",
-            display_name="Title",
-            description="Full title of the journal",
-            es_mapping=keyword_mapping(enable_full_text_search=True),
-            extractor=XML(Tag("dc:title")),
         )
 
     def url(self):
