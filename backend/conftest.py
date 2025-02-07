@@ -241,11 +241,6 @@ def json_mock_corpus(db, json_corpus_definition) -> Corpus:
 
 
 @pytest.fixture
-def drf_client():
-    return APIClient()
-
-
-@pytest.fixture
 def throttle_settings(settings):
     settings.REST_FRAMEWORK.update({
         'DEFAULT_THROTTLE_RATES': {

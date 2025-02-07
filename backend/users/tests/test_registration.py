@@ -60,16 +60,13 @@ def test_register_throttling(client, throttle_settings):
     after exceeding the allowed number of registration attempts.
     """
     cache.clear() # Clear cache to reset rest_registration count
-    # client = drf_client
-    # Check throttle rate settings are applied
+    # Check conftest.py throttle rate settings are applied
     registration_rate = throttle_settings.REST_FRAMEWORK.get(
         'DEFAULT_THROTTLE_RATES', {}).get('registration')
     assert registration_rate == '2/minute', \
         f"Expected registration throttle rate to be '2/minute', but got '{registration_rate}'."
-    assert throttle_settings.CACHES['default']['BACKEND'] == 'django.core.cache.backends.locmem.LocMemCache', \
-        f"Expected 'django.core.cache.backends.locmem.LocMemCache' for default cache backend, got {throttle_settings.CACHES['default']['BACKEND']}"
 
-    url = reverse('rest_register')
+    register_url = reverse('rest_register')
 
     def generate_user_data():
         """Generate unique user data."""
@@ -81,14 +78,14 @@ def test_register_throttling(client, throttle_settings):
             'email': f'testuser{random_str}@example.com'
         }
 
-    # This should use registration_rate + 1, but the rate we get from the fixture
-    # is not being applied for the actual throttling, it uses the rate from common_settings.
-    for i in range(1,7):
-        data = generate_user_data()
-        response = client.post(url, data, format='json')
-        # print(f"Request {i} status: {response.status_code}")
+    # Test that the view returns 429 after 3 requests
+    registration_rate = int(registration_rate.split('/')[0])
+    for i in range(1, registration_rate + 2):
+        user_data = generate_user_data()
+        response = client.post(register_url, user_data, format='json')
+        print(f"Request {i} status: {response.status_code}")
 
-        if i == 6:
+        if i == registration_rate + 1:
             assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS, \
                 f"Expected 429, got {response.status_code}"
             response_data = response.json()
