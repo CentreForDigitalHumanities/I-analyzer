@@ -79,6 +79,7 @@ export class ApiServiceMock {
             corpus: corpusName,
             type: 'General',
             content: 'Example of _documentation_.',
+            content_template: 'Example of _documentation_.',
             index: 1,
         }]);
     }
