@@ -90,3 +90,11 @@ interface Logo {
     width: number, // width of the image in pixels
 }
 ```
+
+### `matomo`
+
+Type: [`MatomoConfig`](../frontend/src/app/routing/matomo.ts)
+
+Optional. To track usage data using matomo, use this setting to provide the URL of the matomo server, and the ID of this I-analyzer site on your matomo server.
+
+Note: the [`matomo.ts` module](../frontend/src/app/routing/matomo.ts) handles the client-side configuration for matomo.
