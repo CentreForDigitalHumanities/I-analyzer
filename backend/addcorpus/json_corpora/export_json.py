@@ -1,7 +1,6 @@
 from typing import Dict
-from datetime import date
 from addcorpus.models import Corpus, CorpusConfiguration, Field
-from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER, DATE_FORMAT
+from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER
 from addcorpus.es_mappings import primary_mapping_type
 
 def export_json_corpus(corpus: Corpus) -> Dict:
@@ -24,13 +23,11 @@ def export_corpus_meta(configuration: CorpusConfiguration) -> Dict:
         'description': configuration.description,
         'languages': configuration.languages,
         'date_range': {
-            'min': export_date(configuration.min_date),
-            'max': export_date(configuration.max_date),
+            'min': configuration.min_year,
+            'max': configuration.max_year,
         }
     }
 
-def export_date(date: date):
-    return date.strftime(DATE_FORMAT)
 
 def export_corpus_source_data(configuration: CorpusConfiguration) -> Dict:
     data = {

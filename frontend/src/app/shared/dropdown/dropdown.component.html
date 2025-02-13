@@ -5,7 +5,8 @@
         (click)="toggleDropdown()"
         (keydown.arrowdown)="focusOnFirstItem($event)"
         (keydown.arrowup)="focusOnFirstItem($event)"
-        #dropdownTrigger>
+        #dropdownTrigger
+        type="button">
         <ng-content select="[iaDropdownLabel]"></ng-content>
         <span class="icon">
             <fa-icon [icon]="actionIcons.dropdown" aria-hidden="true"></fa-icon>

@@ -11,20 +11,28 @@ import {
     SimpleChanges,
     ViewChild,
     AfterViewInit,
+    forwardRef,
 } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { actionIcons } from '../icons';
 import { DropdownService } from './dropdown.service';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
     styleUrls: ['./dropdown.component.scss'],
-    providers: [DropdownService]
+    providers: [DropdownService,
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DropdownComponent),
+            multi: true,
+        },
+    ],
 })
-export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy  {
+export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor  {
     @HostBinding('class') classes = 'dropdown';
 
     @Input() value: any;
@@ -37,7 +45,10 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
 
     actionIcons = actionIcons;
 
+    private blur$ = new Subject<void>();
     private destroy$ = new Subject<void>();
+    private onChangeSubscription?: Subscription;
+    private onTouchedSubscription?: Subscription;
 
     constructor(private elementRef: ElementRef, private dropdownService: DropdownService) {
         // don't trigger a lot of events when a user is quickly looping through the options
@@ -67,7 +78,22 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
             !this.elementRef.nativeElement.contains(event.relatedTarget)
         ) {
             this.dropdownService.open$.next(false);
+            this.blur$.next();
         }
+    }
+
+    writeValue(value: any) {
+        this.dropdownService.selection$.next(value);
+    }
+
+    registerOnChange(fn: any): void {
+        this.onChangeSubscription?.unsubscribe();
+        this.onChangeSubscription = this.dropdownService.selection$.subscribe(fn);
+    }
+
+    registerOnTouched(fn: any): void {
+        this.onTouchedSubscription?.unsubscribe();
+        this.onTouchedSubscription = this.blur$.subscribe(fn);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -85,6 +111,7 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     }
 
     ngOnDestroy(): void {
+        this.blur$.complete();
         this.destroy$.next(undefined);
         this.destroy$.complete();
     }
