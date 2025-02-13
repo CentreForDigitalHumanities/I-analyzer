@@ -262,12 +262,12 @@ export class ApiService {
         return this.http.post(url, data);
     }
 
-    public updateCorpusDocumentationPage(pageID: string, data: CorpusDocumentationPageSubmitData) {
+    public updateCorpusDocumentationPage(pageID: number, data: CorpusDocumentationPageSubmitData) {
         const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
         return this.http.put(url, data);
     }
 
-    public deleteCorpusDocumentationPage(pageID: string) {
+    public deleteCorpusDocumentationPage(pageID: number) {
         const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
         return this.http.delete(url);
     }

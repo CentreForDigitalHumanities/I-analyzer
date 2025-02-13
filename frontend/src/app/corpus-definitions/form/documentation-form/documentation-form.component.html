@@ -3,15 +3,14 @@
 
 <form>
     <div class="block">
-        <ia-tabs *ngIf="documentation$ | async as pages">
-            <ng-template iaTabPanel *ngFor="let category of categories"
-                 [id]="category.id" [title]="category.title">
+        <ia-tabs>
+            <ng-template iaTabPanel *ngFor="let page of pages"
+                 [id]="page.title" [title]="page.title">
 
-                 <ng-container *ngIf="pageByTitle(category.title, pages) as page">
-                    <textarea [value]="page.content_template"
-                        class="textarea" rows="10">
-                    </textarea>
-                 </ng-container>
+                <textarea [(ngModel)]="page.content"
+                    [name]="page.title"
+                    class="textarea" rows="10">
+                </textarea>
             </ng-template>
         </ia-tabs>
     </div>

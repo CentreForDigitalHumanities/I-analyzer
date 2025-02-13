@@ -156,3 +156,10 @@ export interface CorpusDocumentationPageEditable {
     corpus: string,
     content_template: string,
 };
+
+
+export interface CorpusDocumentationPageSubmitData {
+    type: string,
+    corpus: string,
+    content_template: string,
+};

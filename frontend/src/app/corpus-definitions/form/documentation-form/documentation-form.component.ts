@@ -1,30 +1,9 @@
-import { Component } from '@angular/core';
-import { CorpusDocumentationPage, CorpusDocumentationPageEditable } from '@models';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
-
-const CATEGORIES = [
-    {
-        id: 'general',
-        title: 'General Information',
-    },
-    {
-        id: 'citation',
-        title: 'Citation',
-    },
-    {
-        id: 'license',
-        title: 'License'
-    },
-    {
-        id: 'terms_of_service',
-        title: 'Terms of service',
-    },
-    {
-        id: 'wordmodels',
-        title: 'Word models'
-    }
-];
+import { EditablePage, makePages, PAGE_CATEGORIES } from './editable-page';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -32,29 +11,34 @@ const CATEGORIES = [
     templateUrl: './documentation-form.component.html',
     styleUrl: './documentation-form.component.scss'
 })
-export class DocumentationFormComponent {
+export class DocumentationFormComponent implements OnInit {
     documentation$ = this.corpusDefService.documentation$;
 
-    categories = CATEGORIES;
+    categories = PAGE_CATEGORIES;
+
+    pages: EditablePage[] = makePages(
+        this.corpusDefService.corpus$.value.definition.name
+    );
 
     constructor(
         private corpusDefService: CorpusDefinitionService,
+        private destroyRef: DestroyRef,
     ) {}
 
-
-    pageByTitle(title: string, pages: CorpusDocumentationPage[]): CorpusDocumentationPageEditable {
-        const existing = pages.find(page => page.type == title);
-        return existing || this.newPage(title);
-    }
-
-    private newPage(title: string): CorpusDocumentationPageEditable {
-        return {
-            corpus: this.corpusDefService.corpus$.value.definition.name,
-            content_template: '',
-            type: title,
-        }
+    ngOnInit(): void {
+        this.documentation$.pipe(
+            takeUntilDestroyed(this.destroyRef),
+        ).subscribe(
+            data => this.pages.forEach(page => page.update(data))
+        );
     }
 
     submit() {
+        const updates = this.pages.map(page =>
+            this.corpusDefService.saveDocumentationPage(
+                page.id, page.content, page.title, page.corpusName,
+            )
+        );
+        const all = forkJoin(updates).subscribe();
     }
 }

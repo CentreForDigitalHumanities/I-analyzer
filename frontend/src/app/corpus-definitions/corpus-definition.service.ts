@@ -2,13 +2,13 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
-import { BehaviorSubject, filter, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import {
     APICorpusDefinitionField,
     CorpusDefinition,
     Delimiter,
 } from '../models/corpus-definition';
-import { CorpusDocumentationPage } from '@models';
+import { CorpusDocumentationPage, CorpusDocumentationPageSubmitData } from '@models';
 import { ApiService } from '@services';
 
 @Injectable()
@@ -136,6 +136,28 @@ export class CorpusDefinitionService implements OnDestroy {
             }
         }
         return field as APICorpusDefinitionField;
+    }
+
+    public saveDocumentationPage(
+        id: number | undefined,
+        content: string,
+        title: string,
+        corpusName: string,
+    ): Observable<any> {
+        const data: CorpusDocumentationPageSubmitData = {
+            content_template: content,
+            type: title,
+            corpus: corpusName,
+        };
+        if (id && content.length) {
+            return this.apiService.updateCorpusDocumentationPage(id, data)
+        } else if (content.length) {
+            return this.apiService.createCorpusDocumentationPage(data);
+        } else if (id) {
+            return this.apiService.deleteCorpusDocumentationPage(id);
+        } else {
+            return of(undefined);
+        }
     }
 
     private updateCorpus(updatedCorpus: CorpusDefinition) {
