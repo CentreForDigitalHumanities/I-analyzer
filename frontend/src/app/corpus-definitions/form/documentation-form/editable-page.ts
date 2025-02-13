@@ -25,6 +25,7 @@ export const PAGE_CATEGORIES: DocumentationCategory[] = [
         title: 'Terms of service',
         description: 'Does your corpus require additional conditions for users?',
     },
+    // does not include the word models page; db-only corpora don't support word models
 ];
 
 export class EditablePage {
@@ -34,9 +35,7 @@ export class EditablePage {
     constructor(
         public corpusName: string,
         public category: DocumentationCategory,
-    ) {
-    }
-
+    ) { }
 }
 
 export const makePages = (corpusName: string): EditablePage[] =>
