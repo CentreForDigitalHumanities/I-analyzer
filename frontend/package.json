@@ -99,7 +99,6 @@
     "ts-node": "~10.9.2"
   },
   "peerDependencies": {
-    "pdfjs-dist": "~2.16.105",
     "webpack": "^5.1.0"
   },
   "overrides": {},
