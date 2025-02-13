@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MetaFormComponent } from './meta-form.component';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('MetaFormComponent', () => {
     let component: MetaFormComponent;
@@ -11,7 +12,12 @@ describe('MetaFormComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [MetaFormComponent],
-            providers: [CorpusDefinitionService, SlugifyPipe],
+            providers: [
+                CorpusDefinitionService, SlugifyPipe,
+            ],
+            imports: [
+                HttpClientTestingModule,
+            ]
         }).compileComponents();
 
         fixture = TestBed.createComponent(MetaFormComponent);
