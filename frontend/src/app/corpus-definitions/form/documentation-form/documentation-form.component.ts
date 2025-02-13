@@ -35,6 +35,6 @@ export class DocumentationFormComponent implements OnInit {
     }
 
     submit() {
-        this.corpusDefService.saveDocumentationPages(this.pages).subscribe;
+        this.corpusDefService.saveDocumentationPages(this.pages).subscribe();
     }
 }
