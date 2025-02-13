@@ -108,3 +108,12 @@ interface Logo {
 Type: boolean
 
 By default, the corpus selection menu will allow users to filter corpora based on their category, time period, and language. If the server has a very small number of corpora, or the corpora are very similar, you can use this this setting to hide the filters.
+
+
+### `matomo`
+
+Type: [`MatomoConfig`](../frontend/src/app/routing/matomo.ts)
+
+Optional. To track usage data using matomo, use this setting to provide the URL of the matomo server, and the ID of this I-analyzer site on your matomo server.
+
+Note: the [`matomo.ts` module](../frontend/src/app/routing/matomo.ts) handles the client-side configuration for matomo.
