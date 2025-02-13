@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
-import { BehaviorSubject, filter, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, forkJoin, merge, Observable, of, Subject, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import {
     APICorpusDefinitionField,
     CorpusDefinition,
@@ -10,6 +10,7 @@ import {
 } from '../models/corpus-definition';
 import { CorpusDocumentationPage, CorpusDocumentationPageSubmitData } from '@models';
 import { ApiService } from '@services';
+import { EditablePage } from './form/documentation-form/editable-page';
 
 @Injectable()
 export class CorpusDefinitionService implements OnDestroy {
@@ -27,6 +28,8 @@ export class CorpusDefinitionService implements OnDestroy {
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
+    private documentationUpdated$ = new Subject<void>();
+
     constructor(
         private slugify: SlugifyPipe,
         private apiService: ApiService,
@@ -42,14 +45,17 @@ export class CorpusDefinitionService implements OnDestroy {
                         }),
             });
 
-        this.documentation$ = this.corpus$.pipe(
-            switchMap(corpus =>
+        this.documentation$ = merge(this.corpus$, this.documentationUpdated$).pipe(
+            withLatestFrom(this.corpus$),
+            switchMap(([_, corpus]) =>
                 this.apiService.corpusDocumentationPages(corpus.definition.name)
             ),
-        )
+            takeUntil(this.destroy$),
+        );
     }
 
     ngOnDestroy(): void {
+        this.documentationUpdated$.complete();
         this.destroy$.next();
         this.destroy$.complete();
     }
@@ -138,23 +144,42 @@ export class CorpusDefinitionService implements OnDestroy {
         return field as APICorpusDefinitionField;
     }
 
-    public saveDocumentationPage(
-        id: number | undefined,
-        content: string,
-        title: string,
-        corpusName: string,
+    public updateDocumentationPage(
+        page: EditablePage,
+        data: CorpusDocumentationPage[]
+    ) {
+        const stored = data.find(p => p.type == page.title);
+        if (stored) {
+            page.id = stored.id;
+            page.content = stored.content_template;
+        } else {
+            page.id = undefined;
+            page.content = '';
+        }
+    }
+
+    public saveDocumentationPages(pages: EditablePage[]): Observable<any[]> {
+        return forkJoin(
+            pages.map(page => this.saveDocumentationPage(page))
+        ).pipe(
+            tap(() => this.documentationUpdated$.next())
+        );
+    }
+
+    private saveDocumentationPage(
+        page: EditablePage,
     ): Observable<any> {
         const data: CorpusDocumentationPageSubmitData = {
-            content_template: content,
-            type: title,
-            corpus: corpusName,
+            content_template: page.content,
+            type: page.title,
+            corpus: page.corpusName,
         };
-        if (id && content.length) {
-            return this.apiService.updateCorpusDocumentationPage(id, data)
-        } else if (content.length) {
+        if (page.id && page.content.length) {
+            return this.apiService.updateCorpusDocumentationPage(page.id, data)
+        } else if (page.content.length) {
             return this.apiService.createCorpusDocumentationPage(data);
-        } else if (id) {
-            return this.apiService.deleteCorpusDocumentationPage(id);
+        } else if (page.id) {
+            return this.apiService.deleteCorpusDocumentationPage(page.id);
         } else {
             return of(undefined);
         }

@@ -3,7 +3,6 @@ import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definitio
 import * as _ from 'lodash';
 import { EditablePage, makePages, PAGE_CATEGORIES } from './editable-page';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -34,11 +33,6 @@ export class DocumentationFormComponent implements OnInit {
     }
 
     submit() {
-        const updates = this.pages.map(page =>
-            this.corpusDefService.saveDocumentationPage(
-                page.id, page.content, page.title, page.corpusName,
-            )
-        );
-        const all = forkJoin(updates).subscribe();
+        this.corpusDefService.saveDocumentationPages(this.pages).subscribe();
     }
 }
