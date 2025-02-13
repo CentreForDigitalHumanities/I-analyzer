@@ -28,11 +28,13 @@ export class DocumentationFormComponent implements OnInit {
         this.documentation$.pipe(
             takeUntilDestroyed(this.destroyRef),
         ).subscribe(
-            data => this.pages.forEach(page => page.update(data))
+            data => this.pages.forEach(page =>
+                this.corpusDefService.updateDocumentationPage(page, data)
+            )
         );
     }
 
     submit() {
-        this.corpusDefService.saveDocumentationPages(this.pages).subscribe();
+        this.corpusDefService.saveDocumentationPages(this.pages).subscribe;
     }
 }

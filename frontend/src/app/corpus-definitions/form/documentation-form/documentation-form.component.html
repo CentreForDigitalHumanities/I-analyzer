@@ -1,15 +1,24 @@
 <h1 class="title">Add documentation</h1>
 <p class="subtitle">Provide information about your corpus</p>
 
+<p class="block">
+    Add documentation to help users understand what your corpus is, and how they can use
+    it in their research. You can use
+    <a href="https://www.markdownguide.org/">markdown</a> to style the content.
+</p>
+
 <form>
     <div class="block">
         <ia-tabs>
             <ng-template iaTabPanel *ngFor="let page of pages"
-                 [id]="page.title" [title]="page.title">
+                 [id]="page.category.id" [title]="page.category.title">
+
+                <p class="block">{{page.category.description}}</p>
 
                 <textarea [(ngModel)]="page.content"
-                    [name]="page.title"
-                    class="textarea" rows="10">
+                    [name]="page.category.id"
+                    class="textarea" rows="10"
+                    [attr.aria-labelledby]="'tab-' + page.category.id">
                 </textarea>
             </ng-template>
         </ia-tabs>

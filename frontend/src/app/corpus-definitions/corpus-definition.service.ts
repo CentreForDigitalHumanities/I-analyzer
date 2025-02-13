@@ -148,7 +148,7 @@ export class CorpusDefinitionService implements OnDestroy {
         page: EditablePage,
         data: CorpusDocumentationPage[]
     ) {
-        const stored = data.find(p => p.type == page.title);
+        const stored = data.find(p => p.type == page.category.title);
         if (stored) {
             page.id = stored.id;
             page.content = stored.content_template;
@@ -171,7 +171,7 @@ export class CorpusDefinitionService implements OnDestroy {
     ): Observable<any> {
         const data: CorpusDocumentationPageSubmitData = {
             content_template: page.content,
-            type: page.title,
+            type: page.category.title,
             corpus: page.corpusName,
         };
         if (page.id && page.content.length) {
