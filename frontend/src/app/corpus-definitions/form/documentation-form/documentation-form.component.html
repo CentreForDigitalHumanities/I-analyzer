@@ -1,2 +1,24 @@
 <h1 class="title">Add documentation</h1>
 <p class="subtitle">Provide information about your corpus</p>
+
+<form>
+    <div class="block">
+        <ia-tabs *ngIf="documentation$ | async as pages">
+            <ng-template iaTabPanel *ngFor="let category of categories"
+                 [id]="category.id" [title]="category.title">
+
+                 <ng-container *ngIf="pageByTitle(category.title, pages) as page">
+                    <textarea [value]="page.content_template"
+                        class="textarea" rows="10">
+                    </textarea>
+                 </ng-container>
+            </ng-template>
+        </ia-tabs>
+    </div>
+
+    <div class="block">
+        <button class="button is-primary" type="submit" (click)="submit()">
+            Save changes
+        </button>
+    </div>
+</form>
