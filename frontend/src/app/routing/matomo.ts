@@ -21,6 +21,7 @@ export const matomoImports = (config: MatomoConfig) => {
         MatomoModule.forRoot({
             siteId: config['siteId'],
             trackerUrl: config['url'],
+            acceptDoNotTrack: true,
         }),
         MatomoRouterModule.forRoot({
             interceptors: [removeQueryParamsInterceptor],
