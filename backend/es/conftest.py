@@ -46,20 +46,20 @@ def es_ner_search_client(es_client, basic_mock_corpus, basic_corpus_public, inde
 
 
 @pytest.fixture()
-def es_index_client(es_client, mock_corpus):
+def es_index_client(es_client, mock_corpus, test_index_cleanup):
     """
     Returns an elastic search client for the mock corpus.
-    After tests, removes any indices created for the mock corpus.
+    After each test, removes any indices created for the mock corpus.
     """
 
     yield es_client
     # delete indices when done
-    indices = es_client.indices.get(index='times-test*')
+    indices = es_client.indices.get(index='test-times*')
     for index in indices.keys():
         es_client.indices.delete(index=index)
 
 @pytest.fixture()
-def es_alias_client(db, es_server, es_client, mock_corpus):
+def es_alias_client(db, es_server, es_client, mock_corpus, test_index_cleanup):
     """
     Create multiple indices with version numbers for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
@@ -67,7 +67,7 @@ def es_alias_client(db, es_server, es_client, mock_corpus):
     # add data from mock corpus
     corpus = Corpus.objects.get(name=mock_corpus)
     index = Index.objects.create(
-        name='times-test-1',
+        name='test-times-1',
         server=es_server,
     )
     job = IndexJob.objects.create(
@@ -79,12 +79,12 @@ def es_alias_client(db, es_server, es_client, mock_corpus):
         delete_existing=True,
     )
     es_index.create(create_task)
-    es_client.indices.create(index='times-test-2')
-    es_client.indices.create(index='times-test-bla-3')
+    es_client.indices.create(index='test-times-2')
+    es_client.indices.create(index='test-times-bla-3')
 
     yield es_client
     # delete index when done
-    indices = es_client.indices.get(index='times-test*')
+    indices = es_client.indices.get(index='test-times*')
     for index in indices.keys():
         es_client.indices.delete(index=index)
 

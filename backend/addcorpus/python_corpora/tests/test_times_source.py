@@ -12,7 +12,7 @@ def times_test_settings(settings):
         'times': join(settings.BASE_DIR, 'corpora/times/times.py')
     }
     settings.TIMES_DATA = join(settings.BASE_DIR, 'addcorpus/python_corpora/tests')
-    settings.TIMES_ES_INDEX = 'times-test'
+    settings.TIMES_ES_INDEX = 'test-times'
 
 
 
