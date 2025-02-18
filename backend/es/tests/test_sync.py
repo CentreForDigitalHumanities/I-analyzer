@@ -2,7 +2,7 @@ from time import sleep
 from elasticsearch import Elasticsearch
 import pytest
 
-from es.es_index import perform_indexing
+from indexing.run_job import perform_indexing
 from indexing.create_job import create_indexing_job
 from es.sync import (
     update_server_table_from_settings, fetch_index_metadata, update_availability

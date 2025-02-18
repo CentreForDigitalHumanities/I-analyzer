@@ -3,7 +3,7 @@ from datetime import datetime
 from time import sleep
 
 from addcorpus.models import Corpus
-from es.es_index import perform_indexing
+from indexing.run_job import perform_indexing
 from indexing.create_job import create_indexing_job
 
 START = datetime.strptime('1970-01-01', '%Y-%m-%d')

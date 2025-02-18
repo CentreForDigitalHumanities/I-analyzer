@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
 '''
-Script to index the data into ElasticSearch.
+Functionality to run an IndexJob
 '''
 
 import logging
