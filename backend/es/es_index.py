@@ -8,12 +8,12 @@ import logging
 
 from ianalyzer.elasticsearch import elasticsearch
 from indexing.models import IndexJob
-from es.es_update import run_update_task
 from indexing.run_populate_task import populate
 from indexing.run_create_task import create
 from indexing.run_misc_tasks import (
     update_index_settings, remove_alias, add_alias, delete_index
 )
+from indexing.run_update_task import run_update_task
 
 
 logger = logging.getLogger('indexing')
