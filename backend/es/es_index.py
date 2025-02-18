@@ -7,25 +7,17 @@ Script to index the data into ElasticSearch.
 import logging
 
 from ianalyzer.elasticsearch import elasticsearch
-from .es_alias import (
-    add_alias, remove_alias, delete_index
-)
-from indexing.models import IndexJob, UpdateSettingsTask
+from indexing.models import IndexJob
 from es.es_update import run_update_task
 from indexing.run_populate_task import populate
 from indexing.run_create_task import create
+from indexing.run_misc_tasks import (
+    update_index_settings, remove_alias, add_alias, delete_index
+)
 
 
 logger = logging.getLogger('indexing')
 
-
-def update_index_settings(task: UpdateSettingsTask):
-    client = task.client()
-    client.indices.put_settings(
-        settings=task.settings,
-        index=task.index.name,
-        allow_no_indices=False,
-    )
 
 
 def perform_indexing(job: IndexJob):
