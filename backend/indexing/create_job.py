@@ -5,9 +5,10 @@ from django.db import transaction
 from addcorpus.models import Corpus
 from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
 from es.es_alias import (
-    get_current_index_name, get_new_version_number,
+    get_current_index_name,
     indices_with_alias
 )
+from es.versioning import next_version_number
 from indexing.models import (
     IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
     RemoveAliasTask, AddAliasTask, UpdateSettingsTask
@@ -105,7 +106,7 @@ def _index_and_alias_for_job(job: IndexJob, prod: bool, create_new: bool) -> Tup
     if prod:
         alias = corpus.configuration.es_alias or corpus.configuration.es_index
         if create_new:
-            next_version = get_new_version_number(client, alias, base_name)
+            next_version = next_version_number(client, alias, base_name)
             versioned_name = f'{base_name}-{next_version}'
         else:
             versioned_name = get_current_index_name(

@@ -1,6 +1,7 @@
 from addcorpus.models import Corpus
-from es.es_alias import get_highest_version_number, create_alias_job
+from es.es_alias import create_alias_job
 from es.es_index import perform_indexing
+from es.versioning import highest_version_in_result
 
 
 def test_alias(db, es_alias_client):
@@ -29,9 +30,9 @@ def test_highest_version_number(es_alias_client):
     indices = es_alias_client.indices.get(
         index='{}-*'.format(corpus.configuration.es_index))
     current_index = 'test-times'
-    num = get_highest_version_number(indices, current_index)
+    num = highest_version_in_result(indices, current_index)
     assert num == 2
     current_index = "fantasy-index-name"
     indices = es_alias_client.indices.get(index="{}-*".format(current_index))
-    num = get_highest_version_number(indices, current_index)
+    num = highest_version_in_result(indices, current_index)
     assert num == 0
