@@ -10,6 +10,7 @@ from addcorpus.models import Corpus
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import es_index
+from indexing.create_job import create_indexing_job
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -154,7 +155,7 @@ def jm_client(es_client, jm_corpus):
     Returns an elastic search client for the mock corpus.
     """
     # add data from mock corpus
-    job = es_index.create_indexing_job(jm_corpus, mappings_only=True, clear=True)
+    job = create_indexing_job(jm_corpus, mappings_only=True, clear=True)
     es_index.perform_indexing(job)
 
     # ES is "near real time", so give it a second before we start searching the index
