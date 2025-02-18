@@ -5,8 +5,8 @@ from django.core.management import BaseCommand
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
 from addcorpus.models import Corpus
-from es.es_index import perform_indexing
 from indexing.create_job import create_indexing_job
+from indexing.run_job import perform_indexing
 
 class Command(BaseCommand):
     help = '''
