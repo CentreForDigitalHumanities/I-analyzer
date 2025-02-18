@@ -6,20 +6,20 @@ Script to index the data into ElasticSearch.
 
 from typing import Dict
 import logging
-import elasticsearch.helpers as es_helpers
 
 from addcorpus.es_settings import es_settings
 from addcorpus.models import Corpus, CorpusConfiguration
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
-from addcorpus.reader import make_reader
 from ianalyzer.elasticsearch import elasticsearch
 from .es_alias import (
     add_alias, remove_alias, delete_index
 )
 from indexing.models import (
-    IndexJob, CreateIndexTask, PopulateIndexTask, UpdateSettingsTask
+    IndexJob, CreateIndexTask, UpdateSettingsTask
 )
 from es.es_update import run_update_task
+from indexing.run_populate_task import populate
+
 
 logger = logging.getLogger('indexing')
 
@@ -84,48 +84,6 @@ def create(task: CreateIndexTask):
         mappings=es_mapping,
     )
     return index_name
-
-
-def populate(task: PopulateIndexTask):
-    '''
-    Populate an ElasticSearch index from the corpus' source files.
-    '''
-    reader = make_reader(task.corpus)
-
-    logger.info('Attempting to populate index...')
-
-    # Obtain source documents
-    files = reader.sources(
-        start=task.document_min_date,
-        end=task.document_max_date)
-    docs = reader.documents(files)
-
-    # Each source document is decorated as an indexing operation, so that it
-    # can be sent to ElasticSearch in bulk
-    actions = (
-        {
-            "_op_type": "index",
-            "_index": task.index.name,
-            "_id": doc.get("id"),
-            "_source": doc,
-        }
-        for doc in docs
-    )
-
-    server_config = task.index.server.configuration
-
-    # Do bulk operation
-    client = task.client()
-    for success, info in es_helpers.streaming_bulk(
-        client,
-        actions,
-        chunk_size=server_config["chunk_size"],
-        max_chunk_bytes=server_config["max_chunk_bytes"],
-        raise_on_exception=False,
-        raise_on_error=False,
-    ):
-        if not success:
-            logger.error(f"FAILED INDEX: {info}")
 
 
 def update_index_settings(task: UpdateSettingsTask):
