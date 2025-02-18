@@ -6,7 +6,6 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
 from addcorpus.models import Corpus
 from es.es_index import perform_indexing, create_indexing_job
-from es.es_update import update_index, update_by_query
 
 class Command(BaseCommand):
     help = '''
