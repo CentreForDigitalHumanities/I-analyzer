@@ -1,6 +1,6 @@
 import pytest
 import warnings
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 
 def test_elasticsearch():
     '''

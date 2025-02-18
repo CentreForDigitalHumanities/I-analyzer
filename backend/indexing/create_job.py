@@ -3,7 +3,7 @@ import datetime
 from django.db import transaction
 
 from addcorpus.models import Corpus
-from ianalyzer.elasticsearch import elasticsearch, server_for_corpus
+from es.client import elasticsearch, server_for_corpus
 from es.es_alias import (
     get_current_index_name,
     indices_with_alias

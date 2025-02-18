@@ -4,7 +4,7 @@ Functionality to run an IndexJob
 
 import logging
 
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from indexing.models import IndexJob
 from indexing.run_populate_task import populate
 from indexing.run_create_task import create

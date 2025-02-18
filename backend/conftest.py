@@ -7,7 +7,7 @@ from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
 import warnings
 
-from ianalyzer.elasticsearch import client_from_config
+from es.client import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import sync
 from indexing.create_job import create_indexing_job

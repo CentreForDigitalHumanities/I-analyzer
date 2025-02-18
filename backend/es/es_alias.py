@@ -1,7 +1,7 @@
 from typing import Generator
 
 from addcorpus.models import CorpusConfiguration
-from ianalyzer.elasticsearch import client_from_config
+from es.client import client_from_config
 from es.models import Server, Index
 
 
