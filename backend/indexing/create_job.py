@@ -8,10 +8,10 @@ from es.es_alias import (
     get_current_index_name,
     indices_with_alias
 )
-from es.versioning import next_version_number
+from es.versioning import next_version_number, highest_version_in_result, version_from_name
 from indexing.models import (
     IndexJob, CreateIndexTask, PopulateIndexTask, UpdateIndexTask,
-    RemoveAliasTask, AddAliasTask, UpdateSettingsTask
+    RemoveAliasTask, AddAliasTask, UpdateSettingsTask, DeleteIndexTask,
 )
 from es.sync import update_server_table_from_settings
 from es.models import Server, Index
@@ -123,3 +123,40 @@ def _index_and_alias_for_job(job: IndexJob, prod: bool, create_new: bool) -> Tup
         )
 
     return index, alias
+
+
+@transaction.atomic
+def create_alias_job(corpus: Corpus, clean=False) -> IndexJob:
+    '''
+    Create a job to move the alias of a corpus to the index with the highest version
+    '''
+
+    job = IndexJob.objects.create(corpus=corpus)
+
+    corpus_config = corpus.configuration
+    corpus_name = corpus.name
+    update_server_table_from_settings()
+    server = Server.objects.get(name=server_for_corpus(corpus_name))
+    index_name = corpus_config.es_index
+    index_alias = corpus_config.es_alias
+    client = elasticsearch(corpus_name)
+
+    alias = index_alias if index_alias else index_name
+    indices = client.indices.get(index='{}-*'.format(index_name))
+    highest_version = highest_version_in_result(indices, alias)
+
+    for index_name, properties in indices.items():
+        is_aliased = alias in properties['aliases'].keys()
+        is_highest_version = version_from_name(index_name, alias) == highest_version
+        index, _ = Index.objects.get_or_create(server=server, name=index_name)
+
+        if not is_highest_version and clean:
+            DeleteIndexTask.objects.create(job=job, index=index)
+
+        if not is_highest_version and is_aliased and not clean:
+            RemoveAliasTask.objects.create(job=job, index=index, alias=alias)
+
+        if is_highest_version and not is_aliased:
+            AddAliasTask.objects.create(job=job, index=index, alias=alias)
+
+    return job

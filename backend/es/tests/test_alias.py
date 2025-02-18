@@ -1,5 +1,5 @@
 from addcorpus.models import Corpus
-from es.es_alias import create_alias_job
+from indexing.create_job import create_alias_job
 from es.es_index import perform_indexing
 from es.versioning import highest_version_in_result
 
