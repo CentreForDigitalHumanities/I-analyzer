@@ -85,11 +85,11 @@ class Resistance(Gallica):
     image = "resistance.jpg"
 
     def sources(self, start, end):
-        papers = []
         for pub_id in self.publication_ids:
             self.corpus_id = pub_id
-            papers.append(super().sources(start, end))
-        return chain.from_iterable(papers)
+            docs = super().sources(start, end)
+            for doc in docs:
+                yield doc
 
     def __init__(self):
         self.fields = [
