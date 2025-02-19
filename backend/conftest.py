@@ -238,14 +238,3 @@ def json_mock_corpus(db, json_corpus_definition) -> Corpus:
     corpus.configuration.save()
 
     return corpus
-
-
-@pytest.fixture
-def throttle_settings(settings):
-    settings.REST_FRAMEWORK.update({
-        'DEFAULT_THROTTLE_RATES': {
-            'password': '2/minute',
-            'registration': '2/minute',
-        }
-    })
-    return settings

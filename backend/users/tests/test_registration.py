@@ -54,14 +54,14 @@ def test_register_verification(client, db, django_user_model):
     assert allauth_email.primary is True
 
 
-def test_register_throttling(client, throttle_settings):
+def test_register_throttling(client, settings):
     """
     Test that the ThrottledRegisterView returns a 429 error
     after exceeding the allowed number of registration attempts.
     """
     cache.clear() # Clear cache to reset rest_registration count
     # Check conftest.py throttle rate settings are applied
-    registration_rate = throttle_settings.REST_FRAMEWORK.get(
+    registration_rate = settings.REST_FRAMEWORK.get(
         'DEFAULT_THROTTLE_RATES', {}).get('registration')
     assert registration_rate == '2/minute', \
         f"Expected registration throttle rate to be '2/minute', but got '{registration_rate}'."
