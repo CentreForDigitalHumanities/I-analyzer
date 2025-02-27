@@ -38,7 +38,6 @@
     "@freearhey/iso-639-3": "^1.0.0",
     "balloon-css": "^0.5.2",
     "bulma": "^0.5.1",
-    "bulma-switch": "^2.0.0",
     "chart.js": "^4.4.2",
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-chart-wordcloud": "^4.3.2",

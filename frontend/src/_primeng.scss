@@ -2,7 +2,7 @@
 // This partial defines a primeng theme using the same variables as used
 // to theme Bulma.
 //
-@import "_utilities";
+@use "_utilities";
 
 $fontFamily: $family-primary;
 $fontSize: $size-normal;
