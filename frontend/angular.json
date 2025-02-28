@@ -23,7 +23,6 @@
                   "assets": ["src/assets"],
                   "styles": [
                       "node_modules/primeicons/primeicons.css",
-                      "node_modules/primeng/resources/primeng.min.css",
                       "src/styles.scss",
                       "src/imageviewer.scss"
                   ],

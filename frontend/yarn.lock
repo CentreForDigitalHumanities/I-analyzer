@@ -2027,6 +2027,13 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
+"@primeng/themes@^19.0.9":
+  version "19.0.9"
+  resolved "https://registry.yarnpkg.com/@primeng/themes/-/themes-19.0.9.tgz#fdce1fed388d13f1b1ac132f0eaf99cf5a87ad28"
+  integrity sha512-8oITYftt/0v6sXKth/6n1mEw4UY88acNow0/aAF5yi29N6cpBaOiH/MEvj4nCoYjNCCGUSFhPrGdkTJH/GNo6A==
+  dependencies:
+    "@primeuix/styled" "^0.3.2"
+
 "@primeuix/styled@^0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@primeuix/styled/-/styled-0.3.2.tgz#a6093e81a66fc78b915b5e8d998cc73c2c47a1dc"

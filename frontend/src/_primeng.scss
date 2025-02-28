@@ -53,7 +53,7 @@ $inputTextColor: $text;
 $invalidInputBorderColor: $danger;
 $inputGroupTextColor: $text;
 
-@import "primeng/resources/themes/nova/theme.css";
+@import "primeng/themes";
 
 .p-button {
     @extend .button;

@@ -2,6 +2,8 @@ import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
+import { providePrimeNG } from 'primeng/config';
+import Nora from '@primeng/themes/nora';
 
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
@@ -22,8 +24,6 @@ import { CreateDefinitionComponent } from './corpus-definitions/create-definitio
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { DefinitionInOutComponent } from './corpus-definitions/definition-in-out/definition-in-out.component';
 import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
-import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
-import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
@@ -207,6 +207,11 @@ export const providers: any[] = [
     HighlightService,
     CorpusGuard,
     LoggedOnGuard,
+    providePrimeNG({
+        theme: {
+            preset: Nora
+        }
+    }),
     TitleCasePipe,
     CookieService,
     { provide: APP_BASE_HREF, useValue: '/' },
