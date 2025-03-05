@@ -4,10 +4,17 @@ from elastic_transport import ConnectionError
 
 from indexing.models import IndexJob
 
-def test_create_only(db, basic_mock_corpus, settings):
-    # break elasticsearch connection
+@pytest.fixture()
+def no_elasticsearch_connection(settings):
+    port = settings.SERVERS['default']['port']
     settings.SERVERS['default']['port'] = 999999
 
+    yield
+
+    settings.SERVERS['default']['port'] = port
+
+
+def test_create_only(db, basic_mock_corpus, no_elasticsearch_connection):
     # indexing should fail...
     with pytest.raises(ConnectionError):
         call_command('index', basic_mock_corpus)
