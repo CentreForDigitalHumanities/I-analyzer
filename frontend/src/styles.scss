@@ -1,7 +1,7 @@
-@use "_utilities";
-@use "bulma/bulma.sass";
-@use "_primeng";
-@use "balloon-css/src/balloon";
+@import "utilities";
+@import "bulma/bulma.sass";
+@import "primeng";
+@import "balloon-css/src/balloon";
 
 [data-balloon]:after {
     border-radius: 0;
@@ -41,7 +41,7 @@
 }
 
 .is-loading:not(.button) {
-    @extend %content-loader;
+    @extend .loader;
 }
 
 .tag-dropdown .button {

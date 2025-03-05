@@ -35,8 +35,8 @@ $entity-location: #4e8f2d;
 $entity-organization: #efb71d;
 $entity-miscellaneous: #ee5986;
 
-@use "bulma/sass/utilities/_all";
-@use "bulma/sass/utilities/mixins";
+@import "bulma/sass/utilities/_all";
+@import "bulma/sass/utilities/mixins";
 
 // based on the Bulma loader
 
@@ -47,7 +47,7 @@ $entity-miscellaneous: #ee5986;
     position: relative;
 
     &:after {
-        @include mixins.loader;
+        @include loader;
         border-color: transparent transparent $primary $primary !important;
         border-style: solid;
         border-width: 0.25em;

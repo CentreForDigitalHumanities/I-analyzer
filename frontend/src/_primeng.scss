@@ -2,7 +2,7 @@
 // This partial defines a primeng theme using the same variables as used
 // to theme Bulma.
 //
-@use "_utilities";
+@import "_utilities";
 
 $fontFamily: $family-primary;
 $fontSize: $size-normal;
@@ -52,8 +52,6 @@ $inputBgColor: $text-invert;
 $inputTextColor: $text;
 $invalidInputBorderColor: $danger;
 $inputGroupTextColor: $text;
-
-@import "primeng/themes";
 
 .p-button {
     @extend .button;
