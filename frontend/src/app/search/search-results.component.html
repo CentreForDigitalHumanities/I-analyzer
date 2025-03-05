@@ -16,8 +16,8 @@
         <div class="level">
             <div class="level-left has-text-centered">
                 <div>
-                    <p class="heading">Sort By</p>
-                    <ia-search-sorting [pageResults]="pageResults"></ia-search-sorting>
+                    <label class="heading" id="sort-by-label">Sort By</label>
+                    <ia-search-sorting [pageResults]="pageResults" labelledBy="sort-by-label" />
                 </div>
             </div>
             <div class="level-right has-text-centered" *ngIf="page.total > resultsPerPage" >
