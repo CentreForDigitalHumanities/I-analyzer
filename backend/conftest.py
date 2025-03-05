@@ -5,14 +5,16 @@ import pytest
 import requests
 from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
+import warnings
 
 from ianalyzer.elasticsearch import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index as index
+from es import es_index as index, sync
 from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from es.models import Server
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -111,6 +113,13 @@ def es_client():
 
     return client
 
+
+@pytest.fixture()
+def es_server(db, settings) -> Server:
+    sync.update_server_table_from_settings()
+    return Server.objects.get(name='default')
+
+
 @pytest.fixture()
 def basic_mock_corpus() -> str:
     return 'mock-csv-corpus'
@@ -155,7 +164,10 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
     corpus = Corpus.objects.get(name=corpus_name)
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
-        index.perform_indexing(corpus)
+        with warnings.catch_warnings():
+            job = index.create_indexing_job(corpus)
+            index.perform_indexing(job)
+
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
 
@@ -193,7 +205,12 @@ def index_json_mock_corpus(db, es_client: Elasticsearch, json_mock_corpus: Corpu
 @pytest.fixture(autouse=True)
 def add_mock_python_corpora_to_db(db, media_dir):
     # add python mock corpora to the database at the start of each test
-    load_and_save_all_corpora()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', message="Corpus has no 'id' field")
+        warnings.filterwarnings(
+            'ignore', message='.* text search for keyword fields without text analysis'
+        )
+        load_and_save_all_corpora()
 
 
 @pytest.fixture()

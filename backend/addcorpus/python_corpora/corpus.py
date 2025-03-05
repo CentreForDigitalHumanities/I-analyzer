@@ -2,9 +2,9 @@
 Module contains the base classes from which corpora can derive;
 '''
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 from ianalyzer_readers import extract
-from datetime import datetime
+from datetime import datetime, date
 from os.path import isdir
 import os
 
@@ -49,16 +49,20 @@ class CorpusDefinition(Reader):
         raise NotImplementedError('CorpusDefinition missing description')
 
     @property
-    def min_date(self):
+    def min_date(self) -> Union[datetime, date, int]:
         '''
         Minimum timestamp for data files.
+
+        Can be a datetime, date, or integer (representing the year).
         '''
         raise NotImplementedError('CorpusDefinition missing min_date')
 
     @property
-    def max_date(self):
+    def max_date(self) -> Union[datetime, date, int]:
         '''
         Maximum timestamp for data files.
+
+        Can be a datetime, date, or integer (representing the year).
         '''
         raise NotImplementedError('CorpusDefinition missing max_date')
 
@@ -78,6 +82,23 @@ class CorpusDefinition(Reader):
         See addcorpus.constants.CATEGORIES for options
         '''
         raise NotImplementedError('CorpusDefinition missing category')
+
+    '''
+    Directory where source data is located
+    If neither `data_directory` nor `data_url` is set to valid paths, this corpus cannot be indexed
+    '''
+    data_directory = None
+
+    '''
+    URL where source data is located
+    If neither `data_directory` nor `data_url` is set to valid paths, this corpus cannot be indexed
+    '''
+    data_url = None
+
+    '''
+    If connecting to the data URL requires and API key, it needs to be set here
+    '''
+    data_api_key = None
 
     @property
     def es_index(self):
@@ -495,7 +516,12 @@ def after(year):
     return f
 
 
-def consolidate_start_end_years(start, end, min_date, max_date):
+def consolidate_start_end_years(
+        start: Union[datetime, date, int],
+        end: Union[datetime, date, int],
+        min_date: datetime,
+        max_date: datetime
+):
     ''' given a start and end date provided by the user, make sure
     - that start is not before end
     - that start is not before min_date (corpus variable)
@@ -503,8 +529,13 @@ def consolidate_start_end_years(start, end, min_date, max_date):
     '''
     if isinstance(start, int):
         start = datetime(year=start, month=1, day=1)
+    elif isinstance(start, date):
+        start = datetime(year=start.year, month=start.month, day=start.day)
     if isinstance(end, int):
         end = datetime(year=end, month=12, day=31)
+    elif isinstance(end, date):
+        end = datetime(year=end.year, month=end.month, day=end.day)
+
     if start > end:
         tmp = start
         start = end

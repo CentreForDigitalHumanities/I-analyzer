@@ -11,6 +11,7 @@ from addcorpus.python_corpora.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
+
 class PeacePortal(ParentCorpusDefinition):
     '''
     Base class for corpora in the PEACE portal.
@@ -32,7 +33,7 @@ class PeacePortal(ParentCorpusDefinition):
     es_alias = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
-    min_date = datetime.datetime(year=746, month=1, day=1)
+    min_date = datetime.datetime(year=1, month=1, day=1)
     category = 'inscription'
 
     tag_entry = Tag('TEI')
@@ -41,6 +42,9 @@ class PeacePortal(ParentCorpusDefinition):
     # from external files. See README.
     # el stands for modern Greek (1500-)
     languages = ['en', 'de', 'nl', 'he', 'la', 'el']
+
+    # placeholder data directory
+    data_directory = ''
 
     @property
     def es_settings(self):
@@ -286,8 +290,12 @@ def zero_pad_year(input):
 def transform_to_date_range(earliest, latest):
     if not earliest:
         earliest = PeacePortal.min_date
+        if isinstance(earliest, datetime.datetime):
+            earliest = earliest.date()
     if not latest:
         latest = PeacePortal.max_date
+        if isinstance(latest, datetime.datetime):
+            latest = latest.date()
     return {
         'gte': earliest,
         'lte': latest

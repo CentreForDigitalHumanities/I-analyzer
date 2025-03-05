@@ -71,7 +71,7 @@ append_testcases = [
 
 @pytest.mark.parametrize(['xml', 'tag', 'padding', 'original_output', 'new_output'], append_testcases)
 def test_append_to_tag(xml, tag, padding, original_output, new_output):
-    soup = BeautifulSoup(xml, 'lxml-xml')
+    soup = BeautifulSoup(xml, 'xml')
     extractor = XML(flatten=True)
     assert extractor._flatten(soup) == original_output
 

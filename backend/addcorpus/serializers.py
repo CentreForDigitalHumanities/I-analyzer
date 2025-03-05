@@ -1,12 +1,14 @@
-from rest_framework import serializers
 from typing import Dict
 
-from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.constants import CATEGORIES
-from langcodes import Language, standardize_tag
 from addcorpus.documentation import render_documentation_context
 from addcorpus.json_corpora.export_json import export_json_corpus
 from addcorpus.json_corpora.import_json import import_json_corpus
+from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
+                              CorpusDocumentationPage, Field)
+from django.core.files import File
+from langcodes import Language, standardize_tag
+from rest_framework import serializers
 
 
 class NonEmptyJSONField(serializers.JSONField):
@@ -76,7 +78,7 @@ class PrettyChoiceField(serializers.ChoiceField):
         return super().to_internal_value(value)
 
 class CorpusConfigurationSerializer(serializers.ModelSerializer):
-    fields = FieldSerializer(many=True, read_only=True)
+    fields = FieldSerializer(many=True)
     languages = serializers.ListField(child=LanguageField())
     category = PrettyChoiceField(choices=CATEGORIES)
     default_sort = NonEmptyJSONField()
@@ -92,8 +94,8 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'es_alias',
             'es_index',
             'languages',
-            'min_date',
-            'max_date',
+            'min_year',
+            'max_year',
             'scan_image_type',
             'title',
             'word_models_present',
@@ -102,7 +104,6 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'fields',
             'has_named_entities',
         ]
-
 
 class CorpusSerializer(serializers.ModelSerializer):
     configuration = CorpusConfigurationSerializer(read_only=True)
@@ -173,8 +174,10 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
 
         corpus = Corpus.objects.create(**definition_data)
         configuration = CorpusConfiguration.objects.create(corpus=corpus, **configuration_data)
-        for field_data in fields_data:
-            Field.objects.create(corpus_configuration=configuration, **field_data)
+        for i, field_data in enumerate(fields_data):
+            Field.objects.create(
+                corpus_configuration=configuration, position=i, **field_data
+            )
 
         if validated_data.get('active') == True:
             corpus.active = True
@@ -187,7 +190,9 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
         configuration_data = definition_data.pop('configuration')
         fields_data = configuration_data.pop('fields')
 
-        corpus = Corpus(pk=instance.pk, **definition_data)
+        corpus = Corpus(
+            pk=instance.pk, date_created=instance.date_created, **definition_data
+        )
         corpus.save()
 
         configuration, _ = CorpusConfiguration.objects.get_or_create(corpus=corpus)
@@ -195,12 +200,16 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             setattr(configuration, attr, configuration_data[attr])
         configuration.save()
 
-        for field_data in fields_data:
-            field, _ = Field.objects.get_or_create(
-                corpus_configuration=configuration, name=field_data['name']
-            )
+        for i, field_data in enumerate(fields_data):
+            try:
+                field = Field.objects.get(
+                    corpus_configuration=configuration, name=field_data['name'])
+            except Field.DoesNotExist:
+                field = Field(corpus_configuration=configuration,
+                              name=field_data['name'])
             for attr in field_data:
                 setattr(field, attr, field_data[attr])
+            field.position = i
             field.save()
 
         configuration.fields.exclude(name__in=(f['name'] for f in fields_data)).delete()
@@ -210,3 +219,19 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             corpus.save()
 
         return corpus
+
+
+class DataFileField(serializers.FileField):
+    def to_representation(self, value: File) -> Dict:
+        return value.name
+
+    def to_internal_value(self, data):
+        return super().to_internal_value(data)
+
+
+class CorpusDataFileSerializer(serializers.ModelSerializer):
+    file = DataFileField()
+
+    class Meta:
+        model = CorpusDataFile
+        fields = ('id', 'corpus', 'file', 'created', 'is_sample')
