@@ -70,6 +70,9 @@ class Gallica(XMLCorpusDefinition):
                 for year in year_soup.find_all("year")
                 if int(year.string) >= start.year and int(year.string) <= end.year
             ]
+        else:
+            logger.warning(f"The date request for {self.corpus_id} failed.")
+            yield None
         for year in years:
             for retry in range(self.n_retries):
                 sleep(retry * 10)
