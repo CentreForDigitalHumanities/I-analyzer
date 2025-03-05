@@ -8,9 +8,9 @@ from corpora.gallica.gallica import Gallica
 
 class Resistance(Gallica):
     title = "Journaux clandestins de la Resistance"
-    description = "Collection of underground journals during and after German occupation, 1941-1949"
+    description = "Collection of underground journals during and after German occupation, 1940-1954"
     min_date = datetime(year=1940, month=1, day=1)
-    max_date = datetime(year=1954, month=12, day=31)
+    max_date = datetime(year=1960, month=12, day=31)
     publication_ids = [
         # Bulletins
         "cb32738662m",
@@ -88,6 +88,8 @@ class Resistance(Gallica):
         for pub_id in self.publication_ids:
             self.corpus_id = pub_id
             docs = super().sources(start, end)
+            if not docs:
+                continue
             for doc in docs:
                 yield doc
 
