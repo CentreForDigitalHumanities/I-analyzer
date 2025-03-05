@@ -49,7 +49,7 @@ The following attributes are required for a corpus to function.
 | `max_date` | `datetime.date` | The maximum date for the data - analogous to `min_date`. |
 | `category` | `str` | The type of data in the corpus. See the [options for categories](/backend/addcorpus/constants.py). |
 | `languages` | `List[str]` | A list of IETF tags of the languages used in your corpus. Corpus languages are intended as a way for users to select interesting datasets, so only include languages for which your corpus contains a meaningful amount of data. The list should go from most to least frequent. You can also include `''` for "unknown". |
-| `es_index` | `str` | The name of the elasticsearch index. In development, the corpus name will do. On a production cluster, you may need to use a particular prefix. |
+| `es_index` | `str` | The name of the elasticsearch index. In development, the corpus name will do. On a production cluster, you may need to use a particular prefix. If the name starts with `test-`, the index may be deleted when running unit tests; do this for test corpora, don't do it elsewhere. |
 | `data_directory` | `Optional[str]` | Path to the directory containing source files. Always get this from the setttings. You can also set this to `None`; usually because you are getting source data from an API instead of a local directory. |
 | `fields` | `List[Field]` | The fields for the corpus. See [defining fields](#definining-fields). |
 

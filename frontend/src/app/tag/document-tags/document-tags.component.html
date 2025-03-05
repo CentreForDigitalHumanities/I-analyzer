@@ -14,13 +14,14 @@
 
     <div class="control">
         <ng-container *ngIf="showAddNew; else toggleAddNew">
-            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
+            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="closeAddNew()" />
         </ng-container>
 
         <ng-template #toggleAddNew>
             <button class="button tag" aria-label="add a tag"
                 iaBalloon="add a tag" iaBalloonPosition="up"
-                (click)="showAddNew = true">
+                (click)="showAddNew = true"
+                #toggleAddNewButton>
                 <span class="icon"><fa-icon [icon]="actionIcons.add" aria-hidden="true"></fa-icon></span>
             </button>
         </ng-template>

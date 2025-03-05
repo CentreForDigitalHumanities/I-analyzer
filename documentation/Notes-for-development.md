@@ -13,17 +13,16 @@ The above steps do not actually install the package; you can do this at any stag
 
 ## Testing
 
-Backend tests exist in the `backend` directory. They are typically located in a `tests` subdirectory of the module they apply to. Run tests by calling `pytest` (or `python -m pytest`) from `/backend`. Assess code coverage by running `coverage run --m py.test && coverage report`.
+### Backend
 
-When writing new backend tests, you can use the fixtures in the `conftest.py` for the module. For example, in the `api` module, you can do the following in order to test a view.
+Backend tests exist in the `backend` directory. They are typically located in a `tests` subdirectory of the package they apply to. Run tests by calling `pytest` (or `python -m pytest`) from `/backend`. Assess code coverage by running `coverage run --m py.test && coverage report`.
 
-```py
-def test_some_view(client):
-    response = client.get('/some/route')
-    assert response.status_code == 200
-    # etcetera
-```
+When writing new backend tests, you can use the fixtures in the `conftest.py` for the package. [`backend/conftest.py`](../backend/conftest.py) defines fixtures for the whole project, include some that are used automatically.
 
-For further details, consult the source code in `conftest.py` of the module.
+For example, the project conftest defines an `auth_user` fixture that creates a user account; this is widely used to test authentication and user data. The [conftest for the `tag` app](../backend/tag/conftest.py) includes a fixture `auth_user_tag` that creates a tag for the user, which is a useful starting point for many of the tests in this app, but not used elsewhere in the project.
+
+Some backend tests require Elasticsearch. If the backend cannot connect to Elasticsearch during testing, these tests will be skipped. (So if you see a lot of skipped tests in the test output, it's because Elasticsearch isn't available.)
+
+### Frontend
 
 Tests are also available for the `frontend`, they should be run from that directory using Angular. Frontend tests can be run with `yarn test-front`.

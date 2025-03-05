@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'api',
     'es',
     'corpora',
+    'indexing',
     'visualization',
     'download',
     'wordmodels',
@@ -112,8 +113,6 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Amsterdam'
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

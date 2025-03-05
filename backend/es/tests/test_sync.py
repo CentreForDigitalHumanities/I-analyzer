@@ -1,7 +1,8 @@
 from time import sleep
 from elasticsearch import Elasticsearch
+import pytest
 
-from es.es_index import perform_indexing
+from es.es_index import perform_indexing, create_indexing_job
 from es.sync import (
     update_server_table_from_settings, fetch_index_metadata, update_availability
 )
@@ -27,7 +28,7 @@ def test_update_server_data(settings, db):
     default_server.refresh_from_db()
     assert default_server.active
 
-
+@pytest.mark.filterwarnings("ignore:Corpus has no 'id' field")
 def test_fetch_index_data(db, es_client, basic_mock_corpus, index_basic_mock_corpus):
     update_server_table_from_settings()
     fetch_index_metadata()
@@ -42,7 +43,8 @@ def test_fetch_index_data(db, es_client, basic_mock_corpus, index_basic_mock_cor
     assert not index.available
 
     # restore index
-    perform_indexing(corpus)
+    job = create_indexing_job(corpus)
+    perform_indexing(job)
     sleep(1)
 
     fetch_index_metadata()

@@ -10,8 +10,14 @@
         </a>
         <div class="navbar-brand">
             <a class="navbar-item" [routerLink]="['/home']">
-                <img src="/assets/logo.png" aria-hidden="true" width="50" height="50">
-                I-ANALYZER
+                <img *ngIf="brand.logo"
+                    [src]="brand.logo"
+                    [alt]="brand.logoAlt"
+                    [attr.aria-hidden]="brand.logoAlt?.length">
+                <span>{{brand.title}}</span>
+                <span *ngIf="brand.subtitle">
+                    <span class="app-subtitle">{{brand.subtitle}}</span>
+                </span>
             </a>
 
             <a  role="button" tabindex="0"
