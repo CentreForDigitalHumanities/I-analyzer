@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject, from, of } from 'rxjs';
 import { catchError, filter, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { actionIcons } from '@shared/icons';
 import { ApiService } from '@services';
+import { ValidationError, Validator } from 'jsonschema';
 
 @Component({
     selector: 'ia-definition-json-upload',
@@ -19,7 +20,8 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
     schema$ = this.apiService.corpusSchema();
     file$: BehaviorSubject<File|undefined> = new BehaviorSubject(undefined);
     data$: Observable<any>;
-    error$ = new Subject<Error>();
+    error$ = new Subject<{message: string}>();
+    validationErrors$ = new BehaviorSubject<ValidationError[]>([]);
 
     private inputChange$ = new Subject<void>();
     private destroy$ = new Subject<void>();
@@ -60,6 +62,7 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.validationErrors$.complete();
         this.destroy$.next();
         this.inputChange$.complete();
         this.destroy$.complete();
@@ -72,6 +75,9 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
     }
 
     validate(data, schema) {
-        return true;
+        const validator = new Validator();
+        const result = validator.validate(data, schema);
+        this.validationErrors$.next(result.errors);
+        return !result.errors.length;
     }
 }
