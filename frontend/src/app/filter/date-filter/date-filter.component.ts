@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 
 import { DateFilter, DateFilterData, QueryModel } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
-import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
 import {
     Aggregator,
     MaxDateAggregator,
@@ -20,11 +19,6 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilter> {
     public minDate: Date;
     public maxDate: Date;
 
-    public selectedMinDate: BehaviorSubject<Date>;
-    public selectedMaxDate: BehaviorSubject<Date>;
-
-    private filterDataSubscription: Subscription;
-
     constructor(private searchService: SearchService) {
         super();
     }
@@ -36,24 +30,7 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilter> {
             this.minDate = filter.defaultData.min;
             this.maxDate = filter.defaultData.max;
 
-            this.selectedMinDate = new BehaviorSubject(filter.currentData.min);
-            this.selectedMaxDate = new BehaviorSubject(filter.currentData.max);
-
-            combineLatest([this.selectedMinDate, this.selectedMaxDate]).subscribe(([min, max]) =>
-                this.update({ min, max })
-            );
-
-            this.filterDataSubscription?.unsubscribe();
-            this.filterDataSubscription = filter.state$.subscribe(state => {
-                if (this.selectedMinDate.value !== state.data.min) {
-                    this.selectedMinDate.next(state.data.min);
-                }
-                if (this.selectedMaxDate.value !== state.data.max) {
-                    this.selectedMaxDate.next(state.data.max);
-                }
-            });
         });
-
     }
 
     private fetchDefaultData(filter: DateFilter): Promise<DateFilterData> {
