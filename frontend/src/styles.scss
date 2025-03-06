@@ -41,7 +41,7 @@
 }
 
 .is-loading:not(.button) {
-    @extend .loader;
+    @extend %content-loader;
 }
 
 .tag-dropdown .button {

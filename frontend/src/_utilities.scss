@@ -40,7 +40,7 @@ $entity-miscellaneous: #ee5986;
 
 // based on the Bulma loader
 
-.loader {
+%content-loader {
     min-height: 10em;
     opacity: 0.5;
     pointer-events: none;
