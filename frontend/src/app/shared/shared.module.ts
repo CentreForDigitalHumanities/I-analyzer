@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { BalloonDirective } from '../balloon.directive';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
@@ -55,6 +56,7 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         BrowserModule,
         CommonModule,
         DatePickerModule,
+        DialogModule,
         FormsModule,
         TableModule,
         DropdownModule,
