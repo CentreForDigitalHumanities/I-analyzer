@@ -4,6 +4,8 @@ import { commonTestBed } from 'app/common-test-bed';
 
 import { FieldFormComponent } from './field-form.component';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
+import { SharedModule } from '@shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('FieldFormComponent', () => {
     let component: FieldFormComponent;
@@ -16,6 +18,7 @@ describe('FieldFormComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [FieldFormComponent],
+            imports: [SharedModule, ReactiveFormsModule],
             providers: [CorpusDefinitionService],
         }).compileComponents();
 

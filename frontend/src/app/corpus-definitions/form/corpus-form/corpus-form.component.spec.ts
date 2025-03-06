@@ -1,26 +1,44 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusFormComponent } from './corpus-form.component';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { appRoutes } from 'app/app.module';
-import { commonTestBed } from 'app/common-test-bed';
+import { StepsModule } from 'primeng/steps';
+import { MetaFormComponent } from '../meta-form/meta-form.component';
+import { FieldFormComponent } from '../field-form/field-form.component';
+import { UploadSampleComponent } from '../upload-sample/upload-sample.component';
+import { ApiService } from '@services';
+import { ApiServiceMock } from 'mock-data/api';
+import { SharedModule } from '@shared/shared.module';
+import { ActivatedRoute } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 describe('CorpusFormComponent', () => {
     let component: CorpusFormComponent;
     let fixture: ComponentFixture<CorpusFormComponent>;
 
-    beforeEach(waitForAsync(() => {
-        commonTestBed().testingModule.compileComponents();
-    }));
+    const mockRoute = { snapshot: { params: {corpusID: 1} } };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-    declarations: [CorpusFormComponent],
-    providers: [SlugifyPipe, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), provideRouter(appRoutes)]
-}).compileComponents();
+            declarations: [
+                CorpusFormComponent,
+                MetaFormComponent,
+                FieldFormComponent,
+                UploadSampleComponent,
+            ],
+            imports: [
+                SharedModule,
+                StepsModule,
+                ReactiveFormsModule,
+                MultiSelectModule,
+            ],
+            providers: [
+                SlugifyPipe,
+                { provide: ActivatedRoute, useValue: mockRoute },
+                { provide: ApiService, useClass: ApiServiceMock },
+            ],
+        }).compileComponents();
 
         fixture = TestBed.createComponent(CorpusFormComponent);
         component = fixture.componentInstance;
