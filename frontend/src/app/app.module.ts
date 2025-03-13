@@ -201,11 +201,15 @@ export const imports: any[] = [
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
 
+/***
+ * Override PrimeNG color palette: using values from ./src/_utilities.scss
+ */
 const stylePreset = definePreset(Nora, {
     semantic: {
         primary: {
             50: '#D6D6D6', // highlight color
             600: '#303F9F', // "I-Analyzer blue"
+            700: '#495cc9', // accent color
         }
     }
 });
