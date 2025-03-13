@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { ElementRef } from '@angular/core';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ElementRef } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import {FontAwesomeTestingModule} from '@fortawesome/angular-fontawesome/testing';
 
 import { appRoutes, declarations, imports, providers } from './app.module';
@@ -29,8 +29,7 @@ import { CorpusDefinitionService } from './corpus-definitions/corpus-definition.
 
 export const commonTestBed = () => {
     const filteredImports = imports.filter(value => !(value in provideHttpClient()));
-    filteredImports.push(RouterTestingModule.withRoutes(appRoutes));
-    filteredImports.push(FontAwesomeTestingModule)
+    filteredImports.push(FontAwesomeTestingModule);
     const filteredProviders = providers.filter(provider => !(
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService]));
     filteredProviders.push(
@@ -85,7 +84,8 @@ export const commonTestBed = () => {
         },
         {
             provide: CorpusDefinitionService,
-        }
+        },
+        provideRouter(appRoutes)
     );
 
     return {

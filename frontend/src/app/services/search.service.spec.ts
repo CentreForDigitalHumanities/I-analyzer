@@ -1,5 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
@@ -14,12 +15,12 @@ import { QueryModel } from '@models';
 import { mockCorpus } from '../../mock-data/corpus';
 import { AuthService } from './auth.service';
 import { AuthServiceMock } from '../../mock-data/auth';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { appRoutes } from 'app/app.module';
+
 
 describe('SearchService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-    imports: [RouterTestingModule.withRoutes([])],
     providers: [
         SearchService,
         ApiRetryService,
@@ -33,6 +34,7 @@ describe('SearchService', () => {
         SessionService,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        provideRouter(appRoutes)
     ]
 });
     });

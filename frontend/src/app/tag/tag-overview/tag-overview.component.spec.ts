@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { TagOverviewComponent } from './tag-overview.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ApiRetryService } from '@services';
-import { RouterTestingModule } from '@angular/router/testing';
 import { commonTestBed } from '../../common-test-bed';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { appRoutes } from 'app/app.module';
 
 describe('TagOverviewComponent', () => {
     let component: TagOverviewComponent;
@@ -18,8 +19,7 @@ describe('TagOverviewComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
     declarations: [TagOverviewComponent],
-    imports: [RouterTestingModule],
-    providers: [ApiRetryService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [ApiRetryService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), provideRouter(appRoutes)]
 }).compileComponents();
     });
 
