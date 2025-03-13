@@ -20,6 +20,8 @@ import { actionIcons } from '../icons';
 import { DropdownService } from './dropdown.service';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+let nextID = 0;
+
 @Component({
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
@@ -39,12 +41,19 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     @Input() value: any;
     @Input() disabled: boolean;
 
+    /** ID of the element labelling the dropdown */
+    @Input() labelledBy: string;
+
     @Output()
     public onChange = new EventEmitter<T>();
 
     @ViewChild('dropdownTrigger') trigger: ElementRef<HTMLButtonElement>;
 
     actionIcons = actionIcons;
+
+
+    id = nextID++;
+    open$ = this.dropdownService.open$;
 
     private blur$ = new Subject<void>();
     private destroy$ = new Subject<void>();
@@ -64,6 +73,14 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
     @HostBinding('class.is-active')
     get isActive(): boolean {
         return this.dropdownService.open$.value;
+    }
+
+    get triggerID(): string {
+        return `dropdown-trigger-${this.id}`;
+    }
+
+    get menuID(): string {
+        return `dropdown-menu-${this.id}`;
     }
 
     @HostListener('document:click', ['$event'])
@@ -123,9 +140,9 @@ export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy
 
     focusOnFirstItem(event: KeyboardEvent) {
         event.preventDefault();
-        if (this.dropdownService.open$.value) {
-            this.dropdownService.focusShift$.next(1);
-        }
+        this.dropdownService.open$.next(true);
+        // focus on the first item - use setTimeout to wait until the menu is opened
+        setTimeout(() => this.dropdownService.focusShift$.next(1));
     }
 
 }

@@ -52,7 +52,7 @@ describe('DropdownComponent', () => {
     it('should render the label', async () => {
         await fixture.whenStable();
 
-        const trigger = fixture.debugElement.query(By.css('#dropdownTrigger')).nativeElement;
+        const trigger = fixture.debugElement.query(By.css('.dropdown-trigger > button')).nativeElement;
 
         expect(trigger.innerHTML).toContain('Select option');
 
@@ -72,7 +72,7 @@ describe('DropdownComponent', () => {
 
         expect(dropdown.classes['is-active']).toBeFalsy();
 
-        const trigger = dropdown.query(By.css('#dropdownTrigger'));
+        const trigger = dropdown.query(By.css('.dropdown-trigger > button'));
         trigger.triggerEventHandler('click', undefined);
 
         tick();

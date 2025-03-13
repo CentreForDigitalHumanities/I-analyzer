@@ -6540,6 +6540,13 @@ ngx-cookie-service@19.1.0:
   dependencies:
     tslib "^2.8.0"
 
+ngx-matomo-client@6.4.1:
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/ngx-matomo-client/-/ngx-matomo-client-6.4.1.tgz#232c1f71a35e3f6b1ad033fa93c0a1961616019f"
+  integrity sha512-GRriCGW0ULCg9oSZw3ule+o9esELVVJTJ0Z99/zYKGjlyrrHLn5a1e0GSdgICubo59gP1cg9NwsOC0BH7oio9A==
+  dependencies:
+    tslib "^2.3.0"
+
 node-abi@^3.3.0:
   version "3.74.0"
   resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-3.74.0.tgz#5bfb4424264eaeb91432d2adb9da23c63a301ed0"

@@ -1,4 +1,5 @@
 import {
+    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -13,6 +14,7 @@ import { Tag } from '@models';
 import { TagService } from '@services/tag.service';
 import { takeUntil } from 'rxjs/operators';
 import { actionIcons, formIcons } from '@shared/icons';
+import { DropdownComponent } from '@shared/dropdown/dropdown.component';
 
 @Component({
     selector: 'ia-tag-select',
@@ -20,12 +22,13 @@ import { actionIcons, formIcons } from '@shared/icons';
     styleUrls: ['./tag-select.component.scss'],
     standalone: false
 })
-export class TagSelectComponent implements OnDestroy {
+export class TagSelectComponent implements AfterViewInit, OnDestroy {
     @Input() exclude: Tag[];
     @Output() selection = new EventEmitter<Tag>();
     @Output() cancel = new EventEmitter<void>();
 
-    @ViewChild('tagSelect') tagSelect: ElementRef;
+    @ViewChild('newTagNameInput') newTagNameInput: ElementRef<HTMLInputElement>;
+    @ViewChild(DropdownComponent) dropdown: DropdownComponent<any>;
 
     tags$: Observable<Tag[]>;
     destroy$ = new Subject<void>();
@@ -40,6 +43,10 @@ export class TagSelectComponent implements OnDestroy {
 
     constructor(private tagService: TagService) {
         this.tags$ = this.tagService.tags$;
+    }
+
+    ngAfterViewInit() {
+        this.dropdown.trigger.nativeElement.focus();
     }
 
     filterTags(tags: Tag[], exclude?: Tag[]): Tag[] {
@@ -63,7 +70,8 @@ export class TagSelectComponent implements OnDestroy {
 
     toggleCreate(): void {
         this.selectedTag = undefined;
-        this.createMode = !this.createMode;
+        this.createMode = true;
+        setTimeout(() => this.newTagNameInput.nativeElement.focus());
     }
 
     ngOnDestroy(): void {

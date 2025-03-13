@@ -1,9 +1,10 @@
 <form [formGroup]="form">
     <div class="columns">
         <div class="column field">
-            <label class="label">Language</label>
+            <label class="label" id="label-language">Language</label>
             <div class="control">
-                <ia-dropdown name="language" [formControl]="form.controls.language">
+                <ia-dropdown name="language" [formControl]="form.controls.language"
+                    labelledBy="label-language">
                     <span iaDropdownLabel>{{form.controls.language.value || 'Any'}}</span>
                     <div iaDropdownMenu>
                         <a iaDropdownItem [value]="null">Any</a>
@@ -16,9 +17,10 @@
             </div>
         </div>
         <div class="column field">
-            <label class="label">Type of data</label>
+            <label class="label" id="label-category">Type of data</label>
             <div class="control">
-                <ia-dropdown name="category" [formControl]="form.controls.category">
+                <ia-dropdown name="category" [formControl]="form.controls.category"
+                    labelledBy="label-category">
                     <span iaDropdownLabel>{{form.controls.category.value || 'Any'}}</span>
                     <div iaDropdownMenu>
                         <a iaDropdownItem [value]="null">Any</a>

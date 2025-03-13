@@ -17,6 +17,7 @@ const defaultValueType = 'alpha';
 export class SearchSortingComponent {
     @HostBinding('class') classes = 'field has-addons';
     @Input() pageResults: PageResults;
+    @Input() labelledBy: string;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public showFields = false;
