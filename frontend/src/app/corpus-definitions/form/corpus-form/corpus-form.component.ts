@@ -1,11 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ApiService } from '../../../services';
-import { MenuItem } from 'primeng/api';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { tap } from 'rxjs';
-import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'ia-corpus-form',
