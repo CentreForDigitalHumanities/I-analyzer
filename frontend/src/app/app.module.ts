@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import { definePreset } from '@primeng/themes';
 import Nora from '@primeng/themes/nora';
 
 import { CookieService } from 'ngx-cookie-service';
@@ -200,6 +201,15 @@ export const imports: any[] = [
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
 
+const stylePreset = definePreset(Nora, {
+    semantic: {
+        primary: {
+            50: '#D6D6D6', // highlight color
+            600: '#303F9F', // "I-Analyzer blue"
+        }
+    }
+});
+
 export const providers: any[] = [
     ApiService,
     ApiRetryService,
@@ -209,7 +219,7 @@ export const providers: any[] = [
     LoggedOnGuard,
     providePrimeNG({
         theme: {
-            preset: Nora
+            preset: stylePreset
         }
     }),
     TitleCasePipe,
