@@ -38,7 +38,7 @@
     "@freearhey/iso-639-3": "^1.0.0",
     "@primeng/themes": "^19.0.9",
     "balloon-css": "^0.5.2",
-    "bulma": "^0.5.1",
+    "bulma": "^0.9.4",
     "chart.js": "^4.4.2",
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-chart-wordcloud": "^4.3.2",
