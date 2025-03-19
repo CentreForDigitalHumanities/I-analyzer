@@ -1,7 +1,7 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
-import { DateTime } from 'luxon';
+import { addDays, addMonths, addWeeks, addYears, differenceInDays, format } from 'date-fns';
 import 'chartjs-adapter-moment';
 
 import {
@@ -178,12 +178,26 @@ export class TimelineComponent
         }));
     }
 
+    callibratexAxis(date: Date, margin: number = 1) {
+        switch(this.currentTimeCategory) {
+            case 'day':
+                return addDays(date, margin);
+            case 'week':
+                return addWeeks(date, margin);
+            case 'month':
+                return addMonths(date, margin);
+            case 'year':
+                return addYears(date, margin);
+
+        }
+    }
+
     chartOptions(datasets) {
         const xLabel = this.visualizedField.displayName
             ? this.visualizedField.displayName
             : this.visualizedField.name;
-        const xMin = DateTime(this.xDomain[0]).minus({[this.currentTimeCategory]: 1}).toJSDate();
-        const xMax = DateTime(this.xDomain[1]).plus({[this.currentTimeCategory]: 1}).toJSDate();
+        const xMin = this.callibratexAxis(this.xDomain[0], -1);
+        const xMax = this.callibratexAxis(this.xDomain[0]);
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
@@ -335,7 +349,7 @@ export class TimelineComponent
      * based on minimum and maximum dates on the x axis.
      */
     public calculateTimeCategory(min: Date, max: Date): TimeCategory {
-        const diff = DateTime(max).diff(DateTime(min), 'days').toObject().get('days');
+        const diff = differenceInDays(max, min);
         if (diff <= this.scaleDownThreshold) {
             return 'day';
         } else if (diff <= this.scaleDownThreshold * 7) {
@@ -422,14 +436,14 @@ export class TimelineComponent
                 dateFormat = 'yyyy';
                 break;
             case 'month':
-                dateFormat = 'LLLL yyyy';
+                dateFormat = 'MM yyyy';
                 break;
             default:
-                dateFormat = 'yyyy-LL-dd';
+                dateFormat = 'yyyy-MM-dd';
                 break;
         }
 
-        return (date: Date) => DateTime(date).toFormat(dateFormat);
+        return (date: Date) => format(date, dateFormat);
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering

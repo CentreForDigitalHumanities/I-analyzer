@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { DateTime } from 'luxon';
+import { format } from 'date-fns';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import {
@@ -137,14 +137,16 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
 
     private formatDate(date?: Date): string {
         if (date) {
-            return DateTime.fromJSDate(date).toFormat('yyyy-LL-dd');
+            return format(date, 'yyyy-MM-dd');
         }
         return '';
     }
 
     private parseDate(dateString?: string): Date|undefined {
         if (dateString.length) {
-            return DateTime.fromISO(dateString).toJSDate();
+            const date = new Date(dateString);
+            date.setHours(0, 0, 0); // make sure that time-zone induced shifts in historical dates are set to 0
+            return date;
         }
     }
 }

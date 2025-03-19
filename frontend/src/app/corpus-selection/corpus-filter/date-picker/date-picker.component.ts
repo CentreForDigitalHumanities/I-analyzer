@@ -1,6 +1,6 @@
 import { Component, Input, Output } from '@angular/core';
 import * as _ from 'lodash';
-import { DateTime } from 'luxon';
+import { parse } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -23,18 +23,12 @@ export class DatePickerComponent {
     }
 
     formatInput(value: string|Date): Date {
-        let valueAsDate: Date;
         if (typeof(value) == 'string') {
-            const format = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
-            const m = DateTime.fromFormat(value, format);
-            if (m.isValid) {
-                valueAsDate = m.toJSDate();
-            }
+            const dateFormat = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
+            return parse(value, dateFormat, null, null);
         } else {
-            valueAsDate = value;
+            return value;
         }
-
-        return valueAsDate;
     }
 
     set(value: string|Date) {
