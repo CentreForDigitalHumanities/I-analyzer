@@ -18,6 +18,8 @@ from indexing.run_update_task import run_update_task
 logger = logging.getLogger('indexing')
 
 def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
+    logger.info(f'Running index task: {task}')
+
     task.status = TaskStatus.WORKING
     task.save()
 
@@ -60,34 +62,22 @@ def perform_indexing(job: IndexJob):
 
     for task in job.createindextasks.all():
         run_task(task, create)
-
-        if not job.populateindextasks.exists() or job.updateindextasks.exists():
-            logger.info(f'Created index `{task.index.name}` with mappings only.')
-        else:
-            logger.info(f'Created index `{task.index.name}`')
-
         client.cluster.health(wait_for_status='yellow')
 
     for task in job.populateindextasks.all():
         run_task(task, populate)
-        logger.info('Finished indexing `{}` to index `{}`.'.format(
-            corpus_name, task.index.name))
 
     for task in job.updateindextasks.all():
         run_task(task, run_update_task)
 
     for task in job.updatesettingstasks.all():
-        logger.info("Updating settings for index `{}`".format(task.index.name))
         run_task(task, update_index_settings)
 
     for task in job.removealiastasks.all():
-        logger.info(f'Removing alias `{task.alias}` for index `{task.index.name}`')
         run_task(task, remove_alias)
 
     for task in job.addaliastasks.all():
-        logger.info(f'Adding alias `{task.alias}` for index `{task.index.name}`')
         run_task(task, add_alias)
 
     for task in job.deleteindextasks.all():
-        logger.info(f'Deleting index {task.index.name}')
         run_task(task, delete_index)
