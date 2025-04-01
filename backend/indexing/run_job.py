@@ -18,7 +18,8 @@ from indexing.run_update_task import run_update_task
 logger = logging.getLogger('indexing')
 
 def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
-    logger.info(f'Running index task: {task}')
+    task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
+    logger.info(f'Running {task_id}: {task}')
 
     task.status = TaskStatus.WORKING
     task.save()
@@ -26,13 +27,14 @@ def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
     try:
         handler(task)
     except Exception as e:
+        logger.exception(f'{task_id} failed!')
         task.status = TaskStatus.ERROR
         task.save()
         raise e
 
     task.status = TaskStatus.DONE
     task.save()
-
+    logger.info(f'{task_id} completed')
 
 def perform_indexing(job: IndexJob):
     '''
