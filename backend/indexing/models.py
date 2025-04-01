@@ -27,6 +27,29 @@ class IndexJob(models.Model):
         return f'{self.corpus} ({self.created})'
 
 
+class TaskStatus(models.TextChoices):
+    CREATED = 'created'
+    'Task is created, but not scheduled'
+
+    QUEUED = 'queued'
+    'Task has not started, but its job has been started'
+
+    WORKING = 'working'
+    'Task is currently running'
+
+    DONE = 'done'
+    'Task completed successfully'
+
+    ERROR = 'error'
+    'Task ran into an error'
+
+    ABORTED = 'aborted'
+    'Task was started, then aborted by a user'
+
+    CANCELLED = 'cancelled'
+    'Task was cancelled (because a task up-chain was aborted or failed)'
+
+
 class IndexTask(models.Model):
     '''
     Abstract model for index-related tasks.
@@ -46,6 +69,12 @@ class IndexTask(models.Model):
         on_delete=models.CASCADE,
         related_name='%(class)ss',
         help_text='index on which this task is applied',
+    )
+    status = models.CharField(
+        max_length=16,
+        choices=TaskStatus.choices,
+        default=TaskStatus.CREATED,
+        help_text='execution status of this task',
     )
 
     @property
