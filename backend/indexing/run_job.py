@@ -60,6 +60,9 @@ def run_task(task: IndexTask) -> None:
     task.save()
     logger.info(f'{task_id} completed')
 
+    if isinstance(task, CreateIndexTask):
+        task.client().cluster.health(wait_for_status='yellow')
+
 
 def mark_tasks_stopped(job: IndexJob):
     '''
@@ -79,7 +82,21 @@ def perform_indexing(job: IndexJob):
     Run an IndexJob by running all related tasks.
     '''
     job.corpus.validate_ready_to_index()
+    _log_job_started(job)
 
+    for task in job.tasks():
+        task.status = TaskStatus.QUEUED
+        task.save()
+
+    for task in job.tasks():
+        try:
+            run_task(task)
+        except Exception as e:
+            mark_tasks_stopped(job)
+            raise e
+
+
+def _log_job_started(job: IndexJob):
     corpus_name = job.corpus.name
 
     logger.info(f'Started index job: {job}')
@@ -90,17 +107,3 @@ def perform_indexing(job: IndexJob):
     logger.info('retry on timeout: {}'.format(
         vars(client).get('_retry_on_timeout'))
     )
-
-    for task in job.tasks():
-        task.status = TaskStatus.QUEUED
-        task.save()
-
-    for task in job.tasks():
-        try:
-            run_task(task)
-
-            if isinstance(task, CreateIndexTask):
-                client.cluster.health(wait_for_status='yellow')
-        except Exception as e:
-            mark_tasks_stopped(job)
-            raise e
