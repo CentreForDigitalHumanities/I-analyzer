@@ -30,10 +30,10 @@
         </div>
 
         <div class="field">
-            <p class="label">
+            <label class="label" id="sort-by-label">
                 Sort results
-            </p>
-            <ia-search-sorting [pageResults]="resultsConfig"></ia-search-sorting>
+            </label>
+            <ia-search-sorting [pageResults]="resultsConfig" labelledBy="sort-by-label" />
         </div>
 
         <!-- TODO: show this option when query-in-context download is fixed -->
