@@ -3,9 +3,10 @@ Functionality to run an IndexJob
 '''
 
 import logging
+from typing import Callable, Any
 
 from es.client import elasticsearch
-from indexing.models import IndexJob
+from indexing.models import IndexJob, IndexTask, TaskStatus
 from indexing.run_populate_task import populate
 from indexing.run_create_task import create
 from indexing.run_management_tasks import (
@@ -16,6 +17,19 @@ from indexing.run_update_task import run_update_task
 
 logger = logging.getLogger('indexing')
 
+def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
+    task.status = TaskStatus.WORKING
+    task.save()
+
+    try:
+        handler(task)
+    except Exception as e:
+        task.status = TaskStatus.ERROR
+        task.save()
+        raise e
+
+    task.status = TaskStatus.DONE
+    task.save()
 
 
 def perform_indexing(job: IndexJob):
@@ -45,7 +59,7 @@ def perform_indexing(job: IndexJob):
     )
 
     for task in job.createindextasks.all():
-        create(task)
+        run_task(task, create)
 
         if not job.populateindextasks.exists() or job.updateindextasks.exists():
             logger.info(f'Created index `{task.index.name}` with mappings only.')
@@ -55,25 +69,25 @@ def perform_indexing(job: IndexJob):
         client.cluster.health(wait_for_status='yellow')
 
     for task in job.populateindextasks.all():
-        populate(task)
+        run_task(task, populate)
         logger.info('Finished indexing `{}` to index `{}`.'.format(
             corpus_name, task.index.name))
 
     for task in job.updateindextasks.all():
-        run_update_task(task)
+        run_task(task, run_update_task)
 
     for task in job.updatesettingstasks.all():
         logger.info("Updating settings for index `{}`".format(task.index.name))
-        update_index_settings(task)
+        run_task(task, update_index_settings)
 
     for task in job.removealiastasks.all():
         logger.info(f'Removing alias `{task.alias}` for index `{task.index.name}`')
-        remove_alias(task)
+        run_task(task, remove_alias)
 
     for task in job.addaliastasks.all():
         logger.info(f'Adding alias `{task.alias}` for index `{task.index.name}`')
-        add_alias(task)
+        run_task(task, add_alias)
 
     for task in job.deleteindextasks.all():
         logger.info(f'Deleting index {task.index.name}')
-        delete_index(task)
+        run_task(task, delete_index)
