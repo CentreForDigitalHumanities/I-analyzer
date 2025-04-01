@@ -1,11 +1,36 @@
 from django.db import models
 from elasticsearch import Elasticsearch
-from typing import List
+from typing import List, Optional
 from itertools import chain
+from django.contrib import admin
 
 from es.client import elasticsearch
 from addcorpus.models import Corpus
 from es.models import Index
+
+
+class TaskStatus(models.TextChoices):
+    CREATED = 'created'
+    'Task is created, but not scheduled'
+
+    QUEUED = 'queued'
+    'Task has not started, but its job has been started'
+
+    WORKING = 'working'
+    'Task is currently running'
+
+    DONE = 'done'
+    'Task completed successfully'
+
+    ERROR = 'error'
+    'Task ran into an error'
+
+    ABORTED = 'aborted'
+    'Task was started, then aborted by a user'
+
+    CANCELLED = 'cancelled'
+    'Task was cancelled (because a task up-chain was aborted or failed)'
+
 
 class IndexJob(models.Model):
     '''
@@ -52,27 +77,19 @@ class IndexJob(models.Model):
         return f'{self.corpus} ({self.created})'
 
 
-class TaskStatus(models.TextChoices):
-    CREATED = 'created'
-    'Task is created, but not scheduled'
+    @admin.display()
+    def status(self) -> Optional[TaskStatus]:
+        '''Aggregate status of related tasks'''
+        statuses = set(task.status for task in self.tasks())
+        if len(statuses) == 1:
+            return statuses.pop()
+        if TaskStatus.ERROR in statuses:
+            return TaskStatus.ERROR
+        if TaskStatus.WORKING in statuses:
+            return TaskStatus.WORKING
+        if TaskStatus.ABORTED in statuses:
+            return TaskStatus.ABORTED
 
-    QUEUED = 'queued'
-    'Task has not started, but its job has been started'
-
-    WORKING = 'working'
-    'Task is currently running'
-
-    DONE = 'done'
-    'Task completed successfully'
-
-    ERROR = 'error'
-    'Task ran into an error'
-
-    ABORTED = 'aborted'
-    'Task was started, then aborted by a user'
-
-    CANCELLED = 'cancelled'
-    'Task was cancelled (because a task up-chain was aborted or failed)'
 
 
 class IndexTask(models.Model):

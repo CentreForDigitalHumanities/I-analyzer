@@ -40,7 +40,8 @@ class DeleteIndexAdmin(admin.StackedInline):
 
 
 class IndexJobAdmin(admin.ModelAdmin):
-    list_display = ['created', 'corpus']
+    list_display = ['created', 'corpus', 'status']
+    readonly_fields = ['status']
     list_filter = ['corpus']
     inlines = [
         CreateIndexAdmin,
