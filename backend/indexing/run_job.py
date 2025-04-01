@@ -31,7 +31,7 @@ TASK_HANDLERS = [
 ]
 
 
-def task_handler(task: IndexTask) -> Callable[[IndexTask], Any]:
+def _task_handler(task: IndexTask) -> Callable[[IndexTask], Any]:
     '''Select the appropriate function to execute an IndexTask'''
     for (task_type, handler) in TASK_HANDLERS:
         if isinstance(task, task_type):
@@ -48,7 +48,7 @@ def run_task(task: IndexTask) -> None:
     task.save()
 
     try:
-        handler = task_handler(task)
+        handler = _task_handler(task)
         handler(task)
     except Exception as e:
         logger.exception(f'{task_id} failed!')
@@ -59,6 +59,14 @@ def run_task(task: IndexTask) -> None:
     task.status = TaskStatus.DONE
     task.save()
     logger.info(f'{task_id} completed')
+
+
+def cancel_queued_tasks(job: IndexJob):
+    '''Mark all remaining queued tasks as cancelled.'''
+    for task in job.tasks():
+        if task.status == TaskStatus.QUEUED:
+            task.status = TaskStatus.CANCELLED
+            task.save()
 
 
 def perform_indexing(job: IndexJob):
@@ -79,7 +87,15 @@ def perform_indexing(job: IndexJob):
     )
 
     for task in job.tasks():
-        run_task(task)
+        task.status = TaskStatus.QUEUED
+        task.save()
 
-        if isinstance(task, CreateIndexTask):
-            client.cluster.health(wait_for_status='yellow')
+    for task in job.tasks():
+        try:
+            run_task(task)
+
+            if isinstance(task, CreateIndexTask):
+                client.cluster.health(wait_for_status='yellow')
+        except Exception as e:
+            cancel_queued_tasks(job)
+            raise e

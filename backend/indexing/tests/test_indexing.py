@@ -118,3 +118,5 @@ def test_task_status_failure(mock_corpus, es_index_client):
 
     create_task = invalid_job.createindextasks.first()
     assert create_task.status == TaskStatus.ERROR
+    populate_task = invalid_job.populateindextasks.first()
+    assert populate_task.status == TaskStatus.CANCELLED
