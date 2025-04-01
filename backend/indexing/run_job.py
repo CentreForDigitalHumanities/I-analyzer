@@ -61,11 +61,16 @@ def run_task(task: IndexTask) -> None:
     logger.info(f'{task_id} completed')
 
 
-def cancel_queued_tasks(job: IndexJob):
-    '''Mark all remaining queued tasks as cancelled.'''
+def mark_tasks_stopped(job: IndexJob):
+    '''
+    Mark open tasks as aborted and queued tasks as cancelled.
+    '''
     for task in job.tasks():
         if task.status == TaskStatus.QUEUED:
             task.status = TaskStatus.CANCELLED
+            task.save()
+        if task.status == TaskStatus.WORKING:
+            task.status = TaskStatus.ABORTED
             task.save()
 
 
@@ -97,5 +102,5 @@ def perform_indexing(job: IndexJob):
             if isinstance(task, CreateIndexTask):
                 client.cluster.health(wait_for_status='yellow')
         except Exception as e:
-            cancel_queued_tasks(job)
+            mark_tasks_stopped(job)
             raise e

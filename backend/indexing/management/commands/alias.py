@@ -2,7 +2,7 @@ from django.core.management import BaseCommand
 
 from addcorpus.models import Corpus
 from indexing.create_job import create_alias_job
-from indexing.run_job import perform_indexing
+from indexing.run_job import perform_indexing, mark_tasks_stopped
 
 class Command(BaseCommand):
     help = '''
@@ -39,4 +39,8 @@ class Command(BaseCommand):
         job = create_alias_job(corpus_obj, clean)
 
         if not create_only:
-            perform_indexing(job)
+            try:
+                perform_indexing(job)
+            except KeyboardInterrupt as e:
+                print('Aborting tasks...')
+                mark_tasks_stopped(job)
