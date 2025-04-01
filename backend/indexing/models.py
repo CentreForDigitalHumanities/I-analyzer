@@ -1,5 +1,7 @@
 from django.db import models
 from elasticsearch import Elasticsearch
+from typing import List
+from itertools import chain
 
 from es.client import elasticsearch
 from addcorpus.models import Corpus
@@ -21,6 +23,29 @@ class IndexJob(models.Model):
         help_text='time when the job was created',
     )
 
+
+    def tasks(self) -> List['IndexTask']:
+        '''
+        Returns all tasks in order of execution.
+
+        Tasks are ordered by type. The order of types is:
+        - `CreateIndexTask`
+        - `PopulateIndexTask`
+        - `UpdateIndexTask`
+        - `UpdateSettingsTask`
+        - `RemoveAliasTask`
+        - `AddAliasTask`
+        - `DeleteIndexTask`
+        '''
+        return list(chain(
+            self.createindextasks.all(),
+            self.populateindextasks.all(),
+            self.updateindextasks.all(),
+            self.updatesettingstasks.all(),
+            self.removealiastasks.all(),
+            self.addaliastasks.all(),
+            self.deleteindextasks.all()
+        ))
 
 
     def __str__(self):

@@ -6,7 +6,10 @@ import logging
 from typing import Callable, Any
 
 from es.client import elasticsearch
-from indexing.models import IndexJob, IndexTask, TaskStatus
+from indexing.models import (
+    IndexJob, IndexTask, TaskStatus, CreateIndexTask, PopulateIndexTask,
+    UpdateSettingsTask, RemoveAliasTask, AddAliasTask, DeleteIndexTask, UpdateIndexTask
+)
 from indexing.run_populate_task import populate
 from indexing.run_create_task import create
 from indexing.run_management_tasks import (
@@ -17,7 +20,27 @@ from indexing.run_update_task import run_update_task
 
 logger = logging.getLogger('indexing')
 
-def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
+TASK_HANDLERS = [
+    (CreateIndexTask, create),
+    (PopulateIndexTask, populate),
+    (UpdateIndexTask, run_update_task),
+    (UpdateSettingsTask, update_index_settings),
+    (RemoveAliasTask, remove_alias),
+    (AddAliasTask, add_alias),
+    (DeleteIndexTask, delete_index),
+]
+
+
+def task_handler(task: IndexTask) -> Callable[[IndexTask], Any]:
+    '''Select the appropriate function to execute an IndexTask'''
+    for (task_type, handler) in TASK_HANDLERS:
+        if isinstance(task, task_type):
+            return handler
+    raise TypeError(f'Unexpected task type: {type(task)}')
+
+
+def run_task(task: IndexTask) -> None:
+    '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
     logger.info(f'Running {task_id}: {task}')
 
@@ -25,6 +48,7 @@ def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
     task.save()
 
     try:
+        handler = task_handler(task)
         handler(task)
     except Exception as e:
         logger.exception(f'{task_id} failed!')
@@ -36,18 +60,10 @@ def run_task(task: IndexTask, handler: Callable[[IndexTask], Any]):
     task.save()
     logger.info(f'{task_id} completed')
 
+
 def perform_indexing(job: IndexJob):
     '''
     Run an IndexJob by running all related tasks.
-
-    Tasks are run per type. The order of types is:
-    - `CreateIndexTask`
-    - `PopulateIndexTask`
-    - `UpdateIndexTask`
-    - `UpdateSettingsTask`
-    - `RemoveAliasTask`
-    - `AddAliasTask`
-    - `DeleteIndexTask`
     '''
     job.corpus.validate_ready_to_index()
 
@@ -62,24 +78,8 @@ def perform_indexing(job: IndexJob):
         vars(client).get('_retry_on_timeout'))
     )
 
-    for task in job.createindextasks.all():
-        run_task(task, create)
-        client.cluster.health(wait_for_status='yellow')
+    for task in job.tasks():
+        run_task(task)
 
-    for task in job.populateindextasks.all():
-        run_task(task, populate)
-
-    for task in job.updateindextasks.all():
-        run_task(task, run_update_task)
-
-    for task in job.updatesettingstasks.all():
-        run_task(task, update_index_settings)
-
-    for task in job.removealiastasks.all():
-        run_task(task, remove_alias)
-
-    for task in job.addaliastasks.all():
-        run_task(task, add_alias)
-
-    for task in job.deleteindextasks.all():
-        run_task(task, delete_index)
+        if isinstance(task, CreateIndexTask):
+            client.cluster.health(wait_for_status='yellow')
