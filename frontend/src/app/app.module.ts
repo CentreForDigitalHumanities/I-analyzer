@@ -59,7 +59,6 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
 import { MatomoConfig, matomoImports } from './routing/matomo';
 
 export const appRoutes: Routes = [
