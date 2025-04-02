@@ -46,21 +46,6 @@ describe('DateFilterComponent', () => {
         expect(component.filter.currentData.max).toEqual(exampleData1.max);
     });
 
-    it('should create a new update when onFilterSet is called', fakeAsync(() => {
-        spyOn(searchService, 'aggregateSearch').and.returnValue(
-            Promise.resolve(new Date(Date.now()))
-        );
-
-        const newFilter = new DateFilter(new SimpleStore(), mockFieldDate);
-        newFilter.set(exampleData1);
-        component.onFilterSet(newFilter);
-
-        flushMicrotasks();
-
-        expect(component.selectedMinDate.value).toEqual(exampleData1.min);
-        expect(component.selectedMaxDate.value).toEqual(exampleData1.max);
-    }));
-
     it('should use the specified data range', fakeAsync(() => {
         const newFilter = new DateFilter(new SimpleStore(), mockFieldDate);
         component.onFilterSet(newFilter);

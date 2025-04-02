@@ -1,7 +1,6 @@
-import { Component, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import * as _ from 'lodash';
 import { parse } from 'date-fns';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'ia-date-picker',
@@ -10,11 +9,12 @@ import { BehaviorSubject } from 'rxjs';
     standalone: false
 })
 export class DatePickerComponent {
-    @Input() @Output() subject: BehaviorSubject<Date> = new BehaviorSubject<Date>(undefined);
+    @Input() value: Date;
     @Input() minDate: Date;
     @Input() maxDate: Date;
     @Input() default: Date;
     @Input() unit: 'year'|'date' = 'year';
+    @Output() onChange = new EventEmitter<Date>();
 
     constructor() { }
 
@@ -34,7 +34,7 @@ export class DatePickerComponent {
     set(value: string|Date) {
         const valueAsDate = this.formatInput(value);
         const checkedValue = _.min([_.max([valueAsDate, this.minDate]), this.maxDate]);
-        this.subject.next(checkedValue);
+        this.onChange.emit(checkedValue);
     }
 
 }
