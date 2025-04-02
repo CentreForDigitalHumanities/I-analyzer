@@ -1150,7 +1150,6 @@
     "@babel/parser" "^7.26.7"
     "@babel/template" "^7.25.9"
     "@babel/types" "^7.26.7"
-
     debug "^4.3.1"
     globals "^11.1.0"
 
@@ -1158,14 +1157,6 @@
   version "7.26.7"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.26.7.tgz#5e2b89c0768e874d4d061961f3a5a153d71dc17a"
   integrity sha512-t8kDRGrKXyp6+tjUh7hw2RLyclsW4TRoRvRHtSyAX9Bb5ldlFh+90YAYY6awRXrlB4G5G2izNeGySpATlFzmOg==
-  dependencies:
-    "@babel/helper-string-parser" "^7.25.9"
-    "@babel/helper-validator-identifier" "^7.25.9"
-
-"@babel/types@^7.26.10", "@babel/types@^7.26.9":
-  version "7.26.10"
-  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.26.10.tgz#396382f6335bd4feb65741eacfc808218f859259"
-  integrity sha512-emqcG3vHrpxUKTrxcblR36dcrcoRDvKmnL/dCL6ZsHaShW80qxCAcNhzQZrpeM765VzEos+xOi4s+r4IXzTwdQ==
   dependencies:
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
@@ -8760,6 +8751,14 @@ vega-expression@^5.2.0, vega-expression@~5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/vega-expression/-/vega-expression-5.2.0.tgz#a5dfa8dd79066082add1846618f3d7f0a364305f"
   integrity sha512-WRMa4ny3iZIVAzDlBh3ipY2QUuLk2hnJJbfbncPgvTF7BUgbIbKq947z+JicWksYbokl8n1JHXJoqi3XvpG0Zw==
+  dependencies:
+    "@types/estree" "^1.0.0"
+    vega-util "^1.17.3"
+
+vega-expression@~5.1.1:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/vega-expression/-/vega-expression-5.1.2.tgz#1ed0677787b8e5f4047c9b847ecc20da0a2a8d05"
+  integrity sha512-fFeDTh4UtOxlZWL54jf1ZqJHinyerWq/ROiqrQxqLkNJRJ86RmxYTgXwt65UoZ/l4VUv9eAd2qoJeDEf610Umw==
   dependencies:
     "@types/estree" "^1.0.0"
     vega-util "^1.17.3"
