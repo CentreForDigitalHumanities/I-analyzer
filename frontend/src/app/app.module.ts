@@ -229,7 +229,10 @@ export const providers: any[] = [
     LoggedOnGuard,
     providePrimeNG({
         theme: {
-            preset: stylePreset
+            preset: stylePreset,
+            options: {
+                darkModeSelector: false || 'none'
+            },
         }
     }),
     TitleCasePipe,
