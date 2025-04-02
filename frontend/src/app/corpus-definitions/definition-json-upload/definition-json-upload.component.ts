@@ -1,8 +1,10 @@
 import { Component, Input, OnChanges, OnDestroy, Output } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, Subject, from, of } from 'rxjs';
-import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { actionIcons } from '@shared/icons';
+import { ApiService } from '@services';
+import { ValidationError, Validator } from 'jsonschema';
 
 @Component({
     selector: 'ia-definition-json-upload',
@@ -16,14 +18,18 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
 
     actionIcons = actionIcons;
 
+    schema$ = this.apiService.corpusSchema();
     file$: BehaviorSubject<File|undefined> = new BehaviorSubject(undefined);
     data$: Observable<any>;
-    error$ = new Subject<Error>();
+    error$ = new Subject<{message: string}>();
+    validationErrors$ = new BehaviorSubject<ValidationError[]>([]);
 
     private inputChange$ = new Subject<void>();
     private destroy$ = new Subject<void>();
 
-    constructor() {
+    constructor(
+        private apiService: ApiService,
+    ) {
         this.data$ = this.file$.pipe(
             takeUntil(this.destroy$),
             tap(() => this.error$.next(undefined)),
@@ -39,7 +45,11 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
             ),
         );
 
-        this.data$.subscribe(data => {
+        this.data$.pipe(
+            withLatestFrom(this.schema$),
+            filter(([data, schema]) => this.validate(data, schema)),
+            map(_.first),
+        ).subscribe(data => {
             this.upload.next(data);
         });
     }
@@ -53,6 +63,7 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.validationErrors$.complete();
         this.destroy$.next();
         this.inputChange$.complete();
         this.destroy$.complete();
@@ -62,5 +73,12 @@ export class DefinitionJsonUploadComponent implements OnChanges, OnDestroy {
         const files: File[] = event.target['files'];
         const file = files ? _.first(files) : undefined;
         this.file$.next(file);
+    }
+
+    validate(data, schema) {
+        const validator = new Validator();
+        const result = validator.validate(data, schema);
+        this.validationErrors$.next(result.errors);
+        return !result.errors.length;
     }
 }
