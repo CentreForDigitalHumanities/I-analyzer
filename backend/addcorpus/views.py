@@ -19,6 +19,7 @@ from rest_framework.permissions import (IsAuthenticated)
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
+from addcorpus.json_corpora.validate import corpus_schema
 
 
 class CorpusView(viewsets.ReadOnlyModelViewSet):
@@ -124,3 +125,13 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
         info = get_csv_info(obj.file.path, sep=delimiter if delimiter else ',')
 
         return Response(info, HTTP_200_OK)
+
+
+class CorpusDefinitionSchemaView(APIView):
+    '''
+    View the JSON schema for corpus definitions
+    '''
+
+    def get(self, request, *args, **kwargs):
+        schema = corpus_schema()
+        return Response(schema, HTTP_200_OK)
