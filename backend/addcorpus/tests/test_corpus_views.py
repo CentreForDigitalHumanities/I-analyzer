@@ -6,6 +6,7 @@ from datetime import timedelta
 from users.models import CustomUser
 from addcorpus.models import Corpus, CorpusDocumentationPage
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
+from addcorpus.json_corpora.validate import corpus_schema
 
 def test_no_corpora(db, settings, admin_client):
     Corpus.objects.all().delete()
@@ -160,3 +161,7 @@ def test_corpus_edit_views(admin_client: Client, json_corpus_definition: Dict, j
     assert status.is_success(response.status_code)
     assert len(response.data) == 1
 
+
+def test_corpus_schema_view(client):
+    response = client.get('/api/corpus/definition-schema')
+    assert response.data == corpus_schema()
