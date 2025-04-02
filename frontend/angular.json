@@ -21,8 +21,7 @@
                     "src/polyfills.ts"
                   ],
                   "assets": ["src/assets"],
-                  "styles": [
-                      "node_modules/primeicons/primeicons.css",
+                "styles": [
                       "src/styles.scss",
                       "src/imageviewer.scss"
                   ],
