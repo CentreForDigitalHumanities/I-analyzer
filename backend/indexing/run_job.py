@@ -8,7 +8,7 @@ from es.client import elasticsearch
 from indexing.models import IndexJob
 from indexing.run_populate_task import populate
 from indexing.run_create_task import create
-from backend.indexing.run_management_tasks import (
+from indexing.run_management_tasks import (
     update_index_settings, remove_alias, add_alias, delete_index
 )
 from indexing.run_update_task import run_update_task
