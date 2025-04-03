@@ -7,9 +7,11 @@ from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
 import warnings
 
-from ianalyzer.elasticsearch import client_from_config
+from es.client import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index as index, sync
+from es import sync
+from indexing.create_job import create_indexing_job
+from indexing.run_job import perform_indexing
 from django.conf import settings
 from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
@@ -165,8 +167,8 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
         with warnings.catch_warnings():
-            job = index.create_indexing_job(corpus)
-            index.perform_indexing(job)
+            job = create_indexing_job(corpus)
+            perform_indexing(job)
 
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
