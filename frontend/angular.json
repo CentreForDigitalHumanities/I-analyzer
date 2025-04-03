@@ -32,13 +32,16 @@
                   "optimization": false,
                   "namedChunks": true,
                   "allowedCommonJsDependencies": [
-                      "lodash",
-                      "moment",
-                      "ng2-pdf-viewer",
-                      "iv-viewer",
-                      "smoothscroll-polyfill",
-                      "file-saver",
-                      "pdfjs-dist"
+                    "d3-cloud",
+                    "hammerjs",
+                    "jsonschema",
+                    "lodash",
+                    "moment",
+                    "ng2-pdf-viewer",
+                    "iv-viewer",
+                    "smoothscroll-polyfill",
+                    "file-saver",
+                    "pdfjs-dist"
                   ],
                   "browser": "src/main.ts"
               },
