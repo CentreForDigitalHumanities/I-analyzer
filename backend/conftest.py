@@ -238,3 +238,11 @@ def json_mock_corpus(db, json_corpus_definition) -> Corpus:
     corpus.configuration.save()
 
     return corpus
+
+@pytest.fixture(scope='session')
+def celery_config():
+    return {
+        'task_serializer': 'pickle',
+        'result_serializer': 'pickle',
+        'accept_content': ['json', 'pickle'],
+    }
