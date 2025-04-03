@@ -3,7 +3,7 @@
         <div class="control is-expanded">
             <div class="field has-addons">
                 <div class="control is-expanded">
-                    <p-autocomplete name="queries" [(ngModel)]="queries" multiple fluid (completeMethod)="search($event)" [typeahead]="false" />
+                    <p-autocomplete name="queries" [(ngModel)]="queries" multiple fluid [typeahead]="false" />
                 </div>
                 <div class="control">
                     <button class="button is-primary" (click)="confirmQueries()" [disabled]="!valid(queries)">
