@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { APIEditableCorpus } from '@models/corpus-definition';
 import { ApiService } from '@services';
 import { actionIcons, documentIcons } from '@shared/icons';
-import { Observable } from 'rxjs';
+import { showLoading } from '@utils/utils';
+import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 
 @Component({
     selector: 'ia-definitions-overview',
@@ -15,13 +16,29 @@ export class DefinitionsOverviewComponent {
 
     corpora$: Observable<APIEditableCorpus[]>;
 
+    corpusToDelete$ = new BehaviorSubject<APIEditableCorpus|null>(null);
+    deleteLoading$ = new BehaviorSubject<boolean>(false);
+
     constructor(private apiService: ApiService) {
         this.corpora$ = this.apiService.corpusDefinitions();
     }
 
-    delete(corpus: APIEditableCorpus) {
-        this.apiService.deleteCorpus(corpus.id).subscribe(() => {
+    openDelete(corpus: APIEditableCorpus) {
+        this.corpusToDelete$.next(corpus);
+    }
+
+    confirmDelete(corpus: APIEditableCorpus) {
+        const request$ = this.apiService.deleteCorpus(corpus.id);
+        showLoading(
+            this.deleteLoading$,
+            lastValueFrom(request$)
+        ).then(() => {
             this.corpora$ = this.apiService.corpusDefinitions();
+            this.corpusToDelete$.next(null);
         });
+    }
+
+    cancelDelete() {
+        this.corpusToDelete$.next(null);
     }
 }
