@@ -126,6 +126,8 @@ class Command(BaseCommand):
             rollover, update
         )
 
+        print(f'Created IndexJob #{job.pk}')
+
         if not create_only:
             try:
                 perform_indexing(job)
