@@ -81,7 +81,7 @@ def perform_indexing(job: IndexJob):
     '''
     Run an IndexJob by running all related tasks.
     '''
-    job.corpus.validate_ready_to_index()
+    _validate_job_start(job)
     _log_job_started(job)
 
     for task in job.tasks():
@@ -94,6 +94,12 @@ def perform_indexing(job: IndexJob):
         except Exception as e:
             mark_tasks_stopped(job)
             raise e
+
+
+def _validate_job_start(job: IndexJob):
+    '''Validation that should be run before starting an IndexJob'''
+    assert job.status() == TaskStatus.CREATED
+    job.corpus.validate_ready_to_index()
 
 
 def _log_job_started(job: IndexJob):
