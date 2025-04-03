@@ -105,7 +105,16 @@ def perform_indexing(job: IndexJob):
     '''
 
     chain = job_chain(job)
-    return chain.apply(job)
+    return chain.apply()
+
+
+def perform_indexing_async(job: IndexJob):
+    '''
+    Run an IndexJob asynchronously (through celery)
+    '''
+
+    chain = job_chain(job)
+    return chain.apply_async()
 
 
 def _validate_job_start(job: IndexJob):

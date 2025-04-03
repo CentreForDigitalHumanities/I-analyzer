@@ -1,6 +1,7 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.db.models import QuerySet
 
-from indexing import models
+from indexing import models, run_job
 
 
 class CreateIndexAdmin(admin.StackedInline):
@@ -52,5 +53,16 @@ class IndexJobAdmin(admin.ModelAdmin):
         AddAliasAdmin,
         DeleteIndexAdmin,
     ]
+    actions = ['start_job']
+
+    @admin.action(description='Start selected jobs')
+    def start_job(self, request, queryset: QuerySet[models.IndexJob]):
+        for job in queryset:
+            run_job.perform_indexing_async(job)
+            self.message_user(
+                request,
+                f'Index job {job} started!',
+                messages.SUCCESS,
+            )
 
 admin.site.register(models.IndexJob, IndexJobAdmin)
