@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '@services';
 import { formIcons } from '@shared/icons';
 import * as _ from 'lodash';
@@ -19,9 +19,15 @@ export class ChangePasswordComponent {
     formIcons = formIcons;
 
     form = new FormGroup({
-        oldPassword: new FormControl(),
-        newPassword1: new FormControl(),
-        newPassword2: new FormControl(),
+        oldPassword: new FormControl<string>('', {
+            validators: [Validators.required,],
+        }),
+        newPassword1: new FormControl<string>('', {
+            validators: [Validators.required],
+        }),
+        newPassword2: new FormControl<string>('', {
+            validators: [Validators.required],
+        }),
     });
 
     invalidFeedback: FormFeedback = this.emptyFeedback();
@@ -32,13 +38,30 @@ export class ChangePasswordComponent {
     ) { }
 
     submit() {
-        const data = this.form.value;
-        this.authService.changePassword(
-            data.oldPassword, data.newPassword1, data.newPassword2
-        ).subscribe({
-            next: this.onSuccess.bind(this),
-            error: this.onRequestError.bind(this),
-        });
+        if (this.form.valid) {
+            const data = this.form.value;
+            this.authService.changePassword(
+                data.oldPassword, data.newPassword1, data.newPassword2
+            ).subscribe({
+                next: this.onSuccess.bind(this),
+                error: this.onRequestError.bind(this),
+            });
+        } else {
+            this.onInvalidSubmit();
+        }
+
+    }
+
+    private onInvalidSubmit() {
+        if (this.form.controls.oldPassword.errors?.required) {
+            this.invalidFeedback.oldPassword = 'This field is required.';
+        }
+        if (this.form.controls.newPassword1.errors?.required) {
+            this.invalidFeedback.newPassword1 = 'This field is required.';
+        }
+        if (this.form.controls.newPassword2.errors?.required) {
+            this.invalidFeedback.newPassword2 = 'This field is required.';
+        }
     }
 
     private onSuccess(response: any) {
@@ -48,8 +71,6 @@ export class ChangePasswordComponent {
     }
 
     private onRequestError(data: any) {
-        console.error(data);
-
         this.invalidFeedback.oldPassword = this.formatErrorText(data.error['old_password']);
         this.invalidFeedback.newPassword1 = this.formatErrorText(data.error['new_password1']);
         this.invalidFeedback.newPassword2 = this.formatErrorText(data.error['new_password2']);
