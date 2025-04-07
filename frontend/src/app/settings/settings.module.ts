@@ -5,6 +5,7 @@ import { SearchHistorySettingsComponent } from './search-history-settings/search
 import { DeleteSearchHistoryComponent } from './search-history-settings/delete-search-history/delete-search-history.component';
 import { ToggleSearchHistoryComponent } from './search-history-settings/toggle-search-history/toggle-search-history.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -17,6 +18,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
         ChangePasswordComponent,
     ],
     imports: [
+        ReactiveFormsModule,
         SharedModule,
     ],
     exports: [
