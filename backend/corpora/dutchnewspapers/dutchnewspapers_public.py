@@ -38,6 +38,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    description_page = 'description_public.md'
     citation_page = 'citation_public.md'
 
     @property
