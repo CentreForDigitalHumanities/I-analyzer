@@ -1,6 +1,6 @@
 from django.db import models
 from elasticsearch import Elasticsearch
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from itertools import chain
 from django.contrib import admin
 

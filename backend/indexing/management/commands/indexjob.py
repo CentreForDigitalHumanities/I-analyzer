@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Callable
 from csv import DictWriter
 from sys import stdout
 
@@ -12,12 +12,18 @@ class Command(BaseCommand):
     Create, populate or clear elasticsearch indices for corpora.
     '''
 
-    actions = ['list', 'show', 'start']
+    @property
+    def actions(self) -> Dict[str, Callable[[List[int]], None]]:
+        return {
+            'list': self.list,
+            'show': self.show,
+            'start': self.start,
+        }
 
     def add_arguments(self, parser):
         parser.add_argument(
             'action',
-            choices=self.actions,
+            choices=self.actions.keys(),
             help='Action keyword. Options: '
                 'list (show brief overview), show (show more information about a job, '
                 'including its list of tasks); start (start a job)',
@@ -30,16 +36,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, action: str, ids: List[int], **options):
-        if action == 'list':
-            self.list(ids)
-        if action == 'show':
-            for id in ids:
-                self.show(id)
-        if action == 'start':
-            for id in ids:
-                self.start(id)
+        handle_action = self.actions[action]
+        handle_action(ids, **options)
 
-    def list(self, ids: List[int]):
+    def list(self, ids: List[int], **options):
         if len(ids):
             jobs = IndexJob.objects.filter(id__in=ids)
         else:
@@ -59,28 +59,39 @@ class Command(BaseCommand):
                 'status': job.status()
             })
 
-    def show(self, id: int):
-        job = IndexJob.objects.get(id=id)
-        print()
-        print('JOB:', job.id)
-        print('CORPUS:', job.corpus)
-        print('CREATED ON:', job.created)
-        print('STATUS:', job.status())
+    def show(self, ids: List[int], **options):
+        for id in ids:
+            job = IndexJob.objects.get(id=id)
+            print()
+            print('JOB #', job.id, sep='')
+            print('CORPUS:', job.corpus)
+            print('CREATED ON:', job.created)
+            print('STATUS:', job.status())
 
-        print('TASKS:')
-        for task in job.tasks():
-            print('- ', task, f'[{task.status}]')
+            print('TASKS:')
+            for task in job.tasks():
+                print('- ', task, f'[{task.status}]', sep='')
 
-        print()
+                if options['verbosity'] > 1:
+                    print('    * type:', task.__class__.__name__)
+                    field_values = (
+                        (field.name, getattr(task, field.name))
+                        for field in task._meta.fields
+                    )
+                    for parameter, value in field_values:
+                        print('    * ', parameter, ': ', value, sep='')
 
-    def start(self, id: int):
-        job = IndexJob.objects.get(id=id)
+            print()
 
-        if job.status() != TaskStatus.CREATED:
-            print(
-                f'Job {job.id} cannot be started: current status is {job.status()}'
-            )
-            return
+    def start(self, ids: List[int], **options):
+        for id in ids:
+            job = IndexJob.objects.get(id=id)
 
-        print(f'Starting job: {job.id}')
-        perform_indexing(job)
+            if job.status() != TaskStatus.CREATED:
+                print(
+                    f'Job {job.id} cannot be started: current status is {job.status()}'
+                )
+                return
+
+            print(f'Starting job: {job.id}')
+            perform_indexing(job)
