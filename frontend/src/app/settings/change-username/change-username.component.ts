@@ -23,6 +23,7 @@ export class ChangeUsernameComponent {
 
     invalidFeedback: string;
     successFeedback: string;
+    errorFeedback: string;
 
     constructor(
         private authService: AuthService,
@@ -36,6 +37,7 @@ export class ChangeUsernameComponent {
     submitName() {
         this.invalidFeedback = undefined;
         this.successFeedback = undefined;
+        this.errorFeedback = undefined;
 
         this.authService.updateSettings(this.form.value).subscribe({
             next: this.onSuccess.bind(this),
@@ -48,6 +50,11 @@ export class ChangeUsernameComponent {
     }
 
     private onRequestFail(err) {
-        this.invalidFeedback = err.error?.username;
+        if (err.error?.username) {
+            this.invalidFeedback = err.error.username;
+        } else {
+            this.errorFeedback = 'Something went wrong. Please try again later. ' +
+                'If you keep seeing this error, please contact an administrator.';
+        }
     }
 }

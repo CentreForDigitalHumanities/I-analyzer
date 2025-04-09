@@ -36,5 +36,10 @@
                 {{successFeedback}}
             </p>
         </div>
+        <div class="message is-danger" [class.is-hidden]="!errorFeedback">
+            <p class="message-body">
+                {{errorFeedback}}
+            </p>
+        </div>
     </div>
 </form>
