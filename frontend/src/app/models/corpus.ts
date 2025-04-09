@@ -150,14 +150,6 @@ export interface CorpusDocumentationPage {
     index?: number;
 }
 
-export interface CorpusDocumentationPageEditable {
-    id?: number,
-    type: string,
-    corpus: string,
-    content_template: string,
-};
-
-
 export interface CorpusDocumentationPageSubmitData {
     type: string,
     corpus: string,
