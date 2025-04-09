@@ -87,7 +87,13 @@ class Command(BaseCommand):
                 command after indexing is complete.'''
         )
 
-    def handle(self, corpus, start=None, end=None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
+        parser.add_argument(
+            '--create-only',
+            action='store_true',
+            help='''Save an IndexJob for this command, but don't run it.'''
+        )
+
+    def handle(self, corpus, start=None, end=None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, create_only=False, **options):
         corpus_object = self._corpus_object(corpus)
         corpus_object.validate_ready_to_index()
 
@@ -120,7 +126,8 @@ class Command(BaseCommand):
             rollover, update
         )
 
-        perform_indexing(job)
+        if not create_only:
+            perform_indexing(job)
 
     def _validate_arguments(
         self,
