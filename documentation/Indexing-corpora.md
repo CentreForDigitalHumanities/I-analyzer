@@ -37,8 +37,22 @@ See [Indexing on server](documentation/Indexing-on-server.md) for more informati
 
 ## Scheduling and managing index jobs
 
-When you run `index my-corpus`, the index process will start immediately. This process will store an `IndexJob` in the database that represents the action, which you may use as a log. You can use `yarn django indexjob list` to view an overview of all indexjobs, and `yarn django indexjob show {id}` to view details about a specific job. You can also view index jobs on the admin site.
+When you run `index my-corpus`, the index process will start immediately. This process will store an `IndexJob` in the database that represents the action, which you may use as a log. You can use the `indexjob` command to view index jobs:
 
-If you want to create a job to run later, you can use `--create-only` in the index command. After this, you can start the job from the command line using `yarn django indexjob start {id}`. Alternatively, you can select the job in the admin site and use the action "start selected jobs". This will run the job asynchronously using celery.
+```sh
+python manage.py indexjob list # view a list of all index jobs
+python manage.py indexjob show 42 # view details for an index job
+python manage.py indexjob show 42 --verbosity 2 # include all task parameters
+```
+
+You can also view index jobs on the admin site.
+
+If you want to create a job to run later, you can use `--create-only` in the index command. After this, you can start the job from the command line:
+
+```sh
+python manage.py indexjob start 42
+```
+
+Alternatively, you can select the job in the admin site and use the action "start selected jobs". This will run the job asynchronously using celery.
 
 You can also use the admin site to create or edit index jobs (and then run them). However, the command line is typically faster and easier.
