@@ -21,7 +21,7 @@
             <ia-upload-sample *ngSwitchCase="1" />
             <ng-container *ngSwitchCase="2"><ia-field-form *ngIf="corpus$ | async as corpus"
                     [corpus]="corpus" /></ng-container>
-    
+            <ia-documentation-form *ngSwitchCase="3" />
         </div>
     </div>
 </ng-container>

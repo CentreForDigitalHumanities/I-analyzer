@@ -12,6 +12,7 @@ import { CorpusFormComponent } from './form/corpus-form/corpus-form.component';
 import { UploadSampleComponent } from './form/upload-sample/upload-sample.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
+import { DocumentationFormComponent } from './form/documentation-form/documentation-form.component';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { DropdownModule } from 'primeng/dropdown';
         CorpusFormComponent,
         FieldFormComponent,
         UploadSampleComponent,
+        DocumentationFormComponent,
     ],
     exports: [
         CreateDefinitionComponent,
