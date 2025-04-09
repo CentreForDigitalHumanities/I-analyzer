@@ -1,0 +1,32 @@
+<h2 class="title is-4">Change username</h2>
+
+<p class="block">
+    You can change the name that you use to sign in to I-analyzer.
+</p>
+
+<form>
+    <div class="field">
+        <div class="control">
+            <label for="input-username" class="label">
+                Username
+            </label>
+            <input type="text" id="input-username" class="input"
+                [class.is-danger]="!!invalidFeedback">
+        </div>
+        <div class="input-feedback" aria-live>
+            <div class="message is-danger" [class.is-hidden]="!invalidFeedback">
+                <p class="message-body">
+                    {{invalidFeedback}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <div class="control">
+            <button class="button is-primary">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save new username</span>
+            </button>
+        </div>
+    </div>
+</form>
