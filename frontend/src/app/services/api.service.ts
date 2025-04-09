@@ -463,6 +463,21 @@ export class ApiService {
         );
     }
 
+    public changePassword(
+        oldPassword: string,
+        newPassword1: string,
+        newPassword2: string,
+    ) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/change/'),
+            {
+                old_password: oldPassword,
+                new_password1: newPassword1,
+                new_password2: newPassword2,
+            }
+        );
+    }
+
     /** send PATCH request to update settings for the user */
     public updateUserSettings(
         details: Partial<UserResponse>
