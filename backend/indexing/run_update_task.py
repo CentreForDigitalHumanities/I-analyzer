@@ -1,7 +1,7 @@
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import CorpusDefinition
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from indexing.models import UpdateIndexTask
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.exceptions import PythonDefinitionRequired

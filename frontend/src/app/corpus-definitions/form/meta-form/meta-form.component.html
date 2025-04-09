@@ -18,9 +18,9 @@
     </div>
 
     <div class="field">
-        <label class="label" for="category">Category</label>
+        <label class="label" for="category" id="label-category">Category</label>
         <div class="control">
-            <ia-dropdown formControlName="category">
+            <ia-dropdown formControlName="category" labelledBy="label-category">
                 <span iaDropdownLabel>{{currentCategoryLabel}}</span>
                 <div iaDropdownMenu>
                     <a *ngFor="let category of categories"

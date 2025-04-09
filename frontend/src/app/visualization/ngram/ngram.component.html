@@ -4,11 +4,12 @@
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="search for bigrams (2 words) or trigrams (3 words)"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-size">
                     Length of n-gram
                 </label>
                 <div class="control">
-                    <ia-dropdown [value]="currentSizeOption"
+                    <ia-dropdown [value]="currentSizeOption" labelledBy="label-size"
                         (onChange)="onParameterChange('size', $event.value)">
                         <span iaDropdownLabel>{{currentSizeOption?.label}}</span>
                         <div iaDropdownMenu>
@@ -24,11 +25,12 @@
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="only search n-grams with the search term in the specified position"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">
+                iaBalloonPosition="up-left" iaBalloonLength="fit"
+                id="label-positions">
                     Position of search term
                 </label>
                 <div class="control">
-                    <ia-dropdown [value]="currentPositionsOption"
+                    <ia-dropdown [value]="currentPositionsOption" labelledBy="label-positions"
                         (onChange)="onParameterChange('positions', $event.value)">
                         <span iaDropdownLabel>{{currentPositionsOption?.label}}</span>
                         <div iaDropdownMenu>
@@ -44,11 +46,12 @@
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="divide by the average frequency of the words in the n-gram; favours words that are otherwise rare"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">
+                iaBalloonPosition="up-left" iaBalloonLength="fit"
+                id="label-freq-compensation">
                     Compensate for frequency
                 </label>
                 <div class="control">
-                    <ia-dropdown [value]="currentFreqCompensationOption"
+                    <ia-dropdown [value]="currentFreqCompensationOption" labelledBy="label-freq-compensation"
                         (onChange)="onParameterChange('freqCompensation', $event.value)">
                         <span iaDropdownLabel>{{currentFreqCompensationOption?.label}}</span>
                         <div iaDropdownMenu>
@@ -64,11 +67,12 @@
         <div class="column is-one-third" *ngIf="analysisOptions">
             <div class="field">
                 <label class="label" iaBalloon="pre-processing steps on the text, like removing stopwords or stemming"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-analysis">
                     Language processing
                 </label>
                 <div class="control">
-                    <ia-dropdown [value]="currentAnalysisOption"
+                    <ia-dropdown [value]="currentAnalysisOption" labelledBy="label-analysis"
                         (onChange)="onParameterChange('analysis', $event.value)">
                         <span iaDropdownLabel>{{currentAnalysisOption?.label}}</span>
                         <div iaDropdownMenu>
@@ -84,9 +88,12 @@
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-max-documents">
+                    Document limit
+                </label>
                 <div class="control">
-                    <ia-dropdown [value]="currentMaxDocumentsOption"
+                    <ia-dropdown [value]="currentMaxDocumentsOption" labelledBy="label-max-documents"
                         (onChange)="onParameterChange('maxDocuments', $event.value)">
                         <span iaDropdownLabel>{{currentMaxDocumentsOption?.label}}</span>
                         <div iaDropdownMenu>
@@ -102,9 +109,13 @@
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="the number of n-grams displayed in the results"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">Number of n-grams</label>
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-number-of-ngrams">
+                    Number of n-grams
+                </label>
                 <div class="control">
                     <ia-dropdown [value]="currentNumberOfNgramsOption"
+                        labelledBy="label-number-of-ngrams"
                         (onChange)="onParameterChange('numberOfNgrams', $event.value)">
                         <span iaDropdownLabel>{{currentNumberOfNgramsOption?.label}}</span>
                         <div iaDropdownMenu>
@@ -121,10 +132,12 @@
     <div class="column is-one-third" *ngIf="allDateFields && allDateFields.length > 1">
         <div class="field">
             <div class="control">
-                <label class="label" iaBalloon="field to use on the x-axis">
+                <label class="label" iaBalloon="field to use on the x-axis"
+                    id="label-date-field">
                     Compare frequencies by:
                 </label>
                 <ia-dropdown [value]="dateField"
+                    labelledBy="label-date-field"
                     (onChange)="onParameterChange('dateField', $event)">
                     <span iaDropdownLabel>{{dateField?.displayName}}</span>
                     <div iaDropdownMenu>
