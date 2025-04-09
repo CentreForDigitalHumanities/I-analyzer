@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
-import { BehaviorSubject, combineLatest, filter, forkJoin, merge, Observable, of, Subject, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, forkJoin, merge, Observable, of, startWith, Subject, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import {
     APICorpusDefinitionField,
     CorpusDefinition,
@@ -45,9 +45,13 @@ export class CorpusDefinitionService implements OnDestroy {
                         }),
             });
 
-        this.documentation$ = merge(this.corpus$, this.documentationUpdated$).pipe(
-            withLatestFrom(this.corpus$),
-            switchMap(([_, corpus]) =>
+        // documentation is fetched when the corpus is changed or documentation
+        // changes are submitted
+        this.documentation$ = combineLatest([
+            this.corpus$,
+            this.documentationUpdated$.pipe(startWith()),
+        ]).pipe(
+            switchMap(([corpus, _]) =>
                 this.apiService.corpusDocumentationPages(corpus.definition.name)
             ),
             takeUntil(this.destroy$),
