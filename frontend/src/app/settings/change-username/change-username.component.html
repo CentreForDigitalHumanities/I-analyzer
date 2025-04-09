@@ -4,7 +4,7 @@
     You can change the name that you use to sign in to I-analyzer.
 </p>
 
-<form *ngIf="currentName$ | async as name">
+<form [formGroup]="form">
     <div class="field">
         <div class="control">
             <label for="input-username" class="label">
@@ -12,7 +12,7 @@
             </label>
             <input type="text" id="input-username" class="input"
                 [class.is-danger]="!!invalidFeedback"
-                [value]="name">
+                [formControl]="form.controls.name">
         </div>
         <div class="input-feedback" aria-live="polite">
             <div class="message is-danger" [class.is-hidden]="!invalidFeedback">

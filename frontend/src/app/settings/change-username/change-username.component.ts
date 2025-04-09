@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup } from '@angular/forms';
 import { AuthService } from '@services';
 import { formIcons } from '@shared/icons';
 import { map } from 'rxjs';
@@ -13,6 +15,10 @@ export class ChangeUsernameComponent {
         map(user => user.name)
     );
 
+    form = new FormGroup({
+        name: new FormControl<string>(''),
+    });
+
     formIcons = formIcons;
 
     invalidFeedback: string;
@@ -20,15 +26,18 @@ export class ChangeUsernameComponent {
 
     constructor(
         private authService: AuthService,
-    ) {}
+    ) {
+        this.authService.currentUser$.pipe(
+            map(user=> user.name),
+            takeUntilDestroyed(),
+        ).subscribe(name => this.form.setValue({name}))
+    }
 
     submitName() {
         this.invalidFeedback = undefined;
         this.successFeedback = undefined;
 
-        this.authService.updateSettings({
-            name: 'test'
-        }).subscribe({
+        this.authService.updateSettings(this.form.value).subscribe({
             next: this.onSuccess.bind(this),
             error: this.onRequestFail.bind(this),
         })
