@@ -31,7 +31,15 @@ The [documentation directory](./documentation/) contains documentation for devel
 
 ## Licence
 
-I-analyzer is shared under an MIT licence. See [LICENSE](./LICENSE) for more information.
+The source code of I-analyzer is shared under an MIT licence. See [LICENSE](./LICENSE) for the full licence statement.
+
+### Images
+
+This licence does *not* cover the images used for corpora, which are licensed individually. These images are located in the [corpora directory](/backend/corpora/), in the "images" folder for each corpus.
+
+Each image is accompanied by a `*.license` file that provides information on licensing for that image. If you wish to reuse or distribute this repository including these images, you will have to ensure that you comply with the license terms of the image as well.
+
+Some images currently lack a licence file. We are working on providing clear copyright information for all images; until then, assume that these images are protected under copyright.
 
 ## Citation
 

@@ -312,6 +312,10 @@ export class ApiService {
         return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
     }
 
+    public corpusSchema(): Observable<any> {
+        return this.http.get('/api/corpus/definition-schema');
+    }
+
     // Corpus datafiles
     public createDataFile(
         corpusId: number,

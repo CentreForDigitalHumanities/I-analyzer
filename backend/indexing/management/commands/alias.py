@@ -1,8 +1,8 @@
 from django.core.management import BaseCommand
 
 from addcorpus.models import Corpus
-from es.es_alias import create_alias_job
-from es.es_index import perform_indexing
+from indexing.create_job import create_alias_job
+from indexing.run_job import perform_indexing
 
 class Command(BaseCommand):
     help = '''
@@ -28,7 +28,15 @@ class Command(BaseCommand):
                 deleted.'''
         )
 
-    def handle(self, corpus, clean=False, **options):
+        parser.add_argument(
+            '--create-only',
+            action='store_true',
+            help='''Save an IndexJob for this command, but don't run it.''',
+        )
+
+    def handle(self, corpus, clean=False, create_only=False, **options):
         corpus_obj = Corpus.objects.get(name=corpus)
         job = create_alias_job(corpus_obj, clean)
-        perform_indexing(job)
+
+        if not create_only:
+            perform_indexing(job)

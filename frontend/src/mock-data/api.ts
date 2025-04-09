@@ -122,4 +122,8 @@ export class ApiServiceMock {
     listDataFiles(): Observable<CorpusDataFile[]> {
         return of([]);
     }
+
+    corpusSchema(): Observable<any> {
+        return of({});
+    }
 }

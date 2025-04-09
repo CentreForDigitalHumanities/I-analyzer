@@ -32,7 +32,7 @@ from addcorpus.validation.publishing import (
     validate_default_sort,
     validate_ngram_has_date_field,
 )
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254

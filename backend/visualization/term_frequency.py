@@ -2,7 +2,7 @@ import math
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from copy import deepcopy
 from visualization import query, termvectors
 from es import download
