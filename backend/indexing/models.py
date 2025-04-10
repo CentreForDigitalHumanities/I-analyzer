@@ -51,7 +51,7 @@ class IndexJob(models.Model):
 
     def tasks(self) -> List['IndexTask']:
         '''
-        Returns all tasks in order of execution.
+        A list of all tasks that belong to this job, in order of execution.
 
         Tasks are ordered by type. The order of types is:
         - `CreateIndexTask`
@@ -62,7 +62,16 @@ class IndexJob(models.Model):
         - `AddAliasTask`
         - `DeleteIndexTask`
         '''
-        return list(chain(
+        return list(chain(*self.task_query_sets()))
+
+
+    def task_query_sets(self) -> List[models.QuerySet['IndexTask']]:
+        '''
+        For each task type, the queryset of tasks that belong to this job.
+
+        Can be used to run bulk updates on related tasks.
+        '''
+        return [
             self.createindextasks.all(),
             self.populateindextasks.all(),
             self.updateindextasks.all(),
@@ -70,7 +79,7 @@ class IndexJob(models.Model):
             self.removealiastasks.all(),
             self.addaliastasks.all(),
             self.deleteindextasks.all()
-        ))
+        ]
 
 
     def __str__(self):

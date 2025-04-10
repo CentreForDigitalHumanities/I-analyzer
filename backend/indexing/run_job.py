@@ -60,13 +60,9 @@ def mark_tasks_stopped(job: IndexJob):
     '''
     Mark open tasks as aborted and queued tasks as cancelled.
     '''
-    for task in job.tasks():
-        if task.status == TaskStatus.QUEUED:
-            task.status = TaskStatus.CANCELLED
-            task.save()
-        if task.status == TaskStatus.WORKING:
-            task.status = TaskStatus.ABORTED
-            task.save()
+    for task_set in job.task_query_sets():
+        task_set.filter(status=TaskStatus.QUEUED).update(status=TaskStatus.CANCELLED)
+        task_set.filter(status=TaskStatus.WORKING).update(status=TaskStatus.ABORTED)
 
 
 def perform_indexing(job: IndexJob):
