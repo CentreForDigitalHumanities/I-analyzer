@@ -17,6 +17,7 @@ from indexing.run_management_tasks import (
     update_index_settings, remove_alias, add_alias, delete_index
 )
 from indexing.run_update_task import run_update_task
+from indexing.celery_utils import warn_if_no_worker
 
 
 logger = logging.getLogger('indexing')
@@ -101,6 +102,7 @@ def perform_indexing_async(job: IndexJob):
     Run an IndexJob asynchronously (through celery)
     '''
 
+    warn_if_no_worker()
     chain = job_chain(job)
     return chain.apply_async()
 

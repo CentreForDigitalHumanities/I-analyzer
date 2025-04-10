@@ -6,6 +6,7 @@ from django.core.management import BaseCommand
 
 from indexing.models import IndexJob, TaskStatus
 from indexing.run_job import perform_indexing
+from indexing.command_utils import run_job
 
 class Command(BaseCommand):
     help = '''
@@ -33,6 +34,12 @@ class Command(BaseCommand):
             type=int,
             nargs='*',
             help='IDs of the jobs to which the action should be applied',
+        )
+        parser.add_argument(
+            '--async',
+            action='store_true',
+            dest='run_async',
+            help='Run job asynchronously using Celery. Only applies with "start".',
         )
 
     def handle(self, action: str, ids: List[int], **options):
@@ -94,4 +101,4 @@ class Command(BaseCommand):
                 return
 
             print(f'Starting job: {job.id}')
-            perform_indexing(job)
+            run_job(job, options.get('run_async'))
