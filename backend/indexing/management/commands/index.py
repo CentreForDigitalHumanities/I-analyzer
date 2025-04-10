@@ -6,7 +6,7 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
 from addcorpus.models import Corpus
 from indexing.create_job import create_indexing_job
-from indexing.command_utils import run_job
+from indexing.command_utils import run_job, add_create_only_argument, add_async_argument
 
 
 class Command(BaseCommand):
@@ -88,18 +88,8 @@ class Command(BaseCommand):
                 command after indexing is complete.'''
         )
 
-        parser.add_argument(
-            '--create-only',
-            action='store_true',
-            help='''Save an IndexJob for this command, but don't run it.'''
-        )
-        parser.add_argument(
-            '--async',
-            action='store_true',
-            dest='run_async', # "async" is a Python keyword
-            help='''Run the IndexJob asynchronously using Celery. Cannot be used in
-                combination with --create-only.'''
-        )
+        add_create_only_argument(parser)
+        add_async_argument(parser, 'Cannot be used in combination with --create-only.')
 
     def handle(
             self, corpus,

@@ -5,8 +5,7 @@ from sys import stdout
 from django.core.management import BaseCommand
 
 from indexing.models import IndexJob, TaskStatus
-from indexing.run_job import perform_indexing
-from indexing.command_utils import run_job
+from indexing.command_utils import run_job, add_async_argument
 
 class Command(BaseCommand):
     help = '''
@@ -35,11 +34,10 @@ class Command(BaseCommand):
             nargs='*',
             help='IDs of the jobs to which the action should be applied',
         )
-        parser.add_argument(
-            '--async',
-            action='store_true',
-            dest='run_async',
-            help='Run job asynchronously using Celery. Only applies with "start".',
+
+        add_async_argument(
+            parser,
+            'Only applicable with "start"',
         )
 
     def handle(self, action: str, ids: List[int], **options):
