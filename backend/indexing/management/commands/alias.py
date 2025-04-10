@@ -41,6 +41,6 @@ class Command(BaseCommand):
         if not create_only:
             try:
                 perform_indexing(job)
-            except KeyboardInterrupt as e:
+            except KeyboardInterrupt:
                 print('Aborting tasks...')
                 mark_tasks_stopped(job)

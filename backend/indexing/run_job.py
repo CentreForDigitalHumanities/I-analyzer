@@ -46,7 +46,7 @@ def run_task(task: IndexTask) -> None:
         logger.exception(f'{task_id} failed!')
         task.status = TaskStatus.ERROR
         task.save()
-        raise e
+        raise
 
     task.status = TaskStatus.DONE
     task.save()
