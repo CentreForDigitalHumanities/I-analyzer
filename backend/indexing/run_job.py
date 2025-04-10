@@ -3,7 +3,7 @@ Functionality to run an IndexJob
 '''
 
 import logging
-from typing import Callable, Any
+from typing import Callable, Type, Dict
 
 from es.client import elasticsearch
 from indexing.models import (
@@ -20,23 +20,15 @@ from indexing.run_update_task import run_update_task
 
 logger = logging.getLogger('indexing')
 
-TASK_HANDLERS = [
-    (CreateIndexTask, create),
-    (PopulateIndexTask, populate),
-    (UpdateIndexTask, run_update_task),
-    (UpdateSettingsTask, update_index_settings),
-    (RemoveAliasTask, remove_alias),
-    (AddAliasTask, add_alias),
-    (DeleteIndexTask, delete_index),
-]
-
-
-def _task_handler(task: IndexTask) -> Callable[[IndexTask], Any]:
-    '''Select the appropriate function to execute an IndexTask'''
-    for (task_type, handler) in TASK_HANDLERS:
-        if isinstance(task, task_type):
-            return handler
-    raise TypeError(f'Unexpected task type: {type(task)}')
+TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
+    CreateIndexTask: create,
+    PopulateIndexTask: populate,
+    UpdateIndexTask: run_update_task,
+    UpdateSettingsTask: update_index_settings,
+    RemoveAliasTask: remove_alias,
+    AddAliasTask: add_alias,
+    DeleteIndexTask: delete_index,
+}
 
 
 def run_task(task: IndexTask) -> None:
@@ -48,7 +40,7 @@ def run_task(task: IndexTask) -> None:
     task.save()
 
     try:
-        handler = _task_handler(task)
+        handler = TASK_HANDLERS[task.__class__]
         handler(task)
     except Exception as e:
         logger.exception(f'{task_id} failed!')
