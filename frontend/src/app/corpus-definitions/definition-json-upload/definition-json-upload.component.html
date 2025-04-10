@@ -17,9 +17,30 @@
 
 <div class="message is-danger" *ngIf="error$ | async as error">
     <div class="message-header">
-        Invalid file
+        Cannot read file
     </div>
-    <div class="message-body">
-        An error occurred when reading the file: {{error.message}}
+    <div class="message-body content">
+        <p>
+            An error occurred when reading the file: {{error.message}}. Is this a JSON file?
+        </p>
     </div>
 </div>
+
+<ng-container *ngIf="validationErrors$ | async as validationErrors">
+    <div class="message is-danger" *ngIf="validationErrors.length">
+        <div class="message-header">
+            Invalid data
+        </div>
+        <div class="message-body content">
+            <p>
+                The data in the file is not a valid corpus definition. The following
+                issues were found:
+            </p>
+            <ul>
+                <li *ngFor="let error of validationErrors">
+                    {{error.stack}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</ng-container>
