@@ -6,7 +6,7 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
 from addcorpus.models import Corpus
 from indexing.create_job import create_indexing_job
-from indexing.run_job import perform_indexing
+from indexing.run_job import perform_indexing, mark_tasks_stopped
 
 class Command(BaseCommand):
     help = '''
@@ -127,7 +127,12 @@ class Command(BaseCommand):
         )
 
         if not create_only:
-            perform_indexing(job)
+            try:
+                perform_indexing(job)
+            except KeyboardInterrupt:
+                print('Aborting tasks...')
+                mark_tasks_stopped(job)
+
 
     def _validate_arguments(
         self,
