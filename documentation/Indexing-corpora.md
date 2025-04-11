@@ -35,8 +35,10 @@ Some options that may be useful for development:
 
 See [Indexing on server](documentation/Indexing-on-server.md) for more information about production-specific settings.
 
-## IndexJob log
+## Managing index jobs through the admin site
 
-When you start the command, the application will save an `IndexJob` that represents the action. These can also be viewed in the admin site.
+When you run `index my-corpus`, the index process will start immediately. This process will store an `IndexJob` in the database that represents the action, which you may use as a log. You can view index jobs on the admin site.
 
-IndexJobs are not automatically deleted when the command completes, but can be freely deleted at that point.
+If you want to create a job to run later, you can use `--create-only` in the index command. After this, you can select the job in the admin site and use the action "start selected jobs". This will run the job asynchronously using celery.
+
+You can also use the admin site to create or edit index jobs (and then run them). However, the command line is typically faster and easier.

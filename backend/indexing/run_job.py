@@ -4,6 +4,7 @@ Functionality to run an IndexJob
 
 import logging
 from typing import Callable, Type, Dict
+import celery
 
 from es.client import elasticsearch
 from indexing.models import (
@@ -31,6 +32,7 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 }
 
 
+@celery.shared_task()
 def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
@@ -65,10 +67,13 @@ def mark_tasks_stopped(job: IndexJob):
         task_set.filter(status=TaskStatus.WORKING).update(status=TaskStatus.ABORTED)
 
 
-def perform_indexing(job: IndexJob):
-    '''
-    Run an IndexJob by running all related tasks.
-    '''
+@celery.shared_task()
+def handle_job_error(request, exc, traceback, job: IndexJob):
+    mark_tasks_stopped(job)
+
+
+@celery.shared_task()
+def start_job(job: IndexJob) -> None:
     _validate_job_start(job)
     _log_job_started(job)
 
@@ -76,12 +81,28 @@ def perform_indexing(job: IndexJob):
         task.status = TaskStatus.QUEUED
         task.save()
 
-    for task in job.tasks():
-        try:
-            run_task(task)
-        except Exception as e:
-            mark_tasks_stopped(job)
-            raise e
+
+def job_chain(job: IndexJob) -> celery.chain:
+    signatures = [start_job.si(job)] + [run_task.si(task) for task in job.tasks()]
+    return celery.chain(signatures).on_error(handle_job_error.s(job))
+
+
+def perform_indexing(job: IndexJob):
+    '''
+    Run an IndexJob by running all related tasks.
+    '''
+
+    chain = job_chain(job)
+    return chain.apply()
+
+
+def perform_indexing_async(job: IndexJob):
+    '''
+    Run an IndexJob asynchronously (through celery)
+    '''
+
+    chain = job_chain(job)
+    return chain.apply_async()
 
 
 def _validate_job_start(job: IndexJob):
