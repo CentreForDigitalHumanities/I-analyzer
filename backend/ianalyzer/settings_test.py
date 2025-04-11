@@ -20,3 +20,12 @@ TIMES_ES_INDEX = 'test-times'
 UBLAD_DATA = '' # necessary to make ublad test not fail
 
 SERVERS['default']['index_prefix'] = 'test'
+
+REST_FRAMEWORK.update(
+    {
+        "DEFAULT_THROTTLE_RATES": {
+            "password": "2/minute",
+            "registration": "2/minute",
+        }
+    }
+)
