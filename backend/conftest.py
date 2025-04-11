@@ -17,6 +17,8 @@ from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
 from es.models import Server
+from rest_framework.test import APIClient
+
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):

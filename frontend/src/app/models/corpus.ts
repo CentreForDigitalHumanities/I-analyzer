@@ -146,5 +146,12 @@ export interface CorpusDocumentationPage {
     corpus: string;
     type: string;
     content: string;
+    content_template: string,
     index?: number;
 }
+
+export interface CorpusDocumentationPageSubmitData {
+    type: string,
+    corpus: string,
+    content_template: string,
+};

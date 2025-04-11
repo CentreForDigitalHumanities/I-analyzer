@@ -3,7 +3,7 @@ Functionality to run an IndexJob
 '''
 
 import logging
-from typing import Callable, Any
+from typing import Callable, Type, Dict
 import celery
 
 from es.client import elasticsearch
@@ -21,23 +21,15 @@ from indexing.run_update_task import run_update_task
 
 logger = logging.getLogger('indexing')
 
-TASK_HANDLERS = [
-    (CreateIndexTask, create),
-    (PopulateIndexTask, populate),
-    (UpdateIndexTask, run_update_task),
-    (UpdateSettingsTask, update_index_settings),
-    (RemoveAliasTask, remove_alias),
-    (AddAliasTask, add_alias),
-    (DeleteIndexTask, delete_index),
-]
-
-
-def _task_handler(task: IndexTask) -> Callable[[IndexTask], Any]:
-    '''Select the appropriate function to execute an IndexTask'''
-    for (task_type, handler) in TASK_HANDLERS:
-        if isinstance(task, task_type):
-            return handler
-    raise TypeError(f'Unexpected task type: {type(task)}')
+TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
+    CreateIndexTask: create,
+    PopulateIndexTask: populate,
+    UpdateIndexTask: run_update_task,
+    UpdateSettingsTask: update_index_settings,
+    RemoveAliasTask: remove_alias,
+    AddAliasTask: add_alias,
+    DeleteIndexTask: delete_index,
+}
 
 
 @celery.shared_task()
@@ -50,13 +42,13 @@ def run_task(task: IndexTask) -> None:
     task.save()
 
     try:
-        handler = _task_handler(task)
+        handler = TASK_HANDLERS[task.__class__]
         handler(task)
     except Exception as e:
         logger.exception(f'{task_id} failed!')
         task.status = TaskStatus.ERROR
         task.save()
-        raise e
+        raise
 
     task.status = TaskStatus.DONE
     task.save()
@@ -70,13 +62,9 @@ def mark_tasks_stopped(job: IndexJob):
     '''
     Mark open tasks as aborted and queued tasks as cancelled.
     '''
-    for task in job.tasks():
-        if task.status == TaskStatus.QUEUED:
-            task.status = TaskStatus.CANCELLED
-            task.save()
-        if task.status == TaskStatus.WORKING:
-            task.status = TaskStatus.ABORTED
-            task.save()
+    for task_set in job.task_query_sets():
+        task_set.filter(status=TaskStatus.QUEUED).update(status=TaskStatus.CANCELLED)
+        task_set.filter(status=TaskStatus.WORKING).update(status=TaskStatus.ABORTED)
 
 
 @celery.shared_task()
