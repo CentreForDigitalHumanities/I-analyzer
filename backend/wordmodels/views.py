@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from addcorpus.permissions import CanSearchCorpus, corpus_name_from_request
 from wordmodels import utils, visualisations
 from rest_framework.exceptions import APIException
+from wordmodels import local_graph
 
 class RelatedWordsView(APIView):
     '''
@@ -37,7 +38,10 @@ class LocalGraphView(APIView):
     permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
-        return Response({})
+        corpus = corpus_name_from_request(request)
+        query_term = request.data['query_term']
+        results = local_graph.local_graph_data(corpus, query_term)
+        return Response(results)
 
 
 class SimilarityView(APIView):
