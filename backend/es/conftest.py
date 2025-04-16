@@ -6,7 +6,6 @@ import elasticsearch
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.models import Corpus
-from es import es_index
 
 
 @pytest.fixture(scope='session')
@@ -42,38 +41,6 @@ def es_ner_search_client(es_client, basic_mock_corpus, basic_corpus_public, inde
     # ES is "near real time", so give it a second before we start searching the index
     sleep(1)
     yield es_client
-
-
-@pytest.fixture()
-def es_index_client(es_client, mock_corpus):
-    """
-    Returns an elastic search client for the mock corpus.
-    After tests, removes any indices created for the mock corpus.
-    """
-
-    yield es_client
-    # delete indices when done
-    indices = es_client.indices.get(index='times-test*')
-    for index in indices.keys():
-        es_client.indices.delete(index=index)
-
-@pytest.fixture()
-def es_alias_client(es_client, mock_corpus):
-    """
-    Create multiple indices with version numbers for the mock corpus in elasticsearch.
-    Returns an elastic search client for the mock corpus.
-    """
-    # add data from mock corpus
-    corpus = Corpus.objects.get(name=mock_corpus)
-    es_index.create(es_client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
-    es_client.indices.create(index='times-test-2')
-    es_client.indices.create(index='times-test-bla-3')
-
-    yield es_client
-    # delete index when done
-    indices = es_client.indices.get(index='times-test*')
-    for index in indices.keys():
-        es_client.indices.delete(index=index)
 
 
 @pytest.fixture()

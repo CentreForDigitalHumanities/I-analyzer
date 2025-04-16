@@ -94,8 +94,8 @@ class CorpusConfigurationSerializer(serializers.ModelSerializer):
             'es_alias',
             'es_index',
             'languages',
-            'min_date',
-            'max_date',
+            'min_year',
+            'max_year',
             'scan_image_type',
             'title',
             'word_models_present',
@@ -174,8 +174,10 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
 
         corpus = Corpus.objects.create(**definition_data)
         configuration = CorpusConfiguration.objects.create(corpus=corpus, **configuration_data)
-        for field_data in fields_data:
-            Field.objects.create(corpus_configuration=configuration, **field_data)
+        for i, field_data in enumerate(fields_data):
+            Field.objects.create(
+                corpus_configuration=configuration, position=i, **field_data
+            )
 
         if validated_data.get('active') == True:
             corpus.active = True
@@ -198,7 +200,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             setattr(configuration, attr, configuration_data[attr])
         configuration.save()
 
-        for field_data in fields_data:
+        for i, field_data in enumerate(fields_data):
             try:
                 field = Field.objects.get(
                     corpus_configuration=configuration, name=field_data['name'])
@@ -207,6 +209,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
                               name=field_data['name'])
             for attr in field_data:
                 setattr(field, attr, field_data[attr])
+            field.position = i
             field.save()
 
         configuration.fields.exclude(name__in=(f['name'] for f in fields_data)).delete()

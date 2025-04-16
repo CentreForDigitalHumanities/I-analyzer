@@ -1,0 +1,46 @@
+from django.core.management import BaseCommand
+
+from addcorpus.models import Corpus
+from indexing.create_job import create_alias_job
+from indexing.run_job import perform_indexing, mark_tasks_stopped
+
+class Command(BaseCommand):
+    help = '''
+    Ensure that an alias exist for the index with the highest version number (e.g.
+    `indexname-5`). The alias is removed for all other (lower / older) versions. The
+    indices themselves are only removed if you add the `--clean` flag (but be very sure
+    if this is what you want to do!). Particularly useful in the production environment,
+    i.e. after creating an index with `--prod`.
+    '''
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            'corpus',
+            help='''Corpus for which the alias should be updated. This should match the
+                "name" field in the database. For Python corpora, this field is based on
+                the name in settings.py'''
+        )
+
+        parser.add_argument(
+            '--clean',
+            action='store_true',
+            help='''If included, any indices that are not the highest version will be
+                deleted.'''
+        )
+
+        parser.add_argument(
+            '--create-only',
+            action='store_true',
+            help='''Save an IndexJob for this command, but don't run it.''',
+        )
+
+    def handle(self, corpus, clean=False, create_only=False, **options):
+        corpus_obj = Corpus.objects.get(name=corpus)
+        job = create_alias_job(corpus_obj, clean)
+
+        if not create_only:
+            try:
+                perform_indexing(job)
+            except KeyboardInterrupt:
+                print('Aborting tasks...')
+                mark_tasks_stopped(job)

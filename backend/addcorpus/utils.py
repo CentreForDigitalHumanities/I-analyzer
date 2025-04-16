@@ -46,3 +46,12 @@ def is_date(input: str) -> Optional[datetime.datetime]:
         return True
     except (ValueError, TypeError):
         return False
+
+
+def normalize_date_to_year(input: Union[datetime.date, datetime.datetime, int]) -> int:
+    if isinstance(input, datetime.datetime) or isinstance(input, datetime.date):
+        return input.year
+    elif isinstance(input, int):
+        return input
+    else:
+        raise TypeError(f'Unexpected date type: {type(input)}')
