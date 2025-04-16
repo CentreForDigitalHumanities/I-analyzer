@@ -46,4 +46,25 @@ def _graph_nodes(wm, query_term):
 
 
 def _graph_links(wm, nodes):
-    return []
+    threshold = min(
+        node['similarity'] for node in nodes
+    )
+
+    links = []
+
+    for n1 in nodes:
+        for n2 in nodes:
+            i1 = n1['index']
+            i2 = n2['index']
+            if i1 != i2:
+                term1 = n1['term']
+                term2 = n2['term']
+                similarity = term_similarity(wm, term1, term2)
+                if similarity and similarity > threshold:
+                    links.append({
+                        'from': i1,
+                        'to': i2,
+                        'value': similarity
+                    })
+
+    return links
