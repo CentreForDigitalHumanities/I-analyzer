@@ -57,6 +57,18 @@ export class WordmodelsService {
         });
     }
 
+    public getLocalGraph(
+        queryTerm: string,
+        corpusName: string,
+        neighbours: number,
+    ) {
+        return this.http.post(this.wmApiRoute('local_graph'), {
+            query_term: queryTerm,
+            corpus_name: corpusName,
+            neighbours,
+        });
+    }
+
     public async getWordSimilarity(
         term1: string,
         term2: string,

@@ -68,7 +68,9 @@
                                 (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>
 
-                            <ia-local-graph *ngIf="tab=='localgraph'"/>
+                            <ia-local-graph *ngIf="tab=='localgraph'"
+                                [corpus]="corpus" [queryText]="activeQuery"
+                                />
                         </div>
 
                         <div class="block">

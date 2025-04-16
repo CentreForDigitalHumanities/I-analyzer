@@ -28,6 +28,18 @@ class RelatedWordsView(APIView):
                     'time_points': results[1]
             })
 
+
+class LocalGraphView(APIView):
+    '''
+    Get a graph of the nearest neighbours of the query term
+    '''
+
+    permission_classes = [CanSearchCorpus]
+
+    def post(self, request, *args, **kwargs):
+        return Response({})
+
+
 class SimilarityView(APIView):
     '''
     Get similarity between two query terms
