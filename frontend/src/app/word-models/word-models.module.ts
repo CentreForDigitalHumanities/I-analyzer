@@ -9,6 +9,7 @@ import { SimilarityChartComponent } from './similarity-chart/similarity-chart.co
 import { TimeIntervalSliderComponent } from './similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models.component';
 import { WordSimilarityComponent } from './word-similarity/word-similarity.component';
+import { LocalGraphComponent } from './local-graph/local-graph.component';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { WordSimilarityComponent } from './word-similarity/word-similarity.compo
         WordSimilarityComponent,
         SimilarityChartComponent,
         TimeIntervalSliderComponent,
+        LocalGraphComponent,
     ], exports: [
         WordModelsComponent,
     ],
@@ -29,6 +31,6 @@ import { WordSimilarityComponent } from './word-similarity/word-similarity.compo
         CorpusModule,
         SharedModule,
         VisualizationModule,
-    ]
+    ],
 })
 export class WordModelsModule { }

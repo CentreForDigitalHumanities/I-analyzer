@@ -39,6 +39,11 @@ export class WordModelsComponent extends ParamDirective {
             manual: 'relatedwords',
             chartID: 'chart',
         },
+        localgraph: {
+            title: 'Local graph',
+            manual: 'localgraph',
+            chartID: 'chart',
+        },
         wordsimilarity: {
             title: 'Compare similarity',
             manual: 'comparesimilarity',

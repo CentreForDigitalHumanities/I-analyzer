@@ -67,6 +67,8 @@
                                 [asTable]="asTable" [palette]="palette"
                                 (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>
+
+                            <ia-local-graph *ngIf="tab=='localgraph'"/>
                         </div>
 
                         <div class="block">
