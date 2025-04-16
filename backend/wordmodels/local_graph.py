@@ -27,7 +27,7 @@ def local_graph_in_timeframe(wm, query_term: str):
 
 
 def _graph_nodes(wm, query_term):
-    neighbours = find_n_most_similar(wm, query_term, 5)
+    neighbours = find_n_most_similar(wm, query_term, 10)
     query_node = {
         'term': query_term,
         'index': 0,
@@ -61,7 +61,7 @@ def _graph_links(wm, nodes):
                 term1 = n1['term']
                 term2 = n2['term']
                 similarity = term_similarity(wm, term1, term2)
-                if similarity and similarity > threshold:
+                if similarity and similarity >= threshold:
                     links.append({
                         'source': i1,
                         'target': i2,
@@ -87,8 +87,8 @@ def _graph_vega_doc(nodes, links):
                 "bind": {"input": "range", "min": 1, "max": 50, "step": 1} },
             { "name": "nodeCharge", "value": -30,
                 "bind": {"input": "range", "min":-100, "max": 10, "step": 1} },
-            { "name": "linkDistance", "value": 30,
-                "bind": {"input": "range", "min": 5, "max": 100, "step": 1} },
+            { "name": "linkDistance", "value": 75,
+                "bind": {"input": "range", "min": 20, "max": 200, "step": 1} },
             { "name": "static", "value": True,
                 "bind": {"input": "checkbox"} },
             {
