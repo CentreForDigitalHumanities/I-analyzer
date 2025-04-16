@@ -33,13 +33,14 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 }
 
 
-@celery.shared_task()
-def run_task(task: IndexTask) -> None:
+@celery.shared_task(bind=True)
+def run_task(self, task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
     logger.info(f'Running {task_id}: {task}')
 
     task.status = TaskStatus.WORKING
+    task.celery_task_id = str(self.request.id)
     task.save()
 
     try:
