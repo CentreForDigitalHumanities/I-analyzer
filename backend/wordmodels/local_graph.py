@@ -31,12 +31,14 @@ def _graph_nodes(wm, query_term):
     query_node = {
         'term': query_term,
         'index': 0,
+        'group': 1,
         'similarity': 1,
     }
     neighbour_nodes = (
         {
             'term': item['key'],
             'index': i + 1,
+            'group': 2,
             'similarity': item['similarity'],
         }
         for (i, item) in enumerate(neighbours)
@@ -61,8 +63,8 @@ def _graph_links(wm, nodes):
                 similarity = term_similarity(wm, term1, term2)
                 if similarity and similarity > threshold:
                     links.append({
-                        'from': i1,
-                        'to': i2,
+                        'source': i1,
+                        'target': i2,
                         'value': similarity
                     })
 
@@ -81,6 +83,8 @@ def _graph_vega_doc(nodes, links):
         "signals": [
             { "name": "cx", "update": "width / 2" },
             { "name": "cy", "update": "height / 2" },
+            { "name": "nodeRadius", "value": 8,
+            "bind": {"input": "range", "min": 1, "max": 50, "step": 1} },
             { "name": "nodeCharge", "value": -30,
             "bind": {"input": "range", "min":-100, "max": 10, "step": 1} },
             { "name": "linkDistance", "value": 30,
@@ -127,23 +131,23 @@ def _graph_vega_doc(nodes, links):
 
         "data": [
             {
-            "name": "node-data",
-            'values': nodes,
-            "format": {"type": "json", "property": "nodes"}
+                "name": "node-data",
+                "values": nodes,
+                "format": {"type": "json"}
             },
             {
-            "name": "link-data",
-            'values': links,
-            "format": {"type": "json", "property": "links"}
+                "name": "link-data",
+                "values": links,
+                "format": {"type": "json"}
             }
         ],
 
         "scales": [
             {
             "name": "color",
-            "type": "linear",
-            "domain": {"data": "node-data", "field": "similarity"},
-            "range": {"scheme": "blues"}
+            "type": "ordinal",
+            "domain": {"data": "node-data", "field": "group"},
+            "range": {"scheme": "category20c"}
             }
         ],
 
@@ -172,7 +176,7 @@ def _graph_vega_doc(nodes, links):
                 "stroke": {"value": "white"}
                 },
                 "update": {
-                "size": 32,
+                "size": {"signal": "2 * nodeRadius * nodeRadius"},
                 "cursor": {"value": "pointer"}
                 }
             },
@@ -186,7 +190,7 @@ def _graph_vega_doc(nodes, links):
                 "signal": "force",
                 "forces": [
                     {"force": "center", "x": {"signal": "cx"}, "y": {"signal": "cy"}},
-                    {"force": "collide", "radius": 8},
+                    {"force": "collide", "radius": {"signal": "nodeRadius"}},
                     {"force": "nbody", "strength": {"signal": "nodeCharge"}},
                     {"force": "link", "links": "link-data", "distance": {"signal": "linkDistance"}}
                 ]
