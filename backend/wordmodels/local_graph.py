@@ -198,24 +198,39 @@ def _graph_vega_doc(nodes, links):
             ]
             },
             {
-            "type": "path",
-            "from": {"data": "link-data"},
-            "interactive": False,
-            "encode": {
-                "update": {
-                    "stroke": {"value": "#ccc"},
-                    "strokeWidth": {"value": 0.5}
-                }
+                "type": "path",
+                "from": {"data": "link-data"},
+                "interactive": False,
+                "encode": {
+                    "update": {
+                        "stroke": {"value": "#ccc"},
+                        "strokeWidth": {"value": 0.5}
+                    }
+                },
+                "transform": [
+                    {
+                        "type": "linkpath",
+                        "require": {"signal": "force"},
+                        "shape": "line",
+                        "sourceX": "datum.source.x", "sourceY": "datum.source.y",
+                        "targetX": "datum.target.x", "targetY": "datum.target.y"
+                    }
+                ]
             },
-            "transform": [
-                {
-                    "type": "linkpath",
-                    "require": {"signal": "force"},
-                    "shape": "line",
-                    "sourceX": "datum.source.x", "sourceY": "datum.source.y",
-                    "targetX": "datum.target.x", "targetY": "datum.target.y"
-                }
-            ]
-            }
+            {
+                "type": "text",
+                "from": {"data": "nodes"},
+                "zindex": 2,
+                "encode": {
+                    "enter": {
+                        "fontSize": {"value": 15},
+                        "fill": {"value": "black"},
+                        "text": {"field": "datum.term"},
+                        "baseline": {"value": "bottom"},
+                        "align": {"value": "center"}
+                    },
+                    "update": {"dx": {"field": "x"}, "dy": {"field": "y"}}
+                },
+            },
         ]
     }
