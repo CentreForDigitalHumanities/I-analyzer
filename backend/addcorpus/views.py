@@ -1,16 +1,26 @@
-from rest_framework.views import APIView
-from addcorpus.serializers import CorpusSerializer, CorpusDocumentationPageSerializer, CorpusJSONDefinitionSerializer
-from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 import os
-from django.http.response import FileResponse
-from addcorpus.permissions import (
-    CanSearchCorpus, corpus_name_from_request, IsCurator,
-    IsCuratorOrReadOnly)
-from rest_framework.exceptions import NotFound
-from rest_framework import viewsets
-from addcorpus.models import Corpus, CorpusConfiguration, CorpusDocumentationPage
 
+from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
+                              CorpusDocumentationPage)
+from addcorpus.permissions import (CanSearchCorpus, IsCurator, IsCuratorOrReadOnly,
+                                   corpus_name_from_request)
+from addcorpus.python_corpora.load_corpus import (corpus_dir)
+from addcorpus.serializers import (CorpusDataFileSerializer,
+                                   CorpusDocumentationPageSerializer,
+                                   CorpusJSONDefinitionSerializer,
+                                   CorpusSerializer)
+from addcorpus.utils import get_csv_info
 from django.conf import settings
+from django.http.response import FileResponse
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
+from rest_framework.permissions import (IsAuthenticated)
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
+from addcorpus.json_corpora.validate import corpus_schema
+
 
 class CorpusView(viewsets.ReadOnlyModelViewSet):
     '''
@@ -20,7 +30,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
     serializer_class = CorpusSerializer
 
     def get_queryset(self):
-        return self.request.user.searchable_corpora()
+        return self.request.user.searchable_corpora().order_by('-date_created')
 
 
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
@@ -36,7 +46,7 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
         if self.request.user.is_staff:
             corpora = Corpus.objects.all()
         else:
-           corpora = self.request.user.searchable_corpora()
+            corpora = self.request.user.searchable_corpora()
 
         queried_corpus = self.request.query_params.get('corpus')
         if queried_corpus:
@@ -88,3 +98,40 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Corpus.objects.filter(has_python_definition=False)
+
+
+class CorpusDataFileViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CorpusDataFileSerializer
+
+    def get_queryset(self):
+        queryset = CorpusDataFile.objects.all()
+
+        corpus = self.request.query_params.get('corpus')
+        if corpus:
+            queryset = queryset.filter(corpus=corpus)
+
+        samples = self.request.query_params.get('samples', False)
+        if samples:
+            queryset = queryset.filter(is_sample=True)
+
+        return queryset.order_by('created')
+
+    @action(detail=True, methods=['get'])
+    def info(self, request, pk):
+        obj = self.get_object()
+        delimiter = obj.corpus.configuration_obj.source_data_delimiter
+
+        info = get_csv_info(obj.file.path, sep=delimiter if delimiter else ',')
+
+        return Response(info, HTTP_200_OK)
+
+
+class CorpusDefinitionSchemaView(APIView):
+    '''
+    View the JSON schema for corpus definitions
+    '''
+
+    def get(self, request, *args, **kwargs):
+        schema = corpus_schema()
+        return Response(schema, HTTP_200_OK)

@@ -10,17 +10,13 @@ from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
 
 from addcorpus.python_corpora.corpus import CorpusDefinition, CSVCorpusDefinition, XMLCorpusDefinition
 from addcorpus.python_corpora.extract import Constant, CSV, XML, Metadata, Combined, Backup
+from addcorpus.es_mappings import main_content_mapping
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.utils.formatting as formatting
+from corpora.utils.filter_sources import in_date_range
 import corpora.parliament.utils.parlamint as parlamint
 
-
-def in_date_range(corpus, start, end):
-    start_date = start or corpus.min_date
-    end_date = end or corpus.max_date
-
-    return start_date <= corpus.max_date and end_date >= corpus.min_date
 
 def format_mininster_role(position, department):
     '''Format 1919-2013 minister positions analogous to the 2014-2020 positions'''
@@ -148,7 +144,6 @@ class ParliamentIrelandOld(CSVCorpusDefinition):
 
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant('1919-2013')
-
 
     fields = [
         date,
@@ -446,7 +441,7 @@ class ParliamentIreland(Parliament, CorpusDefinition):
     data_directory = settings.PP_IRELAND_DATA
     es_index = getattr(settings, 'PP_IRELAND_INDEX', 'parliament-ireland')
     word_model_path = getattr(settings, 'PP_IRELAND_WM', None)
-    image = 'ireland.png'
+    image = 'ireland.jpg'
     description_page = 'ireland.md'
     es_settings = {'index': {'number_of_replicas': 0}} # do not include analyzers in es_settings
     languages = ['en', 'ga']
@@ -495,17 +490,8 @@ class ParliamentIreland(Parliament, CorpusDefinition):
     speaker_id = field_defaults.speaker_id()
     speaker_constituency = field_defaults.speaker_constituency()
 
-    speech = field_defaults.speech()
     # no language-specific analysers since the corpus is mixed-language
-    speech.es_mapping = {
-        "type" : "text",
-        "fields": {
-            "length": {
-                "type":     "token_count",
-                "analyzer": "standard"
-            }
-        }
-    }
+    speech = field_defaults.speech()
 
     speech_id = field_defaults.speech_id()
     topic = field_defaults.topic()

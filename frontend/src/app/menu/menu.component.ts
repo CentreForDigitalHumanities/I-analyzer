@@ -16,6 +16,7 @@ import { navIcons, userIcons } from '@shared/icons';
 export class MenuComponent implements OnDestroy, OnInit {
     @ViewChild('userDropdown') userDropdown: ElementRef;
 
+    brand = environment.navbarBrand;
     adminUrl = environment.adminUrl;
 
     menuOpen$ = new BehaviorSubject<boolean>(false);

@@ -38,6 +38,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    description_page = 'description_public.md'
     citation_page = 'citation_public.md'
 
     @property
@@ -187,7 +188,6 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 display_name="Newspaper title",
                 description="Title of the newspaper",
                 results_overview=True,
-                search_field_core=True,
                 es_mapping={"type": "keyword"},
                 visualizations=["resultscount", "termfrequency"],
                 search_filter=filters.MultipleChoiceFilter(
@@ -244,7 +244,6 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 display_name="Publisher",
                 description="Publisher",
                 es_mapping=keyword_mapping(),
-                search_field_core=True,
                 extractor=Metadata("publisher"),
             ),
             FieldDefinition(
@@ -260,6 +259,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 description="Article title",
                 results_overview=True,
                 search_field_core=True,
+                searchable=True,
                 extractor=XML(Tag("title"), flatten=True, toplevel=True),
             ),
             FieldDefinition(

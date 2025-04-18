@@ -9,7 +9,8 @@ from addcorpus.es_mappings import geo_mapping
 from addcorpus.models import Corpus
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index
+from indexing.create_job import create_indexing_job
+from indexing.run_job import perform_indexing
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -113,15 +114,12 @@ EXPECTED_DOCUMENT = {
     "region": "Africa Proconsularis ",
     "coordinates": {
         "type": "Point",
-        "coordinates": [
-            36.36811466666666,
-            6.613302666666667
-        ]
+        "coordinates": [36.36811466666666, 6.613302666666667],
     },
     "site_type": "Inscription",
     "inscription_type": "Epitaph",
     "period": "II AD",
-    "estimated_centuries": [2, 3],
+    "estimated_centuries": ['2', '3'],
     "inscription_count": 1,
     "religious_profession": "",
     "sex_dedicator": "",
@@ -129,7 +127,7 @@ EXPECTED_DOCUMENT = {
     "iconography": "",
     "comments": "",
     "transcription": "",
-    "transcription_en": "To the shadows of the underworld Julia Victoria the Jewess(?) CV"
+    "transcription_en": "To the shadows of the underworld Julia Victoria the Jewess(?) CV",
 }
 
 @pytest.fixture
@@ -157,7 +155,8 @@ def jm_client(es_client, jm_corpus):
     Returns an elastic search client for the mock corpus.
     """
     # add data from mock corpus
-    es_index.create(es_client, jm_corpus, False, True, False)
+    job = create_indexing_job(jm_corpus, mappings_only=True, clear=True)
+    perform_indexing(job)
 
     # ES is "near real time", so give it a second before we start searching the index
     sleep(1)

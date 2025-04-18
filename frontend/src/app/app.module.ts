@@ -1,11 +1,12 @@
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { inject, Injectable, NgModule } from '@angular/core';
 
-import { ExtraOptions, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, ExtraOptions, NavigationEnd, RouterModule, Routes } from '@angular/router';
 
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
+import { environment } from '@environments/environment';
 
 
 import {
@@ -20,15 +21,19 @@ import { AppComponent } from './app.component';
 import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
 import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
-import { EditDefinitionComponent } from './corpus-definitions/edit-definition/edit-definition.component';
+import { DefinitionInOutComponent } from './corpus-definitions/definition-in-out/definition-in-out.component';
+import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
+import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
+import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { CorpusGuard } from './corpus.guard';
 import { DialogComponent } from './dialog/dialog.component';
-import { DocumentPageComponent } from './document-page/document-page.component';
+import { DocumentPageComponent } from './document/document-page/document-page.component';
 import { DocumentModule } from './document/document.module';
 import { FooterComponent } from './footer/footer.component';
+import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryModule } from './history/history.module';
 import { SearchHistoryComponent } from './history/search-history/index';
@@ -53,7 +58,8 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
+import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
+import { MatomoConfig, matomoImports } from './routing/matomo';
 
 export const appRoutes: Routes = [
     {
@@ -145,14 +151,18 @@ export const appRoutes: Routes = [
                 component: CreateDefinitionComponent,
             },
             {
+                path: 'io/:corpusID',
+                component: DefinitionInOutComponent,
+            },
+            {
                 path: 'edit/:corpusID',
-                component: EditDefinitionComponent,
+                component: CorpusFormComponent,
             },
             {
                 path: '',
                 component: DefinitionsOverviewComponent,
             },
-        ]
+        ],
     },
     {
         path: '',
@@ -192,6 +202,10 @@ export const imports: any[] = [
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
+
+if ('matomo' in environment) {
+    imports.push(...matomoImports(environment.matomo as MatomoConfig));
+}
 
 export const providers: any[] = [
     ApiService,

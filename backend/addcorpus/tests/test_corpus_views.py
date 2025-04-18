@@ -1,10 +1,12 @@
 from rest_framework import status
 from django.test.client import Client
 from typing import Dict
+from datetime import timedelta
 
 from users.models import CustomUser
 from addcorpus.models import Corpus, CorpusDocumentationPage
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
+from addcorpus.json_corpora.validate import corpus_schema
 
 def test_no_corpora(db, settings, admin_client):
     Corpus.objects.all().delete()
@@ -15,6 +17,22 @@ def test_no_corpora(db, settings, admin_client):
 
     assert status.is_success(response.status_code)
     assert response.data == []
+
+
+def test_corpus_sort(db, admin_client, basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
+    corpus.date_created -= timedelta(days=1)
+    corpus.save()
+
+    response = admin_client.get('/api/corpus/')
+    assert response.data[-1]['name'] == basic_mock_corpus
+
+    corpus.date_created += timedelta(days=2)
+    corpus.save()
+
+    response = admin_client.get('/api/corpus/')
+    assert response.data[0]['name'] == basic_mock_corpus
+
 
 def test_corpus_documentation_list_view(admin_client, basic_mock_corpus, settings):
     response = admin_client.get(f'/api/corpus/documentation/')
@@ -142,3 +160,8 @@ def test_corpus_edit_views(admin_client: Client, json_corpus_definition: Dict, j
     response = admin_client.get('/api/corpus/definitions/')
     assert status.is_success(response.status_code)
     assert len(response.data) == 1
+
+
+def test_corpus_schema_view(client):
+    response = client.get('/api/corpus/definition-schema')
+    assert response.data == corpus_schema()

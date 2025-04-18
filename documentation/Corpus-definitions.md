@@ -49,6 +49,7 @@ Database-only corpora do not support some advanced functionality. Notably:
 - word models (i.e. word embeddings)
 - media attachments to documents
 - updating the data of a corpus instead of re-indexing it from scratch
+- named entity annotations
 
 ### Python class
 

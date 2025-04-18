@@ -1,0 +1,27 @@
+<div class="section">
+    <div class="container">
+        <nav aria-label="secondary navigation" class="breadcrumb">
+            <ul>
+                <li><a [routerLink]="['/']">Corpora</a></li>
+                <li><a [routerLink]="['../..']">Definitions</a></li>
+                <li class="is-active" aria-current="page"><a>{{(corpus$ | async).definition?.meta.title ||
+                        '...'}}: edit</a></li>
+            </ul>
+        </nav>
+
+        <p-steps [model]="steps$ | async" [readonly]="false" [activeIndex]="activeStep$ | async"
+            (activeIndexChange)="onActiveIndexChange($event)" />
+    </div>
+</div>
+<ng-container [ngSwitch]="activeStep$ | async">
+    <div class="section">
+        <div class="container is-readable">
+            <ng-container *ngSwitchCase="0"><ia-meta-form *ngIf="corpus$ | async as corpus"
+                    [corpus]="corpus" /></ng-container>
+            <ia-upload-sample *ngSwitchCase="1" />
+            <ng-container *ngSwitchCase="2"><ia-field-form *ngIf="corpus$ | async as corpus"
+                    [corpus]="corpus" /></ng-container>
+            <ia-documentation-form *ngSwitchCase="3" />
+        </div>
+    </div>
+</ng-container>
