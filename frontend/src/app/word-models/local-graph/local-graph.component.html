@@ -1,5 +1,5 @@
 <div class="block">
-    <div #chart  [class.is-hidden]="asTable" [attr.aria-hidden]="asTable"></div>
+    <div #chart id="chart" [class.is-hidden]="asTable" [attr.aria-hidden]="asTable"></div>
 
     <ia-freqtable [headers]="tableHeaders" [data]="data?.table"
         [class.is-hidden]="!asTable" [attr.aria-hidden]="!asTable" />

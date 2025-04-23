@@ -52,6 +52,10 @@
                 "title": "Related words"
             },
             {
+                "id": "local-graph",
+                "title": "Local graph"
+            },
+            {
                 "id": "comparesimilarity",
                 "title": "Compare similarity"
             }
