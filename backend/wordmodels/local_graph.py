@@ -21,7 +21,8 @@ def local_graph_data(corpus_name: str, query_term: str):
     links = list(chain(*link_data))
 
     return {
-        'graph': _graph_vega_doc(times, nodes, links)
+        'graph': _graph_vega_doc(times, nodes, links),
+        'table': _graph_table_data(nodes, links)
     }
 
 
@@ -281,3 +282,16 @@ def _graph_vega_doc(timeframes, nodes, links):
             },
         ]
     }
+
+def _graph_table_data(nodes, links):
+    find_term = lambda i: next(node for node in nodes if node['index'] == i)['term']
+
+    return [
+        {
+            'timeframe': link['timeframe'],
+            'term1': find_term(link['source']),
+            'term2': find_term(link['target']),
+            'similarity': round(link['value'], 4),
+        }
+        for link in links
+    ]

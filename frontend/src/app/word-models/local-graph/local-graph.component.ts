@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { Corpus } from '@models';
+import { Corpus, FreqTableHeaders } from '@models';
 import { WordmodelsService } from '@services';
 import { BehaviorSubject } from 'rxjs';
 import embed from 'vega-embed';
@@ -12,11 +12,30 @@ import embed from 'vega-embed';
 export class LocalGraphComponent implements OnChanges {
     @Input({required: true}) corpus!: Corpus;
     @Input({required: true}) queryText!: string;
+    @Input() asTable: boolean;
 
     @ViewChild('chart') chart!: ElementRef;
 
     data: any;
 
+    tableHeaders: FreqTableHeaders = [
+        {
+            key: 'term1',
+            label: 'Term 1',
+        },
+        {
+            key: 'term2',
+            label: 'Term 2',
+        },
+        {
+            key: 'timeframe',
+            label: 'Timeframe',
+        },
+        {
+            key: 'similarity',
+            label: 'Similarity'
+        }
+    ]
 
     constructor(
         private wordModelsService: WordmodelsService,
