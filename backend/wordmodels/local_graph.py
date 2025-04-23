@@ -83,8 +83,6 @@ def _graph_vega_doc(nodes, links):
         "signals": [
             { "name": "cx", "update": "width / 2" },
             { "name": "cy", "update": "height / 2" },
-            { "name": "nodeCharge", "value": -30,
-                "bind": {"input": "range", "min":-100, "max": 10, "step": 1} },
             { "name": "linkDistance", "value": 150,
                 "bind": {"input": "range", "min": 20, "max": 300, "step": 1} },
             { "name": "static", "value": True,
@@ -198,7 +196,7 @@ def _graph_vega_doc(nodes, links):
                         "forces": [
                             {"force": "center", "x": {"signal": "cx"}, "y": {"signal": "cy"}},
                             {"force": "collide", "radius": 30},
-                            {"force": "nbody", "strength": "nodeCharge"},
+                            {"force": "nbody", "strength": -30},
                             {"force": "link", "links": "link-data", "distance": {"signal": "linkDistance"}}
                         ]
                     }
