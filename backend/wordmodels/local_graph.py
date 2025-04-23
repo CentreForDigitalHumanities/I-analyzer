@@ -123,7 +123,7 @@ def _graph_vega_doc(timeframes, nodes, links):
             { "name": "cy", "update": "height / 2" },
             {
                 'name': 'timeframe',
-                'value': timeframes[0],
+                'value': timeframes[-1],
                 'bind': {
                     'input': 'select',
                     'name': 'time frame',
