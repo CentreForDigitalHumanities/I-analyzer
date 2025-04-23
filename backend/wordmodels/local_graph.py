@@ -63,6 +63,16 @@ def _graph_nodes(wm, query_term):
     )
     return [query_node, *neighbour_nodes]
 
+def pairs(items, reflexive=False):
+    '''
+    Returns all unique pairs in a list
+    '''
+
+    for i in range(len(items)):
+        start = i if reflexive else i + 1
+        for j in range(start, len(items)):
+            yield items[i], items[j]
+
 
 def _graph_links(wm, nodes):
     if not len(nodes):
@@ -74,21 +84,19 @@ def _graph_links(wm, nodes):
 
     links = []
 
-    for n1 in nodes:
-        for n2 in nodes:
-            i1 = n1['index']
-            i2 = n2['index']
-            if i1 != i2:
-                term1 = n1['term']
-                term2 = n2['term']
-                similarity = term_similarity(wm, term1, term2)
-                if similarity and similarity >= threshold:
-                    links.append({
-                        'source': i1,
-                        'target': i2,
-                        'value': similarity,
-                        'timeframe': _format_time(wm),
-                    })
+    for n1, n2 in pairs(nodes):
+        i1 = n1['index']
+        i2 = n2['index']
+        term1 = n1['term']
+        term2 = n2['term']
+        similarity = term_similarity(wm, term1, term2)
+        if similarity and similarity >= threshold:
+            links.append({
+                'source': i1,
+                'target': i2,
+                'value': similarity,
+                'timeframe': _format_time(wm),
+            })
 
     return links
 
