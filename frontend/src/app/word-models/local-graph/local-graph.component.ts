@@ -17,8 +17,6 @@ export class LocalGraphComponent implements OnChanges {
 
     data: any;
 
-    timeIntervals: string[];
-    interval$ = new BehaviorSubject<number>(0);
 
     constructor(
         private wordModelsService: WordmodelsService,
@@ -36,20 +34,7 @@ export class LocalGraphComponent implements OnChanges {
 
     onDataLoaded(res) {
         this.data = res;
-        this.timeIntervals = this.data.map(bin =>
-            `${bin.start_year}-${bin.end_year}`
-        );
-        this.selectInterval(0);
-    }
-
-    selectInterval(i: number): void {
-        this.interval$.next(i);
-        const spec = this.data[i]['graph'];
-        this.renderChart(spec);
-    }
-
-    isSelected(i: number): boolean {
-        return this.interval$.value === i;
+        this.renderChart(res['graph']);
     }
 
     renderChart(data): void {

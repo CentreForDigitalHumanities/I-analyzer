@@ -1,29 +1,41 @@
+from itertools import chain
+from typing import List
+
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from wordmodels.utils import load_word_models
 from wordmodels.similarity import find_n_most_similar, term_similarity
-
 
 def local_graph_data(corpus_name: str, query_term: str):
     corpus = load_corpus_definition(corpus_name)
     wm_list = load_word_models(corpus)
 
-    return [
-        {
-            'start_year': wm['start_year'],
-            'end_year': wm['end_year'],
-            'graph': _graph_vega_doc(
-                *local_graph_in_timeframe(wm, query_term)
-            )
-        }
+    times = timeframes(wm_list)
+
+    data_per_timeframe = (
+        graph_data_for_timeframe(wm, query_term)
         for wm in wm_list
-    ]
+    )
+
+    node_data, link_data = zip(*data_per_timeframe)
+    nodes = list(chain(*node_data))
+    links = list(chain(*link_data))
+
+    return {
+        'graph': _graph_vega_doc(times, nodes, links)
+    }
 
 
-def local_graph_in_timeframe(wm, query_term: str):
+def graph_data_for_timeframe(wm, query_term: str):
     nodes = _graph_nodes(wm, query_term)
     links = _graph_links(wm, nodes)
 
     return nodes, links
+
+
+def _format_time(wm):
+    start_year = wm['start_year']
+    end_year = wm['end_year']
+    return f'{start_year}-{end_year}'
 
 
 def _graph_nodes(wm, query_term):
@@ -31,15 +43,17 @@ def _graph_nodes(wm, query_term):
     query_node = {
         'term': query_term,
         'index': 0,
-        'group': 1,
+        'timeframe': _format_time(wm),
         'similarity': 1,
+        'group': 1,
     }
     neighbour_nodes = (
         {
             'term': item['key'],
             'index': i + 1,
-            'group': 2,
+            'timeframe': _format_time(wm),
             'similarity': item['similarity'],
+            'group': 2,
         }
         for (i, item) in enumerate(neighbours)
     )
@@ -65,13 +79,22 @@ def _graph_links(wm, nodes):
                     links.append({
                         'source': i1,
                         'target': i2,
-                        'value': similarity
+                        'value': similarity,
+                        'timeframe': _format_time(wm),
                     })
 
     return links
 
 
-def _graph_vega_doc(nodes, links):
+def timeframes(models) -> List[str]:
+    sorted_models = sorted(models, key=lambda wm: wm['start_year'])
+    return [
+        _format_time(wm) for wm in sorted_models
+    ]
+
+
+def _graph_vega_doc(timeframes, nodes, links):
+
     return {
         "$schema": "https://vega.github.io/schema/vega/v5.json",
         "description": "A node-link diagram of neighbouring words",
@@ -83,8 +106,24 @@ def _graph_vega_doc(nodes, links):
         "signals": [
             { "name": "cx", "update": "width / 2" },
             { "name": "cy", "update": "height / 2" },
+            {
+                'name': 'timeframe',
+                'value': timeframes[0],
+                'bind': {
+                    'input': 'select',
+                    'name': 'time frame',
+                    'options': timeframes,
+                },
+            },
             { "name": "linkDistance", "value": 150,
-                "bind": {"input": "range", "min": 20, "max": 300, "step": 1} },
+                "bind": {
+                    "input": "range",
+                    "min": 20,
+                    "max": 300,
+                    "step": 1,
+                    'name': 'link distance'
+                }
+            },
             { "name": "static", "value": True,
                 "bind": {"input": "checkbox"} },
             {
@@ -129,12 +168,24 @@ def _graph_vega_doc(nodes, links):
             {
                 "name": "node-data",
                 "values": nodes,
-                "format": {"type": "json"}
+                "format": {"type": "json"},
+                'transform': [
+                    {
+                        'type': 'filter',
+                        'expr': 'datum.timeframe === timeframe',
+                    }
+                ]
             },
             {
                 "name": "link-data",
                 "values": links,
-                "format": {"type": "json"}
+                "format": {"type": "json"},
+                'transform': [
+                    {
+                        'type': 'filter',
+                        'expr': 'datum.timeframe === timeframe',
+                    }
+                ]
             }
         ],
 
