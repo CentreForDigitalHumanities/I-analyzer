@@ -1,1 +1,16 @@
-<div #chart></div>
+<div class="field">
+
+    <p class="label">Select timeframe:</p>
+
+    <div class="block">
+        <button *ngFor="let interval of timeIntervals; index as i" class="button"
+            [class.is-primary]="isSelected(i)" [aria-pressed]="isSelected(i)"
+            (click)="selectInterval(i)">
+            {{interval}}
+        </button>
+    </div>
+</div>
+
+<div class="block">
+    <div #chart></div>
+</div>
