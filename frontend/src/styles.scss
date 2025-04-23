@@ -103,3 +103,22 @@ a.dropdown-item[disabled] {
 .is-disabled {
     @extend [disabled];
 }
+
+.vega-bindings {
+    @extend .columns;
+    @extend .is-multiline;
+
+    .vega-bind {
+        @extend .field;
+        @extend .column;
+        @extend .is-4;
+
+        .vega-bind-name {
+            @extend .label;
+        }
+
+        select {
+            @extend .select;
+        }
+    }
+}
