@@ -83,12 +83,10 @@ def _graph_vega_doc(nodes, links):
         "signals": [
             { "name": "cx", "update": "width / 2" },
             { "name": "cy", "update": "height / 2" },
-            { "name": "nodeRadius", "value": 8,
-                "bind": {"input": "range", "min": 1, "max": 50, "step": 1} },
             { "name": "nodeCharge", "value": -30,
                 "bind": {"input": "range", "min":-100, "max": 10, "step": 1} },
-            { "name": "linkDistance", "value": 75,
-                "bind": {"input": "range", "min": 20, "max": 200, "step": 1} },
+            { "name": "linkDistance", "value": 150,
+                "bind": {"input": "range", "min": 20, "max": 300, "step": 1} },
             { "name": "static", "value": True,
                 "bind": {"input": "checkbox"} },
             {
@@ -96,15 +94,15 @@ def _graph_vega_doc(nodes, links):
                 "name": "fix", "value": False,
                 "on": [
                     {
-                        "events": "symbol:pointerout[!event.buttons], window:pointerup",
+                        "events": "text:pointerout[!event.buttons], window:pointerup",
                         "update": "false"
                     },
                     {
-                        "events": "symbol:pointerover",
+                        "events": "text:pointerover",
                         "update": "fix || true"
                     },
                     {
-                        "events": "[symbol:pointerdown, window:pointerup] > window:pointermove!",
+                        "events": "[text:pointerdown, window:pointerup] > window:pointermove!",
                         "update": "xy()",
                         "force": True
                     }
@@ -115,7 +113,7 @@ def _graph_vega_doc(nodes, links):
             "name": "node", "value": None,
             "on": [
                     {
-                        "events": "symbol:pointerover",
+                        "events": "text:pointerover",
                         "update": "fix === true ? item() : node"
                     }
                 ]
@@ -144,58 +142,67 @@ def _graph_vega_doc(nodes, links):
 
         "scales": [
             {
-            "name": "color",
-            "type": "ordinal",
-            "domain": {"data": "node-data", "field": "group"},
-            "range": {"scheme": "category20c"}
+                'name': 'link-color',
+                'type': 'linear',
+                'domain': {"data": "link-data", "field": "value"},
+                'range': {'scheme': 'greys'},
+            },
+            {
+                'name': 'text-weight',
+                'type': 'ordinal',
+                'domain': [1,2],
+                'range': ['bold', 'normal'],
             }
         ],
 
         "marks": [
             {
-            "name": "nodes",
-            "type": "symbol",
-            "zindex": 1,
+                "name": "nodes",
+                "type": "text",
+                "zindex": 1,
 
-            "from": {"data": "node-data"},
-            "on": [
-                {
-                    "trigger": "fix",
-                    "modify": "node",
-                    "values": "fix === true ? {fx: node.x, fy: node.y} : {fx: fix[0], fy: fix[1]}"
-                },
-                {
-                    "trigger": "!fix",
-                    "modify": "node", "values": "{fx: null, fy: null}"
-                }
-            ],
-
-            "encode": {
+                "from": {"data": "node-data"},
+                "on": [
+                    {
+                        "trigger": "fix",
+                        "modify": "node",
+                        "values": "fix === true ? {fx: node.x, fy: node.y} : {fx: fix[0], fy: fix[1]}"
+                    },
+                    {
+                        "trigger": "!fix",
+                        "modify": "node", "values": "{fx: null, fy: null}"
+                    }
+                ],
+                "encode": {
                     "enter": {
-                    "fill": {"scale": "color", "field": "group"},
-                    "stroke": {"value": "white"}
+                        "fontSize": {"value": 15},
+                        "fill": {"value": "black"},
+                        "text": {"field": "term"},
+                        "baseline": {"value": "middle"},
+                        "align": {"value": "center"},
+                        'fontWeight': {
+                            'scale': 'text-weight', 'field': 'group'
+                        },
+                    },
+                    "update": {
+                        "cursor": {"value": "pointer"}
+                    },
                 },
-                "update": {
-                    "size": {"signal": "2 * nodeRadius * nodeRadius"},
-                    "cursor": {"value": "pointer"}
-                }
-            },
-
-            "transform": [
-                {
-                    "type": "force",
-                    "iterations": 300,
-                    "restart": {"signal": "restart"},
-                    "static": {"signal": "static"},
-                    "signal": "force",
-                    "forces": [
-                        {"force": "center", "x": {"signal": "cx"}, "y": {"signal": "cy"}},
-                        {"force": "collide", "radius": {"signal": "nodeRadius"}},
-                        {"force": "nbody", "strength": {"signal": "nodeCharge"}},
-                        {"force": "link", "links": "link-data", "distance": {"signal": "linkDistance"}}
-                    ]
-                }
-            ]
+                "transform": [
+                    {
+                        "type": "force",
+                        "iterations": 300,
+                        "restart": {"signal": "restart"},
+                        "static": {"signal": "static"},
+                        "signal": "force",
+                        "forces": [
+                            {"force": "center", "x": {"signal": "cx"}, "y": {"signal": "cy"}},
+                            {"force": "collide", "radius": 30},
+                            {"force": "nbody", "strength": "nodeCharge"},
+                            {"force": "link", "links": "link-data", "distance": {"signal": "linkDistance"}}
+                        ]
+                    }
+                ]
             },
             {
                 "type": "path",
@@ -203,8 +210,8 @@ def _graph_vega_doc(nodes, links):
                 "interactive": False,
                 "encode": {
                     "update": {
-                        "stroke": {"value": "#ccc"},
-                        "strokeWidth": {"value": 0.5}
+                        "stroke": {'scale': 'link-color', 'field': 'value'},
+                        "strokeWidth": {'value': 0.5},
                     }
                 },
                 "transform": [
@@ -216,21 +223,6 @@ def _graph_vega_doc(nodes, links):
                         "targetX": "datum.target.x", "targetY": "datum.target.y"
                     }
                 ]
-            },
-            {
-                "type": "text",
-                "from": {"data": "nodes"},
-                "zindex": 2,
-                "encode": {
-                    "enter": {
-                        "fontSize": {"value": 15},
-                        "fill": {"value": "black"},
-                        "text": {"field": "datum.term"},
-                        "baseline": {"value": "bottom"},
-                        "align": {"value": "center"}
-                    },
-                    "update": {"dx": {"field": "x"}, "dy": {"field": "y"}}
-                },
             },
         ]
     }
