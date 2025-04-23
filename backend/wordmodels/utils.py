@@ -44,6 +44,11 @@ def word_in_models(query_term, corpus, max_distance=2):
         'similar_keys': similar_keys
     }
 
+
+def word_in_model(query_term, wm):
+    return query_term in wm['vectors']
+
+
 def transform_query(query):
     if not has_whitespace(query):
         transformed = strip_punctuation(query).lower()

@@ -2,7 +2,7 @@ from itertools import chain
 from typing import List
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
-from wordmodels.utils import load_word_models
+from wordmodels.utils import load_word_models, word_in_model
 from wordmodels.similarity import find_n_most_similar, term_similarity
 
 def local_graph_data(corpus_name: str, query_term: str):
@@ -39,6 +39,9 @@ def _format_time(wm):
 
 
 def _graph_nodes(wm, query_term):
+    if not word_in_model(query_term, wm):
+        return []
+
     neighbours = find_n_most_similar(wm, query_term, 10)
     query_node = {
         'term': query_term,
@@ -61,6 +64,9 @@ def _graph_nodes(wm, query_term):
 
 
 def _graph_links(wm, nodes):
+    if not len(nodes):
+        return []
+
     threshold = min(
         node['similarity'] for node in nodes
     )
