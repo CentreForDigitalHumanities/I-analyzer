@@ -15,17 +15,26 @@
                 <p class="help">The column name in your CSV (sample) file. This can not be changed.</p>
             </div>
             <div class="field">
-                <label class="label" for="display_name">Display name</label>
+                <label class="label" for="display_name">Display name*</label>
                 <div class="control">
                     <input class="input" type="text" name="display_name" formControlName="display_name" />
                 </div>
+                <p class="help">
+                    The name that will be shown to users.
+                </p>
             </div>
 
             <div class="field">
                 <label class="label" for="description">Description</label>
                 <div class="control">
-                    <input class="input" type="text" name="description" formControlName="description" />
+                    <input class="input" type="text" name="description" formControlName="description"
+                        maxlength="150" />
                 </div>
+                <p class="help">
+                    A brief description of the field, that will be shown in tooltips.
+                    You can add more elaborate information in the "add documentation"
+                    step.
+                </p>
             </div>
 
             <div class="field">
