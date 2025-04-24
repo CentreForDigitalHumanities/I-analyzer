@@ -60,5 +60,15 @@
                 "title": "Compare similarity"
             }
         ]
+    },
+    {
+        "title": "Creating your own corpus",
+        "permissions": ["canEditCorpus"],
+        "pages": [
+            {
+                "id": "types_of_fields",
+                "title": "Types of fields"
+            }
+        ]
     }
 ]
