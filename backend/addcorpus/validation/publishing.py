@@ -4,6 +4,10 @@ This module defines functions to check if a corpus is ready to be published.
 
 import os
 from addcorpus.validation.creation import primary_mapping_type
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from addcorpus.models import Corpus, CorpusConfiguration
 
 class CorpusNotPublishableError(Exception):
     '''
@@ -30,17 +34,29 @@ def _any_date_fields(fields):
 def _visualisations_require_date_field(visualizations):
     return visualizations and 'ngram' in visualizations
 
-def validate_default_sort(corpus):
-    config = corpus.configuration
+def validate_default_sort(corpus: 'Corpus'):
+    config: 'CorpusConfiguration' = corpus.configuration
     if not config.default_sort:
         return
     field_name = config.default_sort['field']
-    if not corpus.configuration.fields.filter(name=field_name).exists():
+    if not config.fields.filter(name=field_name).exists():
         raise CorpusNotPublishableError(
             f'Invalid default sort field: no field named "{field_name}"'
         )
-    field = corpus.configuration.fields.get(name=field_name)
+    field = config.fields.get(name=field_name)
     if not field.sortable:
         raise CorpusNotPublishableError(
             f'Invalid default sort field: field "{field_name}" is not sortable'
+        )
+
+
+def validate_complete_metadata(corpus: 'Corpus'):
+    config: 'CorpusConfiguration' = corpus.configuration
+    if config.min_year is None or config.max_year is None:
+        raise CorpusNotPublishableError(
+            'Date range not specified'
+        )
+    if config.category is None:
+        raise CorpusNotPublishableError(
+            'Category not specified'
         )
