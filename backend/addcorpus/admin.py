@@ -40,8 +40,6 @@ class InlineFieldAdmin(admin.StackedInline):
 
 
 class CorpusConfigurationAdmin(admin.ModelAdmin):
-    readonly_fields = ['corpus']
-
     inlines = [
         InlineFieldAdmin
     ]
@@ -71,8 +69,8 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                 'fields': [
                     'category',
                     'languages',
-                    'min_date',
-                    'max_date',
+                    'min_year',
+                    'max_year',
                     'document_context',
                     'default_sort',
                 ]
