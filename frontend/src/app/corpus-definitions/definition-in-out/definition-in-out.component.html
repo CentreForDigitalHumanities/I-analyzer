@@ -9,10 +9,14 @@
             </ul>
         </nav>
 
-        <h1 class="title">Edit corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
+        <h1 class="title">Import/export corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
+
+        <h2 class="title is-4">Export</h2>
 
         <p class="block">
-            You can download this corpus definition as a JSON file.
+            You can download the definition of this corpus as a JSON file. This file
+            describes how you have configured this corpus: the name, description,
+            fields, et cetera. It does not contain any source files you uploaded.
         </p>
 
         <div class="block">
@@ -24,8 +28,26 @@
             </button>
         </div>
 
+        <h2 class="title is-4">Import</h2>
+
         <p class="block">
-            You can update this corpus by uploading a new JSON definition for it.
+            You can upload a JSON definition file for this corpus. This will configure
+            the corpus according to the specifications in the file.
+        </p>
+
+        <p class="block">
+            JSON uploads are only accepted if they follow the format used by I-analyzer.
+            If you download a corpus definition from I-analyzer and then upload it (for
+            example, to restore an earlier backup), this is always the case.
+        </p>
+
+        <p class="block">
+            <i>Advanced usage:</i>
+            If you want to write or edit the JSON file for a corpus directly, you can
+            consult the
+            <a href="/api/corpus/definition-schema">specification</a>.
+            This is encoded as a
+            as a <a href="https://json-schema.org/">JSON schema</a>.
         </p>
 
         <form>
