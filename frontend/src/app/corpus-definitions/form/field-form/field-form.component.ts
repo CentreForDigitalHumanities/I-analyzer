@@ -5,7 +5,7 @@ import {
     CorpusDefinition,
 } from '@models/corpus-definition';
 import { MenuItem } from 'primeng/api';
-import { Subject, takeUntil } from 'rxjs';
+import { map, merge, Observable, Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
 import { ISO6393Languages } from '../constants';
@@ -56,6 +56,38 @@ export class FieldFormComponent {
     directionIcons = directionIcons;
     formIcons = formIcons;
 
+    valueChange$ = new Subject<void>();
+    changesSubmitted$ = new Subject<void>();
+    changesSavedSucces$ = new Subject<void>();
+    changesSavedError$ = new Subject<void>();
+
+    /** show succes message after success response, hide when form is changed or user
+     * saves again
+     */
+    showSuccesMessage$: Observable<boolean> = merge(
+        this.changesSavedSucces$.pipe(
+            map(() => true),
+        ),
+        this.valueChange$.pipe(
+            map(() => false),
+        ),
+        this.changesSubmitted$.pipe(
+            map(() => false),
+        )
+    );
+
+    showErrorMessage$: Observable<boolean> = merge(
+        this.changesSavedError$.pipe(
+            map(() => true),
+        ),
+        this.valueChange$.pipe(
+            map(() => false),
+        ),
+        this.changesSubmitted$.pipe(
+            map(() => false),
+        )
+    );
+
     constructor(
         private el: ElementRef<HTMLElement>,
         private corpusDefService: CorpusDefinitionService,
@@ -87,6 +119,10 @@ export class FieldFormComponent {
         });
         fg.patchValue(field);
 
+        fg.valueChanges.pipe(
+            takeUntil(this.destroy$),
+        ).subscribe(() => this.valueChange$.next());
+
         return fg;
     }
 
@@ -104,7 +140,7 @@ export class FieldFormComponent {
                     () =>
                         (this.fieldsForm.controls.fields = new FormArray(
                             this.corpus.definition.fields.map(
-                                this.makeFieldFormgroup
+                                this.makeFieldFormgroup.bind(this)
                             )
                         ))
                 );
@@ -121,7 +157,12 @@ export class FieldFormComponent {
         this.corpus.definition.fields =
             newFields as CorpusDefinition['definition']['fields'];
         this.corpus.save().subscribe({
-            error: console.error,
+            next: () => this.changesSavedSucces$.next(),
+            error: (err) => {
+                this.changesSavedError$.next();
+                console.error(err);
+            }
+
         });
     }
 
