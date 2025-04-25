@@ -68,7 +68,7 @@
                             <p class="help">Show this field in the results overview.</p>
                         </label>
                     </div>
-                    <div *ngIf="field.get('type').value !== 'text_content' " class="control">
+                    <div *ngIf="field.get('type').value !== 'text_content' && field.get('type').value !== 'boolean'" class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="sort" formControlName="sort" /> Sort
                             <p class="help">
