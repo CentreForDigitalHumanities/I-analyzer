@@ -15,7 +15,7 @@
                 <p class="help">The column name in your CSV (sample) file. This can not be changed.</p>
             </div>
             <div class="field">
-                <label class="label" for="display_name">Display name*</label>
+                <label class="label" for="display_name">Display name</label>
                 <div class="control">
                     <input class="input" type="text" name="display_name" formControlName="display_name" />
                 </div>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="field">
-                <label class="label" for="description">Description</label>
+                <label class="label" for="description">Description (optional)</label>
                 <div class="control">
                     <input class="input" type="text" name="description" formControlName="description"
                         maxlength="150" />
@@ -85,11 +85,16 @@
                 </ng-container>
             </div>
             <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
+                <label class="label">Language (optional)</label>
                 <div class="control">
                     <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name"
-                        optionValue="code" placeholder="select language (optional)" [filter]="true"
+                        optionValue="code" placeholder="select language" [filter]="true"
                         [virtualScroll]="true" [virtualScrollItemSize]="10" [showClear]="true" />
                 </div>
+                <p class="help">
+                    What language is the text in this field? (If the field
+                    contains multiple languages, leave this blank.)
+                </p>
             </div>
 
             <div class="field is-grouped" style="justify-content: end;">
