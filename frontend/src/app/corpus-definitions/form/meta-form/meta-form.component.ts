@@ -37,8 +37,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         description: [''],
         category: [''],
         date_range: this.formBuilder.group({
-            min: [''],
-            max: [''],
+            min: [],
+            max: [],
         }),
         languages: [['']],
     });
