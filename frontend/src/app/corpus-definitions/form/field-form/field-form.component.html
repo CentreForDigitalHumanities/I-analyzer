@@ -53,13 +53,13 @@
                         class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="search" formControlName="search" /> Search
-                            <p class="help">Enable full-text search for this field.</p>
+                            <p class="help">Enable text searching within this field.</p>
                         </label>
                     </div>
                     <div *ngIf="field.get('type').value !== 'text_content' " class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="filter" formControlName="filter" /> Filter
-                            <p class="help">Enable filtering on values in this field.</p>
+                            <p class="help">Add a filter widget for this field.</p>
                         </label>
                     </div>
                     <div class="control">
@@ -71,7 +71,15 @@
                     <div *ngIf="field.get('type').value !== 'text_content' " class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="sort" formControlName="sort" /> Sort
-                            <p class="help">Enable sorting on values of this field.</p>
+                            <p class="help">
+                                Enable sorting on values of this field
+                                <ng-container [ngSwitch]="field.get('type').value">
+                                    <ng-container *ngSwitchCase="'text_metadata'">
+                                        (alphabetically)</ng-container>
+                                    <ng-container *ngSwitchCase="'date'">
+                                        (chronologically)</ng-container>
+                                </ng-container>.
+                            </p>
                         </label>
                     </div>
                 </ng-container>
