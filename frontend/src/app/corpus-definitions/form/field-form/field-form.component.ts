@@ -9,7 +9,8 @@ import { Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
 import { ISO6393Languages } from '../constants';
-import { actionIcons, directionIcons } from '@shared/icons';
+import { actionIcons, directionIcons, formIcons } from '@shared/icons';
+import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 
 @Component({
     selector: 'ia-field-form',
@@ -53,9 +54,11 @@ export class FieldFormComponent {
 
     actionIcons = actionIcons;
     directionIcons = directionIcons;
+    formIcons = formIcons;
 
     constructor(
         private el: ElementRef<HTMLElement>,
+        private corpusDefService: CorpusDefinitionService,
     ) {}
 
     get fields(): FormArray {
@@ -147,5 +150,9 @@ export class FieldFormComponent {
         const selector = '#' + this.moveControlID(index, field, delta);
         const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
         button.focus();
+    }
+
+    nextStep() {
+        this.corpusDefService.activateStep(3);
     }
 }
