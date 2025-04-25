@@ -62,7 +62,10 @@
 
     <div class="field">
         <p class="control">
-            <button class="button is-primary">Save changes</button>
+            <button class="button is-primary">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save changes</span>
+            </button>
         </p>
     </div>
 </form>
@@ -72,7 +75,9 @@
 </div>
 
 <div class="block">
-    <button class="button" (click)="nextStep()">
-        Next
+    <button class="button" (click)="nextStep()"
+        [class.is-disabled]="nextStepDisabled$ | async">
+        <span class="icon"><fa-icon [icon]="actionIcons.next" /></span>
+        <span>Add sample data</span>
     </button>
 </div>

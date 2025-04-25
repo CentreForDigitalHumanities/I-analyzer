@@ -5,11 +5,11 @@ import {
     OnDestroy, SimpleChanges
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, take, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil, map, Observable } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
-import { actionIcons } from '@shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-meta-form',
@@ -47,7 +47,11 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
 
     languageOptions = ISO6393Languages;
     actionIcons = actionIcons;
+    formIcons = formIcons;
 
+    nextStepDisabled$: Observable<boolean> = this.corpusDefService.steps$.pipe(
+        map(steps => steps[1].disabled)
+    );
 
     constructor(
         private formBuilder: FormBuilder,
@@ -84,7 +88,6 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
             next: (value) => {
-                this.corpusDefService.toggleStepDisabled(1);
                 this.metaForm.patchValue(value.definition.meta);
             },
             error: console.error,
