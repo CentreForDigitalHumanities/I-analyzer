@@ -30,7 +30,7 @@ describe('ChangePasswordComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    fit('should show success message', () => {
+    it('should show success message', () => {
         // message should be hidden
         const successMessage = fixture.debugElement.query(By.css('.message.is-success'));
         expect(successMessage.classes['is-hidden']).toBeTruthy();

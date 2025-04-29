@@ -17,7 +17,7 @@ export interface UserResponse {
 export class User {
     constructor(
         public id,
-        public name,
+        public name: string,
         public isAdmin: boolean,
         public downloadLimit: number = 0, // The download limit for this user, will be 0 if there is no limit.
         public isSamlLogin: boolean,
