@@ -43,7 +43,6 @@ A decimal number field contains fractional numbers, like `1.5`. If a field conta
 
 Like with integer fields, you can enable filtering and sorting for decimal fields.
 
-In the source file, the decimal point must be a period (`.`), not a comma.
 
 ## Date
 
@@ -53,7 +52,6 @@ If you include a date field as a filter, users will be able to pick the date in 
 
 You can enable sorting on a date field. Values will be sorted in (forward or reverse) chronological order.
 
-In the source file, dates must be written as *year-month-day*. For example, January 15th, 1919 should be written as `1919-01-15` or `1919-1-15`.
 
 ### BCE dates
 

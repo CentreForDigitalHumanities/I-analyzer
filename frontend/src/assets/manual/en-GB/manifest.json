@@ -66,6 +66,14 @@
         "permissions": ["canEditCorpus"],
         "pages": [
             {
+                "id": "creating_a_corpus",
+                "title": "Creating a corpus"
+            },
+            {
+                "id": "uploading_source_data",
+                "title": "Uploading source data"
+            },
+            {
                 "id": "types_of_fields",
                 "title": "Types of fields"
             }
