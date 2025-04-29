@@ -1,7 +1,6 @@
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
-from django.db.models import Q
 
 from addcorpus.models import Corpus, CorpusConfiguration
 
