@@ -17,7 +17,7 @@ from indexing.run_management_tasks import (
     update_index_settings, remove_alias, add_alias, delete_index
 )
 from indexing.run_update_task import run_update_task
-from indexing.celery_utils import warn_if_no_worker
+from ianalyzer.celery_utils import warn_if_no_worker
 
 
 logger = logging.getLogger('indexing')

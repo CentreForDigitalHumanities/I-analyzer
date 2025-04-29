@@ -1,6 +1,5 @@
 import warnings
 
-from django.conf import settings
 from ianalyzer.celery import app
 
 
