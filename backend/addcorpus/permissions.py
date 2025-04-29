@@ -46,7 +46,7 @@ class CanSearchCorpus(permissions.BasePermission):
             raise NotFound('Corpus does not exist')
 
         # check if the user has access
-        return user.can_search(corpus)
+        return user.searchable_corpora().contains(corpus)
 
 
 class CanEditCorpus(permissions.BasePermission):
@@ -103,6 +103,6 @@ class CanSearchOrEditCorpus(permissions.BasePermission):
         user = request.user
         corpus = view.corpus_from_object(obj)
 
-        return user.can_search(corpus) or (
+        return user.searchable_corpora().contains(corpus) or (
             user.is_staff and corpus.owners.contains(user)
         )

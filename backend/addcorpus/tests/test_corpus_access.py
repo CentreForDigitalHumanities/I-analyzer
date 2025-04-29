@@ -6,28 +6,23 @@ def test_access_through_group(db, basic_mock_corpus, group_with_access):
     user.groups.add(group_with_access)
     user.save()
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    assert user.can_search(corpus)
-    assert corpus in user.searchable_corpora()
+    assert user.searchable_corpora().contains(corpus)
 
 def test_superuser_access(basic_mock_corpus, admin_user):
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    assert admin_user.can_search(corpus)
-    assert corpus in admin_user.searchable_corpora()
+    assert admin_user.searchable_corpora().contains(corpus)
 
 def test_no_corpus_access(db, basic_mock_corpus):
     user = CustomUser.objects.create(username='bad-user', password='secret')
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    assert not user.can_search(corpus)
-    assert corpus not in user.searchable_corpora()
+    assert not user.searchable_corpora().contains(corpus)
 
 def test_public_corpus_access(db, basic_corpus_public):
     user = CustomUser.objects.create(username='new-user', password='secret')
     corpus = Corpus.objects.get(name=basic_corpus_public)
-    assert user.can_search(corpus)
-    assert corpus in user.searchable_corpora()
+    assert user.searchable_corpora().contains(corpus)
     anon = CustomAnonymousUser()
-    assert anon.can_search(corpus)
-    assert corpus in anon.searchable_corpora()
+    assert anon.searchable_corpora().contains(corpus)
 
 def test_api_access(db, basic_mock_corpus, group_with_access, auth_client, auth_user):
     # default: no access

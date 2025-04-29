@@ -11,12 +11,6 @@ class CustomUser(django_auth_models.AbstractUser):
         help_text='Maximum documents that this user can download per query',
         default=DEFAULT_DOWNLOAD_LIMIT)
 
-    def can_search(self, corpus: Corpus) -> bool:
-        '''
-        Whether the user is allowed to search the corpus
-        '''
-        return self.searchable_corpora().contains(corpus)
-
     def searchable_corpora(self):
         '''
         Queryset of corpora that the user is allowed to search
@@ -41,9 +35,6 @@ class CustomAnonymousUser(django_auth_models.AnonymousUser):
         return True for any corpus assigned to the `basic` group
     '''
     profile = AnoymousProfile()
-
-    def can_search(self, corpus: Corpus):
-        return self.searchable_corpora().contains(corpus)
 
     def searchable_corpora(self):
         return Corpus.objects.filter(self.searchable_condition())
