@@ -5,12 +5,12 @@ import {
     OnDestroy, SimpleChanges
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, take, takeUntil, map, Observable, merge } from 'rxjs';
+import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
 import { actionIcons, formIcons } from '@shared/icons';
-import * as _ from 'lodash';
+import { mergeAsBooleans } from '@utils/observables';
 
 @Component({
     selector: 'ia-meta-form',
@@ -58,39 +58,19 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     changesSavedSucces$ = new Subject<void>();
     changesSavedError$ = new Subject<void>();
 
-    loading$: Observable<boolean> = merge(
-        this.changesSubmitted$.pipe(
-            map(_.constant(true)),
-        ),
-        this.changesSavedSucces$.pipe(
-            map(_.constant(false)),
-        ),
-        this.changesSavedError$.pipe(
-            map(_.constant(false)),
-        )
-    );
-    showSuccessMessage$: Observable<boolean> = merge(
-        this.changesSavedSucces$.pipe(
-            map(_.constant(true)),
-        ),
-        this.metaForm.valueChanges.pipe(
-            map(_.constant(false)),
-        ),
-        this.changesSubmitted$.pipe(
-            map(_.constant(false))
-        ),
-    );
-    showErrorMessage$: Observable<boolean> = merge(
-        this.changesSavedError$.pipe(
-            map(_.constant(true)),
-        ),
-        this.metaForm.valueChanges.pipe(
-            map(_.constant(false)),
-        ),
-        this.changesSubmitted$.pipe(
-            map(_.constant(false))
-        ),
-    );;
+    loading$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSubmitted$],
+        false: [this.changesSavedSucces$, this.changesSavedError$],
+    });
+    showSuccessMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedSucces$],
+        false: [this.metaForm.valueChanges, this.changesSubmitted$],
+    });
+
+    showErrorMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedError$],
+        false: [this.metaForm.valueChanges, this.changesSubmitted$]
+    });
 
     constructor(
         private formBuilder: FormBuilder,

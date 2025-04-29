@@ -5,12 +5,13 @@ import {
     CorpusDefinition,
 } from '@models/corpus-definition';
 import { MenuItem } from 'primeng/api';
-import { map, merge, Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
 import { ISO6393Languages } from '../constants';
 import { actionIcons, directionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
+import { mergeAsBooleans } from '@utils/observables';
 
 @Component({
     selector: 'ia-field-form',
@@ -64,29 +65,14 @@ export class FieldFormComponent {
     /** show succes message after success response, hide when form is changed or user
      * saves again
      */
-    showSuccesMessage$: Observable<boolean> = merge(
-        this.changesSavedSucces$.pipe(
-            map(() => true),
-        ),
-        this.valueChange$.pipe(
-            map(() => false),
-        ),
-        this.changesSubmitted$.pipe(
-            map(() => false),
-        )
-    );
-
-    showErrorMessage$: Observable<boolean> = merge(
-        this.changesSavedError$.pipe(
-            map(() => true),
-        ),
-        this.valueChange$.pipe(
-            map(() => false),
-        ),
-        this.changesSubmitted$.pipe(
-            map(() => false),
-        )
-    );
+    showSuccesMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedSucces$],
+        false: [this.valueChange$, this.changesSubmitted$],
+    });
+    showErrorMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedError$],
+        false: [this.valueChange$, this.changesSubmitted$],
+    });
 
     constructor(
         private el: ElementRef<HTMLElement>,
