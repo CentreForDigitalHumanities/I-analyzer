@@ -5,11 +5,12 @@ import {
     OnDestroy, SimpleChanges
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, take, takeUntil, map, Observable } from 'rxjs';
+import { Subject, take, takeUntil, map, Observable, merge } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { CorpusDefinition } from '../../../models/corpus-definition';
+import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
 import { actionIcons, formIcons } from '@shared/icons';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-meta-form',
@@ -53,6 +54,44 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         map(steps => steps[1].disabled)
     );
 
+    changesSubmitted$ = new Subject<void>();
+    changesSavedSucces$ = new Subject<void>();
+    changesSavedError$ = new Subject<void>();
+
+    loading$: Observable<boolean> = merge(
+        this.changesSubmitted$.pipe(
+            map(_.constant(true)),
+        ),
+        this.changesSavedSucces$.pipe(
+            map(_.constant(false)),
+        ),
+        this.changesSavedError$.pipe(
+            map(_.constant(false)),
+        )
+    );
+    showSuccessMessage$: Observable<boolean> = merge(
+        this.changesSavedSucces$.pipe(
+            map(_.constant(true)),
+        ),
+        this.metaForm.valueChanges.pipe(
+            map(_.constant(false)),
+        ),
+        this.changesSubmitted$.pipe(
+            map(_.constant(false))
+        ),
+    );
+    showErrorMessage$: Observable<boolean> = merge(
+        this.changesSavedError$.pipe(
+            map(_.constant(true)),
+        ),
+        this.metaForm.valueChanges.pipe(
+            map(_.constant(false)),
+        ),
+        this.changesSubmitted$.pipe(
+            map(_.constant(false))
+        ),
+    );;
+
     constructor(
         private formBuilder: FormBuilder,
         private corpusDefService: CorpusDefinitionService,
@@ -83,18 +122,27 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     }
 
     onSubmit(): void {
+        this.changesSubmitted$.next();
         const newMeta = this.metaForm.value;
         this.corpus.definition.meta =
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
-            next: (value) => {
-                this.metaForm.patchValue(value.definition.meta);
-            },
-            error: console.error,
+            next: this.onSubmitSuccess.bind(this),
+            error: this.onSubmitError.bind(this),
         });
     }
 
     nextStep() {
         this.corpusDefService.activateStep(1);
+    }
+
+    private onSubmitSuccess(value: APIEditableCorpus) {
+        this.metaForm.patchValue(value.definition.meta);
+        this.changesSavedSucces$.next();
+    }
+
+    private onSubmitError(err) {
+        this.changesSavedError$.next();
+        console.error(err);
     }
 }
