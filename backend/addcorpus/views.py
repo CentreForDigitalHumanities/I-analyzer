@@ -68,11 +68,23 @@ class CorpusImageView(APIView):
     Return the image for a corpus.
     '''
 
-    permission_classes = [CanSearchCorpus, CanEditCorpusOrReadOnly]
+    permission_classes = [CanSearchOrEditCorpus, CanEditCorpusOrReadOnly]
+
+    def get_object(self):
+        corpus_name = corpus_name_from_request(self.request)
+        return CorpusConfiguration.objects.get(corpus__name=corpus_name)
+
+    def corpus_from_object(self, obj: CorpusConfiguration) -> Corpus:
+        return obj.corpus
 
     def get(self, request, *args, **kwargs):
-        corpus_name = corpus_name_from_request(request)
-        corpus_config = CorpusConfiguration.objects.get(corpus__name=corpus_name)
+        try:
+            corpus_config = self.get_object()
+        except:
+            raise NotFound('Corpus does not exist')
+
+        self.check_object_permissions(request, corpus_config)
+
         if corpus_config.image:
             path = corpus_config.image.path
         else:
