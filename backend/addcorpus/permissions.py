@@ -47,17 +47,30 @@ class CanSearchCorpus(permissions.BasePermission):
         return user.can_search(corpus)
 
 
-class IsCurator(permissions.BasePermission):
+class CanEditCorpus(permissions.BasePermission):
     '''
     The user is permitted to use the corpus definition API.
+
+    This requires that the user is an admin user. In addition, permission for an
+    object requires that the user owns the corpus.
+
+    For object permissions: the view may handle an object related to a corpus rather than
+    the corpus object itself. Therefore, it must implement a method `corpus_from_object`,
+    which fetches the corpus object for the request.
     '''
 
-    message = 'You do not have permission to manage corpus definitions'
+    message = 'You do not have permission to manage this corpus'
 
     def has_permission(self, request: Request, view):
         return request.user.is_staff
 
-class IsCuratorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request: Request, view, obj):
+        user = request.user
+        corpus = view.corpus_from_object(obj)
+        return corpus.owners.contains(user)
+
+
+class CanEditCorpusOrReadOnly(permissions.BasePermission):
     '''
     The user is permitted to edit the corpus, or it is a read-only request.
     '''
@@ -65,7 +78,18 @@ class IsCuratorOrReadOnly(permissions.BasePermission):
     message = 'You do not have permission to edit this corpus'
 
     def has_permission(self, request: Request, view):
-        if request.method in permissions.SAFE_METHODS:
+        if self._is_safe_method(request):
             return True
 
         return request.user.is_staff
+
+    def has_object_permission(self, request, view, obj):
+        if self._is_safe_method(request):
+            return True
+
+        user = request.user
+        corpus = view.corpus_from_object(obj)
+        return corpus.owners.contains(user)
+
+    def _is_safe_method(self, request: Request):
+        return request.method in permissions.SAFE_METHODS

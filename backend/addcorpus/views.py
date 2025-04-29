@@ -2,7 +2,7 @@ import os
 
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
-from addcorpus.permissions import (CanSearchCorpus, IsCurator, IsCuratorOrReadOnly,
+from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditCorpusOrReadOnly,
                                    corpus_name_from_request)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
@@ -38,8 +38,11 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     Markdown documentation pages for corpora.
     '''
 
-    permission_classes = [IsCuratorOrReadOnly]
+    permission_classes = [CanEditCorpusOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
+
+    def corpus_from_object(self, obj: CorpusDocumentationPage) -> Corpus:
+        return obj.corpus_configuration.corpus
 
     def get_queryset(self):
         # curators are not limited to active corpora (to allow editing)
@@ -62,7 +65,7 @@ class CorpusImageView(APIView):
     Return the image for a corpus.
     '''
 
-    permission_classes = [CanSearchCorpus, IsCuratorOrReadOnly]
+    permission_classes = [CanSearchCorpus, CanEditCorpusOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         corpus_name = corpus_name_from_request(request)
@@ -93,8 +96,11 @@ class CorpusDocumentView(APIView):
 
 
 class CorpusDefinitionViewset(viewsets.ModelViewSet):
-    permission_classes = [IsCurator]
+    permission_classes = [CanEditCorpus]
     serializer_class = CorpusJSONDefinitionSerializer
+
+    def corpus_from_object(self, obj: Corpus) -> Corpus:
+        return obj
 
     def get_queryset(self):
         return Corpus.objects.filter(has_python_definition=False)
@@ -106,8 +112,12 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
 
 
 class CorpusDataFileViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanEditCorpus]
     serializer_class = CorpusDataFileSerializer
+
+    def corpus_from_object(self, obj: CorpusDataFile) -> Corpus:
+        return obj.corpus
+
 
     def get_queryset(self):
         queryset = CorpusDataFile.objects.all()

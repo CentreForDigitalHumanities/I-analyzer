@@ -5,8 +5,10 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 here = os.path.dirname(os.path.abspath(__file__))
 
 
-def test_csv_upload(admin_client, json_mock_corpus):
+def test_csv_upload(admin_user, admin_client, json_mock_corpus):
     fp = os.path.join(here, 'files', 'example.csv')
+
+    json_mock_corpus.owners.add(admin_user)
 
     # Test file upload
     with open(fp, 'rb') as f:
