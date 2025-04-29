@@ -164,7 +164,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Corpus
-        fields = ['id', 'active', 'definition']
+        fields = ['id', 'active', 'definition', 'owners']
         read_only_fields = ['id']
 
     def create(self, validated_data: Dict):
@@ -178,6 +178,10 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             Field.objects.create(
                 corpus_configuration=configuration, position=i, **field_data
             )
+
+        if validated_data.get('owners'):
+            for user in validated_data.get('owners'):
+                corpus.owners.add(user)
 
         if validated_data.get('active') == True:
             corpus.active = True

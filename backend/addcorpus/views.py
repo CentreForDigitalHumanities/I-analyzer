@@ -99,6 +99,11 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         return Corpus.objects.filter(has_python_definition=False)
 
+    def perform_create(self, serializer):
+        '''Overwrites ModelViewSet.perform_create
+        Auto-assigns the authenticated user on creation'''
+        return serializer.save(owners=[self.request.user])
+
 
 class CorpusDataFileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]

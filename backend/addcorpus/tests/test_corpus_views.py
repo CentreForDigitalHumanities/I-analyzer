@@ -143,7 +143,7 @@ def test_corpus_not_publication_ready(admin_client, basic_mock_corpus):
     response = admin_client.get('/api/corpus/')
     corpus = not any(c['name'] == basic_mock_corpus for c in response.data)
 
-def test_corpus_edit_views(admin_client: Client, json_corpus_definition: Dict, json_mock_corpus: Corpus):
+def test_corpus_edit_views(admin_user, admin_client: Client, json_corpus_definition: Dict, json_mock_corpus: Corpus):
     json_mock_corpus.delete()
 
     response = admin_client.get('/api/corpus/definitions/')
@@ -156,6 +156,9 @@ def test_corpus_edit_views(admin_client: Client, json_corpus_definition: Dict, j
         content_type='application/json',
     )
     assert status.is_success(response.status_code)
+
+    corpus = Corpus.objects.get(name=json_corpus_definition['name'])
+    assert corpus.owners.contains(admin_user)
 
     response = admin_client.get('/api/corpus/definitions/')
     assert status.is_success(response.status_code)
