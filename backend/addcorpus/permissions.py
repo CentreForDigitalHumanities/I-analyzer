@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
+from django.db.models import Q
+
 from addcorpus.models import Corpus, CorpusConfiguration
 
 
@@ -93,3 +95,14 @@ class CanEditCorpusOrReadOnly(permissions.BasePermission):
 
     def _is_safe_method(self, request: Request):
         return request.method in permissions.SAFE_METHODS
+
+
+class CanSearchOrEditCorpus(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        corpus = view.corpus_from_object(obj)
+
+        return user.can_search(corpus) or (
+            user.is_staff and corpus.owners.contains(user)
+        )

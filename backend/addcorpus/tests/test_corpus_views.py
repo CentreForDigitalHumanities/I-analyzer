@@ -179,12 +179,12 @@ def test_corpus_edit_view_auth(auth_user: CustomUser, auth_client: Client, json_
     auth_user.save()
 
     response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert status.is_client_error(response.status_code)
 
     json_mock_corpus.owners.add(auth_user)
 
     response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
-    assert response.status_code == status.HTTP_200_OK
+    assert status.is_success(response.status_code)
 
 
 def test_corpus_schema_view(client):

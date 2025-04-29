@@ -15,25 +15,21 @@ class CustomUser(django_auth_models.AbstractUser):
         '''
         Whether the user is allowed to search the corpus
         '''
-
-        if not corpus.active:
-            return False
-
-        # superusers do not need explicit group membership
-        if self.is_superuser:
-            return True
-
-        return self.groups.filter(corpora=corpus).exists()
+        return self.searchable_corpora().contains(corpus)
 
     def searchable_corpora(self):
         '''
         Queryset of corpora that the user is allowed to search
         '''
 
-        if self.is_superuser:
-            return Corpus.objects.filter(active=True)
+        return Corpus.objects.filter(self.searchable_condition())
 
-        return Corpus.objects.filter(active=True, groups__user=self).distinct()
+
+    def searchable_condition(self) -> models.Q:
+        if self.is_superuser:
+            return models.Q(active=True)
+        else:
+            return models.Q(active=True) & models.Q(groups__user=self)
 
 
 class AnoymousProfile(object):
@@ -47,14 +43,13 @@ class CustomAnonymousUser(django_auth_models.AnonymousUser):
     profile = AnoymousProfile()
 
     def can_search(self, corpus: Corpus):
-        if not corpus.active:
-            return False
-
-        Group = django_auth_models.Group
-        return Group.objects.filter(name=PUBLIC_GROUP_NAME, corpora=corpus).exists()
+        return self.searchable_corpora().contains(corpus)
 
     def searchable_corpora(self):
-        return Corpus.objects.filter(active=True, groups__name=PUBLIC_GROUP_NAME)
+        return Corpus.objects.filter(self.searchable_condition())
+
+    def searchable_condition(self):
+        return models.Q(active=True) & models.Q(groups__name=PUBLIC_GROUP_NAME)
 
 
 django_auth_models.AnonymousUser = CustomAnonymousUser

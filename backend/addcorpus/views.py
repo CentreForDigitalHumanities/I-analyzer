@@ -1,9 +1,10 @@
 import os
+from django.db.models import Q
 
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
 from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditCorpusOrReadOnly,
-                                   corpus_name_from_request)
+    corpus_name_from_request, CanSearchOrEditCorpus)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
                                    CorpusDocumentationPageSerializer,
@@ -38,23 +39,25 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     Markdown documentation pages for corpora.
     '''
 
-    permission_classes = [CanEditCorpusOrReadOnly]
+    permission_classes = [CanSearchOrEditCorpus, CanEditCorpusOrReadOnly]
     serializer_class = CorpusDocumentationPageSerializer
 
     def corpus_from_object(self, obj: CorpusDocumentationPage) -> Corpus:
         return obj.corpus_configuration.corpus
 
+
     def get_queryset(self):
+        condition = self.request.user.searchable_condition()
+
         # curators are not limited to active corpora (to allow editing)
         if self.request.user.is_staff:
-            corpora = Corpus.objects.all()
-        else:
-            corpora = self.request.user.searchable_corpora()
+            condition |= Q(owners=self.request.user)
 
         queried_corpus = self.request.query_params.get('corpus')
         if queried_corpus:
-            corpora = corpora.filter(name=queried_corpus)
+            condition &= Q(name=queried_corpus)
 
+        corpora = Corpus.objects.filter(condition)
         return CorpusDocumentationPage.objects.filter(
             corpus_configuration__corpus__in=corpora
         )
@@ -103,7 +106,9 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
         return obj
 
     def get_queryset(self):
-        return Corpus.objects.filter(has_python_definition=False)
+        user = self.request.user
+        return Corpus.objects.filter(owners=user, has_python_definition=False)
+
 
     def perform_create(self, serializer):
         '''Overwrites ModelViewSet.perform_create
@@ -120,7 +125,7 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        queryset = CorpusDataFile.objects.all()
+        queryset = CorpusDataFile.objects.filter(corpus__owners=self.request.user)
 
         corpus = self.request.query_params.get('corpus')
         if corpus:
