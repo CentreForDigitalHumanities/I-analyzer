@@ -31,7 +31,7 @@ def test_admin_serializer(admin_client, admin_credentials):
         'saml': False,
         'profile': {
             'enable_search_history': True,
-            'can_edit_corpora': False,
+            'can_edit_corpora': True,
         },
     }
 
