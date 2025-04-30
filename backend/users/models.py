@@ -20,11 +20,16 @@ class CustomUser(django_auth_models.AbstractUser):
 
 
     def searchable_condition(self) -> models.Q:
+        is_active = models.Q(active=True)
         if self.is_superuser:
-            return models.Q(active=True)
+            return is_active
         else:
-            return models.Q(active=True) & models.Q(groups__user=self)
-
+            in_group = models.Q(groups__user=self)
+            is_owner = models.Q(owners=self)
+            if self.is_staff:
+                return is_active & (in_group | is_owner)
+            else:
+                return is_active & in_group
 
 class AnoymousProfile(object):
     enable_search_history = False
