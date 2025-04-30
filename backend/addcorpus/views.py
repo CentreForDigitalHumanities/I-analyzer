@@ -4,8 +4,9 @@ from django.db.models import Q
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
 from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditOrSearchCorpus,
-    corpus_name_from_request, can_edit_corpora,
-    searchable_condition, searchable_corpora)
+    corpus_name_from_request,
+    searchable_condition, searchable_corpora,
+    editable_condition, editable_corpora)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
                                    CorpusDocumentationPageSerializer,
@@ -48,11 +49,8 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        condition = searchable_condition(self.request.user)
-
-        # if the user can edit corpora, they can also see inactive corpora they own
-        if can_edit_corpora(self.request.user):
-            condition |= Q(owners=self.request.user)
+        condition = searchable_condition(self.request.user) | \
+            editable_condition(self.request.user)
 
         queried_corpus = self.request.query_params.get('corpus')
         if queried_corpus:
@@ -119,8 +117,7 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
         return obj
 
     def get_queryset(self):
-        user = self.request.user
-        return Corpus.objects.filter(owners=user, has_python_definition=False)
+        return editable_corpora(self.request.user)
 
 
     def perform_create(self, serializer):
@@ -138,7 +135,9 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        queryset = CorpusDataFile.objects.filter(corpus__owners=self.request.user)
+        queryset = CorpusDataFile.objects.filter(
+            corpus__in=editable_corpora(self.request.user)
+        )
 
         corpus = self.request.query_params.get('corpus')
         if corpus:

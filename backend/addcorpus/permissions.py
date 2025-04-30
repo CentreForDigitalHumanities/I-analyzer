@@ -38,7 +38,7 @@ def searchable_condition(user: AbstractUser) -> Q:
     is_active = Q(active=True)
     is_public = Q(groups__name=PUBLIC_GROUP_NAME)
     in_group = Q(groups__user=user)
-    is_owned = Q(owners=user)
+    is_owned = editable_condition(user)
 
     if user.is_anonymous:
         # anonymous users can search public corpora
@@ -53,15 +53,32 @@ def searchable_condition(user: AbstractUser) -> Q:
         # regular users can search public corpora or get group access
         return is_active & (in_group | is_public)
 
+
 def searchable_corpora(user: AbstractUser) -> QuerySet[Corpus]:
     return Corpus.objects.filter(searchable_condition(user))
 
-def can_search(user: AbstractUser, corpus: Corpus):
+
+def can_search(user: AbstractUser, corpus: Corpus) -> bool:
     return searchable_corpora(user).contains(corpus)
 
 
-def can_edit_corpora(user: AbstractUser):
+def can_edit_corpora(user: AbstractUser) -> bool:
     return user.is_staff
+
+
+def editable_condition(user: AbstractUser) -> Q:
+    if not can_edit_corpora(user):
+        return Q(pk__in=[]) # match nothing
+    else:
+        return Q(owners=user, has_python_definition=False)
+
+
+def editable_corpora(user: AbstractUser) -> QuerySet[Corpus]:
+    return Corpus.objects.filter(editable_condition(user))
+
+
+def can_edit(user: AbstractUser, corpus: Corpus) -> bool:
+    return editable_corpora(user).contains(corpus)
 
 
 class CanSearchCorpus(permissions.BasePermission):
@@ -90,18 +107,18 @@ class CanEditCorpus(permissions.BasePermission):
 
     For object permissions: the view may handle an object related to a corpus rather than
     the corpus object itself. Therefore, it must implement a method `corpus_from_object`,
-    which fetches the corpus object for the request.
+    which fetches the corpus related to the requested object.
     '''
 
     message = 'You do not have permission to manage this corpus'
 
-    def has_permission(self, request: Request, view):
+    def has_permission(self, request: Request, view) -> bool:
         return can_edit_corpora(request.user)
 
-    def has_object_permission(self, request: Request, view, obj):
+    def has_object_permission(self, request: Request, view, obj) -> bool:
         user = request.user
         corpus = view.corpus_from_object(obj)
-        return corpus.owners.contains(user)
+        return can_edit(user, corpus)
 
 
 class CanEditOrSearchCorpus(permissions.BasePermission):
@@ -112,23 +129,24 @@ class CanEditOrSearchCorpus(permissions.BasePermission):
     Typically used for corpus metadata that can be edited but is also accessible when
     searching. Note that if the user has editing permission, the corpus is not required
     to be active (i.e. it is not guaranteed to be complete).
+
+    Like `CanEditCorpus`, this requires the view to implement corpus_from_object to check
+    object permissions.
     '''
 
     message = 'You do not have access to this corpus'
 
-    def has_permission(self, request: Request, view):
+    def has_permission(self, request: Request, view) -> bool:
         return self._is_safe_method(request) or can_edit_corpora(request.user)
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request: Request, view, obj) -> bool:
         user = request.user
         corpus = view.corpus_from_object(obj)
 
-        can_edit = can_edit_corpora(user) and corpus.owners.contains(user)
-
         if self._is_safe_method(request):
-            return can_search(user, corpus)
+            return can_search(user, corpus) or can_edit(user, corpus)
 
-        return can_edit
+        return can_edit(user, corpus)
 
     def _is_safe_method(self, request: Request):
         return request.method in permissions.SAFE_METHODS
