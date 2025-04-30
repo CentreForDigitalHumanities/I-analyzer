@@ -46,7 +46,7 @@ def searchable_condition(user: AbstractUser) -> Q:
     elif user.is_superuser:
         # superusers can search anything
         return is_active
-    elif user.is_staff:
+    elif can_edit_corpora(user):
         # if the user can edit corpora, also include their own
         return is_active & (in_group | is_public | is_owned)
     else:
@@ -58,6 +58,11 @@ def searchable_corpora(user: AbstractUser) -> QuerySet[Corpus]:
 
 def can_search(user: AbstractUser, corpus: Corpus):
     return searchable_corpora(user).contains(corpus)
+
+
+def can_edit_corpora(user: AbstractUser):
+    return user.is_staff
+
 
 class CanSearchCorpus(permissions.BasePermission):
     message = 'You do not have permission to access this corpus'
@@ -91,7 +96,7 @@ class CanEditCorpus(permissions.BasePermission):
     message = 'You do not have permission to manage this corpus'
 
     def has_permission(self, request: Request, view):
-        return request.user.is_staff
+        return can_edit_corpora(request.user)
 
     def has_object_permission(self, request: Request, view, obj):
         user = request.user
@@ -112,16 +117,13 @@ class CanEditOrSearchCorpus(permissions.BasePermission):
     message = 'You do not have access to this corpus'
 
     def has_permission(self, request: Request, view):
-        if self._is_safe_method(request):
-            return True
-
-        return request.user.is_staff
+        return self._is_safe_method(request) or can_edit_corpora(request.user)
 
     def has_object_permission(self, request, view, obj):
         user = request.user
         corpus = view.corpus_from_object(obj)
 
-        can_edit = user.is_staff and corpus.owners.contains(user)
+        can_edit = can_edit_corpora(user) and corpus.owners.contains(user)
 
         if self._is_safe_method(request):
             return can_search(user, corpus)

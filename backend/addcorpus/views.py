@@ -4,7 +4,7 @@ from django.db.models import Q
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
 from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditOrSearchCorpus,
-    corpus_name_from_request,
+    corpus_name_from_request, can_edit_corpora,
     searchable_condition, searchable_corpora)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
@@ -51,7 +51,7 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
         condition = searchable_condition(self.request.user)
 
         # if the user can edit corpora, they can also see inactive corpora they own
-        if self.request.user.is_staff:
+        if can_edit_corpora(self.request.user):
             condition |= Q(owners=self.request.user)
 
         queried_corpus = self.request.query_params.get('corpus')
