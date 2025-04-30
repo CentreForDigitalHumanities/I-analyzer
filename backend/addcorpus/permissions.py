@@ -35,23 +35,27 @@ def corpus_config_from_request(request: Request) -> CorpusConfiguration:
 
 
 def searchable_condition(user: AbstractUser) -> Q:
+    '''
+    Condition to determine whether a corpus is searchable for a user.
+
+    Always requires that the corpus is active. In addition, users must have access to the
+    corpus:
+    - Anonymous users can search public corpora
+    - Superusers can search anything
+    - Normal users can search public corpora or get access through a group. Users can also
+        search any active corpora that they can edit.
+    '''
     is_active = Q(active=True)
     is_public = Q(groups__name=PUBLIC_GROUP_NAME)
     in_group = Q(groups__user=user)
-    is_owned = editable_condition(user)
+    is_editable = editable_condition(user)
 
     if user.is_anonymous:
-        # anonymous users can search public corpora
         return is_active & is_public
     elif user.is_superuser:
-        # superusers can search anything
         return is_active
-    elif can_edit_corpora(user):
-        # if the user can edit corpora, also include their own
-        return is_active & (in_group | is_public | is_owned)
     else:
-        # regular users can search public corpora or get group access
-        return is_active & (in_group | is_public)
+        return is_active & (is_public | in_group | is_editable)
 
 
 def searchable_corpora(user: AbstractUser) -> QuerySet[Corpus]:
@@ -63,6 +67,9 @@ def can_search(user: AbstractUser, corpus: Corpus) -> bool:
 
 
 def can_edit_corpora(user: AbstractUser) -> bool:
+    '''
+    Whether the user has permission to edit corpora in general.
+    '''
     if user.is_anonymous:
         return False
     else:
@@ -70,6 +77,13 @@ def can_edit_corpora(user: AbstractUser) -> bool:
 
 
 def editable_condition(user: AbstractUser) -> Q:
+    '''
+    Condition to determine whether a user is allowed to edit a corpus.
+
+    If the user is not allowed to edit corpora at all, this will return an empty set.
+    Otherwise, the user must own the corpus, and the corpus must not have Python
+    definition.
+    '''
     if not can_edit_corpora(user):
         return Q(pk__in=[]) # match nothing
     else:
