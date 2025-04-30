@@ -30,7 +30,8 @@ export const encodeUserData = (data: Partial<User>): Partial<UserResponse> => {
         isAdmin: 'is_admin',
         downloadLimit: 'download_limit',
         isSamlLogin: 'saml',
-        enableSearchHistory: 'profile.enable_search_history'
+        enableSearchHistory: 'profile.enable_search_history',
+        canEditCorpora: 'profile.can_edit_corpora',
     };
 
     const encoded = {};
