@@ -3,8 +3,8 @@ from django.db.models import Q
 
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
-from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditCorpusOrReadOnly,
-    corpus_name_from_request, CanSearchOrEditCorpus,
+from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditOrSearchCorpus,
+    corpus_name_from_request,
     searchable_condition, searchable_corpora)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
@@ -40,7 +40,7 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     Markdown documentation pages for corpora.
     '''
 
-    permission_classes = [CanSearchOrEditCorpus, CanEditCorpusOrReadOnly]
+    permission_classes = [CanEditOrSearchCorpus]
     serializer_class = CorpusDocumentationPageSerializer
 
     def corpus_from_object(self, obj: CorpusDocumentationPage) -> Corpus:
@@ -69,7 +69,7 @@ class CorpusImageView(APIView):
     Return the image for a corpus.
     '''
 
-    permission_classes = [CanSearchOrEditCorpus, CanEditCorpusOrReadOnly]
+    permission_classes = [CanEditOrSearchCorpus]
 
     def get_object(self):
         corpus_name = corpus_name_from_request(self.request)

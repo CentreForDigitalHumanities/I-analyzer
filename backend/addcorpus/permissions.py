@@ -99,12 +99,17 @@ class CanEditCorpus(permissions.BasePermission):
         return corpus.owners.contains(user)
 
 
-class CanEditCorpusOrReadOnly(permissions.BasePermission):
+class CanEditOrSearchCorpus(permissions.BasePermission):
     '''
-    The user is permitted to edit the corpus, or it is a read-only request.
+    Either the user is permitted to edit the corpus, or it is a read-only request
+    and the user is allowed to search the corpus.
+
+    Typically used for corpus metadata that can be edited but is also accessible when
+    searching. Note that if the user has editing permission, the corpus is not required
+    to be active (i.e. it is not guaranteed to be complete).
     '''
 
-    message = 'You do not have permission to edit this corpus'
+    message = 'You do not have access to this corpus'
 
     def has_permission(self, request: Request, view):
         if self._is_safe_method(request):
@@ -113,23 +118,15 @@ class CanEditCorpusOrReadOnly(permissions.BasePermission):
         return request.user.is_staff
 
     def has_object_permission(self, request, view, obj):
-        if self._is_safe_method(request):
-            return True
-
         user = request.user
         corpus = view.corpus_from_object(obj)
-        return corpus.owners.contains(user)
+
+        can_edit = user.is_staff and corpus.owners.contains(user)
+
+        if self._is_safe_method(request):
+            return can_search(user, corpus)
+
+        return can_edit
 
     def _is_safe_method(self, request: Request):
         return request.method in permissions.SAFE_METHODS
-
-
-class CanSearchOrEditCorpus(permissions.BasePermission):
-
-    def has_object_permission(self, request, view, obj):
-        user = request.user
-        corpus = view.corpus_from_object(obj)
-
-        return can_search(user, corpus) or (
-            user.is_staff and corpus.owners.contains(user)
-        )
