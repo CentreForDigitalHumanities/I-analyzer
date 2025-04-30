@@ -13,6 +13,7 @@ export const parseUserData = (result: UserResponse): User => new User(
     result.download_limit == null ? 0 : result.download_limit,
     result.saml,
     result.profile.enable_search_history,
+    result.profile.can_edit_corpora,
 );
 
 /**
