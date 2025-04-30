@@ -175,8 +175,8 @@ def test_corpus_edit_views(admin_user, admin_client: Client, json_corpus_definit
 
 
 def test_corpus_edit_view_auth(auth_user: CustomUser, auth_client: Client, json_mock_corpus: Corpus):
-    auth_user.is_staff = True
-    auth_user.save()
+    auth_user.profile.can_edit_corpora = True
+    auth_user.profile.save()
 
     response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
     assert status.is_client_error(response.status_code)

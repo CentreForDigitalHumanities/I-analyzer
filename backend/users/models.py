@@ -1,6 +1,6 @@
 import django.contrib.auth.models as django_auth_models
 from django.db import models
-from addcorpus.models import Corpus
+
 
 DEFAULT_DOWNLOAD_LIMIT = 10000
 PUBLIC_GROUP_NAME = 'basic'
@@ -40,6 +40,11 @@ class UserProfile(models.Model):
     enable_search_history = models.BooleanField(
         help_text='Whether to save the search history of this user',
         default=True,
+    )
+
+    can_edit_corpora = models.BooleanField(
+        default=False,
+        help_text='Whether the user is allowed to edit corpora',
     )
 
     def __str__(self):

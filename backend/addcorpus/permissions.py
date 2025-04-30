@@ -63,7 +63,10 @@ def can_search(user: AbstractUser, corpus: Corpus) -> bool:
 
 
 def can_edit_corpora(user: AbstractUser) -> bool:
-    return user.is_staff
+    if user.is_anonymous:
+        return False
+    else:
+        return user.is_superuser or user.profile.can_edit_corpora
 
 
 def editable_condition(user: AbstractUser) -> Q:
@@ -110,7 +113,7 @@ class CanEditCorpus(permissions.BasePermission):
     which fetches the corpus related to the requested object.
     '''
 
-    message = 'You do not have permission to manage this corpus'
+    message = 'You do not have permission to edit this corpus'
 
     def has_permission(self, request: Request, view) -> bool:
         return can_edit_corpora(request.user)
