@@ -4,7 +4,8 @@ from django.db.models import Q
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
 from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditCorpusOrReadOnly,
-    corpus_name_from_request, CanSearchOrEditCorpus)
+    corpus_name_from_request, CanSearchOrEditCorpus,
+    searchable_condition, searchable_corpora)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
                                    CorpusDocumentationPageSerializer,
@@ -31,7 +32,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
     serializer_class = CorpusSerializer
 
     def get_queryset(self):
-        return self.request.user.searchable_corpora().order_by('-date_created')
+        return searchable_corpora(self.request.user).order_by('-date_created')
 
 
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
@@ -47,9 +48,9 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        condition = self.request.user.searchable_condition()
+        condition = searchable_condition(self.request.user)
 
-        # curators are not limited to active corpora (to allow editing)
+        # if the user can edit corpora, they can also see inactive corpora they own
         if self.request.user.is_staff:
             condition |= Q(owners=self.request.user)
 

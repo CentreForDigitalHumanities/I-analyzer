@@ -1,7 +1,10 @@
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
+from django.contrib.auth.models import AbstractUser
+from django.db.models import Q, QuerySet
 
+from users.models import PUBLIC_GROUP_NAME
 from addcorpus.models import Corpus, CorpusConfiguration
 
 
@@ -31,6 +34,31 @@ def corpus_config_from_request(request: Request) -> CorpusConfiguration:
     return CorpusConfiguration.objects.get(corpus__name=corpus_name)
 
 
+def searchable_condition(user: AbstractUser) -> Q:
+    is_active = Q(active=True)
+    is_public = Q(groups__name=PUBLIC_GROUP_NAME)
+    in_group = Q(groups__user=user)
+    is_owned = Q(owners=user)
+
+    if user.is_anonymous:
+        # anonymous users can search public corpora
+        return is_active & is_public
+    elif user.is_superuser:
+        # superusers can search anything
+        return is_active
+    elif user.is_staff:
+        # if the user can edit corpora, also include their own
+        return is_active & (in_group | is_public | is_owned)
+    else:
+        # regular users can search public corpora or get group access
+        return is_active & (in_group | is_public)
+
+def searchable_corpora(user: AbstractUser) -> QuerySet[Corpus]:
+    return Corpus.objects.filter(searchable_condition(user))
+
+def can_search(user: AbstractUser, corpus: Corpus):
+    return searchable_corpora(user).contains(corpus)
+
 class CanSearchCorpus(permissions.BasePermission):
     message = 'You do not have permission to access this corpus'
 
@@ -45,7 +73,7 @@ class CanSearchCorpus(permissions.BasePermission):
             raise NotFound('Corpus does not exist')
 
         # check if the user has access
-        return user.searchable_corpora().contains(corpus)
+        return can_search(user, corpus)
 
 
 class CanEditCorpus(permissions.BasePermission):
@@ -102,6 +130,6 @@ class CanSearchOrEditCorpus(permissions.BasePermission):
         user = request.user
         corpus = view.corpus_from_object(obj)
 
-        return user.searchable_corpora().contains(corpus) or (
+        return can_search(user, corpus) or (
             user.is_staff and corpus.owners.contains(user)
         )
