@@ -31,16 +31,13 @@ from addcorpus.validation.indexing import (validate_essential_fields,
 from addcorpus.validation.publishing import (
     validate_default_sort,
     validate_ngram_has_date_field,
+    validate_complete_metadata
 )
 from es.client import elasticsearch
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
-DEFAULT_MIN_YEAR = 1800
-
-def default_max_year() -> int:
-    return datetime.now().year
 
 
 class Corpus(models.Model):
@@ -141,6 +138,7 @@ class Corpus(models.Model):
             CorpusNotPublishableError: interface options are improperly configured.
         '''
 
+        validate_complete_metadata(self)
         validate_has_configuration(self)
 
         config = self.configuration_obj
@@ -225,11 +223,13 @@ class CorpusConfiguration(models.Model):
     )
     min_year = models.IntegerField(
         help_text='earliest year for the data in the corpus',
-        default=DEFAULT_MIN_YEAR,
+        null=True,
+        blank=True,
     )
     max_year = models.IntegerField(
         help_text='latest year for the data in the corpus',
-        default=default_max_year,
+        null=True,
+        blank=True,
     )
     scan_image_type = models.CharField(
         max_length=64,
