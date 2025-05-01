@@ -6,10 +6,13 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
+import { actionIcons } from '@shared/icons';
+import * as _ from 'lodash';
+import { ApiService } from '@services';
 
 @Component({
     selector: 'ia-meta-form',
@@ -17,7 +20,7 @@ import { ISO6393Languages } from '../constants';
     styleUrl: './meta-form.component.scss',
 })
 export class MetaFormComponent implements OnChanges, OnDestroy {
-    @Input() corpus: CorpusDefinition;
+    @Input({required: true}) corpus!: CorpusDefinition;
 
     categories = [
         { value: 'parliament', label: 'Parliamentary debates' },
@@ -43,13 +46,16 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         languages: [['']],
     });
 
+    file$ = new BehaviorSubject<File | undefined>(undefined);
     destroy$ = new Subject<void>();
 
     languageOptions = ISO6393Languages;
+    actionIcons = actionIcons;
 
     constructor(
         private formBuilder: FormBuilder,
-        private corpusDefService: CorpusDefinitionService
+        private corpusDefService: CorpusDefinitionService,
+        private apiService: ApiService,
     ) {}
 
     get currentCategoryLabel(): string {
@@ -84,5 +90,18 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
             },
             error: console.error,
         });
+    }
+
+    onUpload(event: InputEvent) {
+        const files: File[] = event.target['files'];
+        const file = files ? _.first(files) : undefined;
+        this.file$.next(file);
+        const corpusName = this.corpusDefService.corpus$.value.definition.name;
+        this.apiService
+            .updateCorpusImage(corpusName, file)
+            .pipe(
+                takeUntil(this.destroy$),
+            )
+            .subscribe();
     }
 }

@@ -58,6 +58,35 @@
     </div>
 
     <div class="field">
+        <p class="label">
+            Image
+        </p>
+
+        <ng-container *ngIf="corpus?.definition?.name as name">
+            <p>Current image:</p>
+            <img src="/api/corpus/image/{{name}}" />
+        </ng-container>
+
+        <div class="file has-name">
+            <label class="file-label">
+                <input class="file-input" type="file" name="definition-upload"
+                    accept="image/png,image/jpeg" (input)="onUpload($event)" />
+                <span class="file-cta">
+                    <span class="file-icon" aria-hidden="true">
+                        <fa-icon [icon]="actionIcons.upload"></fa-icon>
+                    </span>
+                    <span class="file-label">Upload image file...</span>
+                </span>
+                <span class="file-name" *ngIf="file$ | async as file">
+                    {{file.name}}
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <div class="block"></div>
+
+    <div class="field">
         <p class="control">
             <button class="button is-primary">Next</button>
         </p>
