@@ -1,6 +1,7 @@
 <h1 class="title">Corpus Metadata</h1>
 <p class="subtitle">Provide some basic information about your corpus</p>
-<form (ngSubmit)="onSubmit()" [formGroup]="metaForm">
+<form (ngSubmit)="onSubmit()" class="box" [formGroup]="metaForm">
+    <h2 class="title is-5">Metadata</h2>
 
     <div class="field">
         <label class="label" for="title">Title</label>
@@ -57,6 +58,18 @@
         <p class="help">All or the most important languages occuring in your corpus</p>
     </div>
 
+    <div class="block"></div>
+
+    <div class="field">
+        <p class="control">
+            <button class="button is-primary">Next</button>
+        </p>
+    </div>
+</form>
+
+<div class="box">
+    <h2 class="title is-5">Image</h2>
+
     <div class="field">
         <p class="label">
             Image
@@ -90,11 +103,4 @@
         </button>
     </div>
 
-    <div class="block"></div>
-
-    <div class="field">
-        <p class="control">
-            <button class="button is-primary">Next</button>
-        </p>
-    </div>
-</form>
+</div>
