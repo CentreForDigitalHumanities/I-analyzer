@@ -92,7 +92,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         });
     }
 
-    onUpload(event: InputEvent) {
+    onImageUpload(event: InputEvent) {
         const files: File[] = event.target['files'];
         const file = files ? _.first(files) : undefined;
         this.file$.next(file);
@@ -103,5 +103,12 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
                 takeUntil(this.destroy$),
             )
             .subscribe();
+    }
+
+    deleteImage() {
+        const corpusName = this.corpusDefService.corpus$.value.definition.name;
+        this.apiService.deleteCorpusImage(corpusName).pipe(
+            takeUntil(this.destroy$),
+        ).subscribe();
     }
 }

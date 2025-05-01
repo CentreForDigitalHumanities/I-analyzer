@@ -323,6 +323,11 @@ export class ApiService {
         return this.http.put(url, formData);
     }
 
+    public deleteCorpusImage(corpusName: string): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        return this.http.delete(url);
+    }
+
     // Corpus datafiles
     public createDataFile(
         corpusId: number,

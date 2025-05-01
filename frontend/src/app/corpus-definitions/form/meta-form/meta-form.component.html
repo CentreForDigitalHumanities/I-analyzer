@@ -70,7 +70,7 @@
         <div class="file has-name">
             <label class="file-label">
                 <input class="file-input" type="file" name="definition-upload"
-                    accept="image/png,image/jpeg" (input)="onUpload($event)" />
+                    accept="image/png,image/jpeg" (input)="onImageUpload($event)" />
                 <span class="file-cta">
                     <span class="file-icon" aria-hidden="true">
                         <fa-icon [icon]="actionIcons.upload"></fa-icon>
@@ -82,6 +82,10 @@
                 </span>
             </label>
         </div>
+
+        <button class="button" type="button" (click)="deleteImage()">
+            Remove image
+        </button>
     </div>
 
     <div class="block"></div>
