@@ -66,11 +66,13 @@ class Corpus(models.Model):
         auto_now_add=True,
         help_text='date on which the corpus was added to the database',
     )
-    owners = models.ManyToManyField(
+    owner = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
         related_name='owned_corpora',
+        null=True,
         blank=True,
-        help_text='users that created the corpus and are allowed to edit it',
+        help_text='user that created the corpus and is allowed to edit it',
     )
 
     @property

@@ -87,7 +87,7 @@ def editable_condition(user: AbstractUser) -> Q:
     if not can_edit_corpora(user):
         return Q(pk__in=[]) # match nothing
     else:
-        return Q(owners=user, has_python_definition=False)
+        return Q(owner=user, has_python_definition=False)
 
 
 def editable_corpora(user: AbstractUser) -> QuerySet[Corpus]:

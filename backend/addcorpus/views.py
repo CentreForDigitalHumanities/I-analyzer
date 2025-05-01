@@ -123,7 +123,7 @@ class CorpusDefinitionViewset(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         '''Overwrites ModelViewSet.perform_create
         Auto-assigns the authenticated user on creation'''
-        return serializer.save(owners=[self.request.user])
+        return serializer.save(owner=self.request.user)
 
 
 class CorpusDataFileViewSet(viewsets.ModelViewSet):

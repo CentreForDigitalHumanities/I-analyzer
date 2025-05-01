@@ -167,7 +167,7 @@ def test_corpus_edit_views(admin_user, admin_client: Client, json_corpus_definit
     assert status.is_success(response.status_code)
 
     corpus = Corpus.objects.get(name=json_corpus_definition['name'])
-    assert corpus.owners.contains(admin_user)
+    assert corpus.owner == admin_user
 
     response = admin_client.get('/api/corpus/definitions/')
     assert status.is_success(response.status_code)
@@ -181,7 +181,8 @@ def test_corpus_edit_view_auth(auth_user: CustomUser, auth_client: Client, json_
     response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
     assert status.is_client_error(response.status_code)
 
-    json_mock_corpus.owners.add(auth_user)
+    json_mock_corpus.owner = auth_user
+    json_mock_corpus.save()
 
     response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
     assert status.is_success(response.status_code)

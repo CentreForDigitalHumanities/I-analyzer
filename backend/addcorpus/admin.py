@@ -26,11 +26,10 @@ class CorpusAdmin(admin.ModelAdmin):
     ]
     fields = [
         'name', 'groups', 'configuration', 'date_created', 'has_python_definition',
-        'ready_to_index', 'ready_to_publish', 'active', 'owners',
+        'ready_to_index', 'ready_to_publish', 'active', 'owner',
     ]
     list_display = ['name', 'active']
     list_filter = ['groups', 'active']
-    filter_horizontal = ['owners']
     inlines = [InlineDatafileAdmin]
 
 class InlineFieldAdmin(admin.StackedInline):
