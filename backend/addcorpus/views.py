@@ -92,6 +92,23 @@ class CorpusImageView(APIView):
         return FileResponse(open(path, 'rb'))
 
 
+    def put(self, request, *args, **kwargs):
+        corpus_config = self.get_object()
+        file = request.FILES['file']
+        corpus_config.image = file
+        corpus_config.save()
+
+        return Response('Image saved', HTTP_200_OK)
+
+
+    def delete(self, request, *args, **kwargs):
+        corpus_config = self.get_object()
+        corpus_config.image = None
+        corpus_config.save()
+
+        return Response('Image deleted', HTTP_200_OK)
+
+
 class CorpusDocumentView(APIView):
     '''
     Return a file for a corpus - e.g. extra metadata.
