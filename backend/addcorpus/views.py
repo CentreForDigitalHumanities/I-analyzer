@@ -94,8 +94,13 @@ class CorpusImageView(APIView):
 
     def put(self, request, *args, **kwargs):
         corpus_config = self.get_object()
+
+        clear_corpus_image(corpus_config.corpus)
+
         file = request.FILES['file']
         corpus_config.image = file
+        name, ext = os.path.splitext(corpus_config.image.name)
+        corpus_config.image.name = corpus_config.corpus.name + ext
         corpus_config.save()
 
         return Response('Image saved', HTTP_200_OK)
