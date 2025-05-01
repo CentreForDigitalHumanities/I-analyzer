@@ -84,10 +84,12 @@ export interface APIEditableCorpus {
     id?: number;
     active: boolean;
     definition: APICorpusDefinition;
+    has_image?: boolean;
 }
 
 export class CorpusDefinition {
     active = false;
+    hasImage = false;
     loading$ = new BehaviorSubject<boolean>(true);
 
     definition: APICorpusDefinition;
@@ -144,5 +146,6 @@ export class CorpusDefinition {
         this.active = result.active;
         this.setFromDefinition(result.definition);
         this.loading$.next(false);
+        this.hasImage = result.has_image;
     }
 }

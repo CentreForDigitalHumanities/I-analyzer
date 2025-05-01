@@ -62,6 +62,8 @@
             Image
         </p>
 
+        <p *ngIf="!corpus.hasImage">No image</p>
+
         <ng-container *ngIf="corpus?.definition?.name as name">
             <p>Current image:</p>
             <img src="/api/corpus/image/{{name}}" />
