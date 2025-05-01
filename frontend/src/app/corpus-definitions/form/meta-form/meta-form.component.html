@@ -64,9 +64,9 @@
 
         <p *ngIf="!corpus.hasImage">No image</p>
 
-        <ng-container *ngIf="corpus?.definition?.name as name">
+        <ng-container *ngIf="imageURL$ | async as url">
             <p>Current image:</p>
-            <img src="/api/corpus/image/{{name}}" />
+            <img  [src]="url" />
         </ng-container>
 
         <div class="file has-name">

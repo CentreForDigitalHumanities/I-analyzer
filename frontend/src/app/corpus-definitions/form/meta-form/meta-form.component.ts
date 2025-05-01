@@ -3,10 +3,11 @@ import {
     Input,
     OnChanges,
     OnDestroy,
+    OnInit,
     SimpleChanges,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, startWith, Subject, switchMap, take, takeUntil, tap, timestamp, withLatestFrom } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
@@ -52,6 +53,9 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     languageOptions = ISO6393Languages;
     actionIcons = actionIcons;
 
+    imageUpdated$ = new Subject<void>();
+    imageURL$: Observable<string>;
+
     constructor(
         private formBuilder: FormBuilder,
         private corpusDefService: CorpusDefinitionService,
@@ -66,8 +70,17 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
+            this.imageURL$ = this.corpus.definitionUpdated$.pipe(
+                map(() => this.corpus.definition.name),
+                map(name => `/api/corpus/image/${name}`),
+                timestamp(),
+                map(({value, timestamp}) => `${value}?t=${timestamp}`)
+            );
             this.corpus.definitionUpdated$
-                .pipe(takeUntil(this.destroy$))
+                .pipe(
+                    take(1),
+                    takeUntil(this.destroy$)
+                )
                 .subscribe(() =>
                     this.metaForm.patchValue(this.corpus.definition.meta)
                 );
@@ -84,9 +97,10 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         this.corpus.definition.meta =
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
-            next: () => {
+            next: (value) => {
                 this.corpusDefService.toggleStepDisabled(1);
                 this.corpusDefService.activateStep(1);
+                this.metaForm.patchValue(value.definition.meta);
             },
             error: console.error,
         });
@@ -102,13 +116,22 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
             .pipe(
                 takeUntil(this.destroy$),
             )
-            .subscribe();
+            .subscribe({
+                next: () => this.onImageUpdate(),
+            });
     }
 
     deleteImage() {
         const corpusName = this.corpusDefService.corpus$.value.definition.name;
         this.apiService.deleteCorpusImage(corpusName).pipe(
             takeUntil(this.destroy$),
-        ).subscribe();
+        ).subscribe({
+            next: () => this.onImageUpdate(),
+        });
     }
+
+    onImageUpdate() {
+        this.corpus.save();
+    }
+
 }
