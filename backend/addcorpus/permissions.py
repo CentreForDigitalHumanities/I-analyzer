@@ -119,8 +119,8 @@ class CanEditCorpus(permissions.BasePermission):
     '''
     The user is permitted to use the corpus definition API.
 
-    This requires that the user is an admin user. In addition, permission for an
-    object requires that the user owns the corpus.
+    This requires that the user can edit corpora in general. In addition, permission for
+    an object requires that the user owns the corpus.
 
     For object permissions: the view may handle an object related to a corpus rather than
     the corpus object itself. Therefore, it must implement a method `corpus_from_object`,
