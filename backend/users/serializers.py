@@ -16,6 +16,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
     is_admin = serializers.BooleanField(source='is_staff', read_only=True)
+    saml = serializers.BooleanField(read_only=True)
+    download_limit = serializers.IntegerField(read_only=True)
     profile = UserProfileSerializer()
 
     class Meta(UserDetailsSerializer.Meta):
