@@ -228,10 +228,6 @@
             "license": {
                 "type": "string",
                 "description": "License for re-use"
-            },
-            "terms_of_service": {
-                "type": "string",
-                "description": "Terms of service"
             }
         }
     },

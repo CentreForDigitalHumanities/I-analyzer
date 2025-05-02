@@ -40,6 +40,7 @@ def _parse_configuration(data: Dict) -> Dict:
         'source_data_delimiter': get_path(
             data, 'source_data', 'options', 'delimiter') or DEFAULT_CSV_DELIMITER,
         'fields': _import_fields(data),
+        'documentation_pages': _import_documentation(data)
     }
 
 
@@ -269,3 +270,14 @@ def _include_ngram_visualisation(fields: Iterable[Dict]) -> None:
         for field in fields:
             if field['display_type'] == 'text_content':
                 field['visualizations'].append(VisualizationType.NGRAM.value)
+
+
+def _import_documentation(data: Dict):
+    docs = get_path(data, 'documentation') or {}
+    return [
+        {
+            'type': key,
+            'content': content,
+        }
+        for (key, content) in docs.items()
+    ]
