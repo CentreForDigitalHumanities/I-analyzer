@@ -85,10 +85,13 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         this.corpus.save().subscribe({
             next: (value) => {
                 this.corpusDefService.toggleStepDisabled(1);
-                this.corpusDefService.activateStep(1);
                 this.metaForm.patchValue(value.definition.meta);
             },
             error: console.error,
         });
+    }
+
+    nextStep() {
+        this.corpusDefService.activateStep(1);
     }
 }
