@@ -9,7 +9,6 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     CorpusDocumentationPage,
-    CorpusDocumentationPageSubmitData,
     DateTermFrequencyParameters,
     DocumentTagsResponse,
     Download,
@@ -255,21 +254,6 @@ export class ApiService {
             `documentation/${pageID}/`
         );
         return this.http.get<CorpusDocumentationPage>(url);
-    }
-
-    public createCorpusDocumentationPage(data: CorpusDocumentationPageSubmitData) {
-        const url = this.apiRoute(this.corpusApiUrl, 'documentation/');
-        return this.http.post(url, data);
-    }
-
-    public updateCorpusDocumentationPage(pageID: number, data: CorpusDocumentationPageSubmitData) {
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
-        return this.http.put(url, data);
-    }
-
-    public deleteCorpusDocumentationPage(pageID: number) {
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
-        return this.http.delete(url);
     }
 
     /** fetch a list of all corpora available for searching */

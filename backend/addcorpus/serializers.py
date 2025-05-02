@@ -136,7 +136,6 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
     index = serializers.IntegerField(source='page_index', read_only=True)
     content = DocumentationTemplateField(read_only=True)
-    content_template = serializers.CharField(source='content')
     corpus = serializers.SlugRelatedField(
         source='corpus_configuration',
         queryset=CorpusConfiguration.objects.all(),
@@ -145,7 +144,7 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CorpusDocumentationPage
-        fields = ['id', 'corpus', 'type', 'content', 'content_template', 'index']
+        fields = ['id', 'corpus', 'type', 'content', 'index']
 
 
 class JSONDefinitionField(serializers.Field):
