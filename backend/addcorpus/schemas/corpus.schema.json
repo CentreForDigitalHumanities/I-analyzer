@@ -213,6 +213,28 @@
             }
         }
     },
+    "documentation": {
+        "type": "object",
+        "description": "Documentation pages",
+        "properties": {
+            "general": {
+                "type": "string",
+                "description": "General information about the corpus"
+            },
+            "citation": {
+                "type": "string",
+                "description": "Citation guidelines"
+            },
+            "license": {
+                "type": "string",
+                "description": "License for re-use"
+            },
+            "terms_of_service": {
+                "type": "string",
+                "description": "Terms of service"
+            }
+        }
+    },
     "required": ["name", "meta", "source_data", "fields"],
     "$defs": {
         "sortSetting": {
