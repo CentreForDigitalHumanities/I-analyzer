@@ -275,9 +275,6 @@ def _include_ngram_visualisation(fields: Iterable[Dict]) -> None:
 def _import_documentation(data: Dict):
     docs = get_path(data, 'documentation') or {}
     return [
-        {
-            'type': key,
-            'content': content,
-        }
+        {'type': key, 'content': content}
         for (key, content) in docs.items()
     ]

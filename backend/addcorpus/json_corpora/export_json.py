@@ -97,8 +97,4 @@ def export_field_extract(field: Field) -> Dict:
 
 def export_corpus_documentation(config: CorpusConfiguration):
     pages = config.documentation_pages.all()
-
-    if pages.exists():
-        return {page.type: page.content for page in pages}
-    else:
-        return None
+    return {page.type: page.content for page in pages}
