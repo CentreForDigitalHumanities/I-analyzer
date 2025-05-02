@@ -4,7 +4,7 @@
     Current image <span *ngIf="!corpus.hasImage">(default)</span>:
 </p>
 
-<div *ngIf="imageURL$ | async as url" class="block" style="max-width: 30%;">
+<div *ngIf="imageURL$ | async as url" class="block image-container">
     <div class="image is-5by4">
         <img  [src]="url" />
     </div>
