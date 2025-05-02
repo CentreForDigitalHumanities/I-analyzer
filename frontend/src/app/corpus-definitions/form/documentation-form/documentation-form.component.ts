@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
-import { EditablePage, makePages, PAGE_CATEGORIES } from './editable-page';
+import { PAGE_CATEGORIES } from './editable-page';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { filter, map, switchMap } from 'rxjs';

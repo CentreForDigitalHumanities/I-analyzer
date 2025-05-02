@@ -20,7 +20,6 @@ export class CorpusDefinitionService implements OnDestroy {
         { label: 'Corpus information' },
         { label: 'Upload source data' },
         { label: 'Define fields' },
-        { label: 'Add documentation' },
         { label: 'Process data' },
         { label: 'Browse your corpus' },
     ]);

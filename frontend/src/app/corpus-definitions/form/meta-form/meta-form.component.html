@@ -89,6 +89,10 @@
     <ia-image-upload [corpus]="corpus" />
 </div>
 
+<div class="box">
+    <ia-documentation-form />
+</div>
+
 <div class="block">
     <button class="button" (click)="nextStep()"
         [class.is-disabled]="nextStepDisabled$ | async">
