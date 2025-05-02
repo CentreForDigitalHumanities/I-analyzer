@@ -178,13 +178,22 @@ def test_corpus_edit_view_auth(auth_user: CustomUser, auth_client: Client, json_
     auth_user.profile.can_edit_corpora = True
     auth_user.profile.save()
 
-    response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
+    url = f'/api/corpus/definitions/{json_mock_corpus.pk}/'
+
+    # no access
+    response = auth_client.get(url, content_type='application/json')
     assert status.is_client_error(response.status_code)
 
+    # add user as owner
     json_mock_corpus.owner = auth_user
     json_mock_corpus.save()
 
-    response = auth_client.get(f'/api/corpus/definitions/{json_mock_corpus.pk}/')
+    response = auth_client.get(url, content_type='application/json')
+    assert status.is_success(response.status_code)
+
+    # update and try again
+    auth_client.put(url, response.data, content_type='application/json')
+    response = auth_client.get(url, content_type='application/json')
     assert status.is_success(response.status_code)
 
 
