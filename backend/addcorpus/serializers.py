@@ -238,7 +238,10 @@ class DataFileField(serializers.FileField):
 
 class CorpusDataFileSerializer(serializers.ModelSerializer):
     file = DataFileField()
+    field_types = serializers.JSONField(read_only=True)
+    n_rows = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = CorpusDataFile
-        fields = ('id', 'corpus', 'file', 'created', 'is_sample')
+        fields = ('id', 'corpus', 'file', 'created',
+                  'is_sample', 'field_types', 'n_rows')

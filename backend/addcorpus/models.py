@@ -11,6 +11,7 @@ from django.db.models.constraints import UniqueConstraint
 from django.conf import settings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
+from addcorpus.utils import get_csv_info
 from addcorpus.validation.creation import (
     validate_es_mapping,
     validate_field_language,
@@ -549,5 +550,16 @@ class CorpusDataFile(models.Model):
         default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
     created = models.DateTimeField(auto_now_add=True)
 
+    field_types = models.JSONField(null=True, blank=True)
+    n_rows = models.IntegerField(null=True, blank=True)
+
     def __str__(self):
         return f'{self.file.name}'
+
+    def save(self, **kwargs):
+        '''on updating the file field, also set n_rows and field_types'''
+        super().save(**kwargs)
+        delimiter = self.corpus.configuration_obj.source_data_delimiter
+        self.n_rows, self.field_types = get_csv_info(
+            self.file.path, sep=delimiter if delimiter else ',')
+        super().save()

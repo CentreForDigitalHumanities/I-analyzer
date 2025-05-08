@@ -1,19 +1,20 @@
 import datetime
 import os
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Tuple, Union, TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 
-from addcorpus.models import Corpus
+if TYPE_CHECKING:
+    from addcorpus.models import Corpus
 
 
-def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
+def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Tuple[int, Dict]:
     df = pd.read_csv(path, **kwargs)
     info = {
         col_name: map_col(df[col_name]) for col_name in df.columns
     }
-    return info
+    return len(df), info
 
 
 def map_col(col: pd.Series) -> str:
@@ -59,7 +60,7 @@ def normalize_date_to_year(input: Union[datetime.date, datetime.datetime, int]) 
         raise TypeError(f'Unexpected date type: {type(input)}')
 
 
-def clear_corpus_image(corpus: Corpus):
+def clear_corpus_image(corpus: 'Corpus'):
     if corpus.configuration_obj and corpus.configuration.image:
         image = corpus.configuration.image
         if image:

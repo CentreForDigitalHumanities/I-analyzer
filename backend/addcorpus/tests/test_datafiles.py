@@ -1,6 +1,7 @@
 import os
 
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
+from rest_framework.status import HTTP_201_CREATED
+from addcorpus.models import CorpusDataFile
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,9 +20,9 @@ def test_csv_upload(admin_user, admin_client, json_mock_corpus):
     file_pk = res.data.get('id')
 
     # Test file info
-    info_res = admin_client.get(f'/api/corpus/datafiles/{file_pk}/info/')
-    assert info_res.status_code == HTTP_200_OK
-    assert info_res.data == {
+    data_file = CorpusDataFile.objects.get(pk=file_pk)
+    assert data_file.n_rows == 10
+    assert data_file.field_types == {
         'character': 'text',
         'line': 'text',
         'date-column': 'date',
