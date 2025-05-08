@@ -1,7 +1,7 @@
 <h1 class="title">Upload a sample of your data</h1>
 <p class="subtitle">Determines sensible default values for the fields of your corpus</p>
 
-<div *ngIf="fileInfo$|async as fileInfo" class="block">
+<div *ngIf="dataFile$|async as dataFile" class="block">
     <table class="table is-fullwidth">
         <caption style="text-align: left">Found the following columns in your sample file:</caption>
         <thead>
@@ -11,7 +11,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let field of fileInfo|keyvalue">
+            <tr *ngFor="let field of dataFile.field_types|keyvalue">
                 <td>{{field.key}}</td>
                 <td>{{field.value}}</td>
             </tr>
@@ -21,7 +21,7 @@
 
 <ng-template #resetMenu>
     <div class="field is-grouped">
-        <button class="button" (click)="resetFields()">
+        <button class="button" (click)="resetFields()" [disabled]="(dataFile$|async) === undefined">
             <span class="icon" aria-hidden="true">
                 <fa-icon [icon]="formIcons.reset"></fa-icon>
             </span>
@@ -37,7 +37,7 @@
 </ng-template>
 
 
-<form *ngIf="(fileInfo$ | async) === undefined || (fileInfo$ | async) === null; else resetMenu">
+<form *ngIf="(dataFile$ | async) === undefined || (dataFile$ | async) === null; else resetMenu">
     <div class="field">
         <label class="label">Delimiter</label>
         <div class="control">
@@ -62,14 +62,14 @@
                     </span>
                     <span class="file-label">Upload CSV file...</span>
                 </span>
-                <span class="file-name" *ngIf="file$ | async as file">
+                <span class="file-name" *ngIf="newFile$ | async as file">
                     {{file.name}}
                 </span>
             </label>
             </div>
             </div>
 
-    <div *ngIf="fileInfo$|async" class="field">
+    <div *ngIf="dataFile$|async" class="field">
         <p class="control">
             <button class="button is-primary">Next</button>
         </p>

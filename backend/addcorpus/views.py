@@ -154,7 +154,6 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
     def corpus_from_object(self, obj: CorpusDataFile) -> Corpus:
         return obj.corpus
 
-
     def get_queryset(self):
         queryset = CorpusDataFile.objects.filter(
             corpus__in=editable_corpora(self.request.user)
@@ -169,17 +168,6 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(is_sample=True)
 
         return queryset.order_by('created')
-
-    @action(detail=True, methods=['get'])
-    def info(self, request, pk):
-        obj = self.get_object()
-        delimiter = obj.corpus.configuration_obj.source_data_delimiter
-
-        info = get_csv_info(obj.file.path, sep=delimiter if delimiter else ',')
-
-        return Response(info, HTTP_200_OK)
-
-
 class CorpusDefinitionSchemaView(APIView):
     '''
     View the JSON schema for corpus definitions

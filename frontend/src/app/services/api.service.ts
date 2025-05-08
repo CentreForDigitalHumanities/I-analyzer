@@ -33,11 +33,7 @@ import {
 } from '@models';
 import { environment } from '@environments/environment';
 import * as _ from 'lodash';
-import {
-    APIEditableCorpus,
-    CorpusDataFile,
-    DataFileInfo,
-} from '@models/corpus-definition';
+import { APIEditableCorpus, CorpusDataFile } from '@models/corpus-definition';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -156,7 +152,10 @@ export class ApiService {
         return this.http.post<GeoDocument[]>(url, data);
     }
 
-    public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {
+    public geoCentroid(data: {
+        corpus: string;
+        field: string;
+    }): Promise<GeoLocation> {
         const url = this.apiRoute(this.visApiURL, 'geo_centroid');
         return this.http.post<GeoLocation>(url, data).toPromise();
     }
@@ -257,18 +256,29 @@ export class ApiService {
         return this.http.get<CorpusDocumentationPage>(url);
     }
 
-    public createCorpusDocumentationPage(data: CorpusDocumentationPageSubmitData) {
+    public createCorpusDocumentationPage(
+        data: CorpusDocumentationPageSubmitData
+    ) {
         const url = this.apiRoute(this.corpusApiUrl, 'documentation/');
         return this.http.post(url, data);
     }
 
-    public updateCorpusDocumentationPage(pageID: number, data: CorpusDocumentationPageSubmitData) {
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
+    public updateCorpusDocumentationPage(
+        pageID: number,
+        data: CorpusDocumentationPageSubmitData
+    ) {
+        const url = this.apiRoute(
+            this.corpusApiUrl,
+            `documentation/${pageID}/`
+        );
         return this.http.put(url, data);
     }
 
     public deleteCorpusDocumentationPage(pageID: number) {
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
+        const url = this.apiRoute(
+            this.corpusApiUrl,
+            `documentation/${pageID}/`
+        );
         return this.http.delete(url);
     }
 
@@ -319,7 +329,7 @@ export class ApiService {
     public updateCorpusImage(corpusName: string, file: File): Observable<any> {
         const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
         const formData: FormData = new FormData();
-        formData.append('file', file, file.name)
+        formData.append('file', file, file.name);
         return this.http.put(url, formData);
     }
 
@@ -329,6 +339,12 @@ export class ApiService {
     }
 
     // Corpus datafiles
+    public getDataFile(dataFile: CorpusDataFile): Observable<CorpusDataFile> {
+        return this.http.get<CorpusDataFile>(
+            `/api/corpus/datafiles/${dataFile.id}/`
+        );
+    }
+
     public createDataFile(
         corpusId: number,
         file: File
@@ -358,12 +374,6 @@ export class ApiService {
         return this.http.get<CorpusDataFile[]>('/api/corpus/datafiles/', {
             params: params,
         });
-    }
-
-    public getDataFileInfo(dataFile: CorpusDataFile): Observable<DataFileInfo> {
-        return this.http.get<DataFileInfo>(
-            `/api/corpus/datafiles/${dataFile.id}/info/`
-        );
     }
 
     // Tagging
@@ -478,7 +488,7 @@ export class ApiService {
     public changePassword(
         oldPassword: string,
         newPassword1: string,
-        newPassword2: string,
+        newPassword2: string
     ) {
         return this.http.post<{ detail: string }>(
             this.authApiRoute('password/change/'),

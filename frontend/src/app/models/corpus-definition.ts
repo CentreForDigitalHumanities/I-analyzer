@@ -11,9 +11,11 @@ export interface CorpusDataFile {
     file: File | string;
     is_sample: boolean;
     created?: Date;
+    field_types?: DataFileFieldTypes;
+    n_rows?: number;
 }
 
-export interface DataFileInfo {
+export interface DataFileFieldTypes {
     [columnName: string]: APICorpusDefinitionField['type'];
 }
 
