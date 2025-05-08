@@ -103,3 +103,7 @@ a.dropdown-item[disabled] {
 .is-disabled {
     @extend [disabled];
 }
+
+.input-feedback {
+    margin-top: 0.5rem;
+}

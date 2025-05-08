@@ -6,7 +6,7 @@ from corpora.gallica.gallica import Gallica
 
 
 class Caricature(Gallica):
-    title = "La Caricature"
+    title = "La Caricature morale, politique et littéraire"
     description = "Satirical periodical, 1830-1843"
     min_date = datetime(year=1830, month=1, day=1)
     max_date = datetime(year=1843, month=12, day=31)

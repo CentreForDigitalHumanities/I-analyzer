@@ -73,12 +73,13 @@ export class ApiServiceMock {
         return of({ username: 'Thomas', email: 'thomas@cromwell.com' });
     }
 
-    public corpusDocumentationPages(corpus: Corpus): Observable<CorpusDocumentationPage[]> {
+    public corpusDocumentationPages(corpusName: string): Observable<CorpusDocumentationPage[]> {
         return of([{
             id: 1,
-            corpus: corpus.name,
+            corpus: corpusName,
             type: 'General',
             content: 'Example of _documentation_.',
+            content_template: 'Example of _documentation_.',
             index: 1,
         }]);
     }
@@ -120,5 +121,9 @@ export class ApiServiceMock {
 
     listDataFiles(): Observable<CorpusDataFile[]> {
         return of([]);
+    }
+
+    corpusSchema(): Observable<any> {
+        return of({});
     }
 }

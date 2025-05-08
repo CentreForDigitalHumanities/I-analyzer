@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 import logging
 
 from addcorpus import models as corpus_models
-from ianalyzer.elasticsearch import client_from_config
+from es.client import client_from_config
 
 logger = logging.getLogger()
 

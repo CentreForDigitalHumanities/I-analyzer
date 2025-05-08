@@ -1,11 +1,12 @@
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { inject, Injectable, NgModule } from '@angular/core';
 
-import { ExtraOptions, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, ExtraOptions, NavigationEnd, RouterModule, Routes } from '@angular/router';
 
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
+import { environment } from '@environments/environment';
 
 
 import {
@@ -57,6 +58,8 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
+import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
+import { MatomoConfig, matomoImports } from './routing/matomo';
 
 export const appRoutes: Routes = [
     {
@@ -199,6 +202,10 @@ export const imports: any[] = [
     WordModelsModule,
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
+
+if ('matomo' in environment) {
+    imports.push(...matomoImports(environment.matomo as MatomoConfig));
+}
 
 export const providers: any[] = [
     ApiService,

@@ -5,6 +5,7 @@ import { AuthService } from '@services';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { actionIcons } from '@shared/icons';
+import { environment } from '@environments/environment';
 
 
 @Component({
@@ -22,10 +23,13 @@ export class CorpusSelectionComponent implements OnInit {
 
     actionIcons = actionIcons;
 
+    showCorpusFilters: boolean;
+
     constructor(private authService: AuthService) {
         this.showManageLink$ = this.authService.currentUser$.pipe(
-            map((user) => user?.isAdmin)
+            map((user) => user?.canEditCorpora)
         );
+        this.showCorpusFilters = _.get(environment, 'showCorpusFilters', true);
      }
 
     get displayItems(): Corpus[] {

@@ -129,6 +129,8 @@ AUTH_USER_MODEL = 'users.CustomUser'
 REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': False,
 }
 
 LOGO_LINK = 'https://dhstatic.hum.uu.nl/logo-cdh/png/UU_CDH_logo_EN_whiteFC.png'
@@ -136,3 +138,9 @@ LOGO_LINK = 'https://dhstatic.hum.uu.nl/logo-cdh/png/UU_CDH_logo_EN_whiteFC.png'
 NLTK_DATA_PATH = os.path.join(BASE_DIR, 'addcorpus', 'nltk_data')
 
 DEFAULT_CORPUS_IMAGE = os.path.join(BASE_DIR, 'addcorpus', 'images', 'default.png')
+
+# Celery
+
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']

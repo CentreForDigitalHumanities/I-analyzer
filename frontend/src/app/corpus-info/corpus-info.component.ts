@@ -32,7 +32,7 @@ export class CorpusInfoComponent implements OnInit {
 
     setCorpus(corpus: Corpus) {
         this.corpus = corpus;
-        this.documentation$ = this.apiService.corpusDocumentationPages(corpus).pipe(
+        this.documentation$ = this.apiService.corpusDocumentationPages(corpus.name).pipe(
             map(pages => pages.filter(page => this.includePage(corpus, page))),
             map(pages => _.sortBy(pages, 'index'))
         );

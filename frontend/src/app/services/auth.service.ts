@@ -170,6 +170,10 @@ export class AuthService implements OnDestroy {
         );
     }
 
+    changePassword(oldPassword: string, newPassword1: string, newPassword2: string) {
+        return this.apiService.changePassword(oldPassword, newPassword1, newPassword2);
+    }
+
     public updateSettings(update: Partial<User>) {
         return this.apiService.updateUserSettings(encodeUserData(update)).pipe(
             tap((res) => this.setAuth(parseUserData(res))),

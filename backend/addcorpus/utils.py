@@ -5,6 +5,8 @@ from typing import Dict, Optional, Union
 import numpy as np
 import pandas as pd
 
+from addcorpus.models import Corpus
+
 
 def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
     df = pd.read_csv(path, **kwargs)
@@ -55,3 +57,13 @@ def normalize_date_to_year(input: Union[datetime.date, datetime.datetime, int]) 
         return input
     else:
         raise TypeError(f'Unexpected date type: {type(input)}')
+
+
+def clear_corpus_image(corpus: Corpus):
+    if corpus.configuration_obj and corpus.configuration.image:
+        image = corpus.configuration.image
+        if image:
+            if os.path.exists(image.path):
+                os.remove(image.path)
+
+            image.delete()

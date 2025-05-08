@@ -1,4 +1,4 @@
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from es.search import total_hits, search
 from addcorpus.models import Corpus, CorpusConfiguration
 from visualization.query import MATCH_ALL
