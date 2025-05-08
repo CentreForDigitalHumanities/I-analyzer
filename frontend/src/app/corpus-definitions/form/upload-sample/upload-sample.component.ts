@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Corpus } from '@models';
 import { CorpusDataFile } from '@models/corpus-definition';
 import { ApiService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
@@ -7,13 +6,11 @@ import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definitio
 import * as _ from 'lodash';
 import {
     BehaviorSubject,
-    distinctUntilChanged,
     filter,
     map,
-    of,
     Subject,
-    switchMap,
     takeUntil,
+    withLatestFrom,
 } from 'rxjs';
 
 @Component({
@@ -29,6 +26,7 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     dataFile$ = new BehaviorSubject<CorpusDataFile | undefined>(undefined);
     error$ = new BehaviorSubject<Error | undefined>(undefined);
     destroy$ = new Subject<void>();
+    submit$ = new Subject<void>();
 
     delimiterOptions = [
         { label: ', comma', value: ',' },
@@ -52,20 +50,20 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
                 error: (err) => this.error$.next(err),
             });
 
-        this.dataFile$
-            .pipe(
-                takeUntil(this.destroy$),
-                filter(_.negate(_.isUndefined)),
-                distinctUntilChanged(_.isEqual),
-                switchMap((df: CorpusDataFile) => {
-                    const fields = _.map(df.field_types, (dtype, colName) =>
-                        this.corpusDefService.makeDefaultField(dtype, colName)
-                    );
-                    return of(fields);
-                })
-            )
+        this.submit$
+            .pipe(takeUntil(this.destroy$), withLatestFrom(this.dataFile$))
             .subscribe({
-                next: (fields) => this.corpusDefService.setFields(fields),
+                next: ([_submit, dataFile]) => {
+                    const fields = _.map(
+                        dataFile.field_types,
+                        (dtype, colName) =>
+                            this.corpusDefService.makeDefaultField(
+                                dtype,
+                                colName
+                            )
+                    );
+                    this.corpusDefService.setFields(fields);
+                },
                 error: console.error,
             });
     }
@@ -91,14 +89,12 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     }
 
     onSubmit() {
-        this.corpusDefService.toggleStepDisabled(2);
-        this.corpusDefService.activateStep(2);
+        this.submit$.next();
     }
 
     resetFields() {
         this.apiService.deleteDataFile(this.dataFile$.value).subscribe({
             next: () => {
-                this.corpusDefService.setFields([]);
                 this.dataFile$.next(undefined);
             },
             error: console.error,
@@ -108,5 +104,6 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        this.submit$.complete();
     }
 }
