@@ -101,6 +101,13 @@
                         <fa-icon [icon]="directionIcons.down" aria-hidden="true" />
                     </button>
                 </div>
+                <div class="control">
+                    <button class="button" type="button" aria-label="remove"
+                        iaBalloon="remove field"
+                        (click)="removeField(i)">
+                        <fa-icon [icon]="actionIcons.delete" aria-hidden="true" />
+                    </button>
+                </div>
             </div>
         </div>
     </ng-container>

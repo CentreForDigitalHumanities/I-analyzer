@@ -126,11 +126,15 @@ export class FieldFormComponent {
      *
      * includes the index as an argument so this can be used as a TrackByFunction
      */
-    fieldControlName(index: number, field: FormControl) {
+    fieldControlName(index: number, field: FormGroup) {
         return field.get('extract').get('column').value as string;
     }
 
-    moveField(index: number, field: FormControl, delta: number): void {
+    removeField(index: number) {
+        this.fieldsForm.controls.fields.removeAt(index);
+    }
+
+    moveField(index: number, field: FormGroup, delta: number): void {
         this.fields.removeAt(index);
         this.fields.insert(index + delta, field);
 
@@ -138,14 +142,15 @@ export class FieldFormComponent {
         setTimeout(() => this.focusOnMoveControl(index, field, delta));
     }
 
-    moveControlID(index: number, field: FormControl, delta: number): string {
+    moveControlID(index: number, field: FormGroup, delta: number): string {
         const label = delta > 0 ? 'movedown' : 'moveup';
         return label + '-' + this.fieldControlName(index, field);
     }
 
-    focusOnMoveControl(index: number, field: FormControl, delta: number): void {
+    focusOnMoveControl(index: number, field: FormGroup, delta: number): void {
         const selector = '#' + this.moveControlID(index, field, delta);
-        const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
+        const button =
+            this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
         button.focus();
     }
 }
