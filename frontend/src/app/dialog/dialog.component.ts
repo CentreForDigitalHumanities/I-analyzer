@@ -7,9 +7,10 @@ import { navIcons } from '@shared/icons';
 import { DialogService } from '@services';
 
 @Component({
-  selector: 'ia-dialog',
-  templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.scss']
+    selector: 'ia-dialog',
+    templateUrl: './dialog.component.html',
+    styleUrls: ['./dialog.component.scss'],
+    standalone: false
 })
 export class DialogComponent implements OnDestroy, OnInit {
     public title: string = undefined;

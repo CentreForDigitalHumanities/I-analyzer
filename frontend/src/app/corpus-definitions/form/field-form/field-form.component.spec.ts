@@ -1,4 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+
+import { commonTestBed } from 'app/common-test-bed';
 
 import { FieldFormComponent } from './field-form.component';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
@@ -8,6 +10,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 describe('FieldFormComponent', () => {
     let component: FieldFormComponent;
     let fixture: ComponentFixture<FieldFormComponent>;
+
+    beforeEach(waitForAsync(() => {
+        commonTestBed().testingModule.compileComponents();
+    }));
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({

@@ -14,6 +14,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-search-history',
     templateUrl: './search-history.component.html',
     styleUrls: ['./search-history.component.scss'],
+    standalone: false
 })
 export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: QueryDb[];

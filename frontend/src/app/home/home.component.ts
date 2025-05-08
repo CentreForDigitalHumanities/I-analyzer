@@ -10,6 +10,7 @@ import { environment } from '@environments/environment';
     selector: 'ia-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
+    standalone: false
 })
 export class HomeComponent implements OnInit {
     public items: Corpus[];

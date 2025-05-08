@@ -20,6 +20,7 @@ import {
     selector: 'ia-upload-sample',
     templateUrl: './upload-sample.component.html',
     styleUrl: './upload-sample.component.scss',
+    standalone: false
 })
 export class UploadSampleComponent implements OnInit, OnDestroy {
     actionIcons = actionIcons;

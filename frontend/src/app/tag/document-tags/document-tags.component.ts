@@ -7,6 +7,7 @@ import { formIcons, actionIcons } from '@shared/icons';
     selector: 'ia-document-tags',
     templateUrl: './document-tags.component.html',
     styleUrls: ['./document-tags.component.scss'],
+    standalone: false
 })
 export class DocumentTagsComponent implements OnChanges {
     @Input() document: FoundDocument;

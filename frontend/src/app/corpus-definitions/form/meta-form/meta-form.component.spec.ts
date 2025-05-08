@@ -7,11 +7,15 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { CorpusDefinition } from '@models/corpus-definition';
+import { mockCorpusDefinition } from 'mock-data/corpus-definition';
+import { ApiService } from '@services';
 
 
 describe('MetaFormComponent', () => {
     let component: MetaFormComponent;
     let fixture: ComponentFixture<MetaFormComponent>;
+    let apiService: ApiService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -27,6 +31,9 @@ describe('MetaFormComponent', () => {
 
         fixture = TestBed.createComponent(MetaFormComponent);
         component = fixture.componentInstance;
+        const corpus = new CorpusDefinition(apiService);
+        corpus.setFromDefinition(mockCorpusDefinition);
+        component.corpus = corpus;
         fixture.detectChanges();
     });
 

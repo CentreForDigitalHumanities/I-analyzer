@@ -11,6 +11,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-verify-email',
     templateUrl: './verify-email.component.html',
     styleUrls: ['./verify-email.component.scss'],
+    standalone: false
 })
 export class VerifyEmailComponent implements OnInit {
     public key: string;

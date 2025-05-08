@@ -1,5 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
+import { commonTestBed } from '../../common-test-bed';
 import { DefinitionJsonUploadComponent } from './definition-json-upload.component';
 import { ApiService } from '@services';
 import { ApiServiceMock } from 'mock-data/api';

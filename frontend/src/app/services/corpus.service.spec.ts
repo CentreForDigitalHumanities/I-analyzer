@@ -1,4 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
@@ -6,8 +7,8 @@ import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
 import { SessionService } from './session.service';
 
-import { RouterTestingModule } from '@angular/router/testing';
 import * as _ from 'lodash';
+import { appRoutes } from 'app/app.module';
 
 describe('CorpusService', () => {
     let service: CorpusService;
@@ -21,8 +22,8 @@ describe('CorpusService', () => {
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
                 SessionService,
+                provideRouter(appRoutes)
             ],
-            imports: [RouterTestingModule],
         });
         service = TestBed.inject(CorpusService);
     });

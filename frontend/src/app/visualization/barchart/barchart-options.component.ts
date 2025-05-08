@@ -9,6 +9,7 @@ import { ParamService } from '@services';
     selector: 'ia-barchart-options',
     templateUrl: './barchart-options.component.html',
     styleUrls: ['./barchart-options.component.scss'],
+    standalone: false
 })
 export class BarchartOptionsComponent
     extends ParamDirective

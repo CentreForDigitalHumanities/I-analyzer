@@ -13,6 +13,7 @@ import { formIcons } from '@shared/icons';
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
     styleUrls: ['./related-words.component.scss'],
+    standalone: false
 })
 export class RelatedWordsComponent extends ParamDirective implements OnChanges {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning

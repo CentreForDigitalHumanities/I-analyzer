@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
 @Component({
     selector: 'ia-toggle-search-history',
     templateUrl: './toggle-search-history.component.html',
-    styleUrls: ['./toggle-search-history.component.scss']
+    styleUrls: ['./toggle-search-history.component.scss'],
+    standalone: false
 })
 export class ToggleSearchHistoryComponent {
     searchHistoryEnabled$: Observable<boolean>;

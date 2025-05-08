@@ -12,6 +12,7 @@ import { navIcons, userIcons } from '@shared/icons';
     selector: 'ia-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss'],
+    standalone: false
 })
 export class MenuComponent implements OnDestroy, OnInit {
     @ViewChild('userDropdown') userDropdown: ElementRef;

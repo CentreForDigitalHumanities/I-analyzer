@@ -6,9 +6,10 @@ import { PALETTES } from '@utils/select-color';
 import { actionIcons } from '@shared/icons';
 
 @Component({
-  selector: 'ia-visualization-footer',
-  templateUrl: './visualization-footer.component.html',
-  styleUrls: ['./visualization-footer.component.scss']
+    selector: 'ia-visualization-footer',
+    templateUrl: './visualization-footer.component.html',
+    styleUrls: ['./visualization-footer.component.scss'],
+    standalone: false
 })
 export class VisualizationFooterComponent implements OnInit {
     @Input() manualPage: string;

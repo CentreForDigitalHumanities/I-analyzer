@@ -32,6 +32,7 @@ import {
     selector: 'ia-download',
     templateUrl: './download.component.html',
     styleUrls: ['./download.component.scss'],
+    standalone: false
 })
 export class DownloadComponent implements OnChanges {
     @Input() public corpus: Corpus;

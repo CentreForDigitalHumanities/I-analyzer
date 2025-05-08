@@ -1,7 +1,10 @@
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
-import { inject, Injectable, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 
-import { ActivatedRouteSnapshot, ExtraOptions, NavigationEnd, RouterModule, Routes } from '@angular/router';
+import { providePrimeNG } from 'primeng/config';
+import { definePreset } from '@primeng/themes';
+import Nora from '@primeng/themes/nora';
 
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
@@ -23,8 +26,6 @@ import { CreateDefinitionComponent } from './corpus-definitions/create-definitio
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { DefinitionInOutComponent } from './corpus-definitions/definition-in-out/definition-in-out.component';
 import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
-import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
-import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
@@ -58,7 +59,6 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
 import { MatomoConfig, matomoImports } from './routing/matomo';
 
 export const appRoutes: Routes = [
@@ -203,6 +203,19 @@ export const imports: any[] = [
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
 
+/***
+ * Override PrimeNG color palette: using values from ./src/_utilities.scss
+ */
+const stylePreset = definePreset(Nora, {
+    semantic: {
+        primary: {
+            50: '#D6D6D6', // highlight color
+            600: '#303F9F', // "I-Analyzer blue"
+            700: '#495cc9', // accent color
+        }
+    }
+});
+
 if ('matomo' in environment) {
     imports.push(...matomoImports(environment.matomo as MatomoConfig));
 }
@@ -214,6 +227,14 @@ export const providers: any[] = [
     HighlightService,
     CorpusGuard,
     LoggedOnGuard,
+    providePrimeNG({
+        theme: {
+            preset: stylePreset,
+            options: {
+                darkModeSelector: false || 'none'
+            },
+        }
+    }),
     TitleCasePipe,
     CookieService,
     { provide: APP_BASE_HREF, useValue: '/' },

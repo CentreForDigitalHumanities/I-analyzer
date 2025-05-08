@@ -13,7 +13,8 @@ import { isTagFilter } from '@models/tag-filter';
 @Component({
     selector: 'ia-filter-manager',
     templateUrl: './filter-manager.component.html',
-    styleUrls: ['./filter-manager.component.scss']
+    styleUrls: ['./filter-manager.component.scss'],
+    standalone: false
 })
 export class FilterManagerComponent {
     @Input() queryModel: QueryModel;

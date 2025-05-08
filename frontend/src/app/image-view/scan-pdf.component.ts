@@ -7,6 +7,7 @@ import { ApiService } from '@services';
     selector: 'ia-scan-pdf',
     templateUrl: './scan-pdf.component.html',
     styleUrls: ['./scan-pdf.component.scss'],
+    standalone: false
 })
 export class ScanPdfComponent implements OnChanges {
     @Input() public imagePaths: string[];

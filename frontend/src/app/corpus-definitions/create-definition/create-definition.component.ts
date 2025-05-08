@@ -11,6 +11,7 @@ import { SlugifyPipe } from '../../shared/pipes/slugify.pipe';
     selector: 'ia-create-definition',
     templateUrl: './create-definition.component.html',
     styleUrls: ['./create-definition.component.scss'],
+    standalone: false
 })
 export class CreateDefinitionComponent {
     actionIcons = actionIcons;

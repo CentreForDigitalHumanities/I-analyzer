@@ -11,7 +11,8 @@ import { RouterStoreService } from 'app/store/router-store.service';
 @Component({
     selector: 'ia-map',
     templateUrl: './map.component.html',
-    styleUrls: ['./map.component.scss']
+    styleUrls: ['./map.component.scss'],
+    standalone: false
 })
 export class MapComponent implements OnChanges {
     @ViewChild('vegaMap') vegaMap!: ElementRef;

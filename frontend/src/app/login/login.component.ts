@@ -14,6 +14,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
     public static activated = false;

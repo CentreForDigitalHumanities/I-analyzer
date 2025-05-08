@@ -16,6 +16,7 @@ import { SearchTab, SearchTabs } from './search-tabs';
     selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss'],
+    standalone: false
 })
 export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection', { static: false })

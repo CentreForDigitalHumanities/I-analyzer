@@ -25,6 +25,7 @@ type RegisterErrorResponse = Omit<HttpErrorResponse, 'error'> & {
     selector: 'ia-registration',
     templateUrl: './registration.component.html',
     styleUrls: ['./registration.component.scss'],
+    standalone: false
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
     public username: string;

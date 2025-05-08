@@ -10,7 +10,8 @@ import { FilterInterface } from '@models/base-filter';
  * Filter data from parameters and after search are pushed via a DataService observable
  */
 @Component({
-    template: ''
+    template: '',
+    standalone: false
 })
 export abstract class BaseFilterComponent<SearchFilter extends FilterInterface> implements OnChanges {
     @Input() filter: SearchFilter;

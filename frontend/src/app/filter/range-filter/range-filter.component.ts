@@ -11,7 +11,8 @@ import * as _ from 'lodash';
 @Component({
     selector: 'ia-range-filter',
     templateUrl: './range-filter.component.html',
-    styleUrls: ['./range-filter.component.scss']
+    styleUrls: ['./range-filter.component.scss'],
+    standalone: false
 })
 export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> implements OnInit, OnDestroy {
     min: number;

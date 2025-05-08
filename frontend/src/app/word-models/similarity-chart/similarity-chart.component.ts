@@ -14,6 +14,7 @@ import { FreqTableHeaders, WordSimilarity } from '@models';
     selector: 'ia-similarity-chart',
     templateUrl: './similarity-chart.component.html',
     styleUrls: ['./similarity-chart.component.scss'],
+    standalone: false
 })
 export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() timeIntervals: string[];

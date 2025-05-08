@@ -16,6 +16,7 @@ import { By } from '@angular/platform-browser';
         </div>
     </ia-dropdown>
     `,
+    standalone: false
 })
 class DropdownTestComponent {
     options = [

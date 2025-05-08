@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusFormComponent } from './corpus-form.component';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';

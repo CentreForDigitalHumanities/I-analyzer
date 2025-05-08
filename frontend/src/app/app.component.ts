@@ -7,6 +7,7 @@ import { environment } from '@environments/environment';
     selector: 'ia-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
     public iframe: boolean;

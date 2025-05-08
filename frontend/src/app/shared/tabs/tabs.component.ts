@@ -19,7 +19,8 @@ interface Tab {
 @Component({
     selector: 'ia-tabs',
     templateUrl: './tabs.component.html',
-    styleUrls: ['./tabs.component.scss']
+    styleUrls: ['./tabs.component.scss'],
+    standalone: false
 })
 export class TabsComponent implements AfterContentInit {
     @ViewChildren('tabLink') tabLinks: QueryList<ElementRef>;

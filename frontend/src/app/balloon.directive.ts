@@ -4,7 +4,8 @@ import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
  * Directive for showing styled tooltip balloons.
  */
 @Directive({
-    selector: '[iaBalloon]'
+    selector: '[iaBalloon]',
+    standalone: false
 })
 export class BalloonDirective implements OnChanges {
     @Input('iaBalloon')

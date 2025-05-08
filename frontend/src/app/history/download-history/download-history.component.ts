@@ -26,7 +26,8 @@ import { pageTitle } from '@utils/app';
 @Component({
     selector: 'ia-download-history',
     templateUrl: './download-history.component.html',
-    styleUrls: ['./download-history.component.scss']
+    styleUrls: ['./download-history.component.scss'],
+    standalone: false
 })
 export class DownloadHistoryComponent extends HistoryDirective implements OnInit {
     downloads: Download[];

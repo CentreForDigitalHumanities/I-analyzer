@@ -4,9 +4,10 @@ import { environment } from '@environments/environment';
 import { DialogService } from '@services';
 
 @Component({
-  selector: 'ia-about',
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss']
+    selector: 'ia-about',
+    templateUrl: './about.component.html',
+    styleUrls: ['./about.component.scss'],
+    standalone: false
 })
 export class AboutComponent implements OnInit {
     public appName: string;

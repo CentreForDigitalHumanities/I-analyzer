@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 import { CorpusField, FoundDocument } from '@models';
 
 @Pipe({
-    name: 'elasticsearchHighlight'
+    name: 'elasticsearchHighlight',
+    standalone: false
 })
 export class ElasticsearchHighlightPipe implements PipeTransform {
 

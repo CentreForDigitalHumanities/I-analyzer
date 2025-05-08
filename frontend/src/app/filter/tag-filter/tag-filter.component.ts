@@ -8,7 +8,8 @@ import { Tag } from '@models';
 @Component({
     selector: 'ia-tag-filter',
     templateUrl: './tag-filter.component.html',
-    styleUrls: ['./tag-filter.component.scss']
+    styleUrls: ['./tag-filter.component.scss'],
+    standalone: false
 })
 export class TagFilterComponent extends BaseFilterComponent<TagFilter> {
 

@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { actionIcons } from '@shared/icons';
 
 @Component({
-  selector: 'ia-full-data-button',
-  templateUrl: './full-data-button.component.html',
-  styleUrls: ['./full-data-button.component.scss']
+    selector: 'ia-full-data-button',
+    templateUrl: './full-data-button.component.html',
+    styleUrls: ['./full-data-button.component.scss'],
+    standalone: false
 })
 export class FullDataButtonComponent {
     @Output() requestFullData = new EventEmitter<void>();

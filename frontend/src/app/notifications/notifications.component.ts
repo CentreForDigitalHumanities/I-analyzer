@@ -17,6 +17,7 @@ const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['c
     selector: 'ia-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
+    standalone: false
 })
 export class NotificationsComponent implements OnDestroy {
     defaultTimeout = 10000;

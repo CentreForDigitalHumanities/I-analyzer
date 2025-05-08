@@ -11,6 +11,7 @@ import { scanIcons, actionIcons, formIcons } from '@shared/icons';
     templateUrl: './image-view.component.html',
     styleUrls: ['./image-view.component.scss'],
     providers: [ConfirmationService],
+    standalone: false
 })
 export class ImageViewComponent implements OnChanges {
     @Input() public corpus: Corpus;

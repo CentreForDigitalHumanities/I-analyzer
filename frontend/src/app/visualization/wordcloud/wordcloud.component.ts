@@ -46,6 +46,7 @@ const unitScale = (min: number, max: number): (frequency: number) => number => {
     selector: 'ia-wordcloud',
     templateUrl: './wordcloud.component.html',
     styleUrls: ['./wordcloud.component.scss'],
+    standalone: false
 })
 export class WordcloudComponent implements OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;

@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
         Test
     </button>
     `,
+    standalone: false
 })
 class ToggleButtonTestComponent {
     active = false;

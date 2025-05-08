@@ -6,7 +6,8 @@ import { BooleanFilter } from '@models';
 @Component({
     selector: 'ia-boolean-filter',
     templateUrl: './boolean-filter.component.html',
-    styleUrls: ['./boolean-filter.component.scss']
+    styleUrls: ['./boolean-filter.component.scss'],
+    standalone: false
 })
 export class BooleanFilterComponent extends BaseFilterComponent<BooleanFilter> {
 }

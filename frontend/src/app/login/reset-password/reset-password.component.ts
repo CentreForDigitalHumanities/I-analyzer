@@ -12,6 +12,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-reset-password',
     templateUrl: './reset-password.component.html',
     styleUrls: ['./reset-password.component.scss'],
+    standalone: false
 })
 export class ResetPasswordComponent implements OnInit {
     public submitted: boolean;

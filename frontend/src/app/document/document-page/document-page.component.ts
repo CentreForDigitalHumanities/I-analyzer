@@ -10,9 +10,10 @@ import { Title } from '@angular/platform-browser';
 import { pageTitle } from '@utils/app';
 
 @Component({
-  selector: 'ia-document-page',
-  templateUrl: './document-page.component.html',
-  styleUrls: ['./document-page.component.scss']
+    selector: 'ia-document-page',
+    templateUrl: './document-page.component.html',
+    styleUrls: ['./document-page.component.scss'],
+    standalone: false
 })
 export class DocumentPageComponent implements OnInit {
     corpus: Corpus;
