@@ -8,6 +8,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+from django.conf import settings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
@@ -64,6 +65,14 @@ class Corpus(models.Model):
     date_created = models.DateField(
         auto_now_add=True,
         help_text='date on which the corpus was added to the database',
+    )
+    owner = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='owned_corpora',
+        null=True,
+        blank=True,
+        help_text='user that created the corpus and is allowed to edit it',
     )
 
     @property

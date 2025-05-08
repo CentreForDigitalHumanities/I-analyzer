@@ -6,9 +6,12 @@ from users.models import UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    can_edit_corpora = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = UserProfile
-        fields = ['enable_search_history']
+        fields = ['enable_search_history', 'can_edit_corpora']
+
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
