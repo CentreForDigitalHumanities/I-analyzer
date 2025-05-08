@@ -12,7 +12,7 @@ from addcorpus.serializers import (CorpusDataFileSerializer,
                                    CorpusDocumentationPageSerializer,
                                    CorpusJSONDefinitionSerializer,
                                    CorpusSerializer)
-from addcorpus.utils import get_csv_info
+from addcorpus.utils import get_csv_info, clear_corpus_image
 from django.conf import settings
 from django.http.response import FileResponse
 from rest_framework import viewsets
@@ -90,6 +90,27 @@ class CorpusImageView(APIView):
             path = settings.DEFAULT_CORPUS_IMAGE
 
         return FileResponse(open(path, 'rb'))
+
+
+    def put(self, request, *args, **kwargs):
+        corpus_config = self.get_object()
+
+        clear_corpus_image(corpus_config.corpus)
+
+        file = request.FILES['file']
+        corpus_config.image = file
+        name, ext = os.path.splitext(corpus_config.image.name)
+        corpus_config.image.name = corpus_config.corpus.name + ext
+        corpus_config.save()
+
+        return Response('Image saved', HTTP_200_OK)
+
+
+    def delete(self, request, *args, **kwargs):
+        corpus_config = self.get_object()
+        clear_corpus_image(corpus_config.corpus)
+
+        return Response('Image deleted', HTTP_200_OK)
 
 
 class CorpusDocumentView(APIView):
