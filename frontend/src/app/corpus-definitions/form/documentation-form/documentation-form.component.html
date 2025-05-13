@@ -22,8 +22,9 @@
     </div>
 
     <div class="block">
-        <button class="button is-primary" type="submit">
-            Save changes
+        <button class="button is-primary" type="submit" [class.is-loading]="loading$ | async">
+            <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+            <span>Save changes</span>
         </button>
     </div>
 

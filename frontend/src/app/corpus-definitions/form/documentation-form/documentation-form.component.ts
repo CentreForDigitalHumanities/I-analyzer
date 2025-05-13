@@ -7,6 +7,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { filter, map, Observable, Subject, switchMap } from 'rxjs';
 import { APICorpusDefinition } from '@models/corpus-definition';
 import { mergeAsBooleans } from '@utils/observables';
+import { formIcons } from '@shared/icons';
 
 
 @Component({
@@ -42,6 +43,7 @@ export class DocumentationFormComponent implements OnInit {
         false: [this.changesSubmitted$, this.form.valueChanges]
     });
 
+    formIcons = formIcons;
 
     constructor(
         private corpusDefService: CorpusDefinitionService,
