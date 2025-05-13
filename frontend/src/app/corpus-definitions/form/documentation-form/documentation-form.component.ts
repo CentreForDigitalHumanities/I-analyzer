@@ -34,12 +34,12 @@ export class DocumentationFormComponent implements OnInit {
     });
     showSuccessMessage$: Observable<boolean> = mergeAsBooleans({
         true: [this.changesSavedSucces$],
-        false: [this.changesSubmitted$],
+        false: [this.changesSubmitted$, this.form.valueChanges],
     });
 
     showErrorMessage$: Observable<boolean> = mergeAsBooleans({
         true: [this.changesSavedError$],
-        false: [this.changesSubmitted$]
+        false: [this.changesSubmitted$, this.form.valueChanges]
     });
 
 
