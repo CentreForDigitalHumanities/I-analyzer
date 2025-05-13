@@ -1,5 +1,4 @@
-from itertools import chain
-from typing import List
+from itertools import chain, combinations
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from wordmodels.utils import load_word_models, word_in_model, time_label, time_labels
@@ -57,15 +56,6 @@ def _graph_nodes(wm, query_term):
     )
     return [query_node, *neighbour_nodes]
 
-def pairs(items, reflexive=False):
-    '''
-    Returns all unique pairs in a list
-    '''
-
-    for i in range(len(items)):
-        start = i if reflexive else i + 1
-        for j in range(start, len(items)):
-            yield items[i], items[j]
 
 
 def _graph_links(wm, nodes):
@@ -78,7 +68,7 @@ def _graph_links(wm, nodes):
 
     links = []
 
-    for n1, n2 in pairs(nodes):
+    for n1, n2 in combinations(nodes, 2):
         i1 = n1['index']
         i2 = n2['index']
         term1 = n1['term']
