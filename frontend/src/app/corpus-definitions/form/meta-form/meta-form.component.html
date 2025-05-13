@@ -93,10 +93,10 @@
     <ia-documentation-form />
 </div>
 
-<div class="block">
-    <button class="button" (click)="nextStep()"
-        [class.is-disabled]="nextStepDisabled$ | async">
+<div class="block" *ngIf="nextStep$ | async as step">
+    <button class="button" (click)="goToNextStep()"
+        [class.is-disabled]="step.disabled">
         <span class="icon"><fa-icon [icon]="actionIcons.next" /></span>
-        <span>Add sample data</span>
+        <span>{{step.label}}</span>
     </button>
 </div>

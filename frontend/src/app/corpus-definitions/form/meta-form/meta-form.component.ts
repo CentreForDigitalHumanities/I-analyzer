@@ -11,6 +11,7 @@ import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-defi
 import { ISO6393Languages } from '../constants';
 import { actionIcons, formIcons } from '@shared/icons';
 import { mergeAsBooleans } from '@utils/observables';
+import { MenuItem } from 'primeng/api';
 
 @Component({
     selector: 'ia-meta-form',
@@ -50,8 +51,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     actionIcons = actionIcons;
     formIcons = formIcons;
 
-    nextStepDisabled$: Observable<boolean> = this.corpusDefService.steps$.pipe(
-        map(steps => steps[1].disabled)
+    nextStep$: Observable<MenuItem> = this.corpusDefService.steps$.pipe(
+        map(steps => steps[1]),
     );
 
     changesSubmitted$ = new Subject<void>();
@@ -112,7 +113,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         });
     }
 
-    nextStep() {
+    goToNextStep() {
         this.corpusDefService.activateStep(1);
     }
 
