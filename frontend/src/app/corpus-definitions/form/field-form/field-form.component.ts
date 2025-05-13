@@ -178,8 +178,4 @@ export class FieldFormComponent {
         const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
         button.focus();
     }
-
-    nextStep() {
-        this.corpusDefService.activateStep(3);
-    }
 }

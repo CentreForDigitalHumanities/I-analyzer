@@ -24,3 +24,12 @@
         </div>
     </div>
 </ng-container>
+
+<div class="section" *ngIf="nextStep$ | async as nextStep">
+    <div class="container is-readable">
+        <button class="button" (click)="toNext()" [disabled]="nextStep.disabled">
+            <span class="icon"><fa-icon [icon]="actionIcons.next" aria-hidden="true" /></span>
+            <span>{{nextStep.label}}</span>
+        </button>
+    </div>
+</div>
