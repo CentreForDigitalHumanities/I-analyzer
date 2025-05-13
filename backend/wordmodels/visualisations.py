@@ -20,7 +20,7 @@ def get_similarity_over_time(query_term, comparison_term, corpus_string):
         )
         for time_bin in wm_list
     ]
-    time_labels = time_labels(wm_list)
+    labels = time_labels(wm_list)
 
     similarities = [
         {
@@ -28,7 +28,7 @@ def get_similarity_over_time(query_term, comparison_term, corpus_string):
             'similarity': float(similarity) if similarity != None else None,
             'time': time,
         }
-        for (similarity, time) in zip(data, time_labels)
+        for (similarity, time) in zip(data, labels)
     ]
 
     return similarities
