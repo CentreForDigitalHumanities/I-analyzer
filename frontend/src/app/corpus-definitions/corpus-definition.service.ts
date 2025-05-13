@@ -20,8 +20,7 @@ export class CorpusDefinitionService implements OnDestroy {
         { label: 'Corpus information' },
         { label: 'Upload source data' },
         { label: 'Define fields' },
-        { label: 'Process data' },
-        { label: 'Browse your corpus' },
+        { label: 'Index data' },
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
