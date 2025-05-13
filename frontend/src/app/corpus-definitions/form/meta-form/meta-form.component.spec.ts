@@ -12,6 +12,7 @@ import { ApiService } from '@services';
 import { ApiServiceMock } from 'mock-data/api';
 import { CorpusDefinition } from '@models/corpus-definition';
 import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 
 
 describe('MetaFormComponent', () => {
@@ -23,7 +24,8 @@ describe('MetaFormComponent', () => {
             declarations: [
                 MetaFormComponent,
                 ImageUploadComponent,
-                FormFeedbackComponent
+                DocumentationFormComponent,
+                FormFeedbackComponent,
             ],
             imports: [
                 SharedModule,
