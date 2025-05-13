@@ -8,6 +8,7 @@ Celery is used for
 - Search results downloads with more than 10.000 documents
 - The term frequency visualisation
 - The ngram visualisation
+- Indexing documents (can also be done synchronously, see [indexing corpora](./Indexing-corpora.md))
 
 ## Running celery
 
@@ -60,7 +61,6 @@ Then open `localhost:5555` in your browser to see the flower interface.
 
 ## Developing with celery
 
-- The arguments and outputs for celery tasks must be JSON-serialisable. For example, a task function can have a user ID string as an argument, but not a `CustomUser` object.
 - Use `group` to run tasks in parallel and `chain` to run tasks in series. You can use groups in chains, chains in groups, chains in chains, etc.
 - You can use flower (see above) for an overview of your celery tasks. Note that groups and chains are not tasks themselves, and will not show up as tasks on Flower.
 - For easier debugging and testing, keep your tasks simple and outfactor complicated functionality to 'normal' functions.

@@ -2,14 +2,14 @@ import {
     Component,
     Input,
     OnChanges,
-    OnDestroy,
-    SimpleChanges,
+    OnDestroy, SimpleChanges
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-meta-form',
@@ -17,7 +17,7 @@ import { ISO6393Languages } from '../constants';
     styleUrl: './meta-form.component.scss',
 })
 export class MetaFormComponent implements OnChanges, OnDestroy {
-    @Input() corpus: CorpusDefinition;
+    @Input({required: true}) corpus!: CorpusDefinition;
 
     categories = [
         { value: 'parliament', label: 'Parliamentary debates' },
@@ -46,10 +46,12 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     destroy$ = new Subject<void>();
 
     languageOptions = ISO6393Languages;
+    actionIcons = actionIcons;
+
 
     constructor(
         private formBuilder: FormBuilder,
-        private corpusDefService: CorpusDefinitionService
+        private corpusDefService: CorpusDefinitionService,
     ) {}
 
     get currentCategoryLabel(): string {
@@ -61,7 +63,10 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
             this.corpus.definitionUpdated$
-                .pipe(takeUntil(this.destroy$))
+                .pipe(
+                    take(1),
+                    takeUntil(this.destroy$)
+                )
                 .subscribe(() =>
                     this.metaForm.patchValue(this.corpus.definition.meta)
                 );
@@ -78,11 +83,15 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         this.corpus.definition.meta =
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
-            next: () => {
+            next: (value) => {
                 this.corpusDefService.toggleStepDisabled(1);
-                this.corpusDefService.activateStep(1);
+                this.metaForm.patchValue(value.definition.meta);
             },
             error: console.error,
         });
+    }
+
+    nextStep() {
+        this.corpusDefService.activateStep(1);
     }
 }

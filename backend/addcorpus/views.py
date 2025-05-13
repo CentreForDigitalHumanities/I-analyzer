@@ -1,15 +1,18 @@
 import os
+from django.db.models import Q
 
 from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
                               CorpusDocumentationPage)
-from addcorpus.permissions import (CanSearchCorpus, IsCurator, IsCuratorOrReadOnly,
-                                   corpus_name_from_request)
+from addcorpus.permissions import (CanSearchCorpus, CanEditCorpus, CanEditOrSearchCorpus,
+    corpus_name_from_request,
+    searchable_condition, searchable_corpora,
+    editable_condition, editable_corpora)
 from addcorpus.python_corpora.load_corpus import (corpus_dir)
 from addcorpus.serializers import (CorpusDataFileSerializer,
                                    CorpusDocumentationPageSerializer,
                                    CorpusJSONDefinitionSerializer,
                                    CorpusSerializer)
-from addcorpus.utils import get_csv_info
+from addcorpus.utils import get_csv_info, clear_corpus_image
 from django.conf import settings
 from django.http.response import FileResponse
 from rest_framework import viewsets
@@ -30,7 +33,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
     serializer_class = CorpusSerializer
 
     def get_queryset(self):
-        return self.request.user.searchable_corpora().order_by('-date_created')
+        return searchable_corpora(self.request.user).order_by('-date_created')
 
 
 class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
@@ -38,20 +41,22 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
     Markdown documentation pages for corpora.
     '''
 
-    permission_classes = [IsCuratorOrReadOnly]
+    permission_classes = [CanEditOrSearchCorpus]
     serializer_class = CorpusDocumentationPageSerializer
 
+    def corpus_from_object(self, obj: CorpusDocumentationPage) -> Corpus:
+        return obj.corpus_configuration.corpus
+
+
     def get_queryset(self):
-        # curators are not limited to active corpora (to allow editing)
-        if self.request.user.is_staff:
-            corpora = Corpus.objects.all()
-        else:
-            corpora = self.request.user.searchable_corpora()
+        condition = searchable_condition(self.request.user) | \
+            editable_condition(self.request.user)
 
         queried_corpus = self.request.query_params.get('corpus')
         if queried_corpus:
-            corpora = corpora.filter(name=queried_corpus)
+            condition &= Q(name=queried_corpus)
 
+        corpora = Corpus.objects.filter(condition)
         return CorpusDocumentationPage.objects.filter(
             corpus_configuration__corpus__in=corpora
         )
@@ -62,17 +67,50 @@ class CorpusImageView(APIView):
     Return the image for a corpus.
     '''
 
-    permission_classes = [CanSearchCorpus, IsCuratorOrReadOnly]
+    permission_classes = [CanEditOrSearchCorpus]
+
+    def get_object(self):
+        corpus_name = corpus_name_from_request(self.request)
+        return CorpusConfiguration.objects.get(corpus__name=corpus_name)
+
+    def corpus_from_object(self, obj: CorpusConfiguration) -> Corpus:
+        return obj.corpus
 
     def get(self, request, *args, **kwargs):
-        corpus_name = corpus_name_from_request(request)
-        corpus_config = CorpusConfiguration.objects.get(corpus__name=corpus_name)
+        try:
+            corpus_config = self.get_object()
+        except:
+            raise NotFound('Corpus does not exist')
+
+        self.check_object_permissions(request, corpus_config)
+
         if corpus_config.image:
             path = corpus_config.image.path
         else:
             path = settings.DEFAULT_CORPUS_IMAGE
 
         return FileResponse(open(path, 'rb'))
+
+
+    def put(self, request, *args, **kwargs):
+        corpus_config = self.get_object()
+
+        clear_corpus_image(corpus_config.corpus)
+
+        file = request.FILES['file']
+        corpus_config.image = file
+        name, ext = os.path.splitext(corpus_config.image.name)
+        corpus_config.image.name = corpus_config.corpus.name + ext
+        corpus_config.save()
+
+        return Response('Image saved', HTTP_200_OK)
+
+
+    def delete(self, request, *args, **kwargs):
+        corpus_config = self.get_object()
+        clear_corpus_image(corpus_config.corpus)
+
+        return Response('Image deleted', HTTP_200_OK)
 
 
 class CorpusDocumentView(APIView):
@@ -93,19 +131,34 @@ class CorpusDocumentView(APIView):
 
 
 class CorpusDefinitionViewset(viewsets.ModelViewSet):
-    permission_classes = [IsCurator]
+    permission_classes = [CanEditCorpus]
     serializer_class = CorpusJSONDefinitionSerializer
 
+    def corpus_from_object(self, obj: Corpus) -> Corpus:
+        return obj
+
     def get_queryset(self):
-        return Corpus.objects.filter(has_python_definition=False)
+        return editable_corpora(self.request.user)
+
+
+    def perform_create(self, serializer):
+        '''Overwrites ModelViewSet.perform_create
+        Auto-assigns the authenticated user on creation'''
+        return serializer.save(owner=self.request.user)
 
 
 class CorpusDataFileViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanEditCorpus]
     serializer_class = CorpusDataFileSerializer
 
+    def corpus_from_object(self, obj: CorpusDataFile) -> Corpus:
+        return obj.corpus
+
+
     def get_queryset(self):
-        queryset = CorpusDataFile.objects.all()
+        queryset = CorpusDataFile.objects.filter(
+            corpus__in=editable_corpora(self.request.user)
+        )
 
         corpus = self.request.query_params.get('corpus')
         if corpus:

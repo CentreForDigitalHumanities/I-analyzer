@@ -39,6 +39,7 @@ describe('user API conversion', () => {
             10000,
             false,
             true,
+            false,
         );
     });
 
@@ -52,6 +53,7 @@ describe('user API conversion', () => {
             saml: false,
             profile: {
                 enable_search_history: true,
+                can_edit_corpora: false,
             }
         };
     });
