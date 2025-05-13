@@ -70,19 +70,8 @@
         </p>
     </div>
 
-    <div class="block" role="status">
-        <div class="message is-success" *ngIf="showSuccessMessage$ | async">
-            <p class="message-body">
-                Changes saved!
-            </p>
-        </div>
-        <div class="message is-danger" *ngIf="showErrorMessage$ | async">
-            <p class="message-body">
-                Something went wrong saving your changes. Please try again.
-                If you keep seeing this error, please contact support.
-            </p>
-        </div>
-    </div>
+    <ia-form-feedback [showSuccess]="showSuccessMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
 </form>
 
 <div class="box">
