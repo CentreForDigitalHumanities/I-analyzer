@@ -1,17 +1,18 @@
 from itertools import chain, combinations
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
-from wordmodels.utils import load_word_models, word_in_model, time_label, time_labels
+from wordmodels.utils import load_word_models, word_in_model, time_label, time_labels, transform_query
 from wordmodels.similarity import find_n_most_similar, term_similarity
 
-def local_graph_data(corpus_name: str, query_term: str):
+def local_graph_data(corpus_name: str, query: str):
+    term = transform_query(query)
     corpus = load_corpus_definition(corpus_name)
     wm_list = load_word_models(corpus)
 
     times = time_labels(wm_list, sort=True)
 
     data_per_timeframe = (
-        graph_data_for_timeframe(wm, query_term)
+        graph_data_for_timeframe(wm, term)
         for wm in wm_list
     )
 
@@ -25,20 +26,20 @@ def local_graph_data(corpus_name: str, query_term: str):
     }
 
 
-def graph_data_for_timeframe(wm, query_term: str):
-    nodes = _graph_nodes(wm, query_term)
+def graph_data_for_timeframe(wm, term: str):
+    nodes = _graph_nodes(wm, term)
     links = _graph_links(wm, nodes)
 
     return nodes, links
 
 
-def _graph_nodes(wm, query_term):
-    if not word_in_model(query_term, wm):
+def _graph_nodes(wm, term):
+    if not word_in_model(term, wm):
         return []
 
-    neighbours = find_n_most_similar(wm, query_term, 10)
+    neighbours = find_n_most_similar(wm, term, 10)
     query_node = {
-        'term': query_term,
+        'term': term,
         'index': 0,
         'timeframe': time_label(wm),
         'similarity': 1,
