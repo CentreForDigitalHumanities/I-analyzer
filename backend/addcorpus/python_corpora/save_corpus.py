@@ -7,7 +7,7 @@ import sys
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
-from addcorpus.utils import normalize_date_to_year
+from addcorpus.utils import normalize_date_to_year, clear_corpus_image
 
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
     '''
@@ -24,7 +24,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     configuration, regardless of what is currently saved in the database.
     '''
 
-    _clear_corpus_image(corpus)
+    clear_corpus_image(corpus)
 
     # create a clean CorpusConfiguration object, but use the existing PK if possible
     pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
@@ -124,14 +124,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     field.full_clean()
     return field
 
-def _clear_corpus_image(corpus: Corpus):
-    if corpus.configuration_obj and corpus.configuration.image:
-        image = corpus.configuration.image
-        if image:
-            if os.path.exists(image.path):
-                os.remove(image.path)
 
-            image.delete()
 
 def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     corpus_name = configuration.corpus.name

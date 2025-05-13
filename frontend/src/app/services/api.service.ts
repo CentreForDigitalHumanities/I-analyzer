@@ -300,6 +300,18 @@ export class ApiService {
         return this.http.get('/api/corpus/definition-schema');
     }
 
+    public updateCorpusImage(corpusName: string, file: File): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name)
+        return this.http.put(url, formData);
+    }
+
+    public deleteCorpusImage(corpusName: string): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        return this.http.delete(url);
+    }
+
     // Corpus datafiles
     public createDataFile(
         corpusId: number,

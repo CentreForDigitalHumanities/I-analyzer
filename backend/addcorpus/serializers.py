@@ -160,10 +160,11 @@ class JSONDefinitionField(serializers.Field):
 
 class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
     definition = JSONDefinitionField()
+    has_image =serializers.BooleanField(source='configuration.image', read_only=True)
 
     class Meta:
         model = Corpus
-        fields = ['id', 'active', 'definition', 'owner']
+        fields = ['id', 'active', 'definition', 'owner', 'has_image']
         read_only_fields = ['id']
 
     def create(self, validated_data: Dict):
