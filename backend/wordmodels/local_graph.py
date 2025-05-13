@@ -2,14 +2,14 @@ from itertools import chain
 from typing import List
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
-from wordmodels.utils import load_word_models, word_in_model, time_label
+from wordmodels.utils import load_word_models, word_in_model, time_label, time_labels
 from wordmodels.similarity import find_n_most_similar, term_similarity
 
 def local_graph_data(corpus_name: str, query_term: str):
     corpus = load_corpus_definition(corpus_name)
     wm_list = load_word_models(corpus)
 
-    times = timeframes(wm_list)
+    times = time_labels(wm_list, sort=True)
 
     data_per_timeframe = (
         graph_data_for_timeframe(wm, query_term)
@@ -93,13 +93,6 @@ def _graph_links(wm, nodes):
             })
 
     return links
-
-
-def timeframes(models) -> List[str]:
-    sorted_models = sorted(models, key=lambda wm: wm['start_year'])
-    return [
-        time_label(wm) for wm in sorted_models
-    ]
 
 
 def _graph_vega_doc(timeframes, nodes, links):

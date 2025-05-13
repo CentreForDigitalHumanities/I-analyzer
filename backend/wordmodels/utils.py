@@ -73,3 +73,11 @@ def time_label(model):
     start_year = model['start_year']
     end_year = model['end_year']
     return f'{start_year}-{end_year}'
+
+
+def time_labels(models, sort=False):
+    ordered = sorted(models, key=lambda wm: wm['start_year']) if sort else models
+    return [
+        time_label(wm) for wm in ordered
+    ]
+
