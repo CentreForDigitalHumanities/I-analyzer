@@ -2,7 +2,7 @@ from itertools import chain
 from typing import List
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
-from wordmodels.utils import load_word_models, word_in_model
+from wordmodels.utils import load_word_models, word_in_model, time_label
 from wordmodels.similarity import find_n_most_similar, term_similarity
 
 def local_graph_data(corpus_name: str, query_term: str):
@@ -33,12 +33,6 @@ def graph_data_for_timeframe(wm, query_term: str):
     return nodes, links
 
 
-def _format_time(wm):
-    start_year = wm['start_year']
-    end_year = wm['end_year']
-    return f'{start_year}-{end_year}'
-
-
 def _graph_nodes(wm, query_term):
     if not word_in_model(query_term, wm):
         return []
@@ -47,7 +41,7 @@ def _graph_nodes(wm, query_term):
     query_node = {
         'term': query_term,
         'index': 0,
-        'timeframe': _format_time(wm),
+        'timeframe': time_label(wm),
         'similarity': 1,
         'group': 1,
     }
@@ -55,7 +49,7 @@ def _graph_nodes(wm, query_term):
         {
             'term': item['key'],
             'index': i + 1,
-            'timeframe': _format_time(wm),
+            'timeframe': time_label(wm),
             'similarity': item['similarity'],
             'group': 2,
         }
@@ -95,7 +89,7 @@ def _graph_links(wm, nodes):
                 'source': i1,
                 'target': i2,
                 'value': similarity,
-                'timeframe': _format_time(wm),
+                'timeframe': time_label(wm),
             })
 
     return links
@@ -104,7 +98,7 @@ def _graph_links(wm, nodes):
 def timeframes(models) -> List[str]:
     sorted_models = sorted(models, key=lambda wm: wm['start_year'])
     return [
-        _format_time(wm) for wm in sorted_models
+        time_label(wm) for wm in sorted_models
     ]
 
 

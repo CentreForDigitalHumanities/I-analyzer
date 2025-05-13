@@ -67,3 +67,9 @@ def term_to_index(query, model):
 
 def index_to_term(index, vocab):
     return vocab[index]
+
+
+def time_label(model):
+    start_year = model['start_year']
+    end_year = model['end_year']
+    return f'{start_year}-{end_year}'

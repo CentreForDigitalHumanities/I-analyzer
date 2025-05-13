@@ -4,7 +4,7 @@ import pandas as pd
 
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from wordmodels.similarity import find_n_most_similar, term_similarity
-from wordmodels.utils import load_word_models
+from wordmodels.utils import load_word_models, time_label
 
 
 NUMBER_SIMILAR = 8
@@ -36,7 +36,7 @@ def get_similarity_over_time(query_term, comparison_term, corpus_string):
 
 def get_time_labels(binned_model):
     return [
-        '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
+        time_label(time_bin)
         for time_bin in binned_model
     ]
 
