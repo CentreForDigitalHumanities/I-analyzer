@@ -9,7 +9,7 @@ import { SimilarityChartComponent } from './similarity-chart/similarity-chart.co
 import { TimeIntervalSliderComponent } from './similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models.component';
 import { WordSimilarityComponent } from './word-similarity/word-similarity.component';
-import { LocalGraphComponent } from './local-graph/local-graph.component';
+import { NeighborNetworkComponent } from './neighbor-network/neighbor-network.component';
 
 
 @NgModule({
@@ -23,7 +23,7 @@ import { LocalGraphComponent } from './local-graph/local-graph.component';
         WordSimilarityComponent,
         SimilarityChartComponent,
         TimeIntervalSliderComponent,
-        LocalGraphComponent,
+        NeighborNetworkComponent,
     ], exports: [
         WordModelsComponent,
     ],

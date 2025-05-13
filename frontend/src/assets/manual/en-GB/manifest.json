@@ -52,8 +52,8 @@
                 "title": "Related words"
             },
             {
-                "id": "local-graph",
-                "title": "Local graph"
+                "id": "neighbour-network",
+                "title": "Network of nearest neighbours"
             },
             {
                 "id": "comparesimilarity",

@@ -1,24 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LocalGraphComponent } from './local-graph.component';
+import { NeighborNetworkComponent } from './neighbor-network.component';
 import { WordmodelsService } from '@services';
 import { WordmodelsServiceMock } from 'mock-data/wordmodels';
 import { mockCorpus } from 'mock-data/corpus';
 
-describe('LocalGraphComponent', () => {
-    let component: LocalGraphComponent;
-    let fixture: ComponentFixture<LocalGraphComponent>;
+describe('NeighborNetworkComponent', () => {
+    let component: NeighborNetworkComponent;
+    let fixture: ComponentFixture<NeighborNetworkComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [LocalGraphComponent],
+            declarations: [NeighborNetworkComponent],
             providers: [
                 { provide: WordmodelsService, useClass: WordmodelsServiceMock },
             ],
         })
             .compileComponents();
 
-        fixture = TestBed.createComponent(LocalGraphComponent);
+        fixture = TestBed.createComponent(NeighborNetworkComponent);
         component = fixture.componentInstance;
         component.corpus = mockCorpus;
         component.queryText = 'test';

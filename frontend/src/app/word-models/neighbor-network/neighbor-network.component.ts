@@ -5,11 +5,11 @@ import { BehaviorSubject } from 'rxjs';
 import embed from 'vega-embed';
 
 @Component({
-    selector: 'ia-local-graph',
-    templateUrl: './local-graph.component.html',
-    styleUrl: './local-graph.component.scss'
+    selector: 'ia-neighbor-network',
+    templateUrl: './neighbor-network.component.html',
+    styleUrl: './neighbor-network.component.scss'
 })
-export class LocalGraphComponent implements OnChanges {
+export class NeighborNetworkComponent implements OnChanges {
     @Input({required: true}) corpus!: Corpus;
     @Input({required: true}) queryText!: string;
     @Input() asTable: boolean;
@@ -46,7 +46,7 @@ export class LocalGraphComponent implements OnChanges {
     }
 
     getData() {
-        this.wordModelsService.getLocalGraph(
+        this.wordModelsService.getNeighborNetwork(
             this.queryText, this.corpus.name, 5
         ).subscribe(this.onDataLoaded.bind(this));
     }

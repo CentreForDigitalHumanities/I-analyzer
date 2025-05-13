@@ -57,12 +57,12 @@ export class WordmodelsService {
         });
     }
 
-    public getLocalGraph(
+    public getNeighborNetwork(
         queryTerm: string,
         corpusName: string,
         neighbours: number,
     ) {
-        return this.http.post(this.wmApiRoute('local_graph'), {
+        return this.http.post(this.wmApiRoute('neighbor_network'), {
             query_term: queryTerm,
             corpus_name: corpusName,
             neighbours,

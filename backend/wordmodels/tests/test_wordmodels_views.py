@@ -52,13 +52,13 @@ def test_word_in_models_view(term, in_model, admin_client, mock_corpus):
         assert 'similar_keys' in data
 
 
-def test_local_graph_view(admin_client, mock_corpus):
+def test_neighbor_network_view(admin_client, mock_corpus):
     query_json = {
         'query_term': 'alice',
         'corpus_name': mock_corpus,
     }
     response = admin_client.post(
-        '/api/wordmodels/local_graph',
+        '/api/wordmodels/neighbor_network',
         query_json,
         content_type='application/json'
     )

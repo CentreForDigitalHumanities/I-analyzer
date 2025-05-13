@@ -1,4 +1,4 @@
-This graph shows words that appear in the same contexts as the query term across the corpus.
+This graph shows a network of words that appear in the same contexts as the query term across the corpus.
 
 ## Word models
 
