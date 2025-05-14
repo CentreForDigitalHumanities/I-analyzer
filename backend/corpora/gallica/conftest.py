@@ -10,6 +10,7 @@ def gallica_corpus_settings(settings):
     settings.CORPORA = {
         "caricature": os.path.join(here, "caricature.py"),
         "figaro": os.path.join(here, "figaro.py"),
+        "resistance": os.path.join(here, "resistance.py"),
     }
 
 
