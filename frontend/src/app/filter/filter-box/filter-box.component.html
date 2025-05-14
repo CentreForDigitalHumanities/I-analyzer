@@ -1,6 +1,6 @@
 <fieldset class="box filter-container" *ngIf="filter"
     [class.on]="filter.state$.value.active">
-    <legend class="label" id="legend-filter-{{filter.name}}">
+    <legend class="label" id="legend-filter-{{filter.displayName | slugify}}">
         {{ filter.displayName }}
     </legend>
     <div class="field has-addons" style="float:right">
