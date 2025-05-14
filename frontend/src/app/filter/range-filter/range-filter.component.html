@@ -3,6 +3,7 @@
         <span>{{data.min}} - {{data.max}}</span>
         <p-slider [animate]="true" [ngModel]="[data.min, data.max]"
             [range]="true" [min]="min" [max]="max"
-            (onChange)="sliderValue$.next($event.values)"></p-slider>
+            (onChange)="sliderValue$.next($event.values)"
+            [ariaLabel]="filter.displayName" />
     </div>
 </ng-container>
