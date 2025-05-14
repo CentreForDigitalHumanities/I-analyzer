@@ -1,13 +1,17 @@
 <fieldset class="box filter-container" *ngIf="filter"
     [class.on]="filter.state$.value.active">
-    <legend class="label" id="legend-filter-{{filter.name}}"
-        iaBalloon="{{ filter.description }}"
-        iaBalloonPosition="up-left"
-        iaBalloonLength="medium">
+    <legend class="label" id="legend-filter-{{filter.name}}">
         {{ filter.displayName }}
     </legend>
     <div class="field has-addons" style="float:right">
         <div class="control">
+            <span class="icon filter-icon"
+                *ngIf="filter.description?.length"
+                iaBalloon="{{ filter.description }}"
+                iaBalloonPosition="up-left"
+                iaBalloonLength="medium">
+                <fa-icon [icon]="actionIcons.tooltip" aria-hidden="true" />
+            </span>
             <button *ngIf="(filter.isDefault$ | async) === false"
                 class="button icon filter-icon is-primary is-inverted is-round"
                 type="button"
