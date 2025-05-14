@@ -36,7 +36,7 @@ class CorpusView(viewsets.ReadOnlyModelViewSet):
         return searchable_corpora(self.request.user).order_by('-date_created')
 
 
-class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
+class CorpusDocumentationPageViewset(viewsets.ReadOnlyModelViewSet):
     '''
     Markdown documentation pages for corpora.
     '''
@@ -49,8 +49,7 @@ class CorpusDocumentationPageViewset(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        condition = searchable_condition(self.request.user) | \
-            editable_condition(self.request.user)
+        condition = searchable_condition(self.request.user)
 
         queried_corpus = self.request.query_params.get('corpus')
         if queried_corpus:

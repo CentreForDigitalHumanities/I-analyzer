@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangeUsernameComponent } from './change-username.component';
-import { SharedModule } from 'primeng/api';
+import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '@services';
 import { AuthServiceMock } from 'mock-data/auth';

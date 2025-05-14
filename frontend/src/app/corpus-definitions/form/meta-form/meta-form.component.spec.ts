@@ -11,6 +11,8 @@ import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { ApiService } from '@services';
 import { ApiServiceMock } from 'mock-data/api';
 import { CorpusDefinition } from '@models/corpus-definition';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 
 
 describe('MetaFormComponent', () => {
@@ -19,7 +21,12 @@ describe('MetaFormComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [MetaFormComponent, ImageUploadComponent],
+            declarations: [
+                MetaFormComponent,
+                ImageUploadComponent,
+                DocumentationFormComponent,
+                FormFeedbackComponent,
+            ],
             imports: [
                 SharedModule,
                 ReactiveFormsModule,

@@ -108,8 +108,14 @@
 
 
     <div class="field">
-        <p class="control">
-            <button class="button is-primary" type="submit">Save changes</button>
-        </p>
+        <div class="control">
+            <button class="button is-primary" type="submit">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save changes</span>
+            </button>
+        </div>
     </div>
+
+    <ia-form-feedback [showSuccess]="showSuccesMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
 </form>

@@ -136,7 +136,6 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
     type = PrettyChoiceField(choices = CorpusDocumentationPage.PageType.choices)
     index = serializers.IntegerField(source='page_index', read_only=True)
     content = DocumentationTemplateField(read_only=True)
-    content_template = serializers.CharField(source='content')
     corpus = serializers.SlugRelatedField(
         source='corpus_configuration',
         queryset=CorpusConfiguration.objects.all(),
@@ -145,7 +144,7 @@ class CorpusDocumentationPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CorpusDocumentationPage
-        fields = ['id', 'corpus', 'type', 'content', 'content_template', 'index']
+        fields = ['id', 'corpus', 'type', 'content', 'index']
 
 
 class JSONDefinitionField(serializers.Field):
@@ -172,6 +171,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
         definition_data = validated_data.get('definition')
         configuration_data = definition_data.pop('configuration')
         fields_data = configuration_data.pop('fields')
+        documentation_data = configuration_data.pop('documentation_pages')
 
         corpus = Corpus.objects.create(**definition_data)
         configuration = CorpusConfiguration.objects.create(corpus=corpus, **configuration_data)
@@ -189,12 +189,20 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
             corpus.active = True
             corpus.save()
 
+        for page in documentation_data:
+            CorpusDocumentationPage.objects.create(
+                corpus_configuration=configuration,
+                type=page['type'],
+                content=page['content'],
+            )
+
         return corpus
 
     def update(self, instance: Corpus, validated_data: Dict):
         definition_data = validated_data.get('definition')
         configuration_data = definition_data.pop('configuration')
         fields_data = configuration_data.pop('fields')
+        documentation_data = configuration_data.pop('documentation_pages')
 
         corpus = Corpus(
             pk=instance.pk, date_created=instance.date_created, owner=instance.owner,
@@ -224,6 +232,23 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
         if validated_data.get('active') == True:
             corpus.active = True
             corpus.save()
+
+        configuration.documentation_pages.exclude(
+            type__in=(page['type'] for page in documentation_data)).delete()
+        for page in documentation_data:
+            match = CorpusDocumentationPage.objects.filter(
+                corpus_configuration=configuration,
+                type=page['type'],
+            )
+
+            if match.exists():
+                match.update(content=page['content'])
+            else:
+                CorpusDocumentationPage.objects.create(
+                    corpus_configuration=configuration,
+                    type=page['type'],
+                    content=page['content'],
+                )
 
         return corpus
 

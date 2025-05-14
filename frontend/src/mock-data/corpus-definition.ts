@@ -7,8 +7,8 @@ export const mockCorpusDefinition: APICorpusDefinition = {
         description: 'JSON corpus definition for testing',
         category: 'book',
         date_range: {
-            min: '1800-01-01',
-            max: '1900-01-01'
+            min: 1800,
+            max: 1900,
         },
         languages: ['en'],
     },

@@ -213,6 +213,24 @@
             }
         }
     },
+    "documentation": {
+        "type": "object",
+        "description": "Documentation pages",
+        "properties": {
+            "general": {
+                "type": "string",
+                "description": "General information about the corpus"
+            },
+            "citation": {
+                "type": "string",
+                "description": "Citation guidelines"
+            },
+            "license": {
+                "type": "string",
+                "description": "License for re-use"
+            }
+        }
+    },
     "required": ["name", "meta", "source_data", "fields"],
     "$defs": {
         "sortSetting": {

@@ -75,20 +75,6 @@ def test_corpus_documentation_retrieve_view(admin_client: Client):
     assert status.is_success(response.status_code)
 
 
-def test_corpus_documentation_create_view(admin_client, basic_mock_corpus):
-    request_data = {
-        'corpus': basic_mock_corpus,
-        'type': 'Terms of service',
-        'content_template': 'You can do whatever you want.'
-    }
-    response = admin_client.post(
-        '/api/corpus/documentation/',
-        request_data,
-        content_type='application/json'
-    )
-    assert status.is_success(response.status_code)
-
-
 def test_corpus_image_view(admin_client, basic_mock_corpus):
     corpus = Corpus.objects.get(name=basic_mock_corpus)
     assert not corpus.configuration.image

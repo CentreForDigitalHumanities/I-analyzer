@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ImageUploadComponent } from './image-upload.component';
-import { SharedModule } from 'primeng/api';
 import { ApiService } from '@services';
 import { ApiServiceMock } from 'mock-data/api';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import { CorpusDefinition } from '@models/corpus-definition';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { SharedModule } from '@shared/shared.module';
 
 describe('ImageUploadComponent', () => {
     let component: ImageUploadComponent;
@@ -14,7 +15,10 @@ describe('ImageUploadComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ImageUploadComponent],
+            declarations: [
+                ImageUploadComponent,
+                FormFeedbackComponent,
+            ],
             imports: [SharedModule],
             providers: [
                 CorpusDefinitionService,

@@ -22,6 +22,9 @@ export class ImageUploadComponent {
     imageUpdated$ = new Subject<void>();
     imageURL$: Observable<string>;
 
+    showSuccess = false;
+    showError = false;
+
     constructor(
         private corpusDefService: CorpusDefinitionService,
         private apiService: ApiService,
@@ -45,6 +48,9 @@ export class ImageUploadComponent {
 
 
     onImageUpload(event: InputEvent) {
+        this.showSuccess = false;
+        this.showError = false;
+
         const files: File[] = event.target['files'];
         const file = files ? _.first(files) : undefined;
         this.file$.next(file);
@@ -60,6 +66,9 @@ export class ImageUploadComponent {
     }
 
     deleteImage() {
+        this.showSuccess = false;
+        this.showError = false;
+
         const corpusName = this.corpusDefService.corpus$.value.definition.name;
         this.apiService.deleteCorpusImage(corpusName).pipe(
             takeUntil(this.destroy$),
@@ -69,7 +78,15 @@ export class ImageUploadComponent {
     }
 
     onImageUpdate() {
-        this.corpus.save();
+        this.corpus.save().subscribe(() => {
+            this.showSuccess = true;
+            this.showError = false;
+        });
+    }
+
+    onRequestError() {
+        this.showSuccess = false;
+        this.showError = true;
     }
 
 }

@@ -21,7 +21,18 @@
             <ia-upload-sample *ngSwitchCase="1" />
             <ng-container *ngSwitchCase="2"><ia-field-form *ngIf="corpus$ | async as corpus"
                     [corpus]="corpus" /></ng-container>
-            <ia-documentation-form *ngSwitchCase="3" />
+            <p *ngSwitchCase="3">
+                <i>Coming soon!</i>
+            </p>
         </div>
     </div>
 </ng-container>
+
+<div class="section" *ngIf="nextStep$ | async as nextStep">
+    <div class="container is-readable">
+        <button class="button" (click)="toNext()" [disabled]="nextStep.disabled">
+            <span class="icon"><fa-icon [icon]="actionIcons.next" aria-hidden="true" /></span>
+            <span>{{nextStep.label}}</span>
+        </button>
+    </div>
+</div>
