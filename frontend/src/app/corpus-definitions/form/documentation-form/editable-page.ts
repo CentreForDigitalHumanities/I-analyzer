@@ -20,12 +20,6 @@ export const PAGE_CATEGORIES: DocumentationCategory[] = [
         title: 'License',
         description: 'We recommend providing a licence for others to reuse the data in your corpus, if possible.',
     },
-    {
-        id: 'terms_of_service',
-        title: 'Terms of service',
-        description: 'Does your corpus require additional conditions for users?',
-    },
-    // does not include the word models page; db-only corpora don't support word models
 ];
 
 export class EditablePage {

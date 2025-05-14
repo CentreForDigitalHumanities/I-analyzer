@@ -7,25 +7,24 @@
     <a href="https://www.markdownguide.org/">markdown</a> to style the content.
 </p>
 
-<form>
+<form [formGroup]="form" (ngSubmit)="submit()">
     <div class="block">
         <ia-tabs>
-            <ng-template iaTabPanel *ngFor="let page of pages"
-                 [id]="page.category.id" [title]="page.category.title">
+            <ng-template iaTabPanel *ngFor="let category of categories"
+                 [id]="category.id" [title]="category.title">
 
-                <p class="block">{{page.category.description}}</p>
+                <p class="block">{{category.description}}</p>
 
-                <textarea [(ngModel)]="page.content"
-                    [name]="page.category.id"
+                <textarea [formControl]="form.controls[category.id]"
                     class="textarea" rows="10"
-                    [attr.aria-labelledby]="'tab-' + page.category.id">
+                    [attr.aria-labelledby]="'tab-' + category.id">
                 </textarea>
             </ng-template>
         </ia-tabs>
     </div>
 
     <div class="block">
-        <button class="button is-primary" type="submit" (click)="submit()">
+        <button class="button is-primary" type="submit">
             Save changes
         </button>
     </div>
