@@ -3,11 +3,12 @@
         <div class="column">
             <p aria-live="polite" [attr.aria-busy]="pageResults.loading$ | async">
                 <span  aria-atomic="true">
-                        {page.total, plural, =1 {1 result} other {{{page.total}} results}}.
+                        {page.total, plural, =1 {1 result} other {{{page.total | number}} results}}.
                 </span>
                 <span aria-atomic="true">
                     <span *ngIf="page.total > resultsPerPage">
-                        Showing results {{pageResults.from$ | async}}-{{pageResults.to$ | async}}
+                        Showing results
+                        {{pageResults.from$ | async | number}}-{{pageResults.to$ | async | number}}
                     </span>
                 </span>
             </p>
