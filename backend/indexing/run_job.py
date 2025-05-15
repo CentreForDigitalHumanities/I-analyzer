@@ -34,14 +34,13 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 }
 
 
-@celery.shared_task(bind=True)
-def run_task(self, task: IndexTask) -> None:
+@celery.shared_task()
+def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
     logger.info(f'Running {task_id}: {task}')
 
     task.status = TaskStatus.WORKING
-    task.celery_task_id = str(self.request.id)
     task.save()
 
     try:
@@ -66,14 +65,17 @@ def handle_job_error(request, exc, traceback, job: IndexJob):
     mark_tasks_stopped(job)
 
 
-@celery.shared_task()
-def start_job(job: IndexJob) -> None:
+@celery.shared_task(bind=True)
+def start_job(self, job: IndexJob) -> None:
     _validate_job_start(job)
     _log_job_started(job)
 
-    for task in job.tasks():
-        task.status = TaskStatus.QUEUED
-        task.save()
+    scheduled = self.request.chain
+    for task in scheduled:
+        obj: IndexTask = task.args[0]
+        obj.status = TaskStatus.QUEUED
+        obj.celery_task_id = task.id
+        obj.save()
 
 
 def job_chain(job: IndexJob) -> celery.chain:

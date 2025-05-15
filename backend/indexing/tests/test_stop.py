@@ -6,7 +6,7 @@ from indexing.stop_job import stop_job, is_stoppable
 
 
 def test_stop_job(transactional_db, mock_corpus, es_index_client, celery_app, celery_worker, monkeypatch):
-    # replace create function to ensure fixed execution time
+    # replace first task handler to ensure fixed execution time
     def mock_create(task: models.CreateIndexTask):
         sleep(60) # this is a long time, but the task will never complete
         return task.index.name
@@ -15,7 +15,7 @@ def test_stop_job(transactional_db, mock_corpus, es_index_client, celery_app, ce
 
     # start indexing job asynchronously
     corpus = Corpus.objects.get(name=mock_corpus)
-    job =  create_job.create_indexing_job(corpus, mappings_only=True)
+    job =  create_job.create_indexing_job(corpus)
     run_job.perform_indexing_async(job)
 
     # wait for job to get started
