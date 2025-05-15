@@ -147,6 +147,16 @@ class ParliamentEurope(Parliament):
                 metadata["subcorpus"] = i
                 yield filename, metadata
 
+    def source2dicts(self, source):
+        filename, metadata = source
+
+        subcorpus_index = metadata["subcorpus"]
+        subcorpus = self.subcorpora[subcorpus_index]
+
+        docs = subcorpus.source2dicts(source)
+        for doc in docs:
+            yield {field.name: doc.get(field.name, None) for field in self.fields}
+
     debate_id = field_defaults.debate_id()
     debate_title = field_defaults.debate_title()
     date = field_defaults.date(min_date, max_date)
@@ -196,7 +206,7 @@ class ParliamentEurope(Parliament):
         ]
 
 
-class ParliamentEuropeFromAPI(ParliamentEurope, JSONCorpusDefinition):
+class ParliamentEuropeFromAPI(JSONCorpusDefinition):
     """
     Speeches of the European parliament, originally in or translated to English,
     provided through the Europarl Open Data API
@@ -334,59 +344,50 @@ class ParliamentEuropeFromAPI(ParliamentEurope, JSONCorpusDefinition):
     date = field_defaults.date(min_date, max_date)
     date.extractor = Metadata('date')
 
-    def party(self) -> FieldDefinition:
-        party = field_defaults.party()
-        party.extractor = Combined(
-            JSON(
-                "had_participation",
-                "had_participant_person",
-            ),
-            Metadata('date'),
-            transform=self.api_get_party_name,
-        )
-        return party
+    party = field_defaults.party()
+    party.extractor = Combined(
+        JSON(
+            "had_participation",
+            "had_participant_person",
+        ),
+        Metadata('date'),
+        transform=api_get_party_name,
+    )
 
-    def party_id(self) -> FieldDefinition:
-        party_id = field_defaults.party_id()
-        party_id.extractor = Combined(
-            JSON("had_participation", "had_participant_person"),
-            Metadata('date'),
-            transform=self.api_get_party_id,
-        )
-        return party_id
+    party_id = field_defaults.party_id()
+    party_id.extractor = Combined(
+        JSON("had_participation", "had_participant_person"),
+        Metadata('date'),
+        transform=api_get_party_id,
+    )
 
     source_language = field_defaults.language()
     source_language.extractor = JSON(
         "recorded_in_a_realization_of", "originalLanguage", transform=api_get_language
     )
 
-    def speaker(self) -> FieldDefinition:
-        speaker = field_defaults.speaker()
-        speaker.extractor = JSON(
+    speaker = field_defaults.speaker()
+    speaker.extractor = JSON(
+        "had_participation",
+        "had_participant_person",
+        transform=api_get_speaker_name,
+    )
+
+    speaker_country = FieldDefinition(
+        name='speaker_country',
+        extractor=JSON(
             "had_participation",
             "had_participant_person",
-            transform=self.api_get_speaker_name,
-        )
-        return speaker
+            transform=api_get_speaker_country,
+        ),
+    )
 
-    def speaker_country(self) -> FieldDefinition:
-        speaker_country = FieldDefinition(
-            name='speaker_country',
-            extractor=JSON(
-                "had_participation",
-                "had_participant_person",
-                transform=self.api_get_speaker_country,
-            ),
-        )
-        return speaker_country
-
-    def speaker_id(self):
-        speaker_id = field_defaults.speaker_id()
-        speaker_id.extractor = JSON(
-            "had_participation",
-            "had_participant_person",
-            transform=self.api_get_speaker_id,
-        )
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = JSON(
+        "had_participation",
+        "had_participant_person",
+        transform=api_get_speaker_id,
+    )
 
     speech = field_defaults.speech()
     speech.extractor = JSON(
@@ -399,23 +400,22 @@ class ParliamentEuropeFromAPI(ParliamentEurope, JSONCorpusDefinition):
     speech_id = field_defaults.speech_id()
     speech_id.extractor = JSON("id")
 
-    def __init__(self):
-        self.fields = [
-            self.date,
-            self.debate_id,
-            self.debate_title,
-            self.party(),
-            self.party_id(),
-            self.source_language,
-            self.speaker(),
-            self.speaker_country(),
-            self.speaker_id(),
-            self.speech,
-            self.speech_id,
-        ]
+    fields = [
+        date,
+        debate_id,
+        debate_title,
+        party,
+        party_id,
+        source_language,
+        speaker,
+        speaker_country,
+        speaker_id,
+        speech,
+        speech_id,
+    ]
 
 
-class ParliamentEuropeFromRDF(ParliamentEurope, RDFCorpusDefinition):
+class ParliamentEuropeFromRDF(RDFCorpusDefinition):
     """
     Speeches of the European parliament, originally in or translated to English,
     provided as Linked Open Data by the "Talk of Europe" project
@@ -423,6 +423,8 @@ class ParliamentEuropeFromRDF(ParliamentEurope, RDFCorpusDefinition):
 
     min_date = datetime(year=1999, month=7, day=20)
     max_date = datetime(year=2017, month=7, day=6)
+
+    data_directory = settings.PP_EUPARL_DATA
 
     def sources(self, start, end, **kwargs):
         metadata = {
@@ -439,21 +441,21 @@ class ParliamentEuropeFromRDF(ParliamentEurope, RDFCorpusDefinition):
             graph.subjects(predicate=LPV.spokenText),
         )
 
-    def parse_graph_from_filename(self, filename: str) -> Graph:
+    def data_from_file(self, filename: str) -> Graph:
         '''we combine the graphs in place, to keep memory load low'''
         graph = Graph()
         graph.parse(filename)
         graph.parse(os.path.join(self.data_directory, EVENTS_METADATA))
         return graph
 
+    date = field_defaults.date(min_date, max_date)
+    date.extractor = RDF(DCTERMS.date, transform=lambda x: x.strftime('%Y-%m-%d'))
+
     debate_id = field_defaults.debate_id()
     debate_id.extractor = RDF(DCTERMS.isPartOf, transform=get_identifier)
 
     debate_title = field_defaults.debate_title()
     debate_title.extractor = RDF(DCTERMS.isPartOf, DCTERMS.title)
-
-    date = field_defaults.date(min_date, max_date)
-    date.extractor = RDF(DCTERMS.date, transform=lambda x: x.strftime('%Y-%m-%d'))
 
     party = field_defaults.party()
     party.extractor = Combined(
@@ -508,17 +510,16 @@ class ParliamentEuropeFromRDF(ParliamentEurope, RDFCorpusDefinition):
     url = field_defaults.url()
     url.extractor = Backup(RDF(LPV.videoURI, transform=get_uri), RDF(transform=get_uri))
 
-    def __init__(self):
-        self.fields = [
-            self.date,
-            self.debate_id,
-            self.debate_title,
-            self.party,
-            self.sequence,
-            self.source_language,
-            self.speaker,
-            self.speaker_country,
-            self.speech,
-            self.speech_id,
-            self.url,
-        ]
+    fields = [
+        date,
+        debate_id,
+        debate_title,
+        party,
+        sequence,
+        source_language,
+        speaker,
+        speaker_country,
+        speech,
+        speech_id,
+        url,
+    ]

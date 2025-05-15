@@ -23,6 +23,7 @@ def test_imports(parliament_corpora_settings, corpus_object):
     docs = get_documents(corpus, start, end)
     for target in corpus_object.get('docs'):
         doc = next(docs)
+        breakpoint()
         for key in target:
             tested_fields.add(key)
             assert key in doc
