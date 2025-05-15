@@ -71,13 +71,15 @@ def start_job(self, job: IndexJob) -> None:
     _validate_job_start(job)
     _log_job_started(job)
 
-    scheduled = self.request.chain
-    for task in scheduled:
-        obj: IndexTask = task.args[0]
-        obj.status = TaskStatus.QUEUED
-        obj.celery_task_id = task.id
-        obj.save()
+    if self.request.chain:
+        for task in self.request.chain:
+            obj: IndexTask = task.args[0]
+            obj.celery_task_id = task.id
+            obj.save()
 
+    for task in job.tasks():
+        task.status = TaskStatus.QUEUED
+        task.save()
 
 def job_chain(job: IndexJob) -> celery.chain:
     signatures = [start_job.si(job)] + [run_task.si(task) for task in job.tasks()]
