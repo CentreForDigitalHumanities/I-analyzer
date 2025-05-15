@@ -12,7 +12,6 @@ def corpus_test_name(corpus_spec):
 @pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
 def test_imports(parliament_corpora_settings, corpus_object):
     corpus = load_corpus_definition(corpus_object.get('name'))
-    breakpoint()
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
 
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
