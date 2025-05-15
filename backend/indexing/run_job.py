@@ -5,6 +5,7 @@ Functionality to run an IndexJob
 import logging
 from typing import Callable, Type, Dict
 import celery
+from celery.result import AsyncResult
 
 from es.client import elasticsearch
 from indexing.models import (
@@ -92,7 +93,7 @@ def perform_indexing(job: IndexJob):
     return chain.apply()
 
 
-def perform_indexing_async(job: IndexJob):
+def perform_indexing_async(job: IndexJob) -> AsyncResult:
     '''
     Run an IndexJob asynchronously (through celery)
     '''
