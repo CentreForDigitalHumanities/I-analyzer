@@ -3,6 +3,7 @@ import {
     faClock,
     faFileCode,
     faNewspaper,
+    faQuestionCircle
 } from '@fortawesome/free-regular-svg-icons';
 import {
     IconDefinition as SolidIconDefinition,
@@ -39,7 +40,6 @@ import {
     faPalette,
     faPencil,
     faPlus,
-    faQuestionCircle,
     faSearch,
     faSearchMinus,
     faSearchPlus,
@@ -56,10 +56,9 @@ import {
     faUndo,
     faUpload,
     faUser,
-    faArrowsUpDown,
-    faArrowRightArrowLeft,
     faArrowUp,
     faArrowDown,
+    faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
@@ -96,6 +95,8 @@ export const actionIcons: Icons = {
     search: faSearch,
     help: faInfoCircle,
     helpAlt: faQuestionCircle,
+    tooltip: faQuestionCircle,
+    manual: navIcons.manual,
     download: faDownload,
     upload: faUpload,
     config: faCog,

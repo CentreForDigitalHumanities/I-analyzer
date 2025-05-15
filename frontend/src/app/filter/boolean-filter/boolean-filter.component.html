@@ -1,4 +1,11 @@
 <div class="bool" *ngIf="filter">
-    <p-checkbox [ngModel]="data" binary="true" (onChange)="update($event.checked)"></p-checkbox>
-    {{data | json | titlecase }}
+    <ia-dropdown [value]="data" (onChange)="update($event)"
+        labelledBy="legend-filter-{{filter.displayName | slugify}}">
+        <span iaDropdownLabel>{{data !== undefined ? (data | json) : 'any value'}}</span>
+        <div iaDropdownMenu>
+            <a iaDropdownItem>any value</a>
+            <a iaDropdownItem [value]="true">true</a>
+            <a iaDropdownItem [value]="false">false</a>
+        </div>
+    </ia-dropdown>
 </div>
