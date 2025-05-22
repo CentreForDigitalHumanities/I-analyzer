@@ -19,15 +19,20 @@ from api.utils import check_json_keys
 
 logger = logging.getLogger()
 
-def send_csv_file(download, directory, encoding, format=None):
+
+def send_csv_file(download, directory, encoding, format=None, delete_after_sent=False):
     '''
     Perform final formatting and send a CSV file as a FileResponse
     '''
-    converted_filename = convert_csv.convert_csv(
-        directory, download.filename, download.download_type, encoding, format)
-    path = os.path.join(directory, converted_filename)
+    try:
+        converted_filename = convert_csv.convert_csv(
+            directory, download.filename, download.download_type, encoding, format)
+        path = os.path.join(directory, converted_filename)
+        return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
+    finally:
+        if delete_after_sent:
+            download.delete()
 
-    return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
 
 class ResultsDownloadView(APIView):
     '''
@@ -49,7 +54,8 @@ class ResultsDownloadView(APIView):
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
-            return send_csv_file(download, directory, request.data['encoding'])
+            delete_after_sent = user is None
+            return send_csv_file(download, directory, request.data['encoding'], delete_after_sent=delete_after_sent)
         except Exception as e:
             logger.error(e)
             raise APIException(
