@@ -113,6 +113,8 @@ def es_client():
     try:
         client.info()
     except:
+        warnings.warn(
+            'Cannot connect to elasticsearch server, skipping tests that require it.')
         pytest.skip('Cannot connect to elasticsearch server')
 
     return client
