@@ -7,7 +7,7 @@ from corpora.gallica.gallica import Gallica
 
 class Figaro(Gallica):
     title = "Le Figaro"
-    description = "Archive of the French daily newspaper Le Figaro."
+    description = "Archive of Le Figaro, a French daily newspaper."
     min_date = datetime(year=1854, month=1, day=1)
     max_date = datetime(year=1954, month=12, day=31)
     corpus_id = "cb34355551z"

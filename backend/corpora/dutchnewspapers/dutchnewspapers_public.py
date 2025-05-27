@@ -29,8 +29,8 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     variation in the key: it MUST be `'dutchnewspapers-public'`
     '''
 
-    title = "Public Dutch Newspapers"
-    description = "Publicly available collection of Dutch newspapers by the KB"
+    title = "Dutch Newspapers (public)"
+    description = "Collection of Dutch newspapers in the public domain, digitised by the Koninklijke Bibliotheek."
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = settings.DUTCHNEWSPAPERS_DATA

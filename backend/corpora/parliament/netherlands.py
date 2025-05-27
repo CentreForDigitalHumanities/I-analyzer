@@ -441,7 +441,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     """
 
     title = "People & Parliament (Netherlands)"
-    description = "Speeches from the Eerste Kamer and Tweede Kamer"
+    description = "Debates in the Dutch national parliament, from its founding to the present. A collection of the speeches in the Eerste Kamer and Tweede Kamer."
     min_date = datetime(year=1815, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
 
