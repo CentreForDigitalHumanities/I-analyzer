@@ -67,7 +67,7 @@ The source files of a corpus are not included in this directory; ask another dev
 
 1. Add the corpus to the `CORPORA` dictionary in your local settings file. See [CORPORA settings documentation](/documentation/Django-project-settings.md#corpora).
 2. Set configurations for your corpus. Check the definition file to see which variables it expects to find in the configuration. Some of these may be optional, but you will at least need to define the (absolute) path to your source files.
-3. Activate your python virtual environment. Run the `loadcorpora` admin command (`yarn django loadcorpora`) to register the new corpus in the SQL database. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](documentation/Indexing-corpora.md) for more information.
+3. Activate your python virtual environment. Run the `loadcorpora` admin command (`yarn django loadcorpora`) to register the new corpus in the SQL database. Then create an ElasticSearch index from the source files by running, e.g., `yarn django index dutchannualreports`, for indexing the Dutch Annual Reports corpus in a development environment. See [Indexing](Indexing-corpora.md) for more information.
 
 ### Database-only corpora
 
