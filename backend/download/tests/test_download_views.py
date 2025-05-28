@@ -12,6 +12,7 @@ from addcorpus.models import Corpus
 from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
+from django.core.cache import cache
 
 
 def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus, csv_directory):
@@ -231,6 +232,7 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
 
 
 def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
+    cache.clear()  # clear cache to avoid throttle limit
     download_request_json = {
         'corpus': basic_mock_corpus,
         'es_query': mock_match_all_query(),
@@ -247,7 +249,9 @@ def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_pu
     download_objects = Download.objects.all()
     assert download_objects.count() == 0
 
+
 def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
+    cache.clear()  # clear cache to avoid throttle limit
     es_query = query.set_query_text(mock_match_all_query(), 'ghost')
     download_request_json = {
         'corpus': basic_mock_corpus,
