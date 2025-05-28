@@ -34,11 +34,11 @@ The most common reason why works are in the public domain, is that they are old,
 
 ## Query
 
-When you search a corpus on I-analyzer, you make a query. This is your description of what you want to see; for example, you want to see all documents, or search for a specific term.
+When you provide a bit of text to search for, we call this a query. Your query can include one or several terms. When you search for documents, you can use special characters to make more complex queries; see [queries](/manual/query) for more information.
 
 ## Tag
 
-On I-analyzer, tags are labels that you can assign to documents. See the [tags](/manual/tagging-documents) for more information.
+On I-analyzer, tags are labels that you can assign to documents. See [tags](/manual/tagging-documents) for more information.
 
 ## Word embeddings
 
