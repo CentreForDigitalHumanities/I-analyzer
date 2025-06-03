@@ -21,4 +21,4 @@ def test_dutchnewspapers_all(settings, admin_client):
     settings.DUTCHNEWSPAPERS_ALL_DATA = ''
 
     corpus = corpus_from_api(admin_client)
-    assert corpus['title'] == 'Dutch Newspapers (all)'
+    assert corpus['title'] == 'Dutch Newspapers (full)'
