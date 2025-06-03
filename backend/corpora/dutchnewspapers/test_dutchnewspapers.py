@@ -10,7 +10,7 @@ def test_dutchnewspapers_public(settings, db, admin_client):
     settings.DUTCHNEWSPAPERS_DATA = ''
 
     corpus = corpus_from_api(admin_client)
-    assert corpus['title'] == 'Public Dutch Newspapers'
+    assert corpus['title'] == 'Dutch Newspapers (public)'
 
 def test_dutchnewspapers_all(settings, admin_client):
     settings.CORPORA = {
@@ -21,4 +21,4 @@ def test_dutchnewspapers_all(settings, admin_client):
     settings.DUTCHNEWSPAPERS_ALL_DATA = ''
 
     corpus = corpus_from_api(admin_client)
-    assert corpus['title'] == 'Dutch Newspapers (Delpher)'
+    assert corpus['title'] == 'Dutch Newspapers (full)'
