@@ -36,6 +36,10 @@ The most common reason why works are in the public domain, is that they are old,
 
 When you provide a bit of text to search for, we call this a query. Your query can include one or several terms. When you search for documents, you can use special characters to make more complex queries; see [queries](/manual/query) for more information.
 
+## Stemming
+
+A kind of text processing where the words in a text are stripped of all inflection. For instance, *walk*, *walks*, and *walking* are all reduced to *walk*. This can be used to ignore irrevelant variation between words. See [stemming (wikipedia)](/https://en.wikipedia.org/wiki/Stemming) for more information.
+
 ## Tag
 
 On I-analyzer, tags are labels that you can assign to documents. See [tags](/manual/tagging-documents) for more information.
