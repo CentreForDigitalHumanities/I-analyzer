@@ -10,7 +10,7 @@ The data on I-analyzer is divided in corpora. A corpus usually has a clear focus
 
 CSV stands for *comma-separated values*. This is a data format for files. When you download data from I-analyzer, you will receive a CSV file.
 
-You can open CSV files in spreadsheet editors like Microsoft Excel, Google Sheets or LibreOffice Calc. They are also well-suited for scripting languages like Python or R. See [downloading data](/manual/download) for more information.
+You can open CSV files in spreadsheet editors like Microsoft Excel, Google Sheets or LibreOffice Calc. They are also well-suited for scripting languages like Python or R. See [downloading data](/manual/download#using-csv-files) for more information.
 
 ## Document
 
@@ -22,7 +22,7 @@ A text can contain named entities: people, locations, organisations, etc. that t
 
 ## Open source
 
-We call software open source when the source code is freely available. That means anyone can view it, share it with others, or edit it to make their own version. (The source code of a program is the "recipe" for a computer.)
+We call software open source when the source code is freely available. That means anyone can view it, share it with others, or edit it to make their own version. There may still be conditions for re-using the software, such as including an attribution to the original author.
 
 I-analyzer is open source.
 
