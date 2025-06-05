@@ -1,22 +1,22 @@
 {
   "data": [
     {
-      "id": "org/4275",
+      "id": "org/7037",
       "type": "Organization",
-      "identifier": "4275",
+      "identifier": "7037",
       "isVersionOf": "org/ECR",
       "source": "EU_PARLIAMENT",
       "temporal": {
-        "id": "time-period/20140701-20190701",
+        "id": "time-period/20240716",
         "type": "PeriodOfTime",
-        "endDate": "2019-07-01",
-        "startDate": "2014-07-01"
+        "startDate": "2024-07-16"
       },
       "label": "ECR",
       "altLabel": {
         "en": "European Conservatives and Reformists"
       },
-      "notation_codictBodyId": "4275",
+      "notation_codictBodyId": "7037",
+      "notation_providerTemporalBodyId": "7037",
       "prefLabel": {
         "en": "European Conservatives and Reformists Group"
       },

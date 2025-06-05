@@ -1,6 +1,8 @@
 import os
 
 import pytest
+from requests import Response
+from unittest.mock import Mock
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,21 +14,12 @@ def gallica_corpus_settings(settings):
     }
 
 
-class MockResponse(object):
-    def __init__(self, filepath):
-        self.mock_content_file = filepath
-
-    @property
-    def content(self):
-        with open(self.mock_content_file, "r") as f:
-            return f.read()
-
-    @property
-    def status_code(self):
-        return 200
+def mock_content(filename):
+    with open(filename, "r") as f:
+        return f.read()
 
 
-def mock_response(url: str) -> MockResponse:
+def mock_response(url: str) -> Response:
     if url.endswith("date"):
         filename = os.path.join(here, "tests", "data", "figaro", "Years.xml")
     elif "&" in url:
@@ -35,7 +28,10 @@ def mock_response(url: str) -> MockResponse:
         filename = os.path.join(here, "tests", "data", "figaro", "OAIRecord.xml")
     elif url.endswith("texteBrut"):
         filename = os.path.join(here, "tests", "data", "figaro", "RoughText.html")
-    return MockResponse(filename)
+    mock = Mock(spec=Response)
+    mock.status_code = 200
+    mock.content = mock_content(filename)
+    return mock
 
 
 def mock_sleep(seconds: int):

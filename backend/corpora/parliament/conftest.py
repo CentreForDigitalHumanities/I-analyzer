@@ -1,9 +1,11 @@
 from datetime import datetime
+import json
 import os
 
 import pytest
+from requests import Response
+from unittest.mock import Mock
 
-from corpora.gallica.conftest import MockResponse
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -694,7 +696,6 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 "source_language": "Italian",
                 "url": "http://purl.org/linkedpolitics/eu/plenary/1999-07-21-Speech-3-063",
             },
-            {},  # skipping 2009 speech
             {
                 "id": "2017-07-06-Speech-4-146-000",
                 "date": "2017-07-06",
@@ -712,25 +713,38 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 "date": "2024-11-13",
                 "debate_id": "MTG-PL-2024-11-13-PVCRE-ITM-17",
                 "debate_title": "17. Fight against money laundering and terrorist financing: listing Russia as a high-risk third country in the EU (debate)",
+                "id": "MTG-PL-2024-11-13-OTH-2017005042457",
                 "party": "European Conservatives and Reformists Group",
-                "party_id": "4275",
-                "source language": "English",
+                "party_id": "7037",
+                "source_language": "English",
+                "sequence": 1,
                 "speaker": "Roberts Zīle",
                 "speaker_country": "Latvia",
                 "speaker_id": "28615",
-                "speech": "",
-                "speech_id": "MTG-PL-2024-11-13-OTH-2017005042457",
+                "speech": "Thank you, Commissioner McGuinness, and I would also like to thank you for your work on the AML package and many other issues, also for today's issues. Thank you very much.",
             },
         ],
-        "n_documents": 4,
+        "n_documents": 3,
     },
 ]
 
 
-def mock_response_euparl(url: str) -> MockResponse:
+def mock_json(filename):
+    with open(filename, "r") as f:
+        return json.load(f)
+
+
+def mock_xml(filename):
+    with open(filename, "r") as f:
+        return f.read()
+
+
+def mock_response_euparl(url: str, headers: dict = {}) -> Response:
     if "meetings" in url:
-        filename = os.path.join(
-            here, "tests", "data", "euparl", "api", "MeetingResponse.json"
+        filename = (
+            os.path.join(here, "tests", "data", "euparl", "api", "MeetingResponse.json")
+            if 'MTG-PL-2024-11-13' in url
+            else None
         )
     elif "speeches" in url:
         filename = os.path.join(
@@ -748,4 +762,14 @@ def mock_response_euparl(url: str) -> MockResponse:
         filename = os.path.join(here, "tests", "data", "euparl", "api", "Country.xml")
     elif "language" in url:
         filename = os.path.join(here, "tests", "data", "euparl", "api", "Language.xml")
-    return MockResponse(filename)
+
+    mock_response = Mock(spec=Response)
+    if not filename:
+        mock_response.status_code = 404
+        return mock_response
+    mock_response.status_code = 200
+    if filename.endswith('xml'):
+        mock_response.content = mock_xml(filename)
+    elif filename.endswith('json'):
+        mock_response.json.return_value = mock_json(filename)
+    return mock_response

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from functools import cache
 from itertools import chain
 import logging
 import os
@@ -73,51 +74,58 @@ def add_speaker_metadata(filename: str) -> dict:
         })
     return speaker_dict
 
-def get_identifier(input: str) -> str:
-    return input.split('/')[-1]
+
+def get_identifier(input_string: str) -> str:
+    return input_string.split('/')[-1]
 
 
 def language_name(lang_code: str) -> str:
     return Language.make(language=standardize_tag(lang_code)).display_name()
 
 
-def get_speaker(input: Tuple[URIRef, dict]) -> str:
-    (speaker, speaker_dict) = input
+def get_speaker(input_data: Tuple[URIRef, dict]) -> str:
+    (speaker, speaker_dict) = input_data
     return speaker_dict.get(speaker).get('name')
 
-def get_speaker_country(input: Tuple[URIRef, dict]) -> str:
-    (speaker, speaker_dict) = input
+
+def get_speaker_country(input_data: Tuple[URIRef, dict]) -> str:
+    (speaker, speaker_dict) = input_data
     return speaker_dict.get(speaker).get('country')
 
-def get_speaker_party(input: Tuple[str, datetime, dict]) -> str:
+
+def get_speaker_party(input_data: Tuple[str, datetime, dict]) -> str:
     ''' look up the which EU party the speaker was part of at the date of their speech '''
-    (speaker, date, party_data) = input
+    (speaker, date, party_data) = input_data
     party_list = party_data.get(speaker).get('parties')
     return next(
         (
             f"{p['party_name'].value} ({p['party_acronym'].value})"
             for p in party_list
             if (date >= p["date_start"] and date <= p["date_end"])
-        )
+        ),
+        None,
     )
 
-def get_speech_index(input: Tuple[str, list]) -> int:
+
+def get_speech_index(input_data: Tuple[str, list]) -> int:
     ''' find index of speech in array of debate parts '''
-    speech, speeches = input
+    speech, speeches = input_data
     if not speech:
         return None
     return speeches.index(speech) + 1
 
-def get_speech_text(input: str) -> str:
-    ''' remove leading language information, e.g., `(IT)`'''
-    return input.split(') ')[-1]
 
-def get_uri(input: Union[URIRef, str]) -> str:
+def get_speech_text(input_string: str) -> str:
+    ''' remove leading language information, e.g., `(IT)`'''
+    return input_string.split(') ')[-1]
+
+
+def get_uri(input_data: Union[URIRef, str]) -> str:
     ''' convert input from URIRef to string '''
     try:
-        return input.n3().strip('<>')
+        return input_data.n3().strip('<>')
     except:
-        return input
+        return input_data
 
 
 class ParliamentEurope(Parliament):
@@ -163,12 +171,16 @@ class ParliamentEurope(Parliament):
     party = field_defaults.party()
     party_id = field_defaults.party_id()
     sequence = field_defaults.sequence()
-    source_language = field_defaults.language()
-    source_language.name = 'source_language'
-    source_language.display_name = 'Source language'
-    source_language.description = 'Original language of the speech'
-    source_language.search_filter.description = (
-        'Search only in speeches in the selected source languages'
+    source_language = FieldDefinition(
+        name='source_language',
+        display_name='Source language',
+        description='Original language of the speech',
+        es_mapping=keyword_mapping(),
+        search_filter=MultipleChoiceFilter(
+            description='Search only in speeches in the selected original languages',
+            option_count=50,
+        ),
+        visualizations=['resultscount', 'termfrequency'],
     )
 
     speaker = field_defaults.speaker()
@@ -206,6 +218,91 @@ class ParliamentEurope(Parliament):
         ]
 
 
+def api_convert_xml(speech_xml: str) -> str:
+    speech_soup = BeautifulSoup(speech_xml, 'lxml')
+    return speech_soup.find('speech').find('p').text
+
+
+def api_get_language(languages: list[str]) -> str:
+    language = language_name(languages[0].split('/')[-1])
+    return language
+
+
+def api_get_speaker_id(participant: str) -> str:
+    return participant.split('/')[-1]
+
+
+@cache
+def api_get_preflabel(url: str) -> Optional[str]:
+    response = requests.get(url)
+    if response.status_code != 200:
+        return None
+    soup = BeautifulSoup(response.content, 'lxml')
+    return soup.find('skos:preflabel', {'xml:lang': 'en'}).text
+
+
+@cache
+def api_get_speaker_info(participant: str) -> dict:
+    '''Query metadata about the speaker, unless it's already been queried before'''
+    speaker_id = api_get_speaker_id(participant)
+    speaker_response = requests.get(
+        f'https://data.europarl.europa.eu/api/v2/meps/{speaker_id}?format=application%2Fld%2Bjson'
+    )
+    if not speaker_response.status_code == 200:
+        logger.warning(f"No response for {speaker_id}")
+        return {}
+    else:
+        return speaker_response.json().get('data')[0]
+
+
+def api_get_speaker_country(participant: str) -> Optional[str]:
+    speaker_metadata = api_get_speaker_info(participant)
+    citizenship = speaker_metadata.get('citizenship')
+    return api_get_preflabel(citizenship)
+
+
+def api_get_speaker_name(participant: str) -> str:
+    speaker_metadata = api_get_speaker_info(participant)
+    given_name = speaker_metadata.get('givenName')
+    family_name = speaker_metadata.get('familyName')
+    return f'{given_name} {family_name}'
+
+
+@cache
+def api_get_party_id(data) -> dict:
+    participant, date = data
+    speaker_metadata = api_get_speaker_info(participant)
+    memberships = speaker_metadata.get('hasMembership')
+    for membership in memberships:
+        if (
+            membership.get('membershipClassification')
+            != 'def/ep-entities/EU_POLITICAL_GROUP'
+        ):
+            continue
+        membership_period = membership.get('memberDuring')
+        end_date = membership_period.get('endDate', datetime.now().strftime('%Y-%m-%d'))
+        if membership_period.get('startDate') <= date <= end_date:
+            return membership.get('organization').split('/')[-1]
+    return ''
+
+
+def api_get_party_name(data) -> Optional[str]:
+    party_id = api_get_party_id(data)
+    return api_get_party_name_from_id(party_id)
+
+
+@cache
+def api_get_party_name_from_id(party_id: str) -> str:
+    if not party_id:
+        return None
+    party_response = requests.get(
+        f'https://data.europarl.europa.eu/api/v2/corporate-bodies/{party_id}?format=application%2Fld%2Bjson&language=en'
+    )
+    if party_response.status_code != 200:
+        return None
+    return party_response.json().get('data')[0].get('prefLabel').get('en')
+
+
 class ParliamentEuropeFromAPI(JSONCorpusDefinition):
     """
     Speeches of the European parliament, originally in or translated to English,
@@ -218,6 +315,11 @@ class ParliamentEuropeFromAPI(JSONCorpusDefinition):
     # Variables to hold interim metadata
     speaker_metadata = {}
     party_metadata = {}
+    record_path = ['data', 'recorded_in_a_realization_of']
+    meta = [
+        ['data', 'had_participation', 'had_participant_person'],
+        ['data', 'activity_id'],
+    ]
 
     def sources(self, start, end, **kwargs):
         date = self.min_date
@@ -226,120 +328,37 @@ class ParliamentEuropeFromAPI(JSONCorpusDefinition):
             formatted_date = date.strftime('%Y-%m-%d')
             meeting_id = f'MTG-PL-{formatted_date}'
             response = requests.get(
-                f'https://data.europarl.europa.eu/api/v2/meetings/{meeting_id}activities?format=application%2Fld%2Bjson',
+                f'https://data.europarl.europa.eu/api/v2/meetings/{meeting_id}/activities?format=application%2Fld%2Bjson',
                 headers={'accept': 'application/ld+json'},
             )
             if response.status_code != 200:
                 continue
             meeting_data = response.json().get('data')
-            metadata = {'date': meeting_data.get('activity_date')}
+            metadata = {'date': formatted_date}
             for event in meeting_data:
                 if event.get("had_activity_type") != "def/ep-activities/PLENARY_DEBATE":
                     continue
                 metadata['debate_id'] = event.get('activity_id')
                 metadata['debate_title'] = event.get('activity_label').get('en')
 
-                for speech in event.get('consist_of'):
+                sequence_in_debate = 0
+
+                for speech in event.get('consists_of'):
                     speech_id = speech.split("/")[-1]
-                    response = requests.get(
+                    speech_response = requests.get(
                         f'https://data.europarl.europa.eu/api/v2/speeches/{speech_id}?include-output=xml_fragment&language=en&format=application%2Fld%2Bjson'
                     )
-                    if response.response_code != 200:
+                    if speech_response.status_code != 200:
                         continue
-                    speech_data = response.json().get('data')[0]
-                    yield speech_data, metadata
-
-    def api_convert_xml(speech_xml: str) -> str:
-        speech_soup = BeautifulSoup(speech_xml)
-        return speech_soup.string
-
-    def api_get_language(languages: list[str]) -> str:
-        return language_name(languages[0].split('/')[-1])
-
-    def api_get_speaker_id(participants: list[str]) -> str:
-        speaker_id = participants[0]
-        return speaker_id.split('/')[-1]
-
-    def api_get_preflabel(url) -> Optional[str]:
-        response = requests.get(url)
-        if response.status_code != 200:
-            return None
-        soup = BeautifulSoup(response.content)
-        for label_tag in soup.find_all('skos:prefLabel'):
-            if label_tag.get('xml:lang') == 'en':
-                return label_tag.text
-
-    def api_get_speaker_info(self, participants: list[str]) -> dict:
-        '''Query metadata about the speaker, unless it's already been queried before'''
-        speaker_id = self.api_get_speaker_id(participants)
-        if not self.speaker_metadata.get(speaker_id):
-            speaker_metadata = {}
-            speaker_response = requests.get(
-                'https://data.europarl.europa.eu/api/v2/meps/speaker_id?format=application%2Fld%2Bjson'
-            )
-            if speaker_response == 200:
-                speaker_metadata[speaker_id] = speaker_response.json().get('data')[0]
-            else:
-                logger.warning(f"No response for {speaker_id}")
-        return speaker_metadata
-
-    def api_get_speaker_country(self, participants: list[str]) -> Optional[str]:
-        speaker_metadata = self.api_get_speaker_info(
-            participants, self.speaker_metadata
-        )
-        citizenship = speaker_metadata.get('citizenship')
-        return self.api_get_preflabel(citizenship)
-
-    def api_get_speaker_name(self, participants: list[str]) -> str:
-        speaker_metadata = self.api_get_speaker_info(
-            participants, self.speaker_metadata
-        )
-        given_name = speaker_metadata.get('givenName')
-        family_name = speaker_metadata.get('familyName')
-        return f'{given_name} {family_name}'
-
-    def api_get_party_info(self, participants: list[str], date: str) -> dict:
-        speaker_metadata = speaker_metadata = self.api_get_speaker_info(
-            participants, self.speaker_metadata
-        )
-        memberships = speaker_metadata.get('hasMembership')
-        if not self.party_metadata.get(speaker_metadata.get('id')):
-            party_metadata = {}
-            for membership in memberships:
-                if (
-                    membership.get('membershipClassification')
-                    != 'def/ep-entities/EU_POLITICAL_GROUP'
-                ):
-                    continue
-                membership_period = membership.get('memberDuring')
-                if (
-                    membership_period.get('startDate')
-                    <= date
-                    <= membership_period.get('endDate')
-                ):
-                    party_metadata[speaker_metadata['id']] = membership.get(
-                        'organization'
-                    ).split('/')[-1]
-        return party_metadata
-
-    def api_get_party_id(self, participants: list[str], date: str) -> str:
-        party_metadata = self.api_get_party_info(participants, date)
-        return party_metadata.get(self.speaker_metadata['id'])
-
-    def api_get_party_name(self, participants: list[str], date: str) -> Optional[str]:
-        party_id = self.api_get_party_id(participants, date)
-        party_response = requests.get(
-            f'https://data.europarl.europa.eu/api/v2/corporate-bodies/{party_id}?format=application%2Fld%2Bjson&language=en'
-        )
-        if party_response.status_code != 200:
-            return None
-        return party_response.json().get('data')[0].get('prefLabel').get('en')
+                    sequence_in_debate += 1
+                    metadata['sequence'] = sequence_in_debate
+                    yield speech_response, metadata
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = Metadata('debate_id')
 
     debate_title = field_defaults.debate_title()
-    debate_title.exctractor = Metadata('debate_title')
+    debate_title.extractor = Metadata('debate_title')
 
     date = field_defaults.date(min_date, max_date)
     date.extractor = Metadata('date')
@@ -347,8 +366,7 @@ class ParliamentEuropeFromAPI(JSONCorpusDefinition):
     party = field_defaults.party()
     party.extractor = Combined(
         JSON(
-            "had_participation",
-            "had_participant_person",
+            "data.had_participation.had_participant_person",
         ),
         Metadata('date'),
         transform=api_get_party_name,
@@ -356,49 +374,46 @@ class ParliamentEuropeFromAPI(JSONCorpusDefinition):
 
     party_id = field_defaults.party_id()
     party_id.extractor = Combined(
-        JSON("had_participation", "had_participant_person"),
+        JSON("data.had_participation.had_participant_person"),
         Metadata('date'),
         transform=api_get_party_id,
     )
 
+    sequence = field_defaults.sequence()
+    sequence.extractor = Metadata('sequence')
+
     source_language = field_defaults.language()
-    source_language.extractor = JSON(
-        "recorded_in_a_realization_of", "originalLanguage", transform=api_get_language
-    )
+    source_language.name = 'source_language'
+    source_language.extractor = JSON("originalLanguage", transform=api_get_language)
 
     speaker = field_defaults.speaker()
     speaker.extractor = JSON(
-        "had_participation",
-        "had_participant_person",
+        "data.had_participation.had_participant_person",
         transform=api_get_speaker_name,
     )
 
     speaker_country = FieldDefinition(
         name='speaker_country',
         extractor=JSON(
-            "had_participation",
-            "had_participant_person",
+            "data.had_participation.had_participant_person",
             transform=api_get_speaker_country,
         ),
     )
 
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = JSON(
-        "had_participation",
-        "had_participant_person",
+        "data.had_participation.had_participant_person",
         transform=api_get_speaker_id,
     )
 
     speech = field_defaults.speech()
     speech.extractor = JSON(
-        "recorded_in_a_realization_of",
-        "api:xmlFragment",
-        "en",
+        "api:xmlFragment.en",
         transform=api_convert_xml,
     )
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = JSON("id")
+    speech_id.extractor = JSON("data.activity_id")
 
     fields = [
         date,
@@ -406,6 +421,7 @@ class ParliamentEuropeFromAPI(JSONCorpusDefinition):
         debate_title,
         party,
         party_id,
+        sequence,
         source_language,
         speaker,
         speaker_country,
@@ -474,11 +490,6 @@ class ParliamentEuropeFromRDF(RDFCorpusDefinition):
 
     source_language = field_defaults.language()
     source_language.name = 'source_language'
-    source_language.display_name = 'Source language'
-    source_language.description = 'Original language of the speech'
-    source_language.search_filter.description = (
-        'Search only in speeches in the selected source languages',
-    )
     source_language.extractor = RDF(DCTERMS.language, transform=language_name)
 
     speaker = field_defaults.speaker()
