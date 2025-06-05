@@ -127,6 +127,11 @@ class IndexTask(models.Model):
         default=TaskStatus.CREATED,
         help_text='execution status of this task',
     )
+    celery_task_id = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True,
+    )
 
     @property
     def corpus(self) -> Corpus:
