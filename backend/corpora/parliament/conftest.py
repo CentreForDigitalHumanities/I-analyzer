@@ -6,7 +6,6 @@ import pytest
 from requests import Response
 from unittest.mock import Mock
 
-
 here = os.path.abspath(os.path.dirname(__file__))
 
 @pytest.fixture()
@@ -732,7 +731,6 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
 def mock_json(filename):
     with open(filename, "r") as f:
         return json.load(f)
-
 
 def mock_xml(filename):
     with open(filename, "r") as f:
