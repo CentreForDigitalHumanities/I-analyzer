@@ -75,7 +75,7 @@ defusedxml==0.7.1
     #   python3-openid
 dj-rest-auth[with-social,with_social]==4.0.1
     # via -r requirements.in
-django==4.2.18
+django==4.2.21
     # via
     #   -r requirements.in
     #   dj-rest-auth
@@ -385,7 +385,7 @@ threadpoolctl==3.2.0
     # via scikit-learn
 tomli==2.0.1
     # via pytest
-tornado==6.4.2
+tornado==6.5.1
     # via
     #   django-livereload-server
     #   flower

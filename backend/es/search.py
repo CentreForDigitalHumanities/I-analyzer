@@ -1,5 +1,5 @@
 from typing import Dict
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from addcorpus.models import CorpusConfiguration
 
 def get_index(corpus_name):

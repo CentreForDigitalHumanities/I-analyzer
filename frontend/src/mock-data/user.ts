@@ -1,7 +1,7 @@
 import { User, UserResponse } from '../app/models/index';
 
 
-export const mockUser: User = new User(42, 'mouse', false, 10000, false, true);
+export const mockUser: User = new User(42, 'mouse', false, 10000, false, true, false);
 
 export const mockUserResponse: UserResponse = {
     id: 42,
@@ -12,5 +12,6 @@ export const mockUserResponse: UserResponse = {
     saml: false,
     profile: {
         enable_search_history: true,
+        can_edit_corpora: false,
     },
 };

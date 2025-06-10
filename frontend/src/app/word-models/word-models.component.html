@@ -67,6 +67,11 @@
                                 [asTable]="asTable" [palette]="palette"
                                 (wordSimilarityError)="setErrorMessage($event)">
                             </ia-word-similarity>
+
+                            <ia-neighbor-network *ngIf="tab=='neighbornetwork'"
+                                [corpus]="corpus" [queryText]="activeQuery"
+                                [asTable]="asTable"
+                                />
                         </div>
 
                         <div class="block">

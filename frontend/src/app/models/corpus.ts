@@ -146,5 +146,6 @@ export interface CorpusDocumentationPage {
     corpus: string;
     type: string;
     content: string;
-    index?: number;
+    index: number;
 }
+

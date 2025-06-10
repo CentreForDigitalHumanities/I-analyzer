@@ -1,6 +1,12 @@
 from django.core import mail
+import random
 import re
+import string
+
+from django.core.cache import cache
+from django.urls import reverse
 from allauth.account.models import EmailAddress
+from rest_framework import status
 
 
 def test_register_verification(client, db, django_user_model):
@@ -46,3 +52,41 @@ def test_register_verification(client, db, django_user_model):
     assert allauth_email.email == creds.get('email')
     assert allauth_email.verified is True
     assert allauth_email.primary is True
+
+
+def test_register_throttling(client, settings):
+    """
+    Test that the ThrottledRegisterView returns a 429 error
+    after exceeding the allowed number of registration attempts.
+    """
+    cache.clear() # Clear cache to reset rest_registration count
+    # Check conftest.py throttle rate settings are applied
+    registration_rate = settings.REST_FRAMEWORK.get(
+        'DEFAULT_THROTTLE_RATES', {}).get('registration')
+    assert registration_rate == '2/minute', \
+        f"Expected registration throttle rate to be '2/minute', but got '{registration_rate}'."
+
+    register_url = reverse('rest_register')
+
+    def generate_user_data():
+        """Generate unique user data."""
+        random_str = ''.join(random.choices(string.digits, k=4))
+        return {
+            'username': f'testuser{random_str}',
+            'password1': 'Testpass123!',
+            'password2': 'Testpass123!',
+            'email': f'testuser{random_str}@example.com'
+        }
+
+    # Test that the view returns 429 after 3 requests
+    registration_rate = int(registration_rate.split('/')[0])
+    for i in range(1, registration_rate + 2):
+        user_data = generate_user_data()
+        response = client.post(register_url, user_data, format='json')
+        print(f"Request {i} status: {response.status_code}")
+
+        if i == registration_rate + 1:
+            assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS, \
+                f"Expected 429, got {response.status_code}"
+            response_data = response.json()
+            assert 'detail' in response_data, "Response does not contain 'detail' key"

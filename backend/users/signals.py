@@ -33,5 +33,6 @@ def ensure_admin_email(sender, instance, created, **kwargs):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(
-            user=instance
+            user=instance,
+            can_edit_corpora=instance.is_superuser,
         )

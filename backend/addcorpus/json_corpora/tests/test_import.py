@@ -1,7 +1,7 @@
 from addcorpus.json_corpora.import_json import _parse_field
 from addcorpus.models import Field, Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
-from addcorpus.models import Corpus, CorpusConfiguration
+from addcorpus.models import Corpus, CorpusConfiguration, CorpusDocumentationPage
 from addcorpus.json_corpora.export_json import export_json_corpus
 
 def test_json_corpus_import(db, json_mock_corpus, json_corpus_definition):
@@ -209,3 +209,33 @@ def test_parse_geo_field(geo_field_json):
     assert field.hidden == False
     assert field.sortable == False
     assert field.searchable == False
+
+
+_documentation = '''This is a test corpus.
+
+You can use it for testing!
+'''
+
+def test_parse_documentation(db, json_mock_corpus, json_corpus_definition):
+    json_corpus_definition['documentation'] = {
+        'general': _documentation,
+        'license': 'Do whatever you want',
+    }
+    data = {
+        'definition': json_corpus_definition,
+        'active': True,
+    }
+
+    serializer = CorpusJSONDefinitionSerializer(data=data)
+    assert serializer.is_valid()
+    serializer.update(json_mock_corpus, serializer.validated_data)
+
+    pages = CorpusDocumentationPage.objects.filter(
+        corpus_configuration__corpus=json_mock_corpus
+    )
+    assert pages.count() == 2
+
+    page = pages.get(
+        type=CorpusDocumentationPage.PageType.GENERAL
+    )
+    assert page.content == _documentation

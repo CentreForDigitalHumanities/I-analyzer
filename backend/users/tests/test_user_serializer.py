@@ -14,6 +14,7 @@ def test_user_serializer(auth_client,
         'saml': False,
         'profile': {
             'enable_search_history': True,
+            'can_edit_corpora': False,
         },
     }
 
@@ -30,6 +31,7 @@ def test_admin_serializer(admin_client, admin_credentials):
         'saml': False,
         'profile': {
             'enable_search_history': True,
+            'can_edit_corpora': True,
         },
     }
 

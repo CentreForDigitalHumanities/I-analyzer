@@ -9,19 +9,24 @@ import {
     Delimiter,
 } from '../models/corpus-definition';
 
+
 @Injectable()
 export class CorpusDefinitionService implements OnDestroy {
     corpus$ = new BehaviorSubject<CorpusDefinition | undefined>(undefined);
+
     destroy$ = new Subject<void>();
 
     steps$ = new BehaviorSubject<MenuItem[]>([
         { label: 'Corpus information' },
         { label: 'Sample data', disabled: true },
         { label: 'Define fields', disabled: true },
+        { label: 'Add documentation', disabled: true }
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
-    constructor(private slugify: SlugifyPipe) {
+    constructor(
+        private slugify: SlugifyPipe,
+    ) {
         this.corpus$
             .pipe(takeUntil(this.destroy$), filter(_.negate(_.isUndefined)))
             .subscribe({
