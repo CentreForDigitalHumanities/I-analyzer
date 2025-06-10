@@ -8,7 +8,7 @@ from django.conf import settings
 from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousTag, TransformTag
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined, Order
+from ianalyzer_readers.extract import XML, Constant, Combined, Order
 from corpora.parliament.utils.parlamint import (
     extract_all_party_data,
     extract_people_data,

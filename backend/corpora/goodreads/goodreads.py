@@ -8,7 +8,7 @@ from datetime import datetime
 from django.conf import settings
 import openpyxl
 
-from addcorpus.python_corpora.extract import CSV, Metadata
+from ianalyzer_readers.extract import CSV, Metadata
 from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
 

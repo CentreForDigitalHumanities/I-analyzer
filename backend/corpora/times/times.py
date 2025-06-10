@@ -11,7 +11,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora.corpus import (FieldDefinition, XMLCorpusDefinition, after,
                               consolidate_start_end_years, string_contains,
                               until)
