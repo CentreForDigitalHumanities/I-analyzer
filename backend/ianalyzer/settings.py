@@ -113,12 +113,12 @@ LOGGING = {
         "indexing": {
             "handlers": ["console"],
             "level": "INFO",
-            "propragate": True
+            "propagate": False
         }
     },
 }
 
-MEDIA_ROOT = 'data'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'data')
 
 # This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:

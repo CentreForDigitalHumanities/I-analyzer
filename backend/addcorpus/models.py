@@ -1,4 +1,6 @@
+import os
 import warnings
+from datetime import datetime
 
 from django.contrib import admin
 from django.contrib.auth.models import Group
@@ -6,6 +8,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+from django.conf import settings
 
 from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
 from addcorpus.validation.creation import (
@@ -29,12 +32,14 @@ from addcorpus.validation.indexing import (validate_essential_fields,
 from addcorpus.validation.publishing import (
     validate_default_sort,
     validate_ngram_has_date_field,
+    validate_complete_metadata
 )
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
+
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -56,6 +61,18 @@ class Corpus(models.Model):
         default=False,
         help_text='whether the configuration of this corpus is determined by a Python '
             'module (some features are only available for Python-based corpora)',
+    )
+    date_created = models.DateField(
+        auto_now_add=True,
+        help_text='date on which the corpus was added to the database',
+    )
+    owner = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='owned_corpora',
+        null=True,
+        blank=True,
+        help_text='user that created the corpus and is allowed to edit it',
     )
 
     @property
@@ -130,6 +147,7 @@ class Corpus(models.Model):
             CorpusNotPublishableError: interface options are improperly configured.
         '''
 
+        validate_complete_metadata(self)
         validate_has_configuration(self)
 
         config = self.configuration_obj
@@ -174,10 +192,13 @@ class CorpusConfiguration(models.Model):
         max_length=64,
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
+        blank=True,
+        null=True
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
+        null=True,
         help_text='short description of the corpus',
     )
     document_context = models.JSONField(
@@ -207,12 +228,17 @@ class CorpusConfiguration(models.Model):
             blank=True,
         ),
         help_text='languages used in the content of the corpus (from most to least frequent)',
+        blank=True,
     )
-    min_date = models.DateField(
-        help_text='earliest date for the data in the corpus',
+    min_year = models.IntegerField(
+        help_text='earliest year for the data in the corpus',
+        null=True,
+        blank=True,
     )
-    max_date = models.DateField(
-        help_text='latest date for the data in the corpus',
+    max_year = models.IntegerField(
+        help_text='latest year for the data in the corpus',
+        null=True,
+        blank=True,
     )
     scan_image_type = models.CharField(
         max_length=64,
@@ -419,12 +445,18 @@ class Field(models.Model):
         blank=True,
         help_text='column name in CSV source files from which to extract this field',
     )
+    position = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="Field's position within the configuration (order)"
+    )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['corpus_configuration', 'name'],
                                 name='unique_name_for_corpus')
         ]
+        ordering = ["position"]
 
     @property
     def is_main_content(self) -> bool:
@@ -504,3 +536,18 @@ class CorpusDocumentationPage(models.Model):
                 name='unique_documentation_type_for_corpus'
             )
         ]
+
+
+class CorpusDataFile(models.Model):
+    def upload_path(self, filename):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}', filename)
+
+    corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=upload_path,
+                            help_text='file containing corpus data')
+    is_sample = models.BooleanField(
+        default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.file.name}'

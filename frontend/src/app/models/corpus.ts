@@ -22,8 +22,8 @@ export class Corpus {
         public description: string,
         public index: string,
         public fields: CorpusField[],
-        public minDate: Date,
-        public maxDate: Date,
+        public minYear: number,
+        public maxYear: number,
         public scanImageType: string,
         public allowImageDownload: boolean,
         public wordModelsPresent: boolean,
@@ -35,14 +35,6 @@ export class Corpus {
         public defaultSort?: SortState,
         public languageField?: CorpusField,
     ) { }
-
-    get minYear(): number {
-        return this.minDate.getFullYear();
-    }
-
-    get maxYear(): number {
-        return this.maxDate.getFullYear();
-    }
 
     get displayLanguages(): string {
         return this.languages.join(', ');
@@ -59,7 +51,7 @@ export interface DocumentContext {
 
 
 export type FieldDisplayType =
-    'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean' | 'url';
+    'text_content' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean' | 'url' | 'geo_point';
 
 /** Corpus field info as sent by the backend api */
 export interface ApiCorpusField {
@@ -154,5 +146,6 @@ export interface CorpusDocumentationPage {
     corpus: string;
     type: string;
     content: string;
-    index?: number;
+    index: number;
 }
+

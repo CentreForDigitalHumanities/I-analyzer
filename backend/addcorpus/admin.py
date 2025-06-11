@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
+from .models import Corpus, CorpusConfiguration, CorpusDataFile, Field, CorpusDocumentationPage
 
 def show_warning_message(request):
     '''
@@ -14,11 +14,23 @@ def show_warning_message(request):
     )
 
 
+class InlineDatafileAdmin(admin.StackedInline):
+    model = CorpusDataFile
+    fields = ['file', 'is_sample']
+    show_change_link = True,
+    extra = 0
+
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['configuration', 'ready_to_index', 'ready_to_publish']
-    fields = ['name', 'groups', 'configuration', 'has_python_definition', 'ready_to_index', 'ready_to_publish', 'active']
+    readonly_fields = [
+        'configuration', 'ready_to_index', 'ready_to_publish', 'date_created',
+    ]
+    fields = [
+        'name', 'groups', 'configuration', 'date_created', 'has_python_definition',
+        'ready_to_index', 'ready_to_publish', 'active', 'owner',
+    ]
     list_display = ['name', 'active']
     list_filter = ['groups', 'active']
+    inlines = [InlineDatafileAdmin]
 
 class InlineFieldAdmin(admin.StackedInline):
     model = Field
@@ -26,9 +38,8 @@ class InlineFieldAdmin(admin.StackedInline):
     show_change_link = True
     extra = 0
 
-class CorpusConfigurationAdmin(admin.ModelAdmin):
-    readonly_fields = ['corpus']
 
+class CorpusConfigurationAdmin(admin.ModelAdmin):
     inlines = [
         InlineFieldAdmin
     ]
@@ -58,8 +69,8 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                 'fields': [
                     'category',
                     'languages',
-                    'min_date',
-                    'max_date',
+                    'min_year',
+                    'max_year',
                     'document_context',
                     'default_sort',
                 ]

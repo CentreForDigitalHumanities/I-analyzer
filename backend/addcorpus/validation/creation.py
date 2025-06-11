@@ -26,7 +26,6 @@ def supports_full_text_search(es_mapping):
 def _is_text(es_mapping):
     return primary_mapping_type(es_mapping) in [
         MappingType.TEXT.value,
-        MappingType.ANNOTATED_TEXT.value,
     ]
 
 
@@ -146,15 +145,16 @@ def validate_field_name_permissible_characters(slug: str):
 def validate_ner_slug(es_mapping: dict, name: str):
     """
     Checks if colons are in field name, will raise ValidationError if the field does not meet the following requirements:
-    - ends with `:ner` suffix and is an annotated_text field
+    - ends with `:ner` suffix and is a non-indexed text field
     - ends with `:ner-kw` suffix and is a keyword field
     """
     if ":" in name:
         if name.endswith(":ner"):
-            if primary_mapping_type(es_mapping) != MappingType.ANNOTATED_TEXT.value:
-                raise ValidationError(
-                    f"{name} cannot be used as a field name: the suffix `:ner` is reserved for annotated_text fields"
-        )
+            if primary_mapping_type(es_mapping) != MappingType.TEXT.value:
+                if es_mapping.get('index', True):
+                    raise ValidationError(
+                        f"{name} cannot be used as a field name: the suffix `:ner` is reserved for Named Entity non-indexed text fields"
+                    )
         elif name.endswith(":ner-kw"):
             if primary_mapping_type(es_mapping) != MappingType.KEYWORD.value:
                 raise ValidationError(
@@ -176,7 +176,7 @@ def mapping_can_be_searched(es_mapping):
 
     if primary_mapping_type(es_mapping) == MappingType.KEYWORD.value:
         warnings.warn(
-            'It is strongly discouraged to use text search for keyword fields without'
+            'It is strongly discouraged to use text search for keyword fields without '
             'text analysis. Consider adding a text multifield or using a filter instead.'
         )
         return True

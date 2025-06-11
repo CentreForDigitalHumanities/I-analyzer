@@ -92,7 +92,6 @@ def float_mapping():
         'type': 'float'
     }
 
-
 def bool_mapping():
     return {'type': 'boolean'}
 
@@ -100,5 +99,5 @@ def geo_mapping():
     return {'type': 'geo_point'}
 
 
-def ner_mapping():
+def non_indexed_text_mapping():
     return {'type': 'text', 'index': False}

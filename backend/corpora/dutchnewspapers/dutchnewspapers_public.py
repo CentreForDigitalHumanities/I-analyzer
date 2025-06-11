@@ -29,8 +29,8 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     variation in the key: it MUST be `'dutchnewspapers-public'`
     '''
 
-    title = "Public Dutch Newspapers"
-    description = "Publicly available collection of Dutch newspapers by the KB"
+    title = "Dutch Newspapers (public)"
+    description = "Collection of Dutch newspapers in the public domain, digitised by the Koninklijke Bibliotheek."
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = settings.DUTCHNEWSPAPERS_DATA
@@ -38,6 +38,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    description_page = 'description_public.md'
     citation_page = 'citation_public.md'
 
     @property
@@ -187,7 +188,6 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 display_name="Newspaper title",
                 description="Title of the newspaper",
                 results_overview=True,
-                search_field_core=True,
                 es_mapping={"type": "keyword"},
                 visualizations=["resultscount", "termfrequency"],
                 search_filter=filters.MultipleChoiceFilter(
@@ -244,7 +244,6 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 display_name="Publisher",
                 description="Publisher",
                 es_mapping=keyword_mapping(),
-                search_field_core=True,
                 extractor=Metadata("publisher"),
             ),
             FieldDefinition(
@@ -260,6 +259,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                 description="Article title",
                 results_overview=True,
                 search_field_core=True,
+                searchable=True,
                 extractor=XML(Tag("title"), flatten=True, toplevel=True),
             ),
             FieldDefinition(

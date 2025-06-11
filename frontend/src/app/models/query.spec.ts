@@ -26,6 +26,7 @@ const corpus: Corpus = {
     languages: ['English'],
     displayLanguages: 'English',
     category: 'Tests',
+    hasNamedEntities: false,
 } as Corpus;
 
 describe('QueryModel', () => {

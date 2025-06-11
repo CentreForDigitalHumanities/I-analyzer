@@ -16,7 +16,9 @@ A corpus that does not meet this check cannot be searched in the frontend. This 
 
 A corpus must pass this check to be set to `active` - which enables the corpus in the search interface.
 
-The `ready_to_publish` validation is not used directly when handling views, because it can include some non-trivial checks. For Python corpora, `active` is simply set by running `ready_to_publish()` after importing the corpus definition.
+The `ready_to_publish` validation is not executed when handling views, because it can include some non-trivial checks. Instead, we check whether `active` is `True`, which implies that the corpus passed this validation.
+
+For Python corpora, `active` is automatically set by running `ready_to_publish()` after importing the corpus definition. Database-only corpora are inactive by default, and have to be activated manually, which will trigger the validation.
 
 ## API
 

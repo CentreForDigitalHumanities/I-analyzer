@@ -4,15 +4,7 @@ name: Frontend unit tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'develop'
-      - 'master'
-      - 'feature/**'
-      - 'bugfix/**'
-      - 'hotfix/**'
-      - 'release/**'
-      - 'dependabot/**'
+  pull_request:
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend-test.yml'

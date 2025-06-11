@@ -46,7 +46,7 @@ Note that removing an alias does not remove the index itself, but removing an in
 ## Indexing from multiple corpus definitions
 If you have separate datasets for different parts of a corpus, you may combine them by setting the `ES_INDEX` variable in the corpus definitions to the same `overarching-corpus` index name.
 
-Then, you can define multiple corpora in the deployment module, e.g.,
+Then, you can define multiple corpora in the deployment settings module, e.g.,
 ```
 CORPORA = {
     'corpus1': 'path/to/corpus1',

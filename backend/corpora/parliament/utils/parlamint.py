@@ -5,7 +5,7 @@ from ianalyzer_readers.extract import XML, Combined, Metadata
 from ianalyzer_readers.xml_tag import Tag
 from bs4.element import NavigableString, Tag as Node
 
-from addcorpus.es_mappings import ner_mapping, keyword_mapping
+from addcorpus.es_mappings import non_indexed_text_mapping, keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 
@@ -208,7 +208,7 @@ def speech_ner():
     return FieldDefinition(
         name="speech:ner",
         hidden=True,
-        es_mapping=ner_mapping(),
+        es_mapping=non_indexed_text_mapping(),
         display_type="text_content",
         searchable=True,
         extractor=XML(

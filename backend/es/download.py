@@ -1,7 +1,7 @@
 from typing import Dict, Tuple
 from django.conf import settings
 
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from es.search import get_index, search, hits, total_hits
 import itertools
 

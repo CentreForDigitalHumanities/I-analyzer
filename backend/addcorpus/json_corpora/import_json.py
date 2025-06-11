@@ -1,14 +1,11 @@
-from typing import List, Dict, Iterable, Optional
-from datetime import datetime
+from typing import List, Dict, Iterable
 
-
-from addcorpus.models import Corpus, CorpusConfiguration, Field
+from addcorpus.models import Field
 from addcorpus.json_corpora.utils import get_path
 from addcorpus import es_mappings
 from addcorpus.constants import VisualizationType
-from addcorpus.validation.publishing import _any_date_fields
 from django.conf import settings
-from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER, DATE_FORMAT
+from addcorpus.json_corpora.constants import DEFAULT_CSV_DELIMITER
 
 def import_json_corpus(data: Dict) -> Dict:
     name = get_path(data, 'name')
@@ -32,10 +29,8 @@ def _parse_configuration(data: Dict) -> Dict:
         'category': get_path(data, 'meta', 'category'),
         'es_index': create_index_name(get_path(data, 'name')),
         'languages': get_path(data, 'meta', 'languages'),
-        'min_date': _parse_date(
-            get_path(data, 'meta', 'date_range', 'min')),
-        'max_date': _parse_date(
-            get_path(data, 'meta', 'date_range', 'max')),
+        'min_year': get_path(data, 'meta', 'date_range', 'min'),
+        'max_year': get_path(data, 'meta', 'date_range', 'max'),
         'default_sort': get_path(
             data, 'options', 'default_sort') or {},
         'language_field': get_path(
@@ -45,11 +40,8 @@ def _parse_configuration(data: Dict) -> Dict:
         'source_data_delimiter': get_path(
             data, 'source_data', 'options', 'delimiter') or DEFAULT_CSV_DELIMITER,
         'fields': _import_fields(data),
+        'documentation_pages': _import_documentation(data)
     }
-
-
-def _parse_date(date: str):
-    return datetime.strptime(date, DATE_FORMAT).date()
 
 
 def _import_fields(data: Dict) -> List[Dict]:
@@ -278,3 +270,11 @@ def _include_ngram_visualisation(fields: Iterable[Dict]) -> None:
         for field in fields:
             if field['display_type'] == 'text_content':
                 field['visualizations'].append(VisualizationType.NGRAM.value)
+
+
+def _import_documentation(data: Dict):
+    docs = get_path(data, 'documentation') or {}
+    return [
+        {'type': key, 'content': content}
+        for (key, content) in docs.items()
+    ]

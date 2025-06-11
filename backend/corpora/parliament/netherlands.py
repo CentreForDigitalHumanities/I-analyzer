@@ -30,7 +30,7 @@ logger = logging.getLogger('indexing')
 
 def load_nl_recent_metadata(directory):
     with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
-        soup = bs4.BeautifulSoup(f.read(), "xml")
+        soup = bs4.BeautifulSoup(f.read(), 'xml')
     return soup
 
 
@@ -108,7 +108,7 @@ def extract_named_entities(xml_file: str) -> dict:
     '''Extract the named entities from the xml file, and save them, ordered by speech id,
     in a dictionary, which will be used to populate the NER keyword fields'''
     with open(xml_file) as f:
-        soup = bs4.BeautifulSoup(f)
+        soup = bs4.BeautifulSoup(f, 'xml')
     speeches = soup.find_all("u")
     output = dict()
     for speech in speeches:
@@ -441,7 +441,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
     """
 
     title = "People & Parliament (Netherlands)"
-    description = "Speeches from the Eerste Kamer and Tweede Kamer"
+    description = "Debates in the Dutch national parliament, from its founding to the present. A collection of the speeches in the Eerste Kamer and Tweede Kamer."
     min_date = datetime(year=1815, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
 

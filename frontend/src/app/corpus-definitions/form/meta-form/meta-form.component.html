@@ -1,0 +1,78 @@
+<h1 class="title">Corpus Metadata</h1>
+<p class="subtitle">Provide some basic information about your corpus</p>
+<form (ngSubmit)="onSubmit()" class="box" [formGroup]="metaForm">
+    <h2 class="title is-5">Metadata</h2>
+
+    <div class="field">
+        <label class="label" for="title">Title</label>
+        <div class="control">
+            <input class="input" type="text" name="title" formControlName="title" />
+        </div>
+        <p class="help">Enter a short, clear title for your corpus.</p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="description">Description</label>
+        <div class="control">
+            <input class="input" type="text" name="description" formControlName="description" />
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="category" id="label-category">Category</label>
+        <div class="control">
+            <ia-dropdown formControlName="category" labelledBy="label-category">
+                <span iaDropdownLabel>{{currentCategoryLabel}}</span>
+                <div iaDropdownMenu>
+                    <a *ngFor="let category of categories"
+                        iaDropdownItem [value]="category.value">
+                        {{category.label}}
+                    </a>
+                </div>
+            </ia-dropdown>
+        </div>
+        </div>
+
+    <div class="field">
+        <div class="field is-grouped" formGroupName="date_range">
+            <div class="control">
+                <label class="label" for="min">Start year</label>
+                <input class="input" type="number" step="10" name="min" formControlName="min" />
+            </div>
+            <div class="control">
+                <label class="label" for="max">End year</label>
+                <input class="input" type="number" step="10" name="max" formControlName="max" />
+            </div>
+        </div>
+        <p class="help">Enter the earliest and latest year in your corpus. This is only an indication for
+            users, no exact year is required.</p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="languages">Languages</label>
+        <div class="control">
+            <p-multiSelect [options]="languageOptions" formControlName="languages" optionLabel="name" optionValue="code"
+                placeholder="select languages (optional)" [virtualScroll]="true" display="chip" [virtualScrollItemSize]="10"
+                [showClear]="true" />
+        </div>
+        <p class="help">All or the most important languages occuring in your corpus</p>
+    </div>
+
+    <div class="block"></div>
+
+    <div class="field">
+        <p class="control">
+            <button class="button is-primary">Save changes</button>
+        </p>
+    </div>
+</form>
+
+<div class="box">
+    <ia-image-upload [corpus]="corpus" />
+</div>
+
+<div class="block">
+    <button class="button" (click)="nextStep()">
+        Next
+    </button>
+</div>
