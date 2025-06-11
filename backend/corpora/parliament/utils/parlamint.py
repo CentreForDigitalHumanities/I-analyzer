@@ -5,7 +5,7 @@ from ianalyzer_readers.extract import XML, Combined, Metadata
 from ianalyzer_readers.xml_tag import Tag
 from bs4.element import NavigableString, Tag as Node
 
-from addcorpus.es_mappings import annotated_text_mapping, keyword_mapping
+from addcorpus.es_mappings import ner_mapping, keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 
@@ -182,7 +182,7 @@ def format_annotated_segment(element: Node) -> str:
 
 
 def format_annotated_text(element: Node) -> str:
-    """For each <name> tag, format the annotation in Elasticsearch's annotated_text format,
+    """For each <name> tag, format the annotation,
     and embed it in the text extracted from adjoining <w> and <pc> tags
     """
     output = ""
@@ -208,7 +208,7 @@ def speech_ner():
     return FieldDefinition(
         name="speech:ner",
         hidden=True,
-        es_mapping=annotated_text_mapping(),
+        es_mapping=ner_mapping(),
         display_type="text_content",
         searchable=True,
         extractor=XML(
