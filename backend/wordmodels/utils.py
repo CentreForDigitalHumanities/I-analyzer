@@ -44,6 +44,11 @@ def word_in_models(query_term, corpus, max_distance=2):
         'similar_keys': similar_keys
     }
 
+
+def word_in_model(query_term, wm):
+    return query_term in wm['vectors']
+
+
 def transform_query(query):
     if not has_whitespace(query):
         transformed = strip_punctuation(query).lower()
@@ -62,3 +67,17 @@ def term_to_index(query, model):
 
 def index_to_term(index, vocab):
     return vocab[index]
+
+
+def time_label(model):
+    start_year = model['start_year']
+    end_year = model['end_year']
+    return f'{start_year}-{end_year}'
+
+
+def time_labels(models, sort=False):
+    ordered = sorted(models, key=lambda wm: wm['start_year']) if sort else models
+    return [
+        time_label(wm) for wm in ordered
+    ]
+
