@@ -60,7 +60,14 @@ export class DownloadService {
                 }
             })
             .catch((error) => {
-                throw new Error(error.headers.message[0]);
+                if (error.status === 429) {
+                    throw new Error(
+                        'Too many requests. Please try again later.'
+                    );
+                } else {
+                    throw new Error(error.headers.message[0]);
+                }
+
             });
     }
 

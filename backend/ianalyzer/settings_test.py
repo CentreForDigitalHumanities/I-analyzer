@@ -26,6 +26,7 @@ REST_FRAMEWORK.update(
         "DEFAULT_THROTTLE_RATES": {
             "password": "2/minute",
             "registration": "2/minute",
+            "download": "2/minute",
         }
     }
 )
