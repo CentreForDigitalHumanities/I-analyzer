@@ -266,4 +266,4 @@ class CorpusDataFileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CorpusDataFile
-        fields = ('id', 'corpus', 'file', 'created', 'is_sample')
+        fields = ('id', 'corpus', 'file', 'created', 'is_sample', 'confirmed')

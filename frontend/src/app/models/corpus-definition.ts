@@ -11,6 +11,7 @@ export interface CorpusDataFile {
     file: File | string;
     is_sample: boolean;
     created?: Date;
+    confirmed: boolean;
 }
 
 export interface DataFileInfo {
