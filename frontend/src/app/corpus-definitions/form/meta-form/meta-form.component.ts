@@ -5,11 +5,13 @@ import {
     OnDestroy, SimpleChanges
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, take, takeUntil } from 'rxjs';
+import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { CorpusDefinition } from '../../../models/corpus-definition';
+import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
-import { actionIcons } from '@shared/icons';
+import { actionIcons, formIcons } from '@shared/icons';
+import { mergeAsBooleans } from '@utils/observables';
+import { MenuItem } from 'primeng/api';
 
 @Component({
     selector: 'ia-meta-form',
@@ -37,8 +39,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         description: [''],
         category: [''],
         date_range: this.formBuilder.group({
-            min: [''],
-            max: [''],
+            min: [],
+            max: [],
         }),
         languages: [['']],
     });
@@ -47,7 +49,29 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
 
     languageOptions = ISO6393Languages;
     actionIcons = actionIcons;
+    formIcons = formIcons;
 
+    nextStep$: Observable<MenuItem> = this.corpusDefService.steps$.pipe(
+        map(steps => steps[1]),
+    );
+
+    changesSubmitted$ = new Subject<void>();
+    changesSavedSucces$ = new Subject<void>();
+    changesSavedError$ = new Subject<void>();
+
+    loading$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSubmitted$],
+        false: [this.changesSavedSucces$, this.changesSavedError$],
+    });
+    showSuccessMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedSucces$],
+        false: [this.metaForm.valueChanges, this.changesSubmitted$],
+    });
+
+    showErrorMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedError$],
+        false: [this.metaForm.valueChanges, this.changesSubmitted$]
+    });
 
     constructor(
         private formBuilder: FormBuilder,
@@ -79,19 +103,27 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     }
 
     onSubmit(): void {
+        this.changesSubmitted$.next();
         const newMeta = this.metaForm.value;
         this.corpus.definition.meta =
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
-            next: (value) => {
-                this.corpusDefService.toggleStepDisabled(1);
-                this.metaForm.patchValue(value.definition.meta);
-            },
-            error: console.error,
+            next: this.onSubmitSuccess.bind(this),
+            error: this.onSubmitError.bind(this),
         });
     }
 
-    nextStep() {
+    goToNextStep() {
         this.corpusDefService.activateStep(1);
+    }
+
+    private onSubmitSuccess(value: APIEditableCorpus) {
+        this.metaForm.patchValue(value.definition.meta);
+        this.changesSavedSucces$.next();
+    }
+
+    private onSubmitError(err) {
+        this.changesSavedError$.next();
+        console.error(err);
     }
 }

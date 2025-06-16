@@ -1,11 +1,13 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
-import { EditablePage, makePages, PAGE_CATEGORIES } from './editable-page';
+import { PAGE_CATEGORIES } from './editable-page';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { filter, map, switchMap } from 'rxjs';
+import { filter, map, Observable, Subject, switchMap } from 'rxjs';
 import { APICorpusDefinition } from '@models/corpus-definition';
+import { mergeAsBooleans } from '@utils/observables';
+import { formIcons } from '@shared/icons';
 
 
 @Component({
@@ -21,6 +23,27 @@ export class DocumentationFormComponent implements OnInit {
     });
 
     categories = PAGE_CATEGORIES;
+
+
+    changesSubmitted$ = new Subject<void>();
+    changesSavedSucces$ = new Subject<void>();
+    changesSavedError$ = new Subject<void>();
+
+    loading$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSubmitted$],
+        false: [this.changesSavedSucces$, this.changesSavedError$],
+    });
+    showSuccessMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedSucces$],
+        false: [this.changesSubmitted$, this.form.valueChanges],
+    });
+
+    showErrorMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedError$],
+        false: [this.changesSubmitted$, this.form.valueChanges]
+    });
+
+    formIcons = formIcons;
 
     constructor(
         private corpusDefService: CorpusDefinitionService,
@@ -54,6 +77,17 @@ export class DocumentationFormComponent implements OnInit {
         } else {
             corpus.definition.documentation = _.omitBy(this.form.value, _.isEmpty);
         }
-        corpus.save();
+        corpus.save().subscribe({
+            next: () => this.onSubmitSuccess(),
+            error: () => this.onSubmitError(),
+        });
+    }
+
+    private onSubmitSuccess() {
+        this.changesSavedSucces$.next();
+    }
+
+    private onSubmitError() {
+        this.changesSavedError$.next();
     }
 }

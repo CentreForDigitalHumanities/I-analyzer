@@ -1,5 +1,6 @@
 from django.urls import path
-from download.views import *
+
+from download.views import DownloadHistoryViewset, FileDownloadView, FullDataDownloadTaskView, ResultsDownloadTaskView, ResultsDownloadView
 
 urlpatterns = [
     path('search_results', ResultsDownloadView.as_view()),
