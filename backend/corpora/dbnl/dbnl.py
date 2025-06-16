@@ -14,7 +14,7 @@ from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
 class DBNL(XMLCorpusDefinition):
     title = 'DBNL'
-    description = 'Digital Library for Dutch Literature'
+    description = 'Dutch literature and publications on literary or linguistic studies, from the Middle Ages to the 19th century'
     data_directory = settings.DBNL_DATA
     min_date = datetime(year=1200, month=1, day=1)
     max_date = datetime(year=1890, month=12, day=31)
