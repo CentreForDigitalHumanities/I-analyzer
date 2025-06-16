@@ -29,7 +29,6 @@ def test_download_throttle(client, basic_mock_corpus, index_basic_mock_corpus, b
     Test that the ResultsView returns a 429 error
     after exceeding the allowed number of download attempts.
     """
-    cache.clear()
     # check if throttle rate settings are applied
     download_rate = settings.REST_FRAMEWORK.get(
         'DEFAULT_THROTTLE_RATES', {}).get('download')

@@ -232,7 +232,6 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
 
 
 def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
-    cache.clear()  # clear cache to avoid throttle limit
     download_request_json = {
         'corpus': basic_mock_corpus,
         'es_query': mock_match_all_query(),
@@ -251,7 +250,6 @@ def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_pu
 
 
 def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
-    cache.clear()  # clear cache to avoid throttle limit
     es_query = query.set_query_text(mock_match_all_query(), 'ghost')
     download_request_json = {
         'corpus': basic_mock_corpus,

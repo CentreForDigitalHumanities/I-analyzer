@@ -17,7 +17,7 @@ from django.contrib.auth.models import Group
 from addcorpus.models import Corpus
 from addcorpus.serializers import CorpusJSONDefinitionSerializer
 from es.models import Server
-from rest_framework.test import APIClient
+from django.core.cache import cache
 
 
 @pytest.fixture(autouse=True)
@@ -250,3 +250,11 @@ def celery_config():
         'result_serializer': 'pickle',
         'accept_content': ['json', 'pickle'],
     }
+
+
+@pytest.fixture(autouse=True)
+def auto_clear_cache():
+    '''Automatically clear the cache before and after each test.'''
+    cache.clear()
+    yield
+    cache.clear()
