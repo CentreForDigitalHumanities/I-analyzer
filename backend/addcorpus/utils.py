@@ -11,7 +11,9 @@ from addcorpus.models import Corpus
 def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
     df = pd.read_csv(path, **kwargs)
     info = {
-        col_name: map_col(df[col_name]) for col_name in df.columns
+        'n_rows': len(df),
+        'fields': {col_name: map_col(df[col_name]) for col_name in df.columns}
+
     }
     return info
 

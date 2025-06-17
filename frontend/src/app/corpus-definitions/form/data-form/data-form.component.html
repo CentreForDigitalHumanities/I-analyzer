@@ -1,23 +1,7 @@
 <h1 class="title">Upload a sample of your data</h1>
 <p class="subtitle">Determines sensible default values for the fields of your corpus</p>
 
-<div *ngIf="fileInfo$|async as fileInfo" class="block">
-    <table class="table is-fullwidth">
-        <caption style="text-align: left">Found the following columns in your sample file:</caption>
-        <thead>
-            <tr>
-                <th>Column</th>
-                <th>Data type</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let field of fileInfo|keyvalue">
-                <td>{{field.key}}</td>
-                <td>{{field.value}}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<ia-datafile-info *ngIf="fileInfo$ | async as fileInfo" [currentFileInfo]="fileInfo" [currentDataFile]="dataFile" />
 
 <ng-template #resetMenu>
     <div class="field is-grouped">

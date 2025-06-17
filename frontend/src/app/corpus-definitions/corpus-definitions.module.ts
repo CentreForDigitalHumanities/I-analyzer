@@ -15,10 +15,12 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DocumentationFormComponent } from './form/documentation-form/documentation-form.component';
 import { ImageUploadComponent } from './form/image-upload/image-upload.component';
 import { FormFeedbackComponent } from './form/form-feedback/form-feedback.component';
+import { DatafileInfoComponent } from './form/data-form/datafile-info/datafile-info.component';
 
 @NgModule({
     declarations: [
         CreateDefinitionComponent,
+        DatafileInfoComponent,
         DefinitionsOverviewComponent,
         DefinitionInOutComponent,
         DefinitionJsonUploadComponent,

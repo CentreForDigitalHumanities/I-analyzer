@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Corpus } from '@models';
 import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
 import { ApiService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
@@ -65,7 +64,7 @@ export class DataFormComponent implements OnInit, OnDestroy {
                 takeUntil(this.destroy$),
                 distinctUntilChanged(_.isEqual),
                 switchMap((info: DataFileInfo) => {
-                    const fields = _.map(info, (dtype, colName) =>
+                    const fields = _.map(info.fields, (dtype, colName) =>
                         this.corpusDefService.makeDefaultField(dtype, colName)
                     );
                     return of(fields);

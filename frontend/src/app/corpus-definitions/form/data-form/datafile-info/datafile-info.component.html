@@ -1,0 +1,24 @@
+<div class="block">
+    <p>
+        <span>Uploaded <code>{{currentDataFile.file}}</code>. </span>
+        <span>Number of documents: {{currentFileInfo.n_rows}}. </span>
+    </p>
+    <p>Found the following columns in your sample file:</p>
+    <table class="table is-fullwidth">
+        <!-- <caption style="text-align: left">Number of documents: {{currentFileInfo.n_rows}}</caption>
+        <caption style="text-align: left">Found the following columns in your sample file:</caption> -->
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Data type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let field of currentFileInfo.fields|keyvalue">
+                <td>{{field.key}}</td>
+                <td>{{field.value}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
