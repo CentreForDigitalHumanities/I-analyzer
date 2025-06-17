@@ -19,10 +19,6 @@ You can choose whether users will be able to search through the field. This make
 
 You can enable sorting on text metadata fields. Values in the field will be sorted in (forward or reverse) alphabetical order.
 
-> **Tip**
->
-> Sometimes, it's better to disable search for a field, because it leads to irrelevant results. For example, if you search for "new york" in a corpus of newspaper articles, do you want to see every single article from the *New York Times*?
-
 Text metadata fields can be included as filters. The filter widget will be a dropdown with all values for the field.
 
 ## Number (integer)
@@ -33,9 +29,7 @@ Number fields cannot be searched, but they can be included as filters. The filte
 
 You can enable sorting on a number field. Values will be sorted from low to high, or high to low.
 
-> **Tip**
->
-> In some cases, a field contains numbers but a range slider does not make sense; for example, a ZIP code or a phone number. You can set the type to "text (metadata)", meaning this should just be treated as a string of characters.
+**Tip:** in some cases, a field contains numbers but a range slider does not make sense; for example, a ZIP code or a phone number. You can set the type to "text (metadata)", meaning this should just be treated as a string of characters.
 
 ## Number (decimal)
 

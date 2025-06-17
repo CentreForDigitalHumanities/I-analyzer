@@ -190,6 +190,6 @@ export class FieldFormComponent {
     }
 
     showFieldDocumentation() {
-        this.dialogService.showManualPage('types_of_fields');
+        this.dialogService.showManualPage('types-of-fields');
     }
 }

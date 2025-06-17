@@ -125,6 +125,6 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     }
 
     openDocumentation() {
-        this.dialogService.showManualPage('uploading_source_data');
+        this.dialogService.showManualPage('uploading-source-data');
     }
 }
