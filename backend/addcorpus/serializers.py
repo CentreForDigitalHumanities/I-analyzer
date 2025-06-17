@@ -9,6 +9,7 @@ from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
 from django.core.files import File
 from langcodes import Language, standardize_tag
 from rest_framework import serializers
+from os import path
 
 
 class NonEmptyJSONField(serializers.JSONField):
@@ -255,7 +256,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
 
 class DataFileField(serializers.FileField):
     def to_representation(self, value: File) -> Dict:
-        return value.name
+        return path.basename(value.name)
 
     def to_internal_value(self, data):
         return super().to_internal_value(data)
