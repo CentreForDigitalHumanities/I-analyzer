@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Corpus } from '@models';
 import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
-import { ApiService } from '@services';
+import { ApiService, DialogService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
@@ -39,7 +39,8 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
 
     constructor(
         private apiService: ApiService,
-        private corpusDefService: CorpusDefinitionService
+        private corpusDefService: CorpusDefinitionService,
+        private dialogService: DialogService,
     ) {}
 
     ngOnInit() {
@@ -121,5 +122,9 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    openDocumentation() {
+        this.dialogService.showManualPage('uploading_source_data');
     }
 }
