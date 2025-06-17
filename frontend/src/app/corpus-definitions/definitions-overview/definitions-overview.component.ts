@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { APIEditableCorpus } from '@models/corpus-definition';
 import { ApiService } from '@services';
 import { actionIcons, documentIcons } from '@shared/icons';
+import { pageTitle } from '@utils/app';
 import { showLoading } from '@utils/utils';
 import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 
@@ -19,8 +21,12 @@ export class DefinitionsOverviewComponent {
     corpusToDelete$ = new BehaviorSubject<APIEditableCorpus|null>(null);
     deleteLoading$ = new BehaviorSubject<boolean>(false);
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private title: Title
+    ) {
         this.corpora$ = this.apiService.corpusDefinitions();
+        this.title.setTitle(pageTitle('Corpus definitions'));
     }
 
     openDelete(corpus: APIEditableCorpus) {
