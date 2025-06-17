@@ -172,10 +172,7 @@ class CorpusDataFileViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def info(self, request, pk):
         obj = self.get_object()
-        delimiter = obj.corpus.configuration_obj.source_data_delimiter
-
-        info = get_csv_info(obj.file.path, sep=delimiter if delimiter else ',')
-
+        info = get_csv_info(obj.file.path)
         return Response(info, HTTP_200_OK)
 
 

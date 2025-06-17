@@ -23,19 +23,6 @@
 
 <form *ngIf="(fileInfo$ | async) === undefined || (fileInfo$ | async) === null; else resetMenu">
     <div class="field">
-        <label class="label">Delimiter</label>
-        <div class="control">
-            <div class="select">
-                <select (change)="onDelimiterChange($event)">
-                    <option *ngFor="let option of delimiterOptions" [value]="option.value"
-                        [selected]="option.value===((corpusDefService.corpus$|async)?.definition.source_data.options?.delimiter || ',')">
-                        {{option.label}}</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div class="field">
         <div class="file has-name">
             <label class="file-label">
                 <input class="file-input" type="file" name="definition-upload"

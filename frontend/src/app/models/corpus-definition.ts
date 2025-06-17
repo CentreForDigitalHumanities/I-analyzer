@@ -17,6 +17,7 @@ export interface CorpusDataFile {
 export interface DataFileInfo {
     n_rows: number;
     fields: { [columnName: string]: APICorpusDefinitionField['type'] };
+    delimiter: Delimiter;
 }
 
 export interface APICorpusDefinitionField {

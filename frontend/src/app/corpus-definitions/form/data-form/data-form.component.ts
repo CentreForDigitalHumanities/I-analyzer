@@ -64,6 +64,7 @@ export class DataFormComponent implements OnInit, OnDestroy {
                 takeUntil(this.destroy$),
                 distinctUntilChanged(_.isEqual),
                 switchMap((info: DataFileInfo) => {
+                    this.corpusDefService.setDelimiter(info.delimiter);
                     const fields = _.map(info.fields, (dtype, colName) =>
                         this.corpusDefService.makeDefaultField(dtype, colName)
                     );
@@ -74,10 +75,6 @@ export class DataFormComponent implements OnInit, OnDestroy {
                 next: (fields) => this.corpusDefService.setFields(fields),
                 error: console.error,
             });
-    }
-
-    onDelimiterChange(event: InputEvent) {
-        this.corpusDefService.setDelimiter(event.target['value']);
     }
 
     onUpload(event: InputEvent) {

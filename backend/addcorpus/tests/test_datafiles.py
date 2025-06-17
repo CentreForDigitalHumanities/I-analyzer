@@ -22,10 +22,14 @@ def test_csv_upload(admin_user, admin_client, json_mock_corpus):
     info_res = admin_client.get(f'/api/corpus/datafiles/{file_pk}/info/')
     assert info_res.status_code == HTTP_200_OK
     assert info_res.data == {
-        'character': 'text',
-        'line': 'text',
-        'date-column': 'date',
-        'FLOAT COLUMN': 'float',
-        'int_column': 'integer',
-        'bool column': 'boolean'
+        'fields': {
+            'character': 'text',
+            'line': 'text',
+            'date-column': 'date',
+            'FLOAT COLUMN': 'float',
+            'int_column': 'integer',
+            'bool column': 'boolean'
+        },
+        'n_rows': 10,
+        'delimiter': ','
     }

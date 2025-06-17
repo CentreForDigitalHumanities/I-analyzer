@@ -6,14 +6,21 @@ import numpy as np
 import pandas as pd
 
 from addcorpus.models import Corpus
+import csv
 
 
 def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
-    df = pd.read_csv(path, **kwargs)
+    '''Get information about a CSV file'''
+    encoding = kwargs.get('encoding', 'utf-8')
+    # sniff out CSV dialect to find delimiter
+    with open(path, 'r', encoding=encoding) as f:
+        dialect = csv.Sniffer().sniff(f.read(1024))
+        f.seek(0)
+    df = pd.read_csv(path, encoding=encoding, sep=dialect.delimiter, **kwargs)
     info = {
         'n_rows': len(df),
-        'fields': {col_name: map_col(df[col_name]) for col_name in df.columns}
-
+        'fields': {col_name: map_col(df[col_name]) for col_name in df.columns},
+        'delimiter': dialect.delimiter,
     }
     return info
 
