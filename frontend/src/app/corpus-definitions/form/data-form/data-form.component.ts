@@ -17,11 +17,11 @@ import {
 } from 'rxjs';
 
 @Component({
-    selector: 'ia-upload-sample',
-    templateUrl: './upload-sample.component.html',
-    styleUrl: './upload-sample.component.scss',
+    selector: 'ia-data-form',
+    templateUrl: './data-form.component.html',
+    styleUrl: './data-form.component.scss',
 })
-export class UploadSampleComponent implements OnInit, OnDestroy {
+export class DataFormComponent implements OnInit, OnDestroy {
     actionIcons = actionIcons;
     formIcons = formIcons;
 

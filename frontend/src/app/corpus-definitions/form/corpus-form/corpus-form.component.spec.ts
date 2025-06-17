@@ -5,7 +5,7 @@ import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import { StepsModule } from 'primeng/steps';
 import { MetaFormComponent } from '../meta-form/meta-form.component';
 import { FieldFormComponent } from '../field-form/field-form.component';
-import { UploadSampleComponent } from '../upload-sample/upload-sample.component';
+import { DataFormComponent } from '../data-form/data-form.component';
 import { ApiService } from '@services';
 import { ApiServiceMock } from 'mock-data/api';
 import { SharedModule } from '@shared/shared.module';
@@ -17,7 +17,7 @@ describe('CorpusFormComponent', () => {
     let component: CorpusFormComponent;
     let fixture: ComponentFixture<CorpusFormComponent>;
 
-    const mockRoute = { snapshot: { params: {corpusID: 1} } };
+    const mockRoute = { snapshot: { params: { corpusID: 1 } } };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('CorpusFormComponent', () => {
                 CorpusFormComponent,
                 MetaFormComponent,
                 FieldFormComponent,
-                UploadSampleComponent,
+                DataFormComponent,
             ],
             imports: [
                 SharedModule,
@@ -39,7 +39,6 @@ describe('CorpusFormComponent', () => {
                 { provide: ApiService, useClass: ApiServiceMock },
             ],
         }).compileComponents();
-
 
         fixture = TestBed.createComponent(CorpusFormComponent);
         component = fixture.componentInstance;

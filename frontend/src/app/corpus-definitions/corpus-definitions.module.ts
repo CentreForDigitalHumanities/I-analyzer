@@ -9,7 +9,7 @@ import { MetaFormComponent } from './form/meta-form/meta-form.component';
 import { FieldFormComponent } from './form/field-form/field-form.component';
 import { StepsModule } from 'primeng/steps';
 import { CorpusFormComponent } from './form/corpus-form/corpus-form.component';
-import { UploadSampleComponent } from './form/upload-sample/upload-sample.component';
+import { DataFormComponent } from './form/data-form/data-form.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { DocumentationFormComponent } from './form/documentation-form/documentation-form.component';
@@ -25,7 +25,7 @@ import { FormFeedbackComponent } from './form/form-feedback/form-feedback.compon
         MetaFormComponent,
         CorpusFormComponent,
         FieldFormComponent,
-        UploadSampleComponent,
+        DataFormComponent,
         DocumentationFormComponent,
         ImageUploadComponent,
         FormFeedbackComponent,

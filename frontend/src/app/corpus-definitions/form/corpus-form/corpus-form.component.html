@@ -18,7 +18,7 @@
         <div class="container is-readable">
             <ng-container *ngSwitchCase="0"><ia-meta-form *ngIf="corpus$ | async as corpus"
                     [corpus]="corpus" /></ng-container>
-            <ia-upload-sample *ngSwitchCase="1" />
+            <ia-data-form *ngSwitchCase="1" />
             <ng-container *ngSwitchCase="2"><ia-field-form *ngIf="corpus$ | async as corpus"
                     [corpus]="corpus" /></ng-container>
             <p *ngSwitchCase="3">
