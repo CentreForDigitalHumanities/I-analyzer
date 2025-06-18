@@ -222,7 +222,7 @@ class Gallica(XMLCorpusDefinition):
             extractor=XML(Tag("dc:identifier")),
             searchable=False,
         )
-    
+
     def request_media(self, document, corpus_name):
         """
         Return the media URLs for a given document from the Gallica website

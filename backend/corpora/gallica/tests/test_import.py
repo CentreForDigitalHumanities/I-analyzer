@@ -73,7 +73,7 @@ def test_gallica_import(corpus_name, monkeypatch, gallica_corpus_settings):
 
     sources = corpus_def.sources(
         start=corpus_def.min_date,
-        end=corpus_def.min_date,
+        end=corpus_def.max_date,
     )
     documents = list(corpus_def.documents(sources))
     assert len(documents) == target_data.get(corpus_name).get('n_documents')
