@@ -40,6 +40,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     category = 'periodical'
     description_page = 'description_public.md'
     citation_page = 'citation_public.md'
+    word_model_path = getattr(settings, "DUTCHNEWSPAPERS_WM", None)
 
     @property
     def es_settings(self):
