@@ -62,7 +62,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
             else:
                 response = requests.get(self.data_url)
             if response.status_code != 200:
-                logger.warning(f'No response from {self.data_url}')
+                raise (f'Invalid response {response.status_code} from {self.data_url}')
             yield response
         elif self.data_filepath:
             with open(self.data_filepath, 'r') as f:
