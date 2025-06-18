@@ -60,6 +60,7 @@ import {
     faArrowRightArrowLeft,
     faArrowUp,
     faArrowDown,
+    faRedo,
 } from '@fortawesome/free-solid-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
@@ -119,6 +120,7 @@ export const actionIcons: Icons = {
 export const formIcons: Icons = {
     confirm: faCheck,
     reset: faTimes,
+    replace: faRedo,
 };
 
 export const corpusIcons: Icons = {
