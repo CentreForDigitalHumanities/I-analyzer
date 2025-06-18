@@ -282,7 +282,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "id": "ParlaMint-NL_2017-01-31-tweedekamer-23.u1",
                 "speaker": "Khadija Arib",
                 "speaker_id": "#KhadijaArib",
-                "speaker_gender": "vrouw",
+                "speaker_gender": "F",
                 "role": "Chair",
                 "party": "PvdA",
                 "party_id": "#party.PvdA",
