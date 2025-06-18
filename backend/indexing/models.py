@@ -1,9 +1,36 @@
 from django.db import models
 from elasticsearch import Elasticsearch
+from typing import List, Optional
+from itertools import chain
+from django.contrib import admin
 
 from es.client import elasticsearch
 from addcorpus.models import Corpus
 from es.models import Index
+
+
+class TaskStatus(models.TextChoices):
+    CREATED = 'created'
+    'Task is created, but not scheduled'
+
+    QUEUED = 'queued'
+    'Task has not started, but its job has been started'
+
+    WORKING = 'working'
+    'Task is currently running'
+
+    DONE = 'done'
+    'Task completed successfully'
+
+    ERROR = 'error'
+    'Task ran into an error'
+
+    ABORTED = 'aborted'
+    'Task was started, then aborted by a user'
+
+    CANCELLED = 'cancelled'
+    'Task was cancelled (because a task up-chain was aborted or failed)'
+
 
 class IndexJob(models.Model):
     '''
@@ -22,9 +49,56 @@ class IndexJob(models.Model):
     )
 
 
+    def tasks(self) -> List['IndexTask']:
+        '''
+        A list of all tasks that belong to this job, in order of execution.
+
+        Tasks are ordered by type. The order of types is:
+        - `CreateIndexTask`
+        - `PopulateIndexTask`
+        - `UpdateIndexTask`
+        - `UpdateSettingsTask`
+        - `RemoveAliasTask`
+        - `AddAliasTask`
+        - `DeleteIndexTask`
+        '''
+        return list(chain(*self.task_query_sets()))
+
+
+    def task_query_sets(self) -> List[models.QuerySet['IndexTask']]:
+        '''
+        For each task type, the queryset of tasks that belong to this job.
+
+        Can be used to run bulk updates on related tasks.
+        '''
+        return [
+            self.createindextasks.all(),
+            self.populateindextasks.all(),
+            self.updateindextasks.all(),
+            self.updatesettingstasks.all(),
+            self.removealiastasks.all(),
+            self.addaliastasks.all(),
+            self.deleteindextasks.all()
+        ]
+
 
     def __str__(self):
         return f'{self.corpus} ({self.created})'
+
+
+    @admin.display()
+    def status(self) -> Optional[TaskStatus]:
+        '''Aggregate status of related tasks'''
+        statuses = set(task.status for task in self.tasks())
+        if len(statuses) == 1:
+            return statuses.pop()
+        if TaskStatus.ERROR in statuses:
+            return TaskStatus.ERROR
+        if TaskStatus.WORKING in statuses:
+            return TaskStatus.WORKING
+        if TaskStatus.ABORTED in statuses:
+            return TaskStatus.ABORTED
+
 
 
 class IndexTask(models.Model):
@@ -46,6 +120,12 @@ class IndexTask(models.Model):
         on_delete=models.CASCADE,
         related_name='%(class)ss',
         help_text='index on which this task is applied',
+    )
+    status = models.CharField(
+        max_length=16,
+        choices=TaskStatus.choices,
+        default=TaskStatus.CREATED,
+        help_text='execution status of this task',
     )
 
     @property

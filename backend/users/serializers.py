@@ -6,13 +6,18 @@ from users.models import UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    can_edit_corpora = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = UserProfile
-        fields = ['enable_search_history']
+        fields = ['enable_search_history', 'can_edit_corpora']
+
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
     is_admin = serializers.BooleanField(source='is_staff', read_only=True)
+    saml = serializers.BooleanField(read_only=True)
+    download_limit = serializers.IntegerField(read_only=True)
     profile = UserProfileSerializer()
 
     class Meta(UserDetailsSerializer.Meta):

@@ -32,7 +32,7 @@ PROCESSED = "corpora/guardianobserver/processed.txt"
 
 class GuardianObserver(XMLCorpusDefinition):
     title = "Guardian-Observer"
-    description = "Newspaper archive, 1791-2003"
+    description = "Archives from The Guardian, a British daily newspaper, and its sister Sunday paper, the Observer."
     description_page = 'guardianobserver.md'
     min_date = datetime(year=1791, month=1, day=1)
     max_date = datetime(year=2003, month=12, day=31)
