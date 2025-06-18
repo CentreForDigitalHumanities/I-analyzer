@@ -124,7 +124,7 @@ class Gallica(XMLCorpusDefinition):
                         )
                         continue
                 yield (
-                    source_response.content,
+                    source_response,
                     {"content": parsed_content},
                 )
 

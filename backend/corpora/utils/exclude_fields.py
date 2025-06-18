@@ -1,4 +1,4 @@
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 
 def has_extractor(field):
     if type(field.extractor) != extract.Constant:

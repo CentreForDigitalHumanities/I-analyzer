@@ -15,15 +15,6 @@ lp_eu:1999-07-21-Speech-3-063 lpv:docno "en.19990721.5.3-063" .
 lp_eu:1999-07-21-Speech-3-063 lpv:hasSubsequent lp_eu:1999-07-21-Speech-3-064 .
 lp_eu:1999-07-21-Speech-3-063 lpv:speaker lp:EUmember_997 .
 
-lp_eu:2009-03-24-Speech-2-371 a lpv_eu:Speech .
-lp_eu:2009-03-24-Speech-2-371 dcterms:date "2009-03-24"^^xsd:date .
-lp_eu:2009-03-24-Speech-2-371 dcterms:isPartOf lp_eu:2009-03-24_AgendaItem_30 .
-lp_eu:2009-03-24-Speech-2-371 dcterms:language "fr"^^xsd:language .
-lp_eu:2009-03-24-Speech-2-371 lpv:docno "en.20090324.30.2-371" .
-lp_eu:2009-03-24-Speech-2-371 lpv:hasSubsequent lp_eu:2009-03-24-Speech-2-372 .
-lp_eu:2009-03-24-Speech-2-371 lpv:speaker lp:Speaker_Philippe_Maystadt .
-lp_eu:2009-03-24-Speech-2-371 lpv:videoURI <http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20090324-17:03:01-978> .
-
 lp_eu:2017-07-06-Speech-4-146-000 a lpv_eu:Speech .
 lp_eu:2017-07-06-Speech-4-146-000 dcterms:date "2017-07-06"^^xsd:date .
 lp_eu:2017-07-06-Speech-4-146-000 dcterms:isPartOf lp_eu:2017-07-06_AgendaItem_13 .

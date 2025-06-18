@@ -11,14 +11,14 @@ from os.path import join, getsize
 from datetime import datetime
 from zipfile import ZipFile
 from io import BytesIO
-from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
+from ianalyzer_readers.xml_tag import Tag
+from ianalyzer_readers import extract
 
 from indexing.run_update_task import update_document
-from addcorpus.python_corpora import extract
 from addcorpus.python_corpora import filters
-from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains, consolidate_start_end_years
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from media.image_processing import sizeof_fmt
 from media.media_url import media_url
 

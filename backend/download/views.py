@@ -2,20 +2,20 @@ import logging
 import os
 
 from addcorpus.models import Corpus
-from addcorpus.permissions import (CanSearchCorpus,
-                                   corpus_name_from_request)
+from addcorpus.permissions import CanSearchCorpus, corpus_name_from_request
+from api.utils import check_json_keys
 from django.conf import settings
 from django.http.response import FileResponse
 from download import convert_csv, tasks
 from download.models import Download
 from download.serializers import DownloadSerializer
+from download.throttles import DownloadThrottleMixin
 from rest_framework.exceptions import (APIException, NotFound, ParseError,
                                        PermissionDenied)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from api.utils import check_json_keys
 
 logger = logging.getLogger()
 
@@ -34,7 +34,7 @@ def send_csv_file(download, directory, encoding, format=None, delete_after_sent=
             download.delete()
 
 
-class ResultsDownloadView(APIView):
+class ResultsDownloadView(DownloadThrottleMixin, APIView):
     '''
     Download search results up to 1.000 documents
     '''
