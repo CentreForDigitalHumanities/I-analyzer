@@ -13,6 +13,7 @@ class Caricature(Gallica):
     corpus_id = "cb344523348"
     category = "periodical"
     es_index = getattr(settings, 'CARICATURE_INDEX', 'caricature')
+    description_page = 'caricature.md'
     image = "caricature.jpg"
 
     def __init__(self):

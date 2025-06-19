@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<results ResultsGenerationSearchTime="0:00:00.008" countResults="1" resultType="CVOAIRecordSearchService" searchTime="">
+<visibility_rights>all</visibility_rights>
+<notice>
+<record>
+<header>
+<identifier>oai:bnf.fr:gallica/ark:/12148/bpt6k8724474</identifier>
+<datestamp>2023-09-29</datestamp>
+<setSpec>gallica:typedoc:periodiques:fascicules</setSpec>
+</header>
+<metadata>
+<oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+<dc:identifier>https://gallica.bnf.fr/ark:/12148/bpt6k8724474</dc:identifier>
+<dc:date>1943-09-01</dc:date>
+<dc:description>01 septembre 1943</dc:description>
+<dc:description>1943/09/01 (N2)-1943/09/30.</dc:description>
+<dc:description/>
+<dc:title>Document n°... / Centre d'information et de documentation ; Éditions MUR</dc:title>
+<dc:creator>Mouvements unis de résistance (France). Auteur du texte</dc:creator>
+<dc:creator>Centre d'information et de documentation (France). Auteur du texte</dc:creator>
+<dc:publisher>Éditions MUR (Zone sud)</dc:publisher>
+<dc:type xml:lang="fre">texte</dc:type>
+<dc:type xml:lang="eng">text</dc:type>
+<dc:type xml:lang="fre">publication en série imprimée</dc:type>
+<dc:type xml:lang="eng">printed serial</dc:type>
+<dc:language>fre</dc:language>
+<dc:relation>Notice du catalogue : http://catalogue.bnf.fr/ark:/12148/cb32738662m</dc:relation>
+<dc:source>Bibliothèque nationale de France, département Réserve des livres rares, RES-G-1470 (58)</dc:source>
+<dc:rights xml:lang="fre">domaine public</dc:rights>
+<dc:rights xml:lang="eng">public domain</dc:rights>
+<dc:relation>http://gallica.bnf.fr/ark:/12148/cb32738662m/date</dc:relation>
+<dc:format>Nombre total de vues :  78</dc:format>
+</oai_dc:dc>
+</metadata>
+</record>
+</notice>
+<provenance>bnf.fr</provenance>
+<source>Bibliothèque nationale de France, département Réserve des livres rares, RES-G-1470 (58)</source>
+<typedoc>fascicule</typedoc>
+<nqamoyen>82.32</nqamoyen>
+<mode_indexation>text</mode_indexation>
+<title>Document n°... / Centre d'information et de documentation ; Éditions MUR</title>
+<date nbIssue="1">1943-09-01</date>
+<first_indexation_date>25/07/2011</first_indexation_date>
+<streamable>false</streamable>
+<listBibVirt>
+<label>gallica</label>
+</listBibVirt>
+</results>
