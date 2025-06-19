@@ -95,4 +95,25 @@ class Tranchees(Gallica):
     ]
     category = "periodical"
     es_index = getattr(settings, 'TRANCHEES_INDEX', 'tranchees')
-    image = "resistance.jpg"
+    image = "tranchees.jpg"
+    description_page = "tranchees.md"
+
+    def sources(self, start, end):
+        for pub_id in self.publication_ids:
+            self.corpus_id = pub_id
+            docs = super().sources(start, end)
+            if not docs:
+                continue
+            for doc in docs:
+                yield doc
+
+    def __init__(self):
+        self.fields = [
+            self.content(),
+            self.contributor(),
+            self.date(self.min_date, self.max_date),
+            self.identifier(),
+            self.issue(),
+            self.periodical_title(),
+            self.url(),
+        ]
