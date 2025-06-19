@@ -82,7 +82,8 @@ class Resistance(Gallica):
     ]
     category = "periodical"
     es_index = getattr(settings, 'RESISTANCE_INDEX', 'resistance')
-    image = "resistance.jpg"
+    image = "resistance.png"
+    description_page = "resistance.md"
 
     def sources(self, start, end):
         for pub_id in self.publication_ids:
