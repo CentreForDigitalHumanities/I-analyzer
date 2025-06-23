@@ -3,7 +3,7 @@ from glob import glob
 from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousSiblingTag, ParentTag
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import XML, Combined, Constant, Metadata
+from ianalyzer_readers.extract import XML, Combined, Constant, Metadata
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.constants import document_context

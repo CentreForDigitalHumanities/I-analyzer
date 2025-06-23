@@ -14,6 +14,9 @@ def export_json_corpus(corpus: Corpus) -> Dict:
     data['fields'] = [
         export_json_field(field) for field in config.fields.all()
     ]
+    documentation = export_corpus_documentation(config)
+    if documentation:
+        data['documentation'] = documentation
     return data
 
 def export_corpus_meta(configuration: CorpusConfiguration) -> Dict:
@@ -90,3 +93,8 @@ def export_field_filter(field: Field) -> str:
 
 def export_field_extract(field: Field) -> Dict:
     return {'column': field.extract_column}
+
+
+def export_corpus_documentation(config: CorpusConfiguration):
+    pages = config.documentation_pages.all()
+    return {page.type: page.content for page in pages}

@@ -62,17 +62,22 @@
 
     <div class="field">
         <p class="control">
-            <button class="button is-primary">Save changes</button>
+            <button class="button is-primary"
+                [class.is-loading]="loading$ | async">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save changes</span>
+            </button>
         </p>
     </div>
+
+    <ia-form-feedback [showSuccess]="showSuccessMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
 </form>
 
 <div class="box">
     <ia-image-upload [corpus]="corpus" />
 </div>
 
-<div class="block">
-    <button class="button" (click)="nextStep()">
-        Next
-    </button>
+<div class="box">
+    <ia-documentation-form />
 </div>

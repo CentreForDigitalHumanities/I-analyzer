@@ -14,6 +14,7 @@ from ianalyzer_readers.readers.core import Reader, Field
 from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.readers.csv import CSVReader
 from ianalyzer_readers.readers.html import HTMLReader
+from ianalyzer_readers.readers.json import JSONReader
 from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.readers.xlsx import XLSXReader
 
@@ -347,20 +348,11 @@ class XLSXCorpusDefinition(CorpusDefinition, XLSXReader):
     '''
 
 
-class JSONCorpusDefinition(CorpusDefinition):
+class JSONCorpusDefinition(CorpusDefinition, JSONReader):
     '''
     Corpus definition for json encoded data.
     '''
 
-    def source2dicts(self, source, *nargs, **kwargs):
-        self._reject_extractors(extract.XML, extract.CSV)
-
-        field_dict = {
-            field.name: field.extractor.apply(source, *nargs, **kwargs)
-            for field in self.fields
-        }
-
-        yield field_dict
 
 class RDFCorpusDefinition(CorpusDefinition, RDFReader):
     '''

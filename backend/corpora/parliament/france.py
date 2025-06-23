@@ -5,7 +5,7 @@ from datetime import datetime
 from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.python_corpora.extract import Constant, Combined, CSV
+from ianalyzer_readers.extract import Constant, Combined, CSV
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.formatting import underscore_to_space
@@ -130,12 +130,3 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
             self.speech, self.speech_id,
             self.url_pdf, self.url_html
         ]
-
-
-
-
-
-
-
-
-

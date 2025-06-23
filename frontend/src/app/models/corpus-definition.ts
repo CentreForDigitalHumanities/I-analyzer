@@ -52,8 +52,8 @@ export interface APICorpusDefinition {
         description?: string;
         languages?: string[];
         date_range?: {
-            min: string;
-            max: string;
+            min: number;
+            max: number;
         };
     };
     source_data: {
@@ -78,6 +78,11 @@ export interface APICorpusDefinition {
             ascending: boolean;
         };
     };
+    documentation?: {
+        general?: string,
+        citation?: string,
+        license?: string,
+    }
 }
 
 export interface APIEditableCorpus {

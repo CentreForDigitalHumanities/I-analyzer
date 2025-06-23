@@ -8,7 +8,7 @@ from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.es_mappings import date_mapping
-from addcorpus.python_corpora.extract import XML, Constant, Combined, Pass
+from ianalyzer_readers.extract import XML, Constant, Combined, Pass
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
     clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
     not_before_extractor
@@ -296,7 +296,6 @@ def _add_support_comment(soup: bs4.PageElement, existing_commentaries: str, elem
             text = clean_commentary(text)
             return '{}{}:\n{}\n\n'.format(existing_commentaries, commentary_name, text)
     return existing_commentaries
-
 
 
 def _extract_country(soup) -> Iterable[bs4.PageElement]:
