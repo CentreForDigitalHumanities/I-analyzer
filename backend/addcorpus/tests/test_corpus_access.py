@@ -1,3 +1,4 @@
+from click import group
 from users.models import CustomUser, CustomAnonymousUser
 from addcorpus.models import Corpus
 from addcorpus.permissions import can_search
@@ -36,6 +37,17 @@ def test_api_access(db, basic_mock_corpus, group_with_access, auth_client, auth_
     response = auth_client.get('/api/corpus/')
     assert len(response.data) == 1
     assert response.data[0].get('name') == basic_mock_corpus
+
+
+def test_multiple_groups_access(db, basic_mock_corpus, small_mock_corpus, group_with_access, another_group_with_access, auth_client, auth_user):
+    auth_user.groups.add(group_with_access)
+    auth_user.groups.add(another_group_with_access)
+
+    response = auth_client.get('/api/corpus/')
+    assert len(response.data) == 2
+    names = set([item['name'] for item in response.data])
+    assert set(names) == {basic_mock_corpus, small_mock_corpus}
+
 
 def test_superuser_api_access(admin_client, basic_mock_corpus):
     response = admin_client.get('/api/corpus/')
