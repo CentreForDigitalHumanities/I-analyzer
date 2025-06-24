@@ -4,11 +4,13 @@ import { ApiService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
+import { MenuItem } from 'primeng/api';
 import {
     BehaviorSubject,
     distinctUntilChanged,
     filter,
     map,
+    Observable,
     of,
     Subject,
     switchMap,
@@ -30,11 +32,9 @@ export class DataFormComponent implements OnInit, OnDestroy {
     error$ = new BehaviorSubject<Error | undefined>(undefined);
     destroy$ = new Subject<void>();
 
-    delimiterOptions = [
-        { label: ', comma', value: ',' },
-        { label: '; semicolon', value: ';' },
-        { label: 'tab', value: '\t' },
-    ];
+    nextStep$: Observable<MenuItem> = this.corpusDefService.steps$.pipe(
+        map((steps) => steps[1])
+    );
 
     constructor(
         private apiService: ApiService,
@@ -47,15 +47,11 @@ export class DataFormComponent implements OnInit, OnDestroy {
             .pipe(
                 map(_.head),
                 filter(_.negate(_.isUndefined)),
-                switchMap((dataFile: CorpusDataFile) => {
-                    this.dataFile = dataFile;
-                    return this.apiService.getDataFileInfo(dataFile);
-                })
+                switchMap((dataFile) => this.loadDataFileInfo(dataFile)),
+                takeUntil(this.destroy$)
             )
             .subscribe({
-                next: (info) => {
-                    this.fileInfo$.next(info);
-                },
+                next: (info) => this.fileInfo$.next(info),
                 error: (err) => this.error$.next(err),
             });
 
@@ -63,8 +59,8 @@ export class DataFormComponent implements OnInit, OnDestroy {
             .pipe(
                 takeUntil(this.destroy$),
                 distinctUntilChanged(_.isEqual),
-                switchMap((info: DataFileInfo) => {
-                    this.corpusDefService.setDelimiter(info.delimiter);
+                filter(_.negate(_.isUndefined)),
+                switchMap((info) => {
                     const fields = _.map(info.fields, (dtype, colName) =>
                         this.corpusDefService.makeDefaultField(dtype, colName)
                     );
@@ -86,36 +82,58 @@ export class DataFormComponent implements OnInit, OnDestroy {
             .createDataFile(corpusId, file)
             .pipe(
                 takeUntil(this.destroy$),
-                switchMap((dataFile) => {
-                    this.dataFile = dataFile;
-                    return this.apiService.getDataFileInfo(dataFile);
-                })
+                switchMap((dataFile) => this.loadDataFileInfo(dataFile))
             )
             .subscribe({
-                next: (info) => {
-                    this.fileInfo$.next(info);
-                },
+                next: (info) => this.fileInfo$.next(info),
                 error: (err) => this.error$.next(err),
             });
     }
 
-    onSubmit() {
-        this.corpusDefService.toggleStepDisabled(2);
-        this.corpusDefService.activateStep(2);
+    replaceFile(event: InputEvent) {
+        const files: File[] = event.target['files'];
+        const file = files ? _.first(files) : undefined;
+        console.log('replace file', file);
+        // should show the upload dialog again
     }
 
-    resetFields() {
+    resetFile() {
+        // delete the file
         this.apiService.deleteDataFile(this.dataFile).subscribe({
             next: () => {
                 this.corpusDefService.setFields([]);
                 this.fileInfo$.next(undefined);
+                this.dataFile = undefined;
             },
             error: console.error,
         });
     }
 
+    confirmFile() {
+        this.apiService
+            .patchDataFile(this.dataFile.id, { confirmed: true })
+            .pipe(switchMap((datafile) => this.loadDataFileInfo(datafile)))
+            .subscribe({
+                next: (info) => this.fileInfo$.next(info),
+                error: (err) => this.error$.next(err),
+            });
+    }
+
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    fileUploaded(): boolean {
+        return !!this.dataFile && !_.isEmpty(this.dataFile.file);
+    }
+
+    fileConfirmed(): boolean {
+        return this.fileUploaded() && !!this.dataFile?.confirmed;
+    }
+
+    private loadDataFileInfo(dataFile: CorpusDataFile) {
+        this.dataFile = dataFile;
+        return this.apiService.getDataFileInfo(dataFile);
     }
 }

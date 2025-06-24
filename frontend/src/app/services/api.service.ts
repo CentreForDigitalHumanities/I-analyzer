@@ -332,6 +332,14 @@ export class ApiService {
         return this.http.delete<null>(url);
     }
 
+    public patchDataFile(
+        fileId: number,
+        data: Partial<CorpusDataFile>
+    ): Observable<CorpusDataFile> {
+        const url = `/api/corpus/datafiles/${fileId}/`;
+        return this.http.patch<CorpusDataFile>(url, data);
+    }
+
     public listDataFiles(
         corpusId: number,
         samples: boolean = false
