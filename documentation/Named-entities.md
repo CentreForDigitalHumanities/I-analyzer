@@ -1,16 +1,14 @@
 # Named Entities
 I-Analyzer has the capacity to display named entities.
 
-## Prerequisites
-In order to display a corpus enriched with named entities, install the Annotated Text plugin of Elasticsearch, following the instructions [here](https://www.elastic.co/guide/en/elasticsearch/plugins/8.6/mapper-annotated-text.html).
-
-### Named entity fields
+## Named entity fields
 To determine whether named entities are available for a given corpus, the application checks if a given corpus contains fields ending with `:ner`.
 
 If the main content field is called `speech`, the field containing named entity annotations should be called `speech:ner`. This field should have the following Elasticsearch mapping:
 ```python
 {
-    'type': 'annotated_text'
+    'type': 'text',
+    'index': False,
 }
 ```
 

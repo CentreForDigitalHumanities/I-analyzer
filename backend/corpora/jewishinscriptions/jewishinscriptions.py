@@ -7,7 +7,7 @@ from ianalyzer_readers.xml_tag import Tag, CurrentTag
 
 from django.conf import settings
 
-from addcorpus.python_corpora.extract import XML
+from ianalyzer_readers.extract import XML
 from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping

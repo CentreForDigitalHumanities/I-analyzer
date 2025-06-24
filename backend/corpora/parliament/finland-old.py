@@ -2,7 +2,7 @@ from datetime import datetime
 from glob import glob
 
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition
-from addcorpus.python_corpora.extract import CSV, Combined, Constant
+from ianalyzer_readers.extract import CSV, Combined, Constant
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
