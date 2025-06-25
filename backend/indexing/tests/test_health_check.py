@@ -13,7 +13,7 @@ def test_health_check_not_indexed(mock_corpus, es_index_client, es_server):
     assert health.includes_latest_data is None
     assert health.corpus_ready_to_index
 
-def test_health_check_index_python_corpus(small_mock_corpus, index_small_mock_corpus):
+def test_health_check_index_python_corpus(small_mock_corpus, index_small_mock_corpus, es_server):
     corpus = Corpus.objects.get(name=small_mock_corpus)
     health = CorpusIndexHealth(corpus)
     assert health.server_active
@@ -24,7 +24,7 @@ def test_health_check_index_python_corpus(small_mock_corpus, index_small_mock_co
     assert health.includes_latest_data is None # this is a python corpus, so NA
     assert health.corpus_ready_to_index
 
-def test_health_check_indexed_db_corpus(json_mock_corpus, index_json_mock_corpus):
+def test_health_check_indexed_db_corpus(json_mock_corpus, index_json_mock_corpus, es_server):
     health = CorpusIndexHealth(json_mock_corpus)
     assert health.server_active
     assert health.index_active
