@@ -123,6 +123,10 @@ class CorpusIndexHealth:
             actual_mappings = self.index.mappings()
             return generated_mappings == actual_mappings
 
+    @property
+    def index_compatible(self) -> Optional[bool]:
+        return self.settings_compatible and self.mappings_compatible
+
 
     @property
     def job_status(self) -> Optional[TaskStatus]:
