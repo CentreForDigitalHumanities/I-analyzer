@@ -16,7 +16,7 @@ from indexing.models import (
 logger = logging.getLogger('indexing')
 
 
-def _make_es_settings(corpus: Corpus) -> Dict:
+def make_es_settings(corpus: Corpus) -> Dict:
     if corpus.has_python_definition:
         corpus_def = load_corpus_definition(corpus.name)
         return corpus_def.es_settings
@@ -27,7 +27,7 @@ def _make_es_settings(corpus: Corpus) -> Dict:
     )
 
 
-def _make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
+def make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
     '''
     Create the ElasticSearch mapping for the fields of this corpus. May be
     passed to the body of an ElasticSearch index creation request.
@@ -46,7 +46,7 @@ def create(task: CreateIndexTask):
 
     corpus_config = task.corpus.configuration
     index_name = task.index.name
-    es_mapping = _make_es_mapping(corpus_config)
+    es_mapping = make_es_mapping(corpus_config)
 
     if client.indices.exists(index=index_name, allow_no_indices=False):
         if task.delete_existing:
@@ -59,7 +59,7 @@ def create(task: CreateIndexTask):
             )
             raise Exception('index already exists')
 
-    settings = _make_es_settings(task.corpus)
+    settings = make_es_settings(task.corpus)
 
     if task.production_settings:
         logger.info('Adding prod settings to index')
