@@ -11,6 +11,7 @@ def test_health_check_not_indexed(mock_corpus, es_index_client, es_server):
     assert health.mappings_compatible is None
     assert health.job_status is None
     assert health.includes_latest_data is None
+    assert health.corpus_ready_to_index
 
 def test_health_check_index_python_corpus(small_mock_corpus, index_small_mock_corpus):
     corpus = Corpus.objects.get(name=small_mock_corpus)
@@ -21,6 +22,7 @@ def test_health_check_index_python_corpus(small_mock_corpus, index_small_mock_co
     assert health.mappings_compatible
     assert health.job_status == TaskStatus.DONE
     assert health.includes_latest_data is None # this is a python corpus, so NA
+    assert health.corpus_ready_to_index
 
 def test_health_check_indexed_db_corpus(json_mock_corpus, index_json_mock_corpus):
     health = CorpusIndexHealth(json_mock_corpus)
@@ -30,3 +32,4 @@ def test_health_check_indexed_db_corpus(json_mock_corpus, index_json_mock_corpus
     assert health.mappings_compatible
     assert health.job_status == TaskStatus.DONE
     assert health.includes_latest_data is True
+    assert health.corpus_ready_to_index

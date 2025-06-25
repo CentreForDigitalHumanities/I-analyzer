@@ -10,14 +10,15 @@ from es.es_alias import get_current_index_name
 from indexing.models import TaskStatus, IndexJob
 from indexing.run_create_task import make_es_mapping, make_es_settings
 from addcorpus.json_corpora.import_json import get_path
-
+from addcorpus.validation.indexing import CorpusNotIndexableError
 
 
 class CorpusIndexHealth:
     '''
     Reports on the "health status" of a corpus index.
 
-
+    This class groups various diagnostic functions. This can be used to report on the
+    index status to the user or for internal troubleshooting.
     '''
 
     corpus: Corpus
@@ -146,3 +147,22 @@ class CorpusIndexHealth:
         '''
         if self.latest_job and self.latest_file:
             return self.latest_job.created > self.latest_file.created
+
+    @property
+    def corpus_ready_to_index(self) -> bool:
+        '''
+        Whether the corpus configuration passes validation for indexing
+        '''
+        return self.corpus.ready_to_index()
+
+    @property
+    def corpus_validation_feedback(self) -> Optional[str]:
+        '''
+        If the corpus does not pass validation for indexing, returns the validation error
+        message.
+        '''
+        try:
+            self.corpus.validate_ready_to_index()
+        except CorpusNotIndexableError as e:
+            return str(e)
+
