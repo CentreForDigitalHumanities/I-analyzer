@@ -6,6 +6,7 @@ import requests
 from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
 import warnings
+from django.core.files import File
 
 from es.client import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
@@ -14,8 +15,8 @@ from indexing.create_job import create_indexing_job
 from indexing.run_job import perform_indexing
 from django.conf import settings
 from django.contrib.auth.models import Group
-from addcorpus.models import Corpus
-from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from addcorpus.models import Corpus, CorpusDataFile
+from addcorpus.serializers import CorpusJSONDefinitionSerializer, CorpusDataFileSerializer
 from es.models import Server
 from django.core.cache import cache
 
@@ -237,8 +238,17 @@ def json_mock_corpus(db, json_corpus_definition) -> Corpus:
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
 
-    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data')
-    corpus.configuration.data_directory = data_dir
+    # add data file
+    filepath = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data', 'example.csv')
+    with open(filepath) as f:
+        serializer = CorpusDataFileSerializer(data={
+            'corpus': corpus.pk,
+            'file': File(f, name='example.csv')
+        })
+        assert serializer.is_valid()
+        datafile = serializer.create(serializer.validated_data)
+
+    corpus.configuration.data_directory = os.path.join(settings.MEDIA_ROOT, datafile.upload_dir())
     corpus.configuration.save()
 
     return corpus
