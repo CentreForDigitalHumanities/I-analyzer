@@ -1,6 +1,6 @@
 from rest_framework import status
 
-def test_health_view(admin_user, admin_client, json_mock_corpus, index_json_mock_corpus):
+def test_health_view(admin_user, admin_client, json_mock_corpus, index_json_mock_corpus, es_server):
     json_mock_corpus.owner = admin_user
     json_mock_corpus.save()
 
