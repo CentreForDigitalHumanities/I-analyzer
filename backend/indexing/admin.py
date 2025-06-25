@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 
-from indexing import models, run_job
+from indexing import models, run_job, stop_job
 
 
 class CreateIndexAdmin(admin.StackedInline):
@@ -64,5 +64,23 @@ class IndexJobAdmin(admin.ModelAdmin):
                 f'Index job {job} started!',
                 messages.SUCCESS,
             )
+
+    @admin.action(description='Stop selected jobs')
+    def stop_job(self, request, queryset: QuerySet[models.IndexJob]):
+        for job in queryset:
+            if stop_job.is_stoppable(job):
+                stop_job.stop_job(job)
+                self.message_user(
+                    request,
+                    f'Index job {job} stopped!',
+                    messages.SUCCESS,
+                )
+            else:
+                self.message_user(
+                    request,
+                    f'Index job {job} cannot be stopped because it is not running',
+                    messages.WARNING,
+                )
+
 
 admin.site.register(models.IndexJob, IndexJobAdmin)

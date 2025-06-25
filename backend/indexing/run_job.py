@@ -5,6 +5,7 @@ Functionality to run an IndexJob
 import logging
 from typing import Callable, Type, Dict
 import celery
+from celery.result import AsyncResult
 
 from es.client import elasticsearch
 from indexing.models import (
@@ -18,6 +19,7 @@ from indexing.run_management_tasks import (
 )
 from indexing.run_update_task import run_update_task
 from ianalyzer.celery_utils import warn_if_no_worker
+from indexing.stop_job import mark_tasks_stopped
 
 
 logger = logging.getLogger('indexing')
@@ -59,29 +61,25 @@ def run_task(task: IndexTask) -> None:
         task.client().cluster.health(wait_for_status='yellow')
 
 
-def mark_tasks_stopped(job: IndexJob):
-    '''
-    Mark open tasks as aborted and queued tasks as cancelled.
-    '''
-    for task_set in job.task_query_sets():
-        task_set.filter(status=TaskStatus.QUEUED).update(status=TaskStatus.CANCELLED)
-        task_set.filter(status=TaskStatus.WORKING).update(status=TaskStatus.ABORTED)
-
-
 @celery.shared_task()
 def handle_job_error(request, exc, traceback, job: IndexJob):
     mark_tasks_stopped(job)
 
 
-@celery.shared_task()
-def start_job(job: IndexJob) -> None:
+@celery.shared_task(bind=True)
+def start_job(self, job: IndexJob) -> None:
     _validate_job_start(job)
     _log_job_started(job)
+
+    if self.request.chain:
+        for task in self.request.chain:
+            obj: IndexTask = task.args[0]
+            obj.celery_task_id = task.id
+            obj.save()
 
     for task in job.tasks():
         task.status = TaskStatus.QUEUED
         task.save()
-
 
 def job_chain(job: IndexJob) -> celery.chain:
     signatures = [start_job.si(job)] + [run_task.si(task) for task in job.tasks()]
@@ -97,7 +95,7 @@ def perform_indexing(job: IndexJob):
     return chain.apply()
 
 
-def perform_indexing_async(job: IndexJob):
+def perform_indexing_async(job: IndexJob) -> AsyncResult:
     '''
     Run an IndexJob asynchronously (through celery)
     '''
