@@ -1,4 +1,4 @@
-You can use the search bar to search throug the document in a corpus. By de fault, you will be searching through all text fields, but you can also select specific fields to search through.
+You can use the search bar to search through the documents in a corpus. By default, you will be searching through all text fields, but you can also select specific fields to search through.
 
 You can type in multiple query terms. For example, if you type in `tram bike`, you will search for documents that contain `tram` and/or `bike`.
 

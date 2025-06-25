@@ -10,8 +10,25 @@
                 "title": "Terms of use and privacy"
             },
             {
+                "id": "glossary",
+                "title": "Glossary"
+            }
+        ]
+    },
+    {
+        "title": "Searching",
+        "pages": [
+            {
                 "id": "query",
-                "title": "Search query"
+                "title": "Search queries"
+            },
+            {
+                "id": "namedentities",
+                "title": "Viewing named entities"
+            },
+            {
+                "id": "tagging-documents",
+                "title": "Tagging documents"
             },
             {
                 "id": "download",
@@ -20,15 +37,12 @@
             {
                 "id": "citation",
                 "title": "Citing I-analyzer"
-            },
-            {
-                "id": "namedentities",
-                "title": "Viewing named entities"
             }
+
         ]
     },
     {
-        "title": "Visualising documents",
+        "title": "Visualisations",
         "pages": [
             {   "id": "numberofresults",
                 "title": "Number of results"
@@ -45,8 +59,12 @@
         ]
     },
     {
-        "title": "Word models",
+        "title": "Word embeddings",
         "pages": [
+            {
+                "id": "word-embeddings",
+                "title": "What are word embeddings?"
+            },
             {
                 "id": "relatedwords",
                 "title": "Related words"

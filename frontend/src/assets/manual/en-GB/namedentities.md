@@ -1,4 +1,12 @@
-In some corpora, you have the option to view named entities. If this option is available, a toggle button labeled *Show named entities* is visible in the document overview, above the document content and metadata.
+In some corpora, you have the option to view named entities. Named entities are people, organisations, locations, etc. that the text refers to by name.
+
+For example, in the following piece of text (from [Isaac Newton (Wikipedia)](https://en.wikipedia.org/wiki/Isaac_Newton)):
+
+> Newton himself often told the story that he was inspired to formulate his theory of gravitation by watching the fall of an apple from a tree. The story is believed to have passed into popular knowledge after being related by Catherine Barton, Newton's niece, to Voltaire.
+
+Here, "Newton", "Catherine Barton" and "Voltaire" are all named entities. But a descriptive phrase like "a tree" is not. See [named entity recognitition (Wikipedia)](https://en.wikipedia.org/wiki/Named-entity_recognition) for more information.
+
+If this option is available, a toggle button labeled *Show named entities* is visible in the document view.
 
 Activating the toggle will show entities of four types:
 - Persons
