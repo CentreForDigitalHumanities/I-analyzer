@@ -126,3 +126,20 @@ a.dropdown-item[disabled] {
 .input-feedback {
     margin-top: 0.5rem;
 }
+
+
+table.spreadsheet {
+    border: 2px solid $grey-lighter;
+
+    thead th, tbody td, tbody th {
+        border-width: 1px;
+    }
+
+    th {
+        background-color: $light;
+    }
+
+    tr:hover {
+        background-color: inherit;
+    }
+}
