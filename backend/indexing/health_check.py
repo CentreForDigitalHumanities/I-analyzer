@@ -1,4 +1,5 @@
 from typing import Optional
+from elasticsearch import NotFoundError
 
 from addcorpus.models import Corpus, CorpusDataFile
 from es.client import server_for_corpus
@@ -8,6 +9,7 @@ from es.sync import fetch_index_metadata
 from es.es_alias import get_current_index_name
 from indexing.models import TaskStatus, IndexJob
 from indexing.run_create_task import make_es_mapping, make_es_settings
+from addcorpus.json_corpora.import_json import get_path
 
 
 
@@ -30,7 +32,7 @@ class CorpusIndexHealth:
         self.server = self._server()
         self.index = self._index(self.server)
         self.latest_job = self._latest_job()
-        self.latest_file = self.latest_datafile()
+        self.latest_file = self._latest_datafile()
 
 
     def _server(self) -> Server:
@@ -41,7 +43,7 @@ class CorpusIndexHealth:
         client = server.client()
         try:
             index_name = get_current_index_name(self.corpus.configuration, client)
-        except ValueError: # the corpus has no index
+        except NotFoundError: # the corpus has no index
             index_name = self.corpus.configuration.es_index
         except: # connection issues etc.
             return
@@ -72,7 +74,7 @@ class CorpusIndexHealth:
         Find the most recent data file for this corpus. Will not return a value for
         Python corpora.
         '''
-        files = CorpusDataFile.objects.filter(corpus_configuration__corpus=self.corpus)
+        files = CorpusDataFile.objects.filter(corpus=self.corpus)
         if files.exists():
             return files.latest('created')
 
@@ -104,12 +106,11 @@ class CorpusIndexHealth:
         configuration
         '''
 
-        if self.index:
+        if self.index and self.index.available:
             generated_settings = make_es_settings(self.corpus)
             actual_settings = self.index.settings()
 
-            if 'analysis' in generated_settings:
-                return actual_settings.get('analysis', None) == generated_settings['analysis']
+            return get_path(generated_settings, 'analysis') == get_path(actual_settings, 'index', 'analysis')
 
 
     @property
@@ -117,9 +118,9 @@ class CorpusIndexHealth:
         '''
         Whether the field mappings in Elasticsearch match the corpus configuration
         '''
-        if self.index:
+        if self.index and self.index.available:
             generated_mappings = make_es_mapping(self.corpus.configuration)
-            actual_mappings = self.index.mappings
+            actual_mappings = self.index.mappings()
             return generated_mappings == actual_mappings
 
 
@@ -139,5 +140,5 @@ class CorpusIndexHealth:
         Checks whether the job was created *after* the data was uploaded. This is
         reliable in the context of the corpus form.
         '''
-        if self.latest_job and self.latest_data:
-            return self.latest_job.created > self.latest_data.created
+        if self.latest_job and self.latest_file:
+            return self.latest_job.created > self.latest_file.created
