@@ -11,6 +11,7 @@ from django.core.files import File
 from es.client import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from es import sync
+from indexing.models import TaskStatus
 from indexing.create_job import create_indexing_job
 from indexing.run_job import perform_indexing
 from django.conf import settings
@@ -177,6 +178,13 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
 
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
+    else:
+        # if the corpus is already indexed, re-create the index job and set it to "done"
+        job = create_indexing_job(corpus)
+        for task in job.tasks():
+            task.status = TaskStatus.DONE
+            task.save()
+
 
 @pytest.fixture()
 def index_basic_mock_corpus(db, es_client: Elasticsearch, basic_mock_corpus: str, test_index_cleanup):
