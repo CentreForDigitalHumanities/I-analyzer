@@ -57,3 +57,6 @@ class TaggedDocument(models.Model):
                 name='unique_document_ID_for_corpus'
             )
         ]
+
+    def tags_to_str(self):
+        return ",".join([tag.name for tag in self.tags])

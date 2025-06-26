@@ -4,6 +4,9 @@ from typing import Dict, Iterable, List, Union
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+
+from addcorpus.models import Corpus
+from tag.models import TaggedDocument
 from visualization.term_frequency import parse_datestring
 
 QUERY_CONTEXT_INFIX = '_qic_'
@@ -41,7 +44,9 @@ def sort_fieldnames(fns: Iterable[str]) -> List[str]:
     return reg_fieldnames + sorted(context_fieldnames)
 
 
-def search_results_csv(results: Iterable[Dict], fields, query, download_id) -> Union[os.PathLike, str]:
+def search_results_csv(
+    results: Iterable[Dict], fields, query, download_id: str, corpus: Corpus
+) -> Union[os.PathLike, str]:
     '''Writes a CSV file for search results.
     Operates on either lists or generator containing results.
     '''
@@ -53,14 +58,14 @@ def search_results_csv(results: Iterable[Dict], fields, query, download_id) -> U
     field_set.discard('context')
     fieldnames = sort_fieldnames(field_set)
 
-    entries = generate_rows(results, fields, query, field_set)
+    entries = generate_rows(results, fields, query, field_set, corpus)
 
     filepath = write_file(filename, fieldnames, entries,
                           dialect='resultsDialect')
     return filepath
 
 
-def generate_rows(results: Iterable[Dict], fields, query, field_set):
+def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus):
     ''' Yields rows of data to be written to the CSV file'''
     for result in results:
         entry = {'query': query}
@@ -81,6 +86,9 @@ def generate_rows(results: Iterable[Dict], fields, query, field_set):
                     field_set.update([highlight_field_name])
                     soup = BeautifulSoup(hi, 'html.parser')
                     entry.update({highlight_field_name: soup.get_text()})
+        tagged_doc = TaggedDocument.objects.get(corpus=corpus, doc_id=result['_id'])
+        if tagged_doc:
+            entry.update({'tags': tagged_doc.tags_to_str()})
         yield entry
 
 

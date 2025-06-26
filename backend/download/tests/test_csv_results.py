@@ -61,7 +61,9 @@ def test_create_csv(result_csv_with_highlights):
 def test_csv_fieldnames(mock_corpus_results_csv, mock_corpus_specs):
     with open(mock_corpus_results_csv) as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
-        assert set(reader.fieldnames) == set(mock_corpus_specs['fields'] + ['query'])
+        assert set(reader.fieldnames) == set(
+            mock_corpus_specs['fields'] + ['query'] + ['tags']
+        )
 
 def assert_result_csv_expectations(csv_path, expectations, delimiter=','):
     '''Check that a CSV contains the expected data. Parameters:
@@ -84,14 +86,17 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
     that none of the steps in the download make encoding issues.'''
 
     if mock_corpus == small_mock_corpus:
-        expected = [{
-            'date': '1818-01-01',
-            'genre': "Science fiction",
-            'title': "Frankenstein, or, the Modern Prometheus",
-            'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
-        }, {
-            'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
-        }]
+        expected = [
+            {
+                'date': '1818-01-01',
+                'genre': "Science fiction",
+                'title': "Frankenstein, or, the Modern Prometheus",
+                'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
+            },
+            {
+                'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+            },
+        ]
     elif mock_corpus == ml_mock_corpus:
         expected = [{
             'language': 'Swedish',
@@ -104,6 +109,25 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
         expected = []
 
     assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
+
+
+def test_tags_csv_export(
+    mock_corpus_with_tags, tagged_mock_corpus_elasticsearch_results
+):
+    '''Assert that tags are exported'''
+    fields = ['id', 'date', 'genre']
+    field_set = set(fields)
+    rows_generator = create_csv.generate_rows(
+        tagged_mock_corpus_elasticsearch_results,
+        fields,
+        'myquery',
+        field_set,
+        mock_corpus_with_tags,
+    )
+    for row in rows_generator:
+        breakpoint()
+        assert row
+
 
 def test_csv_encoding(ml_mock_corpus_results_csv):
     '''Assert that the results csv file matches utf-8 encoding'''
