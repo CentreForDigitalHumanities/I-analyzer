@@ -20,7 +20,7 @@ class IndexHealthView(APIView):
         return Response(serializer.data)
 
 
-class IndexJobView(CreateModelMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+class IndexJobViewset(CreateModelMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     '''
     Viewset for running and inspecting index jobs.
 

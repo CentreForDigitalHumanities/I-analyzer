@@ -16,7 +16,7 @@ Including another URLconf
 from addcorpus import urls as corpus_urls
 from addcorpus.views import (CorpusDataFileViewSet, CorpusDefinitionViewset,
                              CorpusDocumentationPageViewset)
-from indexing.views import IndexHealthView
+from indexing.views import IndexJobViewset
 from api import urls as api_urls
 from api.views import QueryViewset
 from django.conf import settings
@@ -43,6 +43,7 @@ api_router.register('corpus/definitions', CorpusDefinitionViewset, basename='cor
 api_router.register('corpus/datafiles',
                     CorpusDataFileViewSet, basename='datafiles')
 api_router.register('corpus/documentation', CorpusDocumentationPageViewset, basename='corpus-documentation')
+api_router.register('indexing/jobs', IndexJobViewset, basename='index-job')
 
 if settings.PROXY_FRONTEND:
     spa_url = re_path(r'^(?P<path>.*)$', proxy_frontend)
