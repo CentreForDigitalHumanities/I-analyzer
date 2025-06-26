@@ -4,6 +4,7 @@ from rest_framework.serializers import (
 )
 
 from indexing.models import TaskStatus, IndexJob
+from indexing.create_job import create_indexing_job
 
 class IndexHealthSerializer(Serializer):
     corpus = IntegerField(source='corpus.pk')
@@ -20,4 +21,11 @@ class IndexJobSerializer(ModelSerializer):
     class Meta:
         model = IndexJob
         fields = ['id', 'corpus', 'status']
-        read_only_fields = ['id', 'corpus', 'status']
+        read_only_fields = ['id', 'status']
+
+    def create(self, validated_data):
+        corpus = validated_data.get('corpus')
+        return create_indexing_job(corpus, clear=True)
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError()

@@ -18,3 +18,11 @@ def test_indexjob_serializer(db, basic_mock_corpus):
         'corpus': corpus.pk,
         'status': TaskStatus.CREATED
     }
+
+def test_indexjob_create(db, basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
+    serializer = IndexJobSerializer(data={'corpus': corpus.pk})
+    assert serializer.is_valid()
+    job = serializer.create(serializer.validated_data)
+    assert len(job.tasks()) == 2 # tasks: create + populate
+
