@@ -7,7 +7,7 @@ from corpora.gallica.gallica import Gallica
 
 
 class JournauxResistance(Gallica):
-    title = "Journaux clandestins de la Resistance"
+    title = "Journaux clandestins de la Résistance"
     description = "Collection of underground journals during and after German occupation, 1940-1954"
     min_date = datetime(year=1940, month=1, day=1)
     max_date = datetime(year=1954, month=12, day=31)
