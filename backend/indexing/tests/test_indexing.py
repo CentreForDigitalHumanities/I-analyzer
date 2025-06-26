@@ -120,3 +120,16 @@ def test_task_status_failure(mock_corpus, es_index_client):
     assert create_task.status == TaskStatus.ERROR
     populate_task = invalid_job.populateindextasks.first()
     assert populate_task.status == TaskStatus.CANCELLED
+
+
+def test_task_status_invalid(json_mock_corpus, es_index_client):
+    '''Test task status is set property when validation on the corpus fails'''
+
+    corpus = json_mock_corpus
+    corpus.configuration.data_directory = ''
+    corpus.configuration.save()
+
+    job = create_indexing_job(corpus, START, END)
+    perform_indexing(job)
+
+    assert job.status() == TaskStatus.CANCELLED

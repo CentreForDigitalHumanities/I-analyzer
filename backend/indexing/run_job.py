@@ -36,6 +36,12 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 @celery.shared_task()
 def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
+
+    # check if the task was already marked as cancelled
+    task.refresh_from_db()
+    if task.status == TaskStatus.CANCELLED:
+        return
+
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
     logger.info(f'Running {task_id}: {task}')
 
@@ -64,6 +70,7 @@ def mark_tasks_stopped(job: IndexJob):
     Mark open tasks as aborted and queued tasks as cancelled.
     '''
     for task_set in job.task_query_sets():
+        task_set.filter(status=TaskStatus.CREATED).update(status=TaskStatus.CANCELLED)
         task_set.filter(status=TaskStatus.QUEUED).update(status=TaskStatus.CANCELLED)
         task_set.filter(status=TaskStatus.WORKING).update(status=TaskStatus.ABORTED)
 
@@ -75,9 +82,14 @@ def handle_job_error(request, exc, traceback, job: IndexJob):
 
 @celery.shared_task()
 def start_job(job: IndexJob) -> None:
-    _validate_job_start(job)
-    _log_job_started(job)
+    try:
+        _validate_job_start(job)
+    except Exception as e:
+        logger.warning(f'Index job {job.pk} cancelled: validation failed', exc_info=True)
+        mark_tasks_stopped(job)
+        return
 
+    _log_job_started(job)
     for task in job.tasks():
         task.status = TaskStatus.QUEUED
         task.save()
