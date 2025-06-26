@@ -1,8 +1,9 @@
 from rest_framework.serializers import (
-    Serializer, BooleanField, ChoiceField, IntegerField, CharField
+    Serializer, BooleanField, ChoiceField, IntegerField, CharField,
+    ModelSerializer
 )
 
-from indexing.models import TaskStatus
+from indexing.models import TaskStatus, IndexJob
 
 class IndexHealthSerializer(Serializer):
     corpus = IntegerField(source='corpus.pk')
@@ -13,3 +14,10 @@ class IndexHealthSerializer(Serializer):
     includes_latest_data = BooleanField()
     corpus_ready_to_index = BooleanField()
     corpus_validation_feedback = CharField()
+
+
+class IndexJobSerializer(ModelSerializer):
+    class Meta:
+        model = IndexJob
+        fields = ['id', 'corpus', 'status']
+        read_only_fields = ['id', 'corpus', 'status']
