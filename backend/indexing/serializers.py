@@ -1,10 +1,12 @@
 from rest_framework.serializers import (
     Serializer, BooleanField, ChoiceField, IntegerField, CharField,
-    ModelSerializer
+    ModelSerializer, ValidationError
 )
 
 from indexing.models import TaskStatus, IndexJob
 from indexing.create_job import create_indexing_job
+from addcorpus.models import Corpus
+from addcorpus.validation.indexing import CorpusNotIndexableError
 
 class IndexHealthSerializer(Serializer):
     corpus = IntegerField(source='corpus.pk')
@@ -27,5 +29,10 @@ class IndexJobSerializer(ModelSerializer):
         corpus = validated_data.get('corpus')
         return create_indexing_job(corpus, clear=True)
 
-    def update(self, instance, validated_data):
-        raise NotImplementedError()
+    def validate_corpus(self, value: Corpus):
+        try:
+            value.validate_ready_to_index()
+        except CorpusNotIndexableError as e:
+            raise ValidationError(str(e))
+
+        return value

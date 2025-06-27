@@ -26,3 +26,9 @@ def test_indexjob_create(db, basic_mock_corpus):
     job = serializer.create(serializer.validated_data)
     assert len(job.tasks()) == 2 # tasks: create + populate
 
+
+def test_indexjob_create_validation(db, basic_mock_corpus):
+    corpus = Corpus.objects.get(name=basic_mock_corpus)
+    corpus.configuration.fields.all().delete() # makes corpus invalid for indexing
+    serializer = IndexJobSerializer(data={'corpus': corpus.pk})
+    assert not serializer.is_valid()
