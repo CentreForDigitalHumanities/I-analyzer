@@ -4,6 +4,12 @@ from indexing.create_job import create_indexing_job
 from addcorpus.models import Corpus
 from indexing.models import TaskStatus
 
+def test_index_heath_serializer_not_indexed(mock_corpus, es_index_client, es_server):
+    corpus = Corpus.objects.get(name=mock_corpus)
+    health = CorpusIndexHealth(corpus)
+    serializer = IndexHealthSerializer(health)
+    assert serializer.data
+
 def test_index_health_serializer(json_mock_corpus, index_json_mock_corpus, es_server):
     health = CorpusIndexHealth(json_mock_corpus)
     serializer = IndexHealthSerializer(health)

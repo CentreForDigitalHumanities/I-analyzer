@@ -1,6 +1,7 @@
 from rest_framework.serializers import (
-    Serializer, BooleanField, ChoiceField, IntegerField, CharField,
-    ModelSerializer, ValidationError
+    Serializer, BooleanField, ChoiceField, CharField,
+    ModelSerializer, ValidationError,
+    PrimaryKeyRelatedField
 )
 
 from indexing.models import TaskStatus, IndexJob
@@ -9,10 +10,11 @@ from addcorpus.models import Corpus
 from addcorpus.validation.indexing import CorpusNotIndexableError
 
 class IndexHealthSerializer(Serializer):
-    corpus = IntegerField(source='corpus.pk')
+    corpus = PrimaryKeyRelatedField(read_only=True)
     server_active = BooleanField()
     index_active = BooleanField()
     index_compatible = BooleanField()
+    latest_job = PrimaryKeyRelatedField(read_only=True)
     job_status = ChoiceField(choices=TaskStatus.choices)
     includes_latest_data = BooleanField()
     corpus_ready_to_index = BooleanField()
