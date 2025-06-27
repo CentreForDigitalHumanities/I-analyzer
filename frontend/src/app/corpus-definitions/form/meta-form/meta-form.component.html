@@ -1,6 +1,7 @@
 <h1 class="title">Corpus Metadata</h1>
 <p class="subtitle">Provide some basic information about your corpus</p>
-<form (ngSubmit)="onSubmit()" [formGroup]="metaForm">
+<form (ngSubmit)="onSubmit()" class="box" [formGroup]="metaForm">
+    <h2 class="title is-5">Metadata</h2>
 
     <div class="field">
         <label class="label" for="title">Title</label>
@@ -18,9 +19,9 @@
     </div>
 
     <div class="field">
-        <label class="label" for="category">Category</label>
+        <label class="label" for="category" id="label-category">Category</label>
         <div class="control">
-            <ia-dropdown formControlName="category">
+            <ia-dropdown formControlName="category" labelledBy="label-category">
                 <span iaDropdownLabel>{{currentCategoryLabel}}</span>
                 <div iaDropdownMenu>
                     <a *ngFor="let category of categories"
@@ -57,9 +58,26 @@
         <p class="help">All or the most important languages occuring in your corpus</p>
     </div>
 
+    <div class="block"></div>
+
     <div class="field">
         <p class="control">
-            <button class="button is-primary">Next</button>
+            <button class="button is-primary"
+                [class.is-loading]="loading$ | async">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save changes</span>
+            </button>
         </p>
     </div>
+
+    <ia-form-feedback [showSuccess]="showSuccessMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
 </form>
+
+<div class="box">
+    <ia-image-upload [corpus]="corpus" />
+</div>
+
+<div class="box">
+    <ia-documentation-form />
+</div>

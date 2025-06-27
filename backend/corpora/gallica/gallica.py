@@ -47,6 +47,7 @@ class Gallica(XMLCorpusDefinition):
     languages = ["fr"]
     data_url = "https://gallica.bnf.fr"
     corpus_id = ""  # each corpus on Gallica has an "ark" id
+    scan_image_type = "image/jpeg"
     n_retries = 5
     data_directory = op.dirname(
         op.abspath(__file__)
@@ -123,7 +124,7 @@ class Gallica(XMLCorpusDefinition):
                         )
                         continue
                 yield (
-                    source_response.content,
+                    source_response,
                     {"content": parsed_content},
                 )
 
@@ -221,6 +222,16 @@ class Gallica(XMLCorpusDefinition):
             extractor=XML(Tag("dc:identifier")),
             searchable=False,
         )
+
+    def request_media(self, document, corpus_name):
+        """
+        Return the media URLs for a given document from the Gallica website
+        This method assumes that all Gallica images are stored in the same way,
+        i.e. by adding "/f1.highres" to the URL.
+        """
+        full_image_path = document['fieldValues'].get('url') + "/f1.highres"
+        image_urls = [full_image_path]
+        return {'media': image_urls}
 
     # define fields property so it can be set in __init__
     @property

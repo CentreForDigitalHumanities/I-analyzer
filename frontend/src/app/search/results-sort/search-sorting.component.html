@@ -1,5 +1,6 @@
 <div class="control">
-    <ia-dropdown (onChange)="changeField($event)" [value]="sortField">
+    <ia-dropdown (onChange)="changeField($event)" [value]="sortField"
+        [labelledBy]="labelledBy">
         <span iaDropdownLabel>{{ sortField?.displayName || 'Relevance' }}</span>
         <div iaDropdownMenu>
             <a iaDropdownItem [value]="undefined">Relevance</a>

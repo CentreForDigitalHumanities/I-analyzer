@@ -15,8 +15,18 @@ CORPORA = {
 }
 
 TIMES_DATA = os.path.join(BASE_DIR, 'addcorpus', 'python_corpora', 'tests')
-TIMES_ES_INDEX = 'times-test'
+TIMES_ES_INDEX = 'test-times'
 
 UBLAD_DATA = '' # necessary to make ublad test not fail
 
 SERVERS['default']['index_prefix'] = 'test'
+
+REST_FRAMEWORK.update(
+    {
+        "DEFAULT_THROTTLE_RATES": {
+            "password": "2/minute",
+            "registration": "2/minute",
+            "download": "2/minute",
+        }
+    }
+)

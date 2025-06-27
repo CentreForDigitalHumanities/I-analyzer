@@ -2,34 +2,39 @@ import logging
 import os
 
 from addcorpus.models import Corpus
-from addcorpus.permissions import (CanSearchCorpus,
-                                   corpus_name_from_request)
+from addcorpus.permissions import CanSearchCorpus, corpus_name_from_request
+from api.utils import check_json_keys
 from django.conf import settings
 from django.http.response import FileResponse
 from download import convert_csv, tasks
 from download.models import Download
 from download.serializers import DownloadSerializer
+from download.throttles import DownloadThrottleMixin
 from rest_framework.exceptions import (APIException, NotFound, ParseError,
                                        PermissionDenied)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from api.utils import check_json_keys
 
 logger = logging.getLogger()
 
-def send_csv_file(download, directory, encoding, format=None):
+
+def send_csv_file(download, directory, encoding, format=None, delete_after_sent=False):
     '''
     Perform final formatting and send a CSV file as a FileResponse
     '''
-    converted_filename = convert_csv.convert_csv(
-        directory, download.filename, download.download_type, encoding, format)
-    path = os.path.join(directory, converted_filename)
+    try:
+        converted_filename = convert_csv.convert_csv(
+            directory, download.filename, download.download_type, encoding, format)
+        path = os.path.join(directory, converted_filename)
+        return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
+    finally:
+        if delete_after_sent:
+            download.delete()
 
-    return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
 
-class ResultsDownloadView(APIView):
+class ResultsDownloadView(DownloadThrottleMixin, APIView):
     '''
     Download search results up to 1.000 documents
     '''
@@ -49,7 +54,8 @@ class ResultsDownloadView(APIView):
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
-            return send_csv_file(download, directory, request.data['encoding'])
+            delete_after_sent = user is None
+            return send_csv_file(download, directory, request.data['encoding'], delete_after_sent=delete_after_sent)
         except Exception as e:
             logger.error(e)
             raise APIException(

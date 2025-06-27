@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from addcorpus.permissions import CanSearchCorpus, corpus_name_from_request
 from wordmodels import utils, visualisations
 from rest_framework.exceptions import APIException
+from wordmodels import neighbor_network
 
 class RelatedWordsView(APIView):
     '''
@@ -27,6 +28,21 @@ class RelatedWordsView(APIView):
                     'similarities_over_time_local_top_n': results[2],
                     'time_points': results[1]
             })
+
+
+class NeighborNetworkView(APIView):
+    '''
+    Get a graph of the nearest neighbours of the query term
+    '''
+
+    permission_classes = [CanSearchCorpus]
+
+    def post(self, request, *args, **kwargs):
+        corpus = corpus_name_from_request(request)
+        query_term = request.data['query_term']
+        results = neighbor_network.neighbor_network_data(corpus, query_term)
+        return Response(results)
+
 
 class SimilarityView(APIView):
     '''

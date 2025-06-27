@@ -234,11 +234,11 @@ export class ApiService {
         return this.http.post<TaskResult>(url, data).toPromise();
     }
 
-    // Corpus
+    // Corpus documentation
     public corpusDocumentationPages(
-        corpus?: Corpus
+        corpusName?: string
     ): Observable<CorpusDocumentationPage[]> {
-        const params = new URLSearchParams({ corpus: corpus.name }).toString();
+        const params = new URLSearchParams({ corpus: corpusName }).toString();
         const url = this.apiRoute(
             this.corpusApiUrl,
             `documentation/?${params}`
@@ -256,6 +256,7 @@ export class ApiService {
         return this.http.get<CorpusDocumentationPage>(url);
     }
 
+    /** fetch a list of all corpora available for searching */
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
     }
@@ -293,6 +294,22 @@ export class ApiService {
 
     public deleteCorpus(corpusID: number): Observable<any> {
         return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public corpusSchema(): Observable<any> {
+        return this.http.get('/api/corpus/definition-schema');
+    }
+
+    public updateCorpusImage(corpusName: string, file: File): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name)
+        return this.http.put(url, formData);
+    }
+
+    public deleteCorpusImage(corpusName: string): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        return this.http.delete(url);
     }
 
     // Corpus datafiles
@@ -436,6 +453,21 @@ export class ApiService {
             {
                 uid,
                 token,
+                new_password1: newPassword1,
+                new_password2: newPassword2,
+            }
+        );
+    }
+
+    public changePassword(
+        oldPassword: string,
+        newPassword1: string,
+        newPassword2: string,
+    ) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/change/'),
+            {
+                old_password: oldPassword,
                 new_password1: newPassword1,
                 new_password2: newPassword2,
             }

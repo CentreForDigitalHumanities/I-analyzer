@@ -1,20 +1,22 @@
-<div>
+<form aria-labelledby="header-filters">
     <div class="field has-addons">
         <div class="control is-expanded">
-            <h2 class="title">Filters</h2>
+            <h2 class="title" id="header-filters">Filters</h2>
         </div>
         <p class="control" style="float:right">
-            <span *ngIf="anyActiveFilters$ | async" class="button icon filter-icon is-primary is-active is-medium is-round"
+            <button *ngIf="anyActiveFilters$ | async" class="button icon filter-icon is-primary is-active is-medium is-round"
                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
-                iaBalloonPosition="down-left">
+                iaBalloonPosition="down-left"
+                type="button">
                 <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
-            </span>
-            <span *ngIf="anyNonDefaultFilters$ | async" class="button icon filter-icon is-inverted is-round is-primary is-medium"
+            </button>
+            <button *ngIf="anyNonDefaultFilters$ | async" class="button icon filter-icon is-inverted is-round is-primary is-medium"
                 (click)="toggleActiveFilters()"
                 iaBalloon="{{(anyActiveFilters$ | async) ? ('Disable active filters') : ('Enable deactivated filters')}}"
-                iaBalloonPosition="down-left">
+                iaBalloonPosition="down-left"
+                type="button">
                 <fa-icon [icon]="filterIcons.toggle" aria-hidden="true"></fa-icon>
-            </span>
+            </button>
         </p>
     </div>
     <ng-container *ngFor="let filter of filters">
@@ -22,4 +24,4 @@
             <ia-filter-box [filter]="filter" [queryModel]="queryModel"></ia-filter-box>
         </div>
     </ng-container>
-</div>
+</form>

@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "id": "org/7037",
+      "type": "Organization",
+      "identifier": "7037",
+      "isVersionOf": "org/ECR",
+      "source": "EU_PARLIAMENT",
+      "temporal": {
+        "id": "time-period/20240716",
+        "type": "PeriodOfTime",
+        "startDate": "2024-07-16"
+      },
+      "label": "ECR",
+      "altLabel": {
+        "en": "European Conservatives and Reformists"
+      },
+      "notation_codictBodyId": "7037",
+      "notation_providerTemporalBodyId": "7037",
+      "prefLabel": {
+        "en": "European Conservatives and Reformists Group"
+      },
+      "classification": "def/ep-entities/EU_POLITICAL_GROUP"
+    }
+  ],
+  "@context": [
+    {
+      "data": "@graph",
+      "@base": "https://data.europarl.europa.eu/"
+    },
+    "https://data.europarl.europa.eu/api/v2/context.jsonld"
+  ]
+}

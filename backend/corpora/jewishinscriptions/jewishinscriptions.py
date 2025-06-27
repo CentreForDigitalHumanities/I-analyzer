@@ -7,7 +7,7 @@ from ianalyzer_readers.xml_tag import Tag, CurrentTag
 
 from django.conf import settings
 
-from addcorpus.python_corpora.extract import XML
+from ianalyzer_readers.extract import XML
 from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
@@ -22,11 +22,10 @@ class JewishInscriptions(XMLCorpusDefinition):
     max_date = datetime(year=849, month=12, day=31)
     data_directory = settings.JEWISH_INSCRIPTIONS_DATA
     es_index = getattr(settings, 'JEWISH_INSCRIPTIONS_ES_INDEX', 'jewishinscriptions')
-    image = 'jewish_inscriptions.jpg'
+    image = 'jewishinscriptions.jpg'
     visualize = []
     languages = ['heb', 'lat']
     category = 'inscription'
-
 
     tag_toplevel = CurrentTag()
     tag_entry = Tag('TEI')

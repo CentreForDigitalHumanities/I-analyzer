@@ -1,0 +1,33 @@
+<h2 class="title is-5">Documentation</h2>
+
+
+<p class="block">
+    Add documentation to help users understand what your corpus is, and how they can use
+    it in their research. You can use
+    <a href="https://www.markdownguide.org/">markdown</a> to style the content.
+</p>
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="block">
+        <ia-tabs>
+            <ng-template iaTabPanel *ngFor="let category of categories"
+                 [id]="category.id" [title]="category.title">
+                <p class="block">{{category.description}}</p>
+
+                <textarea [formControl]="form.controls[category.id]"
+                    class="textarea" rows="10"
+                    [attr.aria-labelledby]="'tab-' + category.id">
+                </textarea>
+            </ng-template>
+        </ia-tabs>
+    </div>
+
+    <div class="block">
+        <button class="button is-primary" type="submit" [class.is-loading]="loading$ | async">
+            <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+            <span>Save changes</span>
+        </button>
+    </div>
+
+    <ia-form-feedback [showSuccess]="showSuccessMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
+</form>

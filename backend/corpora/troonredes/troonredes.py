@@ -12,7 +12,7 @@ from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 
@@ -34,7 +34,7 @@ class Troonredes(XMLCorpusDefinition):
     max_date = datetime(year=2023, month=12, day=31)
     data_directory = settings.TROONREDES_DATA
     es_index = getattr(settings, 'TROONREDES_ES_INDEX', 'troonredes')
-    image = 'troon.jpg'
+    image = 'troonrede.jpg'
     word_model_path = getattr(settings, 'TROONREDES_WM', None)
     languages = ['nl']
     category = 'oration'

@@ -3,16 +3,17 @@ import json
 import logging
 
 from django.conf import settings
+from ianalyzer_readers.extract import Combined, JSON
 import langcodes
 import requests
 
 from addcorpus.python_corpora.corpus import JSONCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import int_mapping, keyword_mapping
-import addcorpus.python_corpora.extract as extract
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.peaceportal.peaceportal import PeacePortal
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
+logger = logging.getLogger('indexing')
 
 def transform_language(language_array):
     ''' transform the language to an iso code,
@@ -29,6 +30,11 @@ def transform_language(language_array):
     return output
 
 
+def transform_coordinates(data):
+    if data:
+        return {'coordinates': data[0], 'type': data[1]}
+
+
 class JewishMigration(PeacePortal, JSONCorpusDefinition):
     ''' Class for indexing Jewish Migration data '''
     title = "Modelling Jewish Migration"
@@ -43,7 +49,7 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
 
     es_alias = getattr(settings, 'JMIG_ALIAS', None)
     es_index = getattr(settings, 'JMIG_INDEX', 'jewishmigration')
-    image = 'jewish_inscriptions.jpg'
+    image = 'jewishmigration.jpg'
     languages = ['en']
 
     category = 'inscription'
@@ -55,42 +61,44 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 response = requests.get(self.data_url, headers=headers)
             else:
                 response = requests.get(self.data_url)
-            list_of_sources = response.json()
+            if response.status_code != 200:
+                raise (f'Invalid response {response.status_code} from {self.data_url}')
+            yield response
         elif self.data_filepath:
             with open(self.data_filepath, 'r') as f:
                 list_of_sources = json.load(f)
+                for source in list_of_sources:
+                    yield source
         else:
-            logging.getLogger('indexing').warning(
-                'No data filepath or URL provided.')
-        for source in list_of_sources:
-            yield source
+            logging.getLogger('indexing').warning('No data filepath or URL provided.')
 
     def __init__(self):
         super().__init__()
-        self._id.extractor = extract.JSON(key='source')
-        self.source_database.extractor = extract.JSON(key='source')
-        self.language.extractor = extract.JSON(
-            key='languages')
-        self.language_code.extractor = extract.JSON(
-            key='languages', transform=transform_language)
-        self.country.extractor = extract.JSON(key='area')
-        self.region.extractor = extract.JSON(key='region')
-        self.settlement.extractor = extract.JSON(key='place_name')
-        self.coordinates.extractor = extract.JSON(key='coordinates')
+        self._id.extractor = JSON('source')
+        self.source_database.extractor = JSON('source')
+        self.language.extractor = JSON('languages')
+        self.language_code.extractor = JSON('languages', transform=transform_language)
+        self.country.extractor = JSON('area')
+        self.region.extractor = JSON('region')
+        self.settlement.extractor = JSON('place_name')
+        self.coordinates.extractor = Combined(
+            JSON('coordinates.coordinates'),
+            JSON('coordinates.type'),
+            transform=transform_coordinates,
+        )
         self.coordinates.visualizations = ['map']
-        self.sex.extractor = extract.JSON(key='sex_deceased')
-        self.iconography.extractor = extract.JSON(key='symbol')
-        self.comments.extractor = extract.JSON(key='comments')
-        self.transcription.extractor = extract.JSON(key='inscription')
-        self.transcription_english.extractor = extract.JSON(
-            key='transcription')
+        self.sex.extractor = JSON('sex_deceased')
+        self.iconography.extractor = JSON('symbol')
+        self.comments.extractor = JSON('comments')
+        self.transcription.extractor = JSON('inscription')
+        self.transcription_english.extractor = JSON('transcription')
         extra_fields = [
             FieldDefinition(
                 name="script",
                 display_name="Script",
                 description="Which alphabet the source was written in",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="scripts"),
+                extractor=JSON("scripts"),
                 visualizations=["resultscount"],
             ),
             FieldDefinition(
@@ -98,28 +106,28 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 display_name="Site Type",
                 description="Type of site where evidence for settlement was found",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="site_type"),
+                extractor=JSON("site_type"),
             ),
             FieldDefinition(
                 name="inscription_type",
                 display_name="Inscription type",
                 description="Type of inscription",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="inscription_type"),
+                extractor=JSON("inscription_type"),
             ),
             FieldDefinition(
                 name="period",
                 display_name="Period",
                 description="Period in which the inscription was made",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="period"),
+                extractor=JSON("period"),
             ),
             FieldDefinition(
                 name="estimated_centuries",
                 display_name="Estimated Centuries",
                 description="Estimate of centuries in which the inscription was made",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="estimated_centuries"),
+                extractor=JSON("estimated_centuries"),
                 search_filter=MultipleChoiceFilter(
                     description="Search only within these estimated centuries.",
                     option_count=4,
@@ -131,21 +139,21 @@ class JewishMigration(PeacePortal, JSONCorpusDefinition):
                 display_name="Inscription count",
                 description="Number of inscriptions",
                 es_mapping=int_mapping(),
-                extractor=extract.JSON(key="inscriptions_count"),
+                extractor=JSON("inscriptions_count"),
             ),
             FieldDefinition(
                 name="religious_profession",
                 display_name="Religious profession",
                 description="Religious profession of deceased",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="religious_profession"),
+                extractor=JSON("religious_profession"),
             ),
             FieldDefinition(
                 name="sex_dedicator",
                 display_name="Gender dedicator",
                 description="Gender of the dedicator",
                 es_mapping=keyword_mapping(),
-                extractor=extract.JSON(key="sex_dedicator"),
+                extractor=JSON("sex_dedicator"),
             ),
         ]
         self.fields = [*exclude_fields_without_extractor(self.fields), *extra_fields]

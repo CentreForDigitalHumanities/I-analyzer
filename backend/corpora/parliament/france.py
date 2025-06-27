@@ -5,7 +5,7 @@ from datetime import datetime
 from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.python_corpora.extract import Constant, Combined, CSV
+from ianalyzer_readers.extract import Constant, Combined, CSV
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.formatting import underscore_to_space
@@ -17,7 +17,7 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     min_date = datetime(year=1881, month=1, day=1)
     data_directory = settings.PP_FR_DATA
     es_index = getattr(settings, 'PP_FR_INDEX', 'parliament-france')
-    image = 'france.jpeg'
+    image = 'france.jpg'
     languages = ['fr']
     description_page = 'france.md'
     word_model_path = getattr(settings, 'PP_FR_WM', None)
@@ -130,12 +130,3 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
             self.speech, self.speech_id,
             self.url_pdf, self.url_html
         ]
-
-
-
-
-
-
-
-
-

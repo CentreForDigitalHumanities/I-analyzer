@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 })
 export class DropdownItemDirective {
     @HostBinding('class') class = 'dropdown-item';
-    @HostBinding('role') role = 'menuitem';
+    @HostBinding('role') role = 'option';
     @HostBinding('attr.tabIndex') tabIndex = 0;
 
     @Input() value;
@@ -38,6 +38,7 @@ export class DropdownItemDirective {
     }
 
     @HostBinding('class.is-active')
+    @HostBinding('attr.aria-selected')
     get isActive(): boolean {
         return _.isEqual(this.dropdownService.selection$.value, this.value);
     }

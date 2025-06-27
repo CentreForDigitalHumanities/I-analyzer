@@ -1,5 +1,6 @@
 import os
 from time import sleep
+from unittest.mock import Mock
 
 from elasticsearch import BadRequestError
 import pytest
@@ -9,97 +10,88 @@ from addcorpus.es_mappings import geo_mapping
 from addcorpus.models import Corpus
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index
+from indexing.create_job import create_indexing_job
+from indexing.run_job import perform_indexing
 
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-class MockResponse(object):
-    def __init__(self, mock_content):
-        self.mock_content = mock_content
 
-    def json(self):
-        return self.mock_content
-
-
-def mock_get(_dummy_path, headers=None):
-    return MockResponse(mock_content=[
-        {
-            "source": "Le Bohec 1981 n. 71",
-            "languages": ["Latin", "Greek"],
-            "scripts": ["Latin"],
-            "place_name": "Constanine/ Cirta",
-            "area": "Algeria",
-            "region": "Africa Proconsularis ",
-            "coordinates": {
-                "type": "Point",
-                "coordinates": [
-                    36.36811466666666,
-                    6.613302666666667
-                ]
-            },
-            "site_type": "Inscription",
-            "inscription_type": "Epitaph",
-            "period": "II AD",
-            "estimated_centuries": ["2", "3"],
-            "inscriptions_count": 1,
-            "religious_profession": "",
-            "sex_dedicator": "",
-            "sex_deceased": "Female",
-            "symbol": "",
-            "comments": "",
-            "inscription": "",
-            "transcription": "To the shadows of the underworld Julia Victoria the Jewess(?) CV"
+mock_content = [
+    {
+        "source": "Le Bohec 1981 n. 71",
+        "languages": ["Latin", "Greek"],
+        "scripts": ["Latin"],
+        "place_name": "Constanine/ Cirta",
+        "area": "Algeria",
+        "region": "Africa Proconsularis ",
+        "coordinates": {
+            "type": "Point",
+            "coordinates": [36.36811466666666, 6.613302666666667],
         },
-        {
-            "source": "Le Bohec 1981 n. 72",
-            "language": ["Latin"],
-            "script": ["Latin"],
-            "place_name": "Ksour el-Gannaïa/ Festis",
-            "area": "Algeria",
-            "region": "Africa Proconsularis ",
-            "coordinates": None,
-            "site_type": "Inscription",
-            "inscription_type": "",
-            "period": "VI AD",
-            "estimated_centuries": ["4"],
-            "inscriptions_count": 1,
-            "religious_profession": "",
-            "sex_dedicator": "",
-            "sex_deceased": "",
-            "symbol": "",
-            "comments": "Fragment of a marble cancel",
-            "inscription": "",
-            "transcription": "Fear the faithful (?)"
-        },
-        {
-            "source": "Le Bohec 1981 n. 73",
-            "languages": ["Latin"],
-            "scripts": ["Latin"],
-            "place_name": "Setif",
-            "area": "Algeria",
-            "region": "Mauretania Caesariensis",
-            "coordinates": {
-                "type": "Point",
-                "coordinates": [
-                    5.4,
-                    36.18333333333333
-                ]
-            },
-            "site_type": "Inscription",
-            "inscription_type": "Epitaph",
-            "period": "VI AD",
-            "estimated_centuries": ["3", "4"],
-            "inscriptions_count": 1,
-            "religious_profession": "",
-            "sex_dedicator": "Male",
-            "sex_deceased": "Female",
-            "symbol": "",
-            "comments": "Stone in the form of a box: inscription in a molded frame",
-            "inscription": "",
-            "transcription": "Caelia Thalassa the Jewess lived for 20 years and 4 months; Marcus Auillius Iaunuaris the loving husband"
-        }
-    ])
+        "site_type": "Inscription",
+        "inscription_type": "Epitaph",
+        "period": "II AD",
+        "estimated_centuries": ["2", "3"],
+        "inscriptions_count": 1,
+        "religious_profession": "",
+        "sex_dedicator": "",
+        "sex_deceased": "Female",
+        "symbol": "",
+        "comments": "",
+        "inscription": "",
+        "transcription": "To the shadows of the underworld Julia Victoria the Jewess(?) CV",
+    },
+    {
+        "source": "Le Bohec 1981 n. 72",
+        "language": ["Latin"],
+        "script": ["Latin"],
+        "place_name": "Ksour el-Gannaïa/ Festis",
+        "area": "Algeria",
+        "region": "Africa Proconsularis ",
+        "coordinates": None,
+        "site_type": "Inscription",
+        "inscription_type": "",
+        "period": "VI AD",
+        "estimated_centuries": ["4"],
+        "inscriptions_count": 1,
+        "religious_profession": "",
+        "sex_dedicator": "",
+        "sex_deceased": "",
+        "symbol": "",
+        "comments": "Fragment of a marble cancel",
+        "inscription": "",
+        "transcription": "Fear the faithful (?)",
+    },
+    {
+        "source": "Le Bohec 1981 n. 73",
+        "languages": ["Latin"],
+        "scripts": ["Latin"],
+        "place_name": "Setif",
+        "area": "Algeria",
+        "region": "Mauretania Caesariensis",
+        "coordinates": {"type": "Point", "coordinates": [5.4, 36.18333333333333]},
+        "site_type": "Inscription",
+        "inscription_type": "Epitaph",
+        "period": "VI AD",
+        "estimated_centuries": ["3", "4"],
+        "inscriptions_count": 1,
+        "religious_profession": "",
+        "sex_dedicator": "Male",
+        "sex_deceased": "Female",
+        "symbol": "",
+        "comments": "Stone in the form of a box: inscription in a molded frame",
+        "inscription": "",
+        "transcription": "Caelia Thalassa the Jewess lived for 20 years and 4 months; Marcus Auillius Iaunuaris the loving husband",
+    },
+]
+
+
+def mock_response(url: str) -> requests.Response:
+    mock = Mock(spec=requests.Response)
+    mock.status_code = 200
+    mock.json.return_value = mock_content
+    return mock
 
 
 EXPECTED_DOCUMENT = {
@@ -137,6 +129,7 @@ def jm_corpus_settings(settings):
     settings.JMIG_DATA_DIR = None
     settings.JMIG_DATA = None
     settings.JMIG_DATA_URL = 'http://www.example.com'
+    settings.JMIG_DATA_API_KEY = None
     settings.JMIG_INDEX = 'test-jewishmigration'
 
 
@@ -154,11 +147,9 @@ def jm_client(es_client, jm_corpus):
     Returns an elastic search client for the mock corpus.
     """
     # add data from mock corpus
-    job = es_index.create_indexing_job(jm_corpus, mappings_only=True, clear=True)
-    es_index.perform_indexing(job)
+    job = create_indexing_job(jm_corpus, mappings_only=True, clear=True)
+    perform_indexing(job)
 
-    # ES is "near real time", so give it a second before we start searching the index
-    sleep(1)
     yield es_client
     # delete index when done
     es_client.indices.delete(index=jm_corpus.configuration.es_index)
@@ -207,14 +198,14 @@ def test_geofield(jm_client, jm_corpus):
           }
         }
     }
-    # wait for the indexing operation to be finished
+    # wait for the indexing operation on jm_client to be finished
     sleep(1)
     results = jm_client.search(index=es_index, query=query)
     assert results['hits']['total']['value'] == 1
 
 
 def test_data_from_request(jm_corpus, monkeypatch):
-    monkeypatch.setattr(requests, "get", mock_get)
+    monkeypatch.setattr(requests, "get", mock_response)
     corpus_def = load_corpus_definition(jm_corpus.name)
     sources = corpus_def.sources(
         start=corpus_def.min_date, end=corpus_def.max_date)
