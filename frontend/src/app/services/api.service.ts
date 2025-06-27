@@ -37,7 +37,7 @@ import {
     CorpusDataFile,
     DataFileInfo,
 } from '@models/corpus-definition';
-import { APIIndexHealth, APIIndexJob, JobStatus } from '@models/indexing';
+import { APIIndexHealth, APIIndexJob, isComplete, JobStatus } from '@models/indexing';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -511,12 +511,9 @@ export class ApiService {
     }
 
     pollIndexJob(jobID: number, stop$: Observable<any>): Observable<APIIndexJob> {
-        const isDone = (job: APIIndexJob): boolean => [
-            JobStatus.Done, JobStatus.Aborted, JobStatus.Cancelled, JobStatus.Error
-        ].includes(job.status);
         return this.pollRequest(
             () => this.getIndexJob(jobID),
-            isDone,
+            (job) => isComplete(job.status),
             stop$,
         )
     }

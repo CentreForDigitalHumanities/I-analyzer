@@ -1,1 +1,12 @@
-<p>index-form works!</p>
+<h1 class="title">Index data</h1>
+
+<div class="content">
+    <p>
+        To make your corpus searchable, the data must be indexed. Depending on the amount
+        of data, this can take a while.
+    </p>
+</div>
+
+<ng-container *ngIf="state$ | async as state">
+    <pre>{{state | json}}</pre>
+</ng-container>

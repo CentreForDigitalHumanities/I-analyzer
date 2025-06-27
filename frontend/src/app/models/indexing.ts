@@ -8,10 +8,14 @@ export enum JobStatus {
     Cancelled = 'cancelled',
 }
 
+export const isComplete = (status: JobStatus): boolean => {
+    return [JobStatus.Done, JobStatus.Error, JobStatus.Aborted, JobStatus.Cancelled].includes(status);
+}
 
 export interface APIIndexHealth {
     corpus: number;
     server_active: boolean;
+    index_active: boolean | null;
     index_compatible: boolean | null;
     latest_job: number | null;
     job_status: JobStatus | null;
