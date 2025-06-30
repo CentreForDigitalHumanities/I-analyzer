@@ -71,8 +71,6 @@ class PeacePortal(ParentCorpusDefinition):
         self._id = field_defaults.id()
         self.url = field_defaults.url()
         self.year = field_defaults.year(self.min_year, self.max_date.year)
-        self.not_before = field_defaults.not_before()
-        self.not_after = field_defaults.not_after()
         self.date = field_defaults.date(self.min_date, self.max_date)
         self.transcription = field_defaults.transcription()
         self.transcription_german = field_defaults.transcription_german()
