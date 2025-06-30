@@ -4,7 +4,8 @@ from django.conf import settings
 
 from corpora.gallica.gallica import Gallica
 
-class Tranchees(Gallica):
+
+class JournauxTranchees(Gallica):
     title = "Journaux de tranchées"
     description = "Publications distributed in the trenches of World War 1"
     min_date = datetime(year=1914, month=1, day=1)

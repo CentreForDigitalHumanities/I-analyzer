@@ -13,6 +13,7 @@ def gallica_corpus_settings(settings):
         "caricature": os.path.join(here, "caricature.py"),
         "figaro": os.path.join(here, "figaro.py"),
         "journauxresistance": os.path.join(here, "resistance.py"),
+        "journauxtranchees": os.path.join(here, "tranchees.py"),
     }
 
 
