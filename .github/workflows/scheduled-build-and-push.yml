@@ -7,10 +7,8 @@ on:
     schedule:
         - cron: "0 0 1 * *"
     push:
-      branches:
-        - develop
-      paths:
-        - 'backend/requirements.txt'
+      tags:
+      - '*'
 
 
 jobs:
@@ -45,8 +43,8 @@ jobs:
             tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend:latest
             platforms: linux/amd64,linux/arm64
     
-    rebuild-with-dependencies:
-        name: Build backend image with dependencies
+    build-indexing-image:
+        name: Build backend image for indexing
         runs-on: ubuntu-latest
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
         steps:
@@ -64,7 +62,26 @@ jobs:
           with:
             context: backend/.
             file: backend/Dockerfile
+            target: indexing
             push: true
-            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-backend-dependencies:latest
+            tags: ghcr.io/centrefordigitalhumanities/ianalyzer-indexing:${{ github.ref_name }}
             platforms: linux/amd64,linux/arm64
-
+      
+    delete-untagged-base-images:
+      runs-on: ubuntu-latest
+      needs: rebuild-scheduled
+      steps:
+      - name: Package/Container Cleanup action in ghcr.io
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-untagged: true
+          exclude-tags: latest
+    
+    delete-untagged-indexing-images:
+      runs-on: ubuntu-latest
+      needs: build-indexing-image
+      steps:
+      - name: Package/Container Cleanup action in ghcr.io
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-untagged: true
