@@ -101,8 +101,6 @@ class PeacePortal(ParentCorpusDefinition):
             self._id,
             self.url,
             self.year,
-            self.not_before,
-            self.not_after,
             self.date,
             self.source_database,
             self.transcription,
@@ -128,7 +126,7 @@ class PeacePortal(ParentCorpusDefinition):
             self.transcription_latin,
             self.transcription_greek,
             self.transcription_english,
-            self.transcription_dutch
+            self.transcription_dutch,
         ]
 
 
