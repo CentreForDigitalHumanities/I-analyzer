@@ -7,6 +7,10 @@
         </div>
 
         <div class="box" *ngIf="enableChangeCredentials$ | async">
+            <ia-change-username />
+        </div>
+
+        <div class="box" *ngIf="enableChangeCredentials$ | async">
             <ia-change-password />
         </div>
     </div>

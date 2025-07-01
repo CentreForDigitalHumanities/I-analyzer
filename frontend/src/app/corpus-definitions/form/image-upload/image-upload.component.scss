@@ -1,0 +1,14 @@
+.image-container {
+    max-width: 300px;
+}
+
+// stack controls vertically on narrow screens
+@media screen and (max-width: 769px) {
+    .field.is-grouped {
+        display: block;
+
+        .control {
+            margin-bottom: 0.75rem;
+        }
+    }
+}

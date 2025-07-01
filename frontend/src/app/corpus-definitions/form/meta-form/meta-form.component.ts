@@ -2,14 +2,16 @@ import {
     Component,
     Input,
     OnChanges,
-    OnDestroy,
-    SimpleChanges,
+    OnDestroy, SimpleChanges
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { CorpusDefinition } from '../../../models/corpus-definition';
+import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
 import { ISO6393Languages } from '../constants';
+import { actionIcons, formIcons } from '@shared/icons';
+import { mergeAsBooleans } from '@utils/observables';
+import { MenuItem } from 'primeng/api';
 
 @Component({
     selector: 'ia-meta-form',
@@ -17,7 +19,7 @@ import { ISO6393Languages } from '../constants';
     styleUrl: './meta-form.component.scss',
 })
 export class MetaFormComponent implements OnChanges, OnDestroy {
-    @Input() corpus: CorpusDefinition;
+    @Input({required: true}) corpus!: CorpusDefinition;
 
     categories = [
         { value: 'parliament', label: 'Parliamentary debates' },
@@ -37,8 +39,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         description: [''],
         category: [''],
         date_range: this.formBuilder.group({
-            min: [''],
-            max: [''],
+            min: [],
+            max: [],
         }),
         languages: [['']],
     });
@@ -46,10 +48,34 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     destroy$ = new Subject<void>();
 
     languageOptions = ISO6393Languages;
+    actionIcons = actionIcons;
+    formIcons = formIcons;
+
+    nextStep$: Observable<MenuItem> = this.corpusDefService.steps$.pipe(
+        map(steps => steps[1]),
+    );
+
+    changesSubmitted$ = new Subject<void>();
+    changesSavedSucces$ = new Subject<void>();
+    changesSavedError$ = new Subject<void>();
+
+    loading$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSubmitted$],
+        false: [this.changesSavedSucces$, this.changesSavedError$],
+    });
+    showSuccessMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedSucces$],
+        false: [this.metaForm.valueChanges, this.changesSubmitted$],
+    });
+
+    showErrorMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedError$],
+        false: [this.metaForm.valueChanges, this.changesSubmitted$]
+    });
 
     constructor(
         private formBuilder: FormBuilder,
-        private corpusDefService: CorpusDefinitionService
+        private corpusDefService: CorpusDefinitionService,
     ) {}
 
     get currentCategoryLabel(): string {
@@ -61,7 +87,10 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
             this.corpus.definitionUpdated$
-                .pipe(takeUntil(this.destroy$))
+                .pipe(
+                    take(1),
+                    takeUntil(this.destroy$)
+                )
                 .subscribe(() =>
                     this.metaForm.patchValue(this.corpus.definition.meta)
                 );
@@ -74,15 +103,27 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     }
 
     onSubmit(): void {
+        this.changesSubmitted$.next();
         const newMeta = this.metaForm.value;
         this.corpus.definition.meta =
             newMeta as CorpusDefinition['definition']['meta'];
         this.corpus.save().subscribe({
-            next: () => {
-                this.corpusDefService.toggleStepDisabled(1);
-                this.corpusDefService.activateStep(1);
-            },
-            error: console.error,
+            next: this.onSubmitSuccess.bind(this),
+            error: this.onSubmitError.bind(this),
         });
+    }
+
+    goToNextStep() {
+        this.corpusDefService.activateStep(1);
+    }
+
+    private onSubmitSuccess(value: APIEditableCorpus) {
+        this.metaForm.patchValue(value.definition.meta);
+        this.changesSavedSucces$.next();
+    }
+
+    private onSubmitError(err) {
+        this.changesSavedError$.next();
+        console.error(err);
     }
 }

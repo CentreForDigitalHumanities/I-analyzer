@@ -1,33 +1,30 @@
+from click import group
 from users.models import CustomUser, CustomAnonymousUser
 from addcorpus.models import Corpus
+from addcorpus.permissions import can_search
 
 def test_access_through_group(db, basic_mock_corpus, group_with_access):
     user = CustomUser.objects.create(username='nice-user', password='secret')
     user.groups.add(group_with_access)
     user.save()
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    assert user.can_search(corpus)
-    assert corpus in user.searchable_corpora()
+    assert can_search(user, corpus)
 
 def test_superuser_access(basic_mock_corpus, admin_user):
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    assert admin_user.can_search(corpus)
-    assert corpus in admin_user.searchable_corpora()
+    assert can_search(admin_user, corpus)
 
 def test_no_corpus_access(db, basic_mock_corpus):
     user = CustomUser.objects.create(username='bad-user', password='secret')
     corpus = Corpus.objects.get(name=basic_mock_corpus)
-    assert not user.can_search(corpus)
-    assert corpus not in user.searchable_corpora()
+    assert not can_search(user, corpus)
 
 def test_public_corpus_access(db, basic_corpus_public):
     user = CustomUser.objects.create(username='new-user', password='secret')
     corpus = Corpus.objects.get(name=basic_corpus_public)
-    assert user.can_search(corpus)
-    assert corpus in user.searchable_corpora()
+    assert can_search(user, corpus)
     anon = CustomAnonymousUser()
-    assert anon.can_search(corpus)
-    assert corpus in anon.searchable_corpora()
+    assert can_search(anon, corpus)
 
 def test_api_access(db, basic_mock_corpus, group_with_access, auth_client, auth_user):
     # default: no access
@@ -40,6 +37,17 @@ def test_api_access(db, basic_mock_corpus, group_with_access, auth_client, auth_
     response = auth_client.get('/api/corpus/')
     assert len(response.data) == 1
     assert response.data[0].get('name') == basic_mock_corpus
+
+
+def test_multiple_groups_access(db, basic_mock_corpus, small_mock_corpus, group_with_access, another_group_with_access, auth_client, auth_user):
+    auth_user.groups.add(group_with_access)
+    auth_user.groups.add(another_group_with_access)
+
+    response = auth_client.get('/api/corpus/')
+    assert len(response.data) == 2
+    names = set([item['name'] for item in response.data])
+    assert set(names) == {basic_mock_corpus, small_mock_corpus}
+
 
 def test_superuser_api_access(admin_client, basic_mock_corpus):
     response = admin_client.get('/api/corpus/')

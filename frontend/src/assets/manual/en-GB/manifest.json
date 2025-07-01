@@ -52,6 +52,10 @@
                 "title": "Related words"
             },
             {
+                "id": "neighbour-network",
+                "title": "Network of nearest neighbours"
+            },
+            {
                 "id": "comparesimilarity",
                 "title": "Compare similarity"
             }
