@@ -20,6 +20,42 @@ from ianalyzer_readers.xml_tag import Tag
 
 logger = logging.getLogger('indexing')
 
+def extract_speech(element):
+    """
+    Extracts all string values from the given BeautifulSoup element (in this case 
+    one sentence from a speech) and joins them into a single string.
+    Preserves spaces between words but not between words and punctuation.
+
+    Args:
+        element (bs4.PageElement): The BeautifulSoup element to process.
+
+    Returns:
+        str: A single string containing a sentence.
+    """
+    sentence = []
+    for string in element.stripped_strings:
+        # Dealing with punctuation
+        if string in [',', '.', '!', '?', ';', ':', ')', ']', '}']:
+            if sentence and sentence[-1].endswith(' '):
+                sentence[-1] = sentence[-1][:-1] + string + ' '
+            else:
+                sentence.append(string + ' ')
+        elif string in ["-"]:  # hyphenated-words
+            if sentence and sentence[-1].endswith(' '):
+                sentence[-1] = sentence[-1][:-1] + string
+            else:
+                sentence.append(string)
+        elif string.startswith("'"):  # contractions are stored as "'s", "'m"
+            if sentence and sentence[-1].endswith(' '):
+                sentence[-1] = sentence[-1][:-1] + string + ' '
+            else:
+                sentence.append(string + ' ')
+        elif string in ['(', '[', '{']:
+            sentence.append(string)
+        else:
+            sentence.append(string + ' ')
+    sentence[-1] = sentence[-1][:-1] if sentence and sentence[-1].endswith(' ') else sentence[-1] #trailspaces
+    return ''.join(sentence)
 
 def get_persons_metadata(directory):
     with open(join(directory, 'ParlaMint-TR-listPerson.xml'), 'rb') as f:
@@ -70,7 +106,7 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     min_date = datetime(year=2011, month=6, day=1)
     max_date = datetime(year=2022, month=12, day=31)
     data_directory = settings.PARLAMINT_TURKIYE_DATA
-    es_index = getattr(settings, 'PARLAMINT_TURKIYE_ES_INDEX', 'parlamint-turkiye')
+    es_index = getattr(settings, 'PARLAMINT_TURKIYE_INDEX', 'parlamint-turkiye')
     image = 'turkiye.jpg'
     description_page = 'parlamint_turkiye.md'
 
@@ -119,10 +155,10 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
 
     speech = field_defaults.speech(language='tr')
     speech.extractor = XML(
-            Tag('seg'),
+            Tag('s'),
             multiple=True,
-            flatten=True,
-            transform='\n'.join)
+            extract_soup_func = extract_speech,
+            transform=' '.join)
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(
