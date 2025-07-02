@@ -1,5 +1,11 @@
-import pytest
+from contextlib import contextmanager
 import csv
+
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+import pytest
+
+from addcorpus.models import Corpus
 from es.search import hits
 from download import create_csv
 
@@ -41,12 +47,16 @@ mock_es_result = {
     }
 }
 
+
 @pytest.fixture()
-def result_csv_with_highlights(csv_directory):
-    route = 'parliament-netherlands_query=test'
+def result_csv_with_highlights(csv_directory, small_mock_corpus, auth_user):
+    route = 'parliament-netherlands?query=test'
     fields = ['speech']
-    file = create_csv.search_results_csv(hits(mock_es_result), fields, route, 0)
+    file = create_csv.search_results_csv(
+        hits(mock_es_result), fields, route, 0, small_mock_corpus, auth_user
+    )
     return file
+
 
 def test_create_csv(result_csv_with_highlights):
     counter = 0
@@ -61,9 +71,7 @@ def test_create_csv(result_csv_with_highlights):
 def test_csv_fieldnames(mock_corpus_results_csv, mock_corpus_specs):
     with open(mock_corpus_results_csv) as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
-        assert set(reader.fieldnames) == set(
-            mock_corpus_specs['fields'] + ['query'] + ['tags']
-        )
+        assert set(reader.fieldnames) == set(mock_corpus_specs['fields'] + ['query'])
 
 def assert_result_csv_expectations(csv_path, expectations, delimiter=','):
     '''Check that a CSV contains the expected data. Parameters:
@@ -111,22 +119,60 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
     assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
 
 
-def test_tags_csv_export(
-    mock_corpus_with_tags, tagged_mock_corpus_elasticsearch_results
+def test_csv_exports_tags(
+    tagged_mock_corpus, small_mock_corpus_elasticsearch_results, auth_user
 ):
     '''Assert that tags are exported'''
-    fields = ['id', 'date', 'genre']
+    fields = ['id', 'date', 'genre', 'tags']
     field_set = set(fields)
-    rows_generator = create_csv.generate_rows(
-        tagged_mock_corpus_elasticsearch_results,
-        fields,
-        'myquery',
-        field_set,
-        mock_corpus_with_tags,
+    rows = list(
+        create_csv.generate_rows(
+            small_mock_corpus_elasticsearch_results,
+            fields,
+            'myquery',
+            field_set,
+            tagged_mock_corpus,
+            auth_user,
+        )
     )
-    for row in rows_generator:
-        breakpoint()
-        assert row
+    for row in rows:
+        assert 'tags' in row
+    assert rows[0]['tags'] == 'female writer'
+    assert rows[1]['tags'] == 'female writer,female protagonist'
+    assert rows[2]['tags'] == 'female protagonist'
+
+
+@contextmanager
+def not_raises(exception):
+    try:
+        yield
+    except exception:
+        raise pytest.fail("DID RAISE {0}".format(exception))
+
+
+def test_csv_exports_document_link(
+    small_mock_corpus, small_mock_corpus_elasticsearch_results, auth_user
+):
+    fields = ['id', 'date', 'genre', 'document_link']
+    field_set = set(fields)
+    corpus = Corpus.objects.get(name=small_mock_corpus)
+    rows = list(
+        create_csv.generate_rows(
+            small_mock_corpus_elasticsearch_results,
+            fields,
+            'myquery',
+            field_set,
+            corpus,
+            auth_user,
+        )
+    )
+    validate_url = URLValidator()
+    for row in rows:
+        doc_link = row.get('document_link')
+        assert doc_link
+        assert doc_link.endswith(str(row['id']))
+        with not_raises(ValidationError):
+            assert validate_url(doc_link) is None
 
 
 def test_csv_encoding(ml_mock_corpus_results_csv):
