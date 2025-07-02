@@ -12,6 +12,7 @@
                 or contact an administrator if you keep seeing this message.
             </p>
         </ng-container>
+
         <ng-container *ngSwitchCase="'index required'">
             <p [ngSwitch]="state.reason">
                 <ng-container *ngSwitchCase="'no index'">
@@ -31,28 +32,51 @@
                 To make your corpus searchable, start the indexing proccess below.
                 Depending on the amount of data, this can take a while.
             </p>
-            <button class="button">Start indexing</button>
+            <button class="button" (click)="startIndex()">Start indexing</button>
         </ng-container>
+
         <ng-container *ngSwitchCase="'working'">
             <p>Your data is being indexed...</p>
         </ng-container>
+
         <ng-container *ngSwitchCase="'index ready'">
             <p>
                 Your data data is indexed and ready to be searched!
             </p>
-            <p>
+            <p *ngIf="!corpus.active">
                 You can activate your corpus now to start searching. Once the corpus is
                 active, most of the fields in this form will be locked; you can
                 de-activate the corpus to start editing again.
             </p>
-            <button class="button is-primary">Activate corpus</button>
+            <p *ngIf="corpus.active">
+                Your corpus is now active and available for searching. While the corpus
+                is active, most of the fields in this form are locked; you can de-activate
+                the corpus to start editing again.
+            </p>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button" (click)="toggleCorpusActive()"
+                        [class.is-primary]="!corpus.active">
+                        {{corpus.active ? 'Deactivate' : 'Activate'}} corpus
+                    </button>
+                </div>
+                <div class="control">
+                    <a class="button is-primary" *ngIf="corpus.active"
+                        [routerLink]="['/search', corpus.definition.name]">
+                        Search corpus
+                    </a>
+                </div>
+            </div>
         </ng-container>
+
         <ng-container *ngSwitchCase="'index failed'">
             <p>
                 Something went wrong while indexing your data. Please contact an
                 administrator.
             </p>
         </ng-container>
+
         <ng-container *ngSwitchCase="'corpus invalid'">
             <p>
                 Your corpus is not yet ready for indexing.

@@ -1,27 +1,43 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CorpusDefinition } from '@models/corpus-definition';
 import { APIIndexHealth, isComplete, JobStatus } from '@models/indexing';
 import { ApiService } from '@services';
-import { map, Observable } from 'rxjs';
+import * as _ from 'lodash';
+import { map, Subject, switchMap } from 'rxjs';
 
+/** Possible states for the interface of this component */
 type DisplayState = {
+    // connection issues in the backend (indexing disabled)
     status: 'no connection'
 } | {
+    // indexing available and required to use the corpus
     status: 'index required',
+    // there can be several reasons for this; note that these are not mutually exclusive,
+    // but reporting one the user is enough. Listed here in order of preference,
+    // e.g. if the data is outdated and the job was cancelled, just say the data is outdated.
     reason: 'no index' | 'outdated data' | 'outdated configuration' | 'job cancelled',
 } | {
+    // index in progress
     status: 'working',
     jobID: number,
 } | {
+    // index complete (indexing disabled, corpus can be activated)
     status: 'index ready'
 } | {
+    // index job failed (should never happen, user must contact admin)
     status: 'indexing failed',
 } | {
+    // corpus not index-ready (e.g. missing data or fields)
     status: 'corpus invalid',
     reason: string,
 };
 
+/** Converts the API index health response to a display state for this component.
+ *
+ * Breaks down possible scenarios.
+ */
 const healthToDisplayState = (health: APIIndexHealth): DisplayState => {
+    // all requirements for the "ready" state
     if (
         health.server_active &&
         health.index_active &&
@@ -31,6 +47,7 @@ const healthToDisplayState = (health: APIIndexHealth): DisplayState => {
     ) {
         return { status: 'index ready' };
     }
+    // otherwise, go over alternatives
     if (!health.server_active) {
         return { status: 'no connection' };
     }
@@ -62,11 +79,11 @@ const healthToDisplayState = (health: APIIndexHealth): DisplayState => {
     templateUrl: './index-form.component.html',
     styleUrl: './index-form.component.scss'
 })
-export class IndexFormComponent implements OnChanges {
+export class IndexFormComponent implements OnChanges, OnDestroy {
     @Input({required: true}) corpus: CorpusDefinition;
 
-    health$?: Observable<APIIndexHealth>;
-    state$?: Observable<DisplayState>;
+    state$ = new Subject<DisplayState>;
+    destroy$ = new Subject<void>();
 
     constructor(
         private apiService: ApiService,
@@ -74,10 +91,36 @@ export class IndexFormComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
-            this.health$ = this.apiService.getIndexHealth(this.corpus.id);
-            this.state$ = this.health$.pipe(
-                map(healthToDisplayState)
-            );
+            this.apiService.getIndexHealth(this.corpus.id).subscribe(health => {
+                const state = healthToDisplayState(health);
+                this.state$.next(state);
+                if (state.status == 'working') {
+                    this.pollJob(state.jobID);
+                }
+            });
         }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    startIndex() {
+        this.apiService.createIndexJob(this.corpus.id).subscribe((response) =>
+            this.pollJob(response.id)
+        );
+    }
+
+    toggleCorpusActive() {
+        this.corpus.active = !this.corpus.active;
+        this.corpus.save();
+    }
+
+    private pollJob(jobID: number) {
+        this.apiService.pollIndexJob(jobID, this.destroy$).pipe(
+            switchMap(() => this.apiService.getIndexHealth(this.corpus.id)),
+            map(healthToDisplayState),
+        ).subscribe(this.state$.next);
     }
 }
