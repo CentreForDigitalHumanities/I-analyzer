@@ -11,7 +11,7 @@ from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.python_corpora.extract import Combined, Metadata, XML
+from ianalyzer_readers.extract import Combined, Metadata, XML
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
@@ -25,7 +25,7 @@ from media.media_url import media_url
 
 class Ecco(XMLCorpusDefinition):
     title = "Eighteenth Century Collections Online"
-    description = "Digital collection of books published in Great Britain during the 18th century."
+    description = "Printed works published in Great Britain and its territories during the 18th century."
     description_page = 'ecco.md'
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)

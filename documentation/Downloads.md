@@ -61,3 +61,5 @@ The table includes all search results downloads, and full data downloads for vis
 Each user account has a download limit. By default, this is 10.000 documents. You can set this in the admin site, to allow individual users to download more documents.
 
 Use this with caution on production servers. Note that the server may also have request timeouts that will effectively prevent users from being able to download large files, even if they are allowed to generate them.
+
+Furthermore, the rate of requests for the download API is limited. By default, this is set to 5 request per minute. This prevents server overload when users try to harvest from the API, while still enabling said harvesting at a moderate rate.

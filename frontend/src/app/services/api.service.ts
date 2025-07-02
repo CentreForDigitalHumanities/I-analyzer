@@ -9,7 +9,6 @@ import {
     AggregateTermFrequencyParameters,
     Corpus,
     CorpusDocumentationPage,
-    CorpusDocumentationPageSubmitData,
     DateTermFrequencyParameters,
     DocumentTagsResponse,
     Download,
@@ -257,21 +256,6 @@ export class ApiService {
         return this.http.get<CorpusDocumentationPage>(url);
     }
 
-    public createCorpusDocumentationPage(data: CorpusDocumentationPageSubmitData) {
-        const url = this.apiRoute(this.corpusApiUrl, 'documentation/');
-        return this.http.post(url, data);
-    }
-
-    public updateCorpusDocumentationPage(pageID: number, data: CorpusDocumentationPageSubmitData) {
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
-        return this.http.put(url, data);
-    }
-
-    public deleteCorpusDocumentationPage(pageID: number) {
-        const url = this.apiRoute(this.corpusApiUrl, `documentation/${pageID}/`);
-        return this.http.delete(url);
-    }
-
     /** fetch a list of all corpora available for searching */
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
@@ -314,6 +298,18 @@ export class ApiService {
 
     public corpusSchema(): Observable<any> {
         return this.http.get('/api/corpus/definition-schema');
+    }
+
+    public updateCorpusImage(corpusName: string, file: File): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name)
+        return this.http.put(url, formData);
+    }
+
+    public deleteCorpusImage(corpusName: string): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        return this.http.delete(url);
     }
 
     // Corpus datafiles
