@@ -8,7 +8,7 @@ import { map, Subject, switchMap } from 'rxjs';
 /** Possible states for the interface of this component */
 type DisplayState = {
     // connection issues in the backend (indexing disabled)
-    status: 'no connection'
+    status: 'no connection',
 } | {
     // indexing available and required to use the corpus
     status: 'index required',
@@ -18,10 +18,10 @@ type DisplayState = {
     reason: 'no index' | 'outdated data' | 'outdated configuration' | 'job cancelled',
 } | {
     // index in progress
-    status: 'working'
+    status: 'working',
 } | {
     // index complete (indexing disabled, corpus can be activated)
-    status: 'index ready'
+    status: 'index ready',
 } | {
     // index job failed (should never happen, user must contact admin)
     status: 'indexing failed',
@@ -115,6 +115,20 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
     toggleCorpusActive() {
         this.corpus.active = !this.corpus.active;
         this.corpus.save();
+    }
+
+    stateClass(state: DisplayState) {
+        switch (state.status) {
+            case 'no connection':
+            case 'indexing failed':
+                return 'is-danger';
+            case 'index ready':
+                return 'is-success';
+            case 'corpus invalid':
+                return 'is-warning';
+            default:
+                '';
+        }
     }
 
     private pollJob(jobID: number) {

@@ -5,6 +5,33 @@
 </p>
 
 <ng-container *ngIf="state$ | async as state">
+    <div class="message" [class]="stateClass(state)">
+        <div class="message-body" role="status">
+            <p class="subtitle" style="text-align: center;">
+                <span [ngSwitch]="state.status">
+                    <ng-container *ngSwitchCase="'no connection'">
+                        No connection
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'index required'">
+                        Ready to index
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'working'">
+                        Indexing in progress...
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'index ready'">
+                        Index ready!
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'index failed'">
+                        Indexing failed
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'corpus invalid'">
+                        Corpus not complete
+                    </ng-container>
+                </span>
+            </p>
+        </div>
+    </div>
+
     <div [ngSwitch]="state.status" class="content">
         <ng-container *ngSwitchCase="'no connection'">
             <p>
