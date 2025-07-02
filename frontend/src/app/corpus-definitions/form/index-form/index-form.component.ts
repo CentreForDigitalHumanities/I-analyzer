@@ -18,8 +18,7 @@ type DisplayState = {
     reason: 'no index' | 'outdated data' | 'outdated configuration' | 'job cancelled',
 } | {
     // index in progress
-    status: 'working',
-    jobID: number,
+    status: 'working'
 } | {
     // index complete (indexing disabled, corpus can be activated)
     status: 'index ready'
@@ -52,7 +51,7 @@ const healthToDisplayState = (health: APIIndexHealth): DisplayState => {
         return { status: 'no connection' };
     }
     if (health.job_status && !(isComplete(health.job_status))) {
-        return { status: 'working', jobID: health.latest_job };
+        return { status: 'working' };
     }
     if (health.job_status == JobStatus.Error) {
         return { status: 'indexing failed' };
@@ -95,7 +94,7 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
                 const state = healthToDisplayState(health);
                 this.state$.next(state);
                 if (state.status == 'working') {
-                    this.pollJob(state.jobID);
+                    this.pollJob(health.latest_job);
                 }
             });
         }
@@ -107,6 +106,7 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
     }
 
     startIndex() {
+        this.state$.next({ status: 'working' });
         this.apiService.createIndexJob(this.corpus.id).subscribe((response) =>
             this.pollJob(response.id)
         );
@@ -121,6 +121,6 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
         this.apiService.pollIndexJob(jobID, this.destroy$).pipe(
             switchMap(() => this.apiService.getIndexHealth(this.corpus.id)),
             map(healthToDisplayState),
-        ).subscribe(this.state$.next);
+        ).subscribe(state => this.state$.next(state));
     }
 }
