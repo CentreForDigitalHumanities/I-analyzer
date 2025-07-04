@@ -6,6 +6,8 @@ import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definitio
 import { ApiService } from '@services';
 import { ApiServiceMock } from 'mock-data/api';
 import { CorpusDefinition } from '@models/corpus-definition';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
 
 describe('DocumentationFormComponent', () => {
     let component: DocumentationFormComponent;
@@ -13,8 +15,11 @@ describe('DocumentationFormComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [DocumentationFormComponent],
-            imports: [SharedModule],
+            declarations: [
+                DocumentationFormComponent,
+                FormFeedbackComponent,
+            ],
+            imports: [SharedModule, ReactiveFormsModule],
             providers: [
                 CorpusDefinitionService,
                 { provide: ApiService, useClass: ApiServiceMock },

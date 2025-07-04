@@ -6,7 +6,7 @@ from ianalyzer_readers.xml_tag import Tag, CurrentTag, TransformTag
 
 from django.conf import settings
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import Metadata, XML, Pass, Order, Backup, Combined
+from ianalyzer_readers.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
 from addcorpus.python_corpora.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
@@ -14,7 +14,7 @@ from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
 class DBNL(XMLCorpusDefinition):
     title = 'DBNL'
-    description = 'Digital Library for Dutch Literature'
+    description = 'Dutch literature and publications on literary or linguistic studies, from the Middle Ages to the 19th century'
     data_directory = settings.DBNL_DATA
     min_date = datetime(year=1200, month=1, day=1)
     max_date = datetime(year=1890, month=12, day=31)
