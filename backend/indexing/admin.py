@@ -69,7 +69,7 @@ class IndexJobAdmin(admin.ModelAdmin):
     def stop_job(self, request, queryset: QuerySet[models.IndexJob]):
         for job in queryset:
             if stop_job.is_stoppable(job):
-                stop_job.stop_job(job)
+                stop_job.mark_tasks_stopped(job)
                 self.message_user(
                     request,
                     f'Index job {job} stopped!',
