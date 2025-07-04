@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
         parser_stop = subparsers.add_parser(
             'stop',
-            help='Stop an job that is running through Celery',
+            help='Stop an job that is currently running',
         )
         parser_stop.add_argument(
             'id',

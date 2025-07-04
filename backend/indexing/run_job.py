@@ -20,7 +20,7 @@ from indexing.run_management_tasks import (
 )
 from indexing.run_update_task import run_update_task
 from ianalyzer.celery_utils import warn_if_no_worker
-from indexing.stop_job import mark_tasks_stopped
+from indexing.stop_job import mark_tasks_stopped, TaskAborted, raise_if_aborted
 
 
 logger = logging.getLogger('indexing')
@@ -41,8 +41,9 @@ def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
 
-    task.refresh_from_db()
-    if task.is_aborted():
+    try:
+        raise_if_aborted(task)
+    except TaskAborted:
         logger.warning(f'{task_id} cancelled')
         return
 
@@ -55,19 +56,19 @@ def run_task(task: IndexTask) -> None:
         task.client().cluster.health(wait_for_status='yellow')
         handler = TASK_HANDLERS[task.__class__]
         handler(task)
+    except TaskAborted:
+        # exception raised by the handler if the task is aborted mid-execution
+        logger.warning(f'{task_id} aborted')
+        return
     except Exception as e:
         logger.exception(f'{task_id} failed!')
         task.status = TaskStatus.ERROR
         task.save()
         raise
 
-    if task.is_aborted():
-        logger.warning(f'{task_id} aborted')
-        return
-    else:
-        task.status = TaskStatus.DONE
-        task.save()
-        logger.info(f'{task_id} completed')
+    task.status = TaskStatus.DONE
+    task.save()
+    logger.info(f'{task_id} completed')
 
 
 @celery.shared_task()
