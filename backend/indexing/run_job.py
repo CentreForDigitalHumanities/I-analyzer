@@ -42,10 +42,16 @@ def run_task(self, task: IndexTask) -> None:
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
     logger.info(f'Running {task_id}: {task}')
 
+    if self.is_aborted():
+        task.status == TaskStatus.CANCELLED
+        task.save()
+        return
+
     task.status = TaskStatus.WORKING
     task.save()
 
     try:
+        task.client().cluster.health(wait_for_status='yellow')
         handler = TASK_HANDLERS[task.__class__]
         handler(task, self)
     except Exception as e:
@@ -54,12 +60,14 @@ def run_task(self, task: IndexTask) -> None:
         task.save()
         raise
 
-    task.status = TaskStatus.DONE
-    task.save()
-    logger.info(f'{task_id} completed')
-
-    if isinstance(task, CreateIndexTask):
-        task.client().cluster.health(wait_for_status='yellow')
+    if self.is_aborted():
+        task.status = TaskStatus.ABORTED
+        task.save()
+        logger.warning(f'{task_id} aborted')
+    else:
+        task.status = TaskStatus.DONE
+        task.save()
+        logger.info(f'{task_id} completed')
 
 
 @celery.shared_task()

@@ -35,4 +35,7 @@ def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_a
     # stop
     assert stop_job.is_stoppable(job)
     stop_job.stop_job(job)
+
+    result.get()
+
     assert job.status() == models.TaskStatus.ABORTED
