@@ -36,16 +36,17 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 }
 
 
-@celery.shared_task(bind=True, base=AbortableTask)
-def run_task(self, task: IndexTask) -> None:
+@celery.shared_task()
+def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
-    logger.info(f'Running {task_id}: {task}')
 
-    if self.is_aborted():
-        task.status == TaskStatus.CANCELLED
-        task.save()
+    task.refresh_from_db()
+    if task.is_aborted():
+        logger.warning(f'{task_id} cancelled')
         return
+
+    logger.info(f'Running {task_id}: {task}')
 
     task.status = TaskStatus.WORKING
     task.save()
@@ -53,17 +54,16 @@ def run_task(self, task: IndexTask) -> None:
     try:
         task.client().cluster.health(wait_for_status='yellow')
         handler = TASK_HANDLERS[task.__class__]
-        handler(task, self)
+        handler(task)
     except Exception as e:
         logger.exception(f'{task_id} failed!')
         task.status = TaskStatus.ERROR
         task.save()
         raise
 
-    if self.is_aborted():
-        task.status = TaskStatus.ABORTED
-        task.save()
+    if task.is_aborted():
         logger.warning(f'{task_id} aborted')
+        return
     else:
         task.status = TaskStatus.DONE
         task.save()

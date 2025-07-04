@@ -1,6 +1,5 @@
 import logging
 import elasticsearch.helpers as es_helpers
-from celery.contrib.abortable import AbortableTask
 
 from addcorpus.reader import make_reader
 from indexing.models import PopulateIndexTask
@@ -8,7 +7,7 @@ from indexing.models import PopulateIndexTask
 logger = logging.getLogger('indexing')
 
 
-def populate(task: PopulateIndexTask, celery_task: AbortableTask):
+def populate(task: PopulateIndexTask):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
@@ -36,7 +35,8 @@ def populate(task: PopulateIndexTask, celery_task: AbortableTask):
 
     server_config = task.index.server.configuration
 
-    if celery_task.is_aborted():
+    task.refresh_from_db()
+    if task.is_aborted():
         logger.warning(f'Populating task #{task.pk} aborted')
         return
 
@@ -52,6 +52,8 @@ def populate(task: PopulateIndexTask, celery_task: AbortableTask):
     ):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
-        if celery_task.is_aborted():
+
+        task.refresh_from_db()
+        if task.is_aborted():
             logger.warning(f'Populating task #{task.pk} aborted')
             break

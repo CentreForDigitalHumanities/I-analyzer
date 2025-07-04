@@ -7,7 +7,7 @@ from indexing.models import (
 )
 
 
-def add_alias(task: AddAliasTask, celery_task):
+def add_alias(task: AddAliasTask):
     '''
     Add an alias to an Elasticsearch index, as defined by an AddAliasTask
     '''
@@ -18,7 +18,7 @@ def add_alias(task: AddAliasTask, celery_task):
     )
 
 
-def remove_alias(task: RemoveAliasTask, celery_task):
+def remove_alias(task: RemoveAliasTask):
     '''
     Remove an alias from an Elasticsearch index, as defined by a RemoveAliasTask
     '''
@@ -29,7 +29,7 @@ def remove_alias(task: RemoveAliasTask, celery_task):
     )
 
 
-def delete_index(task: DeleteIndexTask, celery_task):
+def delete_index(task: DeleteIndexTask):
     '''
     Delete an Elasticsearch index, as defined by a DeleteIndexTask
     '''
@@ -39,7 +39,7 @@ def delete_index(task: DeleteIndexTask, celery_task):
     )
 
 
-def update_index_settings(task: UpdateSettingsTask, celery_task):
+def update_index_settings(task: UpdateSettingsTask):
     client = task.client()
     client.indices.put_settings(
         settings=task.settings,

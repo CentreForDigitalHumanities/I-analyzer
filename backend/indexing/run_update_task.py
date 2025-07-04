@@ -9,7 +9,7 @@ from addcorpus.exceptions import PythonDefinitionRequired
 import logging
 logger = logging.getLogger('indexing')
 
-def run_update_task(task: UpdateIndexTask, celery_task) -> None:
+def run_update_task(task: UpdateIndexTask) -> None:
     if not task.corpus.has_python_definition:
         raise PythonDefinitionRequired(task.corpus, 'Update task not applicable')
 

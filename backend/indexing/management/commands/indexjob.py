@@ -6,7 +6,7 @@ from django.core.management import BaseCommand
 
 from indexing.models import IndexJob, TaskStatus
 from indexing.command_utils import run_job, add_async_argument
-from indexing.stop_job import is_stoppable, stop_job
+from indexing.stop_job import is_stoppable, mark_tasks_stopped
 
 
 class Command(BaseCommand):
@@ -133,7 +133,7 @@ class Command(BaseCommand):
         job = IndexJob.objects.get(id=id)
 
         if is_stoppable(job):
-            stop_job(job)
+            mark_tasks_stopped(job)
             print(f'Job {job.id} stopped')
         else:
             self.stdout.write(self.style.WARNING(

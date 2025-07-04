@@ -5,14 +5,15 @@ from addcorpus.models import Corpus
 from indexing import models, create_job, run_job, stop_job
 
 
-def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_app, celery_worker, monkeypatch):
+def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_worker, monkeypatch):
     # replace create task handler to ensure fixed execution time
     # (note: because this skips creating the index, the index job will fail in a later
     # step if it is not interrupted)
-    def mock_create(task: models.CreateIndexTask, celery_task):
+    def mock_create(task: models.CreateIndexTask):
         # this is a long time, but the task will never complete
         for _ in range(20):
-            if celery_task.is_aborted():
+            task.refresh_from_db()
+            if task.is_aborted():
                 return
             sleep(1)
         return task.index.name
@@ -30,11 +31,9 @@ def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_a
     first_result = result.parent.parent
     first_result.get()
 
-    monkeypatch.setattr(stop_job, 'celery_app', celery_app)
-
     # stop
     assert stop_job.is_stoppable(job)
-    stop_job.stop_job(job)
+    stop_job.mark_tasks_stopped(job)
 
     result.get()
 
