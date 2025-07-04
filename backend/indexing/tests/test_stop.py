@@ -2,8 +2,7 @@ from time import sleep
 from copy import copy
 
 from addcorpus.models import Corpus
-from indexing import models, create_job, run_job
-from indexing.stop_job import stop_job, is_stoppable
+from indexing import models, create_job, run_job, stop_job
 
 
 def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_app, celery_worker, monkeypatch):
@@ -11,7 +10,7 @@ def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_a
     # (note: because this skips creating the index, the index job will fail in a later
     # step if it is not interrupted)
     def mock_create(task: models.CreateIndexTask):
-        sleep(60) # this is a long time, but the task will never complete
+        sleep(20) # this is a long time, but the task will never complete
         return task.index.name
 
     mock_handlers = copy(run_job.TASK_HANDLERS)
@@ -27,7 +26,9 @@ def test_stop_job(transactional_db, basic_mock_corpus, es_index_client, celery_a
     first_result = result.parent.parent
     first_result.get()
 
+    monkeypatch.setattr(stop_job, 'celery_app', celery_app)
+
     # stop
-    assert is_stoppable(job)
-    stop_job(job)
+    assert stop_job.is_stoppable(job)
+    stop_job.stop_job(job)
     assert job.status() == models.TaskStatus.ABORTED
