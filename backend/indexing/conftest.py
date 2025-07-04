@@ -4,7 +4,7 @@ from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.models import Corpus
 from es.models import Index
 from indexing.models import IndexJob, CreateIndexTask
-from indexing.run_create_task import create
+from indexing.run_job import perform_indexing
 
 @pytest.fixture(scope='session')
 def mock_corpus():
@@ -45,12 +45,13 @@ def es_alias_client(db, es_server, es_client, mock_corpus, test_index_cleanup):
     job = IndexJob.objects.create(
         corpus=corpus,
     )
-    create_task = CreateIndexTask.objects.create(
+    CreateIndexTask.objects.create(
         job=job,
         index=index,
         delete_existing=True,
     )
-    create(create_task)
+    perform_indexing(job)
+
     es_client.indices.create(index='test-times-2')
     es_client.indices.create(index='test-times-bla-3')
 

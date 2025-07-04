@@ -41,7 +41,7 @@ def _make_es_mapping(corpus_configuration: CorpusConfiguration) -> Dict:
     }
 
 
-def create(task: CreateIndexTask):
+def create(task: CreateIndexTask, celery_task):
     client = task.client()
 
     corpus_config = task.corpus.configuration

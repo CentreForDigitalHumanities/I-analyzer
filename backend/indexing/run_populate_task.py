@@ -7,7 +7,7 @@ from indexing.models import PopulateIndexTask
 logger = logging.getLogger('indexing')
 
 
-def populate(task: PopulateIndexTask):
+def populate(task: PopulateIndexTask, celery_task):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''

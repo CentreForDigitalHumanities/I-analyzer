@@ -6,6 +6,7 @@ import logging
 from typing import Callable, Type, Dict
 import celery
 from celery.result import AsyncResult
+from celery.contrib.abortable import AbortableTask
 
 from es.client import elasticsearch
 from indexing.models import (
@@ -35,8 +36,8 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 }
 
 
-@celery.shared_task()
-def run_task(task: IndexTask) -> None:
+@celery.shared_task(bind=True, base=AbortableTask)
+def run_task(self, task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
     logger.info(f'Running {task_id}: {task}')
@@ -46,7 +47,7 @@ def run_task(task: IndexTask) -> None:
 
     try:
         handler = TASK_HANDLERS[task.__class__]
-        handler(task)
+        handler(task, self)
     except Exception as e:
         logger.exception(f'{task_id} failed!')
         task.status = TaskStatus.ERROR

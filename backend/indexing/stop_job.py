@@ -1,3 +1,4 @@
+from celery.contrib.abortable import AbortableAsyncResult
 from ianalyzer.celery import app as celery_app
 from indexing.models import IndexJob, TaskStatus
 
@@ -14,7 +15,8 @@ def stop_job(job: IndexJob):
 
     for task in job.tasks():
         if task.celery_task_id:
-            celery_app.control.revoke(task.celery_task_id, terminate=True)
+            result = AbortableAsyncResult(task.celery_task_id, app=celery_app)
+            result.abort()
 
     mark_tasks_stopped(job)
 
