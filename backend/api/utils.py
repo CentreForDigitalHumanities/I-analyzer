@@ -28,6 +28,6 @@ def find_media_file(base_path, file_path, mime_type=None):
         return None
 
     if mime_type is not None and mimetypes.guess_type(path)[0] != mime_type:
-        raise ValueError('Unexpected MIME type when reading {file_path}')
+        raise ValueError(f'Unexpected MIME type when reading {file_path}')
 
     return path
