@@ -8,6 +8,7 @@ from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
+from api.utils import find_media_file
 from addcorpus.python_corpora.extract import XML, Metadata, Combined
 from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
@@ -251,11 +252,8 @@ class DutchAnnualReports(XMLCorpusDefinition):
         image_path = request_args['image_path']
         start_page = int(request_args['start_page'])
         end_page = int(request_args['end_page'])
-        absolute_path = op.join(self.data_directory, image_path)
-        if not op.isfile(absolute_path):
-            return None
+        absolute_path = find_media_file(self.data_directory, image_path, self.mimetype)
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
         out = build_partial_pdf(pages, input_pdf)
         return out
-

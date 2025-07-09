@@ -11,6 +11,7 @@ from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
+from api.utils import find_media_file
 from addcorpus.python_corpora.extract import Combined, Metadata, XML
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
@@ -290,9 +291,7 @@ class Ecco(XMLCorpusDefinition):
         image_path = request_args['image_path']
         start_page = int(request_args['start_page'])
         end_page = int(request_args['end_page'])
-        absolute_path = join(self.data_directory, image_path)
-        if not isfile(absolute_path):
-            return None
+        absolute_path = find_media_file(self.data_directory, image_path, 'application/pdf')
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
         out = build_partial_pdf(pages, input_pdf)
