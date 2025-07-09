@@ -47,7 +47,8 @@ def searchable_condition(user: AbstractUser) -> Q:
     '''
     is_active = Q(active=True)
     is_public = Q(groups__name=PUBLIC_GROUP_NAME)
-    in_group = Q(groups__user=user)
+    in_group = Q(groups__in=user.groups.all())
+
     is_editable = editable_condition(user)
 
     if user.is_anonymous:
@@ -59,7 +60,7 @@ def searchable_condition(user: AbstractUser) -> Q:
 
 
 def searchable_corpora(user: AbstractUser) -> QuerySet[Corpus]:
-    return Corpus.objects.filter(searchable_condition(user))
+    return Corpus.objects.filter(searchable_condition(user)).distinct()
 
 
 def can_search(user: AbstractUser, corpus: Corpus) -> bool:

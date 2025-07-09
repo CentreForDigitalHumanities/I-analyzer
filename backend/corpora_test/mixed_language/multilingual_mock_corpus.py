@@ -1,9 +1,10 @@
 from datetime import datetime
 import os
 
+from ianalyzer_readers.extract import CSV
+
 from addcorpus.python_corpora.corpus import FieldDefinition, CSVCorpusDefinition
 from addcorpus.es_mappings import keyword_mapping, text_mapping
-from addcorpus.python_corpora.extract import CSV
 
 # Fake corpus class for unit tests
 

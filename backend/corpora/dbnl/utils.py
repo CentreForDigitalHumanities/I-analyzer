@@ -5,7 +5,7 @@ from langcodes import standardize_tag, Language
 from typing import List
 
 from copy import copy
-from addcorpus.python_corpora.extract import Pass, Combined, CSV
+from ianalyzer_readers.extract import Pass, Combined, CSV
 
 # === METADATA EXTRACTION ===
 

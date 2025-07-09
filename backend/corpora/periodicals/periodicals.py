@@ -13,7 +13,7 @@ from ianalyzer_readers.xml_tag import Tag, SiblingTag, ParentTag
 
 from django.conf import settings
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping

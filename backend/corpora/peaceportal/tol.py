@@ -6,7 +6,7 @@ import bs4
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined
+from ianalyzer_readers.extract import XML, Constant, Combined
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
     clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
     transform_to_date_range, not_before_extractor, not_after_extractor
