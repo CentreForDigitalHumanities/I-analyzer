@@ -76,16 +76,10 @@ def handle_job_error(request, exc, traceback, job: IndexJob):
     mark_tasks_stopped(job)
 
 
-@celery.shared_task(bind=True)
-def start_job(self, job: IndexJob) -> None:
+@celery.shared_task()
+def start_job(job: IndexJob) -> None:
     _validate_job_start(job)
     _log_job_started(job)
-
-    if self.request.chain:
-        for task in self.request.chain:
-            obj: IndexTask = task.args[0]
-            obj.celery_task_id = task.id
-            obj.save()
 
     for task in job.tasks():
         task.status = TaskStatus.QUEUED
