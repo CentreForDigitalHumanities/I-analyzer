@@ -298,6 +298,30 @@ def speech(language=None):
         language=language,
     )
 
+def speech_translated():
+    """
+    speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
+    stopword and stemmer filter need to be defined for each language
+    """
+    return FieldDefinition(
+        name='speech_translated',
+        display_name='Speech (machine-translated)',
+        description='The transcribed speech, machine-translated to English',
+        # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
+        es_mapping = main_content_mapping(
+            token_counts=False,
+            stopword_analysis='en',
+            stemming_analysis='en',
+            language='en',
+        ),
+        results_overview=False,
+        search_field_core=True,
+        display_type='text_content',
+        visualizations=[],
+        csv_core=True,
+        language='en',
+    )
+
 def speech_id():
     "unique (corpus-level) ID for the speech"
     return FieldDefinition(

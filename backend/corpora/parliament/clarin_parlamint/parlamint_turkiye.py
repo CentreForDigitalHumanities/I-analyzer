@@ -1,14 +1,13 @@
 import logging
 from datetime import datetime
 from glob import glob
-from os.path import join
+import os
 from bs4 import BeautifulSoup
 import re
 
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined, Order, Metadata, Pass
 from addcorpus.es_mappings import keyword_mapping
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
@@ -16,6 +15,7 @@ from corpora.parliament.utils.parlamint_v4 import extract_all_org_data, extract_
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
+from ianalyzer_readers.extract import XML, Constant, Combined, Order, Metadata, Pass
 from ianalyzer_readers.xml_tag import Tag
 
 logger = logging.getLogger('indexing')
@@ -58,12 +58,12 @@ def extract_speech(element):
     return ''.join(sentence)
 
 def get_persons_metadata(directory):
-    with open(join(directory, 'ParlaMint-TR-listPerson.xml'), 'rb') as f:
+    with open(os.path.join(directory, 'ParlaMint-TR-listPerson.xml'), 'rb') as f:
         soup = BeautifulSoup(f.read(), 'xml')
     return extract_people_data(soup)
 
 def get_orgs_metadata(directory):
-    with open(join(directory, 'ParlaMint-TR-listOrg.xml'), 'rb') as f:
+    with open(os.path.join(directory, 'ParlaMint-TR-listOrg.xml'), 'rb') as f:
         soup = BeautifulSoup(f.read(), 'xml')
     return extract_all_org_data(soup)
 
@@ -96,6 +96,16 @@ def transform_speaker_constituency(data):
             else:
                 return 'Constituency unknown'
 
+def transform_xml_filename(filepath, country_extension):
+    filename = os.path.basename(filepath)
+    transformed_filename = filename.replace(f"ParlaMint-{country_extension}", f"ParlaMint-{country_extension}-en")
+    return transformed_filename
+
+def open_xml_as_soup(filepath):
+    with open(filepath, 'rb') as f:
+        soup = BeautifulSoup(f, features="xml")
+    return soup
+
 class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     '''
     Corpus definition for indexing Turkish parliamentary data from the ParlaMint dataset.
@@ -106,13 +116,14 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     min_date = datetime(year=2011, month=6, day=1)
     max_date = datetime(year=2022, month=12, day=31)
     data_directory = settings.PARLAMINT_TURKIYE_DATA
+    translated_data_directory = settings.PARLAMINT_TURKIYE_DATA_TRANSLATED
     es_index = getattr(settings, 'PARLAMINT_TURKIYE_INDEX', 'parlamint-turkiye')
     image = 'turkiye.jpg'
     description_page = 'parlamint_turkiye.md'
 
     tag_toplevel = Tag('TEI')
     tag_entry = Tag('u')
-    languages = ['tr']
+    languages = ['en', 'tr']
 
     category = 'parliament'
     document_context = document_context()
@@ -130,6 +141,15 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
         for year in range(start.year, end.year):
             for xml_file in glob('{}/{}/*.xml'.format(self.data_directory, year)):
                 metadata['date'] = re.search(r"\d{4}-\d{2}-\d{2}", xml_file).group()
+                translated_file_path = os.path.join(
+                    self.translated_data_directory,
+                    str(year), 
+                    transform_xml_filename(xml_file, 'TR')
+                ) # en-file Path
+
+                translated_soup = open_xml_as_soup(translated_file_path)
+                metadata['translated_soup'] = translated_soup
+                metadata['translated_file'] = translated_file_path
                 yield xml_file, metadata
 
     country = field_defaults.country()
@@ -153,16 +173,28 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             toplevel=True,
     )
 
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = XML(
+        attribute='xml:id'
+    )
+
     speech = field_defaults.speech(language='tr')
     speech.extractor = XML(
             Tag('s'),
             multiple=True,
             extract_soup_func = extract_speech,
             transform=' '.join)
+    
+    def lookup_translated_speech(tuple):
+        element = tuple[1].find(attrs={'xml:id': tuple[0]})
+        result = extract_speech(element) if element else None
+        return result
 
-    speech_id = field_defaults.speech_id()
-    speech_id.extractor = XML(
-        attribute='xml:id'
+    speech_translated = field_defaults.speech_translated()
+    speech_translated.extractor = Combined(
+        XML(attribute='xml:id'),
+        Metadata('translated_soup'),
+        transform=lookup_translated_speech
     )
 
     sequence = field_defaults.sequence()
@@ -258,6 +290,7 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.country,
             self.date,
             self.speech,
+            self.speech_translated,
             self.speech_id,
             self.sequence,
             self.speaker,
