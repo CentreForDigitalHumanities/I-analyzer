@@ -27,7 +27,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/backend/manage.py",
-            "args": ["index", "${input:corpusName}"],
+            "args": ["index", "${input:corpusName}", "-d"],
             "django": true,
             "justMyCode": true
         },
