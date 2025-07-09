@@ -3,6 +3,7 @@ import elasticsearch.helpers as es_helpers
 
 from addcorpus.reader import make_reader
 from indexing.models import PopulateIndexTask
+from indexing.stop_job import raise_if_aborted
 
 logger = logging.getLogger('indexing')
 
@@ -35,6 +36,8 @@ def populate(task: PopulateIndexTask):
 
     server_config = task.index.server.configuration
 
+    raise_if_aborted(task)
+
     # Do bulk operation
     client = task.client()
     for success, info in es_helpers.streaming_bulk(
@@ -47,3 +50,4 @@ def populate(task: PopulateIndexTask):
     ):
         if not success:
             logger.error(f"FAILED INDEX: {info}")
+        raise_if_aborted(task)

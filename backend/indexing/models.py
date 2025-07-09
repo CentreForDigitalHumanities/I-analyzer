@@ -135,6 +135,10 @@ class IndexTask(models.Model):
     def client(self) -> Elasticsearch:
         return elasticsearch(self.corpus.name)
 
+    def is_aborted(self) -> bool:
+        self.refresh_from_db()
+        return self.status in [TaskStatus.CANCELLED, TaskStatus.ABORTED]
+
 
 class CreateIndexTask(IndexTask):
     '''

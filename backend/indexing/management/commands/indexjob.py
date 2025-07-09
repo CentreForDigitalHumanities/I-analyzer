@@ -6,6 +6,8 @@ from django.core.management import BaseCommand
 
 from indexing.models import IndexJob, TaskStatus
 from indexing.command_utils import run_job, add_async_argument
+from indexing.stop_job import is_stoppable, mark_tasks_stopped
+
 
 class Command(BaseCommand):
     help = '''
@@ -61,6 +63,17 @@ class Command(BaseCommand):
         add_async_argument(parser_start)
         parser_start.set_defaults(handler=self.start)
 
+        parser_stop = subparsers.add_parser(
+            'stop',
+            help='Stop an job that is currently running',
+        )
+        parser_stop.add_argument(
+            'id',
+            type=int,
+            help='ID of the job to cancel',
+        )
+        parser_stop.set_defaults(handler=self.stop)
+
 
     def handle(self, handler: Callable, **options):
         handler(**options)
@@ -115,3 +128,14 @@ class Command(BaseCommand):
 
         print(f'Starting job: {job.id}')
         run_job(job, run_async)
+
+    def stop(self, id: int, **options):
+        job = IndexJob.objects.get(id=id)
+
+        if is_stoppable(job):
+            mark_tasks_stopped(job)
+            print(f'Job {job.id} stopped')
+        else:
+            self.stdout.write(self.style.WARNING(
+                f'Job {job.id} is not running; no action taken.'
+            ))
