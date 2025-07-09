@@ -19,7 +19,7 @@ export class CorpusDefinitionService implements OnDestroy {
     steps$ = new BehaviorSubject<MenuItem[]>([
         { label: 'Corpus information' },
         { label: 'Upload source data' },
-        { label: 'Define fields' },
+        { label: 'Configure fields' },
         { label: 'Index data' },
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
@@ -148,6 +148,10 @@ export class CorpusDefinitionService implements OnDestroy {
             return false;
         }
         return true;
+    }
+
+    private dataComplete(corpus: CorpusDefinition) {
+        return true; // Placeholder for future data completeness checks
     }
 
     private hasFields(corpus: CorpusDefinition) {
