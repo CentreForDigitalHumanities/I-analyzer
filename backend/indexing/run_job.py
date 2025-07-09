@@ -41,9 +41,7 @@ def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
 
-    try:
-        raise_if_aborted(task)
-    except TaskAborted:
+    if task.is_aborted():
         logger.warning(f'{task_id} cancelled')
         return
 

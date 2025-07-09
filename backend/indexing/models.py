@@ -136,6 +136,7 @@ class IndexTask(models.Model):
         return elasticsearch(self.corpus.name)
 
     def is_aborted(self) -> bool:
+        self.refresh_from_db()
         return self.status in [TaskStatus.CANCELLED, TaskStatus.ABORTED]
 
 
