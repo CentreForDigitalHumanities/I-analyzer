@@ -103,6 +103,11 @@ a.dropdown-item[disabled] {
     @extend [disabled];
 }
 
+.highlight {
+    background-color: var(--bulma-primary-soft);
+    color: var(--bulma-primary-soft-invert);
+}
+
 // restore some rules from older bulma versions for compatibility
 
 .block:not(:last-child), .message:not(:last-child), .title:not(:last-child),
