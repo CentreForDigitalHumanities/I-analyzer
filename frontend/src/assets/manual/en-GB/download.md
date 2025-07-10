@@ -1,7 +1,15 @@
 ### Download a CSV of search results
-By clicking the "Download CSV" button, you can download a table of your search results.
+By clicking the "Download" tab, you can download a table of your search results.
 
-Next to the "Download CSV" button, the "Settings" button (gear icon) allows you to specify which fields should be downloaded. Some fields are shown by default, others can be displayed by clicking the "Load more" button.
+This will bring up a dialog, which shows how many results are currently selected. Note that downloading more than 1000 results at a time will require that you register, so the results can be sent per email.
+
+To adjust the columns that will appear in the csv file, you can select which *Fields* to download below. The options are all the fields of the corpus you are downloading from, with an addition of the following two fields:
+- Your tags: will download your personal tags of the documents
+- Document link: will download the unique link of each document for future reference
+
+By default, a number of fields - usually a full-text field, an identifier and the date of the document - are selected for download. Note that for convenience, the query that was used to filter the results of the `.csv` will be included in the resulting file as an extra column.
+
+You can also choose to apply different sorting to the documents that will be downloaded, and choose the encoding of the reulsitng `.csv` file.
 
 ### Download visualization data as CSV
 When you display the the numbers underlying a visualization (by clicking the "table" icon in the top right corner), you can download this table. For this, click on the download icon at the lower side of the table, next to the pagination buttons.
