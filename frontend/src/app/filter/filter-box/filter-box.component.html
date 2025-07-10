@@ -7,13 +7,14 @@
             </label>
         </div>
         <p class="control">
-            <button *ngIf="(filter.isDefault$ | async) === false" class="button icon filter-icon is-primary is-inverted is-round"
+            <button *ngIf="(filter.isDefault$ | async) === false"
+                class="button is-primary is-rounded is-ghost icon"
                 (click)="filter.reset()" iaBalloon="Reset this filter to its default values"
                 iaBalloonPosition="down-left">
                 <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
             </button>
             <button *ngIf="(filter.isDefault$ | async) === false"
-                class="button icon filter-icon is-primary is-inverted is-round"
+                class="button is-primary is-rounded is-ghost icon"
                 [ngClass]="{'is-primary': filter.state$.value.active}"
                 (click)="filter.toggle()"iaBalloon="{{filter.state$.value.active ? 'Disable this filter' : 'Enable this filter'}}"
                 iaBalloonPosition="down-left">

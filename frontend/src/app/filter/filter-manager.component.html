@@ -1,20 +1,24 @@
 <div>
-    <div class="field has-addons">
+    <div class="field is-grouped">
         <div class="control is-expanded">
             <h2 class="title">Filters</h2>
         </div>
         <p class="control" style="float:right">
-            <span *ngIf="anyActiveFilters$ | async" class="button icon filter-icon is-primary is-active is-medium is-round"
+            <button *ngIf="anyActiveFilters$ | async"
+                class="button is-primary is-medium is-rounded"
                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                 iaBalloonPosition="down-left">
-                <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
-            </span>
-            <span *ngIf="anyNonDefaultFilters$ | async" class="button icon filter-icon is-inverted is-round is-primary is-medium"
+                <span class="icon">
+                    <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
+                </span>
+            </button>
+            <button *ngIf="anyNonDefaultFilters$ | async"
+                class="button is-ghost is-medium is-rounded"
                 (click)="toggleActiveFilters()"
                 iaBalloon="{{(anyActiveFilters$ | async) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left">
                 <fa-icon [icon]="filterIcons.toggle" aria-hidden="true"></fa-icon>
-            </span>
+            </button>
         </p>
     </div>
     <ng-container *ngFor="let filter of filters">
