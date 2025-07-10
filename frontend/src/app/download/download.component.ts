@@ -27,6 +27,7 @@ import {
     PageResultsParameters,
 } from '@models/page-results';
 
+type ReducedCorpusField = Pick<CorpusField, 'name' | 'displayName'>;
 
 @Component({
     selector: 'ia-download',
@@ -38,7 +39,7 @@ export class DownloadComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
 
     public selectedCsvFields: CorpusField[];
-    public availableCsvFields: CorpusField[];
+    public availableCsvFields: CorpusField | ReducedCorpusField [];
 
     public isDownloading: boolean;
     public isModalActive = false;
@@ -68,6 +69,16 @@ export class DownloadComponent implements OnChanges {
         route: ['/download-history'],
     };
 
+    private tagField: ReducedCorpusField = {
+        name: 'tags',
+        displayName: 'Your tags'
+    }
+
+    private documentLinkField: ReducedCorpusField = {
+        name: 'document_link',
+        displayName: 'Document link'
+    }
+
     constructor(
         private downloadService: DownloadService,
         private notificationService: NotificationService,
@@ -81,7 +92,7 @@ export class DownloadComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
-            this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
+            this.availableCsvFields = _.concat(_.filter(this.corpus?.fields, 'downloadable'), [this.tagField, this.documentLinkField]);
             this.selectedCsvFields = _.filter(this.corpus?.fields, 'csvCore');
         }
         if (changes.queryModel) {
