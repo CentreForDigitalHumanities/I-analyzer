@@ -20,6 +20,8 @@
 }
 
 .navbar-item, .navbar-item.has-dropdown {
+    color: $text-primary-color !important;
+
     &:hover, &.is-active {
         background-color: $contrast-primary-color !important;
 
@@ -43,13 +45,7 @@
 }
 
 .navbar-dropdown {
-    background-color: $primary;
-    color: $text-invert;
     z-index: 1000;
-
-    .navbar-item {
-        color: $text-primary-color;
-    }
 }
 
 .navbar-brand {

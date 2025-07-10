@@ -1,5 +1,5 @@
 <ng-container *ngIf="pageResults?.result$ | async as page; else noResult">
-    <div class="level">
+    <div class="level block">
         <h2 class="subtitle" *ngIf="page.total <= 5">
             {page.total, plural, =1 {1 hit} other {{{page.total}} hits}}
         </h2>
@@ -31,7 +31,7 @@
 
     <section *ngIf="page.documents.length; else noHits" aria-label="search results">
         <div class="hits" [ngClass]="{'is-loading': pageResults.loading$ | async }">
-            <article *ngFor="let document of page.documents" class="document box">
+            <article *ngFor="let document of page.documents" class="document box block">
                 <ia-document-preview [document]="document" [page]="page"></ia-document-preview>
             </article>
         </div>

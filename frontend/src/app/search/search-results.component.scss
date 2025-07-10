@@ -25,7 +25,7 @@
 }
 
 .results-navigation {
-    background: rgba(255, 255, 255, 1);
+    background: var(--bulma-body-background-color);
     z-index: 18;
     top: 68px;
     position: sticky;

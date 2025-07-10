@@ -2,6 +2,7 @@
 @import "bulma/bulma";
 @import "balloon-css/src/balloon";
 
+
 [data-balloon]:after {
     border-radius: 0;
 }
@@ -11,7 +12,7 @@
 }
 
 .search-section {
-    background: rgba(255, 255, 255, 1);
+    background: var(--bulma-body-background-color);
     position: sticky;
     top: 0;
     transition: box-shadow 0.2s;
@@ -100,4 +101,33 @@ a.dropdown-item[disabled] {
 
 .is-disabled {
     @extend [disabled];
+}
+
+// restore some rules from older bulma versions for compatibility
+
+.block:not(:last-child), .message:not(:last-child), .title:not(:last-child),
+    .box:not(:last-child), .field:not(:last-child), .content:not(:last-child) {
+    margin-bottom: var(--bulma-block-spacing);
+}
+
+.heading {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+:root {
+    --bulma-shadow: 0 2px 3px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1),
+        0 0 0 1px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1);
+}
+
+// reset focus styling for accessibility
+
+a, button {
+    &:focus-visible {
+        outline: auto !important;
+        border: inherit !important;
+    }
 }
