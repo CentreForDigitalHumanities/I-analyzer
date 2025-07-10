@@ -5,8 +5,6 @@
     position: absolute;
     z-index: 1;
     transform: translateY(-100%);
-    color: $text-primary-color;
-    background: $contrast-primary-color;
     padding: 10px;
 
     &:focus {
@@ -20,13 +18,13 @@
 }
 
 .navbar-item, .navbar-item.has-dropdown {
-    color: $text-primary-color !important;
+    color: var(--bulma-primary-invert) !important;
 
     &:hover, &.is-active {
-        background-color: $contrast-primary-color !important;
+        background-color: var(--bulma-primary-50);
 
         .navbar-link {
-            background-color: $contrast-primary-color !important;
+            background-color: var(--bulma-primary-50-invert);
         }
     }
 }

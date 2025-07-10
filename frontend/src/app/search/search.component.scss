@@ -9,18 +9,6 @@
     border: none;
 }
 
-.button.is-primary {
-    background-color: $primary;
-    border-color: transparent;
-    color: $text-primary-color;
-
-    &:hover{
-        background-color: $contrast-primary-color;
-        border-color: transparent;
-        color: $text-primary-color;
-    }
-}
-
 //Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted.
 ::ng-deep ia-select-field {
 
