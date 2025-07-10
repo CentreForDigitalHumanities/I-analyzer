@@ -12,7 +12,7 @@
 }
 
 .search-section {
-    background: var(--bulma-body-background-color);
+    background: utilities.$scheme-main;
     position: sticky;
     top: 0;
     transition: box-shadow 0.2s;
@@ -134,5 +134,15 @@ a, button {
     &:focus-visible {
         outline: auto !important;
         border: inherit !important;
+    }
+}
+
+
+// primeNG
+
+.field.has-addons .control:last-child {
+    .p-multiselect {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
     }
 }

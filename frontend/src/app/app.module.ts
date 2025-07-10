@@ -3,9 +3,6 @@ import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 
 import { providePrimeNG } from 'primeng/config';
-import { definePreset } from '@primeng/themes';
-import Nora from '@primeng/themes/nora';
-
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
@@ -60,6 +57,7 @@ import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component'
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 import { MatomoConfig, matomoImports } from './routing/matomo';
+import { stylePreset } from './primeng-theme';
 
 export const appRoutes: Routes = [
     {
@@ -203,19 +201,6 @@ export const imports: any[] = [
     RouterModule.forRoot(appRoutes, routerOptions),
 ];
 
-/***
- * Override PrimeNG color palette: using values from ./src/_utilities.scss
- */
-const stylePreset = definePreset(Nora, {
-    semantic: {
-        primary: {
-            50: '#D6D6D6', // highlight color
-            600: '#303F9F', // "I-Analyzer blue"
-            700: '#495cc9', // accent color
-        }
-    }
-});
-
 if ('matomo' in environment) {
     imports.push(...matomoImports(environment.matomo as MatomoConfig));
 }
@@ -230,9 +215,9 @@ export const providers: any[] = [
     providePrimeNG({
         theme: {
             preset: stylePreset,
-            options: {
-                darkModeSelector: false || 'none'
-            },
+            // options: {
+            //     // darkModeSelector: false || 'none'
+            // },
         }
     }),
     TitleCasePipe,
