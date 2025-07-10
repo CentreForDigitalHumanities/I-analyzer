@@ -24,7 +24,7 @@
     padding-bottom: $spacing;
 
     &.is-scrolled-down {
-        box-shadow: $boxShadow;
+        box-shadow: var(--bulma-shadow);
     }
 
     + section {

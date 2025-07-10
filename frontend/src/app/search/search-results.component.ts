@@ -27,7 +27,7 @@ const MAXIMUM_DISPLAYED = 10000;
     standalone: false
 })
 export class SearchResultsComponent implements OnChanges, OnDestroy {
-    @ViewChild('resultsNavigation', { static: true })
+    @ViewChild('resultsNavigation')
     public resultsNavigation: ElementRef;
 
     /**
