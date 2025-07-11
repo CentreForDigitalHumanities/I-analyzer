@@ -1,42 +1,6 @@
-@import "../../_utilities";
-
 .control[data-balloon] ia-select-field {
     position: relative;
     z-index: 20;
-}
-
-.filter-icon {
-    border: none;
-}
-
-//Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted.
-::ng-deep ia-select-field {
-
-    .p-multiselect .p-multiselect-trigger {
-        display: none;
-    }
-
-    .button.p-widget {
-        font-size: 1rem;
-        border: 1px solid $primary;
-    }
-}
-
-::ng-deep p-dialog {
-
-    .p-dialog-content {
-        max-height: 600px;
-        min-height: 200px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-}
-
-::ng-deep .p-dialog-maximized {
-
-    .p-dialog-content {
-        max-height: 100%;
-    }
 }
 
 .field.has-addons {

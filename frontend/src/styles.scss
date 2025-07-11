@@ -1,6 +1,6 @@
-@import "utilities";
-@import "bulma/bulma";
-@import "balloon-css/src/balloon";
+@use "balloon-css/src/balloon";
+@use "utilities";
+@use "bulma/bulma";
 
 
 [data-balloon]:after {
@@ -20,15 +20,15 @@
 
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)
-    padding-top: $spacing;
-    padding-bottom: $spacing;
+    padding-top: utilities.$spacing;
+    padding-bottom: utilities.$spacing;
 
     &.is-scrolled-down {
         box-shadow: var(--bulma-shadow);
     }
 
     + section {
-        padding-top: $spacing;
+        padding-top: utilities.$spacing;
     }
 
     .search-controls {
@@ -62,12 +62,12 @@ a.dropdown-item:focus {
 }
 
 a.dropdown-item[disabled] {
-    color: $grey;
+    color: utilities.$grey;
     cursor: not-allowed;
 
     &:hover {
         background-color: inherit;
-        color: $grey;
+        color: utilities.$grey;
     }
 }
 
@@ -84,19 +84,19 @@ a.dropdown-item[disabled] {
 }
 
 .entity-person {
-    @include mark-entity($entity-person);
+    @include mark-entity(utilities.$entity-person);
 }
 
 .entity-location {
-    @include mark-entity($entity-location);
+    @include mark-entity(utilities.$entity-location);
 }
 
 .entity-organization {
-    @include mark-entity($entity-organization);
+    @include mark-entity(utilities.$entity-organization);
 }
 
 .entity-miscellaneous {
-    @include mark-entity($entity-miscellaneous);
+    @include mark-entity(utilities.$entity-miscellaneous);
 }
 
 .is-disabled {

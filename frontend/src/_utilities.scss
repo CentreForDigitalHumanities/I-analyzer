@@ -7,8 +7,17 @@
 //
 //
 
-$primary: #303F9F;
-$link: $primary;
+@use "bulma/sass/utilities/mixins";
+
+$ianalyzer-blue: #303F9F;
+
+@forward 'bulma/sass/utilities/initial-variables';
+@forward 'bulma/sass/utilities/derived-variables' with (
+    $primary: $ianalyzer-blue,
+    $link: $ianalyzer-blue,
+);
+
+
 $highlight-color: #D6D6D6;
 
 $spacing: 1rem;
@@ -26,9 +35,6 @@ $entity-location: #4e8f2d;
 $entity-organization: #efb71d;
 $entity-miscellaneous: #ee5986;
 
-@import "bulma/sass/utilities";
-@import "bulma/sass/utilities/mixins";
-
 // based on the Bulma loader
 
 %content-loader {
@@ -38,8 +44,8 @@ $entity-miscellaneous: #ee5986;
     position: relative;
 
     &:after {
-        @include loader;
-        border-color: transparent transparent $primary $primary !important;
+        @include mixins.loader;
+        // border-color: transparent transparent $primary $primary !important;
         border-style: solid;
         border-width: 0.25em;
         height: 5em;
