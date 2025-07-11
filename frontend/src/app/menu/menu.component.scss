@@ -15,29 +15,15 @@
     margin-right: 7px;
 }
 
-.navbar-item, .navbar-item.has-dropdown {
-    color: var(--bulma-primary-invert) !important;
-
+.navbar-item:not(.has-dropdown) {
     &:hover, &.is-active {
         background-color: var(--bulma-primary-50);
-
-        .navbar-link {
-            color: var(--bulma-primary-50-invert);
-        }
-    }
-}
-
-.navbar-menu {
-    background-color: inherit;
-    color: inherit;
-
-    .navbar-item, .navbar-link{
-        color: inherit
+        color: var(--bulma-primary-50-invert);
     }
 }
 
 .navbar-burger {
-    color: inherit;
+    color: var(--bulma-primary-invert);
 }
 
 .navbar-brand {
