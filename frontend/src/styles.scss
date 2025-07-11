@@ -20,15 +20,15 @@
 
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)
-    padding-top: utilities.$spacing;
-    padding-bottom: utilities.$spacing;
+    padding-top: utilities.$size-6;
+    padding-bottom: utilities.$size-6;
 
     &.is-scrolled-down {
         box-shadow: var(--bulma-shadow);
     }
 
     + section {
-        padding-top: utilities.$spacing;
+        padding-top: utilities.$size-6;
     }
 
     .search-controls {
@@ -111,7 +111,7 @@ a.dropdown-item[disabled] {
 // restore some rules from older bulma versions for compatibility
 
 .block, .message, .title, .box, .field, .content {
-    @include utilities.block(utilities.$spacing);
+    @include utilities.block();
 }
 
 .heading {

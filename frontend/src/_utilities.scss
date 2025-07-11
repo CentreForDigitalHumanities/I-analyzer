@@ -18,19 +18,6 @@ $theme-color: #303F9F;
 );
 @forward "bulma/sass/utilities/mixins";
 
-
-$highlight-color: #D6D6D6;
-
-$spacing: 1rem;
-
-//Highlight State
-$stateHighlightBorderColor: $highlight-color;
-$stateHighlightBgColor: $highlight-color;
-$stateHighlightTextColor: #000000;
-
-//Section padding
-$section-padding:	3rem 1.5rem;
-
 $entity-person:  #303F9F;
 $entity-location: #4e8f2d;
 $entity-organization: #efb71d;
