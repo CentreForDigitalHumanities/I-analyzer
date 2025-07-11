@@ -6,6 +6,8 @@ import { ApiService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { Subject } from 'rxjs';
 import { SlugifyPipe } from '../../shared/pipes/slugify.pipe';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-create-definition',
@@ -28,9 +30,11 @@ export class CreateDefinitionComponent {
     constructor(
         private apiService: ApiService,
         private router: Router,
-        private slugify: SlugifyPipe
+        private slugify: SlugifyPipe,
+        private title: Title,
     ) {
         this.corpus = new CorpusDefinition(this.apiService);
+        this.title.setTitle(pageTitle('New corpus'));
     }
 
     onJSONUpload(data: any) {

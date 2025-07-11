@@ -10,8 +10,8 @@ import * as _ from 'lodash';
 
 import { ISO6393Languages } from '../constants';
 import { actionIcons, directionIcons, formIcons } from '@shared/icons';
-import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import { mergeAsBooleans } from '@utils/observables';
+import { DialogService } from '@services';
 
 @Component({
     selector: 'ia-field-form',
@@ -42,13 +42,23 @@ export class FieldFormComponent {
                 'Metadata text. Limited to a single paragraph. Can be used to filter and/or search.',
             hasLanguage: true,
         },
-        { label: 'number (integer)', value: 'integer' },
-        { label: 'number (decimal)', value: 'float' },
-        { label: 'date', value: 'date' },
+        {
+            label: 'number (integer)', value: 'integer',
+            helpText: 'This field contains whole numbers',
+        },
+        {
+            label: 'number (decimal)', value: 'float',
+            helpText: 'This field contains numbers with (optional) decimals',
+        },
+        {
+            label: 'date',
+            value: 'date',
+            helpText: 'This field contains dates.',
+        },
         {
             label: 'boolean',
             value: 'boolean',
-            helpText: 'True/false field. Can be used to filter.',
+            helpText: 'This field contains true/false values.',
         },
     ];
 
@@ -77,7 +87,7 @@ export class FieldFormComponent {
 
     constructor(
         private el: ElementRef<HTMLElement>,
-        private corpusDefService: CorpusDefinitionService,
+        private dialogService: DialogService,
     ) {}
 
     get fields(): FormArray {
@@ -178,5 +188,9 @@ export class FieldFormComponent {
         const selector = '#' + this.moveControlID(index, field, delta);
         const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
         button.focus();
+    }
+
+    showFieldDocumentation() {
+        this.dialogService.showManualPage('types-of-fields');
     }
 }

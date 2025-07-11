@@ -125,12 +125,13 @@ export type DialogPageEvent =
   };
 
 
-export interface ManualSection {
+export interface ManualPage {
     title: string;
     id: string;
 }
 
 export interface ManualSection {
     title: string;
-    pages: ManualSection[];
+    permissions?: 'canEditCorpus'[]
+    pages: ManualPage[];
 };
