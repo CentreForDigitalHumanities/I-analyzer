@@ -1,6 +1,7 @@
 <p-datepicker name="minYear" [view]="unit" [dateFormat]="dateFormat"
     [minDate]="minDate" [maxDate]="maxDate"
     [ngModel]="value || default"
+    [ariaLabel]="ariaLabel"
     (onSelect)="set($event)"
     (keydown.enter)="set($event.target.value)">
 </p-datepicker>

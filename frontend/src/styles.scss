@@ -108,6 +108,11 @@ a.dropdown-item[disabled] {
     color: var(--bulma-primary-soft-invert);
 }
 
+.input-feedback {
+    margin-top: 0.5rem;
+}
+
+
 // restore some rules from older bulma versions for compatibility
 
 .block, .message, .title, .box, .field, .content {
@@ -144,5 +149,26 @@ a, button {
     .p-multiselect {
         border-start-start-radius: 0;
         border-end-start-radius: 0;
+    }
+}
+
+// vega
+
+.vega-bindings {
+    @extend .columns;
+    @extend .is-multiline;
+
+    .vega-bind {
+        @extend .field;
+        @extend .column;
+        @extend .is-4;
+
+        .vega-bind-name {
+            @extend .label;
+        }
+
+        select {
+            @extend .select;
+        }
     }
 }

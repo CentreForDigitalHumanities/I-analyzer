@@ -5,7 +5,7 @@ from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index
 from es.download import scroll
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from visualization import query, termvectors
 
 

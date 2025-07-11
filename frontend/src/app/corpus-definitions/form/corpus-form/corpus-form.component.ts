@@ -3,6 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ApiService } from '../../../services';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
+import { combineLatest, map, tap } from 'rxjs';
+import _ from 'lodash';
+import { actionIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-corpus-form',
@@ -15,7 +18,13 @@ export class CorpusFormComponent {
     steps$ = this.corpusDefService.steps$.asObservable();
     activeStep$ = this.corpusDefService.activeStep$.asObservable();
 
+    nextStep$ = combineLatest([this.steps$, this.activeStep$]).pipe(
+        map(([steps, current]) => _.nth(steps, current + 1)),
+    );
+
     corpus$ = this.corpusDefService.corpus$.asObservable();
+
+    actionIcons = actionIcons;
 
     constructor(
         private apiService: ApiService,
@@ -29,5 +38,9 @@ export class CorpusFormComponent {
 
     onActiveIndexChange(event: number) {
         this.corpusDefService.activateStep(event);
+    }
+
+    toNext() {
+        this.corpusDefService.activateStep(this.corpusDefService.activeStep$.value + 1);
     }
 }

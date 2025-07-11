@@ -13,7 +13,7 @@ from api.models import Query
 from api.api_query import api_query_to_es_query
 from es.es_alias import get_current_index_name
 from es.search import get_index, total_hits, hits
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)

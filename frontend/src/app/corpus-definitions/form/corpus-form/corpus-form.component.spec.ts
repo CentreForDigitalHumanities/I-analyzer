@@ -12,6 +12,9 @@ import { SharedModule } from '@shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 
 describe('CorpusFormComponent', () => {
     let component: CorpusFormComponent;
@@ -26,6 +29,9 @@ describe('CorpusFormComponent', () => {
                 MetaFormComponent,
                 FieldFormComponent,
                 UploadSampleComponent,
+                ImageUploadComponent,
+                FormFeedbackComponent,
+                DocumentationFormComponent,
             ],
             imports: [
                 SharedModule,

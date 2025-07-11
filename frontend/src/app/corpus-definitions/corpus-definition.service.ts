@@ -9,28 +9,35 @@ import {
     Delimiter,
 } from '../models/corpus-definition';
 
+
 @Injectable()
 export class CorpusDefinitionService implements OnDestroy {
     corpus$ = new BehaviorSubject<CorpusDefinition | undefined>(undefined);
+
     destroy$ = new Subject<void>();
 
     steps$ = new BehaviorSubject<MenuItem[]>([
         { label: 'Corpus information' },
-        { label: 'Sample data', disabled: true },
-        { label: 'Define fields', disabled: true },
+        { label: 'Upload source data' },
+        { label: 'Define fields' },
+        { label: 'Index data' },
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
-    constructor(private slugify: SlugifyPipe) {
+    constructor(
+        private slugify: SlugifyPipe,
+    ) {
         this.corpus$
             .pipe(takeUntil(this.destroy$), filter(_.negate(_.isUndefined)))
             .subscribe({
-                next: (corpus) =>
+                next: (corpus) => {
+                    this.setSteps(corpus);
                     corpus.definitionUpdated$
                         .pipe(takeUntil(this.destroy$))
                         .subscribe({
                             next: () => this.setSteps(this.corpus$.value),
-                        }),
+                        });
+                },
             });
     }
 
@@ -128,13 +135,40 @@ export class CorpusDefinitionService implements OnDestroy {
         this.corpus$.value.save();
     }
 
-    private setSteps(corpus: CorpusDefinition) {
-        if (!_.isEmpty(corpus?.definition?.fields)) {
-            const newValue = this.steps$.value.map((step) => ({
-                ...step,
-                disabled: false,
-            }));
-            this.steps$.next(_.cloneDeep(newValue));
+    private metadataComplete(corpus: CorpusDefinition) {
+        const meta = corpus.definition?.meta;
+
+        if (!meta?.title.length) {
+            return false;
         }
+        if (!meta?.description?.length) {
+            return false;
+        }
+        if (!meta?.date_range?.min || !meta?.date_range?.max) {
+            return false;
+        }
+        return true;
+    }
+
+    private hasFields(corpus: CorpusDefinition) {
+        return !_.isEmpty(corpus?.definition.fields);
+    }
+
+    private setSteps(corpus: CorpusDefinition) {
+        let maxStep = Infinity;
+        if (!this.metadataComplete(corpus)) {
+            maxStep = 0;
+        }
+        else if (!this.hasFields(corpus)) {
+            maxStep = 1;
+        }
+
+        const steps = this.steps$.value.map(
+            (step, index) => ({
+                ...step,
+                disabled: index > maxStep,
+            })
+        );
+        this.steps$.next(steps);
     }
 }

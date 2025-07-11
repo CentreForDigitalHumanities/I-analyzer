@@ -9,6 +9,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { CorpusDefinition } from '@models/corpus-definition';
 import { mockCorpusDefinition } from 'mock-data/corpus-definition';
 import { ApiService } from '@services';
+import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { ApiServiceMock } from 'mock-data/api';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 
 
 describe('MetaFormComponent', () => {
@@ -18,19 +22,31 @@ describe('MetaFormComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [MetaFormComponent],
+            declarations: [
+                MetaFormComponent,
+                ImageUploadComponent,
+                DocumentationFormComponent,
+                FormFeedbackComponent,
+            ],
             imports: [
                 SharedModule,
                 ReactiveFormsModule,
                 MultiSelectModule,
             ],
-            providers: [CorpusDefinitionService, SlugifyPipe],
+            providers: [
+                CorpusDefinitionService,
+                SlugifyPipe,
+                { provide: ApiService, useClass: ApiServiceMock },
+            ],
         }).compileComponents();
+
+        apiService = TestBed.inject(ApiService);
+        const definitionService = TestBed.inject(CorpusDefinitionService);
+        const corpus = new CorpusDefinition(apiService, 1);
+        definitionService.setCorpus(corpus);
 
         fixture = TestBed.createComponent(MetaFormComponent);
         component = fixture.componentInstance;
-        const corpus = new CorpusDefinition(apiService);
-        corpus.setFromDefinition(mockCorpusDefinition);
         component.corpus = corpus;
         fixture.detectChanges();
     });

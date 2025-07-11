@@ -14,6 +14,7 @@ export class DatePickerComponent {
     @Input() maxDate: Date;
     @Input() default: Date;
     @Input() unit: 'year'|'date' = 'year';
+    @Input() ariaLabel: string;
     @Output() onChange = new EventEmitter<Date>();
 
     constructor() { }

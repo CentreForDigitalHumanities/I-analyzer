@@ -13,7 +13,7 @@ from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
 from addcorpus.python_corpora import filters
-from addcorpus.python_corpora.extract import Metadata, XML
+from ianalyzer_readers.extract import Metadata, XML
 from addcorpus.python_corpora.load_corpus import corpus_dir
 
 from corpora.utils.constants import document_context
@@ -29,8 +29,8 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     variation in the key: it MUST be `'dutchnewspapers-public'`
     '''
 
-    title = "Public Dutch Newspapers"
-    description = "Publicly available collection of Dutch newspapers by the KB"
+    title = "Dutch Newspapers (public)"
+    description = "Collection of Dutch newspapers in the public domain, digitised by the Koninklijke Bibliotheek."
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = settings.DUTCHNEWSPAPERS_DATA
@@ -38,7 +38,9 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
+    description_page = 'description_public.md'
     citation_page = 'citation_public.md'
+    word_model_path = getattr(settings, "DUTCHNEWSPAPERS_WM", None)
 
     @property
     def es_settings(self):

@@ -3,14 +3,12 @@ from datetime import datetime
 from time import sleep
 
 from addcorpus.models import Corpus
-from es.es_index import perform_indexing, create_indexing_job
+from indexing.models import TaskStatus
+from indexing.run_job import perform_indexing
+from indexing.create_job import create_indexing_job
 
 START = datetime.strptime('1970-01-01', '%Y-%m-%d')
 END = datetime.strptime('1970-12-31', '%Y-%m-%d')
-
-
-def mock_client(es_index_client):
-    return es_index_client
 
 
 @pytest.mark.parametrize("prod, name, shards", [(True, "test-times-1", '5'), (False, "test-times", '1')])
@@ -89,3 +87,36 @@ def test_indexing_with_version(mock_corpus, corpus_definition, es_index_client):
     )
     perform_indexing(job)
     assert es_index_client.indices.exists(index="test-times-1") == True
+
+
+def test_task_status_success(mock_corpus, es_index_client):
+    '''Test task status on a successful job'''
+    corpus = Corpus.objects.get(name=mock_corpus)
+    job = create_indexing_job(corpus, START, END)
+    create_task = job.createindextasks.first()
+    assert create_task.status == TaskStatus.CREATED
+
+    perform_indexing(job)
+
+    create_task.refresh_from_db()
+    assert create_task.status == TaskStatus.DONE
+
+def test_task_status_failure(mock_corpus, es_index_client):
+    '''Test task status is stored properly when the job fails'''
+    corpus = Corpus.objects.get(name=mock_corpus)
+
+    # create index for this corpus
+    job = create_indexing_job(corpus, START, END, mappings_only=True)
+    perform_indexing(job)
+
+    # create a second job to create the same index ; will fail because the index
+    # already exists
+    invalid_job = create_indexing_job(corpus, START, END)
+
+    with pytest.raises(Exception):
+        perform_indexing(invalid_job)
+
+    create_task = invalid_job.createindextasks.first()
+    assert create_task.status == TaskStatus.ERROR
+    populate_task = invalid_job.populateindextasks.first()
+    assert populate_task.status == TaskStatus.CANCELLED

@@ -12,7 +12,7 @@ from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 

@@ -5,8 +5,9 @@ from django.core.management import BaseCommand
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.python_corpora.save_corpus import load_all_corpus_definitions
 from addcorpus.models import Corpus
-from es.es_index import perform_indexing, create_indexing_job
-from es.es_update import update_index, update_by_query
+from indexing.create_job import create_indexing_job
+from indexing.command_utils import run_job, add_create_only_argument, add_async_argument
+
 
 class Command(BaseCommand):
     help = '''
@@ -87,14 +88,31 @@ class Command(BaseCommand):
                 command after indexing is complete.'''
         )
 
-    def handle(self, corpus, start=None, end=None, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False, **options):
+        add_create_only_argument(parser)
+        add_async_argument(parser, 'Cannot be used in combination with --create-only.')
+
+    def handle(
+            self, corpus,
+            start=None,
+            end=None,
+            add=False,
+            delete=False,
+            update=False,
+            mappings_only=False,
+            prod=False,
+            rollover=False,
+            create_only=False,
+            run_async=False,
+            **options
+        ):
         corpus_object = self._corpus_object(corpus)
         corpus_object.validate_ready_to_index()
 
         corpus_definition = load_corpus_definition(corpus)
 
         self._validate_arguments(
-            start, end, add, delete, update, mappings_only, prod, rollover
+            start, end, add, delete, update, mappings_only, prod, rollover,
+            create_only, run_async,
         )
 
         try:
@@ -120,18 +138,24 @@ class Command(BaseCommand):
             rollover, update
         )
 
-        perform_indexing(job)
+        print(f'Created IndexJob #{job.pk}')
+
+        if not create_only:
+            run_job(job, run_async)
+
 
     def _validate_arguments(
         self,
-        start=None,
-        end=None,
-        add=False,
-        delete=False,
-        update=False,
-        mappings_only=False,
-        prod=False,
-        rollover=False,
+        start,
+        end,
+        add,
+        delete,
+        update,
+        mappings_only,
+        prod,
+        rollover,
+        create_only,
+        run_async,
     ):
         if (start or end) and mappings_only:
             raise ValueError(
@@ -167,6 +191,12 @@ class Command(BaseCommand):
             raise ValueError(
                 '--rollover can only be used in combination with --prod. Alias rollover '
                 'is only applicable with versioned indices.'
+            )
+
+        if create_only and run_async:
+            raise ValueError(
+                '--create-only cannot be used in combination with --async. --async '
+                'can only be specified when starting a job.'
             )
 
 

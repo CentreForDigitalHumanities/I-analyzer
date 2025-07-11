@@ -1,22 +1,24 @@
-<div>
+<form aria-labelledby="header-filters">
     <div class="field is-grouped">
         <div class="control is-expanded">
-            <h2 class="title">Filters</h2>
+            <h2 class="title" id="header-filters">Filters</h2>
         </div>
         <p class="control" style="float:right">
             <button *ngIf="anyActiveFilters$ | async"
-                class="button is-primary is-medium is-rounded"
+                class="button icon is-primary is-medium is-inverted"
                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
-                iaBalloonPosition="down-left">
+                iaBalloonPosition="down-left"
+                type="button">
                 <span class="icon">
                     <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
                 </span>
             </button>
             <button *ngIf="anyNonDefaultFilters$ | async"
-                class="button is-ghost is-medium is-rounded"
+                class="button icon is-primary is-medium is-inverted"
                 (click)="toggleActiveFilters()"
                 iaBalloon="{{(anyActiveFilters$ | async) ? ('Disable active filters') : ('Enable deactivated filters')}}"
-                iaBalloonPosition="down-left">
+                iaBalloonPosition="down-left"
+                type="button">
                 <fa-icon [icon]="filterIcons.toggle" aria-hidden="true"></fa-icon>
             </button>
         </p>
@@ -26,4 +28,4 @@
             <ia-filter-box [filter]="filter" [queryModel]="queryModel"></ia-filter-box>
         </div>
     </ng-container>
-</div>
+</form>

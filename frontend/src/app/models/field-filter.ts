@@ -86,7 +86,7 @@ export interface DateFilterData {
  */
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
     makeDefaultData(filterOptions: DateFilterOptions) {
-        const parse = value => _.isNull(value) ? undefined : this.parseDate(value);
+        const parse = value => (_.isNull(value) || _.isUndefined(value)) ? undefined : this.parseDate(value);
         return {
             min: parse(filterOptions.lower),
             max: parse(filterOptions.upper)

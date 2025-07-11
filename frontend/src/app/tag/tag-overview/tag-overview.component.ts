@@ -75,13 +75,17 @@ export class TagOverviewComponent implements OnInit {
     }
 
     makeQueryParams(corpusName, tag) {
-        const corpus = findByName(this.corpora, corpusName);
+        if (this.corpora) {
+            const corpus = findByName(this.corpora, corpusName);
 
-        const query = new QueryModel(corpus);
-        const tagfilter = query.filters.find(isTagFilter);
-        tagfilter.set([tag.id]);
+            if (corpus) {
+                const query = new QueryModel(corpus);
+                const tagfilter = query.filters.find(isTagFilter);
+                tagfilter.set([tag.id]);
 
-        const params = query.toQueryParams();
-        return params;
+                const params = query.toQueryParams();
+                return params;
+            }
+        }
     }
 }

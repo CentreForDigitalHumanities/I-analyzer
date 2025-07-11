@@ -1,7 +1,6 @@
-import addcorpus.models
 from django.db import migrations, models
 from django.apps import AppConfig
-from datetime import date
+from datetime import date, datetime
 
 
 def fill_min_max_years_from_date(apps: AppConfig, schema_editor):
@@ -19,6 +18,8 @@ def fill_min_max_date_from_year(apps: AppConfig, schema_editor):
         config.max_date = date(year=config.max_year, month=12, day=31)
         config.save()
 
+def default_max_year() -> int:
+    return datetime.now().year
 
 class Migration(migrations.Migration):
 
@@ -32,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpusconfiguration',
             name='max_year',
-            field=models.IntegerField(default=addcorpus.models.default_max_year, help_text='latest year for the data in the corpus'),
+            field=models.IntegerField(default=default_max_year, help_text='latest year for the data in the corpus'),
         ),
         migrations.AddField(
             model_name='corpusconfiguration',

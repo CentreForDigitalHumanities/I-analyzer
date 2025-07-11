@@ -82,6 +82,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'password': '3/minute',
         'registration': '5/minute',
+        'download': '5/minute',
     }
 }
 
@@ -129,6 +130,8 @@ AUTH_USER_MODEL = 'users.CustomUser'
 REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': False,
 }
 
 LOGO_LINK = 'https://dhstatic.hum.uu.nl/logo-cdh/png/UU_CDH_logo_EN_whiteFC.png'

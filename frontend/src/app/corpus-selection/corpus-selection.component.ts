@@ -28,7 +28,7 @@ export class CorpusSelectionComponent implements OnInit {
 
     constructor(private authService: AuthService) {
         this.showManageLink$ = this.authService.currentUser$.pipe(
-            map((user) => user?.isAdmin)
+            map((user) => user?.canEditCorpora)
         );
         this.showCorpusFilters = _.get(environment, 'showCorpusFilters', true);
      }
