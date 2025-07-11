@@ -113,14 +113,14 @@ a.dropdown-item[disabled] {
 }
 
 table.spreadsheet {
-    border: 2px solid $grey-lighter;
+    border: 2px solid var(--bulma-border);
 
     thead th, tbody td, tbody th {
         border-width: 1px;
     }
 
     th {
-        background-color: $light;
+        background-color: utilities.$background;
     }
 
     tr:hover {
