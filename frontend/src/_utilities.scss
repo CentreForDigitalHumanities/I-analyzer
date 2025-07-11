@@ -9,13 +9,14 @@
 
 @use "bulma/sass/utilities/mixins";
 
-$ianalyzer-blue: #303F9F;
+$theme-color: #303F9F;
 
 @forward 'bulma/sass/utilities/initial-variables';
 @forward 'bulma/sass/utilities/derived-variables' with (
-    $primary: $ianalyzer-blue,
-    $link: $ianalyzer-blue,
+    $primary: $theme-color,
+    $link: $theme-color,
 );
+@forward "bulma/sass/utilities/mixins";
 
 
 $highlight-color: #D6D6D6;
@@ -45,7 +46,7 @@ $entity-miscellaneous: #ee5986;
 
     &:after {
         @include mixins.loader;
-        // border-color: transparent transparent $primary $primary !important;
+        border-color: transparent transparent $theme-color $theme-color !important;
         border-style: solid;
         border-width: 0.25em;
         height: 5em;

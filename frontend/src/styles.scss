@@ -110,9 +110,8 @@ a.dropdown-item[disabled] {
 
 // restore some rules from older bulma versions for compatibility
 
-.block:not(:last-child), .message:not(:last-child), .title:not(:last-child),
-    .box:not(:last-child), .field:not(:last-child), .content:not(:last-child) {
-    margin-bottom: var(--bulma-block-spacing);
+.block, .message, .title, .box, .field, .content {
+    @include utilities.block(utilities.$spacing);
 }
 
 .heading {
@@ -129,6 +128,7 @@ a.dropdown-item[disabled] {
 }
 
 // reset focus styling for accessibility
+// bulma's customisation makes focus rings invisible on blue background
 
 a, button {
     &:focus-visible {
