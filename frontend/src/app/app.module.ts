@@ -215,9 +215,9 @@ export const providers: any[] = [
     providePrimeNG({
         theme: {
             preset: stylePreset,
-            // options: {
-            //     // darkModeSelector: false || 'none'
-            // },
+            options: {
+                darkModeSelector: '[data-theme="dark"]'
+            },
         }
     }),
     TitleCasePipe,
