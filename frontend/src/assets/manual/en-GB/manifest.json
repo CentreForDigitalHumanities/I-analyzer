@@ -76,6 +76,10 @@
             {
                 "id": "types-of-fields",
                 "title": "Types of fields"
+            },
+            {
+                "id": "importing-and-exporting-corpora",
+                "title": "Importing and exporting corpora"
             }
         ]
     }

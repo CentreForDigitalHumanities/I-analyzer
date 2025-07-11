@@ -11,13 +11,15 @@
 
         <h1 class="title">Import/export corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
 
-        <h2 class="title is-4">Export</h2>
-
         <p class="block">
-            You can download the definition of this corpus as a JSON file. This file
-            describes how you have configured this corpus: the name, description,
-            fields, et cetera. It does not contain any source files you uploaded.
+            You can download or upload a file with your corpus configuration.
+            You can use this to create a copy or backup of your corpus, or restore
+            your corpus from a backup.
+            For more information about these files, see the
+            <a [routerLink]="['/manual', 'importing-and-exporting-corpora']">manual</a>.
         </p>
+
+        <h2 class="title is-4">Download</h2>
 
         <div class="block">
             <button class="button" (click)="downloadJSON()">
@@ -28,27 +30,7 @@
             </button>
         </div>
 
-        <h2 class="title is-4">Import</h2>
-
-        <p class="block">
-            You can upload a JSON definition file for this corpus. This will configure
-            the corpus according to the specifications in the file.
-        </p>
-
-        <p class="block">
-            JSON uploads are only accepted if they follow the format used by I-analyzer.
-            If you download a corpus definition from I-analyzer and then upload it (for
-            example, to restore an earlier backup), this is always the case.
-        </p>
-
-        <p class="block">
-            <i>Advanced usage:</i>
-            If you want to write or edit the JSON file for a corpus directly, you can
-            consult the
-            <a href="/api/corpus/definition-schema">specification</a>.
-            This is encoded as a
-            as a <a href="https://json-schema.org/">JSON schema</a>.
-        </p>
+        <h2 class="title is-4">Upload</h2>
 
         <form>
             <div class="block">
