@@ -6,6 +6,9 @@ import { ApiService } from '@services';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-definition-in-out',
@@ -22,9 +25,19 @@ export class DefinitionInOutComponent {
 
     error: Error;
 
-    constructor(private apiService: ApiService, private route: ActivatedRoute) {
+    constructor(
+        private apiService: ApiService,
+        private route: ActivatedRoute,
+        private title: Title,
+    ) {
         const id = parseInt(this.route.snapshot.params['corpusID'], 10);
         this.corpus = new CorpusDefinition(this.apiService, id);
+        this.corpus.definitionUpdated$.pipe(
+            takeUntilDestroyed(),
+        ).subscribe(() => {
+            const corpusTitle = this.corpus.definition.meta.title;
+            this.title.setTitle(pageTitle(`${corpusTitle}: import/export`));
+        });
     }
 
     downloadJSON() {
