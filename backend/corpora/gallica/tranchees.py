@@ -9,7 +9,7 @@ class JournauxTranchees(Gallica):
     title = "Journaux de tranchées"
     description = "Publications distributed in the trenches of World War 1"
     min_date = datetime(year=1914, month=1, day=1)
-    max_date = datetime(year=1954, month=12, day=31)
+    max_date = datetime(year=1924, month=12, day=31)
     publication_ids = [
         "cb32735055z", # Cafard muselé
         "cb32736738j", # Le Camouflet
