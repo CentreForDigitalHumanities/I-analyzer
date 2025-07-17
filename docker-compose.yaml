@@ -15,6 +15,7 @@ services:
   backend:
     build:
       context: ./backend
+      target: ianalyzer
     depends_on:
       - db
       - celery
