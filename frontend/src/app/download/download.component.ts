@@ -61,6 +61,9 @@ export class DownloadComponent implements OnChanges {
     totalResults: TotalResults;
     downloadDisabled$: Observable<boolean>;
 
+    tagsSelected = false;
+    documentLinkSelected = false;
+
     private directDownloadLimit: number = environment.directDownloadLimit;
     private userDownloadLimit: number;
 
@@ -68,16 +71,6 @@ export class DownloadComponent implements OnChanges {
         text: 'view downloads',
         route: ['/download-history'],
     };
-
-    private tagField: ReducedCorpusField = {
-        name: 'tags',
-        displayName: 'Your tags'
-    }
-
-    private documentLinkField: ReducedCorpusField = {
-        name: 'document_link',
-        displayName: 'Document link'
-    }
 
     constructor(
         private downloadService: DownloadService,
@@ -92,7 +85,7 @@ export class DownloadComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
-            this.availableCsvFields = _.concat(_.filter(this.corpus?.fields, 'downloadable'), [this.tagField, this.documentLinkField]);
+            this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
             this.selectedCsvFields = _.filter(this.corpus?.fields, 'csvCore');
         }
         if (changes.queryModel) {
@@ -187,6 +180,13 @@ export class DownloadComponent implements OnChanges {
         const selected = _.map(selectedFields, 'name');
         if (this.resultsConfig.state$.value.highlight) {
             selected.push('context');
+        }
+        console.log(this.tagsSelected);
+        if (this.tagsSelected) {
+            selected.push('tags');
+        }
+        if (this.documentLinkSelected) {
+            selected.push('document_link');
         }
         return selected;
     }
