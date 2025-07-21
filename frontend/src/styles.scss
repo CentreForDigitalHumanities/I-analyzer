@@ -12,7 +12,7 @@
 }
 
 .search-section {
-    background: utilities.$scheme-main;
+    background: var(--bulma-body-background-color);
     position: sticky;
     top: 0;
     transition: box-shadow 0.2s;

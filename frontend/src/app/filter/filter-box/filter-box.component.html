@@ -13,14 +13,14 @@
                 <fa-icon [icon]="actionIcons.tooltip" aria-hidden="true" />
             </span>
             <button *ngIf="(filter.isDefault$ | async) === false"
-                class="button icon is-primary is-inverted"
+                class="button icon is-ghost"
                 type="button"
                 (click)="filter.reset()" iaBalloon="Reset this filter to its default values"
                 iaBalloonPosition="down-left">
                 <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
             </button>
             <button *ngIf="(filter.isDefault$ | async) === false"
-                class="button is-primary is-inverted icon"
+                class="button is-ghost icon"
                 type="button"
                 (click)="filter.toggle()"
                 iaBalloon="{{filter.state$.value.active ? 'Disable this filter' : 'Enable this filter'}}"
