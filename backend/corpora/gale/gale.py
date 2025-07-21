@@ -12,6 +12,7 @@ from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
+from api.utils import find_media_file
 from media.media_url import media_url
 
 
@@ -281,8 +282,12 @@ class GaleCorpus(XMLCorpusDefinition):
             page_no = str(start_index + page).zfill(3)
             prefix = starting_page.rsplit('-', 1)[0]
             image_name = '{}-{}.tif'.format(prefix, page_no)
-            full_path = os.path.join(self.data_directory, image_directory, image_name)
-            if os.path.isfile(full_path):
+            image_path = os.path.join(image_directory, image_name)
+
+            # while we serve PNGs, converting or looking up an existing converted file is handled in self.process_scan()
+            # so here we still have to look for the source TIFFs
+            full_path = find_media_file(self.data_directory, image_path, 'image/tiff')
+            if full_path is not None:
                 image_list.append(full_path)
             else:
                 continue

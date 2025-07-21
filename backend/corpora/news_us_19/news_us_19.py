@@ -13,7 +13,6 @@ class NewsUS(GaleCorpus):
     data_directory = settings.NEWS_US_19_DATA
     es_index = getattr(settings, 'PERIODICALS_NEWS_US_19_ES_INDEX', 'news_us_19')
     #image = 'Fleet_Street.jpg'
-    scan_image_type = 'image/tiff'
     #description_page = '19thCenturyUKPeriodicals.md'
     languages = ['en']
     category = 'periodical'
