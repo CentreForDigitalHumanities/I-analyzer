@@ -50,7 +50,7 @@ class ResultsDownloadView(DownloadThrottleMixin, APIView):
             user = request.user if request.user.is_authenticated else None
             download = Download.objects.create(
                 download_type='search_results', corpus=corpus, parameters=request.data, user=user)
-            csv_path = tasks.make_download(request.data, download.id, size)
+            csv_path = tasks.make_download(request.data, download.id, size, user)
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)

@@ -1,9 +1,13 @@
 import csv
 import os
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+
+from addcorpus.models import Corpus
+from tag.models import TaggedDocument
+from users.models import CustomUser
 from visualization.term_frequency import parse_datestring
 
 QUERY_CONTEXT_INFIX = '_qic_'
@@ -41,7 +45,14 @@ def sort_fieldnames(fns: Iterable[str]) -> List[str]:
     return reg_fieldnames + sorted(context_fieldnames)
 
 
-def search_results_csv(results: Iterable[Dict], fields, query, download_id) -> Union[os.PathLike, str]:
+def search_results_csv(
+    results: Iterable[Dict],
+    fields,
+    query,
+    download_id: str,
+    corpus: Corpus,
+    user: Optional[CustomUser],
+) -> Union[os.PathLike, str]:
     '''Writes a CSV file for search results.
     Operates on either lists or generator containing results.
     '''
@@ -53,22 +64,23 @@ def search_results_csv(results: Iterable[Dict], fields, query, download_id) -> U
     field_set.discard('context')
     fieldnames = sort_fieldnames(field_set)
 
-    entries = generate_rows(results, fields, query, field_set)
+    entries = generate_rows(results, fields, query, field_set, corpus, user)
 
     filepath = write_file(filename, fieldnames, entries,
                           dialect='resultsDialect')
     return filepath
 
 
-def generate_rows(results: Iterable[Dict], fields, query, field_set):
+def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, user):
     ''' Yields rows of data to be written to the CSV file'''
     for result in results:
         entry = {'query': query}
+        doc_id = result['_id']
         for field in fields:
             # this assures that old indices, which have their id on
             # the top level '_id' field, will fill in id here
             if field == "id" and "_id" in result:
-                entry.update({field: result['_id']})
+                entry.update({field: doc_id})
             if field in result['_source']:
                 entry.update({field: result['_source'][field]})
         highlights = result.get('highlight')
@@ -81,6 +93,21 @@ def generate_rows(results: Iterable[Dict], fields, query, field_set):
                     field_set.update([highlight_field_name])
                     soup = BeautifulSoup(hi, 'html.parser')
                     entry.update({highlight_field_name: soup.get_text()})
+        if 'tags' in fields:
+            tags = ''
+            if user:
+                try:
+                    tagged_doc = TaggedDocument.objects.get(
+                        corpus=corpus, doc_id=doc_id
+                    )
+                    tags = tagged_doc.tags_to_str(user)
+                except:
+                    pass
+            entry.update({'tags': tags})
+        if 'document_link' in fields:
+            entry.update(
+                {'document_link': f'{settings.BASE_URL}/{corpus.name}/{doc_id}'}
+            )
         yield entry
 
 

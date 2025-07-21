@@ -27,6 +27,7 @@ import {
     PageResultsParameters,
 } from '@models/page-results';
 
+type ReducedCorpusField = Pick<CorpusField, 'name' | 'displayName'>;
 
 @Component({
     selector: 'ia-download',
@@ -38,7 +39,7 @@ export class DownloadComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
 
     public selectedCsvFields: CorpusField[];
-    public availableCsvFields: CorpusField[];
+    public availableCsvFields: CorpusField | ReducedCorpusField [];
 
     public isDownloading: boolean;
     public isModalActive = false;
@@ -59,6 +60,9 @@ export class DownloadComponent implements OnChanges {
 
     totalResults: TotalResults;
     downloadDisabled$: Observable<boolean>;
+
+    tagsSelected = false;
+    documentLinkSelected = false;
 
     private directDownloadLimit: number = environment.directDownloadLimit;
     private userDownloadLimit: number;
@@ -176,6 +180,13 @@ export class DownloadComponent implements OnChanges {
         const selected = _.map(selectedFields, 'name');
         if (this.resultsConfig.state$.value.highlight) {
             selected.push('context');
+        }
+        console.log(this.tagsSelected);
+        if (this.tagsSelected) {
+            selected.push('tags');
+        }
+        if (this.documentLinkSelected) {
+            selected.push('document_link');
         }
         return selected;
     }
