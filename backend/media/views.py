@@ -4,7 +4,7 @@ import os
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
 from addcorpus.permissions import (CanSearchCorpus,
                                    corpus_name_from_request)
-from api.utils import check_json_keys
+from api.utils import check_json_keys, find_media_file
 from django.http.response import FileResponse
 from rest_framework.exceptions import APIException, NotFound, ParseError
 from rest_framework.permissions import IsAuthenticated
@@ -44,8 +44,9 @@ class GetMediaView(APIView):
                                 as_attachment=True,
                                 content_type='application/pdf')
         else:
-            path = os.path.join(corpus.data_directory, image_path)
-            if not os.path.isfile(path):
+            mimetype = getattr(corpus, 'scan_image_type')
+            path = find_media_file(corpus.data_directory, image_path, mimetype)
+            if not path:
                 raise NotFound()
             else:
                 _, filename = os.path.split(image_path)

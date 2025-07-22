@@ -16,6 +16,7 @@ from django.conf import settings
 from ianalyzer_readers.xml_tag import Tag
 from ianalyzer_readers import extract
 
+from api.utils import find_media_file
 from indexing.run_update_task import update_document
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
@@ -254,7 +255,7 @@ class GuardianObserver(XMLCorpusDefinition):
         filename = request_args['filename']
 
         pdf_data = None
-        with ZipFile(join(self.data_directory, image_path), mode='r') as zipped:
+        with ZipFile(find_media_file(self.data_directory, image_path, 'application/zip'), mode='r') as zipped:
             zip_info = zipped.getinfo(filename)
             pdf_data = zipped.read(zip_info)
         if pdf_data:
