@@ -11,8 +11,8 @@ class NewsUS(GaleCorpus):
     min_date = datetime(1800,1,1)
     max_date = datetime(1900,1,1)
     data_directory = settings.NEWS_US_19_DATA
-    es_index = getattr(settings, 'PERIODICALS_NEWS_US_19_ES_INDEX', 'news_us_19')
     #description_page = '19thCenturyUKPeriodicals.md'
+    es_index = getattr(settings, 'NEWS_US_19_ES_INDEX', 'news_us_19')
     image = 'press_room.jpg'
     languages = ['en']
     category = 'periodical'
