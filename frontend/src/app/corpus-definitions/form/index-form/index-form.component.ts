@@ -2,8 +2,9 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/
 import { CorpusDefinition } from '@models/corpus-definition';
 import { APIIndexHealth, isComplete, JobStatus } from '@models/indexing';
 import { ApiService } from '@services';
+import { actionIcons } from '@shared/icons';
 import * as _ from 'lodash';
-import { map, Subject, switchMap } from 'rxjs';
+import { map, Subject, switchMap, merge, filter } from 'rxjs';
 
 /** Possible states for the interface of this component */
 type DisplayState = {
@@ -84,6 +85,11 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
     state$ = new Subject<DisplayState>;
     destroy$ = new Subject<void>();
 
+    actionIcons = actionIcons;
+
+    private jobID: number;
+    private stopping$ = new Subject<boolean>();
+
     constructor(
         private apiService: ApiService,
     ) {}
@@ -94,22 +100,39 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
                 const state = healthToDisplayState(health);
                 this.state$.next(state);
                 if (state.status == 'working') {
-                    this.pollJob(health.latest_job);
+                    this.jobID = health.latest_job;
+                    this.pollJob();
                 }
             });
         }
     }
 
     ngOnDestroy(): void {
+        this.stopping$.complete();
         this.destroy$.next();
         this.destroy$.complete();
     }
 
     startIndex() {
         this.state$.next({ status: 'working' });
-        this.apiService.createIndexJob(this.corpus.id).subscribe((response) =>
-            this.pollJob(response.id)
-        );
+        this.apiService.createIndexJob(this.corpus.id).subscribe((response) => {
+            this.jobID = response.id;
+            this.pollJob();
+        });
+    }
+
+    stopIndex() {
+        this.stopping$.next(true);
+        this.apiService.stopIndexJob(this.jobID).subscribe({
+            next: () => {
+                this.stopping$.next(false);
+                this.state$.next({ status: 'index required', reason: 'job cancelled' });
+            },
+            error: () => {
+                this.stopping$.next(false);
+                this.state$.next({ status: 'indexing failed' });
+            },
+        });
     }
 
     toggleCorpusActive() {
@@ -131,8 +154,11 @@ export class IndexFormComponent implements OnChanges, OnDestroy {
         }
     }
 
-    private pollJob(jobID: number) {
-        this.apiService.pollIndexJob(jobID, this.destroy$).pipe(
+    private pollJob() {
+        this.apiService.pollIndexJob(
+            this.jobID,
+            merge(this.destroy$, this.stopping$),
+        ).pipe(
             switchMap(() => this.apiService.getIndexHealth(this.corpus.id)),
             map(healthToDisplayState),
         ).subscribe(state => this.state$.next(state));

@@ -518,6 +518,12 @@ export class ApiService {
         )
     }
 
+    stopIndexJob(jobID: number) {
+        return this.http.get(
+            this.apiRoute(this.indexApiUrl, `jobs/${jobID}/stop/`)
+        );
+    }
+
     private pollRequest<Outcome>(
         makeRequest: () => Observable<Outcome>,
         isDone: (o: Outcome) => boolean,
