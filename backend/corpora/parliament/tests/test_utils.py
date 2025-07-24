@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-from corpora.parliament.utils.parlamint import (
+from corpora.parliament.utils.parlamint_v4 import (
     detokenize_parlamint,
     format_annotated_text,
 )
