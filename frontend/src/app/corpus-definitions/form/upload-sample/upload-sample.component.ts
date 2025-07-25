@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Corpus } from '@models';
-import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
+import { APICorpusDefinitionField, CorpusDataFile, DataFileInfo, FIELD_TYPE_OPTIONS } from '@models/corpus-definition';
 import { ApiService, DialogService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
@@ -127,4 +127,9 @@ export class UploadSampleComponent implements OnInit, OnDestroy {
     openDocumentation() {
         this.dialogService.showManualPage('uploading-source-data');
     }
+
+    fieldTypeLabel(value: APICorpusDefinitionField['type']) {
+        return FIELD_TYPE_OPTIONS.find(option => option.value == value)?.label;
+    }
+
 }
