@@ -1,6 +1,6 @@
 import datetime
 import os
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Any
 
 import numpy as np
 import pandas as pd
@@ -18,14 +18,16 @@ def map_col(col: pd.Series) -> str:
     if col.dtypes == object:
         if is_date_col(col):
             return 'date'
-        return 'text'
+        if is_long_text_col(col):
+            return 'text_content'
+        return 'text_metadata'
     elif col.dtypes == np.float64:
         return 'float'
     elif col.dtypes == np.int64:
         return 'integer'
     elif col.dtypes == bool:
         return 'boolean'
-    return 'text'
+    return 'text_metadata'
 
 
 def is_date_col(col: pd.Series) -> bool:
@@ -46,3 +48,11 @@ def is_date(input: str) -> Optional[datetime.datetime]:
         return True
     except (ValueError, TypeError):
         return False
+
+
+def is_long_text(value: Any) -> bool:
+    return isinstance(value, str) and (len(value) > 100 or '\n' in value)
+
+
+def is_long_text_col(col: pd.Series) -> bool:
+    return col.apply(is_long_text).any()
