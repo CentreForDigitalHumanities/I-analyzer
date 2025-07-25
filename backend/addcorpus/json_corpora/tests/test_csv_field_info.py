@@ -1,4 +1,4 @@
-from addcorpus.utils import is_date, is_date_col
+from addcorpus.json_corpora.csv_field_info import is_date, is_date_col
 import pandas as pd
 
 
