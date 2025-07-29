@@ -76,6 +76,15 @@
                     <div class="navbar-dropdown is-right"
                         id="userDropdown" #userDropdown>
                         <a class="navbar-item"
+                            *ngIf="canEditCorpora$ | async"
+                            [routerLink]="['/corpus-definitions']"
+                            [routerLinkActive]="'is-active'">
+                            <span class="icon" arai-hidden="true">
+                                <fa-icon [icon]="navIcons.myCorpora" />
+                            </span>
+                            My corpora
+                        </a>
+                        <a class="navbar-item"
                             [routerLink]="['/search-history']"
                             [routerLinkActive]="'is-active'">
                             <span class="icon" aria-hidden="true">
