@@ -4,8 +4,13 @@ import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ApiService } from '../../../services';
 import { MenuItem } from 'primeng/api';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { tap } from 'rxjs';
+import { combineLatest, map, tap } from 'rxjs';
 import { cloneDeep } from 'lodash';
+import * as _ from 'lodash';
+import { actionIcons } from '@shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ia-corpus-form',
@@ -17,19 +22,36 @@ export class CorpusFormComponent {
     steps$ = this.corpusDefService.steps$.asObservable();
     activeStep$ = this.corpusDefService.activeStep$.asObservable();
 
+    nextStep$ = combineLatest([this.steps$, this.activeStep$]).pipe(
+        map(([steps, current]) => _.nth(steps, current + 1)),
+    );
+
     corpus$ = this.corpusDefService.corpus$.asObservable();
+
+    actionIcons = actionIcons;
 
     constructor(
         private apiService: ApiService,
         private route: ActivatedRoute,
-        private corpusDefService: CorpusDefinitionService
+        private corpusDefService: CorpusDefinitionService,
+        private title: Title,
     ) {
         const id = parseInt(this.route.snapshot.params['corpusID'], 10);
         const fetchedCorpus = new CorpusDefinition(this.apiService, id);
         this.corpusDefService.setCorpus(fetchedCorpus);
+        fetchedCorpus.definitionUpdated$.pipe(
+            takeUntilDestroyed(),
+        ).subscribe(() => {
+            const corpusTitle = fetchedCorpus.definition.meta.title;
+            this.title.setTitle(pageTitle(`${corpusTitle}: edit`));
+        });
     }
 
     onActiveIndexChange(event: number) {
         this.corpusDefService.activateStep(event);
+    }
+
+    toNext() {
+        this.corpusDefService.activateStep(this.corpusDefService.activeStep$.value + 1);
     }
 }

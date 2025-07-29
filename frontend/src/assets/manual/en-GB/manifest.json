@@ -78,5 +78,27 @@
                 "title": "Compare similarity"
             }
         ]
+    },
+    {
+        "title": "Creating your own corpus",
+        "permissions": ["canEditCorpus"],
+        "pages": [
+            {
+                "id": "creating-a-corpus",
+                "title": "Creating a corpus"
+            },
+            {
+                "id": "uploading-source-data",
+                "title": "Uploading source data"
+            },
+            {
+                "id": "types-of-fields",
+                "title": "Types of fields"
+            },
+            {
+                "id": "importing-and-exporting-corpora",
+                "title": "Importing and exporting corpora"
+            }
+        ]
     }
 ]

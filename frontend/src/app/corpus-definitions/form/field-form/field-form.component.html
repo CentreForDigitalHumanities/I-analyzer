@@ -12,29 +12,54 @@
                     <input class="input" type="text" name="column_name"
                         [value]="field.get('extract').get('column').value" disabled>
                 </div>
-                <p class="help">The column name in your CSV (sample) file. This can not be changed.</p>
+                <p class="help">The column name in your CSV (sample) file. This cannot be changed.</p>
             </div>
             <div class="field">
                 <label class="label" for="display_name">Display name</label>
                 <div class="control">
                     <input class="input" type="text" name="display_name" formControlName="display_name" />
                 </div>
+                <p class="help">
+                    The name that will be shown to users.
+                </p>
             </div>
 
             <div class="field">
-                <label class="label" for="description">Description</label>
+                <label class="label" for="description">Description (optional)</label>
                 <div class="control">
-                    <input class="input" type="text" name="description" formControlName="description" />
+                    <input class="input" type="text" name="description" formControlName="description"
+                        maxlength="150" />
                 </div>
+                <p class="help">
+                    A brief explanation of the field.
+                    If needed, you can include more extensive descriptions in the "corpus
+                    information" step, by adding documentation to your corpus.
+                </p>
             </div>
 
             <div class="field">
-                <label class="label" for="type">Type</label>
+                <label class="label" for="input-type">Type</label>
                 <div class="control">
-                    <p-dropdown [options]="fieldTypeOptions" formControlName="type" optionLabel="label"
-                        optionValue="value" placeholder="select type" />
+                    <ia-dropdown formControlName="type" id="input-type">
+                        <span iaDropdownLabel>{{getFieldProperty(field, 'label')}}</span>
+                        <div iaDropdownMenu>
+                            <a iaDropdownItem *ngFor="let option of fieldTypeOptions"
+                                [value]="option.value">
+                                {{option.label}}
+                                <span class="help">{{option.helpText}}</span>
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
-                <p *ngIf="getFieldProperty(field, 'helpText') as help" class="help">{{help}}</p>
+                <p class="help content">
+                    What type of data is this? See the
+                    <a role="button" tabindex="0"
+                        (click)="showFieldDocumentation()"
+                        (keydown.enter)="showFieldDocumentation()"
+                        (keydown.space)="showFieldDocumentation()">
+                        documentation of field types</a>
+                    for more information.
+                </p>
             </div>
 
             <div class="field">
@@ -44,13 +69,13 @@
                         class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="search" formControlName="search" /> Search
-                            <p class="help">Enable full-text search for this field.</p>
+                            <p class="help">Enable text searching within this field.</p>
                         </label>
                     </div>
                     <div *ngIf="field.get('type').value !== 'text_content' " class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="filter" formControlName="filter" /> Filter
-                            <p class="help">Enable filtering on values in this field.</p>
+                            <p class="help">Add a filter widget for this field.</p>
                         </label>
                     </div>
                     <div class="control">
@@ -59,20 +84,33 @@
                             <p class="help">Show this field in the results overview.</p>
                         </label>
                     </div>
-                    <div *ngIf="field.get('type').value !== 'text_content' " class="control">
+                    <div *ngIf="field.get('type').value !== 'text_content' && field.get('type').value !== 'boolean'" class="control">
                         <label class="checkbox">
                             <input type="checkbox" name="sort" formControlName="sort" /> Sort
-                            <p class="help">Enable sorting on values of this field.</p>
+                            <p class="help">
+                                Enable sorting on values of this field
+                                <ng-container [ngSwitch]="field.get('type').value">
+                                    <ng-container *ngSwitchCase="'text_metadata'">
+                                        (alphabetically)</ng-container>
+                                    <ng-container *ngSwitchCase="'date'">
+                                        (chronologically)</ng-container>
+                                </ng-container>.
+                            </p>
                         </label>
                     </div>
                 </ng-container>
             </div>
             <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
+                <label class="label">Language (optional)</label>
                 <div class="control">
                     <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name"
-                        optionValue="code" placeholder="select language (optional)" [filter]="true"
+                        optionValue="code" placeholder="select language" [filter]="true"
                         [virtualScroll]="true" [virtualScrollItemSize]="10" [showClear]="true" />
                 </div>
+                <p class="help">
+                    What language is the text in this field? (If the field
+                    contains multiple languages, leave this blank.)
+                </p>
             </div>
 
             <div class="field is-grouped" style="justify-content: end;">
@@ -108,8 +146,14 @@
 
 
     <div class="field">
-        <p class="control">
-            <button class="button is-primary" type="submit">Save changes</button>
-        </p>
+        <div class="control">
+            <button class="button is-primary" type="submit">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save changes</span>
+            </button>
+        </div>
     </div>
+
+    <ia-form-feedback [showSuccess]="showSuccesMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
 </form>
