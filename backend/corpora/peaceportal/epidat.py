@@ -9,9 +9,14 @@ from django.conf import settings
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from addcorpus.es_mappings import date_mapping
 from ianalyzer_readers.extract import XML, Constant, Combined, Pass
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
-    clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
-    not_before_extractor
+from corpora.peaceportal.peaceportal import (
+    PeacePortal,
+    categorize_material,
+    clean_newline_characters,
+    clean_commentary,
+    join_commentaries,
+    get_text_in_language,
+)
 
 from corpora.utils.exclude_fields import exclude_fields_without_extractor
 
@@ -46,8 +51,6 @@ class PeaceportalEpidat(PeacePortal, XMLCorpusDefinition):
             Tag('history'), Tag('origin'), Tag('origDate'), Tag('date'),
             transform=lambda x: get_year(x),
         )
-
-        self.not_before.extractor = not_before_extractor()
 
         # the dataset of the Steinheim institute is from the 19th/20th century and has accurate dates
         self.date.es_mapping = date_mapping()
