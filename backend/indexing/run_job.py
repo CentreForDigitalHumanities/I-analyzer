@@ -39,6 +39,7 @@ TASK_HANDLERS: Dict[Type[IndexTask], Callable[[IndexTask], None]] = {
 @celery.shared_task()
 def run_task(task: IndexTask) -> None:
     '''Run an IndexTask'''
+
     task_id = f'{task.__class__.__name__} #{task.pk}' # e.g. "CreateIndexTask #1"
 
     if task.is_aborted():
@@ -76,12 +77,19 @@ def handle_job_error(request, exc, traceback, job: IndexJob):
 
 @celery.shared_task()
 def start_job(job: IndexJob) -> None:
-    _validate_job_start(job)
     _log_job_started(job)
+
+    try:
+        _validate_job_start(job)
+    except Exception as e:
+        logger.warning(f'Index job {job.pk} cancelled: validation failed', exc_info=True)
+        mark_tasks_stopped(job)
+        return
 
     for task in job.tasks():
         task.status = TaskStatus.QUEUED
         task.save()
+
 
 def job_chain(job: IndexJob) -> celery.chain:
     signatures = [start_job.si(job)] + [run_task.si(task) for task in job.tasks()]
