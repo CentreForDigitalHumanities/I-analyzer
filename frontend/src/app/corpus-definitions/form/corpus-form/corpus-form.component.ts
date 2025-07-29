@@ -1,12 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CorpusDefinition } from '../../../models/corpus-definition';
 import { ApiService } from '../../../services';
-import { MenuItem } from 'primeng/api';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { combineLatest, map, tap } from 'rxjs';
-import { cloneDeep } from 'lodash';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { actionIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
 import { pageTitle } from '@utils/app';
@@ -17,6 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './corpus-form.component.html',
     styleUrl: './corpus-form.component.scss',
     providers: [CorpusDefinitionService],
+    standalone: false
 })
 export class CorpusFormComponent {
     steps$ = this.corpusDefService.steps$.asObservable();

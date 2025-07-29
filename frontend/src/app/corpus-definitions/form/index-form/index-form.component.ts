@@ -77,7 +77,8 @@ const healthToDisplayState = (health: APIIndexHealth): DisplayState => {
 @Component({
     selector: 'ia-index-form',
     templateUrl: './index-form.component.html',
-    styleUrl: './index-form.component.scss'
+    styleUrl: './index-form.component.scss',
+    standalone: false,
 })
 export class IndexFormComponent implements OnChanges, OnDestroy {
     @Input({required: true}) corpus: CorpusDefinition;
