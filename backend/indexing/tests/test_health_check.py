@@ -31,5 +31,5 @@ def test_health_check_indexed_db_corpus(json_mock_corpus, index_json_mock_corpus
     assert health.settings_compatible
     assert health.mappings_compatible
     assert health.job_status == TaskStatus.DONE
-    assert health.includes_latest_data is True
+    assert health.includes_latest_data
     assert health.corpus_ready_to_index
