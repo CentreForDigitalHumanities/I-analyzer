@@ -24,6 +24,7 @@
         </div>
 
         <div class="block" *ngIf="corpora$ | async as corpora">
+
             <table class="table is-fullwidth">
                 <thead>
                     <tr>
@@ -37,9 +38,9 @@
                         <td>
                             <a class="button"
                                 [routerLink]="['/search', corpus.definition.name]"
-                                [attr.disabled]="!corpus.active">
-                                <span class="icon" aria-label="edit">
-                                    <fa-icon [icon]="actionIcons.search"></fa-icon>
+                                [attr.disabled]="!corpus.active || null">
+                                <span class="icon" aria-label="search">
+                                    <fa-icon [icon]="actionIcons.search" />
                                 </span>
                             </a>
                             &nbsp;
@@ -57,7 +58,7 @@
                             </a>
                             &nbsp;
                             <button class="button" (click)="confirmDelete.open(corpus)"
-                                [disabled]="corpus.active">
+                                [disabled]="corpus.active || null">
                                 <span class="icon" aria-label="delete">
                                     <fa-icon [icon]="actionIcons.delete"></fa-icon>
                                 </span>
