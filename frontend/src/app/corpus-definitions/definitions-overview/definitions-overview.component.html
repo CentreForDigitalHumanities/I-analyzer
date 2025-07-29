@@ -2,12 +2,17 @@
     <div class="container">
         <nav aria-label="secondary navigation" class="breadcrumb block">
             <ul>
-                <li><a [routerLink]="['/']">Corpora</a></li>
-                <li class="is-active" aria-current="page"><a>Definitions</a></li>
+                <li><a [routerLink]="['/']">I-Analyzer</a></li>
+                <li class="is-active" aria-current="page"><a>My corpora</a></li>
             </ul>
         </nav>
 
-        <h1 class="title block">Corpus definitions</h1>
+        <h1 class="title block">My corpora</h1>
+
+        <p class="block">
+            In this environment, you can create your own corpora. You can make a corpus
+            for your own needs, or share it with others.
+        </p>
 
         <div class="block">
             <a class="button" [routerLink]="['new']">

@@ -77,7 +77,7 @@
                         id="userDropdown" #userDropdown>
                         <a class="navbar-item"
                             *ngIf="canEditCorpora$ | async"
-                            [routerLink]="['/corpus-definitions']"
+                            [routerLink]="['/my-corpora']"
                             [routerLinkActive]="'is-active'">
                             <span class="icon" arai-hidden="true">
                                 <fa-icon [icon]="navIcons.myCorpora" />

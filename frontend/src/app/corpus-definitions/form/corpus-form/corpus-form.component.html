@@ -2,8 +2,8 @@
     <div class="container">
         <nav aria-label="secondary navigation" class="breadcrumb block">
             <ul>
-                <li><a [routerLink]="['/']">Corpora</a></li>
-                <li><a [routerLink]="['../..']">Definitions</a></li>
+                <li><a [routerLink]="['/']">I-Analyzer</a></li>
+                <li><a [routerLink]="['../..']">My corpora</a></li>
                 <li class="is-active" aria-current="page"><a>{{(corpus$ | async).definition?.meta.title ||
                         '...'}}: edit</a></li>
             </ul>
