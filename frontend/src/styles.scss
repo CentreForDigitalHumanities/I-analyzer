@@ -112,6 +112,13 @@ a.dropdown-item[disabled] {
     margin-top: 0.5rem;
 }
 
+.content {
+    a {
+        text-decoration: underline;
+    }
+}
+
+
 table.spreadsheet {
     border: 2px solid var(--bulma-border);
 
@@ -120,7 +127,7 @@ table.spreadsheet {
     }
 
     th {
-        background-color: utilities.$background;
+        background-color: var(--bulma-body-background-color);
     }
 
     tr:hover {
