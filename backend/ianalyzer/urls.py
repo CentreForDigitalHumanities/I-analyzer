@@ -16,6 +16,7 @@ Including another URLconf
 from addcorpus import urls as corpus_urls
 from addcorpus.views import (CorpusDataFileViewSet, CorpusDefinitionViewset,
                              CorpusDocumentationPageViewset)
+from indexing.views import IndexHealthView
 from api import urls as api_urls
 from api.views import QueryViewset
 from django.conf import settings
@@ -30,6 +31,7 @@ from tag import urls as tag_urls
 from tag.views import TagViewSet
 from visualization import urls as visualization_urls
 from wordmodels import urls as wordmodels_urls
+from indexing import urls as indexing_urls
 
 from .index import index
 from .proxy_frontend import proxy_frontend
@@ -61,6 +63,7 @@ urlpatterns = [
     path('api/wordmodels/', include(wordmodels_urls)),
     path('api/es/', include(es_urls)),
     path('api/tag/', include(tag_urls)),
+    path('api/indexing/', include(indexing_urls)),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',
