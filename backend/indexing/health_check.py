@@ -1,5 +1,6 @@
 from typing import Optional
 from elasticsearch import NotFoundError
+import warnings
 
 from addcorpus.models import Corpus, CorpusDataFile
 from es.client import server_for_corpus
@@ -46,7 +47,8 @@ class CorpusIndexHealth:
             index_name = get_current_index_name(self.corpus.configuration, client)
         except NotFoundError: # the corpus has no index
             index_name = self.corpus.configuration.es_index
-        except: # connection issues etc.
+        except Exception as e: # connection issues etc.
+            warnings.warn(f'Cannot connect to Elasticsearch index: {e}')
             return
 
         index, _ = Index.objects.get_or_create(name=index_name, server=server)
