@@ -1,5 +1,5 @@
 <section class="section">
-    <h1 class="title">Your tags</h1>
+    <h1 class="title block">Your tags</h1>
     <div class="block">
         <button class="button is-primary" aria-label="create tag" (click)="startCreate()">
             <span class="icon">
@@ -17,7 +17,7 @@
                         {{tag.name}}
                     </p>
                 </header>
-                
+
                 <div class="card-content">
                     <div class="content">
                         {{tag.description || "(no description)"}}
@@ -42,7 +42,7 @@
                                         </tr>
                             </table>
                             </details>
-                            
+
                             </div>
                             <ng-template #noTagCount>
                                 <div class="content">

@@ -5,7 +5,7 @@
     </legend>
     <div class="field has-addons" style="float:right">
         <div class="control">
-            <span class="icon filter-icon"
+            <span class="icon"
                 *ngIf="filter.description?.length"
                 iaBalloon="{{ filter.description }}"
                 iaBalloonPosition="up-left"
@@ -13,16 +13,15 @@
                 <fa-icon [icon]="actionIcons.tooltip" aria-hidden="true" />
             </span>
             <button *ngIf="(filter.isDefault$ | async) === false"
-                class="button icon filter-icon is-primary is-inverted is-round"
+                class="button icon is-primary is-inverted"
                 type="button"
                 (click)="filter.reset()" iaBalloon="Reset this filter to its default values"
                 iaBalloonPosition="down-left">
                 <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
             </button>
             <button *ngIf="(filter.isDefault$ | async) === false"
-                class="button icon filter-icon is-primary is-inverted is-round"
+                class="button is-primary is-inverted icon"
                 type="button"
-                [class.is-primary]="filter.state$.value.active"
                 (click)="filter.toggle()"
                 iaBalloon="{{filter.state$.value.active ? 'Disable this filter' : 'Enable this filter'}}"
                 iaBalloonPosition="down-left">

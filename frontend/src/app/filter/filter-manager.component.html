@@ -1,16 +1,20 @@
 <form aria-labelledby="header-filters">
-    <div class="field has-addons">
+    <div class="field is-grouped">
         <div class="control is-expanded">
             <h2 class="title" id="header-filters">Filters</h2>
         </div>
         <p class="control" style="float:right">
-            <button *ngIf="anyActiveFilters$ | async" class="button icon filter-icon is-primary is-active is-medium is-round"
+            <button *ngIf="anyActiveFilters$ | async"
+                class="button icon is-primary is-medium is-inverted"
                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                 iaBalloonPosition="down-left"
                 type="button">
-                <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
+                <span class="icon">
+                    <fa-icon [icon]="filterIcons.clear" aria-hidden="true"></fa-icon>
+                </span>
             </button>
-            <button *ngIf="anyNonDefaultFilters$ | async" class="button icon filter-icon is-inverted is-round is-primary is-medium"
+            <button *ngIf="anyNonDefaultFilters$ | async"
+                class="button icon is-primary is-medium is-inverted"
                 (click)="toggleActiveFilters()"
                 iaBalloon="{{(anyActiveFilters$ | async) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left"

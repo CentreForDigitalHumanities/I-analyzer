@@ -1,8 +1,8 @@
-@import "../../_utilities";
+@use "../../_utilities";
 
 .p-active, .p-highlight {
-    background-color: $primary !important;
-    color: $primary-invert !important;
+    background-color: utilities.$primary !important;
+    color: var(--bulma-primary-invert) !important;
 }
 
 .p-datatable-wrapper {

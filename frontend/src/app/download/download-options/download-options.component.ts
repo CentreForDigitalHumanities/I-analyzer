@@ -11,6 +11,7 @@ import {
     selector: 'ia-download-options',
     templateUrl: './download-options.component.html',
     styleUrls: ['./download-options.component.scss'],
+    standalone: false
 })
 export class DownloadOptionsComponent implements OnChanges {
     @Input() download: Download | PendingDownload;

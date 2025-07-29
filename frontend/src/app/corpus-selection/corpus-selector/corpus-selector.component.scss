@@ -1,10 +1,5 @@
-@import "../../../_utilities";
-
 .corpus-container {
     padding: 0;
-    color: $text-primary-color;
-    text-decoration: none;
-    background-color: $primary;
 
     > .column {
         padding: 1rem; // slightly more generous padding
@@ -32,27 +27,6 @@
     }
 }
 
-
-.moreInfoLink {
-    color: white;
-}
-
-
-.corpus-action {
-    border-color: $highlight-color;
-    color: $text-primary-color;
-    background-color: $contrast-primary-color;
-
-    &:hover {
-        border-color: $text-primary-color;
-        background-color: $contrast-primary-accent-color;
-    }
-
-    &:focus {
-        border-width: 3px;
-    }
-}
-
 .title-row {
     margin-bottom: 0px;
 }
@@ -60,18 +34,6 @@
 .title-divider {
     margin-top: 0px;
     margin-bottom: 1rem;
-}
-
-.title-content {
-    font-size: 1.5em;
-    cursor: pointer;
-    color: white !important;
-}
-
-.moreInfoLink {
-    background: none;
-    border: none;
-    font-size: 1.25em;
 }
 
 .columns .align-bottom {

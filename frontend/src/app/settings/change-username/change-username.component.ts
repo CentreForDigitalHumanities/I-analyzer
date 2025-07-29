@@ -8,7 +8,8 @@ import { map } from 'rxjs';
 @Component({
     selector: 'ia-change-username',
     templateUrl: './change-username.component.html',
-    styleUrl: './change-username.component.scss'
+    styleUrl: './change-username.component.scss',
+    standalone: false,
 })
 export class ChangeUsernameComponent {
     currentName$ = this.authService.currentUser$.pipe(

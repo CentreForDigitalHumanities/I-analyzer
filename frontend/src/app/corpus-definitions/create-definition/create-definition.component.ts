@@ -13,6 +13,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-create-definition',
     templateUrl: './create-definition.component.html',
     styleUrls: ['./create-definition.component.scss'],
+    standalone: false
 })
 export class CreateDefinitionComponent {
     actionIcons = actionIcons;
