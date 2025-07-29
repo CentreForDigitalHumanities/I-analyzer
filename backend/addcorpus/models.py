@@ -539,8 +539,11 @@ class CorpusDocumentationPage(models.Model):
 
 
 class CorpusDataFile(models.Model):
+    def upload_dir(self):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}')
+
     def upload_path(self, filename):
-        return os.path.join('corpus_datafiles', f'{self.corpus.pk}', filename)
+        return os.path.join(self.upload_dir(), filename)
 
     corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
     file = models.FileField(upload_to=upload_path,
