@@ -6,7 +6,8 @@ import { actionIcons, documentIcons } from '@shared/icons';
 @Component({
     selector: 'ia-document-preview',
     templateUrl: './document-preview.component.html',
-    styleUrls: ['./document-preview.component.scss']
+    styleUrls: ['./document-preview.component.scss'],
+    standalone: false
 })
 export class DocumentPreviewComponent {
     @Input() document: FoundDocument;

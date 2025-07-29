@@ -6,6 +6,7 @@ import { debounce } from 'rxjs/operators';
     selector: 'ia-time-interval-slider',
     templateUrl: './time-interval-slider.component.html',
     styleUrls: ['./time-interval-slider.component.scss'],
+    standalone: false
 })
 export class TimeIntervalSliderComponent implements OnChanges {
     @Input() labels: string[];

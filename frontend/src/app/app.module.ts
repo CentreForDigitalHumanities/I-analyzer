@@ -1,8 +1,8 @@
 import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
-import { inject, Injectable, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 
-import { ActivatedRouteSnapshot, ExtraOptions, NavigationEnd, RouterModule, Routes } from '@angular/router';
-
+import { providePrimeNG } from 'primeng/config';
 import { CookieService } from 'ngx-cookie-service';
 import { DialogModule } from 'primeng/dialog';
 import { MenuModule } from 'primeng/menu';
@@ -23,8 +23,6 @@ import { CreateDefinitionComponent } from './corpus-definitions/create-definitio
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { DefinitionInOutComponent } from './corpus-definitions/definition-in-out/definition-in-out.component';
 import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
-import { FieldFormComponent } from './corpus-definitions/form/field-form/field-form.component';
-import { MetaFormComponent } from './corpus-definitions/form/meta-form/meta-form.component';
 import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
@@ -58,8 +56,8 @@ import { SharedModule } from './shared/shared.module';
 import { TagOverviewComponent } from './tag/tag-overview/tag-overview.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
-import { MatomoModule, MatomoRouteInterceptorBase, MatomoRouterInterceptorFn, MatomoRouterModule, MatomoTracker } from 'ngx-matomo-client';
 import { MatomoConfig, matomoImports } from './routing/matomo';
+import { stylePreset } from './primeng-theme';
 
 export const appRoutes: Routes = [
     {
@@ -214,6 +212,14 @@ export const providers: any[] = [
     HighlightService,
     CorpusGuard,
     LoggedOnGuard,
+    providePrimeNG({
+        theme: {
+            preset: stylePreset,
+            options: {
+                darkModeSelector: '[data-theme="dark"]'
+            },
+        }
+    }),
     TitleCasePipe,
     CookieService,
     { provide: APP_BASE_HREF, useValue: '/' },

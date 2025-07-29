@@ -24,9 +24,10 @@ const MAXIMUM_DISPLAYED = 10000;
     selector: 'ia-search-results',
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss'],
+    standalone: false
 })
 export class SearchResultsComponent implements OnChanges, OnDestroy {
-    @ViewChild('resultsNavigation', { static: true })
+    @ViewChild('resultsNavigation')
     public resultsNavigation: ElementRef;
 
     /**

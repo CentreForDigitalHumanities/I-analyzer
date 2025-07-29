@@ -1,18 +1,7 @@
-@import "../../../_utilities";
-
 ::ng-deep .p-multiselect-panel {
     max-width: 300px;
     width: 300px;
 }
-
-::ng-deep .button.p-multiselect .p-multiselect-label {
-    color: $primary;
-}
-
-::ng-deep .button.p-multiselect.p-component {
-    border: 1px solid $primary;
-}
-
 
 
 .select-count {

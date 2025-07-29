@@ -5,7 +5,8 @@ import { entityIcons } from '../../shared/icons';
 import { FieldEntities } from '../../models';
 
 @Pipe({
-    name: 'entity'
+    name: 'entity',
+    standalone: false
 })
 export class EntityPipe implements PipeTransform {
     /**

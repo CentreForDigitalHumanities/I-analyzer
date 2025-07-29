@@ -13,7 +13,8 @@ interface FormFeedback {
 @Component({
     selector: 'ia-change-password',
     templateUrl: './change-password.component.html',
-    styleUrl: './change-password.component.scss'
+    styleUrl: './change-password.component.scss',
+    standalone: false,
 })
 export class ChangePasswordComponent {
     formIcons = formIcons;

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CorpusField, FoundDocument } from '../../models';
 @Pipe({
-    name: 'geoData'
+    name: 'geoData',
+    standalone: false
 })
 export class GeoDataPipe implements PipeTransform {
 

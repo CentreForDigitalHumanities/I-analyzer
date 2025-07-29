@@ -42,9 +42,6 @@ class PeaceportalTOL(PeacePortal, XMLCorpusDefinition):
             transform=lambda x: get_year(x),
         )
 
-        self.not_before.extractor = not_before_extractor()
-        self.not_after.extractor = not_after_extractor()
-
         self.date.extractor = Combined(
             not_before_extractor(),
             not_after_extractor(),
