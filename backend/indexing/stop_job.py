@@ -12,6 +12,7 @@ def mark_tasks_stopped(job: IndexJob):
     execution.
     '''
     for task_set in job.task_query_sets():
+        task_set.filter(status=TaskStatus.CREATED).update(status=TaskStatus.CANCELLED)
         task_set.filter(status=TaskStatus.QUEUED).update(status=TaskStatus.CANCELLED)
         task_set.filter(status=TaskStatus.WORKING).update(status=TaskStatus.ABORTED)
 

@@ -78,15 +78,18 @@ def handle_job_error(request, exc, traceback, job: IndexJob):
 @celery.shared_task()
 def start_job(job: IndexJob) -> None:
     _log_job_started(job)
-    for task in job.tasks():
-        task.status = TaskStatus.QUEUED
-        task.save()
 
     try:
         _validate_job_start(job)
     except Exception as e:
         logger.warning(f'Index job {job.pk} cancelled: validation failed', exc_info=True)
         mark_tasks_stopped(job)
+        return
+
+    for task in job.tasks():
+        task.status = TaskStatus.QUEUED
+        task.save()
+
 
 def job_chain(job: IndexJob) -> celery.chain:
     signatures = [start_job.si(job)] + [run_task.si(task) for task in job.tasks()]
