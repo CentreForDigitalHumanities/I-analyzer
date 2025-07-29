@@ -10,8 +10,8 @@
         <h1 class="title block">My corpora</h1>
 
         <p class="block">
-            In this environment, you can create your own corpora. You can make a corpus
-            for your own needs, or share it with others.
+            In this environment, you can create your own corpora. You can make a private
+            corpus for your own needs, or a public corpus to share with others.
         </p>
 
         <div class="block">
@@ -24,60 +24,64 @@
         </div>
 
         <div class="block" *ngIf="corpora$ | async as corpora">
+            <section class="box" *ngFor="let corpus of corpora">
+                <h2 class="subtitle is-4">{{corpus.definition.meta.title}}</h2>
 
-            <table class="table is-fullwidth">
-                <thead>
-                    <tr>
-                        <th>Corpus</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let corpus of corpora">
-                        <td>{{corpus.definition.meta.title}}</td>
-                        <td>
-                            <a class="button"
-                                [routerLink]="['/search', corpus.definition.name]"
-                                [attr.disabled]="!corpus.active || null">
-                                <span class="icon" aria-label="search">
-                                    <fa-icon [icon]="actionIcons.search" />
-                                </span>
-                            </a>
-                            &nbsp;
-                            <a class="button" [routerLink]="['edit', corpus.id]">
-                                <span class="icon" aria-label="edit">
-                                    <fa-icon [icon]="actionIcons.edit"></fa-icon>
-                                </span>
-                            </a>
-                            &nbsp;
-                            <a class="button"
-                                [routerLink]="['io', corpus.id]">
-                                <span class="icon" aria-label="import-export">
-                                    <fa-icon [icon]="actionIcons.inOut"></fa-icon>
-                                </span>
-                            </a>
-                            &nbsp;
-                            <button class="button" (click)="confirmDelete.open(corpus)"
-                                [disabled]="corpus.active || null">
-                                <span class="icon" aria-label="delete">
-                                    <fa-icon [icon]="actionIcons.delete"></fa-icon>
-                                </span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <p class="block" *ngIf="corpus.definition.meta.description?.length">
+                    {{corpus.definition.meta.description}}
+                </p>
+
+                <div class="buttons">
+                    <a class="button" [routerLink]="['edit', corpus.id]">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="actionIcons.edit"></fa-icon>
+                        </span>
+                        <span>
+                            Edit
+                        </span>
+                    </a>
+                    <a class="button"
+                        [routerLink]="['/search', corpus.definition.name]"
+                        [attr.disabled]="!corpus.active || null">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="actionIcons.search" />
+                        </span>
+                        <span>
+                            Search
+                        </span>
+                    </a>
+                    <a class="button"
+                        [routerLink]="['io', corpus.id]">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="actionIcons.inOut"></fa-icon>
+                        </span>
+                        <span>
+                            Import/export
+                        </span>
+                    </a>
+                    <button class="button" (click)="confirmDelete.open(corpus)"
+                        [disabled]="corpus.active || null">
+                        <span class="icon" aria-label="delete">
+                            <fa-icon [icon]="actionIcons.delete"></fa-icon>
+                        </span>
+                    </button>
+                </div>
+            </section>
         </div>
     </div>
 </div>
-
 
 <ia-confirm-modal #confirmDelete
     actionText="Delete corpus" actionButtonClass="is-danger" [icon]="actionIcons.delete"
     [handleAsync]="handleDelete" (accept)="onDeleteComplete()">
     <p>
         Do you want to delete corpus
-         <strong>{{confirmDelete.data?.definition.meta.title}}</strong>?
+        <strong>{{corpus.definition.meta.title}}</strong>?
         This cannot be reversed.
     </p>
+    <p *ngIf="corpus.active">
+        If you want to hide this corpus in the search interface, you can also
+        deactivate it in the editing menu.
+    </p>
 </ia-confirm-modal>
+
