@@ -139,6 +139,16 @@ table.spreadsheet {
     }
 }
 
+.breadcrumb {
+    li:not(.is-active) > a {
+        text-decoration: underline;
+    }
+
+    li.is-active > a {
+        color: var(--bulma-text);
+    }
+}
+
 // restore some rules from older bulma versions for compatibility
 
 .block,
