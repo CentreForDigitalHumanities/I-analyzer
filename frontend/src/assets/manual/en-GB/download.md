@@ -2,7 +2,7 @@
 
 When you search a corpus, you can use the "download" tab to download a table of your search results. On this page, you choose which fields should be downloaded and how the results should be sorted.
 
-Depending on the size if the download, the file may be immediately available or take longer to create. In that case, you will receive an email when the file is ready. This option is only available if you are signed in.
+Depending on the size if the download, the file may be immediately available or take longer to create. In case of the latter, you will receive an email when the file is ready. This option is only available if you are signed in.
 
 When you download a file, you can also choose the file encoding. We recommend the "utf-16" encoding if you are using Microsoft Excel, and "utf-8" for all other applications. If an application is not displaying special characters correctly (while they appear normal on I-analyzer itself), it may help to use a different file encoding.
 

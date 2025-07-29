@@ -10,4 +10,4 @@ As a research application, I-analyzer must not only offer useful tools to resear
 
 This means that when, for example, you create a graph in I-analyzer and use it in a publication, you can refer to the manual for a description of the algorithm behind the graph. We try to provide explanations that are accessible for researchers from different fields. Nonetheless, these descriptions may provide more technical detail than you need to get started.
 
-Lastly, I-analyzer includes different corpora (datasets) that do not always support the same functionality. This can depend on the available data, the size of the corpus, or what makes sense. This means that some of the functions described in this manual are not available for all corpora.
+Lastly, I-analyzer includes different corpora (datasets) that do not always support the same functionality. This can depend on the available data, the size of the corpus, or the research focus of the corpus. This means that some of the functions described in this manual are not available for all corpora.

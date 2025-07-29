@@ -18,7 +18,7 @@ You can think of this process like trying to draw up a seating arrangement for a
 
 There are different algorithms to train word embeddings. What algorithm works, and how exactly this should be configured, can depend on the corpus. If a corpus on I-analyzer has word embeddings available, the information page will describe what algorithm was used.
 
-The result of this algorithm is a set of coordinates for each word. A geographical map is two-dimensional, so the coordinates for each point are two numbers. With word embeddings, word are represented by much longer sequences of numbers, for example 100. This allows them to capture much more complex information than if you tried to arrange all words on a 2D map.
+The result of this algorithm is a set of coordinates for each word. A geographical map is two-dimensional, so the coordinates for each point are two numbers. With word embeddings, words are represented by much longer sequences of numbers, for example 100. This allows them to capture much more complex information than if you tried to arrange all words on a 2D map.
 
 It also means that we cannot easily visualise this map containing all the words. The exact coordinates of a word are to abstract for us to interpret directly. But like with the seating arrangement, if we want to learn something about a word, we need to look at what other words are next to it.
 
