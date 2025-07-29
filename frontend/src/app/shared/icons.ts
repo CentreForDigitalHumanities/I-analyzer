@@ -128,6 +128,7 @@ export const corpusIcons: Icons = {
     wordModels: faDiagramProject,
     info: faInfo,
     infoAlt: faInfoCircle,
+    edit: actionIcons.edit,
 };
 
 export const searchIcons: Icons = {

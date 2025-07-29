@@ -19,7 +19,7 @@
                             [class.is-primary]="currentPage === 'search'"
                             iaBalloon="Search documents in this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
-                                <fa-icon [icon]="corpusIcons.search">search</fa-icon>
+                                <fa-icon [icon]="corpusIcons.search" />
                             </span>
                         </a>
                     </div>
@@ -28,7 +28,7 @@
                             [class.is-primary]="currentPage === 'word-models'"
                             iaBalloon="Explore word models of this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
-                                <fa-icon [icon]="corpusIcons.wordModels">word models</fa-icon>
+                                <fa-icon [icon]="corpusIcons.wordModels" />
                             </span>
                         </a>
                     </div>
@@ -37,7 +37,17 @@
                             [class.is-primary]="currentPage === 'info'"
                             iaBalloon="Read more about this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
-                                <fa-icon [icon]="corpusIcons.info">info</fa-icon>
+                                <fa-icon [icon]="corpusIcons.info" />
+                            </span>
+                        </a>
+                    </div>
+                    <div class="control" *ngIf="corpus.editable">
+                        <a class="button is-medium"
+                            [routerLink]="['/corpus-definitions/edit', corpus.id]"
+                            iaBalloon="Edit corpus"
+                            iaBalloonPosition="up-right">
+                            <span class="icon" aria-hidden="true">
+                                <fa-icon [icon]="corpusIcons.edit"/>
                             </span>
                         </a>
                     </div>
