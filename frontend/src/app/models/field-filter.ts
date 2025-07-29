@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { format } from 'date-fns';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import {
@@ -86,7 +86,7 @@ export interface DateFilterData {
  */
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
     makeDefaultData(filterOptions: DateFilterOptions) {
-        const parse = value => _.isNull(value) ? undefined : this.parseDate(value);
+        const parse = value => (_.isNull(value) || _.isUndefined(value)) ? undefined : this.parseDate(value);
         return {
             min: parse(filterOptions.lower),
             max: parse(filterOptions.upper)
@@ -137,14 +137,16 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
 
     private formatDate(date?: Date): string {
         if (date) {
-            return moment(date).format('YYYY-MM-DD');
+            return format(date, 'yyyy-MM-dd');
         }
         return '';
     }
 
     private parseDate(dateString?: string): Date|undefined {
         if (dateString.length) {
-            return moment(dateString, 'YYYY-MM-DD').toDate();
+            const date = new Date(dateString);
+            date.setHours(0, 0, 0); // make sure that time-zone induced shifts in historical dates are set to 0
+            return date;
         }
     }
 }

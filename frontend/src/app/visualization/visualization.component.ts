@@ -20,6 +20,7 @@ import { map } from 'rxjs/operators';
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
+    standalone: false
 })
 export class VisualizationComponent implements OnChanges, OnDestroy {
     @Input() public corpus: Corpus;

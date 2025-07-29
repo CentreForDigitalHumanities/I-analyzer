@@ -9,6 +9,7 @@ import * as _ from 'lodash';
     selector: 'ia-manual-navigation',
     templateUrl: './manual-navigation.component.html',
     styleUrls: ['./manual-navigation.component.scss'],
+    standalone: false
 })
 export class ManualNavigationComponent implements OnInit {
     navIcons = navIcons;

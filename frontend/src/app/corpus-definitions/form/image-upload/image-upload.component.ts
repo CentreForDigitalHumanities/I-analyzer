@@ -7,9 +7,10 @@ import * as _ from 'lodash';
 import { BehaviorSubject, map, Observable, Subject, takeUntil, timestamp } from 'rxjs';
 
 @Component({
-  selector: 'ia-image-upload',
-  templateUrl: './image-upload.component.html',
-  styleUrl: './image-upload.component.scss'
+    selector: 'ia-image-upload',
+    templateUrl: './image-upload.component.html',
+    styleUrl: './image-upload.component.scss',
+    standalone: false,
 })
 export class ImageUploadComponent {
     @Input({required: true}) corpus!: CorpusDefinition;

@@ -8,7 +8,8 @@ import { documentIcons, entityIcons } from '@shared/icons';
 @Component({
     selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
-    styleUrls: ['./document-view.component.scss']
+    styleUrls: ['./document-view.component.scss'],
+    standalone: false
 })
 export class DocumentViewComponent implements OnChanges {
 

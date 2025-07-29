@@ -1,4 +1,4 @@
-@import "../../../_utilities";
+@use "bulma/sass/utilities/mixins";
 
 div.tooltip {
     line-height: 1;
@@ -29,6 +29,6 @@ div.tooltip::after {
 }
 
 .notification {
-    @include unselectable;
+    @include mixins.unselectable;
     opacity: 0.75;
 }

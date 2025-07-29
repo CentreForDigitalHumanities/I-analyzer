@@ -25,6 +25,7 @@ function formatXAxisLabel(value): string {
     selector: 'ia-histogram',
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss'],
+    standalone: false
 })
 export class HistogramComponent
     extends BarchartDirective<TermsResult, HistogramDataPoint>

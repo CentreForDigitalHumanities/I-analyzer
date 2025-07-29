@@ -9,7 +9,8 @@ import * as _ from 'lodash';
 @Component({
     selector: 'ia-manual',
     templateUrl: './manual.component.html',
-    styleUrls: ['./manual.component.scss']
+    styleUrls: ['./manual.component.scss'],
+    standalone: false
 })
 export class ManualComponent implements OnInit {
     public isLoading = false;

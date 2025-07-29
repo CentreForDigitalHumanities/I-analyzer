@@ -17,6 +17,7 @@ import { MenuItem } from 'primeng/api';
     selector: 'ia-meta-form',
     templateUrl: './meta-form.component.html',
     styleUrl: './meta-form.component.scss',
+    standalone: false
 })
 export class MetaFormComponent implements OnChanges, OnDestroy {
     @Input({required: true}) corpus!: CorpusDefinition;
