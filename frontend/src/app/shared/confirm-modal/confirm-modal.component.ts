@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, Output } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { showLoading } from '@utils/utils';
-import { BehaviorSubject, lastValueFrom, of, Subject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, of, Subject, timer } from 'rxjs';
 
 
 /**
@@ -54,6 +54,8 @@ export class ConfirmModalComponent implements OnDestroy {
     @Input() actionButtonClass: string = 'is-primary';
     @Output() result = new Subject<any>();
 
+    @ViewChild('modalTitle') title: ElementRef<HTMLElement>;
+
     confirmAction$ = new BehaviorSubject<any>(undefined);
     loading$ = new BehaviorSubject<boolean>(false);
 
@@ -73,6 +75,7 @@ export class ConfirmModalComponent implements OnDestroy {
 
     open(...args: any) {
         this.confirmAction$.next(args);
+        setTimeout(() => this.title.nativeElement.focus());
     }
 
     confirm(args: any) {

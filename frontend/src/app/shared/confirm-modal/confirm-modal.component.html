@@ -2,7 +2,8 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">{{actionText}}?</p>
+            <p class="modal-card-title" #modalTitle tabindex="-1">{{actionText}}?
+            </p>
             <button class="delete" aria-label="close"
                 (click)="cancel()"></button>
         </header>
