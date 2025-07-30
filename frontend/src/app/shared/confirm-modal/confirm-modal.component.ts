@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, Output } from '@angular/core';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { showLoading } from '@utils/utils';
+import { BehaviorSubject, lastValueFrom, of, Subject } from 'rxjs';
 
 @Component({
     selector: 'ia-confirm-modal',
@@ -10,6 +11,7 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 export class ConfirmModalComponent implements OnDestroy {
     @Input({required: true}) actionText: string;
     @Input() icon: any;
+    @Input() actionButtonClass: string;
     @Output() result = new Subject<any>();
 
     confirmAction$ = new BehaviorSubject<any>(undefined);
@@ -27,12 +29,14 @@ export class ConfirmModalComponent implements OnDestroy {
         this.confirmAction$.next(args);
     }
 
-    confirm(...args: any) {
-        this.confirmAction$.next(undefined);
-
-        this.handleAsync(args).subscribe(res =>
+    confirm(args: any) {
+        showLoading(
+            this.loading$,
+            lastValueFrom(this.handleAsync(...args)),
+        ).then(res => {
+            this.confirmAction$.next(undefined);
             this.result.next(res)
-        );
+        });
     }
 
     cancel() {
