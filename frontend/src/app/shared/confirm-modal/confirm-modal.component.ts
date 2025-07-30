@@ -2,6 +2,46 @@ import { Component, Input, OnDestroy, Output } from '@angular/core';
 import { showLoading } from '@utils/utils';
 import { BehaviorSubject, lastValueFrom, of, Subject } from 'rxjs';
 
+
+/**
+ * Component to create a confirmation modal
+ *
+ * Input parameters:
+ * - `actionText` (required): short label for the action; used as the header and the
+ *   text for the confirm button.
+ * - `icon`: icon to show in the confirm button
+ * - `actionButtonClass`: additional CSS class to add to the confirm button, e.g.
+ *   `is-danger` for destructive actions. Default is `is-primary`.
+ * - `handleAsync`: can be used to delay closing the modal after confirming while the
+ *   action is being processed. This is a function that takes the action parameters
+ *   as input, and returns an observable. The modal will show a loading spinner while
+ *   this is running.
+ *
+ * Output:
+ * - `result`: If you did not include a `handleAsync` function, this emits when the user
+ *   confirms the action, with the action parameters as payload. If you included a
+ *   `handleAsync` function, this emits when the action is handled, with the output as
+ *   payload.
+ *
+ * Use projected content to provide the text of the modal.
+ *
+ * Call `open()` to open the modal. You can provide any arguments that are relevant in
+ * context. You can use `args` to access arguments. You can do this with a `ViewChild`,
+ * but typically the easiest way is with a template variable (see example below).
+ *
+ * Example usage:
+ *
+ * ```
+ * <button (click)="confirm.open('something')">Do a thing</button>
+ *
+ * <ia-confirm-modal #confirm actionText="Do the thing">
+ *    <p>
+ *         Are you sure you want to do {{confirm.args[0]}}?
+ *    </p>
+ * </ia-confirm-modal>
+ * ```
+ *
+ */
 @Component({
     selector: 'ia-confirm-modal',
     standalone: false,
@@ -11,7 +51,7 @@ import { BehaviorSubject, lastValueFrom, of, Subject } from 'rxjs';
 export class ConfirmModalComponent implements OnDestroy {
     @Input({required: true}) actionText: string;
     @Input() icon: any;
-    @Input() actionButtonClass: string;
+    @Input() actionButtonClass: string = 'is-primary';
     @Output() result = new Subject<any>();
 
     confirmAction$ = new BehaviorSubject<any>(undefined);
