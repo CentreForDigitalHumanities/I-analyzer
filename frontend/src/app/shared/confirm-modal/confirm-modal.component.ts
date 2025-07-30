@@ -17,6 +17,12 @@ export class ConfirmModalComponent implements OnDestroy {
     confirmAction$ = new BehaviorSubject<any>(undefined);
     loading$ = new BehaviorSubject<boolean>(false);
 
+    args: any; // for briefer notation, this provides the action arguments
+
+    constructor() {
+        this.confirmAction$.subscribe(args => this.args = args);
+    }
+
     @Input() handleAsync = (...args: any) => of(args);
 
     ngOnDestroy(): void {

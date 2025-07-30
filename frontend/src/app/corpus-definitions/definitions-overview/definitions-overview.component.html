@@ -65,12 +65,13 @@
     </div>
 </div>
 
+
 <ia-confirm-modal #confirmDelete
     actionText="Delete corpus" actionButtonClass="is-danger" [icon]="actionIcons.delete"
     [handleAsync]="handleDelete" (result)="onDeleteComplete()">
     <p>
-        Do you want to delete corpus <strong>[TITLE]</strong>?
-        <!-- <strong>{{corpus.definition.meta.title}}</strong>? -->
+        Do you want to delete corpus
+         <strong>{{confirmDelete.args?.[0].definition.meta.title}}</strong>?
         This cannot be reversed.
     </p>
 </ia-confirm-modal>
