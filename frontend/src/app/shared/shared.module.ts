@@ -19,8 +19,10 @@ import { TabsComponent } from './tabs/tabs.component';
 import { ToggleComponent } from './toggle/toggle.component';
 import { SlugifyPipe } from './pipes/slugify.pipe';
 import { ToggleButtonDirective } from './toggle-button.directive';
+import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
-@NgModule({ declarations: [
+@NgModule({
+    declarations: [
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
@@ -30,6 +32,7 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         ToggleComponent,
         SlugifyPipe,
         ToggleButtonDirective,
+        ConfirmModalComponent,
     ],
     exports: [
         // shared components
@@ -39,6 +42,7 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         TabsComponent,
         TabPanelDirective,
         ToggleButtonDirective,
+        ConfirmModalComponent,
         // shared modules
         BrowserAnimationsModule,
         BrowserModule,
@@ -52,7 +56,8 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         ToggleComponent,
         // Shared pipes
         SlugifyPipe,
-    ], imports: [BrowserAnimationsModule,
+    ], imports: [
+        BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
         DatePickerModule,
@@ -61,8 +66,12 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         TableModule,
         DropdownModule,
         FontAwesomeModule,
-        RouterModule], providers: [SlugifyPipe, provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({
+        RouterModule
+    ], providers: [
+        SlugifyPipe,
+        provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
-        }))] })
+        }))
+    ] })
 export class SharedModule {}
