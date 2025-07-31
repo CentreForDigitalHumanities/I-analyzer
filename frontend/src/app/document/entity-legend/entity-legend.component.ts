@@ -5,9 +5,10 @@ import { entityIcons } from '@shared/icons';
 import { FieldEntities } from '@models';
 
 @Component({
-  selector: 'ia-entity-legend',
-  templateUrl: './entity-legend.component.html',
-  styleUrls: ['./entity-legend.component.scss']
+    selector: 'ia-entity-legend',
+    templateUrl: './entity-legend.component.html',
+    styleUrls: ['./entity-legend.component.scss'],
+    standalone: false
 })
 export class EntityLegendComponent implements OnChanges {
     @Input() entityAnnotations: FieldEntities[];

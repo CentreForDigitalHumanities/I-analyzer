@@ -13,6 +13,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-request-reset',
     templateUrl: './request-reset.component.html',
     styleUrls: ['./request-reset.component.scss'],
+    standalone: false
 })
 export class RequestResetComponent implements OnInit {
     public email: string;

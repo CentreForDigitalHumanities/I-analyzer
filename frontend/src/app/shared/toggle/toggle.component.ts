@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'ia-toggle',
-  templateUrl: './toggle.component.html',
-  styleUrls: ['./toggle.component.scss']
+    selector: 'ia-toggle',
+    templateUrl: './toggle.component.html',
+    styleUrls: ['./toggle.component.scss'],
+    standalone: false
 })
 export class ToggleComponent {
     @Input() toggleLabel: string;

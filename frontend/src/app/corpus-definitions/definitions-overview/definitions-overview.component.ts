@@ -11,6 +11,7 @@ import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
     selector: 'ia-definitions-overview',
     templateUrl: './definitions-overview.component.html',
     styleUrls: ['./definitions-overview.component.scss'],
+    standalone: false
 })
 export class DefinitionsOverviewComponent {
     actionIcons = actionIcons;

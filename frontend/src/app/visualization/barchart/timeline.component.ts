@@ -1,6 +1,8 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
+import { addDays, addMonths, addWeeks, addYears, differenceInDays, format } from 'date-fns';
+import 'chartjs-adapter-moment';
 
 import {
     QueryModel,
@@ -10,8 +12,7 @@ import {
     DateFilterData,
 } from '@models/index';
 import { BarchartDirective } from './barchart.directive';
-import * as moment from 'moment';
-import 'chartjs-adapter-moment';
+
 import { selectColor } from '@utils/select-color';
 import { showLoading } from '@utils/utils';
 import {
@@ -24,6 +25,7 @@ import {
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss'],
+    standalone: false
 })
 export class TimelineComponent
     extends BarchartDirective<DateHistogramResult, TimelineDataPoint>
@@ -176,13 +178,26 @@ export class TimelineComponent
         }));
     }
 
+    callibratexAxis(date: Date, margin: number = 1) {
+        switch(this.currentTimeCategory) {
+            case 'day':
+                return addDays(date, margin);
+            case 'week':
+                return addWeeks(date, margin);
+            case 'month':
+                return addMonths(date, margin);
+            case 'year':
+                return addYears(date, margin);
+
+        }
+    }
+
     chartOptions(datasets) {
         const xLabel = this.visualizedField.displayName
             ? this.visualizedField.displayName
             : this.visualizedField.name;
-        const margin = moment.duration(1, this.currentTimeCategory);
-        const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
-        const xMax = moment(this.xDomain[1]).add(margin).toDate();
+        const xMin = this.callibratexAxis(this.xDomain[0], -1);
+        const xMax = this.callibratexAxis(this.xDomain[1]);
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
@@ -334,15 +349,15 @@ export class TimelineComponent
      * based on minimum and maximum dates on the x axis.
      */
     public calculateTimeCategory(min: Date, max: Date): TimeCategory {
-        const diff = moment.duration(moment(max).diff(moment(min)));
-        if (diff.asYears() >= this.scaleDownThreshold) {
-            return 'year';
-        } else if (diff.asMonths() >= this.scaleDownThreshold) {
-            return 'month';
-        } else if (diff.asWeeks() >= this.scaleDownThreshold) {
-            return 'week';
-        } else {
+        const diff = differenceInDays(max, min);
+        if (diff <= this.scaleDownThreshold) {
             return 'day';
+        } else if (diff <= this.scaleDownThreshold * 7) {
+            return 'week';
+        } else if (diff <= this.scaleDownThreshold * 30) {
+            return 'month';
+        } else {
+            return 'year';
         }
     }
 
@@ -418,17 +433,17 @@ export class TimelineComponent
         let dateFormat: string;
         switch (this.currentTimeCategory) {
             case 'year':
-                dateFormat = 'YYYY';
+                dateFormat = 'yyyy';
                 break;
             case 'month':
-                dateFormat = 'MMMM YYYY';
+                dateFormat = 'MM yyyy';
                 break;
             default:
-                dateFormat = 'YYYY-MM-DD';
+                dateFormat = 'yyyy-MM-dd';
                 break;
         }
 
-        return (date: Date) => moment(date).format(dateFormat);
+        return (date: Date) => format(date, dateFormat);
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering

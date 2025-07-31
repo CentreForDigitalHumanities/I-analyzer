@@ -1,5 +1,4 @@
-@import "../../../styles.scss";
-@import "../../../_utilities";
+@use "bulma/sass/utilities/mixins";
 
 ia-timeline {
     z-index: 1;
@@ -8,6 +7,6 @@ ia-timeline {
 
 
 .notification {
-    @include unselectable;
+    @include mixins.unselectable;
     opacity: 0.75;
 }

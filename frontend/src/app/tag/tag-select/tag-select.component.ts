@@ -20,6 +20,7 @@ import { DropdownComponent } from '@shared/dropdown/dropdown.component';
     selector: 'ia-tag-select',
     templateUrl: './tag-select.component.html',
     styleUrls: ['./tag-select.component.scss'],
+    standalone: false
 })
 export class TagSelectComponent implements AfterViewInit, OnDestroy {
     @Input() exclude: Tag[];

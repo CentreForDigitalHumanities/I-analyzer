@@ -38,6 +38,7 @@ const barchartID = 'barchart';
 
 @Directive({
     selector: 'ia-barchart',
+    standalone: false
 })
 
 /** The barchartComponent is used to define shared functionality between the

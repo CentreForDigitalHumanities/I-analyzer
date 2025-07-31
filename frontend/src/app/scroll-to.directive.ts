@@ -3,6 +3,7 @@ import * as smoothScroll from 'smoothscroll-polyfill';
 smoothScroll.polyfill();
 @Directive({
     selector: '[scrollTo]',
+    standalone: false
 })
 export class ScrollToDirective {
     constructor(private el: ElementRef, renderer: Renderer2) {

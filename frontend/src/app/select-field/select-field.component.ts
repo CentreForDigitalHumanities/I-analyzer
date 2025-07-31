@@ -8,6 +8,7 @@ import { actionIcons } from '@shared/icons';
     selector: 'ia-select-field',
     templateUrl: './select-field.component.html',
     styleUrls: ['./select-field.component.scss'],
+    standalone: false
 })
 export class SelectFieldComponent implements OnChanges {
     @Input() queryModel: QueryModel;
