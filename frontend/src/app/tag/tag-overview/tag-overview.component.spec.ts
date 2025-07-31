@@ -1,26 +1,24 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TagOverviewComponent } from './tag-overview.component';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ApiRetryService } from '@services';
-import { commonTestBed } from '../../common-test-bed';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { appRoutes } from 'app/app.module';
+import { ApiService, CorpusService } from '@services';
+import { SharedModule } from '@shared/shared.module';
+import { ApiServiceMock } from 'mock-data/api';
+import { CorpusServiceMock } from 'mock-data/corpus';
 
 describe('TagOverviewComponent', () => {
     let component: TagOverviewComponent;
     let fixture: ComponentFixture<TagOverviewComponent>;
 
-    beforeEach(waitForAsync(() => {
-        commonTestBed().testingModule.compileComponents();
-    }));
-
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-    declarations: [TagOverviewComponent],
-    providers: [ApiRetryService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), provideRouter(appRoutes)]
-}).compileComponents();
+            declarations: [TagOverviewComponent],
+            imports: [SharedModule],
+            providers: [
+                { provide: ApiService, useClass: ApiServiceMock },
+                { provide: CorpusService, useClass: CorpusServiceMock },
+            ]
+        }).compileComponents();
     });
 
     beforeEach(() => {
