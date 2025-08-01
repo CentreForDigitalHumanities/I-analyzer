@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as _ from 'lodash';
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CorpusField, QueryModel } from '@models/index';
 import { actionIcons } from '@shared/icons';
 import { searchFieldOptions } from '@utils/search-fields';
@@ -12,36 +12,29 @@ import { searchFieldOptions } from '@utils/search-fields';
     standalone: false
 })
 export class SelectFieldComponent implements OnChanges {
-    @Input() queryModel: QueryModel;
-    @Input() public filterCriterion: 'searchable'|'downloadable';
-    @Input() public corpusFields: CorpusField[];
-    @Output() selection = new EventEmitter<CorpusField[]>();
+    @Input({ required: true }) queryModel!: QueryModel;
 
-    // all fields which are searchable/downloadable
+    /** searchable fields */
     private availableFields: CorpusField[];
-    // the options displayed at any moment in the dropdown element
+    private coreFields: CorpusField[];
+    /** the options displayed in the dropdown element */
     public optionFields: CorpusField[];
-    // user selection
+    /** user selection */
     selectedFields: CorpusField[];
-    // whether to display all field options, or just the core ones
+    /** whether to display all field options, or just the core ones */
     public allVisible = false;
 
     actionIcons = actionIcons;
 
     constructor() {}
 
-    initialize() {
-        if (this.queryModel) {
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.availableFields = searchFieldOptions(this.queryModel.corpus);
+            this.coreFields = this.availableFields.filter(f => f.searchFieldCore);
+            this.optionFields = this.coreFields;
             this.setStateFromQueryModel(this.queryModel);
-        } else {
-            this.selectedFields = this.filterCoreFields();
         }
-        this.availableFields = searchFieldOptions(this.queryModel.corpus);
-        this.optionFields = this.filterCoreFields();
-    }
-
-    ngOnChanges(): void {
-        this.initialize();
     }
 
     setStateFromQueryModel(queryModel: QueryModel) {
@@ -54,33 +47,16 @@ export class SelectFieldComponent implements OnChanges {
 
     public toggleAllFields() {
         if (this.allVisible) {
-            this.optionFields = this.filterCoreFields();
+            this.optionFields = this.coreFields;
         } else {
-            // show all options, with core options first, the rest alphabetically sorted
-            const coreFields = this.filterCoreFields();
-            const noCoreOptions = _.without(this.availableFields, ... coreFields);
-            this.optionFields = coreFields.concat(_.sortBy(noCoreOptions,['displayName']));
+            this.optionFields = this.availableFields.sort(f => f.searchFieldCore ? 0 : 1);
         }
         this.allVisible = !this.allVisible;
-        this.onUpdate();
     }
 
     public onUpdate() {
-        this.selection.emit(this.selectedFields);
-        if (this.queryModel) {
-            this.queryModel.setParams({
-                searchFields: this.selectedFields
-            });
-        }
-    }
-
-    private filterCoreFields() {
-        if (this.filterCriterion === 'downloadable') {
-            return this.availableFields.filter(field => field.csvCore);
-        } else if (this.filterCriterion === 'searchable') {
-            return this.availableFields.filter(field => field.searchFieldCore);
-        } else {
-            return this.availableFields;
-        }
+        this.queryModel.setParams({
+            searchFields: this.selectedFields
+        });
     }
 }
