@@ -2,7 +2,7 @@ import { Corpus, CorpusField } from '@models';
 import _ from 'lodash';
 
 export const searchFieldOptions = (corpus: Corpus): CorpusField[] => {
-    const searchableFields = corpus.fields.filter(field => field.searchable);
+    const searchableFields = corpus.fields.filter(field => field.searchable && !field.hidden);
     return _.flatMap(searchableFields, field => searchableVariants(field));
 }
 
