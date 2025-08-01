@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as _ from 'lodash';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CorpusField, QueryModel } from '@models/index';
 import { actionIcons } from '@shared/icons';
 import { searchFieldOptions } from '@utils/search-fields';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ia-select-field',
@@ -26,20 +27,23 @@ export class SelectFieldComponent implements OnChanges {
 
     actionIcons = actionIcons;
 
-    constructor() {}
+    constructor(private destroyRef: DestroyRef) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel) {
             this.availableFields = searchFieldOptions(this.queryModel.corpus);
             this.coreFields = this.availableFields.filter(f => f.searchFieldCore);
             this.optionFields = this.coreFields;
-            this.setStateFromQueryModel(this.queryModel);
+            this.setStateFromQueryModel();
+            this.queryModel.update.pipe(
+                takeUntilDestroyed(this.destroyRef),
+            ).subscribe(() => this.setStateFromQueryModel());
         }
     }
 
-    setStateFromQueryModel(queryModel: QueryModel) {
-        if (queryModel.searchFields) {
-            this.selectedFields = _.clone(queryModel.searchFields);
+    setStateFromQueryModel() {
+        if (this.queryModel.searchFields) {
+            this.selectedFields = _.clone(this.queryModel.searchFields);
         } else {
             this.selectedFields = [];
         }
