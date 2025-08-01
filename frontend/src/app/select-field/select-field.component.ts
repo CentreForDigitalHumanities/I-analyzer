@@ -17,7 +17,6 @@ export class SelectFieldComponent implements OnChanges {
 
     /** searchable fields */
     private availableFields: CorpusField[];
-    private coreFields: CorpusField[];
     /** the options displayed in the dropdown element */
     public optionFields: CorpusField[];
     /** user selection */
@@ -32,8 +31,7 @@ export class SelectFieldComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel) {
             this.availableFields = searchFieldOptions(this.queryModel.corpus);
-            this.coreFields = this.availableFields.filter(f => f.searchFieldCore);
-            this.optionFields = this.coreFields;
+            this.setOptionFields();
             this.setStateFromQueryModel();
             this.queryModel.update.pipe(
                 takeUntilDestroyed(this.destroyRef),
@@ -50,17 +48,21 @@ export class SelectFieldComponent implements OnChanges {
     }
 
     public toggleAllFields() {
-        if (this.allVisible) {
-            this.optionFields = this.coreFields;
-        } else {
-            this.optionFields = this.availableFields.sort(f => f.searchFieldCore ? 0 : 1);
-        }
         this.allVisible = !this.allVisible;
+        this.setOptionFields();
     }
 
     public onUpdate() {
         this.queryModel.setParams({
             searchFields: this.selectedFields
         });
+    }
+
+    setOptionFields() {
+        if (this.allVisible) {
+            this.optionFields = this.availableFields.sort(f => f.searchFieldCore ? 0 : 1);
+        } else {
+            this.optionFields = this.availableFields.filter(f => f.searchFieldCore);
+        }
     }
 }
