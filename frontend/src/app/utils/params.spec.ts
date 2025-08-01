@@ -9,12 +9,24 @@ import { PageParameters, PageResultsParameters } from '@models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = {fields: 'speech,great_field'};
+        const params = {fields: 'speech'};
         const corpus = mockCorpus3;
         const fields = searchFieldsFromParams(params, corpus);
-        expect(fields.length).toEqual(2);
-        expect(fields).toContain(mockField2);
+        expect(fields.map(f => f.name)).toEqual(['speech']);
     });
+
+    it('should include stemmed multifields', () => {
+        const fieldWithStemming = _.cloneDeep(mockField2);
+        fieldWithStemming.multiFields = ['length', 'clean', 'stemmed'];
+        const corpus = _.clone(mockCorpus3);
+        corpus.fields[1] = fieldWithStemming;
+
+        const fields = searchFieldsFromParams(
+            { fields: 'speech,speech.stemmed' },
+            corpus
+        );
+        expect(fields.map(f => f.name)).toEqual(['speech', 'speech.stemmed']);
+    })
 });
 
 describe('highlightFromParams', () => {
