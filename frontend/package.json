@@ -59,7 +59,6 @@
     "ngx-cookie-service": "19.1.0",
     "ngx-matomo-client": "7.0.1",
     "primeng": "^19.0.5",
-    "process": "^0.11.10",
     "rxjs": "^7.8.1",
     "smoothscroll-polyfill": "^0.3.6",
     "typescript": "5.7.3",
