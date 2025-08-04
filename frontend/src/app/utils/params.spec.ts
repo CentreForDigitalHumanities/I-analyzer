@@ -18,7 +18,7 @@ describe('searchFieldsFromParams', () => {
     it('should include stemmed multifields', () => {
         const fieldWithStemming = _.cloneDeep(mockField2);
         fieldWithStemming.multiFields = ['length', 'clean', 'stemmed'];
-        const corpus = _.clone(mockCorpus3);
+        const corpus = _.cloneDeep(mockCorpus3);
         corpus.fields[1] = fieldWithStemming;
 
         const fields = searchFieldsFromParams(
