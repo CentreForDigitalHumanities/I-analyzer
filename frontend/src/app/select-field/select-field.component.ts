@@ -5,7 +5,6 @@ import { CorpusField, QueryModel } from '@models/index';
 import { actionIcons } from '@shared/icons';
 import { searchFieldOptions } from '@utils/search-fields';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { findByName } from '@utils/utils';
 
 @Component({
     selector: 'ia-select-field',
@@ -16,16 +15,19 @@ import { findByName } from '@utils/utils';
 export class SelectFieldComponent implements OnChanges {
     @Input({ required: true }) queryModel!: QueryModel;
 
-    /** searchable fields */
+    /** searchable fields
+     *
+     * This includes multifield "variants", i.e. "*.text" and "*.stemmed" fields
+     */
     private availableFields: CorpusField[];
     /** the options displayed in the dropdown element
      *
      * Must be a plain JS object, not a CorpusField instance; see
      * https://github.com/orgs/primefaces/discussions/3695#discussioncomment-12582579
      */
-    public options: { name: string, displayName: string }[];
-    /** user selection */
-    selected: { name: string, displayName: string }[];
+    public options: { label: string, value: string }[];
+    /** user selection (field names) */
+    selected: string[];
     /** whether to display all field options, or just the core ones */
     public allVisible = false;
 
@@ -46,7 +48,7 @@ export class SelectFieldComponent implements OnChanges {
 
     setStateFromQueryModel() {
         if (this.queryModel.searchFields) {
-            this.selected = this.options.filter(o => findByName(this.queryModel.searchFields, o.name));
+            this.selected = this.queryModel.searchFields.map(f => f.name);
         } else {
             this.selected = [];
         }
@@ -58,12 +60,8 @@ export class SelectFieldComponent implements OnChanges {
     }
 
     public onUpdate() {
-        const fields = this.queryModel.corpus.fields.filter(f =>
-            findByName(this.selected, f.name)
-        );
-        this.queryModel.setParams({
-            searchFields: fields
-        });
+        const fields = this.availableFields.filter(f => this.selected.includes(f.name));
+        this.queryModel.setParams({ searchFields: fields });
     }
 
     setOptions() {
@@ -74,7 +72,7 @@ export class SelectFieldComponent implements OnChanges {
             fields = this.availableFields.filter(f => f.searchFieldCore);
         }
 
-        this.options = fields.map(f => _.pick(f, ['name', 'displayName']));
+        this.options = fields.map(f => ({ label: f.displayName, value: f.name }));
 
     }
 }
