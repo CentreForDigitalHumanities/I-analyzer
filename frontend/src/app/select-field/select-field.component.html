@@ -1,6 +1,6 @@
 <p-multiSelect placeholder="All fields"
-    [options]="optionFields"
-    [(ngModel)]="selectedFields"
+    [options]="options"
+    [(ngModel)]="selected"
     optionLabel="displayName"
     [displaySelectedLabel]="true"
     (onChange)="onUpdate()"
@@ -8,7 +8,7 @@
     iaBalloon="Limit your search to specific fields"
     iaBalloonLength="medium"
     iaBalloonPosition="up">
-    <ng-template #footer *ngIf="optionFields">
+    <ng-template #footer>
         <button class="button is-ghost" (click)="toggleAllFields()">
             {{allVisible? 'Show default fields' : 'Show all fields'}}
         </button>
