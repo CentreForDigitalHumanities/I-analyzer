@@ -4,7 +4,7 @@ import {
     OnChanges,
     OnDestroy, SimpleChanges
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { APICorpusDefinition, APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
@@ -137,7 +137,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         console.error(err);
     }
 
-    private dataToFormValue(data: APICorpusDefinition['meta']) {
+    private dataToFormValue(data: APICorpusDefinition['meta']): typeof this.metaForm['value'] {
         const value = _.clone(data) as any;
         value.languages = data.languages.map(code =>
             this.languages.find(l => l.code == code)
@@ -145,10 +145,10 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         return value;
     }
 
-    private formValueToData(value: any): APICorpusDefinition['meta'] {
-        const data = _.clone(value);
-        data.languages = value.languages.map(lang => lang.code);
-        return data as APICorpusDefinition['meta'];
+    private formValueToData(value: typeof this.metaForm['value']): APICorpusDefinition['meta'] {
+        const data = _.clone(value) as any;
+        data.languages = (value.languages || []).map(lang => lang.code);
+        return data;
     }
 
     private languageMatchesQuery(lang: Language, query: string) {
