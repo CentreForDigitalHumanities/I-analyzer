@@ -107,16 +107,11 @@
                         formControlName="language"
                         optionLabel="displayName"
                         optionValue="code"
-                        placeholder="select language"
-                        [filter]="true"
-                        [filterFields]
-                        [virtualScroll]="true"
-                        [virtualScrollItemSize]="10"
-                        [showClear]="true" />
+                        [filter]="false" />
                 </div>
                 <p class="help">
                     What language is the text in this field? (If the field
-                    contains multiple languages, leave this blank.)
+                    contains multiple languages, select "unknown".)
                 </p>
             </div>
 

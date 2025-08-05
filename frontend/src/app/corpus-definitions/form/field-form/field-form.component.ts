@@ -8,10 +8,12 @@ import { MenuItem } from 'primeng/api';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
-import { collectLanguages } from '../constants';
+import { collectLanguages, Language } from '../constants';
 import { actionIcons, directionIcons, formIcons } from '@shared/icons';
 import { mergeAsBooleans } from '@utils/observables';
 import { DialogService } from '@services';
+
+const allLanguages = collectLanguages();
 
 @Component({
     selector: 'ia-field-form',
@@ -20,7 +22,7 @@ import { DialogService } from '@services';
     standalone: false
 })
 export class FieldFormComponent {
-    @Input() corpus: CorpusDefinition;
+    @Input({ required: true }) corpus!: CorpusDefinition;
     destroy$ = new Subject<void>();
 
     fieldsForm = new FormGroup({
@@ -62,7 +64,8 @@ export class FieldFormComponent {
         },
     ];
 
-    languageOptions = collectLanguages();
+
+    languageOptions: Language[] = [];
 
     actionIcons = actionIcons;
     directionIcons = directionIcons;
@@ -107,7 +110,7 @@ export class FieldFormComponent {
                 sort: new FormControl(),
                 hidden: new FormControl(),
             }),
-            language: new FormControl(),
+            language: new FormControl(''),
             // hidden in the form, but included to ease syncing model with form
             name: new FormControl(),
             extract: new FormGroup({
@@ -133,14 +136,14 @@ export class FieldFormComponent {
         if (changes.corpus) {
             this.corpus.definitionUpdated$
                 .pipe(takeUntil(this.destroy$))
-                .subscribe(
-                    () =>
-                        (this.fieldsForm.controls.fields = new FormArray(
-                            this.corpus.definition.fields.map(
-                                this.makeFieldFormgroup.bind(this)
-                            )
-                        ))
-                );
+                .subscribe(() => {
+                    this.languageOptions = this.getLanguageOptions();
+                    this.fieldsForm.controls.fields = new FormArray(
+                        this.corpus.definition.fields.map(
+                            this.makeFieldFormgroup.bind(this)
+                        )
+                    );
+                });
         }
     }
 
@@ -192,5 +195,17 @@ export class FieldFormComponent {
 
     showFieldDocumentation() {
         this.dialogService.showManualPage('types-of-fields');
+    }
+
+    private getLanguageOptions() {
+        const languageCodes = this.corpus.definition.meta.languages;
+
+        if (!languageCodes.includes('eng')) {
+            languageCodes.push('eng')
+        }
+
+        const languages = allLanguages.filter(l => languageCodes.includes(l.code));
+        languages.push({ code: '', displayName: 'Unknown', altNames: ''});
+        return languages;
     }
 }
