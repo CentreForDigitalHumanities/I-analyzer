@@ -63,17 +63,14 @@
     <div class="field">
         <label class="label" for="languages">Languages</label>
         <div class="control">
-            <p-multiSelect
-                [options]="languageOptions"
+            <p-autoComplete
                 formControlName="languages"
+                multiple="true"
+                [suggestions]="languageSuggestions"
+                (completeMethod)="setLanguageSuggestions($event.query)"
                 optionLabel="displayName"
-                optionValue="code"
-                placeholder="select languages (optional)"
-                filterBy="displayName,altNames"
-                [virtualScroll]="true"
-                display="chip"
-                [virtualScrollItemSize]="10"
-                [showClear]="true" />
+                [minLength]="3"
+            />
         </div>
         <p class="help">All or the most important languages occuring in your corpus</p>
     </div>

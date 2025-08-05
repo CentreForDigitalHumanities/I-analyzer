@@ -15,6 +15,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DocumentationFormComponent } from './form/documentation-form/documentation-form.component';
 import { ImageUploadComponent } from './form/image-upload/image-upload.component';
 import { FormFeedbackComponent } from './form/form-feedback/form-feedback.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import { FormFeedbackComponent } from './form/form-feedback/form-feedback.compon
         StepsModule,
         MultiSelectModule,
         DropdownModule,
+        AutoCompleteModule,
     ],
 })
 export class CorpusDefinitionsModule {}

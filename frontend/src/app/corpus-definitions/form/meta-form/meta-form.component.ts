@@ -7,11 +7,12 @@ import {
 import { FormBuilder } from '@angular/forms';
 import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
-import { collectLanguages } from '../constants';
+import { APICorpusDefinition, APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
+import { collectLanguages, Language } from '../constants';
 import { actionIcons, formIcons } from '@shared/icons';
 import { mergeAsBooleans } from '@utils/observables';
 import { MenuItem } from 'primeng/api';
+import _ from 'lodash';
 
 @Component({
     selector: 'ia-meta-form',
@@ -43,12 +44,12 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
             min: [],
             max: [],
         }),
-        languages: [['']],
+        languages: [[]],
     });
 
     destroy$ = new Subject<void>();
 
-    languageOptions = collectLanguages();
+    // languageOptions = collectLanguages();
     actionIcons = actionIcons;
     formIcons = formIcons;
 
@@ -74,12 +75,13 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         false: [this.metaForm.valueChanges, this.changesSubmitted$]
     });
 
+    languages: Language[] = collectLanguages();
+    languageSuggestions = this.languages;
+
     constructor(
         private formBuilder: FormBuilder,
         private corpusDefService: CorpusDefinitionService,
-    ) {
-        console.log(this.languageOptions);
-    }
+    ) {}
 
     get currentCategoryLabel(): string {
         const value = this.metaForm.controls.category.value;
@@ -95,7 +97,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
                     takeUntil(this.destroy$)
                 )
                 .subscribe(() =>
-                    this.metaForm.patchValue(this.corpus.definition.meta)
+                    this.metaForm.patchValue(this.dataToFormValue(this.corpus.definition.meta))
                 );
         }
     }
@@ -107,9 +109,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
 
     onSubmit(): void {
         this.changesSubmitted$.next();
-        const newMeta = this.metaForm.value;
-        this.corpus.definition.meta =
-            newMeta as CorpusDefinition['definition']['meta'];
+        const newMeta = this.formValueToData(this.metaForm.value);
+        this.corpus.definition.meta = newMeta;
         this.corpus.save().subscribe({
             next: this.onSubmitSuccess.bind(this),
             error: this.onSubmitError.bind(this),
@@ -120,13 +121,41 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         this.corpusDefService.activateStep(1);
     }
 
+    setLanguageSuggestions(query: string) {
+        this.languageSuggestions = this.languages.filter(lang =>
+            this.languageMatchesQuery(lang, query)
+        );
+    }
+
     private onSubmitSuccess(value: APIEditableCorpus) {
-        this.metaForm.patchValue(value.definition.meta);
+        this.metaForm.patchValue(this.dataToFormValue(value.definition.meta));
         this.changesSavedSucces$.next();
     }
 
     private onSubmitError(err) {
         this.changesSavedError$.next();
         console.error(err);
+    }
+
+    private dataToFormValue(data: APICorpusDefinition['meta']) {
+        const value = _.clone(data) as any;
+        value.languages = data.languages.map(code =>
+            this.languages.find(l => l.code == code)
+        );
+        return value;
+    }
+
+    private formValueToData(value: any): APICorpusDefinition['meta'] {
+        const data = _.clone(value);
+        data.languages = value.languages.map(lang => lang.code);
+        return data as APICorpusDefinition['meta'];
+    }
+
+    private languageMatchesQuery(lang: Language, query: string) {
+        return this.contains(lang.displayName, query) || this.contains(lang.altNames, query);
+    }
+
+    private contains(s: string, query: string) {
+        return s.toLowerCase().includes(query.toLowerCase());
     }
 }
