@@ -64,7 +64,6 @@ export class FieldFormComponent {
         },
     ];
 
-
     languageOptions: Language[] = [];
 
     actionIcons = actionIcons;
@@ -197,9 +196,14 @@ export class FieldFormComponent {
         this.dialogService.showManualPage('types-of-fields');
     }
 
-    private getLanguageOptions() {
-        const languageCodes = this.corpus.definition.meta.languages;
+    languageLabel(field: FormGroup): string {
+        const value = field.controls.language.value;
+        return this.languageOptions.find(o => o.code == value).displayName;
+    }
 
+    private getLanguageOptions() {
+        // include corpus languages + interface language
+        const languageCodes = this.corpus.definition.meta.languages;
         if (!languageCodes.includes('eng')) {
             languageCodes.push('eng')
         }

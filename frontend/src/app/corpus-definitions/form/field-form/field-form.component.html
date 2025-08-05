@@ -101,14 +101,16 @@
                 </ng-container>
             </div>
             <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
-                <label class="label">Language (optional)</label>
-                <div class="control">
-                    <p-dropdown [options]="languageOptions"
-                        formControlName="language"
-                        optionLabel="displayName"
-                        optionValue="code"
-                        [filter]="false" />
-                </div>
+                <label class="label" id="language-label">Language (optional)</label>
+                <ia-dropdown formControlName="language" labelledBy="language-label">
+                    <span iaDropdownLabel>{{languageLabel(field)}}</span>
+                    <div iaDropdownMenu>
+                        <a iaDropdownItem *ngFor="let lang of languageOptions"
+                            [value]="lang.code">
+                            {{lang.displayName}}
+                        </a>
+                    </div>
+                </ia-dropdown>
                 <p class="help">
                     What language is the text in this field? (If the field
                     contains multiple languages, select "unknown".)
