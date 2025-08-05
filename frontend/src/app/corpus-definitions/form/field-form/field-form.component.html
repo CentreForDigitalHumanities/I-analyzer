@@ -103,9 +103,16 @@
             <div *ngIf="getFieldProperty(field, 'hasLanguage')" class="field">
                 <label class="label">Language (optional)</label>
                 <div class="control">
-                    <p-dropdown [options]="languageOptions" formControlName="language" optionLabel="name"
-                        optionValue="code" placeholder="select language" [filter]="true"
-                        [virtualScroll]="true" [virtualScrollItemSize]="10" [showClear]="true" />
+                    <p-dropdown [options]="languageOptions"
+                        formControlName="language"
+                        optionLabel="displayName"
+                        optionValue="code"
+                        placeholder="select language"
+                        [filter]="true"
+                        [filterFields]
+                        [virtualScroll]="true"
+                        [virtualScrollItemSize]="10"
+                        [showClear]="true" />
                 </div>
                 <p class="help">
                     What language is the text in this field? (If the field

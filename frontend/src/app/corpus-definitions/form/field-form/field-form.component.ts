@@ -8,7 +8,7 @@ import { MenuItem } from 'primeng/api';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
-import { ISO6393Languages } from '../constants';
+import { collectLanguages } from '../constants';
 import { actionIcons, directionIcons, formIcons } from '@shared/icons';
 import { mergeAsBooleans } from '@utils/observables';
 import { DialogService } from '@services';
@@ -62,7 +62,7 @@ export class FieldFormComponent {
         },
     ];
 
-    languageOptions = ISO6393Languages;
+    languageOptions = collectLanguages();
 
     actionIcons = actionIcons;
     directionIcons = directionIcons;

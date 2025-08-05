@@ -8,7 +8,7 @@ import { FormBuilder } from '@angular/forms';
 import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
-import { ISO6393Languages } from '../constants';
+import { collectLanguages } from '../constants';
 import { actionIcons, formIcons } from '@shared/icons';
 import { mergeAsBooleans } from '@utils/observables';
 import { MenuItem } from 'primeng/api';
@@ -48,7 +48,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
 
     destroy$ = new Subject<void>();
 
-    languageOptions = ISO6393Languages;
+    languageOptions = collectLanguages();
     actionIcons = actionIcons;
     formIcons = formIcons;
 
@@ -77,7 +77,9 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
     constructor(
         private formBuilder: FormBuilder,
         private corpusDefService: CorpusDefinitionService,
-    ) {}
+    ) {
+        console.log(this.languageOptions);
+    }
 
     get currentCategoryLabel(): string {
         const value = this.metaForm.controls.category.value;
