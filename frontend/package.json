@@ -59,14 +59,12 @@
     "ngx-cookie-service": "19.1.0",
     "ngx-matomo-client": "7.0.1",
     "primeng": "^19.0.5",
-    "process": "^0.11.10",
     "rxjs": "^7.8.1",
     "smoothscroll-polyfill": "^0.3.6",
     "typescript": "5.7.3",
     "vega": "^5.32.0",
     "vega-embed": "^6.26.0",
     "vega-lite": "^5.19.0",
-    "vite": "^6.2.7",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
@@ -89,7 +87,8 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage-istanbul-reporter": "^3.0.2",
     "karma-jasmine": "^4.0.0",
-    "karma-jasmine-html-reporter": "^1.5.0"
+    "karma-jasmine-html-reporter": "^1.5.0",
+    "vite": "^6.2.7"
   },
   "peerDependencies": {
     "webpack": "^5.1.0"
