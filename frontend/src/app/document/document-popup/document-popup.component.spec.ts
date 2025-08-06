@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DocumentPopupComponent } from './document-popup.component';
 import { commonTestBed } from '../../common-test-bed';
 import { makeDocument } from '../../../mock-data/constructor-helpers';
-import { mockCorpus, mockCorpus2, mockField } from '../../../mock-data/corpus';
+import { corpusFactory, mockCorpus2, } from '../../../mock-data/corpus';
 import { DocumentPage } from '@models/document-page';
 import { QueryModel } from '@models';
 
@@ -20,10 +20,14 @@ describe('DocumentPopupComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DocumentPopupComponent);
         component = fixture.componentInstance;
-        const document = makeDocument({ great_field: 'Hello world!' });
+        const corpus = corpusFactory();
+        const document = makeDocument(
+            { genre: 'Science Fiction', content: 'Bleep bloop', date: '1950-01-01' },
+            corpus,
+        );
         component.document = document;
-        component.page = new DocumentPage([document], 1, [mockField]);
-        component.queryModel = new QueryModel(mockCorpus);
+        component.page = new DocumentPage([document], 1, corpus.fields);
+        component.queryModel = new QueryModel(corpus);
         fixture.detectChanges();
     });
 

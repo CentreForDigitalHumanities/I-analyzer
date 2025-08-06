@@ -3,7 +3,7 @@ import { TestBed, inject } from '@angular/core/testing';
 import { ApiService } from './api.service';
 import { ApiServiceMock } from '../../mock-data/api';
 import { DownloadService } from './download.service';
-import { mockCorpus, mockField } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import {
     DownloadOptions,
     LimitedResultsDownloadParameters,
@@ -34,12 +34,12 @@ describe('DownloadService', () => {
     });
 
     it('should make a download request', () => {
-        const query = new QueryModel(mockCorpus);
+        const query = new QueryModel(corpusFactory());
         query.setQueryText('test');
 
         const size = 1;
         const route = `/search/${query.corpus.name}`;
-        const sort: SortState = [mockField, 'desc'];
+        const sort: SortState = [query.corpus.fields[2], 'desc'];
         const highlight = 200;
         const options: DownloadOptions = {
             encoding: 'utf-8',
@@ -49,8 +49,8 @@ describe('DownloadService', () => {
         const fieldNames = query.corpus.fields.map(field => field.name)
         service.download(query.corpus, query, fieldNames, size, route, sort, highlight, options);
         const expectedBody: LimitedResultsDownloadParameters = {
-            corpus: mockCorpus.name,
-            fields: ['great_field', 'speech'],
+            corpus: query.corpus.name,
+            fields: ['genre', 'content', 'date'],
             route,
             es_query: {
                 query: {
@@ -65,13 +65,13 @@ describe('DownloadService', () => {
                         filter: [],
                     },
                 },
-                sort: [{ great_field: 'desc' }],
+                sort: [{ date: 'desc' }],
                 highlight: {
                     fragment_size: highlight,
                     pre_tags: ['<mark class="highlight">'],
                     post_tags: ['</mark>'],
                     order: 'score',
-                    fields: [{ speech: {} }],
+                    fields: [{ content: {} }],
                 },
                 from: 0,
                 size,

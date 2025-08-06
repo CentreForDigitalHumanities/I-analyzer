@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { commonTestBed } from '../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { mockCorpus, mockCorpus2 } from '../../mock-data/corpus';
+import { corpusFactory, mockCorpus2 } from '../../mock-data/corpus';
 import { QueryModel } from '@models';
 
 import { AuthService } from '@services';
@@ -18,17 +18,19 @@ describe('FilterManagerComponent', () => {
         commonTestBed().testingModule.compileComponents();
     }));
 
-    describe('it works for an authenticated user:', () => {
+    describe('with authenticated user', () => {
+        const corpus = corpusFactory();
+
         beforeEach(() => {
             fixture = TestBed.createComponent(FilterManagerComponent);
             component = fixture.componentInstance;
-            component.queryModel = new QueryModel(mockCorpus);
+            component.queryModel = new QueryModel(corpus);
             fixture.detectChanges();
         });
 
         it('should create', () => {
             expect(component).toBeTruthy();
-            expect(component.filters.length).toEqual(3);
+            expect(component.filters.length).toEqual(4); // one per field, plus tags
         });
 
         it('resets filters when corpus changes', () => {
@@ -36,16 +38,16 @@ describe('FilterManagerComponent', () => {
             fixture.detectChanges();
             expect(component.filters.length).toEqual(2);
             expect(component.filters[0]['adHoc']).toBeTrue();
-            component.queryModel = new QueryModel(mockCorpus);
+            component.queryModel = new QueryModel(corpus);
             fixture.detectChanges();
-            expect(component.filters.length).toEqual(3);
+            expect(component.filters.length).toEqual(4);
             expect(component.filters[0]['adHoc']).toBeFalse();
         });
 
         it('toggles filters on and off', async () => {
-            const filter = component.filters.find(f => f['corpusField']['name'] === 'great_field');
+            const filter = component.filters.find(f => f['corpusField']['name'] === 'genre');
             expect(component.activeFilters.length).toBe(0);
-            filter.set(true);
+            filter.set(['Fantasy']);
             expect(component.activeFilters.length).toBe(1);
             filter.toggle();
             expect(component.activeFilters.length).toBe(0);
@@ -54,7 +56,6 @@ describe('FilterManagerComponent', () => {
         });
 
         it('shows tag filter', async () => {
-            component.queryModel = new QueryModel(mockCorpus);
             await fixture.whenStable();
             const compiled = fixture.debugElement;
             const tagFilter = compiled.query(By.css('ia-tag-filter'));
@@ -62,12 +63,12 @@ describe('FilterManagerComponent', () => {
         });
     });
 
-    describe('it behaves differently for unauthenticated user:', () => {
+    describe('with unauthenticated user', () => {
         beforeEach(() => {
             TestBed.overrideProvider(AuthService, {useValue: new UnauthenticatedMock()});
             fixture = TestBed.createComponent(FilterManagerComponent);
             component = fixture.componentInstance;
-            component.queryModel = new QueryModel(mockCorpus);
+            component.queryModel = new QueryModel(corpusFactory());
             fixture.detectChanges();
         });
 

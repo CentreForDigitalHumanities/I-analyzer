@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { reduce, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { makeDocument } from '../../mock-data/constructor-helpers';
-import { mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
+import { corpusFactory, mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
 import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
 import { FoundDocument } from './found-document';
@@ -14,23 +14,19 @@ import { Tag } from './tag';
 
 const maxScore = 2.9113607;
 const mockResponse = {
-    _index: 'troonredes',
-    _id: '1994_troonrede',
+    _index: 'test',
+    _id: '12345',
     _score: 2.9113607,
     _source: {
         date: '1994-09-20',
-        id: '1994_troonrede',
-        title: 'Troonrede 20 september 1994',
-        monarch: 'Beatrix',
-        speech_type: 'troonrede',
-        content: 'Om op langere termijn de zekerheid te kunnen blijven bieden ' +
-            'van een gegarandeerd basispensioen, en om solidaire regelingen bij ' +
-            'arbeidsongeschiktheid en werkloosheid in stand te houden, is een ' +
-            'kritische toets van het bestaande stelsel nu geboden.'
+        genre: 'Science fiction',
+        content: 'You will rejoice to hear that no disaster has accompanied the ' +
+            'commencement of an enterprise which you have regarded with such evil ' +
+            'forebodings.'
     },
     highlight: {
         content: [
-            '<em>toets</em>'
+            '<em>rejoice</em>'
         ]
     }
 };
@@ -38,6 +34,7 @@ const mockResponse = {
 describe('FoundDocument', () => {
     const mockTagService = new TagServiceMock() as any;
     const mockEntityService = new EntityServiceMock() as any;
+    const corpus = corpusFactory();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -49,10 +46,14 @@ describe('FoundDocument', () => {
     });
 
     it('should construct from an elasticsearch response', () => {
-        const document = new FoundDocument(mockTagService, mockEntityService, mockCorpus, mockResponse, maxScore);
+        const document = new FoundDocument(
+            mockTagService, mockEntityService,
+            corpus,
+            mockResponse, maxScore
+        );
 
-        expect(document.id).toBe('1994_troonrede');
-        expect(document.fieldValues['monarch']).toBe('Beatrix');
+        expect(document.id).toBe('12345');
+        expect(document.fieldValues['genre']).toBe('Science fiction');
     });
 
     it('should reflect context', () => {

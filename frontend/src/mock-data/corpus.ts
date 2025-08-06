@@ -111,7 +111,7 @@ export const corpusFactory = () =>
         ['eng'],
         'Books',
         false,
-        null,
+        { contextFields: [], displayName: null },
         false,
         [undefined, 'desc'],
     );
