@@ -92,6 +92,60 @@ export const dateFieldFactory = () =>
         language: '',
     });
 
+
+export const intFieldFactory = () =>
+    new CorpusField({
+        name: 'page',
+        display_name: 'Page',
+        description: 'Page number of the document',
+        display_type: 'integer',
+        hidden: false,
+        sortable: true,
+        downloadable: true,
+        search_filter: {
+            name: 'RangeFilter',
+            lower: 0,
+            upper: 100,
+            description: 'Select page range',
+        },
+        es_mapping: { type: 'integer' },
+        results_overview: false,
+        searchable: false,
+        search_field_core: false,
+        csv_core: false,
+        visualizations: ['resultscount', 'termfrequency'],
+        visualization_sort: '',
+        indexed: true,
+        required: false,
+        language: '',
+    });
+
+export const booleanFieldFactory = () =>
+    new CorpusField({
+        name: 'public_domain',
+        display_name: 'In public domain',
+        description: 'Whether the text is in the public domain',
+        display_type: 'boolean',
+        hidden: false,
+        sortable: false,
+        downloadable: true,
+        search_filter: {
+            name: 'BooleanFilter',
+            description: ''
+        },
+        es_mapping: { type: 'boolean' },
+        results_overview: false,
+        searchable: false,
+        search_field_core: false,
+        csv_core: false,
+        visualizations: [],
+        visualization_sort: '',
+        indexed: true,
+        required: false,
+        language: '',
+    });
+
+
 export const corpusFactory = () =>
     new Corpus(
         'test',
@@ -108,7 +162,7 @@ export const corpusFactory = () =>
         '',
         true,
         false,
-        ['eng'],
+        ['English'],
         'Books',
         false,
         { contextFields: [], displayName: null },
@@ -117,7 +171,6 @@ export const corpusFactory = () =>
     );
 
 const mockFilterOptions: BooleanFilterOptions = {
-    checked: false,
     name: 'BooleanFilter',
     description: 'Use this filter to decide whether or not this field is great',
 };
@@ -247,76 +300,13 @@ export const mockFieldDate = new CorpusField({
 });
 
 
-export const mockCorpus: Corpus = {
-    name: 'test1',
-    index: 'test1',
-    title: 'Test corpus',
-    description: 'This corpus is for mocking',
-    minYear: 1800,
-    maxYear: 1900,
-    scanImageType: 'pdf',
-    allowImageDownload: false,
-    wordModelsPresent: false,
-    hasNamedEntities: false,
-    directDownloadLimit: 500,
-    fields: [mockField, mockField2],
-    languages: ['English'],
-    category: 'Tests',
-    defaultSort: [undefined, 'desc'],
-    languageField: undefined,
-} as unknown as Corpus;
-
-export const mockCorpus2 = {
-    name: 'test2',
-    index: 'test2',
-    title: 'Test corpus 2',
-    description: 'This corpus is for mocking',
-    minYear: 1850,
-    maxYear: 2000,
-    scanImageType: 'pdf',
-    allowImageDownload: false,
-    wordModelsPresent: false,
-    hasNamedEntities: true,
-    directDownloadLimit: 1000,
-    fields: [mockField2],
-    languages: ['English', 'French'],
-    category: 'Different tests',
-    defaultSort: [undefined, 'desc'],
-    languageField: undefined,
-} as unknown as Corpus;
-
-export const mockCorpus3: Corpus = {
-    name: 'test3',
-    index: 'test3',
-    title: 'Test corpus 3',
-    description: 'This corpus is for mocking',
-    minYear: 1800,
-    maxYear: 2000,
-    scanImageType: 'pdf',
-    allowImageDownload: false,
-    wordModelsPresent: false,
-    hasNamedEntities: false,
-    directDownloadLimit: 2000,
-    fields: [mockField, mockField2, mockField3, mockFieldDate, mockFieldMultipleChoice],
-    languages: ['English'],
-    category: 'Tests',
-    documentContext: {
-        contextFields: [mockFieldDate],
-        displayName: 'day',
-        sortField: mockField3,
-        sortDirection: 'asc'
-    },
-    defaultSort: [undefined, 'desc'],
-    languageField: undefined,
-} as unknown as Corpus;
-
 export class CorpusServiceMock {
-    private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);
+    private currentCorpusSubject = new BehaviorSubject<Corpus>(corpusFactory());
     // eslint-disable-next-line @typescript-eslint/member-ordering
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
     public get(refresh = false): Promise<Corpus[]> {
-        return Promise.resolve([mockCorpus, mockCorpus2]);
+        return Promise.resolve([corpusFactory()]);
     }
 
     public set(corpusName = 'test1'): Promise<boolean> {

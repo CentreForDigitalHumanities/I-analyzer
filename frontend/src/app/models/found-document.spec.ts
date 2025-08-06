@@ -2,8 +2,8 @@ import { TestBed, fakeAsync, waitForAsync } from '@angular/core/testing';
 import * as _ from 'lodash';
 import { reduce, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { makeDocument } from '../../mock-data/constructor-helpers';
-import { corpusFactory, mockCorpus, mockCorpus3 } from '../../mock-data/corpus';
+import { exampleValues, makeDocument } from '../../mock-data/constructor-helpers';
+import { corpusFactory } from '../../mock-data/corpus';
 import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock, mockTags } from '../../mock-data/tag';
 import { FoundDocument } from './found-document';
@@ -57,16 +57,22 @@ describe('FoundDocument', () => {
     });
 
     it('should reflect context', () => {
-        const notDefinedInCorpus = makeDocument({great_field: 'test'}, mockCorpus);
+        const notDefinedInCorpus = makeDocument();
         expect(notDefinedInCorpus.hasContext).toBeFalse();
 
-        const missingValues = makeDocument({great_field: 'test'}, mockCorpus3);
+        const corpusWithContext = corpusFactory();
+        corpusWithContext.documentContext = {
+            contextFields: [corpusWithContext.fields[2]],
+            displayName: 'date',
+        }
+
+        const missingValues = makeDocument(
+            _.omit(exampleValues, ['date']),
+            corpusWithContext
+        );
         expect(missingValues.hasContext).toBeFalse();
 
-        const shouldHaveContext = makeDocument({
-            great_field: 'test',
-            date: new Date('1800-01-01')
-        }, mockCorpus3);
+        const shouldHaveContext = makeDocument(exampleValues, corpusWithContext);
         expect(shouldHaveContext.hasContext).toBeTrue();
     });
 

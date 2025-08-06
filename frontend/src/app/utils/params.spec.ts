@@ -2,30 +2,26 @@ import {
     highlightFromParams, omitNullParameters, pageFromParams, pageToParams, searchFieldsFromParams,
     sortSettingsFromParams, sortSettingsToParams
 } from './params';
-import { mockCorpus3, mockField2, corpusFactory } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { Corpus, CorpusField, SortState } from '@models';
 import * as _ from 'lodash';
 import { PageParameters, PageResultsParameters } from '@models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = {fields: 'speech'};
-        const corpus = mockCorpus3;
+        const params = {fields: 'content'};
+        const corpus = corpusFactory();
         const fields = searchFieldsFromParams(params, corpus);
-        expect(fields.map(f => f.name)).toEqual(['speech']);
+        expect(fields.map(f => f.name)).toEqual(['content']);
     });
 
     it('should include stemmed multifields', () => {
-        const fieldWithStemming = _.cloneDeep(mockField2);
-        fieldWithStemming.multiFields = ['length', 'clean', 'stemmed'];
-        const corpus = _.cloneDeep(mockCorpus3);
-        corpus.fields[1] = fieldWithStemming;
-
+        const corpus = corpusFactory();
         const fields = searchFieldsFromParams(
-            { fields: 'speech,speech.stemmed' },
+            { fields: 'content,content.stemmed' },
             corpus
         );
-        expect(fields.map(f => f.name)).toEqual(['speech', 'speech.stemmed']);
+        expect(fields.map(f => f.name)).toEqual(['content', 'content.stemmed']);
     })
 });
 

@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { DocumentPopupComponent } from './document-popup.component';
 import { commonTestBed } from '../../common-test-bed';
 import { makeDocument } from '../../../mock-data/constructor-helpers';
-import { corpusFactory, mockCorpus2, } from '../../../mock-data/corpus';
+import { corpusFactory } from '../../../mock-data/corpus';
 import { DocumentPage } from '@models/document-page';
 import { QueryModel } from '@models';
 
@@ -41,7 +41,11 @@ describe('DocumentPopupComponent', () => {
 
     it('shows the NER toggle for corpora with named entities', () => {
         const setModel = component.queryModel;
-        const queryModel = new QueryModel(mockCorpus2);
+
+        const corpusWithEntities = corpusFactory();
+        corpusWithEntities.hasNamedEntities = true;
+
+        const queryModel = new QueryModel(corpusWithEntities);
         component.queryModel = queryModel;
         component.ngOnChanges({queryModel: {previousValue: setModel, currentValue: queryModel, firstChange: false, isFirstChange: null}});
         fixture.detectChanges();

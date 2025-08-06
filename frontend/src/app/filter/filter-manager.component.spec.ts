@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { commonTestBed } from '../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { corpusFactory, mockCorpus2 } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { QueryModel } from '@models';
 
 import { AuthService } from '@services';
@@ -34,7 +34,11 @@ describe('FilterManagerComponent', () => {
         });
 
         it('resets filters when corpus changes', () => {
-            component.queryModel = new QueryModel(mockCorpus2);
+            const newCorpus = corpusFactory();
+            newCorpus.fields[0].filterOptions = null;
+            newCorpus.fields = newCorpus.fields.slice(0, 1);
+
+            component.queryModel = new QueryModel(newCorpus);
             fixture.detectChanges();
             expect(component.filters.length).toEqual(2);
             expect(component.filters[0]['adHoc']).toBeTrue();

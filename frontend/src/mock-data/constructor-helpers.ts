@@ -11,7 +11,7 @@ const entityService = new EntityServiceMock() as any;
 export const exampleValues = {
     genre: 'Science Fiction',
     content: 'Bleep boop',
-    date: '1850-03-01'
+    date: '1800-01-01'
 };
 
 export const makeDocument = (

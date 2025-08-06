@@ -1,7 +1,7 @@
 import { PageResultsParameters } from '../app/models/page-results';
 import { SearchFilter } from '../app/models/field-filter';
 import { Corpus, CorpusField, FoundDocument, QueryModel, SearchResults } from '../app/models/index';
-import { corpusFactory, mockCorpus } from './corpus';
+import { corpusFactory } from './corpus';
 import { TagServiceMock } from './tag';
 import { ElasticSearchServiceMock } from './elastic-search';
 import { Aggregator } from '../app/models/aggregation';
