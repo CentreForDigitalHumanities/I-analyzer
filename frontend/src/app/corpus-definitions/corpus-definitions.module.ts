@@ -14,6 +14,9 @@ import { DocumentationFormComponent } from './form/documentation-form/documentat
 import { ImageUploadComponent } from './form/image-upload/image-upload.component';
 import { FormFeedbackComponent } from './form/form-feedback/form-feedback.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { IndexFormComponent } from './form/index-form/index-form.component';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
     declarations: [
@@ -28,6 +31,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         DocumentationFormComponent,
         ImageUploadComponent,
         FormFeedbackComponent,
+        IndexFormComponent,
     ],
     exports: [
         CreateDefinitionComponent,
@@ -40,6 +44,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         ReactiveFormsModule,
         StepsModule,
         AutoCompleteModule,
+        MultiSelectModule,
+        DropdownModule,
     ],
 })
 export class CorpusDefinitionsModule {}

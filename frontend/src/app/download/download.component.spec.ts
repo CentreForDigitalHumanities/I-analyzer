@@ -35,12 +35,11 @@ describe('DownloadComponent', () => {
         expect(component['getColumnNames']()).toEqual(['great_field', 'speech']);
 
         // Deselect all
-        component.selectedCsvFields = [];
+        component.fieldSelection = [];
         expect(component['getColumnNames']()).toEqual([]);
 
         // Select two
-        component.selectedCsvFields = [mockField, mockField2];
-        const expected_fields = ['great_field', 'speech'];
-        expect(component['getColumnNames']()).toEqual(expected_fields);
+        component.fieldSelection = ['great_field', 'speech'];
+        expect(component['getColumnNames']()).toEqual(['great_field', 'speech']);
     });
 });
