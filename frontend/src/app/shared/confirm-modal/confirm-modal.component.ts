@@ -25,9 +25,10 @@ import { BehaviorSubject, lastValueFrom, of, Subject, timer } from 'rxjs';
  *
  * Use projected content to provide the text of the modal.
  *
- * Call `open()` to open the modal. You can provide any arguments that are relevant in
- * context. You can use `args` to access arguments. You can do this with a `ViewChild`,
- * but typically the easiest way is with a template variable (see example below).
+ * Call `open()` to open the modal. Accepts an optional argument, which can contain any
+ * data that is relevant in context. You can use `data` to access arguments. You can call
+ * this with a `ViewChild`, but typically the easiest way is with a template variable
+ * (see example below).
  *
  * Example usage:
  *
@@ -36,11 +37,13 @@ import { BehaviorSubject, lastValueFrom, of, Subject, timer } from 'rxjs';
  *
  * <ia-confirm-modal #confirm actionText="Do the thing">
  *    <p>
- *         Are you sure you want to do {{confirm.args[0]}}?
+ *         Are you sure you want to do {{confirm.data}}?
  *    </p>
  * </ia-confirm-modal>
  * ```
  *
+ * Note that projected content is still rendered if
+ * the modal is inactive. (In which case `data` is undefined.)
  */
 @Component({
     selector: 'ia-confirm-modal',
@@ -59,13 +62,13 @@ export class ConfirmModalComponent implements OnDestroy {
     confirmAction$ = new BehaviorSubject<any>(undefined);
     loading$ = new BehaviorSubject<boolean>(false);
 
-    args: any; // for briefer notation, this provides the action arguments
+    data: any; // for briefer notation, this provides the action data
 
     constructor() {
-        this.confirmAction$.subscribe(args => this.args = args);
+        this.confirmAction$.subscribe(data => this.data = data);
     }
 
-    @Input() handleAsync = (...args: any) => of(args);
+    @Input() handleAsync = (data: any) => of(data);
 
     ngOnDestroy(): void {
         this.confirmAction$.complete();
@@ -73,15 +76,15 @@ export class ConfirmModalComponent implements OnDestroy {
         this.result.complete();
     }
 
-    open(...args: any) {
-        this.confirmAction$.next(args);
+    open(data: any) {
+        this.confirmAction$.next(data);
         setTimeout(() => this.title.nativeElement.focus());
     }
 
-    confirm(args: any) {
+    confirm(data: any) {
         showLoading(
             this.loading$,
-            lastValueFrom(this.handleAsync(...args)),
+            lastValueFrom(this.handleAsync(data)),
         ).then(res => {
             this.confirmAction$.next(undefined);
             this.result.next(res)

@@ -71,7 +71,7 @@
     [handleAsync]="handleDelete" (result)="onDeleteComplete()">
     <p>
         Do you want to delete corpus
-         <strong>{{confirmDelete.args?.[0].definition.meta.title}}</strong>?
+         <strong>{{confirmDelete.data?.definition.meta.title}}</strong>?
         This cannot be reversed.
     </p>
 </ia-confirm-modal>

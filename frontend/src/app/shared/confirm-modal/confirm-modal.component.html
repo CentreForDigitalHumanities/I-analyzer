@@ -1,4 +1,4 @@
-<div class="modal is-active" *ngIf="confirmAction$ | async as args">
+<div class="modal is-active" *ngIf="confirmAction$ | async as data">
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
@@ -12,7 +12,7 @@
         </section>
         <footer class="modal-card-foot">
             <div class="buttons">
-                <button class="button" (click)="confirm(args)"
+                <button class="button" (click)="confirm(data)"
                     [class]="actionButtonClass"
                     [class.is-loading]="loading$ | async">
                     <span class="icon" *ngIf="icon">
