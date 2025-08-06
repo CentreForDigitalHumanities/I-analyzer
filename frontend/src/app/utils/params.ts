@@ -18,6 +18,7 @@ import {
 } from '@models/page-results';
 import { findByName } from './utils';
 import { SimpleStore } from '../store/simple-store';
+import { searchFieldOptions } from './search-fields';
 
 // general utility functions
 
@@ -44,8 +45,9 @@ export const queryToParams = (queryText: string): Params => ({
 
 export const searchFieldsFromParams = (params: Params, corpus: Corpus): CorpusField[] => {
     if (params['fields']) {
+        const searchableFields = searchFieldOptions(corpus);
         const fieldNames = params['fields'].split(',');
-        return corpus.fields.filter(field => fieldNames.includes(field.name));
+        return searchableFields.filter(field => fieldNames.includes(field.name));
     }
 };
 
