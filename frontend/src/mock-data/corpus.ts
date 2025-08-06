@@ -3,16 +3,16 @@ import { BehaviorSubject } from 'rxjs';
 import { findByName } from '../app/utils/utils';
 import { Corpus, CorpusField } from '../app/models';
 
-export const keywordFieldFactory = (searchable = false): CorpusField => {
-    const mapping = searchable ?
-        { type: 'keyword', fields: { text: { type: 'text'}}} :
-        { type: 'keyword'};
-    return new CorpusField({
+
+export const keywordFieldFactory = (searchable = false): CorpusField =>
+    new CorpusField({
         name: 'genre',
         description: 'Genre of the document',
         display_name: 'Genre',
         display_type: 'keyword',
-        es_mapping: mapping,
+        es_mapping: searchable ?
+            { type: 'keyword', fields: { text: { type: 'text'}}} :
+            { type: 'keyword'},
         hidden: false,
         searchable,
         downloadable: true,
@@ -31,7 +31,7 @@ export const keywordFieldFactory = (searchable = false): CorpusField => {
         indexed: true,
         required: false,
     });
-};
+
 
 export const contentFieldFactory = (): CorpusField =>
     new CorpusField({
