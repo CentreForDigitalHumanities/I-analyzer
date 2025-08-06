@@ -10,12 +10,13 @@ import { FieldFormComponent } from './form/field-form/field-form.component';
 import { StepsModule } from 'primeng/steps';
 import { CorpusFormComponent } from './form/corpus-form/corpus-form.component';
 import { UploadSampleComponent } from './form/upload-sample/upload-sample.component';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { DropdownModule } from 'primeng/dropdown';
 import { DocumentationFormComponent } from './form/documentation-form/documentation-form.component';
 import { ImageUploadComponent } from './form/image-upload/image-upload.component';
 import { FormFeedbackComponent } from './form/form-feedback/form-feedback.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { IndexFormComponent } from './form/index-form/index-form.component';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
     declarations: [
@@ -42,8 +43,9 @@ import { IndexFormComponent } from './form/index-form/index-form.component';
         SharedModule,
         ReactiveFormsModule,
         StepsModule,
+        AutoCompleteModule,
         MultiSelectModule,
         DropdownModule,
-],
+    ],
 })
 export class CorpusDefinitionsModule {}
