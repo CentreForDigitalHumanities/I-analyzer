@@ -5,7 +5,6 @@ import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definitio
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MultiSelectModule } from 'primeng/multiselect';
 import { CorpusDefinition } from '@models/corpus-definition';
 import { mockCorpusDefinition } from 'mock-data/corpus-definition';
 import { ApiService } from '@services';
@@ -13,6 +12,7 @@ import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { ApiServiceMock } from 'mock-data/api';
 import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
 import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 
 describe('MetaFormComponent', () => {
@@ -31,7 +31,7 @@ describe('MetaFormComponent', () => {
             imports: [
                 SharedModule,
                 ReactiveFormsModule,
-                MultiSelectModule,
+                AutoCompleteModule,
             ],
             providers: [
                 CorpusDefinitionService,

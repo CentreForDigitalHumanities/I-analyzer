@@ -197,7 +197,7 @@ export class TimelineComponent
             ? this.visualizedField.displayName
             : this.visualizedField.name;
         const xMin = this.callibratexAxis(this.xDomain[0], -1);
-        const xMax = this.callibratexAxis(this.xDomain[0]);
+        const xMax = this.callibratexAxis(this.xDomain[1]);
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();

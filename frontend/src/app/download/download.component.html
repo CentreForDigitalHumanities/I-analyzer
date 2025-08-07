@@ -16,9 +16,8 @@
         <div class="field">
             <label class="label" id="fields-select-label">Fields</label>
             <div class="control">
-                <p-multiSelect [options]="availableCsvFields"
-                    [(ngModel)]="selectedCsvFields"
-                    optionLabel="displayName"
+                <p-multiSelect [options]="fieldOptions"
+                    [(ngModel)]="fieldSelection"
                     placeholder="select fields"
                     name="searchFields"
                     ariaLabelledBy="fields-select-label">
