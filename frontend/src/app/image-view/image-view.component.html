@@ -35,16 +35,3 @@
     <ia-scan-image *ngIf="mediaType!=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
     <ia-scan-pdf *ngIf="mediaType==='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
 </div>
-
-<p-confirmDialog #cd appendTo="body">
-    <p-footer>
-        <div class="field is-grouped">
-            <button class="button is-primary" (click)="cd.accept()">
-                <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon> Download
-            </button>
-            <button class="button is-primary" (click)="cd.reject()">
-                <fa-icon [icon]="formIcons.reset" aria-hidden="true"></fa-icon> Cancel
-            </button>
-        </div>
-    </p-footer>
-</p-confirmDialog>

@@ -15,6 +15,7 @@ class MediaMockCorpus(MockCSVCorpus):
     citation_page = None
     license_page = None
     description_page = None
+    allow_image_download = True
 
     def request_media(self, document, corpus_name):
         field_values = document['fieldValues']
