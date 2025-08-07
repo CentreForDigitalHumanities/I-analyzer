@@ -156,10 +156,10 @@ export class CorpusDefinition {
 };
 
 export const FIELD_TYPE_OPTIONS: {
-    label: string,
-    value: APICorpusDefinitionField['type'],
-    helpText: string,
-    hasLanguage?: boolean,
+    label: string;
+    value: APICorpusDefinitionField['type'];
+    helpText: string;
+    hasLanguage?: boolean;
 }[] = [
     {
         label: 'text (content)',
@@ -176,11 +176,13 @@ export const FIELD_TYPE_OPTIONS: {
         hasLanguage: true,
     },
     {
-        label: 'number (integer)', value: 'integer',
+        label: 'number (integer)',
+        value: 'integer',
         helpText: 'This field contains whole numbers',
     },
     {
-        label: 'number (decimal)', value: 'float',
+        label: 'number (decimal)',
+        value: 'float',
         helpText: 'This field contains numbers with (optional) decimals',
     },
     {
@@ -192,5 +194,10 @@ export const FIELD_TYPE_OPTIONS: {
         label: 'boolean',
         value: 'boolean',
         helpText: 'This field contains true/false values.',
+    },
+    {
+        label: 'url',
+        value: 'url',
+        helpText: "This field contains URL's",
     },
 ];
