@@ -4,7 +4,6 @@ import openpyxl
 import os.path
 import PIL
 
-from django.utils.functional import classproperty
 from ianalyzer_readers.xml_tag import Tag, SiblingTag, ParentTag
 from ianalyzer_readers import extract
 
@@ -72,7 +71,7 @@ class GaleCorpus(XMLCorpusDefinition):
                 PIL.Image.open(src).save(dst)
         return dst
 
-    @classproperty
+    @property
     def date(cls):
         return FieldDefinition(
             name="date",
@@ -221,19 +220,23 @@ class GaleCorpus(XMLCorpusDefinition):
         ),
         visualizations=["resultscount", "termfrequency"],
     )
-    page_no = FieldDefinition(
-        name="page_no",
-        display_name="Page number",
-        description="At which page the article starts.",
-        es_mapping={"type": "integer"},
-        extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            ParentTag(2),
-            Tag("pa"),
-            external_file=True,
-            transform=lambda x: re.sub(r"[\[\]]", "", x),
-        ),
-    )
+
+    @property
+    def page_no(self):
+        return FieldDefinition(
+            name="page_no",
+            display_name="Page number",
+            description="At which page the article starts.",
+            es_mapping={"type": "integer"},
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                ParentTag(2),
+                Tag("pa"),
+                external_file=True,
+                transform=lambda pa: self.clean_page_number(pa) if pa is not None else None
+            ),
+        )
+
     image_path = FieldDefinition(
         name="image_path",
         display_name="Image path",
@@ -245,23 +248,23 @@ class GaleCorpus(XMLCorpusDefinition):
     )
 
 
-    @classproperty
-    def fields(cls):
+    @property
+    def fields(self):
         return [
-            cls.date,
-            cls.date_pub,
-            cls.id,
-            cls.issue,
-            cls.periodical,
-            cls.content,
-            cls.ocr,
-            cls.title_field,
-            cls.start_column,
-            cls.page_count,
-            cls.word_count,
-            cls.category_field,
-            cls.page_no,
-            cls.image_path,
+            self.date,
+            self.date_pub,
+            self.id,
+            self.issue,
+            self.periodical,
+            self.content,
+            self.ocr,
+            self.title_field,
+            self.start_column,
+            self.page_count,
+            self.word_count,
+            self.category_field,
+            self.page_no,
+            self.image_path,
         ]
 
     document_context = {
@@ -299,3 +302,8 @@ class GaleCorpus(XMLCorpusDefinition):
         # scans are processed on the fly if they're not pre-processed
         urls = [media_url(corpus_name, self.process_scan(m)) for m in media]
         return dict(media=urls)
+
+    def clean_page_number(self, page_no):
+        # remove surrounding []s from page numbers
+        # if page number is a range, keep only the first page
+        return re.sub(r"[\[\]]", "", page_no).split('-')[0]
