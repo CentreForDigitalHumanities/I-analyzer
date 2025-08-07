@@ -78,47 +78,52 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         consolidate_start_end_years(start, end, self.min_date, self.max_date)
-        for directory, subdirs, filenames in os.walk(self.data_directory):
-            _body, tail = split(directory)
-            if tail.startswith("."):
-                # don't go through directories from snapshots
-                subdirs[:] = []
-                continue
-            definition_file = next((join(directory, filename) for filename in filenames if
-                                self.definition_pattern.search(filename)), None)
-            if not definition_file:
-                continue
-            meta_dict = self._metadata_from_xml(definition_file, tags=[
-                    "title",
-                    "date",
-                    "publisher",
-                    {"tag": "spatial", "save_as":"spatial"},
-                    "source",
-                    "issuenumber",
-                    "language",
-                    "isVersionOf",
-                    "temporal",
-                    {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
-            ])
-            logger.debug(meta_dict)
-            for filename in filenames:
-                if filename != '.DS_Store':
-                    name, extension = splitext(filename)
-                    full_path = join(directory, filename)
-                    if extension != '.xml':
-                        logger.debug(self.non_xml_msg.format(full_path))
-                        continue
-                    # def_match = self.definition_pattern.match(name)
-                    article_match = self.article_pattern.match(name)
-                    if article_match:
-                        parts = name.split("_")
-                        record_id = parts[0] +':' + parts[1] + \
-                          ":mpeg21:a" + parts[2]
-                        meta_dict.update({
-                            'external_file': definition_file,
-                            'id': record_id
-                        })
-                        yield full_path, meta_dict
+        ddd_directory = os.path.join(self.data_directory, "updated_harvest_DDD")
+        kranten_directory = os.path.join(self.data_directory, "updated_harvest_KRANTEN")
+        data_directories = [ddd_directory, kranten_directory]
+        for datadir in data_directories:
+            for directory, subdirs, filenames in os.walk(datadir):
+                _body, tail = split(directory)
+                if tail.startswith("."):
+                    # don't go through directories from snapshots
+                    subdirs[:] = []
+                    continue
+                definition_file = next((join(directory, filename) for filename in filenames if
+                                    self.definition_pattern.search(filename)), None)
+                if not definition_file:
+                    continue
+                meta_dict = self._metadata_from_xml(definition_file, tags=[
+                        "title",
+                        "date",
+                        "publisher",
+                        {"tag": "spatial", "save_as":"spatial"},
+                        "source",
+                        "issuenumber",
+                        "language",
+                        "isVersionOf",
+                        "temporal",
+                        {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
+                ])
+                logger.debug(meta_dict)
+                for filename in filenames:
+                    if filename != '.DS_Store':
+                        name, extension = splitext(filename)
+                        full_path = join(directory, filename)
+                        if extension != '.xml':
+                            logger.debug(self.non_xml_msg.format(full_path))
+                            continue
+                        # def_match = self.definition_pattern.match(name)
+                        for pattern in self.article_patterns:
+                            article_match = pattern.match(name)
+                            if article_match:
+                                parts = name.split("_")
+                                record_id = parts[0] +':' + parts[1] + \
+                                ":mpeg21:a" + parts[2]
+                                meta_dict.update({
+                                    'external_file': definition_file,
+                                    'id': record_id
+                                })
+                                yield full_path, meta_dict
 
     titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
     with open(titlefile, encoding='utf-8') as f:
