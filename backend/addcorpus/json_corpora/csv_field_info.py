@@ -5,6 +5,9 @@ from typing import Dict, Optional, Union, Any
 import numpy as np
 import pandas as pd
 
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
 
 def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
     df = pd.read_csv(path, **kwargs)
@@ -16,6 +19,8 @@ def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
 
 def map_col(col: pd.Series) -> str:
     if col.dtypes == object:
+        if col.apply(is_url).all():
+            return 'url'
         if is_date_col(col):
             return 'date'
         if is_long_text_col(col):
@@ -47,6 +52,15 @@ def is_date(input: str) -> Optional[datetime.datetime]:
         datetime.datetime.strptime(input, '%Y-%m-%d')
         return True
     except (ValueError, TypeError):
+        return False
+
+
+def is_url(input: str) -> bool:
+    validator = URLValidator()
+    try:
+        validator(input)
+        return True
+    except ValidationError:
         return False
 
 
