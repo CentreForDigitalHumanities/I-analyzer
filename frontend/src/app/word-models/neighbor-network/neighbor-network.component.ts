@@ -7,7 +7,8 @@ import embed from 'vega-embed';
 @Component({
     selector: 'ia-neighbor-network',
     templateUrl: './neighbor-network.component.html',
-    styleUrl: './neighbor-network.component.scss'
+    styleUrl: './neighbor-network.component.scss',
+    standalone: false,
 })
 export class NeighborNetworkComponent implements OnChanges {
     @Input({required: true}) corpus!: Corpus;

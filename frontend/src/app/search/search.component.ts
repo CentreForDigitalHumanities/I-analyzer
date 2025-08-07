@@ -7,7 +7,7 @@ import { CorpusService, DialogService } from '@services/index';
 
 import { AuthService } from '@services/auth.service';
 import { distinct, filter } from 'rxjs/operators';
-import { actionIcons, searchIcons } from '@shared/icons';
+import { actionIcons, navIcons, searchIcons } from '@shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
 import { Title } from '@angular/platform-browser';
 import { SearchTab, SearchTabs } from './search-tabs';
@@ -16,6 +16,7 @@ import { SearchTab, SearchTabs } from './search-tabs';
     selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss'],
+    standalone: false
 })
 export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection', { static: false })

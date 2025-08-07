@@ -1,19 +1,19 @@
 <div style="text-align: center;" *ngIf="!noImages">
     <div class="level">
     <div class="level-left">
-        <button class="button is-primary is-inverted" (click)="zoomIn()"
+        <button class="button is-ghost" (click)="zoomIn()"
             aria-label="zoom in">
             <span class="icon">
                 <fa-icon [icon]="scanIcons.zoomIn" aria-hidden="true"></fa-icon>
             </span>
         </button>
-        <button class="button is-primary is-inverted" (click)="zoomOut()"
+        <button class="button is-ghost" (click)="zoomOut()"
             aria-label="zoom out">
             <span class="icon">
                 <fa-icon [icon]="scanIcons.zoomOut" aria-hidden="true"></fa-icon>
             </span>
         </button>
-        <button class="button is-primary is-inverted" (click)="resetZoom()"
+        <button class="button is-ghost" (click)="resetZoom()"
             aria-label="reset zoom">
             <span class="icon">
                 <fa-icon [icon]="scanIcons.zoomReset" aria-hidden="true"></fa-icon>
@@ -22,7 +22,7 @@
     </div>
     <ia-image-navigation *ngIf="pageIndices" class="level-item" [pageIndices]="pageIndices" [initialPage]="initialPage" (pageIndexChange)="pageIndexChange($event)"></ia-image-navigation>
     <div class="level-right">
-        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()"
+        <button *ngIf="allowDownload" class="button download is-ghost" (click)="download()"
             aria-label="download image">
             <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon>
         </button>
@@ -35,16 +35,3 @@
     <ia-scan-image *ngIf="mediaType!=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
     <ia-scan-pdf *ngIf="mediaType==='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
 </div>
-
-<p-confirmDialog #cd appendTo="body">
-    <p-footer>
-        <div class="field is-grouped">
-            <button class="button is-primary" (click)="cd.accept()">
-                <fa-icon [icon]="actionIcons.download" aria-hidden="true"></fa-icon> Download
-            </button>
-            <button class="button is-primary" (click)="cd.reject()">
-                <fa-icon [icon]="formIcons.reset" aria-hidden="true"></fa-icon> Cancel
-            </button>
-        </div>
-    </p-footer>
-</p-confirmDialog>

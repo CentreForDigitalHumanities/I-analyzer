@@ -9,7 +9,7 @@ from ianalyzer_readers.xml_tag import Tag
 from django.conf import settings
 
 from api.utils import find_media_file
-from addcorpus.python_corpora.extract import XML, Metadata, Combined
+from ianalyzer_readers.extract import XML, Metadata, Combined
 from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf

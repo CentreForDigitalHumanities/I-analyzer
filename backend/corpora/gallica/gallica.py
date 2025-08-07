@@ -71,6 +71,9 @@ class Gallica(XMLCorpusDefinition):
                 for year in year_soup.find_all("year")
                 if int(year.string) >= start.year and int(year.string) <= end.year
             ]
+        else:
+            logger.warning(f"The date request for {self.corpus_id} failed.")
+            yield None
         for year in years:
             for retry in range(self.n_retries):
                 sleep(retry * 10)
@@ -121,7 +124,7 @@ class Gallica(XMLCorpusDefinition):
                         )
                         continue
                 yield (
-                    source_response.content,
+                    source_response,
                     {"content": parsed_content},
                 )
 
@@ -189,6 +192,15 @@ class Gallica(XMLCorpusDefinition):
             ),
         )
 
+    def periodical_title(self):
+        return FieldDefinition(
+            name="title",
+            display_name="Title",
+            description="Full title of the journal",
+            es_mapping=keyword_mapping(enable_full_text_search=True),
+            extractor=XML(Tag("dc:title")),
+        )
+
     def publisher(self):
         return FieldDefinition(
             name="publisher",
@@ -210,7 +222,7 @@ class Gallica(XMLCorpusDefinition):
             extractor=XML(Tag("dc:identifier")),
             searchable=False,
         )
-    
+
     def request_media(self, document, corpus_name):
         """
         Return the media URLs for a given document from the Gallica website

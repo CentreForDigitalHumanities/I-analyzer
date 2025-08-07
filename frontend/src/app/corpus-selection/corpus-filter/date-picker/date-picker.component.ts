@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { parse } from 'date-fns';
 
 @Component({
-  selector: 'ia-date-picker',
-  templateUrl: './date-picker.component.html',
-  styleUrls: ['./date-picker.component.scss']
+    selector: 'ia-date-picker',
+    templateUrl: './date-picker.component.html',
+    styleUrls: ['./date-picker.component.scss'],
+    standalone: false
 })
 export class DatePickerComponent {
     @Input() value: Date;
@@ -13,6 +14,7 @@ export class DatePickerComponent {
     @Input() maxDate: Date;
     @Input() default: Date;
     @Input() unit: 'year'|'date' = 'year';
+    @Input() ariaLabel: string;
     @Output() onChange = new EventEmitter<Date>();
 
     constructor() { }
@@ -22,18 +24,12 @@ export class DatePickerComponent {
     }
 
     formatInput(value: string|Date): Date {
-        let valueAsDate: Date;
         if (typeof(value) == 'string') {
-            const format = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
-            const m = moment(value, format);
-            if (m.isValid()) {
-                valueAsDate = m.toDate();
-            }
+            const dateFormat = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
+            return parse(value, dateFormat, null, null);
         } else {
-            valueAsDate = value;
+            return value;
         }
-
-        return valueAsDate;
     }
 
     set(value: string|Date) {

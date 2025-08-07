@@ -4,6 +4,8 @@ import { NeighborNetworkComponent } from './neighbor-network.component';
 import { WordmodelsService } from '@services';
 import { WordmodelsServiceMock } from 'mock-data/wordmodels';
 import { mockCorpus } from 'mock-data/corpus';
+import { FreqtableComponent } from 'app/visualization/freqtable.component';
+import { SharedModule } from '@shared/shared.module';
 
 describe('NeighborNetworkComponent', () => {
     let component: NeighborNetworkComponent;
@@ -11,7 +13,8 @@ describe('NeighborNetworkComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [NeighborNetworkComponent],
+            declarations: [NeighborNetworkComponent, FreqtableComponent],
+            imports: [SharedModule],
             providers: [
                 { provide: WordmodelsService, useClass: WordmodelsServiceMock },
             ],

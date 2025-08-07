@@ -1,5 +1,10 @@
-<h1 class="title">Corpus Metadata</h1>
-<p class="subtitle">Provide some basic information about your corpus</p>
+<h1 class="title">Corpus information</h1>
+<p class="subtitle">
+    Provide some basic information about your corpus. This information will be shown in
+    the corpus overview and the information page for your corpus, and will help users find
+    what they are looking for.
+</p>
+
 <form (ngSubmit)="onSubmit()" class="box" [formGroup]="metaForm">
     <h2 class="title is-5">Metadata</h2>
 
@@ -14,8 +19,15 @@
     <div class="field">
         <label class="label" for="description">Description</label>
         <div class="control">
-            <input class="input" type="text" name="description" formControlName="description" />
+            <textarea class="textarea" name="description" formControlName="description"
+                rows="2">
+            </textarea>
+
         </div>
+        <p class="help">
+            Provide a short description of your corpus. You can add more elaborate
+            documentation below.
+        </p>
     </div>
 
     <div class="field">
@@ -51,9 +63,14 @@
     <div class="field">
         <label class="label" for="languages">Languages</label>
         <div class="control">
-            <p-multiSelect [options]="languageOptions" formControlName="languages" optionLabel="name" optionValue="code"
-                placeholder="select languages (optional)" [virtualScroll]="true" display="chip" [virtualScrollItemSize]="10"
-                [showClear]="true" />
+            <p-autoComplete
+                formControlName="languages"
+                multiple="true"
+                [suggestions]="languageSuggestions"
+                (completeMethod)="setLanguageSuggestions($event.query)"
+                optionLabel="displayName"
+                [minLength]="3"
+            />
         </div>
         <p class="help">All or the most important languages occuring in your corpus</p>
     </div>

@@ -7,7 +7,7 @@ from ianalyzer_readers.xml_tag import Tag
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import ParentCorpusDefinition
-from addcorpus.python_corpora.extract import XML
+from ianalyzer_readers.extract import XML
 from addcorpus.es_settings import es_settings
 from corpora.peaceportal.utils import field_defaults
 
@@ -71,8 +71,6 @@ class PeacePortal(ParentCorpusDefinition):
         self._id = field_defaults.id()
         self.url = field_defaults.url()
         self.year = field_defaults.year(self.min_year, self.max_date.year)
-        self.not_before = field_defaults.not_before()
-        self.not_after = field_defaults.not_after()
         self.date = field_defaults.date(self.min_date, self.max_date)
         self.transcription = field_defaults.transcription()
         self.transcription_german = field_defaults.transcription_german()
@@ -103,8 +101,6 @@ class PeacePortal(ParentCorpusDefinition):
             self._id,
             self.url,
             self.year,
-            self.not_before,
-            self.not_after,
             self.date,
             self.source_database,
             self.transcription,
@@ -130,7 +126,7 @@ class PeacePortal(ParentCorpusDefinition):
             self.transcription_latin,
             self.transcription_greek,
             self.transcription_english,
-            self.transcription_dutch
+            self.transcription_dutch,
         ]
 
 

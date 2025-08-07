@@ -5,7 +5,7 @@ from typing import Optional
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import Combined, Constant, ExternalFile, XML
+from ianalyzer_readers.extract import Combined, Constant, ExternalFile, XML
 from addcorpus.serializers import LanguageField
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, \
     clean_commentary, join_commentaries, get_text_in_language, \
@@ -50,10 +50,6 @@ class PeaceportalIIS(PeacePortal, XMLCorpusDefinition):
             Tag('history'), Tag('origin'), Tag('date'),
             attribute='notBefore',
         )
-
-        self.not_before.extractor = not_before_extractor()
-
-        self.not_after.extractor = not_after_extractor()
 
         self.date.extractor = Combined(
             not_before_extractor(),

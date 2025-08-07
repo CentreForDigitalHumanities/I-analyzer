@@ -7,6 +7,7 @@ import { QueryFeedback } from '@models';
     selector: 'ia-query-feedback',
     templateUrl: './query-feedback.component.html',
     styleUrls: ['./query-feedback.component.scss'],
+    standalone: false
 })
 export class QueryFeedbackComponent {
     @Input() query: string;

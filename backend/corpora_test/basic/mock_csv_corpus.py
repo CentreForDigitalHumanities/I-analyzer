@@ -1,5 +1,5 @@
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import CSV
+from ianalyzer_readers.extract import CSV
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 import os
@@ -33,10 +33,11 @@ class MockCSVCorpus(CSVCorpusDefinition):
 
     def sources(self, *args, **kwargs):
         for filename in os.listdir(self.data_directory):
-            full_path = os.path.join(self.data_directory, filename)
-            yield full_path, {
-                    'filename': filename
-                }
+            if filename.endswith('.csv'):
+                full_path = os.path.join(self.data_directory, filename)
+                yield full_path, {
+                        'filename': filename
+                    }
 
     fields = [
         FieldDefinition(

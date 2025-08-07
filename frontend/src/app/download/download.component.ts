@@ -32,13 +32,14 @@ import {
     selector: 'ia-download',
     templateUrl: './download.component.html',
     styleUrls: ['./download.component.scss'],
+    standalone: false
 })
 export class DownloadComponent implements OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
 
-    public selectedCsvFields: CorpusField[];
-    public availableCsvFields: CorpusField[];
+    fieldOptions: { label: string, value: string }[];
+    fieldSelection: string[];
 
     public isDownloading: boolean;
     public isModalActive = false;
@@ -81,8 +82,10 @@ export class DownloadComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
-            this.availableCsvFields = _.filter(this.corpus?.fields, 'downloadable');
-            this.selectedCsvFields = _.filter(this.corpus?.fields, 'csvCore');
+            this.fieldOptions = _.filter(this.corpus?.fields, 'downloadable').map(f => ({
+                value: f.name, label: f.displayName
+            }));
+            this.fieldSelection = _.filter(this.corpus?.fields, 'csvCore').map(f => f.name);
         }
         if (changes.queryModel) {
             this.totalResults?.complete();
@@ -167,13 +170,12 @@ export class DownloadComponent implements OnChanges {
     }
 
     private getColumnNames(): string[] {
-        let selectedFields: CorpusField[];
-        if (this.selectedCsvFields === undefined) {
-            selectedFields = this.corpus.fields.filter((field) => field.csvCore);
+        let selected: string[];
+        if (this.fieldSelection === undefined) {
+            selected = this.corpus.fields.filter((field) => field.csvCore).map(f => f.name);
         } else {
-            selectedFields = this.selectedCsvFields;
+            selected = _.clone(this.fieldSelection);
         }
-        const selected = _.map(selectedFields, 'name');
         if (this.resultsConfig.state$.value.highlight) {
             selected.push('context');
         }

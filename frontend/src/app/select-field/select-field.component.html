@@ -1,16 +1,15 @@
-<p-multiSelect styleClass="button" placeholder=" 'All fields' "
-    [options]="optionFields"
-    [(ngModel)]="selectedFields"
-    optionLabel="displayName"
+<p-multiSelect placeholder="All fields"
+    [options]="options"
+    [(ngModel)]="selected"
     [displaySelectedLabel]="true"
     (onChange)="onUpdate()"
-    [ngModelOptions]="{standalone: true}">
-    <ng-template pTemplate="selectedItems">
-        <fa-icon [icon]="actionIcons.config" aria-label="select field"></fa-icon>
-    </ng-template>
-    <p-footer *ngIf="optionFields">
-        <button class="button is-primary" (click)="toggleAllFields()">
+    [ngModelOptions]="{standalone: true}"
+    iaBalloon="Limit your search to specific fields"
+    iaBalloonLength="medium"
+    iaBalloonPosition="up">
+    <ng-template #footer>
+        <button class="button is-ghost" (click)="toggleAllFields()">
             {{allVisible? 'Show default fields' : 'Show all fields'}}
-    </button>
-    </p-footer>
+        </button>
+    </ng-template>
 </p-multiSelect>

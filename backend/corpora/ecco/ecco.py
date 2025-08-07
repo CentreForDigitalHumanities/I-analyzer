@@ -12,7 +12,7 @@ from ianalyzer_readers.xml_tag import Tag
 from django.conf import settings
 
 from api.utils import find_media_file
-from addcorpus.python_corpora.extract import Combined, Metadata, XML
+from ianalyzer_readers.extract import Combined, Metadata, XML
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings

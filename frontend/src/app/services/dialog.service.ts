@@ -45,8 +45,11 @@ export class DialogService {
             return this.manifest;
         }
 
-        const path = this.getLocalizedPath(`manual`, `/manifest.json`);
-        return this.manifest = fetch(path).then(response => response.json());
+        const path = this.getLocalizedPath(`manual`, `manifest.json`);
+        return this.manifest = fetch(path).then(response => {
+            console.log(response);
+            return response.json();
+        });
     }
 
     /**
@@ -122,12 +125,13 @@ export type DialogPageEvent =
   };
 
 
-export interface ManualSection {
+export interface ManualPage {
     title: string;
     id: string;
 }
 
 export interface ManualSection {
     title: string;
-    pages: ManualSection[];
+    permissions?: 'canEditCorpus'[]
+    pages: ManualPage[];
 };
