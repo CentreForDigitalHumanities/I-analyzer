@@ -2,16 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { userIcons } from '../../shared/icons';
+import { userIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-reset-password',
     templateUrl: './reset-password.component.html',
     styleUrls: ['./reset-password.component.scss'],
+    standalone: false
 })
 export class ResetPasswordComponent implements OnInit {
     public submitted: boolean;

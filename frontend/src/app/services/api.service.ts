@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { interval, Observable } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { ImageInfo } from '../image-view/image-view.component';
@@ -16,6 +16,7 @@ import {
     FieldCoverage,
     FoundDocument,
     GeoDocument,
+    GeoLocation,
     LimitedResultsDownloadParameters,
     MostFrequentWordsResult,
     NGramRequestParameters,
@@ -28,10 +29,15 @@ import {
     UserResponse,
     UserRole,
     WordcloudParameters,
-} from '../models/index';
-import { environment } from '../../environments/environment';
+} from '@models';
+import { environment } from '@environments/environment';
 import * as _ from 'lodash';
-import { APICorpusDefinition, APIEditableCorpus } from '../models/corpus-definition';
+import {
+    APIEditableCorpus,
+    CorpusDataFile,
+    DataFileInfo,
+} from '@models/corpus-definition';
+import { APIIndexHealth, APIIndexJob, isComplete, JobStatus } from '@models/indexing';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -53,6 +59,7 @@ export class ApiService {
     private downloadApiURL = 'download';
     private corpusApiUrl = 'corpus';
     private tagApiUrl = 'tag';
+    private indexApiUrl = 'indexing';
 
     private authApiRoute = (route: string): string =>
         `/${this.authApiUrl}/${route}/`;
@@ -129,23 +136,29 @@ export class ApiService {
         ids: string[],
         stopPolling$: Observable<void>
     ): Observable<TasksOutcome> {
-        return interval(5000).pipe(
-            takeUntil(stopPolling$),
-            switchMap((arg) => this.getTasksStatus({ task_ids: ids })),
-            filter(this.tasksDone),
-            take(1)
+        return this.pollRequest(
+            () => this.getTasksStatus({ task_ids: ids }),
+            this.tasksDone,
+            stopPolling$,
         );
     }
 
     // Visualization
-    public wordCloud(data: WordcloudParameters): Observable<MostFrequentWordsResult[]> {
+    public wordCloud(
+        data: WordcloudParameters
+    ): Observable<MostFrequentWordsResult[]> {
         const url = this.apiRoute(this.visApiURL, 'wordcloud');
         return this.http.post<MostFrequentWordsResult[]>(url, data);
     }
 
-    public geoData(data: WordcloudParameters): Promise<GeoDocument[]> {
+    public geoData(data: WordcloudParameters): Observable<GeoDocument[]> {
         const url = this.apiRoute(this.visApiURL, 'geo');
-        return this.http.post<GeoDocument[]>(url, data).toPromise();
+        return this.http.post<GeoDocument[]>(url, data);
+    }
+
+    public geoCentroid(data: {corpus: string, field: string}): Promise<GeoLocation> {
+        const url = this.apiRoute(this.visApiURL, 'geo_centroid');
+        return this.http.post<GeoLocation>(url, data).toPromise();
     }
 
     public ngramTasks(data: NGramRequestParameters): Promise<TaskResult> {
@@ -222,15 +235,29 @@ export class ApiService {
         return this.http.post<TaskResult>(url, data).toPromise();
     }
 
-    // Corpus
-    public corpusDocumentation(corpusName: string): Observable<CorpusDocumentationPage[]> {
+    // Corpus documentation
+    public corpusDocumentationPages(
+        corpusName?: string
+    ): Observable<CorpusDocumentationPage[]> {
+        const params = new URLSearchParams({ corpus: corpusName }).toString();
         const url = this.apiRoute(
             this.corpusApiUrl,
-            `documentation/${corpusName}/`
+            `documentation/?${params}`
         );
-        return this.http.get<CorpusDocumentationPage[]>(url);
+        return this.http.get<CorpusDocumentationPage[]>(url.toString());
     }
 
+    public corpusDocumentationPage(
+        pageID: number
+    ): Observable<CorpusDocumentationPage> {
+        const url = this.apiRoute(
+            this.corpusApiUrl,
+            `documentation/${pageID}/`
+        );
+        return this.http.get<CorpusDocumentationPage>(url);
+    }
+
+    /** fetch a list of all corpora available for searching */
     public corpus() {
         return this.http.get<Corpus[]>('/api/corpus/');
     }
@@ -242,19 +269,86 @@ export class ApiService {
     }
 
     public corpusDefinition(corpusID: number): Observable<APIEditableCorpus> {
-        return this.http.get<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`);
+        return this.http.get<APIEditableCorpus>(
+            `/api/corpus/definitions/${corpusID}/`
+        );
     }
 
-    public createCorpus(data: APIEditableCorpus): Observable<APIEditableCorpus> {
-        return this.http.post<APIEditableCorpus>('/api/corpus/definitions/', data);
+    public createCorpus(
+        data: APIEditableCorpus
+    ): Observable<APIEditableCorpus> {
+        return this.http.post<APIEditableCorpus>(
+            '/api/corpus/definitions/',
+            data
+        );
     }
 
-    public updateCorpus(corpusID: number, data: APIEditableCorpus): Observable<APIEditableCorpus> {
-        return this.http.put<APIEditableCorpus>(`/api/corpus/definitions/${corpusID}/`, data);
+    public updateCorpus(
+        corpusID: number,
+        data: APIEditableCorpus
+    ): Observable<APIEditableCorpus> {
+        return this.http.put<APIEditableCorpus>(
+            `/api/corpus/definitions/${corpusID}/`,
+            data
+        );
     }
 
     public deleteCorpus(corpusID: number): Observable<any> {
         return this.http.delete(`/api/corpus/definitions/${corpusID}/`);
+    }
+
+    public corpusSchema(): Observable<any> {
+        return this.http.get('/api/corpus/definition-schema');
+    }
+
+    public updateCorpusImage(corpusName: string, file: File): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name)
+        return this.http.put(url, formData);
+    }
+
+    public deleteCorpusImage(corpusName: string): Observable<any> {
+        const url = this.apiRoute(this.corpusApiUrl, `image/${corpusName}`);
+        return this.http.delete(url);
+    }
+
+    // Corpus datafiles
+    public createDataFile(
+        corpusId: number,
+        file: File
+    ): Observable<CorpusDataFile> {
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name);
+        formData.append('corpus', String(corpusId));
+        formData.append('is_sample', 'True');
+        return this.http.post<CorpusDataFile>(
+            `/api/corpus/datafiles/`,
+            formData
+        );
+    }
+
+    public deleteDataFile(dataFile: CorpusDataFile): Observable<null> {
+        const url = `/api/corpus/datafiles/${dataFile.id}/`;
+        return this.http.delete<null>(url);
+    }
+
+    public listDataFiles(
+        corpusId: number,
+        samples: boolean = false
+    ): Observable<CorpusDataFile[]> {
+        const params = new HttpParams()
+            .set('corpus', corpusId)
+            .set('samples', samples);
+        return this.http.get<CorpusDataFile[]>('/api/corpus/datafiles/', {
+            params: params,
+        });
+    }
+
+    public getDataFileInfo(dataFile: CorpusDataFile): Observable<DataFileInfo> {
+        return this.http.get<DataFileInfo>(
+            `/api/corpus/datafiles/${dataFile.id}/info/`
+        );
     }
 
     // Tagging
@@ -366,6 +460,21 @@ export class ApiService {
         );
     }
 
+    public changePassword(
+        oldPassword: string,
+        newPassword1: string,
+        newPassword2: string,
+    ) {
+        return this.http.post<{ detail: string }>(
+            this.authApiRoute('password/change/'),
+            {
+                old_password: oldPassword,
+                new_password1: newPassword1,
+                new_password2: newPassword2,
+            }
+        );
+    }
+
     /** send PATCH request to update settings for the user */
     public updateUserSettings(
         details: Partial<UserResponse>
@@ -378,5 +487,54 @@ export class ApiService {
 
     public solisLogin(data: any): Promise<SolisLoginResponse> {
         return this.http.get<SolisLoginResponse>('/api/solislogin').toPromise();
+    }
+
+    // INDEXING
+
+    getIndexHealth(corpusID: number): Observable<APIIndexHealth> {
+        return this.http.get<APIIndexHealth>(
+            this.apiRoute(this.indexApiUrl, `health/${corpusID}`)
+        );
+    }
+
+    createIndexJob(corpusID: number): Observable<APIIndexJob> {
+        return this.http.post<APIIndexJob>(
+            this.apiRoute(this.indexApiUrl, 'jobs/'),
+            { corpus: corpusID }
+        );
+    }
+
+    getIndexJob(jobID: number): Observable<APIIndexJob> {
+        return this.http.get<APIIndexJob>(
+            this.apiRoute(this.indexApiUrl, `jobs/${jobID}/`)
+        );
+    }
+
+    pollIndexJob(jobID: number, stop$: Observable<any>): Observable<APIIndexJob> {
+        return this.pollRequest(
+            () => this.getIndexJob(jobID),
+            (job) => isComplete(job.status),
+            stop$,
+        )
+    }
+
+    stopIndexJob(jobID: number) {
+        return this.http.get(
+            this.apiRoute(this.indexApiUrl, `jobs/${jobID}/stop/`)
+        );
+    }
+
+    private pollRequest<Outcome>(
+        makeRequest: () => Observable<Outcome>,
+        isDone: (o: Outcome) => boolean,
+        stopPolling$: Observable<any>,
+        period: number = 5000
+    ): Observable<Outcome> {
+        return interval(period).pipe(
+            takeUntil(stopPolling$),
+            switchMap(makeRequest),
+            filter(isDone),
+            take(1)
+        );
     }
 }

@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import {
-    Corpus, QueryModel, SearchResults,
-} from '../models/index';
-import { PageResultsParameters } from '../models/page-results';
-import { Aggregator } from '../models/aggregation';
+import { Corpus, QueryModel, SearchResults } from '@models/index';
+import { PageResultsParameters } from '@models/page-results';
+import { Aggregator } from '@models/aggregation';
 
 
 @Injectable()

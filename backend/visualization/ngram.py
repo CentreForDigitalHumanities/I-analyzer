@@ -1,12 +1,11 @@
 from collections import Counter
-
-import numpy as np
+from typing import Tuple
 
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
-from es.search import get_index, search
+from es.search import get_index
 from es.download import scroll
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from visualization import query, termvectors
 
 
@@ -15,8 +14,8 @@ def get_ngrams(results, number_of_ngrams=10):
     ngrams = []
     ngrams = get_top_n_ngrams(results, number_of_ngrams)
 
-    return { 
-        'words': ngrams, 
+    return {
+        'words': ngrams,
         'time_points': sorted([result['time_interval'] for result in results])
     }
 
@@ -27,10 +26,10 @@ def format_time_label(start_year, end_year):
     else:
         return '{}-{}'.format(start_year, end_year)
 
-def get_total_time_interval(es_query, corpus):
+def get_total_time_interval(es_query, corpus) -> Tuple[datetime, datetime]:
     """
     Min and max date for the search query and corpus. Returns the dates from the query if provided,
-    otherwise the min and max date from the corpus definition.
+    otherwise the min and max date from the corpus configuration.
     """
 
     query_min, query_max = query.get_date_range(es_query)
@@ -39,8 +38,8 @@ def get_total_time_interval(es_query, corpus):
         return query_min, query_max
 
     corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus)
-    corpus_min = corpus_conf.min_date
-    corpus_max = corpus_conf.max_date
+    corpus_min = datetime(corpus_conf.min_year, month=1, day=1)
+    corpus_max = datetime(corpus_conf.max_year, month=12, day=31)
 
     min_date = query_min if query_min and query_min > corpus_min else corpus_min
     max_date = query_max if query_max and query_max < corpus_max else corpus_max
@@ -51,7 +50,7 @@ def get_total_time_interval(es_query, corpus):
 def get_time_bins(es_query, corpus):
     """Wide bins for a query. Depending on the total time range of the query, time intervervals are
     10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
-    
+
     min_date, max_date = get_total_time_interval(es_query, corpus)
     min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
@@ -131,7 +130,7 @@ def tokens_by_time_interval(corpus_name, es_query, field, bin, ngram_size, term_
                             ttf = sum(token['ttf'] for token in ngram) / len(ngram)
                             ngram_ttfs[words] = ttf
                         bin_ngrams.update({ words: 1})
-    
+
     results = {
         'time_interval': format_time_label(bin[0], bin[1]),
         'ngrams': bin_ngrams

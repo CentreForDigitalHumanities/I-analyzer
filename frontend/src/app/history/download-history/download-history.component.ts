@@ -1,18 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash';
-import { Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, DownloadService, NotificationService } from '../../services';
+import {
+    Download,
+    DownloadOptions,
+    DownloadParameters,
+    DownloadType,
+    QueryModel,
+} from '@models';
+import {
+    ApiService,
+    CorpusService,
+    DownloadService,
+    NotificationService,
+} from '@services';
 import { HistoryDirective } from '../history.directive';
-import { findByName } from '../../utils/utils';
-import { actionIcons } from '../../shared/icons';
-import { downloadQueryModel, downloadQueryModels } from '../../utils/download-history';
+import { findByName } from '@utils/utils';
+import { actionIcons } from '@shared/icons';
+import {
+    downloadQueryModel,
+    downloadQueryModels,
+} from '@utils/download-history';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-download-history',
     templateUrl: './download-history.component.html',
-    styleUrls: ['./download-history.component.scss']
+    styleUrls: ['./download-history.component.scss'],
+    standalone: false
 })
 export class DownloadHistoryComponent extends HistoryDirective implements OnInit {
     downloads: Download[];
@@ -72,8 +87,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
             parameters.fields : [parameters[0].field_name];
         const corpus = findByName(this.corpora, download.corpus);
         const fields = fieldNames.map(fieldName =>
-            findByName(corpus.fields, fieldName).displayName
-        );
+            findByName(corpus.fields, fieldName)?.displayName
+        ).filter(_.negate(_.isUndefined));
         return _.join(fields, ', ');
     }
 

@@ -1,13 +1,13 @@
 <div class="section">
     <div class="container">
-        <nav aria-label="secondary navigation" class="breadcrumb">
+        <nav aria-label="secondary navigation" class="breadcrumb block">
             <ul>
                 <li><a [routerLink]="['/']">Corpora</a></li>
                 <li class="is-active" aria-current="page"><a>Definitions</a></li>
             </ul>
         </nav>
 
-        <h1 class="title">Corpus definitions</h1>
+        <h1 class="title block">Corpus definitions</h1>
 
         <div class="block">
             <a class="button" [routerLink]="['new']">
@@ -38,14 +38,20 @@
                                 </span>
                             </a>
                             &nbsp;
-                            <a class="button"
-                                [routerLink]="['edit', corpus.id]">
+                            <a class="button" [routerLink]="['edit', corpus.id]">
                                 <span class="icon" aria-label="edit">
                                     <fa-icon [icon]="actionIcons.edit"></fa-icon>
                                 </span>
                             </a>
                             &nbsp;
-                            <button class="button" (click)="delete(corpus)"
+                            <a class="button"
+                                [routerLink]="['io', corpus.id]">
+                                <span class="icon" aria-label="import-export">
+                                    <fa-icon [icon]="actionIcons.inOut"></fa-icon>
+                                </span>
+                            </a>
+                            &nbsp;
+                            <button class="button" (click)="confirmDelete.open(corpus)"
                                 [disabled]="corpus.active">
                                 <span class="icon" aria-label="delete">
                                     <fa-icon [icon]="actionIcons.delete"></fa-icon>
@@ -58,3 +64,14 @@
         </div>
     </div>
 </div>
+
+
+<ia-confirm-modal #confirmDelete
+    actionText="Delete corpus" actionButtonClass="is-danger" [icon]="actionIcons.delete"
+    [handleAsync]="handleDelete" (result)="onDeleteComplete()">
+    <p>
+        Do you want to delete corpus
+         <strong>{{confirmDelete.data?.definition.meta.title}}</strong>?
+        This cannot be reversed.
+    </p>
+</ia-confirm-modal>

@@ -5,15 +5,22 @@ import pytest
 import requests
 from allauth.account.models import EmailAddress
 from elasticsearch import Elasticsearch
+import warnings
+from django.core.files import File
 
-from addcorpus.json_corpora.import_json import import_json_corpus
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import client_from_config
 from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
-from es import es_index as index
+from es import sync
+from indexing.models import TaskStatus
+from indexing.create_job import create_indexing_job
+from indexing.run_job import perform_indexing
 from django.conf import settings
 from django.contrib.auth.models import Group
-from addcorpus.models import Corpus
-from addcorpus.serializers import CorpusJSONDefinitionSerializer
+from addcorpus.models import Corpus, CorpusDataFile
+from addcorpus.serializers import CorpusJSONDefinitionSerializer, CorpusDataFileSerializer
+from es.models import Server
+from django.core.cache import cache
+
 
 @pytest.fixture(autouse=True)
 def media_dir(tmpdir, settings):
@@ -102,14 +109,24 @@ def es_client():
     Initialise an elasticsearch client for the default elasticsearch cluster. Skip if no connection can be made.
     """
 
-    client = elasticsearch('small-mock-corpus') # based on settings_test.py, this corpus will use cluster 'default'
+    client = client_from_config(settings.SERVERS['default'])
+
     # check if client is available, else skip test
     try:
         client.info()
     except:
+        warnings.warn(
+            'Cannot connect to elasticsearch server, skipping tests that require it.')
         pytest.skip('Cannot connect to elasticsearch server')
 
     return client
+
+
+@pytest.fixture()
+def es_server(db, settings) -> Server:
+    sync.update_server_table_from_settings()
+    return Server.objects.get(name='default')
+
 
 @pytest.fixture()
 def basic_mock_corpus() -> str:
@@ -155,9 +172,19 @@ def _index_test_corpus(es_client: Elasticsearch, corpus_name: str):
     corpus = Corpus.objects.get(name=corpus_name)
 
     if not es_client.indices.exists(index=corpus.configuration.es_index):
-        index.perform_indexing(corpus)
+        with warnings.catch_warnings():
+            job = create_indexing_job(corpus)
+            perform_indexing(job)
+
         # ES is "near real time", so give it a second before we start searching the index
         sleep(2)
+    else:
+        # if the corpus is already indexed, re-create the index job and set it to "done"
+        job = create_indexing_job(corpus)
+        for task in job.tasks():
+            task.status = TaskStatus.DONE
+            task.save()
+
 
 @pytest.fixture()
 def index_basic_mock_corpus(db, es_client: Elasticsearch, basic_mock_corpus: str, test_index_cleanup):
@@ -193,7 +220,12 @@ def index_json_mock_corpus(db, es_client: Elasticsearch, json_mock_corpus: Corpu
 @pytest.fixture(autouse=True)
 def add_mock_python_corpora_to_db(db, media_dir):
     # add python mock corpora to the database at the start of each test
-    load_and_save_all_corpora()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', message="Corpus has no 'id' field")
+        warnings.filterwarnings(
+            'ignore', message='.* text search for keyword fields without text analysis'
+        )
+        load_and_save_all_corpora()
 
 
 @pytest.fixture()
@@ -214,8 +246,33 @@ def json_mock_corpus(db, json_corpus_definition) -> Corpus:
     assert serializer.is_valid()
     corpus = serializer.create(serializer.validated_data)
 
-    data_dir = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data')
-    corpus.configuration.data_directory = data_dir
+    # add data file
+    filepath = os.path.join(settings.BASE_DIR, 'corpora_test', 'basic', 'source_data', 'example.csv')
+    with open(filepath) as f:
+        serializer = CorpusDataFileSerializer(data={
+            'corpus': corpus.pk,
+            'file': File(f, name='example.csv')
+        })
+        assert serializer.is_valid()
+        datafile = serializer.create(serializer.validated_data)
+
+    corpus.configuration.data_directory = os.path.join(settings.MEDIA_ROOT, datafile.upload_dir())
     corpus.configuration.save()
 
     return corpus
+
+@pytest.fixture(scope='session')
+def celery_config():
+    return {
+        'task_serializer': 'pickle',
+        'result_serializer': 'pickle',
+        'accept_content': ['json', 'pickle'],
+    }
+
+
+@pytest.fixture(autouse=True)
+def auto_clear_cache():
+    '''Automatically clear the cache before and after each test.'''
+    cache.clear()
+    yield
+    cache.clear()

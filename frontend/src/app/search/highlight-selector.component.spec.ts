@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockCorpus, mockCorpus2 } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
-import { QueryModel } from '../models';
+import { QueryModel } from '@models';
 
 import { HighlightSelectorComponent } from './highlight-selector.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
-import { PageResults } from '../models/page-results';
+import { PageResults } from '@models/page-results';
 import { SimpleStore } from '../store/simple-store';
 import { SearchServiceMock } from '../../mock-data/search';
-import { SearchService } from '../services';
+import { SearchService } from '@services';
 
 describe('HighlightSelectorComponent', () => {
     let component: HighlightSelectorComponent;
@@ -35,7 +35,7 @@ describe('HighlightSelectorComponent', () => {
     });
 
     it('should reflect the results model state', () => {
-        const button = fixture.debugElement.query(By.css('.highlight-toggle'));
+        const button = fixture.debugElement.query(By.css('#highlight-toggle'));
 
         const innerText = (el: DebugElement) => el.nativeElement.innerText;
 

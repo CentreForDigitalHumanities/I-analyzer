@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { User, UserResponse } from '../models';
+import { User, UserResponse } from '@models';
 
 /* Transforms backend user response to User object
 *
@@ -13,6 +13,7 @@ export const parseUserData = (result: UserResponse): User => new User(
     result.download_limit == null ? 0 : result.download_limit,
     result.saml,
     result.profile.enable_search_history,
+    result.profile.can_edit_corpora,
 );
 
 /**
@@ -29,7 +30,8 @@ export const encodeUserData = (data: Partial<User>): Partial<UserResponse> => {
         isAdmin: 'is_admin',
         downloadLimit: 'download_limit',
         isSamlLogin: 'saml',
-        enableSearchHistory: 'profile.enable_search_history'
+        enableSearchHistory: 'profile.enable_search_history',
+        canEditCorpora: 'profile.can_edit_corpora',
     };
 
     const encoded = {};

@@ -3,11 +3,12 @@
         <div class="columns">
             <div class="column">
                 <div class="field">
-                    <label class="label">
+                    <label class="label" id="label-visualization-type">
                         What do you want to visualise?
                     </label>
                     <div class="control">
-                        <ia-dropdown [value]="selector.activeOption$ | async">
+                        <ia-dropdown [value]="selector.activeOption$ | async"
+                            labelledBy="label-visualization-type">
                             <span iaDropdownLabel>{{(selector.activeOption$ | async).label}}</span>
                             <div iaDropdownMenu>
                                 <a *ngFor="let option of selector.options"
@@ -28,7 +29,8 @@
             </div>
             <div class="column" *ngIf="(selector.activeOption$ | async).fields as fields">
                 <div class="field">
-                    <label class="label" *ngIf="selector.state$ | async as state">
+                    <label class="label" *ngIf="selector.state$ | async as state"
+                        id="label-visualized-field">
                         <span *ngIf="state.name === 'resultscount' || state.name === 'termfrequency'">
                             Compare frequency by:
                         </span>
@@ -41,6 +43,7 @@
                     </label>
                     <div class="control">
                         <ia-dropdown *ngIf="fields.length > 1"
+                            labelledBy="label-visualized-field"
                             [value]="(selector.state$ | async).field">
                             <span iaDropdownLabel>{{(selector.state$ | async).field?.displayName}}</span>
                             <div iaDropdownMenu>
@@ -61,13 +64,15 @@
                 <div class="field has-addons">
                     <!-- Buttons for switching between table and graphical representation -->
                     <div class="control">
-                        <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
-                            <fa-icon [icon]="visualizationIcons.chart" aria-label="view chart"></fa-icon>
+                        <button class="button" iaToggleButton [active]="!freqtable"
+                            (click)="freqtable = false" aria-label="view chart">
+                            <fa-icon [icon]="visualizationIcons.chart" aria-hidden="true" />
                         </button>
                     </div>
                     <div class="control">
-                        <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
-                            <fa-icon [icon]="visualizationIcons.table" aria-label="view table"></fa-icon>
+                        <button class="button" iaToggleButton [active]="freqtable"
+                            (click)="freqtable = true" aria-label="view table">
+                            <fa-icon [icon]="visualizationIcons.table" aria-hidden="true"/>
                         </button>
                     </div>
                 </div>

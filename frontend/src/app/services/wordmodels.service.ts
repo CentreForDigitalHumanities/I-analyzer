@@ -5,7 +5,7 @@ import {
     RelatedWordsResults,
     WordInModelResult,
     WordSimilarity,
-} from '../models';
+} from '@models';
 
 @Injectable()
 export class WordmodelsService {
@@ -51,6 +51,18 @@ export class WordmodelsService {
         neighbours: number
     ): Promise<RelatedWordsResults> {
         return this.relatedWordsRequest({
+            query_term: queryTerm,
+            corpus_name: corpusName,
+            neighbours,
+        });
+    }
+
+    public getNeighborNetwork(
+        queryTerm: string,
+        corpusName: string,
+        neighbours: number,
+    ) {
+        return this.http.post(this.wmApiRoute('neighbor_network'), {
             query_term: queryTerm,
             corpus_name: corpusName,
             neighbours,

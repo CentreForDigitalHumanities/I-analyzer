@@ -55,7 +55,7 @@ def committee():
         description = 'Committee that held the debate',
         es_mapping = keyword_mapping(),
         search_filter = MultipleChoiceFilter(
-            description='Search only in debates from the selected chamber(s)',
+            description='Search only in debates from the selected committee(s)',
         ),
         visualizations = ['resultscount', 'termfrequency']
     )
@@ -69,22 +69,22 @@ def country():
         es_mapping=keyword_mapping(),
     )
 
-def date():
+
+def date(min_date: datetime = MIN_DATE, max_date: datetime = MAX_DATE):
     "The date on which the debate took place."
     return FieldDefinition(
-        name='date',
-        display_name='Date',
-        description='The date on which the debate took place.',
+        name="date",
+        display_name="Date",
+        description="The date on which the debate took place.",
         es_mapping=date_mapping(),
         results_overview=True,
         search_filter=DateFilter(
-            MIN_DATE,
-            MAX_DATE,
-            description='Search only within this time range.'
+            min_date, max_date, description="Search only within this time range."
         ),
-        visualizations=['resultscount', 'termfrequency'],
+        visualizations=["resultscount", "termfrequency"],
         csv_core=True,
     )
+
 
 def date_is_estimate():
     """Wether the date field is an estimate. Boolean value."""
@@ -289,7 +289,6 @@ def speech(language=None):
             stopword_analysis=has_language,
             stemming_analysis=has_language,
             language=language,
-            updated_highlighting=True
         ),
         results_overview=True,
         search_field_core=True,

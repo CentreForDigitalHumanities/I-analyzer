@@ -1,10 +1,24 @@
 import { ParamMap, Params, convertToParamMap } from '@angular/router';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, FilterInterface, QueryModel, SearchFilter, SortBy, SortDirection, SortState } from '../models';
-import { TagFilter } from '../models/tag-filter';
-import { PageParameters, PageResultsParameters, RESULTS_PER_PAGE } from '../models/page-results';
+import {
+    Corpus,
+    CorpusField,
+    FilterInterface,
+    QueryModel,
+    SearchFilter,
+    SortBy,
+    SortDirection,
+    SortState,
+} from '@models';
+import { TagFilter } from '@models/tag-filter';
+import {
+    PageParameters,
+    PageResultsParameters,
+    RESULTS_PER_PAGE,
+} from '@models/page-results';
 import { findByName } from './utils';
 import { SimpleStore } from '../store/simple-store';
+import { searchFieldOptions } from './search-fields';
 
 // general utility functions
 
@@ -25,10 +39,15 @@ export const mergeAllParams = (values: Params[]): Params =>
 export const queryFromParams = (params: Params): string =>
     params['query'];
 
+export const queryToParams = (queryText: string): Params => ({
+     query: queryText || null
+});
+
 export const searchFieldsFromParams = (params: Params, corpus: Corpus): CorpusField[] => {
     if (params['fields']) {
+        const searchableFields = searchFieldOptions(corpus);
         const fieldNames = params['fields'].split(',');
-        return corpus.fields.filter(field => fieldNames.includes(field.name));
+        return searchableFields.filter(field => fieldNames.includes(field.name));
     }
 };
 

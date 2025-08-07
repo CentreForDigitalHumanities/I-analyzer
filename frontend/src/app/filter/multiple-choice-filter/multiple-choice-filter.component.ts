@@ -2,15 +2,16 @@ import { Component } from '@angular/core';
 
 import * as _ from 'lodash';
 
+import { TermsAggregator, TermsResult } from '@models/aggregation';
+import { SearchService } from '@services';
+import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
-import { MultipleChoiceFilter, MultipleChoiceFilterOptions } from '../../models';
-import { SearchService } from '../../services';
-import { TermsAggregator, TermsResult } from '../../models/aggregation';
 
 @Component({
     selector: 'ia-multiple-choice-filter',
     templateUrl: './multiple-choice-filter.component.html',
-    styleUrls: ['./multiple-choice-filter.component.scss']
+    styleUrls: ['./multiple-choice-filter.component.scss'],
+    standalone: false
 })
 export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilter> {
     options: { label: string; value: string; doc_count: number }[] = [];

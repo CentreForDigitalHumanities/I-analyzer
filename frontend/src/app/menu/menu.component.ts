@@ -1,21 +1,23 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
-import { User } from '../models/index';
-import { environment } from '../../environments/environment';
-import { AuthService } from '../services/auth.service';
+import { User } from '@models/index';
+import { environment } from '@environments/environment';
+import { AuthService } from '@services/auth.service';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { navIcons, userIcons } from '../shared/icons';
+import { navIcons, userIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss'],
+    standalone: false
 })
 export class MenuComponent implements OnDestroy, OnInit {
     @ViewChild('userDropdown') userDropdown: ElementRef;
 
+    brand = environment.navbarBrand;
     adminUrl = environment.adminUrl;
 
     menuOpen$ = new BehaviorSubject<boolean>(false);

@@ -6,10 +6,13 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import * as _ from 'lodash';
-import { Corpus, CorpusField, QueryModel } from '../models/index';
-import { actionIcons, visualizationIcons } from '../shared/icons';
+import { Corpus, CorpusField, QueryModel } from '@models/index';
+import { actionIcons, visualizationIcons } from '@shared/icons';
 import { RouterStoreService } from '../store/router-store.service';
-import { VisualizationOption, VisualizationSelector } from '../models/visualization-selector';
+import {
+    VisualizationOption,
+    VisualizationSelector,
+} from '@models/visualization-selector';
 import { Observable, Subject, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -17,6 +20,7 @@ import { map } from 'rxjs/operators';
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
+    standalone: false
 })
 export class VisualizationComponent implements OnChanges, OnDestroy {
     @Input() public corpus: Corpus;

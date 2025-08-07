@@ -5,14 +5,15 @@ locations.
 
 import logging
 logger = logging.getLogger(__name__)
-from os.path import join, isfile, splitext
+from os.path import join, isfile
 from datetime import datetime
 import re
 import openpyxl
+from ianalyzer_readers.xml_tag import Tag, SiblingTag, ParentTag
 
 from django.conf import settings
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
@@ -40,13 +41,9 @@ class Periodicals(XMLCorpusDefinition):
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    tag_toplevel = 'articles'
-    tag_entry = 'artInfo'
-
-    # New data members
-    filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
-    non_xml_msg = 'Skipping non-XML file {}'
-    non_match_msg = 'Skipping XML file with nonmatching name {}'
+    tag_toplevel = Tag('articles')
+    tag_entry = Tag('artInfo')
+    external_file_tag_toplevel = Tag('issue')
 
     mimetype = 'image/jpeg'
 
@@ -62,7 +59,8 @@ class Periodicals(XMLCorpusDefinition):
             metadict['title'] = row[0]
             if row[1].startswith('['):
                 date = row[1][1:-1]
-            else: date = row[1]
+            else:
+                date = row[1]
             metadict['date_full'] = date
             if date=='Date Unknown':
                 metadict['date'] = None
@@ -83,210 +81,172 @@ class Periodicals(XMLCorpusDefinition):
 
     fields = [
         FieldDefinition(
-            name='date',
-            display_name='Formatted Date',
-            description='Publication date, formatted from the full date',
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            name="date",
+            display_name="Formatted Date",
+            description="Publication date, formatted from the full date",
+            es_mapping={"type": "date", "format": "yyyy-MM-dd"},
             histogram=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
-                )
+                    "Accept only articles with publication date in this range."
+                ),
             ),
-            extractor=extract.Metadata('date'),
+            extractor=extract.Metadata("date"),
             csv_core=True,
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=["resultscount", "termfrequency"],
         ),
         FieldDefinition(
-            name='date_pub',
-            display_name='Publication Date',
-            description='Publication date as full string, as found in source file',
+            name="date_pub",
+            display_name="Publication Date",
+            description="Publication date as full string, as found in source file",
             es_mapping=keyword_mapping(),
             results_overview=True,
-            extractor=extract.Metadata('date_full')
+            extractor=extract.Metadata("date_full"),
         ),
         FieldDefinition(
-            name='id',
-            display_name='ID',
-            description='Unique identifier of the entry.',
+            name="id",
+            display_name="ID",
+            description="Unique identifier of the entry.",
             es_mapping=keyword_mapping(),
-            extractor=extract.XML(tag=None,
-                                  toplevel=False,
-                                  attribute='id'),
+            extractor=extract.XML(attribute="id"),
         ),
         FieldDefinition(
-            name='issue',
-            display_name='Issue number',
-            description='Source issue number.',
+            name="issue",
+            display_name="Issue number",
+            description="Source issue number.",
             es_mapping=keyword_mapping(),
             results_overview=False,
-            extractor=extract.Metadata('issue_id'),
+            extractor=extract.Metadata("issue_id"),
             csv_core=False,
         ),
         FieldDefinition(
-            name='periodical',
-            display_name='Periodical name',
+            name="periodical",
+            display_name="Periodical name",
             histogram=True,
             results_overview=True,
-            es_mapping={'type': 'keyword'},
-            description='Periodical name.',
+            es_mapping={"type": "keyword"},
+            description="Periodical name.",
             search_filter=filters.MultipleChoiceFilter(
-                description='Search only within these periodicals.',
-                option_count=90
+                description="Search only within these periodicals.", option_count=90
             ),
-            extractor=extract.Metadata('title'),
+            extractor=extract.Metadata("title"),
             csv_core=True,
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=["resultscount", "termfrequency"],
         ),
         FieldDefinition(
-            name='content',
-            display_name='Content',
-            display_type='text_content',
-            description='Text content.',
-            es_mapping=main_content_mapping(True, True, True, 'en'),
+            name="content",
+            display_name="Content",
+            display_type="text_content",
+            description="Text content.",
+            es_mapping=main_content_mapping(True, True, True, "en"),
             results_overview=True,
-            extractor=extract.XML(tag='ocrText', flatten=True),
+            extractor=extract.XML(Tag("ocrText"), flatten=True),
             search_field_core=True,
+            visualizations=["wordcloud", "ngram"],
+            language="en",
+        ),
+        FieldDefinition(
+            name="ocr",
+            display_name="OCR confidence",
+            description="OCR confidence level.",
+            es_mapping={"type": "float"},
+            search_filter=filters.RangeFilter(
+                0,
+                100,
+                description=(
+                    "Accept only articles for which the Opitical Character Recognition confidence "
+                    "indicator is in this range."
+                ),
+            ),
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                SiblingTag("ocr"),
+            ),
+            sortable=True,
+        ),
+        FieldDefinition(
+            name="title",
+            display_name="Article title",
+            description="Title of the article.",
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                SiblingTag("ti"),
+                external_file=True,
+            ),
             visualizations=["wordcloud"],
-            language='en',
         ),
         FieldDefinition(
-            name='ocr',
-            display_name='OCR confidence',
-            description='OCR confidence level.',
-            es_mapping={'type': 'float'},
-            search_filter=filters.RangeFilter(0, 100,
-                                              description=(
-                                                  'Accept only articles for which the Opitical Character Recognition confidence '
-                                                  'indicator is in this range.'
-                                              )
-                                              ),
-            extractor=extract.XML(tag='ocr',
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                }
+            name="start_column",
+            es_mapping={"type": "keyword"},
+            display_name="Starting column",
+            description="Which column the article starts in.",
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                SiblingTag("sc"),
+                external_file=True,
             ),
-            sortable=True
         ),
         FieldDefinition(
-            name='title',
-            display_name='Article title',
-            description='Title of the article.',
-            extractor=extract.XML(tag='ti',
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                }
+            name="page_count",
+            display_name="Page count",
+            description="How many pages the article covers.",
+            es_mapping={"type": "integer"},
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                SiblingTag("pc"),
+                external_file=True,
             ),
-            visualizations=['wordcloud']
         ),
         FieldDefinition(
-            name='start_column',
-            es_mapping={'type': 'keyword'},
-            display_name='Starting column',
-            description='Which column the article starts in.',
-            extractor=extract.XML(tag='sc',
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                }
-            )
+            name="word_count",
+            display_name="Word count",
+            description="Number of words in the article.",
+            es_mapping={"type": "integer"},
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                SiblingTag("wordCount"),
+                external_file=True,
+            ),
         ),
         FieldDefinition(
-            name='page_count',
-            display_name='Page count',
-            description='How many pages the article covers.',
-            es_mapping={'type': 'integer'},
-            extractor=extract.XML(tag='pc',
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                }
-            )
-        ),
-        FieldDefinition(
-            name='word_count',
-            display_name='Word count',
-            description='Number of words in the article.',
-            es_mapping={'type': 'integer'},
-            extractor=extract.XML(tag='wordCount',
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                }
-            )
-        ),
-        FieldDefinition(
-            name='category',
+            name="category",
             csv_core=True,
-            display_name='Category',
-            description='Article category.',
-            es_mapping={'type': 'keyword'},
-            extractor=extract.XML(tag='ct',
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                }
+            display_name="Category",
+            description="Article category.",
+            es_mapping={"type": "keyword"},
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                SiblingTag("ct"),
+                external_file=True,
             ),
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these categories.',
-                option_count=26
+                description="Accept only articles in these categories.", option_count=26
             ),
-            visualizations=['resultscount', 'termfrequency']
+            visualizations=["resultscount", "termfrequency"],
         ),
         FieldDefinition(
-            name='page_no',
-            display_name='Page number',
-            description='At which page the article starts.',
-            es_mapping={'type': 'integer'},
-            extractor=extract.XML(tag='pa',
-                parent_level=1,
-                external_file={
-                    'xml_tag_toplevel': 'issue',
-                    'xml_tag_entry': 'article'
-                },
-                secondary_tag = {
-                    'tag': 'id',
-                    'match': 'id'
-                },
-                transform=lambda x: re.sub('[\[\]]', '', x)
-            )
+            name="page_no",
+            display_name="Page number",
+            description="At which page the article starts.",
+            es_mapping={"type": "integer"},
+            extractor=extract.XML(
+                lambda metadata: Tag("id", string=metadata["id"]),
+                ParentTag(2),
+                Tag("pa"),
+                external_file=True,
+                transform=lambda x: re.sub("[\[\]]", "", x),
+            ),
         ),
         FieldDefinition(
-            name='image_path',
-            display_name='Image path',
-            es_mapping={'type': 'keyword'},
-            description='Path of scan.',
-            extractor=extract.Metadata('image_path'),
+            name="image_path",
+            display_name="Image path",
+            es_mapping={"type": "keyword"},
+            description="Path of scan.",
+            extractor=extract.Metadata("image_path"),
             hidden=True,
-            downloadable=False
+            downloadable=False,
         ),
     ]
 

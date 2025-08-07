@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges } from '@angular/core';
-import { scanIcons } from '../shared/icons';
+import { scanIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-image-navigation',
     templateUrl: './image-navigation.component.html',
     styleUrls: ['./image-navigation.component.scss'],
+    standalone: false
 })
 export class ImageNavigationComponent implements OnChanges {
     @Input() public pageIndices: number[];

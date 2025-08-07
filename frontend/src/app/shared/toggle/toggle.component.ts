@@ -1,22 +1,21 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'ia-toggle',
-  templateUrl: './toggle.component.html',
-  styleUrls: ['./toggle.component.scss']
+    selector: 'ia-toggle',
+    templateUrl: './toggle.component.html',
+    styleUrls: ['./toggle.component.scss'],
+    standalone: false
 })
-export class ToggleComponent implements OnInit {
-  @Output() toggled = new EventEmitter<boolean>();
-  active = false;
+export class ToggleComponent {
+    @Input() toggleLabel: string;
+    @Output() toggled = new EventEmitter<boolean>();
+    active = false;
 
-  constructor() { }
+    constructor() { }
 
-  ngOnInit(): void {
-  }
-
-  public toggleButton() {
-    this.active = !this.active;
-    this.toggled.emit(this.active);
-  }
+    public toggleButton() {
+        this.active = !this.active;
+        this.toggled.emit(this.active);
+    }
 
 }

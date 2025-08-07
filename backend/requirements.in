@@ -22,7 +22,7 @@ scikit-learn
 pandas
 celery
 Redis
-pypdf2
+pypdf
 openpyxl
 selenium
 seleniumbase>3

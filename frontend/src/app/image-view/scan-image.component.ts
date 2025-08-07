@@ -3,9 +3,10 @@ import { AfterViewInit, Component, ElementRef, Input, OnChanges, ViewChild, Simp
 import { ImageViewer } from 'iv-viewer';
 
 @Component({
-  selector: 'ia-scan-image',
-  templateUrl: './scan-image.component.html',
-  styleUrls: ['./scan-image.component.scss']
+    selector: 'ia-scan-image',
+    templateUrl: './scan-image.component.html',
+    styleUrls: ['./scan-image.component.scss'],
+    standalone: false
 })
 export class ScanImageComponent implements AfterViewInit, OnChanges {
     @Input() public imagePaths: string[];

@@ -12,6 +12,7 @@ from addcorpus.models import Corpus
 from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
+from django.core.cache import cache
 
 
 def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus, csv_directory):
@@ -243,9 +244,10 @@ def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_pu
                            content_type='application/json'
                            )
     assert status.is_success(response.status_code)
+    # check that download object is removed
     download_objects = Download.objects.all()
-    assert download_objects.count() == 1
-    assert download_objects.first().user == None
+    assert download_objects.count() == 0
+
 
 def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
     es_query = query.set_query_text(mock_match_all_query(), 'ghost')
@@ -265,3 +267,22 @@ def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, i
     reader = csv.DictReader(stream, delimiter=';')
     row = next(reader)
     assert row['query'] == 'ghost'
+
+@pytest.mark.xfail(reason='query in context download does not work')
+def test_download_with_query_in_context(
+    db, admin_client, small_mock_corpus, index_small_mock_corpus
+):
+    es_query = query.set_query_text(query.MATCH_ALL, 'the')
+    es_query['highlight'] = { 'fragment_size': 200, 'fields': { 'content': {} } }
+    es_query['size'] = 3
+    request_json = {
+        'corpus': small_mock_corpus,
+        'es_query': es_query,
+        'fields': ['date', 'content', 'context'],
+        'route': f"/search/{small_mock_corpus}?query=the&highlight=200",
+        'encoding': 'utf-8'
+    }
+    response = admin_client.post(
+        '/api/download/search_results', request_json, content_type='application/json'
+    )
+    assert status.is_success(response.status_code)

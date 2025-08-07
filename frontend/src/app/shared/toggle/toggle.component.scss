@@ -1,4 +1,4 @@
-@import "../../../_utilities";
+@use "../../../_utilities";
 
 /* The switch - the box around the slider */
 .toggle-container {
@@ -28,7 +28,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: $highlight-color;
+    background-color: utilities.$background;
     transition: .4s;
     border-radius: 35px;
     pointer-events: none;
@@ -50,7 +50,7 @@
 
 input:checked {
     + .slider {
-        background-color: $primary;
+        background-color: utilities.$primary;
     }
 
     + .slider:before {
@@ -60,7 +60,7 @@ input:checked {
         -ms-transform: translateX(2rem);
         -o-transform: translateX(2rem);
     }
-    
+
     + .slider:after {
         left: calc(100% - 5px);
         transform: translateX(-100%);

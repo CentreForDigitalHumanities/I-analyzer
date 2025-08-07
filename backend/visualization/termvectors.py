@@ -1,4 +1,4 @@
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 import re
 from textdistance import damerau_levenshtein
 
@@ -88,13 +88,7 @@ def analyze_query(query_text, index, field, es_client = None):
     return nonempty
 
 def analyze_query_component(component_text, index, field, es_client):
-    analyzed = es_client.indices.analyze(
-        index = index,
-        body={
-            'text': component_text,
-            'field': field,
-        },
-    )
+    analyzed = es_client.indices.analyze(index=index, text=component_text, field=field)
 
     tokens = [token['token'] for token in analyzed['tokens']]
 
@@ -103,7 +97,7 @@ def analyze_query_component(component_text, index, field, es_client):
         # for single-word tokens, add exceptions for wildcard and fuzzy match
         # everything outside quotes is passed per word
 
-        wildcard_match = re.search('\*$', component_text)
+        wildcard_match = re.search(r'\*$', component_text)
         if wildcard_match:
             return [tokens[0] + '.*'] # return re with wildcard
 

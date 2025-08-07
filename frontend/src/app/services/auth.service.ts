@@ -13,12 +13,12 @@ import {
     distinctUntilChanged, mergeMap,
     takeUntil, tap
 } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { User, UserResponse } from '../models';
+import { environment } from '@environments/environment';
+import { User, UserResponse } from '@models';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import * as _ from 'lodash';
-import { encodeUserData, parseUserData } from '../utils/user';
+import { encodeUserData, parseUserData } from '@utils/user';
 
 @Injectable({
     providedIn: 'root',
@@ -168,6 +168,10 @@ export class AuthService implements OnDestroy {
             newPassword1,
             newPassword2
         );
+    }
+
+    changePassword(oldPassword: string, newPassword1: string, newPassword2: string) {
+        return this.apiService.changePassword(oldPassword, newPassword1, newPassword2);
     }
 
     public updateSettings(update: Partial<User>) {

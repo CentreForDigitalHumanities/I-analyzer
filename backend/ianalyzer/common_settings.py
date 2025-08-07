@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'api',
     'es',
     'corpora',
+    'indexing',
     'visualization',
     'download',
     'wordmodels',
@@ -77,7 +78,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-    ]
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'password': '3/minute',
+        'registration': '5/minute',
+        'download': '5/minute',
+    }
 }
 
 # Password validation
@@ -98,6 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ACCOUNT_USER_DISPLAY = lambda user: user.username.replace(".", "\u2024")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -107,8 +114,6 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Amsterdam'
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 
@@ -125,6 +130,8 @@ AUTH_USER_MODEL = 'users.CustomUser'
 REST_AUTH = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegistrationSerializer',
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': False,
 }
 
 LOGO_LINK = 'https://dhstatic.hum.uu.nl/logo-cdh/png/UU_CDH_logo_EN_whiteFC.png'
@@ -132,3 +139,9 @@ LOGO_LINK = 'https://dhstatic.hum.uu.nl/logo-cdh/png/UU_CDH_logo_EN_whiteFC.png'
 NLTK_DATA_PATH = os.path.join(BASE_DIR, 'addcorpus', 'nltk_data')
 
 DEFAULT_CORPUS_IMAGE = os.path.join(BASE_DIR, 'addcorpus', 'images', 'default.png')
+
+# Celery
+
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']

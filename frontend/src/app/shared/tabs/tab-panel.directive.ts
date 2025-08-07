@@ -2,7 +2,8 @@ import { Directive, Input, TemplateRef } from '@angular/core';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Directive({
-    selector: '[iaTabPanel]'
+    selector: '[iaTabPanel]',
+    standalone: false
 })
 export class TabPanelDirective {
     @Input() id: string | number;

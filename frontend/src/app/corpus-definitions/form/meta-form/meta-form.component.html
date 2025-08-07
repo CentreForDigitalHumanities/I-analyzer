@@ -1,0 +1,100 @@
+<h1 class="title">Corpus information</h1>
+<p class="subtitle">
+    Provide some basic information about your corpus. This information will be shown in
+    the corpus overview and the information page for your corpus, and will help users find
+    what they are looking for.
+</p>
+
+<form (ngSubmit)="onSubmit()" class="box" [formGroup]="metaForm">
+    <h2 class="title is-5">Metadata</h2>
+
+    <div class="field">
+        <label class="label" for="title">Title</label>
+        <div class="control">
+            <input class="input" type="text" name="title" formControlName="title" />
+        </div>
+        <p class="help">Enter a short, clear title for your corpus.</p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="description">Description</label>
+        <div class="control">
+            <textarea class="textarea" name="description" formControlName="description"
+                rows="2">
+            </textarea>
+
+        </div>
+        <p class="help">
+            Provide a short description of your corpus. You can add more elaborate
+            documentation below.
+        </p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="category" id="label-category">Category</label>
+        <div class="control">
+            <ia-dropdown formControlName="category" labelledBy="label-category">
+                <span iaDropdownLabel>{{currentCategoryLabel}}</span>
+                <div iaDropdownMenu>
+                    <a *ngFor="let category of categories"
+                        iaDropdownItem [value]="category.value">
+                        {{category.label}}
+                    </a>
+                </div>
+            </ia-dropdown>
+        </div>
+        </div>
+
+    <div class="field">
+        <div class="field is-grouped" formGroupName="date_range">
+            <div class="control">
+                <label class="label" for="min">Start year</label>
+                <input class="input" type="number" step="10" name="min" formControlName="min" />
+            </div>
+            <div class="control">
+                <label class="label" for="max">End year</label>
+                <input class="input" type="number" step="10" name="max" formControlName="max" />
+            </div>
+        </div>
+        <p class="help">Enter the earliest and latest year in your corpus. This is only an indication for
+            users, no exact year is required.</p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="languages">Languages</label>
+        <div class="control">
+            <p-autoComplete
+                formControlName="languages"
+                multiple="true"
+                [suggestions]="languageSuggestions"
+                (completeMethod)="setLanguageSuggestions($event.query)"
+                optionLabel="displayName"
+                [minLength]="3"
+            />
+        </div>
+        <p class="help">All or the most important languages occuring in your corpus</p>
+    </div>
+
+    <div class="block"></div>
+
+    <div class="field">
+        <p class="control">
+            <button class="button is-primary"
+                [class.is-loading]="loading$ | async">
+                <span class="icon"><fa-icon [icon]="formIcons.confirm" /></span>
+                <span>Save changes</span>
+            </button>
+        </p>
+    </div>
+
+    <ia-form-feedback [showSuccess]="showSuccessMessage$ | async"
+        [showError]="showErrorMessage$ | async" />
+</form>
+
+<div class="box">
+    <ia-image-upload [corpus]="corpus" />
+</div>
+
+<div class="box">
+    <ia-documentation-form />
+</div>

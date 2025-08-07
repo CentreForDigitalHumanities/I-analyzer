@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
-import { actionIcons, formIcons } from '../../shared/icons';
-import { ApiService } from '../../services';
-import { APIEditableCorpus, CorpusDefinition } from '../../models/corpus-definition';
-import * as _ from 'lodash';
-import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { APIEditableCorpus, CorpusDefinition } from '@models/corpus-definition';
+import { ApiService } from '@services';
+import { actionIcons, formIcons } from '@shared/icons';
 import { Subject } from 'rxjs';
+import { SlugifyPipe } from '../../shared/pipes/slugify.pipe';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-create-definition',
     templateUrl: './create-definition.component.html',
     styleUrls: ['./create-definition.component.scss'],
+    standalone: false
 })
 export class CreateDefinitionComponent {
     actionIcons = actionIcons;
@@ -22,8 +25,16 @@ export class CreateDefinitionComponent {
 
     reset$ = new Subject<void>();
 
-    constructor(private apiService: ApiService, private router: Router) {
-        this.corpus = new CorpusDefinition(apiService);
+    newCorpusTitle: string;
+
+    constructor(
+        private apiService: ApiService,
+        private router: Router,
+        private slugify: SlugifyPipe,
+        private title: Title,
+    ) {
+        this.corpus = new CorpusDefinition(this.apiService);
+        this.title.setTitle(pageTitle('New corpus'));
     }
 
     onJSONUpload(data: any) {
@@ -31,18 +42,33 @@ export class CreateDefinitionComponent {
     }
 
     submit() {
-        this.error = undefined;
-        this.corpus.save().subscribe(
-            (result: APIEditableCorpus) => {
-                this.router.navigate([
-                    '/corpus-definitions',
-                    'edit',
-                    result.id,
-                ]);
+        this.corpus.definition = {
+            name: this.slugify.transform(this.newCorpusTitle),
+            meta: {
+                title: this.newCorpusTitle,
+                languages: [],
             },
-            (err: HttpErrorResponse) => {
+            fields: [],
+            source_data: {
+                type: 'csv',
+            },
+        };
+        this.corpus.definition.meta.title = this.newCorpusTitle;
+        this.saveCorpus();
+    }
+
+    saveCorpus(asImport: boolean = false) {
+        this.error = undefined;
+        this.corpus.save().subscribe({
+            next: (result: APIEditableCorpus) => {
+                const nextRoute = asImport
+                    ? ['/corpus-definitions']
+                    : ['/corpus-definitions', 'edit', result.id];
+                this.router.navigate(nextRoute);
+            },
+            error: (err: HttpErrorResponse) => {
                 this.error = err;
-            }
-        );
+            },
+        });
     }
 }

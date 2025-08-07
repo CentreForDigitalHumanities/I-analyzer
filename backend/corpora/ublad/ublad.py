@@ -1,22 +1,16 @@
 from datetime import datetime
 import os
-from os.path import join, splitext
-import locale
+from os.path import join
 import logging
 
 from django.conf import settings
 from addcorpus.python_corpora.corpus import HTMLCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import FilterAttribute
+from ianalyzer_readers.extract import XML
+from ianalyzer_readers.xml_tag import Tag
 from addcorpus.es_mappings import *
 from addcorpus.python_corpora.filters import DateFilter
 from addcorpus.es_settings import es_settings
 
-
-from ianalyzer_readers.readers.html import HTMLReader
-from ianalyzer_readers.readers.core import Field
-from ianalyzer_readers.extract import html, Constant
-
-from bs4 import BeautifulSoup, Tag
 
 def transform_content(soup):
     """
@@ -39,13 +33,18 @@ def transform_content(soup):
                 page_text += paragraph_text + '\n\n'
     return page_text
 
+months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus',
+          'september', 'oktober', 'november', 'december']
+
 def transform_date(date_string):
+    day_string, month_string, year_string = date_string.split()
     try:
-        locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
-        date = datetime.strptime(date_string, '%d %B %Y').strftime('%Y-%m-%d')
-        locale.setlocale(locale.LC_ALL, '')
-        return date
-    except ValueError:
+        day = int(day_string)
+        month = next(i + 1 for i, month in enumerate(months) if month == month_string)
+        year = int(year_string)
+        date = datetime(year=year, month=month, day=day)
+        return date.strftime('%Y-%m-%d')
+    except:
         logger.error("Unable to get date from {}".format(date_string))
         return None
 
@@ -79,7 +78,7 @@ class UBlad(HTMLCorpusDefinition):
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    def sources(self, start=min_date, end=max_date):
+    def sources(self, **kwargs):
         for directory, _, filenames in os.walk(self.data_directory):
             _body, tail = os.path.split(directory)
             if '.snapshot' in _:
@@ -102,15 +101,10 @@ class UBlad(HTMLCorpusDefinition):
             search_field_core=True,
             visualizations=['ngram', 'wordcloud'],
             es_mapping = main_content_mapping(True, True, True, 'nl'),
-            extractor= FilterAttribute(tag='div',
-                                       recursive=True,
-                                       multiple=False,
-                                       flatten=False,
-                                       extract_soup_func=transform_content,
-                                       attribute_filter={
-                                            'attribute': 'class',
-                                            'value': 'ocr_page'
-                                        })
+            extractor=XML(
+                Tag('div', attrs={'class': 'ocr_page'}),
+                extract_soup_func=transform_content,
+            )
         ),
         FieldDefinition(
             name='pagenum',
@@ -118,21 +112,19 @@ class UBlad(HTMLCorpusDefinition):
             description='Page number',
             csv_core=True,
             es_mapping = int_mapping(),
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'pagenum'
-                }
+            extractor = XML(
+                Tag('meta', attrs={'name': 'pagenum'}),
+                attribute='content'
             )
         ),
         FieldDefinition(
             name='journal_title',
             display_name='Publication Title',
             description='Title of the publication',
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'journal_title'
-                }
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'journal_title'}),
+                attribute='content',
+            ),
         ),
         FieldDefinition(
             name='volume_id',
@@ -140,21 +132,19 @@ class UBlad(HTMLCorpusDefinition):
             description='Unique identifier for this volume',
             hidden=True,
             es_mapping=keyword_mapping(),
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'identifier_ocn'
-                }
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'identifier_ocn'}),
+                attribute='content',
+            ),
         ),
         FieldDefinition(
             name='id',
             display_name='Page ID',
             description='Unique identifier for this page',
             hidden=True,
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'identifier_indexid'
-                }
+            extractor=XML(
+                Tag('meta', attrs={'name': 'identifier_indexid'}),
+                attribute='content',
             )
         ),
         FieldDefinition(
@@ -163,10 +153,9 @@ class UBlad(HTMLCorpusDefinition):
             description='The number of the edition in this volume. Every year starts at 1.',
             sortable=True,
             es_mapping = keyword_mapping(),
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'aflevering'
-                }
+            extractor=XML(
+                Tag('meta', attrs={'name': 'aflevering'}),
+                attribute='content',
             )
         ),
         FieldDefinition(
@@ -177,10 +166,9 @@ class UBlad(HTMLCorpusDefinition):
             csv_core=True,
             description='The volume number of this publication. There is one volume per year.',
             es_mapping=keyword_mapping(),
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'yearstring'
-                }
+            extractor=XML(
+                Tag('meta', attrs={'name': 'yearstring'}),
+                attribute='content',
             ),
         ),
         FieldDefinition(
@@ -198,12 +186,12 @@ class UBlad(HTMLCorpusDefinition):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor = FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'datestring',
-                },
-                transform=transform_date
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'datestring'}),
+                attribute='content',
+                transform=transform_date,
+
+            ),
         ),
         FieldDefinition(
             name='repo_url',
@@ -212,11 +200,10 @@ class UBlad(HTMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             display_type='url',
             searchable=False,
-            extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'link_repository'
-                }
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'link_repository'}),
+                attribute='content',
+            ),
         ),
         FieldDefinition(
             name='reader_url',
@@ -225,11 +212,10 @@ class UBlad(HTMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             display_type='url',
             searchable=False,
-            extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'link_objects_image'
-                }
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'link_objects_image'}),
+                attribute='content',
+            ),
         ),
         FieldDefinition(
             name='jpg_url',
@@ -238,11 +224,10 @@ class UBlad(HTMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             display_type='url',
             searchable=False,
-            extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'link_objects_jpg'
-                }
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'link_objects_jpg'}),
+                attribute='content',
+            ),
         ),
         FieldDefinition(
             name='worldcat_url',
@@ -251,11 +236,10 @@ class UBlad(HTMLCorpusDefinition):
             es_mapping=keyword_mapping(),
             display_type='url',
             searchable=False,
-            extractor=FilterAttribute(tag='meta', attribute='content', attribute_filter={
-                'attribute': 'name',
-                'value': 'link_worldcat'
-                }
-            )
+            extractor=XML(
+                Tag('meta', attrs={'name': 'link_worldcat'}),
+                attribute='content',
+            ),
         )
     ]
 

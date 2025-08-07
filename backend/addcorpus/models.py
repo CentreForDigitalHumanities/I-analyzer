@@ -1,31 +1,45 @@
+import os
 import warnings
+from datetime import datetime
 
-from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validation.creation import (
-    validate_es_mapping, validate_field_language, validate_implication, validate_language_code,
-    validate_mimetype,
-    validate_name_is_not_a_route_parameter, validate_name_has_no_ner_suffix,
-    validate_search_filter, validate_search_filter_with_mapping,
-    validate_searchable_field_has_full_text_search,
-    validate_sort_configuration, validate_visualizations_with_mapping,
-    validate_source_data_directory,
-)
-from addcorpus.validation.indexing import (validate_essential_fields,
-    validate_has_configuration, validate_language_field, validate_has_data_directory)
-from addcorpus.validation.publishing import (validate_default_sort,
-    validate_ngram_has_date_field)
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+from django.conf import settings
 
-from ianalyzer.elasticsearch import elasticsearch
+from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
+from addcorpus.validation.creation import (
+    validate_es_mapping,
+    validate_field_language,
+    validate_implication,
+    validate_language_code,
+    validate_mimetype,
+    validate_field_name_permissible_characters,
+    validate_name_is_not_a_route_parameter,
+    validate_ner_slug,
+    validate_search_filter,
+    validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_sort_configuration,
+    validate_visualizations_with_mapping,
+    validate_source_data_directory,
+)
+from addcorpus.validation.indexing import (validate_essential_fields,
+    validate_has_configuration, validate_language_field, validate_has_data_directory)
+from addcorpus.validation.publishing import (
+    validate_default_sort,
+    validate_ngram_has_date_field,
+    validate_complete_metadata
+)
+from es.client import elasticsearch
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_TITLE = 256
+
 
 class Corpus(models.Model):
     name = models.SlugField(
@@ -47,6 +61,18 @@ class Corpus(models.Model):
         default=False,
         help_text='whether the configuration of this corpus is determined by a Python '
             'module (some features are only available for Python-based corpora)',
+    )
+    date_created = models.DateField(
+        auto_now_add=True,
+        help_text='date on which the corpus was added to the database',
+    )
+    owner = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='owned_corpora',
+        null=True,
+        blank=True,
+        help_text='user that created the corpus and is allowed to edit it',
     )
 
     @property
@@ -121,6 +147,7 @@ class Corpus(models.Model):
             CorpusNotPublishableError: interface options are improperly configured.
         '''
 
+        validate_complete_metadata(self)
         validate_has_configuration(self)
 
         config = self.configuration_obj
@@ -165,10 +192,13 @@ class CorpusConfiguration(models.Model):
         max_length=64,
         choices=CATEGORIES,
         help_text='category/medium of documents in this dataset',
+        blank=True,
+        null=True
     )
     description = models.CharField(
         max_length=MAX_LENGTH_DESCRIPTION,
         blank=True,
+        null=True,
         help_text='short description of the corpus',
     )
     document_context = models.JSONField(
@@ -198,12 +228,17 @@ class CorpusConfiguration(models.Model):
             blank=True,
         ),
         help_text='languages used in the content of the corpus (from most to least frequent)',
+        blank=True,
     )
-    min_date = models.DateField(
-        help_text='earliest date for the data in the corpus',
+    min_year = models.IntegerField(
+        help_text='earliest year for the data in the corpus',
+        null=True,
+        blank=True,
     )
-    max_date = models.DateField(
-        help_text='latest date for the data in the corpus',
+    max_year = models.IntegerField(
+        help_text='latest year for the data in the corpus',
+        null=True,
+        blank=True,
     )
     scan_image_type = models.CharField(
         max_length=64,
@@ -264,13 +299,15 @@ class CorpusConfiguration(models.Model):
 
     @property
     def has_named_entities(self):
-        client = elasticsearch(self.es_index)
+        from es.search import total_hits
+
+        client = elasticsearch(self.corpus.name)
         try:
-            mapping = client.indices.get_mapping(
-                index=self.es_index)
-            fields = mapping[self.es_index].get(
-                'mappings', {}).get('properties', {}).keys()
-            if any(field.endswith(':ner') for field in fields):
+            # we check if any fields exist for filtering named entities
+            ner_exists = client.search(
+                index=self.es_index, query={"exists": {"field": "*:ner-kw"}}, size=0
+            )
+            if total_hits(ner_exists):
                 return True
         except:
             return False
@@ -307,10 +344,12 @@ VISUALIZATION_SORT_OPTIONS = [
 
 
 class Field(models.Model):
-    name = models.SlugField(
+    name = models.CharField(
         max_length=MAX_LENGTH_NAME,
-        validators=[validate_name_is_not_a_route_parameter,
-                    validate_name_has_no_ner_suffix],
+        validators=[
+            validate_name_is_not_a_route_parameter,
+            validate_field_name_permissible_characters,
+        ],
         help_text='internal name for the field',
     )
     corpus_configuration = models.ForeignKey(
@@ -406,12 +445,18 @@ class Field(models.Model):
         blank=True,
         help_text='column name in CSV source files from which to extract this field',
     )
+    position = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="Field's position within the configuration (order)"
+    )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['corpus_configuration', 'name'],
                                 name='unique_name_for_corpus')
         ]
+        ordering = ["position"]
 
     @property
     def is_main_content(self) -> bool:
@@ -422,6 +467,7 @@ class Field(models.Model):
 
     def clean(self):
         validate_searchable_field_has_full_text_search(self.es_mapping, self.searchable)
+        validate_ner_slug(self.es_mapping, self.name)
 
         if self.search_filter:
             validate_search_filter_with_mapping(self.es_mapping, self.search_filter)
@@ -473,6 +519,13 @@ class CorpusDocumentationPage(models.Model):
         help_text='markdown contents of the documentation'
     )
 
+    @property
+    def page_index(self):
+        '''Numerical index to determine the order in which pages should be displayed.
+        Based on the order in which `PageType` choices are declared.'''
+        indexed_values = enumerate(__class__.PageType.values)
+        return next((i for (i, value) in indexed_values if value == self.type), None)
+
     def __str__(self):
         return f'{self.corpus_configuration.corpus.name} - {self.type}'
 
@@ -483,3 +536,21 @@ class CorpusDocumentationPage(models.Model):
                 name='unique_documentation_type_for_corpus'
             )
         ]
+
+
+class CorpusDataFile(models.Model):
+    def upload_dir(self):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}')
+
+    def upload_path(self, filename):
+        return os.path.join(self.upload_dir(), filename)
+
+    corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=upload_path,
+                            help_text='file containing corpus data')
+    is_sample = models.BooleanField(
+        default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.file.name}'

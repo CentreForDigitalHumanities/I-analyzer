@@ -4,10 +4,12 @@ import os
 import os.path as op
 import logging
 from datetime import datetime
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.python_corpora.extract import XML, Metadata, Combined
+from api.utils import find_media_file
+from ianalyzer_readers.extract import XML, Metadata, Combined
 from addcorpus.python_corpora.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
@@ -20,7 +22,6 @@ from media.media_url import media_url
 class DutchAnnualReports(XMLCorpusDefinition):
     """ Alto XML corpus of Dutch annual reports. """
 
-    # Data overrides from .common.Corpus (fields at bottom of class)
     title = "Dutch Annual Reports"
     description = "Annual reports of Dutch financial and non-financial institutes"
     min_date = datetime(year=1957, month=1, day=1)
@@ -38,9 +39,8 @@ class DutchAnnualReports(XMLCorpusDefinition):
 
     mimetype = 'application/pdf'
 
-    # Data overrides from .common.XMLCorpus
-    tag_toplevel = 'alto'
-    tag_entry = 'Page'
+    tag_toplevel = Tag('alto')
+    tag_entry = Tag('Page')
 
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
@@ -187,9 +187,8 @@ class DutchAnnualReports(XMLCorpusDefinition):
             description='Text content of the page.',
             results_overview=True,
             extractor=XML(
-                tag='String',
+                Tag('String'),
                 attribute='CONTENT',
-                recursive=True,
                 multiple=True,
                 transform=lambda x: ' '.join(x),
             ),
@@ -253,11 +252,8 @@ class DutchAnnualReports(XMLCorpusDefinition):
         image_path = request_args['image_path']
         start_page = int(request_args['start_page'])
         end_page = int(request_args['end_page'])
-        absolute_path = op.join(self.data_directory, image_path)
-        if not op.isfile(absolute_path):
-            return None
+        absolute_path = find_media_file(self.data_directory, image_path, self.mimetype)
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
         out = build_partial_pdf(pages, input_pdf)
         return out
-

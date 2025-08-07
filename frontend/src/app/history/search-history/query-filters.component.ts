@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { QueryModel } from '../../models/index';
+import { QueryModel } from '@models/index';
 
 @Component({
     selector: '[ia-query-filters]',
     templateUrl: './query-filters.component.html',
-    styleUrls: ['./query-filters.component.scss']
+    styleUrls: ['./query-filters.component.scss'],
+    standalone: false
 })
 export class QueryFiltersComponent implements OnInit {
     @Input() public queryModel: QueryModel;

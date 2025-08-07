@@ -3,13 +3,24 @@ import {
 } from '@angular/core';
 
 
-import { MostFrequentWordsResult, QueryModel, FreqTableHeaders } from '../../models/index';
-import { VisualizationService } from '../../services/visualization.service';
-import { Chart, ChartData, ChartDataset, ChartOptions, ScriptableContext, TooltipItem } from 'chart.js';
+import {
+    MostFrequentWordsResult,
+    QueryModel,
+    FreqTableHeaders,
+} from '@models/index';
+import { VisualizationService } from '@services/visualization.service';
+import {
+    Chart,
+    ChartData,
+    ChartDataset,
+    ChartOptions,
+    ScriptableContext,
+    TooltipItem,
+} from 'chart.js';
 import { WordCloudChart } from 'chartjs-chart-wordcloud';
 import * as _ from 'lodash';
-import { selectColor } from '../../utils/select-color';
-import { FrequentWordsResults } from '../../models/frequent-words';
+import { selectColor } from '@utils/select-color';
+import { FrequentWordsResults } from '@models/frequent-words';
 import { RouterStoreService } from '../../store/router-store.service';
 
 // maximum font size in px
@@ -35,6 +46,7 @@ const unitScale = (min: number, max: number): (frequency: number) => number => {
     selector: 'ia-wordcloud',
     templateUrl: './wordcloud.component.html',
     styleUrls: ['./wordcloud.component.scss'],
+    standalone: false
 })
 export class WordcloudComponent implements OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;

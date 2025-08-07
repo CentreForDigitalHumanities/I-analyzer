@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 import * as _ from 'lodash';
-import { apiQueryToQueryModel } from '../../utils/es-query';
-import { QueryDb } from '../../models/index';
-import { CorpusService, QueryService } from '../../services/index';
+import { apiQueryToQueryModel } from '@utils/es-query';
+import { QueryDb } from '@models/index';
+import { CorpusService, QueryService } from '@services/index';
 import { HistoryDirective } from '../history.directive';
-import { findByName } from '../../utils/utils';
-import { actionIcons } from '../../shared/icons';
+import { findByName } from '@utils/utils';
+import { actionIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-search-history',
     templateUrl: './search-history.component.html',
     styleUrls: ['./search-history.component.scss'],
+    standalone: false
 })
 export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: QueryDb[];

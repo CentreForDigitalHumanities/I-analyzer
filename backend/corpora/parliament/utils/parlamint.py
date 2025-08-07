@@ -1,4 +1,4 @@
-from addcorpus.python_corpora.extract import XML, Combined, Metadata
+from ianalyzer_readers.extract import XML, Combined, Metadata
 from bs4.element import NavigableString
 
 def clean_value(value):

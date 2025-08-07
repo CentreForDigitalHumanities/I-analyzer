@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CorpusFilterComponent } from './corpus-filter.component';
 import { commonTestBed } from '../../common-test-bed';
 import { mockCorpus, mockCorpus2 } from '../../../mock-data/corpus';
-import { Corpus } from '../../models';
+import { Corpus } from '@models';
 
 describe('CorpusFilterComponent', () => {
     let component: CorpusFilterComponent;
@@ -28,32 +28,31 @@ describe('CorpusFilterComponent', () => {
         let result: Corpus[];
         component.filtered.subscribe(data => result = data);
 
-        const filterResult = async (language: string, category: string, minDate: Date, maxDate: Date) => {
-            component.selectedLanguage.next(language);
-            component.selectedCategory.next(category);
-            component.selectedMinDate.next(minDate);
-            component.selectedMaxDate.next(maxDate);
+        const filterResult = async (language: string | null, category: string | null, minYear: number, maxYear: number) => {
+            component.form.setValue({
+                language, category, minYear, maxYear
+            });
             await fixture.whenStable();
             return result;
         };
 
-        expect(await filterResult('English', undefined, undefined, undefined))
+        expect(await filterResult('English', null, 1800, 2000))
             .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult('French', undefined, undefined, undefined))
+        expect(await filterResult('French', null, 1800, 2000))
             .toEqual([mockCorpus2]);
-        expect(await filterResult(undefined, undefined, undefined, undefined))
+        expect(await filterResult(null, null, 1800, 2000))
             .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult(undefined, 'Tests', undefined, undefined))
+        expect(await filterResult(null, 'Tests', 1800, 2000))
             .toEqual([mockCorpus]);
-        expect(await filterResult('French', 'Different tests', undefined, undefined))
+        expect(await filterResult('French', 'Different tests', 1800, 2000))
             .toEqual([mockCorpus2]);
-        expect(await filterResult('French', 'Tests', undefined, undefined))
+        expect(await filterResult('French', 'Tests', 1800, 2000))
             .toEqual([]);
-        expect(await filterResult(undefined, undefined, new Date('1920-01-01'), undefined))
+        expect(await filterResult(null, null, 1920, 2000))
             .toEqual([mockCorpus2]);
-        expect(await filterResult(undefined, undefined, new Date('1820-01-01'), undefined))
+        expect(await filterResult(null, null, 1820, 2000))
             .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult(undefined, undefined, undefined, new Date('1830-01-01')))
+        expect(await filterResult(null, null, 1800, 1830))
             .toEqual([mockCorpus]);
     });
 });

@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://github.com/UUDigitalHumanitieslab/I-analyzer/blob/develop/backend/addcorpus/schemas/corpus.schema.json",
+    "$id": "https://github.com/CentreForDigitalHumanities/I-analyzer/blob/develop/backend/addcorpus/schemas/corpus.schema.json",
     "title": "Corpus",
     "description": "Definition of a corpus in I-analyzer",
     "type": "object",
@@ -50,12 +50,14 @@
                     "description": "The date range of the content",
                     "properties": {
                         "min": {
-                            "type": "string",
-                            "format": "date"
+                            "description": "minimum year",
+                            "type": "number",
+                            "multipleOf": 1
                         },
                         "max": {
-                            "type": "string",
-                            "format": "date"
+                            "description": "maximum year",
+                            "type": "number",
+                            "multipleOf": 1
                         }
                     }
                 }
@@ -208,6 +210,24 @@
                     },
                     "required": ["context_fields", "display_name"]
                 }
+            }
+        }
+    },
+    "documentation": {
+        "type": "object",
+        "description": "Documentation pages",
+        "properties": {
+            "general": {
+                "type": "string",
+                "description": "General information about the corpus"
+            },
+            "citation": {
+                "type": "string",
+                "description": "Citation guidelines"
+            },
+            "license": {
+                "type": "string",
+                "description": "License for re-use"
             }
         }
     },

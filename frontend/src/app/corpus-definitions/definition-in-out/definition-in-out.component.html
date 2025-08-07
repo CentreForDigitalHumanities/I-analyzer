@@ -1,0 +1,69 @@
+<section class="section">
+    <div class="container">
+        <nav aria-label="secondary navigation" class="breadcrumb">
+            <ul>
+                <li><a [routerLink]="['/']">Corpora</a></li>
+                <li><a [routerLink]="['../..']">Definitions</a></li>
+                <li class="is-active" aria-current="page"><a>{{corpus.definition?.meta.title ||
+                        '...'}}: import/export</a></li>
+            </ul>
+        </nav>
+
+        <h1 class="title">Import/export corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
+
+        <p class="block">
+            You can download or upload a file with your corpus configuration.
+            You can use this to create a copy or backup of your corpus, or restore
+            your corpus from a backup.
+            For more information about these files, see the
+            <a [routerLink]="['/manual', 'importing-and-exporting-corpora']">manual</a>.
+        </p>
+
+        <h2 class="title is-4">Download</h2>
+
+        <div class="block">
+            <button class="button" (click)="downloadJSON()">
+                <span class="icon" aria-hidden="true">
+                    <fa-icon [icon]="actionIcons.download"></fa-icon>
+                </span>
+                <span>Download JSON</span>
+            </button>
+        </div>
+
+        <h2 class="title is-4">Upload</h2>
+
+        <form>
+            <div class="block">
+                <ia-definition-json-upload [reset]="reset$" (upload)="onJSONUpload($event)">
+                </ia-definition-json-upload>
+            </div>
+
+            <div class="block">
+                <button class="button is-primary" [class.is-loading]="corpus.loading$ | async" type="submit"
+                    (click)="submit()">
+                    <span class="icon" aria-hidden="true">
+                        <fa-icon [icon]="formIcons.confirm"></fa-icon>
+                    </span>
+                    <span>
+                        Save changes
+                    </span>
+                </button>
+                &nbsp;
+                <button class="button" type="reset" (click)="reset()">
+                    <span class="icon" aria-hidden="true">
+                        <fa-icon [icon]="formIcons.reset"></fa-icon>
+                    </span>
+                    <span>
+                        Cancel changes
+                    </span>
+                </button>
+            </div>
+
+            <div class="message is-danger" *ngIf="error">
+                <div class="message-body">
+                    Could not save corpus: {{error.message}}
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

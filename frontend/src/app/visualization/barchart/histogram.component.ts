@@ -6,10 +6,11 @@ import {
     HistogramSeries,
     MultipleChoiceFilterOptions,
     QueryModel,
-    RangeFilterOptions} from '../../models/index';
-import { selectColor } from '../../utils/select-color';
+    RangeFilterOptions,
+} from '@models/index';
+import { selectColor } from '@utils/select-color';
 import { BarchartDirective } from './barchart.directive';
-import { TermsAggregator, TermsResult } from '../../models/aggregation';
+import { TermsAggregator, TermsResult } from '@models/aggregation';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
@@ -24,6 +25,7 @@ function formatXAxisLabel(value): string {
     selector: 'ia-histogram',
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss'],
+    standalone: false
 })
 export class HistogramComponent
     extends BarchartDirective<TermsResult, HistogramDataPoint>
@@ -40,19 +42,16 @@ export class HistogramComponent
      * used in document requests.
      */
     getAggregator(): TermsAggregator {
-        let size = 0;
-
-        if (!this.visualizedField.filterOptions) {
-            return new TermsAggregator(this.visualizedField, 100);
-        }
+        let size = 100;
 
         const filterOptions = this.visualizedField.filterOptions;
         if (filterOptions.name === 'MultipleChoiceFilter') {
             size = (filterOptions as MultipleChoiceFilterOptions).option_count;
         } else if (filterOptions.name === 'RangeFilter') {
-            size =
+            const filterRange =
                 (filterOptions as RangeFilterOptions).upper -
                 (filterOptions as RangeFilterOptions).lower;
+            size = _.max([size, filterRange])
         }
         return new TermsAggregator(this.visualizedField, size);
     }

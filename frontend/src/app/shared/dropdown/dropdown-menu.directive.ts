@@ -4,10 +4,11 @@ import {  takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import * as _ from 'lodash';
 import { DropdownService } from './dropdown.service';
-import { modulo } from '../../utils/utils';
+import { modulo } from '@utils/utils';
 
 @Directive({
-    selector: '[iaDropdownMenu]'
+    selector: '[iaDropdownMenu]',
+    standalone: false
 })
 export class DropdownMenuDirective implements OnInit, OnDestroy {
     @ContentChildren(DropdownItemDirective) items: QueryList<DropdownItemDirective>;

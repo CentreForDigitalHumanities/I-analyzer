@@ -2,17 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
-import { userIcons } from '../../shared/icons';
+import { userIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
-import { pageTitle } from '../../utils/app';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-request-reset',
     templateUrl: './request-reset.component.html',
     styleUrls: ['./request-reset.component.scss'],
+    standalone: false
 })
 export class RequestResetComponent implements OnInit {
     public email: string;

@@ -10,8 +10,25 @@
                 "title": "Terms of use and privacy"
             },
             {
+                "id": "glossary",
+                "title": "Glossary"
+            }
+        ]
+    },
+    {
+        "title": "Searching",
+        "pages": [
+            {
                 "id": "query",
-                "title": "Search query"
+                "title": "Search queries"
+            },
+            {
+                "id": "namedentities",
+                "title": "Viewing named entities"
+            },
+            {
+                "id": "tagging-documents",
+                "title": "Tagging documents"
             },
             {
                 "id": "download",
@@ -21,10 +38,11 @@
                 "id": "citation",
                 "title": "Citing I-analyzer"
             }
+
         ]
     },
     {
-        "title": "Visualising documents",
+        "title": "Visualisations",
         "pages": [
             {   "id": "numberofresults",
                 "title": "Number of results"
@@ -41,15 +59,45 @@
         ]
     },
     {
-        "title": "Word models",
+        "title": "Word embeddings",
         "pages": [
+            {
+                "id": "word-embeddings",
+                "title": "What are word embeddings?"
+            },
             {
                 "id": "relatedwords",
                 "title": "Related words"
             },
             {
+                "id": "neighbour-network",
+                "title": "Network of nearest neighbours"
+            },
+            {
                 "id": "comparesimilarity",
                 "title": "Compare similarity"
+            }
+        ]
+    },
+    {
+        "title": "Creating your own corpus",
+        "permissions": ["canEditCorpus"],
+        "pages": [
+            {
+                "id": "creating-a-corpus",
+                "title": "Creating a corpus"
+            },
+            {
+                "id": "uploading-source-data",
+                "title": "Uploading source data"
+            },
+            {
+                "id": "types-of-fields",
+                "title": "Types of fields"
+            },
+            {
+                "id": "importing-and-exporting-corpora",
+                "title": "Importing and exporting corpora"
             }
         ]
     }

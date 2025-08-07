@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } f
 import { mockCorpus3, mockFieldDate } from '../../../mock-data/corpus';
 
 import { commonTestBed } from '../../common-test-bed';
-import { DateFilter, DateFilterData, QueryModel } from '../../models';
+import { DateFilter, DateFilterData, QueryModel } from '@models';
 
 import { DateFilterComponent } from './date-filter.component';
 import { SimpleStore } from '../../store/simple-store';
-import { SearchService } from '../../services';
+import { SearchService } from '@services';
 import * as _ from 'lodash';
 
 describe('DateFilterComponent', () => {
@@ -14,8 +14,8 @@ describe('DateFilterComponent', () => {
     let searchService: SearchService;
     let fixture: ComponentFixture<DateFilterComponent>;
     const exampleData1: DateFilterData = {
-        min: new Date(Date.parse('Jan 01 1850')),
-        max: new Date(Date.parse('Dec 31 1860'))
+        min: new Date('Jan 01 1850'),
+        max: new Date('Dec 31 1860')
     };
 
     beforeEach(waitForAsync(() => {
@@ -45,21 +45,6 @@ describe('DateFilterComponent', () => {
         expect(component.filter.currentData.min).toEqual(exampleData1.min);
         expect(component.filter.currentData.max).toEqual(exampleData1.max);
     });
-
-    it('should create a new update when onFilterSet is called', fakeAsync(() => {
-        spyOn(searchService, 'aggregateSearch').and.returnValue(
-            Promise.resolve(new Date(Date.now()))
-        );
-
-        const newFilter = new DateFilter(new SimpleStore(), mockFieldDate);
-        newFilter.set(exampleData1);
-        component.onFilterSet(newFilter);
-
-        flushMicrotasks();
-
-        expect(component.selectedMinDate.value).toEqual(exampleData1.min);
-        expect(component.selectedMaxDate.value).toEqual(exampleData1.max);
-    }));
 
     it('should use the specified data range', fakeAsync(() => {
         const newFilter = new DateFilter(new SimpleStore(), mockFieldDate);

@@ -1,27 +1,22 @@
-# This workflow will run backend tests on the Python version defined in the Dockerfiles
+# This workflow will run backend tests using the `ianalyzer-backend:latest` image
 
 name: Backend unit tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'develop'
-      - 'master'
-      - 'feature/**'
-      - 'bugfix/**'
-      - 'hotfix/**'
-      - 'release/**'
-      - 'dependabot/**'
-    paths-ignore:
-      - 'frontend/**'
-      - '**.md'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-test.yml'
+      - 'docker-compose.yaml'
 
 jobs:
   backend-test:
     name: Test Backend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Run backend tests
-      run: sudo mkdir -p /ci-data && sudo docker-compose --env-file .env-ci run backend pytest
+      run: |
+        sudo mkdir -p /ci-data
+        docker compose --env-file .env-ci run backend pytest

@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CorpusField } from '../../models';
+import { CorpusField } from '@models';
 import * as _ from 'lodash';
 
 @Component({
-  selector: 'ia-field-info',
-  templateUrl: './field-info.component.html',
-  styleUrls: ['./field-info.component.scss']
+    selector: 'ia-field-info',
+    templateUrl: './field-info.component.html',
+    styleUrls: ['./field-info.component.scss'],
+    standalone: false
 })
 export class FieldInfoComponent implements OnInit {
     @Input() field: CorpusField;

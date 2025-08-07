@@ -1,11 +1,12 @@
 import { Directive } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { Corpus, Download, QueryDb } from '../models';
-import { CorpusService } from '../services';
-import { findByName } from '../utils/utils';
+import { Corpus, Download, QueryDb } from '@models';
+import { CorpusService } from '@services';
+import { findByName } from '@utils/utils';
 
 @Directive({
-  selector: '[iaHistory]'
+    selector: '[iaHistory]',
+    standalone: false
 })
 export class HistoryDirective {
     corpora: Corpus[];

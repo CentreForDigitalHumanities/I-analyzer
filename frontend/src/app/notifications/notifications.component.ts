@@ -1,7 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { Notification, NotificationService } from '../services/notification.service';
+import {
+    Notification,
+    NotificationService,
+} from '@services/notification.service';
 
 const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['class']} = {
     info: 'is-info',
@@ -14,6 +17,7 @@ const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['c
     selector: 'ia-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
+    standalone: false
 })
 export class NotificationsComponent implements OnDestroy {
     defaultTimeout = 10000;

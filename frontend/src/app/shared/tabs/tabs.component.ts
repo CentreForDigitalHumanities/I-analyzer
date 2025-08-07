@@ -5,12 +5,13 @@ import {
 import * as _ from 'lodash';
 import { TabPanelDirective } from './tab-panel.directive';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { modulo } from '../../utils/utils';
-import { SlugifyPipe } from '../pipes/slugify.pipe';
+import { modulo } from '@utils/utils';
+import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 
 interface Tab {
     label: string; // display name
     id: string | number;
+    elementId: string;
     icon?: IconDefinition;
 };
 
@@ -18,7 +19,8 @@ interface Tab {
 @Component({
     selector: 'ia-tabs',
     templateUrl: './tabs.component.html',
-    styleUrls: ['./tabs.component.scss']
+    styleUrls: ['./tabs.component.scss'],
+    standalone: false
 })
 export class TabsComponent implements AfterContentInit {
     @ViewChildren('tabLink') tabLinks: QueryList<ElementRef>;
@@ -34,6 +36,7 @@ export class TabsComponent implements AfterContentInit {
     ngAfterContentInit(): void {
         this.tabs = this.tabPanels.map(tabPanel => ({
             id: tabPanel.id,
+            elementId: this.tabLinkId(tabPanel.id),
             label: tabPanel.title,
             icon: tabPanel.icon,
         }));
@@ -48,8 +51,7 @@ export class TabsComponent implements AfterContentInit {
 
     cycleTab(event: KeyboardEvent) {
         const target = event.target as Element;
-        const id = target.id;
-        const tabIndex = this.tabs.findIndex(tab => this.tabLinkId(tab.id) === id);
+        const tabIndex = this.tabs.findIndex(tab => tab.elementId === target.id);
 
         const keyBindings = {
             ArrowLeft: -1,
@@ -59,14 +61,14 @@ export class TabsComponent implements AfterContentInit {
         const shift = keyBindings[event.key];
         const newIndex = modulo(tabIndex + shift, this.tabs.length);
         const newTab = this.tabs[newIndex];
-        this.setTabLinkFocus(newTab.id);
+        this.setTabLinkFocus(newTab.elementId);
         this.selectTab(newTab);
     }
 
-    setTabLinkFocus(id: string | number) {
+    setTabLinkFocus(elementId: string) {
         this.tabLinks.forEach(tabLink => {
             const element = tabLink.nativeElement;
-            const focus = element.id === this.tabLinkId(id);
+            const focus = element.id === elementId;
             element.tabIndex = focus ? 0 : -1;
             if (focus) {
                 element.focus();

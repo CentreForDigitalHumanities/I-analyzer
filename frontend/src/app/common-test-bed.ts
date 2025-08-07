@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { ElementRef } from '@angular/core';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { ElementRef } from '@angular/core'
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import {FontAwesomeTestingModule} from '@fortawesome/angular-fontawesome/testing';
 
 import { appRoutes, declarations, imports, providers } from './app.module';
@@ -20,16 +20,16 @@ import { EntityService } from './services/entity.service';
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 import { VisualizationService } from './services/visualization.service';
-import { visualizationServiceMock } from '../mock-data/visualization';
+import { VisualizationServiceMock } from '../mock-data/visualization';
 import { TagService } from './services/tag.service';
 import { TagServiceMock } from '../mock-data/tag';
 import { RouterStoreService } from './store/router-store.service';
 import { SimpleStore } from './store/simple-store';
+import { CorpusDefinitionService } from './corpus-definitions/corpus-definition.service';
 
 export const commonTestBed = () => {
-    const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
-    filteredImports.push(RouterTestingModule.withRoutes(appRoutes));
-    filteredImports.push(FontAwesomeTestingModule)
+    const filteredImports = imports.filter(value => !(value in provideHttpClient()));
+    filteredImports.push(FontAwesomeTestingModule);
     const filteredProviders = providers.filter(provider => !(
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService]));
     filteredProviders.push(
@@ -72,7 +72,7 @@ export const commonTestBed = () => {
         },
         {
             provide: VisualizationService,
-            useValue: new visualizationServiceMock(),
+            useValue: new VisualizationServiceMock(),
         },
         {
             provide: TagService,
@@ -81,7 +81,11 @@ export const commonTestBed = () => {
         {
             provide: RouterStoreService,
             useValue: new SimpleStore()
-        }
+        },
+        {
+            provide: CorpusDefinitionService,
+        },
+        provideRouter(appRoutes)
     );
 
     return {

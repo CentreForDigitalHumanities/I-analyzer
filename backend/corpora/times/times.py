@@ -11,7 +11,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora.corpus import (FieldDefinition, XMLCorpusDefinition, after,
                               consolidate_start_end_years, string_contains,
                               until)
@@ -22,12 +22,14 @@ from corpora.times.times_scans import compose_absolute_image_path
 from django.conf import settings
 from media.media_url import media_url
 
+from ianalyzer_readers.xml_tag import Tag, ParentTag
+
 logger = logging.getLogger(__name__)
 
 
 class Times(XMLCorpusDefinition):
     title = "Times"
-    description = "Newspaper archive, 1785-2010"
+    description = "Archives from The Times, a British daily newspaper."
     min_date = datetime(year=1785, month=1, day=1)
     max_date = datetime(year=2010, month=12, day=31)
     data_directory = settings.TIMES_DATA
@@ -38,13 +40,14 @@ class Times(XMLCorpusDefinition):
     citation_page = 'citation.md'
     languages = ['en']
     category = 'periodical'
+    word_model_path = getattr(settings, "TIMES_WM", None)
 
     @property
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    tag_toplevel = 'issue'
-    tag_entry = 'article'
+    tag_toplevel = Tag('issue')
+    tag_entry = Tag('article')
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
@@ -93,157 +96,151 @@ class Times(XMLCorpusDefinition):
 
     fields = [
         FieldDefinition(
-            name='date',
-            display_name='Publication Date',
-            description='Publication date, parsed to yyyy-MM-dd format',
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            name="date",
+            display_name="Publication Date",
+            description="Publication date, parsed to yyyy-MM-dd format",
+            es_mapping={"type": "date", "format": "yyyy-MM-dd"},
             hidden=True,
-            visualizations=['resultscount', 'termfrequency'],
+            visualizations=["resultscount", "termfrequency"],
+            sortable=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
-                )
+                    "Accept only articles with publication date in this range."
+                ),
             ),
-            extractor=extract.Metadata('date',
-                                       transform=lambda x: x.strftime(
-                                           '%Y-%m-%d')
-                                       )
+            extractor=extract.Metadata(
+                "date", transform=lambda x: x.strftime("%Y-%m-%d")
+            ),
         ),
         FieldDefinition(
-            name='source',
-            display_name='Source',
-            description='Library where the microfilm is sourced',
+            name="source",
+            display_name="Source",
+            description="Library where the microfilm is sourced",
             es_mapping=keyword_mapping(),
             extractor=extract.XML(
-                tag=['metadatainfo', 'sourceLibrary'], toplevel=True,
-                applicable=after(1985)
-            )
+                Tag("metadatainfo"),
+                Tag("sourceLibrary"),
+                toplevel=True,
+                applicable=after(1985),
+            ),
         ),
         FieldDefinition(
-            name='edition',
-            display_name='Edition',
+            name="edition",
+            display_name="Edition",
             es_mapping=keyword_mapping(),
             extractor=extract.Choice(
+                extract.XML(Tag("ed"), toplevel=True, applicable=until(1985)),
                 extract.XML(
-                    tag='ed', toplevel=True,
-                    applicable=until(1985)
+                    Tag("ed"), toplevel=True, multiple=True, applicable=after(1985)
                 ),
-                extract.XML(
-                    tag='ed', toplevel=True, multiple=True,
-                    applicable=after(1985)
-                )
             ),
-            csv_core=True
+            csv_core=True,
         ),
         FieldDefinition(
-            name='issue',
-            display_name='Issue number',
-            es_mapping={'type': 'integer'},
-            description='Source issue number.',
+            name="issue",
+            display_name="Issue number",
+            es_mapping={"type": "integer"},
+            description="Source issue number.",
             extractor=extract.XML(
-                tag='is', toplevel=True,
+                Tag("is"),
+                toplevel=True,
                 # Hardcoded to ignore one particular issue with source data
-                transform=lambda x: (62226 if x == "6222662226" else int(x))
+                transform=lambda x: (62226 if x == "6222662226" else int(x)),
             ),
             sortable=True,
-            csv_core=True
+            csv_core=True,
         ),
         FieldDefinition(
-            name='volume',
-            display_name='Volume',
-            description='Volume number.',
+            name="volume",
+            display_name="Volume",
+            description="Volume number.",
             es_mapping=keyword_mapping(),
-            extractor=extract.XML(
-                tag='volNum', toplevel=True,
-                applicable=after(1985)
-            ),
-            csv_core=True
+            extractor=extract.XML(Tag("volNum"), toplevel=True, applicable=after(1985)),
+            csv_core=True,
         ),
         FieldDefinition(
-            name='date-pub',
-            display_name='Publication Date',
+            name="date-pub",
+            display_name="Publication Date",
             es_mapping=keyword_mapping(),
             csv_core=True,
             results_overview=True,
+            description="Publication date as full string, as found in source file",
+            extractor=extract.XML(Tag("da"), toplevel=True),
+        ),
+        FieldDefinition(
+            name="ocr",
+            display_name="OCR confidence",
+            description="OCR confidence level.",
+            es_mapping={"type": "float"},
+            search_filter=filters.RangeFilter(
+                0,
+                100,
+                description=(
+                    "Accept only articles for which the Opitical Character Recognition confidence "
+                    "indicator is in this range."
+                ),
+            ),
+            extractor=extract.XML(Tag("ocr"), transform=float),
             sortable=True,
-            description='Publication date as full string, as found in source file',
-            extractor=extract.XML(
-                tag='da', toplevel=True
-            )
         ),
         FieldDefinition(
-            name='ocr',
-            display_name='OCR confidence',
-            description='OCR confidence level.',
-            es_mapping={'type': 'float'},
-            search_filter=filters.RangeFilter(0, 100,
-                                              description=(
-                                                  'Accept only articles for which the Opitical Character Recognition confidence '
-                                                  'indicator is in this range.'
-                                              )
-                                              ),
-            extractor=extract.XML(tag='ocr', transform=float),
-            sortable=True
-        ),
-        FieldDefinition(
-            name='date-end',
-            display_name='Ending date',
+            name="date-end",
+            display_name="Ending date",
             es_mapping=keyword_mapping(),
             description=(
-                'Ending date of publication. '
-                'For issues that span more than 1 day.'
+                "Ending date of publication. " "For issues that span more than 1 day."
             ),
-            extractor=extract.XML(
-                tag='tdate', toplevel=True,
-                applicable=after(1985)
-            )
+            extractor=extract.XML(Tag("tdate"), toplevel=True, applicable=after(1985)),
         ),
         FieldDefinition(
-            name='page-count',
-            display_name='Image count',
-            description='Page count: number of images present in the issue.',
-            es_mapping={'type': 'integer'},
-            extractor=extract.XML(
-                tag='ip', toplevel=True, transform=int
-            ),
-            sortable=True
+            name="page-count",
+            display_name="Image count",
+            description="Page count: number of images present in the issue.",
+            es_mapping={"type": "integer"},
+            extractor=extract.XML(Tag("ip"), toplevel=True, transform=int),
+            sortable=True,
         ),
         FieldDefinition(
-            name='page-type',
-            display_name='Page type',
-            description='Supplement in which article occurs.',
-            es_mapping={'type': 'keyword'},
+            name="page-type",
+            display_name="Page type",
+            description="Supplement in which article occurs.",
+            es_mapping={"type": "keyword"},
             search_filter=filters.MultipleChoiceFilter(
                 description=(
-                    'Accept only articles that occur in the relevant '
-                    'supplement. Only after 1985.'
+                    "Accept only articles that occur in the relevant "
+                    "supplement. Only after 1985."
                 ),
-                option_count=2
+                option_count=2,
             ),
             extractor=extract.XML(
-                tag=['..', 'pageid'], attribute='isPartOf',
-                applicable=after(1985)
-            )
-        ),
-        FieldDefinition(
-            name='supplement-title',
-            display_name='Supplement title',
-            description='Supplement title.',
-            extractor=extract.XML(
-                tag=['..', 'pageid', 'supptitle'], multiple=True,
-                applicable=after(1985)
+                ParentTag(), Tag("pageid"), attribute="isPartOf", applicable=after(1985)
             ),
         ),
         FieldDefinition(
-            name='supplement-subtitle',
-            display_name='Supplement subtitle',
-            description='Supplement subtitle.',
+            name="supplement-title",
+            display_name="Supplement title",
+            description="Supplement title.",
             extractor=extract.XML(
-                tag=['..', 'pageid', 'suppsubtitle'], multiple=True,
-                applicable=after(1985)
-            )
+                ParentTag(),
+                Tag("pageid"),
+                Tag("supptitle"),
+                multiple=True,
+                applicable=after(1985),
+            ),
+        ),
+        FieldDefinition(
+            name="supplement-subtitle",
+            display_name="Supplement subtitle",
+            description="Supplement subtitle.",
+            extractor=extract.XML(
+                ParentTag(),
+                Tag("pageid"),
+                Tag("suppsubtitle"),
+                multiple=True,
+                applicable=after(1985),
+            ),
         ),
         # There are no datapoints where this is True, hence the outcomment
         # FieldDefinition(
@@ -266,178 +263,158 @@ class Times(XMLCorpusDefinition):
         #     )
         # ),
         FieldDefinition(
-            name='id',
-            display_name='ID',
-            description='Article identifier.',
+            name="id",
+            display_name="ID",
+            description="Article identifier.",
             es_mapping=keyword_mapping(),
-            extractor=extract.XML(tag='id')
+            extractor=extract.XML(Tag("id")),
         ),
         FieldDefinition(
-            name='ocr-relevant',
-            display_name='OCR relevant',
-            description='Whether OCR confidence level is relevant.',
-            es_mapping={'type': 'boolean'},
+            name="ocr-relevant",
+            display_name="OCR relevant",
+            description="Whether OCR confidence level is relevant.",
+            es_mapping={"type": "boolean"},
             extractor=extract.XML(
-                tag='ocr', attribute='relevant',
+                Tag("ocr"),
+                attribute="relevant",
                 transform=string_contains("yes"),
-            )
+            ),
         ),
         FieldDefinition(
-            name='column',
-            display_name='Column',
+            name="column",
+            display_name="Column",
             description=(
-                'Starting column: a string to label the column'
-                'where article starts.'
+                "Starting column: a string to label the column" "where article starts."
             ),
             es_mapping=keyword_mapping(),
-            extractor=extract.XML(tag='sc')
+            extractor=extract.XML(Tag("sc")),
         ),
         FieldDefinition(
-            name='page',
-            display_name='Page',
-            description='Start page label, from source (1, 2, 17A, ...).',
+            name="page",
+            display_name="Page",
+            description="Start page label, from source (1, 2, 17A, ...).",
             es_mapping=keyword_mapping(),
             extractor=extract.Choice(
-                extract.XML(tag='pa', applicable=until(1985)),
-                extract.XML(tag=['..', 'pa'], applicable=after(1985))
-            )
+                extract.XML(Tag("pa"), applicable=until(1985)),
+                extract.XML(ParentTag(), Tag("pa"), applicable=after(1985)),
+            ),
         ),
         FieldDefinition(
-            name='pages',
-            display_name='Page count',
-            es_mapping={'type': 'integer'},
+            name="pages",
+            display_name="Page count",
+            es_mapping={"type": "integer"},
             description=(
-                'Page count: total number of pages containing sections '
-                'of the article.'
+                "Page count: total number of pages containing sections "
+                "of the article."
             ),
-            extractor=extract.XML(
-                tag='pc', transform=int
-            ),
-            sortable=True
+            extractor=extract.XML(Tag("pc"), transform=int),
+            sortable=True,
         ),
         FieldDefinition(
-            name='title',
-            display_name='Title',
+            name="title",
+            display_name="Title",
             results_overview=True,
             search_field_core=True,
-            visualizations=['wordcloud'],
-            description='Article title.',
-            extractor=extract.XML(tag='ti')
+            visualizations=["wordcloud"],
+            description="Article title.",
+            extractor=extract.XML(Tag("ti")),
         ),
         FieldDefinition(
-            name='subtitle',
-            display_name='Subtitle',
-            description='Article subtitle.',
-            extractor=extract.XML(tag='ta', multiple=True),
-            search_field_core=True
+            name="subtitle",
+            display_name="Subtitle",
+            description="Article subtitle.",
+            extractor=extract.XML(Tag("ta"), multiple=True),
+            search_field_core=True,
         ),
         FieldDefinition(
-            name='subheader',
-            display_name='Subheader',
-            description='Article subheader (product dependent field).',
+            name="subheader",
+            display_name="Subheader",
+            description="Article subheader (product dependent field).",
             extractor=extract.XML(
-                tag='subheader', multiple=True,
-                applicable=after(1985)
-            )
+                Tag("subheader"), multiple=True, applicable=after(1985)
+            ),
         ),
         FieldDefinition(
-            name='author',
-            display_name='Author',
-            description='Article author.',
+            name="author",
+            display_name="Author",
+            description="Article author.",
             es_mapping=keyword_mapping(True),
             extractor=extract.Choice(
-                extract.XML(
-                    tag='au', multiple=True,
-                    applicable=until(1985)
-                ),
-                extract.XML(
-                    tag='au_composed', multiple=True,
-                    applicable=after(1985)
-                )
+                extract.XML(Tag("au"), multiple=True, applicable=until(1985)),
+                extract.XML(Tag("au_composed"), multiple=True, applicable=after(1985)),
             ),
             search_field_core=True,
-            csv_core=True
+            csv_core=True,
         ),
         FieldDefinition(
-            name='source-paper',
-            display_name='Source paper',
-            description='Credited as source.',
+            name="source-paper",
+            display_name="Source paper",
+            description="Credited as source.",
             es_mapping=keyword_mapping(True),
-            extractor=extract.XML(
-                tag='altSource', multiple=True
-            )
+            extractor=extract.XML(Tag("altSource"), multiple=True),
         ),
         FieldDefinition(
-            name='category',
-            visualizations=['resultscount', 'termfrequency'],
-            display_name='Category',
-            description='Article subject categories.',
-            es_mapping={'type': 'keyword'},
+            name="category",
+            visualizations=["resultscount", "termfrequency"],
+            display_name="Category",
+            description="Article subject categories.",
+            es_mapping={"type": "keyword"},
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these categories.',
-                option_count=25
+                description="Accept only articles in these categories.", option_count=25
             ),
-            extractor=extract.XML(tag='ct', multiple=True),
-            csv_core=True
+            extractor=extract.XML(Tag("ct"), multiple=True),
+            csv_core=True,
         ),
         FieldDefinition(
-            name='illustration',
-            display_name='Illustration',
-            description=(
-                'Tables and other illustrations associated with the article.'
-            ),
-            es_mapping={'type': 'keyword'},
-            visualizations=['resultscount', 'termfrequency'],
+            name="illustration",
+            display_name="Illustration",
+            description=("Tables and other illustrations associated with the article."),
+            es_mapping={"type": "keyword"},
+            visualizations=["resultscount", "termfrequency"],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
-                    'Accept only articles associated with these types '
-                    'of illustrations.'),
-                option_count=7
+                    "Accept only articles associated with these types "
+                    "of illustrations."
+                ),
+                option_count=7,
             ),
             extractor=extract.Choice(
+                extract.XML(Tag("il"), multiple=True, applicable=until(1985)),
                 extract.XML(
-                    tag='il', multiple=True,
-                    applicable=until(1985)
+                    Tag("il"), attribute="type", multiple=True, applicable=after(1985)
                 ),
-                extract.XML(
-                    tag='il', attribute='type', multiple=True,
-                    applicable=after(1985)
-                )
             ),
-            csv_core=True
+            csv_core=True,
         ),
         FieldDefinition(
-            name='content-preamble',
-            display_name='Content preamble',
-            description='Raw OCR\'ed text (preamble).',
-            extractor=extract.XML(
-                tag=['text', 'text.preamble'],
-                flatten=True
-            )
+            name="content-preamble",
+            display_name="Content preamble",
+            description="Raw OCR'ed text (preamble).",
+            extractor=extract.XML(Tag("text"), Tag("text.preamble"), flatten=True),
         ),
         FieldDefinition(
-            name='content-heading',
-            display_name='Content heading',
-            description='Raw OCR\'ed text (header).',
-            extractor=extract.XML(
-                tag=['text', 'text.title'],
-                flatten=True
-            )
+            name="content-heading",
+            display_name="Content heading",
+            description="Raw OCR'ed text (header).",
+            extractor=extract.XML(Tag("text"), Tag("text.title"), flatten=True),
         ),
         FieldDefinition(
-            name='content',
-            display_name='Content',
-            display_type='text_content',
-            es_mapping=main_content_mapping(True, True, True, 'en'),
-            visualizations=['wordcloud'],
-            description='Raw OCR\'ed text (content).',
+            name="content",
+            display_name="Content",
+            display_type="text_content",
+            es_mapping=main_content_mapping(True, True, True, "en"),
+            visualizations=["wordcloud", "ngram"],
+            description="Raw OCR'ed text (content).",
             results_overview=True,
             search_field_core=True,
             extractor=extract.XML(
-                tag=['text', 'text.cr'], multiple=True,
-                flatten=True
+                Tag("text"),
+                Tag("text.cr"),
+                multiple=True,
+                flatten=True,
+                transform="\n".join,
             ),
-            language='en',
+            language="en",
         ),
     ]
 

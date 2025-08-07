@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ElasticSearchService, SearchResponse } from './elastic-search.service';
-import { QueryModel } from '../models';
+import { QueryModel } from '@models';
 import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
 import { EntityService } from './entity.service';
 import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock } from '../../mock-data/tag';
 import { TagService } from './tag.service';
-import { TermsAggregator } from '../models/aggregation';
+import { TermsAggregator } from '@models/aggregation';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 
 const mockResponse: SearchResponse = {
@@ -66,13 +67,15 @@ describe('ElasticSearchService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                ElasticSearchService,
-                { provide: EntityService, useValue: new EntityServiceMock()},
-                { provide: TagService, useValue: new TagServiceMock() }
-            ],
-            imports: [ HttpClientTestingModule ]
-        });
+    imports: [],
+    providers: [
+        ElasticSearchService,
+        { provide: EntityService, useValue: new EntityServiceMock() },
+        { provide: TagService, useValue: new TagServiceMock() },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
         service = TestBed.inject(ElasticSearchService);
         httpTestingController = TestBed.inject(HttpTestingController);
     });

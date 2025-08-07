@@ -2,10 +2,11 @@ from datetime import datetime
 import os
 import re
 from tqdm import tqdm
+from ianalyzer_readers.xml_tag import Tag, CurrentTag, TransformTag
 
 from django.conf import settings
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
-from addcorpus.python_corpora.extract import Metadata, XML, Pass, Order, Backup, Combined
+from ianalyzer_readers.extract import Metadata, XML, Pass, Order, Backup, Combined
 import corpora.dbnl.utils as utils
 from addcorpus.es_mappings import *
 from addcorpus.python_corpora.filters import RangeFilter, MultipleChoiceFilter, BooleanFilter
@@ -13,7 +14,7 @@ from corpora.dbnl.dbnl_metadata import DBNLMetadata
 
 class DBNL(XMLCorpusDefinition):
     title = 'DBNL'
-    description = 'Digital Library for Dutch Literature'
+    description = 'Dutch literature and publications on literary or linguistic studies, from the Middle Ages to the 19th century'
     data_directory = settings.DBNL_DATA
     min_date = datetime(year=1200, month=1, day=1)
     max_date = datetime(year=1890, month=12, day=31)
@@ -25,8 +26,8 @@ class DBNL(XMLCorpusDefinition):
     languages = ['nl', 'dum', 'fr', 'la', 'fy', 'lat', 'en', 'nds', 'de', 'af']
     category = 'book'
 
-    tag_toplevel = 'TEI.2'
-    tag_entry = { 'name': 'div', 'attrs': {'type': 'chapter'} }
+    tag_toplevel = Tag('TEI.2')
+    tag_entry = Tag('div', type='chapter')
 
     document_context = {
         'context_fields': ['title_id'],
@@ -261,18 +262,18 @@ class DBNL(XMLCorpusDefinition):
             Pass(
                 Backup(
                     XML( # get the language on chapter-level if available
+                        CurrentTag(),
                         attribute='lang',
                         transform=lambda value: [value] if value else None,
                     ),
                     XML( # look for section-level codes
-                        {'name': 'div', 'attrs': {'type': 'section'}},
+                        Tag('div', type='section'),
                         attribute='lang',
                         multiple=True,
                     ),
                     XML( # look in the top-level metadata
-                        'language',
+                        Tag('language'),
                         toplevel=True,
-                        recursive=True,
                         multiple=True,
                         attribute='id'
                     ),
@@ -298,17 +299,17 @@ class DBNL(XMLCorpusDefinition):
         extractor=Pass(
             Backup(
                 XML( # get the language on chapter-level if available
+                    CurrentTag(),
                     attribute='lang',
                 ),
                 XML( # look for section-level code
-                    {'name': 'div', 'attrs': {'type': 'section'}},
+                    Tag('div', type='section'),
                     attribute='lang'
                 ),
                 XML( #otherwise, get the (first) language for the book
-                    'language',
+                    Tag('language'),
                     attribute='id',
                     toplevel=True,
-                    recursive=True,
                 ),
                 transform=utils.single_language_code,
             ),
@@ -322,13 +323,11 @@ class DBNL(XMLCorpusDefinition):
         display_name='Chapter',
         extractor=Backup(
             XML(
-                tag='head',
-                recursive=True,
+                Tag('head'),
                 flatten=True,
             ),
             XML(
-                tag=utils.LINE_TAG,
-                recursive=True,
+                Tag(utils.LINE_TAG),
                 flatten=True,
             )
         ),
@@ -359,11 +358,33 @@ class DBNL(XMLCorpusDefinition):
         search_field_core=True,
         csv_core=True,
         extractor=XML(
-            tag=utils.LINE_TAG,
-            recursive=True,
+            Tag(utils.LINE_TAG),
+            TransformTag(utils.pad_content),
+            TransformTag(utils.replace_notes_with_ref),
             multiple=True,
             flatten=True,
-            transform_soup_func=utils.pad_content,
+            transform=utils.join_paragraphs,
+        ),
+        es_mapping=main_content_mapping(token_counts=True),
+        visualizations=['wordcloud'],
+        language='dynamic',
+    )
+
+    notes = FieldDefinition(
+        name='notes',
+        display_name='Notes',
+        description='Notes (e.g. footnotes) added to the content',
+        display_type='text_content',
+        results_overview=False,
+        search_field_core=True,
+        csv_core=True,
+        extractor=XML(
+            Tag('note'),
+            TransformTag(utils.pad_content),
+            TransformTag(utils.insert_ref),
+            multiple=True,
+            flatten=True,
+            transform=utils.join_paragraphs,
         ),
         es_mapping=main_content_mapping(token_counts=True),
         visualizations=['wordcloud'],
@@ -419,6 +440,7 @@ class DBNL(XMLCorpusDefinition):
         chapter_title,
         chapter_index,
         content,
+        notes,
         has_content,
         is_primary,
     ]

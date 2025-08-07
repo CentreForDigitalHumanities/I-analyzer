@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { User, UserResponse } from '../models';
+import { User, UserResponse } from '@models';
 import { parseUserData, encodeUserData } from './user';
 
 /**
@@ -39,6 +39,7 @@ describe('user API conversion', () => {
             10000,
             false,
             true,
+            false,
         );
     });
 
@@ -52,6 +53,7 @@ describe('user API conversion', () => {
             saml: false,
             profile: {
                 enable_search_history: true,
+                can_edit_corpora: false,
             }
         };
     });

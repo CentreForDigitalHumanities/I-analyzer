@@ -1,17 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { RangeFilterData, RangeFilter, QueryModel } from '../../models';
+import { RangeFilterData, RangeFilter, QueryModel } from '@models';
 import { BaseFilterComponent } from '../base-filter.component';
 import { Subject, interval } from 'rxjs';
 import { debounce, takeUntil } from 'rxjs/operators';
-import { Aggregator, MaxAggregator, MinAggregator } from '../../models/aggregation';
-import { SearchService } from '../../services';
+import { Aggregator, MaxAggregator, MinAggregator } from '@models/aggregation';
+import { SearchService } from '@services';
 import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-range-filter',
     templateUrl: './range-filter.component.html',
-    styleUrls: ['./range-filter.component.scss']
+    styleUrls: ['./range-filter.component.scss'],
+    standalone: false
 })
 export class RangeFilterComponent extends BaseFilterComponent<RangeFilter> implements OnInit, OnDestroy {
     min: number;

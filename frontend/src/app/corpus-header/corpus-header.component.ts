@@ -1,11 +1,12 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Corpus } from '../models';
-import { corpusIcons } from '../shared/icons';
+import { Corpus } from '@models';
+import { corpusIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-corpus-header',
     templateUrl: './corpus-header.component.html',
-    styleUrls: ['./corpus-header.component.scss']
+    styleUrls: ['./corpus-header.component.scss'],
+    standalone: false
 })
 export class CorpusHeaderComponent implements OnChanges, OnInit {
     @Input() corpus: Corpus;

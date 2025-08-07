@@ -1,10 +1,17 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { Download, PendingDownload, DownloadOptions, TermFrequencyParameters, TermFrequencyDownloadParameters } from '../../models';
+import {
+    Download,
+    PendingDownload,
+    DownloadOptions,
+    TermFrequencyParameters,
+    TermFrequencyDownloadParameters,
+} from '@models';
 
 @Component({
     selector: 'ia-download-options',
     templateUrl: './download-options.component.html',
     styleUrls: ['./download-options.component.scss'],
+    standalone: false
 })
 export class DownloadOptionsComponent implements OnChanges {
     @Input() download: Download | PendingDownload;

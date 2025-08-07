@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import { map, mergeMap, shareReplay, take } from 'rxjs/operators';
 
-import { makeContextParams } from '../utils/document-context';
+import { makeContextParams } from '@utils/document-context';
 import { Corpus, CorpusField } from './corpus';
 import { FieldValues, HighlightResult, SearchHit } from './elasticsearch';
 import { Tag } from './tag';
 import { Observable, Subject, merge, timer } from 'rxjs';
-import { EntityService } from '../services/entity.service';
-import { TagService } from '../services/tag.service';
+import { EntityService } from '@services/entity.service';
+import { TagService } from '@services/tag.service';
 import { FieldEntities } from './search-results';
 
 export class FoundDocument {
@@ -123,6 +123,14 @@ export class FoundDocument {
         ).subscribe(() =>
             this.tagsChanged$.next()
         );
+    }
+
+    hasValue(field: CorpusField): boolean {
+        const value = this.fieldValue(field);
+        if (_.isNumber(value) || _.isBoolean(value)) {
+            return true;
+        }
+        return !_.isEmpty(value);
     }
 
     private fetchAnnotatedEntities(): Observable<{[fieldName: string]: FieldEntities[]}> {

@@ -1,91 +1,9 @@
-@import "../../_utilities";
-
 .control[data-balloon] ia-select-field {
     position: relative;
     z-index: 20;
 }
 
-.filter-icon {
-    border: none;
-}
-
-.button.is-primary {
-    background-color: $primary;
-    border-color: transparent;
-    color: $text-primary-color;
-
-    &:hover{
-        background-color: $contrast-primary-color;
-        border-color: transparent;
-        color: $text-primary-color;
-    }
-}
-
-//Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted.
-::ng-deep ia-select-field {
-
-    .p-multiselect .p-multiselect-trigger {
-        display: none;
-    }
-
-    .button.p-widget {
-        font-size: 1rem;
-        border: 1px solid $primary;
-    }
-}
-
-::ng-deep p-dialog {
-
-    .p-dialog-content {
-        max-height: 600px;
-        min-height: 200px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-}
-
-::ng-deep .p-dialog-maximized {
-
-    .p-dialog-content {
-        max-height: 100%;
-    }
-}
-
-// .field.has-addons .control:last-child .button {
-//     border-radius: 2px;
-// }
-
-
 .field.has-addons {
     display: flex !important;
     word-break: break-word;
-}
-
-.switch[type=checkbox].is-primary:checked + label::before, .switch[type=checkbox].is-primary:checked + label:before {
-    background: $primary;
-}
-
-.switch[type=checkbox] + label {
-    padding-left: 3rem;
-    padding-top: 0rem;
-}
-
-.right_control {
-    text-align: right;
-}
-
-.button.is-small {
-    font-size: 0.7rem;
-}
-
-.modal-card-head_success{
-    background-color: #8ffc98;
-}
-
-.modal-card-head_error{
-   background-color: #ff8e9b;
-}
-
-.info-icon {
-    font-size: medium;
 }

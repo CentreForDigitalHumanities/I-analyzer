@@ -21,7 +21,6 @@ def source_database():
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Search only within these databases.',
-            option_count=4,
         ),
         csv_core=True
     )
@@ -39,20 +38,20 @@ def url():
 
 def year(min_year, max_year):
     return FieldDefinition(
-        name='year',
-        display_name='Year',
-        description='Year of origin of the inscription.',
+        name="year",
+        display_name="Year",
+        description="Year of origin of the inscription.",
         es_mapping=int_mapping(),
         search_filter=RangeFilter(
-            description='Restrict the years from which search results will be returned.',
+            description="Restrict the years from which search results will be returned.",
             lower=min_year,
             upper=max_year,
         ),
         csv_core=True,
         sortable=True,
-        visualization_type='term_frequency',
-        visualization_sort='key',
-        results_overview=True
+        visualizations=["resultscount"],
+        visualization_sort="key",
+        results_overview=True,
     )
 
 
@@ -68,7 +67,6 @@ def date(min_date, max_date):
             upper=max_date,
         )
     )
-
 
 
 def not_before():
@@ -204,44 +202,41 @@ def sex():
 
 def country():
     return FieldDefinition(
-        name='country',
-        display_name='Country',
-        description='Country where the inscription was found.',
+        name="country",
+        display_name="Country",
+        description="Country where the inscription was found.",
         es_mapping=keyword_mapping(True),
         search_filter=MultipleChoiceFilter(
-            description='Search only within these countries.',
-            option_count=5
+            description="Search only within these countries.", option_count=50
         ),
-        visualization_type='term_frequency',
-        results_overview=True
+        visualizations=["resultscount"],
+        results_overview=True,
     )
 
 
 def settlement():
     return FieldDefinition(
-        name='settlement',
-        display_name='Settlement',
-        description='The settlement where the inscription was found.',
+        name="settlement",
+        display_name="Settlement",
+        description="The settlement where the inscription was found.",
         es_mapping=keyword_mapping(True),
         search_filter=MultipleChoiceFilter(
-            description='Search only within these settlements.',
-            option_count=29
+            description="Search only within these settlements.", option_count=50
         ),
-        visualization_type='term_frequency'
+        visualizations=["resultscount"],
     )
 
 
 def region():
     return FieldDefinition(
-        name='region',
-        display_name='Region',
-        description='The region where the inscription was found.',
+        name="region",
+        display_name="Region",
+        description="The region where the inscription was found.",
         es_mapping=keyword_mapping(True),
         search_filter=MultipleChoiceFilter(
-            description='Search only within these regions.',
-            option_count=29
+            description="Search only within these regions.", option_count=50
         ),
-        visualization_type='term_frequency'
+        visualizations=["resultscount"],
     )
 
 
@@ -256,15 +251,14 @@ def location_details():
 
 def material():
     return FieldDefinition(
-        name='material',
-        display_name='Material',
-        description='Type of material the inscription is written on.',
+        name="material",
+        display_name="Material",
+        description="Type of material the inscription is written on.",
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
-            description='Search only within these material types.',
-            option_count=39
+            description="Search only within these material types.", option_count=50
         ),
-        visualization_type='term_frequency'
+        visualization_type="resultscount",
     )
 
 
@@ -280,16 +274,15 @@ def material_details():
 
 def language():
     return FieldDefinition(
-        name='language',
-        display_name='Language',
-        description='Language of the inscription.',
+        name="language",
+        display_name="Language",
+        description="Language of the inscription.",
         es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
-            description='Search only within these languages.',
-            option_count=10
+            description="Search only within these languages.", option_count=50
         ),
         csv_core=True,
-        visualization_type='term_frequency'
+        visualizations=["resultscount"],
     )
 
 

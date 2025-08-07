@@ -1,10 +1,13 @@
 import os
 from django.db import transaction
 from django.core.files.images import ImageFile
+from datetime import date, datetime
+import sys
+
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
-import sys
+from addcorpus.utils import normalize_date_to_year, clear_corpus_image
 
 def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefinition):
     '''
@@ -21,12 +24,13 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     configuration, regardless of what is currently saved in the database.
     '''
 
-    _clear_corpus_image(corpus)
+    clear_corpus_image(corpus)
 
     # create a clean CorpusConfiguration object, but use the existing PK if possible
     pk = corpus.configuration_obj.pk if corpus.configuration_obj else None
     configuration = CorpusConfiguration(pk=pk, corpus=corpus)
     _copy_corpus_attributes(corpus_definition, configuration)
+    _import_corpus_date_range(corpus_definition, configuration)
     configuration.save()
     configuration.full_clean()
 
@@ -53,8 +57,6 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
         'es_alias',
         'es_index',
         'languages',
-        'min_date',
-        'max_date',
         'scan_image_type',
         'title',
         'word_models_present',
@@ -71,9 +73,19 @@ def _copy_corpus_attributes(corpus_definition: CorpusDefinition, configuration: 
     for attr, value in defined.items():
         configuration.__setattr__(attr, value)
 
+def _import_corpus_date_range(definition: CorpusDefinition, configuration: CorpusConfiguration):
+    '''
+    Sets the `min_year` and `max_year` attributes on a CorpusConfiguration based on
+    (respectively) the `min_date` and `max_date` attributes of the CorpusDefinition.
+    '''
+
+    configuration.min_year = normalize_date_to_year(definition.min_date)
+    configuration.max_year = normalize_date_to_year(definition.max_date)
+
+
 def _save_corpus_fields_in_database(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
-    for field in corpus_definition.fields:
-        _save_field_in_database(field, configuration)
+    for index, field in enumerate(corpus_definition.fields):
+        _save_field_in_database(field, configuration, position=index)
 
     for field in configuration.fields.exclude(name__in=corpus_definition.fieldnames):
         field.delete()
@@ -84,7 +96,7 @@ def _field_pk(name: str, configuration: CorpusConfiguration):
     except Field.DoesNotExist:
         return None
 
-def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration):
+def _save_field_in_database(field_definition: FieldDefinition, configuration: CorpusConfiguration, position: int):
     attributes_to_copy = [
         'name', 'display_name', 'display_type',
         'description', 'results_overview',
@@ -104,6 +116,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
         pk=_field_pk(field_definition.name, configuration),
         corpus_configuration=configuration,
         search_filter=filter_definition,
+        position=position,
         **copy_attributes,
     )
 
@@ -111,14 +124,7 @@ def _save_field_in_database(field_definition: FieldDefinition, configuration: Co
     field.full_clean()
     return field
 
-def _clear_corpus_image(corpus: Corpus):
-    if corpus.configuration_obj and corpus.configuration.image:
-        image = corpus.configuration.image
-        if image:
-            if os.path.exists(image.path):
-                os.remove(image.path)
 
-            image.delete()
 
 def _save_corpus_image(corpus_definition: CorpusDefinition, configuration: CorpusConfiguration):
     corpus_name = configuration.corpus.name
