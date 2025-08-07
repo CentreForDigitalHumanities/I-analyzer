@@ -52,8 +52,8 @@ export interface APICorpusDefinition {
         description?: string;
         languages?: string[];
         date_range?: {
-            min: string;
-            max: string;
+            min: number;
+            max: number;
         };
     };
     source_data: {
@@ -78,16 +78,23 @@ export interface APICorpusDefinition {
             ascending: boolean;
         };
     };
+    documentation?: {
+        general?: string,
+        citation?: string,
+        license?: string,
+    }
 }
 
 export interface APIEditableCorpus {
     id?: number;
     active: boolean;
     definition: APICorpusDefinition;
+    has_image?: boolean;
 }
 
 export class CorpusDefinition {
     active = false;
+    hasImage = false;
     loading$ = new BehaviorSubject<boolean>(true);
 
     definition: APICorpusDefinition;
@@ -144,5 +151,46 @@ export class CorpusDefinition {
         this.active = result.active;
         this.setFromDefinition(result.definition);
         this.loading$.next(false);
+        this.hasImage = result.has_image;
     }
-}
+};
+
+export const FIELD_TYPE_OPTIONS: {
+    label: string,
+    value: APICorpusDefinitionField['type'],
+    helpText: string,
+    hasLanguage?: boolean,
+}[] = [
+    {
+        label: 'text (content)',
+        value: 'text_content',
+        helpText:
+            'Main document text. Can consist of multiple paragraphs. Can be used to search.',
+        hasLanguage: true,
+    },
+    {
+        label: 'text (metadata)',
+        value: 'text_metadata',
+        helpText:
+            'Metadata text. Limited to a single paragraph. Can be used to filter and/or search.',
+        hasLanguage: true,
+    },
+    {
+        label: 'number (integer)', value: 'integer',
+        helpText: 'This field contains whole numbers',
+    },
+    {
+        label: 'number (decimal)', value: 'float',
+        helpText: 'This field contains numbers with (optional) decimals',
+    },
+    {
+        label: 'date',
+        value: 'date',
+        helpText: 'This field contains dates.',
+    },
+    {
+        label: 'boolean',
+        value: 'boolean',
+        helpText: 'This field contains true/false values.',
+    },
+];

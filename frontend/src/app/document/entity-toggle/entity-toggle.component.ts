@@ -4,9 +4,10 @@ import { actionIcons } from '../../shared/icons';
 import { DialogService } from '../../services';
 
 @Component({
-  selector: 'ia-entity-toggle',
-  templateUrl: './entity-toggle.component.html',
-  styleUrl: './entity-toggle.component.scss'
+    selector: 'ia-entity-toggle',
+    templateUrl: './entity-toggle.component.html',
+    styleUrl: './entity-toggle.component.scss',
+    standalone: false
 })
 export class EntityToggleComponent {
     actionIcons = actionIcons;

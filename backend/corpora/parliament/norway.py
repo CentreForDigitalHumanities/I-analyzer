@@ -4,7 +4,7 @@ import re
 from django.conf import settings
 import os
 
-from addcorpus.python_corpora.extract import Combined, Constant, CSV
+from ianalyzer_readers.extract import Combined, Constant, CSV
 from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament

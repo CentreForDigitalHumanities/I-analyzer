@@ -40,6 +40,7 @@ def _parse_configuration(data: Dict) -> Dict:
         'source_data_delimiter': get_path(
             data, 'source_data', 'options', 'delimiter') or DEFAULT_CSV_DELIMITER,
         'fields': _import_fields(data),
+        'documentation_pages': _import_documentation(data)
     }
 
 
@@ -47,10 +48,6 @@ def _import_fields(data: Dict) -> List[Dict]:
     fields_data = get_path(data, 'fields')
 
     parsed = [_parse_field(field) for field in fields_data]
-
-    # TODO: replace this!!!!
-    # for field in configuration.fields.exclude(name__in=(f['name'] for f in fields_data)):
-    #     field.delete()
 
     _include_ngram_visualisation(parsed)
     return parsed
@@ -267,5 +264,13 @@ def _include_ngram_visualisation(fields: Iterable[Dict]) -> None:
 
     if any(get_path(field, 'es_mapping', 'type') == 'date' for field in fields):
         for field in fields:
-            if field['display_type'] == 'text_content':
+            if field['display_type'] == 'text_content' and 'visualizations' in field:
                 field['visualizations'].append(VisualizationType.NGRAM.value)
+
+
+def _import_documentation(data: Dict):
+    docs = get_path(data, 'documentation') or {}
+    return [
+        {'type': key, 'content': content}
+        for (key, content) in docs.items()
+    ]

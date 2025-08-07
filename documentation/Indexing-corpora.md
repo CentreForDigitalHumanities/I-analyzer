@@ -35,10 +35,48 @@ Some options that may be useful for development:
 
 See [Indexing on server](documentation/Indexing-on-server.md) for more information about production-specific settings.
 
-## Managing index jobs through the admin site
+## Scheduling and managing index jobs
 
-When you run `index my-corpus`, the index process will start immediately. This process will store an `IndexJob` in the database that represents the action, which you may use as a log. You can view index jobs on the admin site.
+When you run `index my-corpus`, the default options will start the process immediately, and store an `IndexJob` as a record. You can use the command line or the django admin to manage index jobs. It is also possible to run jobs asynchronously.
 
-If you want to create a job to run later, you can use `--create-only` in the index command. After this, you can select the job in the admin site and use the action "start selected jobs". This will run the job asynchronously using celery.
+### Using the command line
 
-You can also use the admin site to create or edit index jobs (and then run them). However, the command line is typically faster and easier.
+The `index` command will store an `IndexJob` in the database that represents the action, which you may use as a log. You can use the `indexjob` command to view index jobs:
+
+```sh
+python manage.py indexjob list # view a list of all index jobs
+python manage.py indexjob show 42 # inspect an index job
+python manage.py indexjob show 42 --verbose # include all task parameters
+```
+
+If you want to create a job to run later, you can use `--create-only` in the `index` command. After this, you can start the job from the command line using `indexjob start`:
+
+```sh
+python manage.py index my-corpus --create-only
+# > Created IndexJob #42
+python manage.py indexjob start 42
+```
+
+When you start an index job through the `index`, `alias`, or `indexjob` commands, you can use the `--async` flag to schedule the job via [Celery](./Celery.md) instead of running it in your terminal:
+
+```sh
+python manage.py index my-corpus --async
+```
+
+You can interrupt jobs as follows:
+
+```sh
+python manage.py indexjob stop {id}
+```
+
+If you are running a job synchronously, you can also use a keyboard interrupt in the terminal.
+
+When a job is stopped, the indexing process will halt, but it is not reversed, so if you use the `index` command to create and populate an index, you will likely end up with a partially populated index.
+
+### Using the admin site
+
+You can also manage index jobs using the admin site. Here you can view, create and edit jobs. To run a job from the admin site, select the job in the overview and use the action "start selected jobs". Jobs started from the admin are always run via Celery.
+
+You can also use the "stop selected jobs" action to interrupt queued or working jobs. (This is equivalent to `indexjob stop`, described above.)
+
+Note that in most cases, it is easier to create jobs via the command line, which offers a more streamlined experience.

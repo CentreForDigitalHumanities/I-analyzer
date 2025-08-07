@@ -3,59 +3,61 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
     APICorpusDefinitionField,
     CorpusDefinition,
+    FIELD_TYPE_OPTIONS,
 } from '@models/corpus-definition';
 import { MenuItem } from 'primeng/api';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import * as _ from 'lodash';
 
-import { ISO6393Languages } from '../constants';
-import { actionIcons, directionIcons } from '@shared/icons';
+import { collectLanguages, Language } from '../constants';
+import { actionIcons, directionIcons, formIcons } from '@shared/icons';
+import { mergeAsBooleans } from '@utils/observables';
+import { DialogService } from '@services';
+
+const allLanguages = collectLanguages();
 
 @Component({
     selector: 'ia-field-form',
     templateUrl: './field-form.component.html',
     styleUrl: './field-form.component.scss',
+    standalone: false
 })
 export class FieldFormComponent {
-    @Input() corpus: CorpusDefinition;
+    @Input({ required: true }) corpus!: CorpusDefinition;
     destroy$ = new Subject<void>();
 
     fieldsForm = new FormGroup({
         fields: new FormArray([]),
     });
 
-    fieldTypeOptions: MenuItem[] = [
-        {
-            label: 'text (content)',
-            value: 'text_content',
-            helpText:
-                'Main document text. Can consist of multiple paragraphs. Can be used to search.',
-            hasLanguage: true,
-        },
-        {
-            label: 'text (metadata)',
-            value: 'text_metadata',
-            helpText:
-                'Metadata text. Limited to a single paragraph. Can be used to filter and/or search.',
-            hasLanguage: true,
-        },
-        { label: 'number (integer)', value: 'integer' },
-        { label: 'number (decimal)', value: 'float' },
-        { label: 'date', value: 'date' },
-        {
-            label: 'boolean',
-            value: 'boolean',
-            helpText: 'True/false field. Can be used to filter.',
-        },
-    ];
+    fieldTypeOptions: MenuItem[] = FIELD_TYPE_OPTIONS;
 
-    languageOptions = ISO6393Languages;
+    languageOptions: Language[] = [];
 
     actionIcons = actionIcons;
     directionIcons = directionIcons;
+    formIcons = formIcons;
+
+    valueChange$ = new Subject<void>();
+    changesSubmitted$ = new Subject<void>();
+    changesSavedSucces$ = new Subject<void>();
+    changesSavedError$ = new Subject<void>();
+
+    /** show succes message after success response, hide when form is changed or user
+     * saves again
+     */
+    showSuccesMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedSucces$],
+        false: [this.valueChange$, this.changesSubmitted$],
+    });
+    showErrorMessage$: Observable<boolean> = mergeAsBooleans({
+        true: [this.changesSavedError$],
+        false: [this.valueChange$, this.changesSubmitted$],
+    });
 
     constructor(
         private el: ElementRef<HTMLElement>,
+        private dialogService: DialogService,
     ) {}
 
     get fields(): FormArray {
@@ -75,7 +77,7 @@ export class FieldFormComponent {
                 sort: new FormControl(),
                 hidden: new FormControl(),
             }),
-            language: new FormControl(),
+            language: new FormControl(''),
             // hidden in the form, but included to ease syncing model with form
             name: new FormControl(),
             extract: new FormGroup({
@@ -83,6 +85,10 @@ export class FieldFormComponent {
             }),
         });
         fg.patchValue(field);
+
+        fg.valueChanges.pipe(
+            takeUntil(this.destroy$),
+        ).subscribe(() => this.valueChange$.next());
 
         return fg;
     }
@@ -97,14 +103,14 @@ export class FieldFormComponent {
         if (changes.corpus) {
             this.corpus.definitionUpdated$
                 .pipe(takeUntil(this.destroy$))
-                .subscribe(
-                    () =>
-                        (this.fieldsForm.controls.fields = new FormArray(
-                            this.corpus.definition.fields.map(
-                                this.makeFieldFormgroup
-                            )
-                        ))
-                );
+                .subscribe(() => {
+                    this.languageOptions = this.getLanguageOptions();
+                    this.fieldsForm.controls.fields = new FormArray(
+                        this.corpus.definition.fields.map(
+                            this.makeFieldFormgroup.bind(this)
+                        )
+                    );
+                });
         }
     }
 
@@ -118,7 +124,12 @@ export class FieldFormComponent {
         this.corpus.definition.fields =
             newFields as CorpusDefinition['definition']['fields'];
         this.corpus.save().subscribe({
-            error: console.error,
+            next: () => this.changesSavedSucces$.next(),
+            error: (err) => {
+                this.changesSavedError$.next();
+                console.error(err);
+            }
+
         });
     }
 
@@ -147,5 +158,26 @@ export class FieldFormComponent {
         const selector = '#' + this.moveControlID(index, field, delta);
         const button = this.el.nativeElement.querySelector<HTMLButtonElement>(selector);
         button.focus();
+    }
+
+    showFieldDocumentation() {
+        this.dialogService.showManualPage('types-of-fields');
+    }
+
+    languageLabel(field: FormGroup): string {
+        const value = field.controls.language.value;
+        return this.languageOptions.find(o => o.code == value).displayName;
+    }
+
+    private getLanguageOptions() {
+        // include corpus languages + interface language
+        const languageCodes = this.corpus.definition.meta.languages;
+        if (!languageCodes.includes('eng')) {
+            languageCodes.push('eng')
+        }
+
+        const languages = allLanguages.filter(l => languageCodes.includes(l.code));
+        languages.push({ code: '', displayName: 'Unknown', altNames: ''});
+        return languages;
     }
 }

@@ -11,7 +11,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from addcorpus.python_corpora import extract
+from ianalyzer_readers import extract
 from addcorpus.python_corpora.corpus import (FieldDefinition, XMLCorpusDefinition, after,
                               consolidate_start_end_years, string_contains,
                               until)
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class Times(XMLCorpusDefinition):
     title = "Times"
-    description = "Newspaper archive, 1785-2010"
+    description = "Archives from The Times, a British daily newspaper."
     min_date = datetime(year=1785, month=1, day=1)
     max_date = datetime(year=2010, month=12, day=31)
     data_directory = settings.TIMES_DATA

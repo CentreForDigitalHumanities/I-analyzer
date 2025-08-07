@@ -11,7 +11,8 @@ from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.python_corpora.extract import Combined, Metadata, XML
+from api.utils import find_media_file
+from ianalyzer_readers.extract import Combined, Metadata, XML
 from addcorpus.python_corpora import filters
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
@@ -25,7 +26,7 @@ from media.media_url import media_url
 
 class Ecco(XMLCorpusDefinition):
     title = "Eighteenth Century Collections Online"
-    description = "Digital collection of books published in Great Britain during the 18th century."
+    description = "Printed works published in Great Britain and its territories during the 18th century."
     description_page = 'ecco.md'
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
@@ -290,9 +291,7 @@ class Ecco(XMLCorpusDefinition):
         image_path = request_args['image_path']
         start_page = int(request_args['start_page'])
         end_page = int(request_args['end_page'])
-        absolute_path = join(self.data_directory, image_path)
-        if not isfile(absolute_path):
-            return None
+        absolute_path = find_media_file(self.data_directory, image_path, 'application/pdf')
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
         out = build_partial_pdf(pages, input_pdf)

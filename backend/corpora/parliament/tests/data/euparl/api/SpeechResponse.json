@@ -1,0 +1,62 @@
+{
+    "data": [
+      {
+        "id": "eli/dl/event/MTG-PL-2024-11-13-OTH-2017005042457",
+        "type": "Activity",
+        "activity_date": "2024-11-13",
+        "activity_end_date": "2024-11-13T22:12:04+01:00",
+        "activity_id": "MTG-PL-2024-11-13-OTH-2017005042457",
+        "activity_label": {
+          "en": "Fight against money laundering and terrorist financing: listing Russia as a high-risk third country in the EU (debate)"
+        },
+        "activity_start_date": "2024-11-13T22:11:49+01:00",
+        "had_activity_type": "def/ep-activities/PLENARY_DEBATE_SPEECH",
+        "had_participation": {
+          "id": "eli/dl/participation/MTG-PL-2024-11-13-OTH-2017005042457_28615",
+          "type": "Participation",
+          "had_participant_person": [
+            "person/28615"
+          ],
+          "participation_role": "def/ep-roles/SPEAKER"
+        },
+        "recorded_in_a_realization_of": [
+          {
+            "id": "eli/dl/doc/CRE-10-2024-11-13-OTH-2017005042457",
+            "type": "WorkSubdivision",
+            "is_part_of": "eli/dl/doc/CRE-10-2024-11-13-ITM-017",
+            "number": "1-0321-0000",
+            "type_subdivision": "http://publications.europa.eu/resource/authority/subdivision/OTH",
+            "identifier": "CRE-10-2024-11-13-OTH-2017005042457",
+            "notation_speechId": "2017005042457",
+            "numbering": 321,
+            "originalLanguage": [
+              "http://publications.europa.eu/resource/authority/language/ENG"
+            ],
+            "api:xmlFragment": {
+              "en": "<oralStatements><speech endTime=\"2024-11-13T22:12:04\" startTime=\"2024-11-13T22:11:49\"><from xml:lang=\"en\" xml:space=\"preserve\"><person refersTo=\"epdata:person/28615\">President</person>.</from><blockContainer><p xml:space=\"preserve\">Thank you, Commissioner McGuinness, and I would also like to thank you for your work on the AML package and many other issues, also for today's issues. Thank you very much.</p><p xml:space=\"preserve\">The concludes the item.</p></blockContainer></speech></oralStatements>"
+            }
+          }
+        ],
+        "inverse_consists_of": [
+          "eli/dl/event/MTG-PL-2024-11-13-PVCRE-ITM-17"
+        ]
+      }
+    ],
+    "@context": [
+      {
+        "data": "@graph",
+        "@base": "https://data.europarl.europa.eu/"
+      },
+      "https://data.europarl.europa.eu/api/v2/context.jsonld"
+    ],
+    "searchResults": {
+      "hits": [
+        {
+          "id": "eli/dl/event/MTG-PL-2024-11-13-OTH-2017005042457"
+        }
+      ]
+    },
+    "meta": {
+      "total": 1
+    }
+  }

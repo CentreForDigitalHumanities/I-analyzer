@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusFormComponent } from './corpus-form.component';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
@@ -11,7 +11,10 @@ import { ApiServiceMock } from 'mock-data/api';
 import { SharedModule } from '@shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 describe('CorpusFormComponent', () => {
     let component: CorpusFormComponent;
@@ -26,12 +29,15 @@ describe('CorpusFormComponent', () => {
                 MetaFormComponent,
                 FieldFormComponent,
                 UploadSampleComponent,
+                ImageUploadComponent,
+                FormFeedbackComponent,
+                DocumentationFormComponent,
             ],
             imports: [
                 SharedModule,
                 StepsModule,
                 ReactiveFormsModule,
-                MultiSelectModule,
+                AutoCompleteModule,
             ],
             providers: [
                 SlugifyPipe,

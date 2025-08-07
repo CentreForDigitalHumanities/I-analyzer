@@ -6,6 +6,7 @@ import { PageResultsParameters } from '@models/page-results';
     selector: 'ia-pagination',
     templateUrl: './pagination.component.html',
     styleUrls: ['./pagination.component.scss'],
+    standalone: false
 })
 export class PaginationComponent implements OnChanges {
     @Input() public totalResults: number;

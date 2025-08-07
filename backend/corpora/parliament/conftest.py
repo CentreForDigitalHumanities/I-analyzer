@@ -1,7 +1,10 @@
 from datetime import datetime
+import json
 import os
 
 import pytest
+from requests import Response
+from unittest.mock import Mock
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,7 +32,7 @@ def parliament_corpora_settings(settings):
     settings.PP_CANADA_DATA = os.path.join(here, 'tests', 'data', 'canada')
     settings.PP_DENMARK_DATA = os.path.join(here, 'tests', 'data', 'denmark')
     settings.PP_DENMARK_NEW_DATA = os.path.join(here, 'tests', 'data', 'denmark-new')
-    settings.PP_EUPARL_DATA = os.path.join(here, 'tests', 'data', 'euparl')
+    settings.PP_EUPARL_DATA = os.path.join(here, 'tests', 'data', 'euparl', 'rdf')
     settings.PP_FINLAND_DATA = os.path.join(here, 'tests', 'data', 'finland')
     settings.PP_FINLAND_OLD_DATA = os.path.join(here, 'tests', 'data', 'finland-old')
     settings.PP_FR_DATA = os.path.join(here, 'tests', 'data', 'france')
@@ -282,7 +285,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 "id": "ParlaMint-NL_2017-01-31-tweedekamer-23.u1",
                 "speaker": "Khadija Arib",
                 "speaker_id": "#KhadijaArib",
-                "speaker_gender": "vrouw",
+                "speaker_gender": "F",
                 "role": "Chair",
                 "party": "PvdA",
                 "party_id": "#party.PvdA",
@@ -691,10 +694,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 "speech": """Mr President, as a Member of the Italian national Parliament for the\n(The Northern League for the Independence of Padania), I did not vote for Professor Prodi in Rome as I considered he would be completely useless as head of government. I was then proved right as he lost the vote of confidence of the Italian Parliament. Reckoning also that a Roman idiot would still be that stupid wherever he was, which, incidently, is reflected in the symbol on the list which bears his name for the election of this Parliament, I cannot for consistency\"s sake express my faith in the President of the Commission. As a native of the Po valley who is Italian only by passport, I am fortunately immune from the national Christian Democrat type of opportunism which brings Berlusconi together with Mastella and De Mita and sees in Prodi not the impartial President of the Commissioners uninfluenced by the States, but the lavish dispenser of favours to a wide and varied assortment of Southern Italian profiteers. Although I hold some of the Commissioners in high esteem, I recall the old mafioso Neapolitan saying: ‘A fish rots from the head downwards’ and I therefore have to express my negative opinion of the Prodi Presidency.""",
                 "source_language": "Italian",
                 "url": "http://purl.org/linkedpolitics/eu/plenary/1999-07-21-Speech-3-063",
-            }
-        ]
-        + [{}]  # skip ahead to last speech
-        + [
+            },
             {
                 "id": "2017-07-06-Speech-4-146-000",
                 "date": "2017-07-06",
@@ -707,8 +707,67 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 "speaker_country": "United Kingdom",
                 "speech": """Mr President, yesterday afternoon we had a lively debate, under Rule 153, on the subject of a single seat for this Parliament. Unfortunately, under that rule, it was not possible to have a resolution, but it was the clear will of this House that we bring forward a report to propose a treaty change. So, as Mr Weber and Mr Pittella are in their seats, could they please take note of the view of this House and, when the matter comes to the Conference of Presidents, could they please authorise that report?""",
                 "url": "http://www.europarl.europa.eu/plenary/EN/vod.html?mode=unit&vodLanguage=EN&startTime=20170706-12:02:01-324",
-            }
+            },
+            {
+                "date": "2024-11-13",
+                "debate_id": "MTG-PL-2024-11-13-PVCRE-ITM-17",
+                "debate_title": "17. Fight against money laundering and terrorist financing: listing Russia as a high-risk third country in the EU (debate)",
+                "id": "MTG-PL-2024-11-13-OTH-2017005042457",
+                "party": "European Conservatives and Reformists Group",
+                "party_id": "7037",
+                "source_language": "English",
+                "sequence": 1,
+                "speaker": "Roberts Zīle",
+                "speaker_country": "Latvia",
+                "speaker_id": "28615",
+                "speech": "Thank you, Commissioner McGuinness, and I would also like to thank you for your work on the AML package and many other issues, also for today's issues. Thank you very much.",
+            },
         ],
         "n_documents": 3,
     },
 ]
+
+
+def mock_json(filename):
+    with open(filename, "r") as f:
+        return json.load(f)
+
+def mock_xml(filename):
+    with open(filename, "r") as f:
+        return f.read()
+
+
+def mock_response_euparl(url: str, headers: dict = {}) -> Response:
+    if "meetings" in url:
+        filename = (
+            os.path.join(here, "tests", "data", "euparl", "api", "MeetingResponse.json")
+            if 'MTG-PL-2024-11-13' in url
+            else None
+        )
+    elif "speeches" in url:
+        filename = os.path.join(
+            here, "tests", "data", "euparl", "api", "SpeechResponse.json"
+        )
+    elif "corporate-bodies" in url:
+        filename = os.path.join(
+            here, "tests", "data", "euparl", "api", "PartyResponse.json"
+        )
+    elif "meps" in url:
+        filename = os.path.join(
+            here, "tests", "data", "euparl", "api", "SpeakerResponse.json"
+        )
+    elif "country" in url:
+        filename = os.path.join(here, "tests", "data", "euparl", "api", "Country.xml")
+    elif "language" in url:
+        filename = os.path.join(here, "tests", "data", "euparl", "api", "Language.xml")
+
+    mock_response = Mock(spec=Response)
+    if not filename:
+        mock_response.status_code = 404
+        return mock_response
+    mock_response.status_code = 200
+    if filename.endswith('xml'):
+        mock_response.content = mock_xml(filename)
+    elif filename.endswith('json'):
+        mock_response.json.return_value = mock_json(filename)
+    return mock_response

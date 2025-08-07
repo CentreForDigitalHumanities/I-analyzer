@@ -11,7 +11,8 @@ import { environment } from '@environments/environment';
 @Component({
     selector: 'ia-corpus-selection',
     templateUrl: './corpus-selection.component.html',
-    styleUrls: ['./corpus-selection.component.scss']
+    styleUrls: ['./corpus-selection.component.scss'],
+    standalone: false
 })
 export class CorpusSelectionComponent implements OnInit {
     @Input()
@@ -27,7 +28,7 @@ export class CorpusSelectionComponent implements OnInit {
 
     constructor(private authService: AuthService) {
         this.showManageLink$ = this.authService.currentUser$.pipe(
-            map((user) => user?.isAdmin)
+            map((user) => user?.canEditCorpora)
         );
         this.showCorpusFilters = _.get(environment, 'showCorpusFilters', true);
      }

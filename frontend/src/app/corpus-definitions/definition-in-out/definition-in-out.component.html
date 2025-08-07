@@ -9,11 +9,17 @@
             </ul>
         </nav>
 
-        <h1 class="title">Edit corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
+        <h1 class="title">Import/export corpus "{{corpus.definition?.meta.title || '...'}}"</h1>
 
         <p class="block">
-            You can download this corpus definition as a JSON file.
+            You can download or upload a file with your corpus configuration.
+            You can use this to create a copy or backup of your corpus, or restore
+            your corpus from a backup.
+            For more information about these files, see the
+            <a [routerLink]="['/manual', 'importing-and-exporting-corpora']">manual</a>.
         </p>
+
+        <h2 class="title is-4">Download</h2>
 
         <div class="block">
             <button class="button" (click)="downloadJSON()">
@@ -24,9 +30,7 @@
             </button>
         </div>
 
-        <p class="block">
-            You can update this corpus by uploading a new JSON definition for it.
-        </p>
+        <h2 class="title is-4">Upload</h2>
 
         <form>
             <div class="block">

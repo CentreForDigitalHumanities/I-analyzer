@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 @Pipe({
-    name: 'snippet'
+    name: 'snippet',
+    standalone: false
 })
 export class SnippetPipe implements PipeTransform {
     constructor(private sanitizer: DomSanitizer) {

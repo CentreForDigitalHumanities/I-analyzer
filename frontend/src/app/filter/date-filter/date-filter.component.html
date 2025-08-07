@@ -2,9 +2,9 @@
     <ia-date-picker unit="date" [value]="state.data.min"
         (onChange)="update({min: $event, max: state.data.max})"
         [minDate]="minDate" [maxDate]="maxDate"
-        [default]="minDate"></ia-date-picker>
+        [default]="minDate" ariaLabel="minimum date" />
     <ia-date-picker unit="date" [value]="state.data.max"
         (onChange)="update({min: state.data.min, max: $event})"
         [minDate]="minDate" [maxDate]="maxDate"
-        [default]="maxDate"></ia-date-picker>
+        [default]="maxDate" ariaLabel="maximum date" />
 </div>
