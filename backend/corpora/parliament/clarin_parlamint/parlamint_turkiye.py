@@ -11,6 +11,7 @@ from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
+from corpora.parliament.utils.parlamint import ner_keyword_field, speech_ner
 from corpora.parliament.utils.parlamint_v4 import extract_all_org_data, extract_people_data, person_attribute_extractor, current_party_id_extractor, organisation_attribute_extractor, POLITICAL_ORIENTATIONS, node_is_current
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -19,6 +20,22 @@ from ianalyzer_readers.extract import XML, Constant, Combined, Order, Metadata, 
 from ianalyzer_readers.xml_tag import Tag
 
 logger = logging.getLogger('indexing')
+
+def extract_named_entities(xml_file: str) -> dict:
+    '''Extract the named entities from the xml file, and save them, ordered by speech id,
+    in a dictionary, which will be used to populate the NER keyword fields'''
+    with open(xml_file) as f:
+        soup = BeautifulSoup(f, 'xml')
+    speeches = soup.find_all("u")
+    output = dict()
+    for speech in speeches:
+        annotations_dict = {"LOC": list(), "MISC": list(), "ORG": list(), "PER": list()}
+        annotations = speech.find_all("name")
+        for annotation in annotations:
+            annotated = " ".join([word.string for word in annotation.find_all("w")])
+            annotations_dict[annotation["type"]].append(annotated)
+        output[speech["xml:id"]] = annotations_dict
+    return output
 
 def extract_speech(element):
     """
@@ -141,15 +158,13 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
         for year in range(start.year, end.year):
             for xml_file in glob('{}/{}/*.xml'.format(self.data_directory, year)):
                 metadata['date'] = re.search(r"\d{4}-\d{2}-\d{2}", xml_file).group()
+                metadata["ner"] = extract_named_entities(xml_file)
                 translated_file_path = os.path.join(
                     self.translated_data_directory,
                     str(year), 
                     transform_xml_filename(xml_file, 'TR')
                 ) # en-file Path
-
-                translated_soup = open_xml_as_soup(translated_file_path)
-                metadata['translated_soup'] = translated_soup
-                metadata['translated_file'] = translated_file_path
+                metadata['translated_soup'] = open_xml_as_soup(translated_file_path)
                 yield xml_file, metadata
 
     country = field_defaults.country()
@@ -187,8 +202,7 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
     
     def lookup_translated_speech(tuple):
         element = tuple[1].find(attrs={'xml:id': tuple[0]})
-        result = extract_speech(element) if element else None
-        return result
+        return extract_speech(element) if element else None
 
     speech_translated = field_defaults.speech_translated()
     speech_translated.extractor = Combined(
@@ -196,6 +210,13 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
         Metadata('translated_soup'),
         transform=lookup_translated_speech
     )
+
+    speech_ner = speech_ner()
+
+    ner_per = ner_keyword_field("person")
+    ner_loc = ner_keyword_field("location")
+    ner_org = ner_keyword_field("organization")
+    ner_misc = ner_keyword_field("miscellaneous")
 
     sequence = field_defaults.sequence()
     sequence.extractor = Order(transform=lambda value: value + 1)
@@ -289,9 +310,10 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.debate_id,
             self.country,
             self.date,
+            self.speech_id,
             self.speech,
             self.speech_translated,
-            self.speech_id,
+            self.speech_ner,
             self.sequence,
             self.speaker,
             self.speaker_id,
@@ -307,6 +329,10 @@ class ParlamintTurkiye(Parliament, XMLCorpusDefinition):
             self.current_party_full,
             self.current_party_wiki,
             self.current_party_political_orientation,
-            self.speaker_constituency
+            self.speaker_constituency,
+            self.ner_per,
+            self.ner_loc,
+            self.ner_org,
+            self.ner_misc
         ]
 

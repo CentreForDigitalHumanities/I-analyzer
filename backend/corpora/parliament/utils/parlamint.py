@@ -197,7 +197,7 @@ def format_annotated_text(element: Node) -> str:
     if not element.find_next_sibling("name"):
         # after last annotation, add remaining text
         remaining_text = detokenize_parlamint(element.find_next_siblings(["w", "pc"]))
-        if remaining_text[0] not in punctuation:
+        if remaining_text and remaining_text[0] not in punctuation:
             # remaining text does not start with punctuation: add whitespace
             output += " "
         output += remaining_text
