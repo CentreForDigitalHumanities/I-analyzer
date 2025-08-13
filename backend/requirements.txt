@@ -259,7 +259,7 @@ pyotp==2.9.0
     # via seleniumbase
 pyparsing==3.1.2
     # via rdflib
-pypdf==5.1.0
+pypdf==6.0.0
     # via -r requirements.in
 pysaml2==7.3.1
     # via djangosaml2
