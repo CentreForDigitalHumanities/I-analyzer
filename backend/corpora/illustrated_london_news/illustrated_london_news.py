@@ -13,8 +13,8 @@ class IllustratedLondonNews(GaleCorpus):
     max_date = datetime(2003, 7, 7)
     data_directory = settings.ILLUSTRATED_LONDON_NEWS_DATA
     es_index = getattr(settings, 'ILLUSTRATED_LONDON_NEWS_ES_INDEX', 'illustrated_london_news')
-    # image = 'press_room.jpg'
-    # description_page = 'IllustratedLondonNews.md'
+    image = 'the_happy_land.png'
+    description_page = 'IllustratedLondonNews.md'
     languages = ['en']
     category = 'periodical'
 
