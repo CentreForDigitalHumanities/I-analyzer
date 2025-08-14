@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 def test_dbnl_validation(settings):
     settings.DBNL_DATA = os.path.join(here, 'data')
     settings.CORPORA = {
-        'dbnl': os.path.join(here, '..', 'dbnl.py'),
+        'dbnl': 'corpora.dbnl.dbnl.DBNL',
     }
 
     load_and_save_all_corpora()
