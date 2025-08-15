@@ -1,5 +1,7 @@
 from glob import glob
 from copy import copy
+import re
+from typing import Dict
 
 from django.conf import settings
 from ianalyzer_readers.extract import CSV
@@ -10,19 +12,20 @@ from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
 from addcorpus.python_corpora.filters import MultipleChoiceFilter
 from corpora.dutchnewspapers.dutchnewspapers_public import DutchNewspapersPublic
 
+class RegexCSV(CSV):
+    '''Adjusted CSV extractor that fetches all columns matching a regular expression.'''
+    def _apply(self, rows, *nargs, **kwargs):
+        return self.get_values(rows[0])
 
-def extract_tag_category(data: str, category: str):
-    tags = data.split(",")
-    return next((tag.split(": ")[-1] for tag in tags if tag.startswith(category)), None)
+    def get_values(self, row):
+        return { key: value for key, value in row.items() if re.search(self.field, key) }
 
-def extract_sound_carrier(data: str):
-    return extract_tag_category(data, "Carrier")
 
-def extract_sound_quality(data: str):
-    return extract_tag_category(data, "Quality")
-
-def extract_sound_source(data: str):
-    return extract_tag_category(data, "Source")
+def format_tags(data: Dict):
+    if data:
+        tags = [key for key, value in data.items() if value == 'True']
+        if len(tags):
+            return [tag.split(": ")[-1] for tag in tags]
 
 class TracesOfSound(CSVCorpusDefinition):
     '''
@@ -54,7 +57,7 @@ class TracesOfSound(CSVCorpusDefinition):
         display_name="Sound carrier",
         description="The carrier of the sound.",
         es_mapping=keyword_mapping(),
-        extractor=CSV('tags', transform=extract_sound_carrier),
+        extractor=RegexCSV('tag: Carrier: ', transform=format_tags),
         search_filter=MultipleChoiceFilter(
             description="Accept only articles with these sound carriers.",
         ),
@@ -65,7 +68,7 @@ class TracesOfSound(CSVCorpusDefinition):
         display_name="Sound quality",
         description="The quality of the sound.",
         es_mapping=keyword_mapping(),
-        extractor=CSV('tags', transform=extract_sound_quality),
+        extractor=RegexCSV('tag: Quality: ', transform=format_tags),
         search_filter=MultipleChoiceFilter(
             description="Accept only articles with these sound qualities.",
         ),
@@ -76,7 +79,7 @@ class TracesOfSound(CSVCorpusDefinition):
         display_name="Sound source",
         description="The source of the sound.",
         es_mapping=keyword_mapping(),
-        extractor=CSV('tags', transform=extract_sound_source),
+        extractor=RegexCSV('tag: Source: ', transform=format_tags),
         search_filter=MultipleChoiceFilter(
             description="Accept only articles with these sound sources.",
         ),
