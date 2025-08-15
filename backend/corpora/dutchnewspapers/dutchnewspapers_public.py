@@ -33,7 +33,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     description = "Collection of Dutch newspapers in the public domain, digitised by the Koninklijke Bibliotheek."
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
-    data_directory = settings.DUTCHNEWSPAPERS_DATA
+    data_directory = getattr(settings, 'DUTCHNEWSPAPERS_DATA', None)
     es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
@@ -110,7 +110,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                         })
                         yield full_path, meta_dict
 
-    titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
+    titlefile = join(os.path.dirname(__file__), 'newspaper_titles.txt')
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
     paper_count = len(papers)
