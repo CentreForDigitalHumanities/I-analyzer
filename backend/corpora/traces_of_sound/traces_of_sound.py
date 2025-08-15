@@ -35,8 +35,8 @@ class TracesOfSound(CSVCorpusDefinition):
         "corpus."
     min_date = DutchNewspapersPublic.min_date
     max_date = DutchNewspapersPublic.max_date
-    data_directory = settings.TOS_DATA
-    es_index = getattr(settings, 'TOS_ES_INDEX', 'traces-of-sound')
+    data_directory = settings.TRACES_OF_SOUND_DATA
+    es_index = getattr(settings, 'TRACES_OF_SOUND_ES_INDEX', 'traces-of-sound')
     languages = DutchNewspapersPublic.languages
     category = DutchNewspapersPublic.category
     description_page = 'traces_of_sound.md'

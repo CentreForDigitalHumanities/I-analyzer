@@ -8,4 +8,4 @@ def traces_corpora_settings(settings):
     settings.CORPORA = {
         'traces-of-sound': join(here, 'traces_of_sound.py'),
     }
-    settings.TOS_DATA = join(here, 'tests', 'data')
+    settings.TRACES_OF_SOUND_DATA = join(here, 'tests', 'data')
