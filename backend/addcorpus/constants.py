@@ -50,8 +50,8 @@ FORBIDDEN_FIELD_NAMES = [
     'tab-scan'
     'p',
     'tags',
-    'context',
     'tab',
+    'document_link',
 ]
 '''
 Field names that cannot be used because they interfere with other functionality.
@@ -59,8 +59,7 @@ Field names that cannot be used because they interfere with other functionality.
 This is usually because they are also query parameters in frontend routes, and using them
 would make routing ambiguous.
 
-`query` is also forbidden because it is a reserved column in CSV downloads. Likewise,
-`context` is forbidden because it's used in download requests.
+`query` and `document_link` are forbidden because they are reserved columns in CSV downloads.
 
 `scan` and `tab-scan` are added because they interfere with element IDs in the DOM.
 '''
