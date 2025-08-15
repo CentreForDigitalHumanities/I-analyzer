@@ -42,7 +42,8 @@ class TracesOfSound(CSVCorpusDefinition):
     es_index = getattr(settings, 'TRACES_OF_SOUND_ES_INDEX', 'traces-of-sound')
     languages = DutchNewspapersPublic.languages
     category = DutchNewspapersPublic.category
-    description_page = 'traces_of_sound.md'
+    # description_page = 'traces_of_sound.md'
+    image = 'Stilleven met boeken.png'
 
     @property
     def es_settings(self):
