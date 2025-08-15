@@ -2,6 +2,7 @@ import pytest
 import os
 
 from addcorpus.models import Corpus
+from addcorpus.reader import make_reader
 from corpora_test.mixed_language.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
 from download import tasks
 from tag.models import Tag, TaggedDocument
@@ -29,23 +30,6 @@ def mock_corpus(request):
 @pytest.fixture()
 def ml_mock_corpus_specs():
     return ML_MOCK_CORPUS_SPECS
-
-
-@pytest.fixture()
-def tagged_mock_corpus(small_mock_corpus, admin_user, auth_user):
-    '''a wrapper around small_mock_corpus, adding tags by two users'''
-    corpus = Corpus.objects.get(name=small_mock_corpus)
-    tag1 = Tag.objects.create(name='female writer', user=auth_user)
-    tag2 = Tag.objects.create(name='female protagonist', user=auth_user)
-    # this tag should not be in the export
-    tag3 = Tag.objects.create(name='interesting', user=admin_user)
-    tagged_doc1 = TaggedDocument.objects.create(corpus=corpus, doc_id=1)
-    tagged_doc1.tags.add(tag1, tag3)
-    tagged_doc2 = TaggedDocument.objects.create(corpus=corpus, doc_id=2)
-    tagged_doc2.tags.add(tag1, tag2, tag3)
-    tagged_doc3 = TaggedDocument.objects.create(corpus=corpus, doc_id=3)
-    tagged_doc3.tags.add(tag2)
-    return corpus
 
 
 @pytest.fixture()
@@ -95,11 +79,12 @@ def ml_mock_corpus_results_csv(ml_mock_corpus, ml_mock_corpus_specs, index_ml_mo
 
 
 @pytest.fixture()
-def small_mock_corpus_elasticsearch_results():
+def tag_mock_corpus_elasticsearch_results(tag_mock_corpus):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    docs = make_reader(corpus).documents()
     return [
-        {'_id': 1, '_source': {'date': '1818-01-01', 'genre': "Science fiction"}},
-        {'_id': 2, '_source': {'date': '1813-01-28', 'genre': "Romance"}},
-        {'_id': 3, '_source': {'date': '1865-11-09', 'genre': "Children"}},
+        { '_id': doc['id'], '_source': doc }
+        for doc in docs
     ]
 
 

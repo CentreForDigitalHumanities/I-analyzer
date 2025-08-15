@@ -8,6 +8,7 @@ import pytest
 from addcorpus.models import Corpus
 from es.search import hits
 from download import create_csv
+from tag.conftest import *
 
 ### SEARCH RESULTS
 
@@ -120,26 +121,27 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
 
 
 def test_csv_exports_tags(
-    tagged_mock_corpus, small_mock_corpus_elasticsearch_results, auth_user
+    auth_user, tag_mock_corpus, tagged_documents, tag_mock_corpus_elasticsearch_results,
+    auth_user_tag
 ):
     '''Assert that tags are exported'''
-    fields = ['id', 'date', 'genre', 'tags']
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    fields = ['id', 'content', 'tags']
     field_set = set(fields)
     rows = list(
         create_csv.generate_rows(
-            small_mock_corpus_elasticsearch_results,
+            tag_mock_corpus_elasticsearch_results,
             fields,
             'myquery',
             field_set,
-            tagged_mock_corpus,
+            corpus,
             auth_user,
         )
     )
     for row in rows:
         assert 'tags' in row
-    assert rows[0]['tags'] == 'female writer'
-    assert rows[1]['tags'] == 'female writer,female protagonist'
-    assert rows[2]['tags'] == 'female protagonist'
+        assert (auth_user_tag.name in row['tags']) == (row['id'] in ['1', '2', '3'])
+
 
 
 @contextmanager
@@ -151,14 +153,14 @@ def not_raises(exception):
 
 
 def test_csv_exports_document_link(
-    small_mock_corpus, small_mock_corpus_elasticsearch_results, auth_user
+    tag_mock_corpus, tag_mock_corpus_elasticsearch_results, auth_user
 ):
-    fields = ['id', 'date', 'genre', 'document_link']
+    fields = ['id', 'content']
     field_set = set(fields)
-    corpus = Corpus.objects.get(name=small_mock_corpus)
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
     rows = list(
         create_csv.generate_rows(
-            small_mock_corpus_elasticsearch_results,
+            tag_mock_corpus_elasticsearch_results,
             fields,
             'myquery',
             field_set,
