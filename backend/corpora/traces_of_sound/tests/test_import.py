@@ -9,16 +9,12 @@ def test_tag_import(traces_corpora_settings):
     documents = list(corpus.documents())
     assert len(documents) == 3
 
-    for doc in documents:
-        assert 'sound_carrier' in doc
-        assert 'sound_quality' in doc
-        assert 'sound_source' in doc
-        if sound_carrier := doc.get('sound_carrier'):
-            assert sound_carrier == 'ground'
-        if sound_quality := doc.get('sound_quality'):
-            assert sound_quality in ['loud', 'soft']
-        if sound_source := doc.get('sound_source'):
-            assert sound_source in ['nightingale', 'rain']
+    expected = [
+        { 'sound_carrier': None, 'sound_source': ['nightingale', 'leopard'], 'sound_quality': None },
+        { 'sound_carrier': ['ground'], 'sound_source': None, 'sound_quality': ['loud'] },
+        { 'sound_carrier': None, 'sound_source': ['rain'], 'sound_quality': ['soft'] },
+    ]
 
-
-
+    for doc, expected_doc in zip(documents, expected):
+        for field in expected_doc:
+            assert doc[field] == expected_doc[field]
