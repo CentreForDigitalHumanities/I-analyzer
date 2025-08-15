@@ -46,7 +46,7 @@
                         <label>
                             <input name="tags" type="checkbox"
                                 [(ngModel)]="tagsSelected">
-                            Include user tags
+                            Your tags
                         </label>
                     </li>
                     <li>
@@ -54,7 +54,7 @@
                             <input name="documentLink" type="checkbox"
                                 [checked]="documentLinkSelected"
                                 (change)="documentLinkSelected = !documentLinkSelected">
-                            Include document link
+                            Document URL
                         </label>
                     </li>
                     <li>
@@ -63,7 +63,7 @@
                             <input  type="checkbox"
                                 [checked]="(resultsConfig.highlight$ | async) !== undefined"
                                 (change)="onHighlightChange($event)">
-                            Include "query in context" snippets
+                            "Query in context" snippets
                         </label>
                     </li>
                 </ul>
