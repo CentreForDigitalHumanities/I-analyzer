@@ -119,29 +119,36 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
 
     assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
 
+def test_tags_to_include(auth_user, admin_user, tag_mock_corpus, basic_mock_corpus, tagged_documents, auth_user_tag):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    assert auth_user_tag in create_csv._tags_to_include(auth_user, corpus, ['tags'])
+    assert auth_user_tag not in create_csv._tags_to_include(admin_user, corpus, ['tags'])
+    assert auth_user_tag not in create_csv._tags_to_include(auth_user, corpus, [])
+
+    other_corpus = Corpus.objects.get(name=basic_mock_corpus)
+    assert auth_user_tag not in create_csv._tags_to_include(auth_user, other_corpus, ['tags'])
+
 
 def test_csv_exports_tags(
-    auth_user, tag_mock_corpus, tagged_documents, tag_mock_corpus_elasticsearch_results,
+    tag_mock_corpus, tagged_documents, tag_mock_corpus_elasticsearch_results,
     auth_user_tag
 ):
     '''Assert that tags are exported'''
     corpus = Corpus.objects.get(name=tag_mock_corpus)
     fields = ['id', 'content']
-    field_set = set(fields)
     rows = list(
         create_csv.generate_rows(
             tag_mock_corpus_elasticsearch_results,
             fields,
             'myquery',
-            field_set,
             corpus,
-            auth_user,
-            ['tags']
+            False,
+            [auth_user_tag]
         )
     )
     for row in rows:
-        assert 'tags' in row
-        assert (auth_user_tag.name in row['tags']) == (row['id'] in ['1', '2', '3'])
+        assert 'tag: fascinating' in row
+        assert (row['tag: fascinating']) == (row['id'] in ['1', '2', '3'])
 
 
 
@@ -150,24 +157,22 @@ def not_raises(exception):
     try:
         yield
     except exception:
-        raise pytest.fail("DID RAISE {0}".format(exception))
+        pytest.fail("DID RAISE {0}".format(exception))
 
 
 def test_csv_exports_document_link(
     tag_mock_corpus, tag_mock_corpus_elasticsearch_results, auth_user
 ):
     fields = ['id', 'content']
-    field_set = set(fields)
     corpus = Corpus.objects.get(name=tag_mock_corpus)
     rows = list(
         create_csv.generate_rows(
             tag_mock_corpus_elasticsearch_results,
             fields,
             'myquery',
-            field_set,
             corpus,
-            auth_user,
-            ['document_link']
+            True,
+            [],
         )
     )
     validate_url = URLValidator()
