@@ -25,6 +25,7 @@ import { NgramParameters, NgramSettings } from '@models/ngram';
     selector: 'ia-ngram',
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss'],
+    standalone: false
 })
 export class NgramComponent implements OnChanges {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning

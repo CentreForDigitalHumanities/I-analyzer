@@ -1,13 +1,9 @@
-@import "../../_utilities";
+@use "../../_utilities";
 
 .content {
     ::ng-deep a {
-        color: $primary;
+        color: utilities.$primary;
     }
 
     max-height: 80vh;
-
-    &.is-loading {
-        @extend %content-loader;
-    }
 }

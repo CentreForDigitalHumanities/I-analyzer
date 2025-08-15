@@ -6,6 +6,7 @@ import { visualizationIcons } from '@shared/icons';
     selector: 'ia-palette-select',
     templateUrl: './palette-select.component.html',
     styleUrls: ['./palette-select.component.scss'],
+    standalone: false
 })
 export class PaletteSelectComponent {
     @Output() paletteChanged = new EventEmitter<string[]>();

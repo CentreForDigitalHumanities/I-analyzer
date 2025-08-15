@@ -37,6 +37,7 @@ import {
     CorpusDataFile,
     DataFileInfo,
 } from '@models/corpus-definition';
+import { APIIndexHealth, APIIndexJob, isComplete, JobStatus } from '@models/indexing';
 
 interface SolisLoginResponse {
     success: boolean;
@@ -58,6 +59,7 @@ export class ApiService {
     private downloadApiURL = 'download';
     private corpusApiUrl = 'corpus';
     private tagApiUrl = 'tag';
+    private indexApiUrl = 'indexing';
 
     private authApiRoute = (route: string): string =>
         `/${this.authApiUrl}/${route}/`;
@@ -134,11 +136,10 @@ export class ApiService {
         ids: string[],
         stopPolling$: Observable<void>
     ): Observable<TasksOutcome> {
-        return interval(5000).pipe(
-            takeUntil(stopPolling$),
-            switchMap((arg) => this.getTasksStatus({ task_ids: ids })),
-            filter(this.tasksDone),
-            take(1)
+        return this.pollRequest(
+            () => this.getTasksStatus({ task_ids: ids }),
+            this.tasksDone,
+            stopPolling$,
         );
     }
 
@@ -486,5 +487,54 @@ export class ApiService {
 
     public solisLogin(data: any): Promise<SolisLoginResponse> {
         return this.http.get<SolisLoginResponse>('/api/solislogin').toPromise();
+    }
+
+    // INDEXING
+
+    getIndexHealth(corpusID: number): Observable<APIIndexHealth> {
+        return this.http.get<APIIndexHealth>(
+            this.apiRoute(this.indexApiUrl, `health/${corpusID}`)
+        );
+    }
+
+    createIndexJob(corpusID: number): Observable<APIIndexJob> {
+        return this.http.post<APIIndexJob>(
+            this.apiRoute(this.indexApiUrl, 'jobs/'),
+            { corpus: corpusID }
+        );
+    }
+
+    getIndexJob(jobID: number): Observable<APIIndexJob> {
+        return this.http.get<APIIndexJob>(
+            this.apiRoute(this.indexApiUrl, `jobs/${jobID}/`)
+        );
+    }
+
+    pollIndexJob(jobID: number, stop$: Observable<any>): Observable<APIIndexJob> {
+        return this.pollRequest(
+            () => this.getIndexJob(jobID),
+            (job) => isComplete(job.status),
+            stop$,
+        )
+    }
+
+    stopIndexJob(jobID: number) {
+        return this.http.get(
+            this.apiRoute(this.indexApiUrl, `jobs/${jobID}/stop/`)
+        );
+    }
+
+    private pollRequest<Outcome>(
+        makeRequest: () => Observable<Outcome>,
+        isDone: (o: Outcome) => boolean,
+        stopPolling$: Observable<any>,
+        period: number = 5000
+    ): Observable<Outcome> {
+        return interval(period).pipe(
+            takeUntil(stopPolling$),
+            switchMap(makeRequest),
+            filter(isDone),
+            take(1)
+        );
     }
 }

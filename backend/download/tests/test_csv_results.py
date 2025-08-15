@@ -1,7 +1,14 @@
-import pytest
+from contextlib import contextmanager
 import csv
+
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+import pytest
+
+from addcorpus.models import Corpus
 from es.search import hits
 from download import create_csv
+from tag.conftest import *
 
 ### SEARCH RESULTS
 
@@ -41,12 +48,16 @@ mock_es_result = {
     }
 }
 
+
 @pytest.fixture()
-def result_csv_with_highlights(csv_directory):
-    route = 'parliament-netherlands_query=test'
+def result_csv_with_highlights(csv_directory, small_mock_corpus, auth_user):
+    route = 'parliament-netherlands?query=test'
     fields = ['speech']
-    file = create_csv.search_results_csv(hits(mock_es_result), fields, route, 0)
+    file = create_csv.search_results_csv(
+        hits(mock_es_result), fields, route, 0, small_mock_corpus, auth_user
+    )
     return file
+
 
 def test_create_csv(result_csv_with_highlights):
     counter = 0
@@ -84,14 +95,17 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
     that none of the steps in the download make encoding issues.'''
 
     if mock_corpus == small_mock_corpus:
-        expected = [{
-            'date': '1818-01-01',
-            'genre': "Science fiction",
-            'title': "Frankenstein, or, the Modern Prometheus",
-            'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
-        }, {
-            'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
-        }]
+        expected = [
+            {
+                'date': '1818-01-01',
+                'genre': "Science fiction",
+                'title': "Frankenstein, or, the Modern Prometheus",
+                'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
+            },
+            {
+                'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+            },
+        ]
     elif mock_corpus == ml_mock_corpus:
         expected = [{
             'language': 'Swedish',
@@ -104,6 +118,71 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
         expected = []
 
     assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
+
+def test_tags_to_include(auth_user, admin_user, tag_mock_corpus, basic_mock_corpus, tagged_documents, auth_user_tag):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    assert auth_user_tag in create_csv._tags_to_include(auth_user, corpus, ['tags'])
+    assert auth_user_tag not in create_csv._tags_to_include(admin_user, corpus, ['tags'])
+    assert auth_user_tag not in create_csv._tags_to_include(auth_user, corpus, [])
+
+    other_corpus = Corpus.objects.get(name=basic_mock_corpus)
+    assert auth_user_tag not in create_csv._tags_to_include(auth_user, other_corpus, ['tags'])
+
+
+def test_csv_exports_tags(
+    tag_mock_corpus, tagged_documents, tag_mock_corpus_elasticsearch_results,
+    auth_user_tag
+):
+    '''Assert that tags are exported'''
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    fields = ['id', 'content']
+    rows = list(
+        create_csv.generate_rows(
+            tag_mock_corpus_elasticsearch_results,
+            fields,
+            'myquery',
+            corpus,
+            False,
+            [auth_user_tag]
+        )
+    )
+    for row in rows:
+        assert 'tag: fascinating' in row
+        assert (row['tag: fascinating']) == (row['id'] in ['1', '2', '3'])
+
+
+
+@contextmanager
+def not_raises(exception):
+    try:
+        yield
+    except exception:
+        pytest.fail("DID RAISE {0}".format(exception))
+
+
+def test_csv_exports_document_link(
+    tag_mock_corpus, tag_mock_corpus_elasticsearch_results, auth_user
+):
+    fields = ['id', 'content']
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    rows = list(
+        create_csv.generate_rows(
+            tag_mock_corpus_elasticsearch_results,
+            fields,
+            'myquery',
+            corpus,
+            True,
+            [],
+        )
+    )
+    validate_url = URLValidator()
+    for row in rows:
+        doc_link = row.get('document_link')
+        assert doc_link
+        assert doc_link.endswith(str(row['id']))
+        with not_raises(ValidationError):
+            assert validate_url(doc_link) is None
+
 
 def test_csv_encoding(ml_mock_corpus_results_csv):
     '''Assert that the results csv file matches utf-8 encoding'''

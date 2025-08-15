@@ -13,7 +13,8 @@ import { actionIcons, documentIcons } from '../../shared/icons';
 @Component({
     selector: 'ia-document-popup',
     templateUrl: './document-popup.component.html',
-    styleUrls: ['./document-popup.component.scss']
+    styleUrls: ['./document-popup.component.scss'],
+    standalone: false
 })
 export class DocumentPopupComponent implements OnChanges, OnDestroy {
     @Input() page: DocumentPage;

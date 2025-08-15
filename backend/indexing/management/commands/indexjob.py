@@ -1,4 +1,4 @@
-from typing import List, Dict, Callable
+from typing import Callable
 from csv import DictWriter
 from sys import stdout
 
@@ -13,14 +13,6 @@ class Command(BaseCommand):
     help = '''
     Create, populate or clear elasticsearch indices for corpora.
     '''
-
-    @property
-    def actions(self) -> Dict[str, Callable[[List[int]], None]]:
-        return {
-            'list': self.list,
-            'show': self.show,
-            'start': self.start,
-        }
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(

@@ -1,10 +1,13 @@
 import pytest
 import os
-from corpora_test.mixed_language.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
-from visualization.conftest import small_mock_corpus_specs, large_mock_corpus_specs
 
-from visualization.query import MATCH_ALL
+from addcorpus.models import Corpus
+from addcorpus.reader import make_reader
+from corpora_test.mixed_language.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
 from download import tasks
+from tag.models import Tag, TaggedDocument
+from visualization.conftest import small_mock_corpus_specs, large_mock_corpus_specs
+from visualization.query import MATCH_ALL
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,6 +30,7 @@ def mock_corpus(request):
 @pytest.fixture()
 def ml_mock_corpus_specs():
     return ML_MOCK_CORPUS_SPECS
+
 
 @pytest.fixture()
 def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs, ml_mock_corpus_specs):
@@ -72,6 +76,17 @@ def large_mock_corpus_results_csv(large_mock_corpus, large_mock_corpus_specs, in
 @pytest.fixture()
 def ml_mock_corpus_results_csv(ml_mock_corpus, ml_mock_corpus_specs, index_ml_mock_corpus, csv_directory):
     return save_all_results_csv(ml_mock_corpus, ml_mock_corpus_specs)
+
+
+@pytest.fixture()
+def tag_mock_corpus_elasticsearch_results(tag_mock_corpus):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    docs = make_reader(corpus).documents()
+    return [
+        { '_id': doc['id'], '_source': doc }
+        for doc in docs
+    ]
+
 
 @pytest.fixture()
 def mock_corpus_results_csv(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock_corpus, small_mock_corpus_results_csv, large_mock_corpus_results_csv, ml_mock_corpus_results_csv):
