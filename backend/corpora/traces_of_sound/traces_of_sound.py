@@ -30,7 +30,9 @@ class TracesOfSound(CSVCorpusDefinition):
     '''
 
     title = "Traces of Sound"
-    description = "Collection of articiles from Dutch newspapers in the public domain with references to sound"
+    description = "Articles from Dutch newspapers in the public domain with references " \
+        "to sound. This is an annotated collection from the 'Dutch Newspapers (public)' " \
+        "corpus."
     min_date = DutchNewspapersPublic.min_date
     max_date = DutchNewspapersPublic.max_date
     data_directory = settings.TOS_DATA
