@@ -107,7 +107,7 @@ def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, use
             entry.update({'tags': tags})
         if 'document_link' in extra_columns:
             entry.update(
-                {'document_link': f'{settings.BASE_URL}/{corpus.name}/{doc_id}'}
+                {'document_link': f'{settings.BASE_URL}/document/{corpus.name}/{doc_id}'}
             )
         yield entry
 
