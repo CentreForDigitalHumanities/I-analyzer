@@ -10,7 +10,6 @@ from users.models import CustomUser
 from visualization.term_frequency import parse_datestring
 from tag.filter import corpus_tags
 
-# QUERY_CONTEXT_INFIX = '_qic_'
 
 DOCUMENT_URL_COL = 'document_link'
 
@@ -32,19 +31,6 @@ def write_file(filename, fieldnames, rows, dialect='excel'):
 
 def create_filename(download_id):
     return f'{download_id}.csv'
-
-
-# def is_context_fieldname(fn: str) -> bool:
-#     return QUERY_CONTEXT_INFIX in fn
-
-
-# def sort_fieldnames(fns: Iterable[str]) -> List[str]:
-#     '''Sorts fieldnames.
-#     Retains input order, but puts all query context fields at the end (sorted)
-#     '''
-#     context_fieldnames = [fn for fn in fns if is_context_fieldname(fn)]
-#     reg_fieldnames = [fn for fn in fns if not is_context_fieldname(fn)]
-#     return reg_fieldnames + sorted(context_fieldnames)
 
 
 def search_results_csv(

@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models.constraints import UniqueConstraint
 
 from addcorpus.models import Corpus
-from users.models import CustomUser
 
 DOCS_PER_TAG_LIMIT = 500
 
@@ -59,6 +58,3 @@ class TaggedDocument(models.Model):
                 name='unique_document_ID_for_corpus'
             )
         ]
-
-    def tags_to_str(self, user: CustomUser):
-        return ",".join([tag.name for tag in self.tags.filter(user=user).all()])

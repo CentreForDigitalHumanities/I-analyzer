@@ -28,7 +28,6 @@ import {
     PageResultsParameters,
 } from '@models/page-results';
 
-type ReducedCorpusField = Pick<CorpusField, 'name' | 'displayName'>;
 
 @Component({
     selector: 'ia-download',
