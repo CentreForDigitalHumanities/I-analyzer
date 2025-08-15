@@ -126,7 +126,7 @@ def test_csv_exports_tags(
 ):
     '''Assert that tags are exported'''
     corpus = Corpus.objects.get(name=tag_mock_corpus)
-    fields = ['id', 'content', 'tags']
+    fields = ['id', 'content']
     field_set = set(fields)
     rows = list(
         create_csv.generate_rows(
@@ -136,6 +136,7 @@ def test_csv_exports_tags(
             field_set,
             corpus,
             auth_user,
+            ['tags']
         )
     )
     for row in rows:
@@ -166,6 +167,7 @@ def test_csv_exports_document_link(
             field_set,
             corpus,
             auth_user,
+            ['document_link']
         )
     )
     validate_url = URLValidator()

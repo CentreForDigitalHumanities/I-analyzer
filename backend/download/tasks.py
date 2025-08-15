@@ -54,6 +54,7 @@ def make_download(request_json, download_id, download_size=None, user=None):
         download_id,
         corpus,
         user,
+        request_json.get('extra'),
     )
     return filepath
 

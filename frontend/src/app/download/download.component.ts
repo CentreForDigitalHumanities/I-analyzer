@@ -11,6 +11,7 @@ import {
 import {
     Corpus,
     CorpusField,
+    ExtraDownloadColumns,
     PendingDownload,
     QueryModel,
     SortState,
@@ -128,7 +129,8 @@ export class DownloadComponent implements OnChanges {
                 this.resultsRoute(this.queryModel, sort, highlight),
                 sort,
                 highlight,
-                { encoding: this.encoding }
+                { encoding: this.encoding },
+                this.extraColumns(),
             )
             .catch((error) => {
                 this.notificationService.showMessage(error);
@@ -152,6 +154,7 @@ export class DownloadComponent implements OnChanges {
                 this.resultsRoute(this.queryModel, sort, highlight),
                 sort,
                 highlight,
+                this.extraColumns(),
             )
             .then((results) => {
                 this.notificationService.showMessage(
@@ -178,6 +181,11 @@ export class DownloadComponent implements OnChanges {
             selectedFields = this.selectedCsvFields;
         }
         const selected = _.map(selectedFields, 'name');
+        return selected;
+    }
+
+    private extraColumns(): ExtraDownloadColumns {
+        const selected = [];
         if (this.resultsConfig.state$.value.highlight) {
             selected.push('context');
         }

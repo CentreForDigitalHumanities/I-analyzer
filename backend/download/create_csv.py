@@ -52,6 +52,7 @@ def search_results_csv(
     download_id: str,
     corpus: Corpus,
     user: Optional[CustomUser],
+    extra_columns: List[str] = []
 ) -> Union[os.PathLike, str]:
     '''Writes a CSV file for search results.
     Operates on either lists or generator containing results.
@@ -62,16 +63,16 @@ def search_results_csv(
     # create csv file
     filename = create_filename(download_id)
     field_set.discard('context')
-    fieldnames = sort_fieldnames(field_set)
+    fieldnames = sort_fieldnames(field_set) + extra_columns
 
-    entries = generate_rows(results, fields, query, field_set, corpus, user)
+    entries = generate_rows(results, fields, query, field_set, corpus, user, extra_columns)
 
     filepath = write_file(filename, fieldnames, entries,
                           dialect='resultsDialect')
     return filepath
 
 
-def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, user):
+def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, user, extra_columns = []):
     ''' Yields rows of data to be written to the CSV file'''
     for result in results:
         entry = {'query': query}
@@ -84,7 +85,7 @@ def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, use
             if field in result['_source']:
                 entry.update({field: result['_source'][field]})
         highlights = result.get('highlight')
-        if 'context' in fields and highlights:
+        if 'context' in extra_columns and highlights:
             hi_fields = highlights.keys()
             for hf in hi_fields:
                 for index, hi in enumerate(highlights[hf]):
@@ -93,7 +94,7 @@ def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, use
                     field_set.update([highlight_field_name])
                     soup = BeautifulSoup(hi, 'html.parser')
                     entry.update({highlight_field_name: soup.get_text()})
-        if 'tags' in fields:
+        if 'tags' in extra_columns:
             tags = ''
             if user:
                 try:
@@ -104,7 +105,7 @@ def generate_rows(results: Iterable[Dict], fields, query, field_set, corpus, use
                 except:
                     pass
             entry.update({'tags': tags})
-        if 'document_link' in fields:
+        if 'document_link' in extra_columns:
             entry.update(
                 {'document_link': f'{settings.BASE_URL}/{corpus.name}/{doc_id}'}
             )
