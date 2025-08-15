@@ -33,6 +33,7 @@ let nextID = 0;
             multi: true,
         },
     ],
+    standalone: false
 })
 export class DropdownComponent<T> implements OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor  {
     @HostBinding('class') classes = 'dropdown';

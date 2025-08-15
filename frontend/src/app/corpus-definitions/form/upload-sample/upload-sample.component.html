@@ -17,7 +17,7 @@
         <tbody>
             <tr *ngFor="let field of fileInfo|keyvalue">
                 <td>{{field.key}}</td>
-                <td>{{field.value}}</td>
+                <td>{{fieldTypeLabel(field.value)}}</td>
             </tr>
         </tbody>
     </table>

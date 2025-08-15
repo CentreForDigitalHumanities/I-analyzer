@@ -16,6 +16,7 @@ import { ParamDirective } from '../param/param-directive';
     selector: 'ia-word-models',
     templateUrl: './word-models.component.html',
     styleUrls: ['./word-models.component.scss'],
+    standalone: false
 })
 export class WordModelsComponent extends ParamDirective {
     @ViewChild('searchSection', { static: false })

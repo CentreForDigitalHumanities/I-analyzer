@@ -16,9 +16,8 @@
         <div class="field">
             <label class="label" id="fields-select-label">Fields</label>
             <div class="control">
-                <p-multiSelect [options]="availableCsvFields"
-                    [(ngModel)]="selectedCsvFields"
-                    optionLabel="displayName"
+                <p-multiSelect [options]="fieldOptions"
+                    [(ngModel)]="fieldSelection"
                     placeholder="select fields"
                     name="searchFields"
                     ariaLabelledBy="fields-select-label">
@@ -72,9 +71,9 @@
         </div>
 
         <ng-container *ngIf="(canDownloadDirectly$ | async); else longDownloadSubmit">
-            <div class="field">
-                <div role="group" class="control">
-                    <legend class="label">File encoding</legend>
+            <div class="field" role="group">
+                <legend class="label">File encoding</legend>
+                <div class="control radios">
                     <label class="radio" *ngFor="let encodingOption of encodingOptions">
                         <input type="radio" name="encoding" (click)="encoding=encodingOption" [checked]="encoding===encodingOption">
                         {{encodingOption}}

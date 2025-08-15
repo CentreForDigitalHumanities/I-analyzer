@@ -3,7 +3,9 @@
         <!-- skip link for keyboard navigation.
             Complicated setup because the menu is outside of router-outlet and so
             it can't use [routerLink]="." -->
-        <a class="skip-to-content-link" *ngIf="route$ | async as route"
+        <a class="skip-to-content-link
+            has-background-primary-soft has-text-primary-soft-invert"
+            *ngIf="route$ | async as route"
 
             [routerLink]="route.url" [queryParams]="route.queryParams" fragment="main">
             Skip to content
@@ -25,6 +27,7 @@
                 class="navbar-burger" [class.is-active]="menuOpen$ | async"
                 aria-label="menu" [attr.aria-expanded]="menuOpen$ | async"
                 data-target="navigation-menu">
+                <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>

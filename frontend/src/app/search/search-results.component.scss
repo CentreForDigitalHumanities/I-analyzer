@@ -1,8 +1,7 @@
-@import "../../_utilities";
+@use "../../_utilities";
 
 .hits {
     &.is-loading {
-        @extend %content-loader;
 
         &:after {
             // normally the spinner is placed in the middle, but this component is generally
@@ -25,17 +24,17 @@
 }
 
 .results-navigation {
-    background: rgba(255, 255, 255, 1);
+    background: var(--bulma-body-background-color);
     z-index: 18;
     top: 68px;
     position: sticky;
 
     // less padding because the results navigation field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)
-    padding-top: $spacing;
-    margin-bottom: $spacing;
+    padding-top: utilities.$size-6;
+    margin-bottom: utilities.$size-6;
 
     &.is-scrolled-down {
-        box-shadow: $boxShadow;
+        box-shadow: var(--bulma-shadow);
     }
 }

@@ -100,6 +100,10 @@ export class ApiServiceMock {
         return of([]);
     }
 
+    deleteTag() {
+        return of();
+    }
+
     corpusDefinitions(): Observable<APIEditableCorpus[]> {
         const data = [{ id: 1, active: false, definition: mockCorpusDefinition }];
         return of(data);

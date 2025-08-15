@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
 
 @Component({
     template: '<p>Hello world!</p>',
+    standalone: false
 })
 class TestComponent {}
 

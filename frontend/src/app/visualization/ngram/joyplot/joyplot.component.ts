@@ -7,7 +7,8 @@ import { selectColor } from '@utils/select-color';
 @Component({
     selector: 'ia-joyplot',
     templateUrl: './joyplot.component.html',
-    styleUrls: ['./joyplot.component.scss']
+    styleUrls: ['./joyplot.component.scss'],
+    standalone: false
 })
 export class JoyplotComponent implements OnChanges {
     @Input() data: NgramResults;

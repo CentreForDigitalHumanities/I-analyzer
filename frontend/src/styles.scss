@@ -1,8 +1,7 @@
-@import "_utilities";
-@import "bulma/bulma.sass";
-@import "_primeng";
-@import "balloon-css";
-@import "bulma-switch";
+@use "balloon-css/src/balloon";
+@use "utilities";
+@use "bulma/bulma";
+
 
 [data-balloon]:after {
     border-radius: 0;
@@ -13,7 +12,7 @@
 }
 
 .search-section {
-    background: rgba(255, 255, 255, 1);
+    background: var(--bulma-body-background-color);
     position: sticky;
     top: 0;
     transition: box-shadow 0.2s;
@@ -21,15 +20,15 @@
 
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)
-    padding-top: $spacing;
-    padding-bottom: $spacing;
+    padding-top: utilities.$size-6;
+    padding-bottom: utilities.$size-6;
 
     &.is-scrolled-down {
-        box-shadow: $boxShadow;
+        box-shadow: var(--bulma-shadow);
     }
 
     + section {
-        padding-top: $spacing;
+        padding-top: utilities.$size-6;
     }
 
     .search-controls {
@@ -63,12 +62,12 @@ a.dropdown-item:focus {
 }
 
 a.dropdown-item[disabled] {
-    color: $grey;
+    color: utilities.$grey;
     cursor: not-allowed;
 
     &:hover {
         background-color: inherit;
-        color: $grey;
+        color: utilities.$grey;
     }
 }
 
@@ -85,24 +84,97 @@ a.dropdown-item[disabled] {
 }
 
 .entity-person {
-    @include mark-entity($entity-person);
+    @include mark-entity(utilities.$entity-person);
 }
 
 .entity-location {
-    @include mark-entity($entity-location);
+    @include mark-entity(utilities.$entity-location);
 }
 
 .entity-organization {
-    @include mark-entity($entity-organization);
+    @include mark-entity(utilities.$entity-organization);
 }
 
 .entity-miscellaneous {
-    @include mark-entity($entity-miscellaneous);
+    @include mark-entity(utilities.$entity-miscellaneous);
 }
 
 .is-disabled {
     @extend [disabled];
 }
+
+.highlight {
+    background-color: var(--bulma-primary-soft);
+    color: var(--bulma-primary-soft-invert);
+}
+
+.input-feedback {
+    margin-top: 0.5rem;
+}
+
+.content {
+    a {
+        text-decoration: underline;
+    }
+}
+
+
+table.spreadsheet {
+    border: 2px solid var(--bulma-border);
+
+    thead th, tbody td, tbody th {
+        border-width: 1px;
+    }
+
+    th {
+        background-color: var(--bulma-body-background-color);
+    }
+
+    tr:hover {
+        background-color: inherit;
+    }
+}
+
+// restore some rules from older bulma versions for compatibility
+
+.block, .message, .title, .box, .field, .content {
+    @include utilities.block();
+}
+
+.heading {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+:root {
+    --bulma-shadow: 0 2px 3px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1),
+        0 0 0 1px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1);
+}
+
+// reset focus styling for accessibility
+// bulma's customisation makes focus rings invisible on blue background
+
+a, button {
+    &:focus-visible {
+        outline: auto !important;
+        border: inherit !important;
+    }
+}
+
+
+// primeNG
+
+.field.has-addons .control:last-child {
+    .p-multiselect {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+    }
+}
+
+// vega
 
 .vega-bindings {
     @extend .columns;
@@ -120,26 +192,5 @@ a.dropdown-item[disabled] {
         select {
             @extend .select;
         }
-    }
-}
-
-.input-feedback {
-    margin-top: 0.5rem;
-}
-
-
-table.spreadsheet {
-    border: 2px solid $grey-lighter;
-
-    thead th, tbody td, tbody th {
-        border-width: 1px;
-    }
-
-    th {
-        background-color: $light;
-    }
-
-    tr:hover {
-        background-color: inherit;
     }
 }

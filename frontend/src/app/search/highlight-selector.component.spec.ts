@@ -35,7 +35,7 @@ describe('HighlightSelectorComponent', () => {
     });
 
     it('should reflect the results model state', () => {
-        const button = fixture.debugElement.query(By.css('.highlight-toggle'));
+        const button = fixture.debugElement.query(By.css('#highlight-toggle'));
 
         const innerText = (el: DebugElement) => el.nativeElement.innerText;
 

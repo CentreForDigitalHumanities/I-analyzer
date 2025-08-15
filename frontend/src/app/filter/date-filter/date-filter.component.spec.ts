@@ -14,8 +14,8 @@ describe('DateFilterComponent', () => {
     let searchService: SearchService;
     let fixture: ComponentFixture<DateFilterComponent>;
     const exampleData1: DateFilterData = {
-        min: new Date(Date.parse('Jan 01 1850')),
-        max: new Date(Date.parse('Dec 31 1860'))
+        min: new Date('Jan 01 1850'),
+        max: new Date('Dec 31 1860')
     };
 
     beforeEach(waitForAsync(() => {
