@@ -191,7 +191,6 @@ export class DownloadComponent implements OnChanges {
         if (this.resultsConfig.state$.value.highlight) {
             selected.push('context');
         }
-        console.log(this.tagsSelected);
         if (this.tagsSelected) {
             selected.push('tags');
         }
