@@ -19,7 +19,7 @@ target_data = {
                 ],
                 "date": "1930-01-01",
                 "id": "bpt6k296099q",
-                "issue": "01 janvier 19301930/01/01 (Numéro 1).",
+                "issue": "01 janvier 1930 1930/01/01 (Numéro 1).",
                 "url": "https://gallica.bnf.fr/ark:/12148/bpt6k296099q",
             }
         ],
@@ -38,13 +38,13 @@ target_data = {
                 ],
                 "date": "1830-11-04",
                 "id": "bpt6k1048832g",
-                "issue": "04 novembre 18301830/11/04 (T1,N1).",
+                "issue": "04 novembre 1830 1830/11/04 (T1,N1).",
                 "publisher": "Aubert (Paris)[s.n.][s.n.] (Paris)",
                 "url": "https://gallica.bnf.fr/ark:/12148/bpt6k1048832g",
             }
         ],
     },
-    'journauxresistance': {
+    'journaux-resistance': {
         'n_documents': 10,
         'documents': [
             {
@@ -52,16 +52,32 @@ target_data = {
                 'contributor': [],
                 'date': '1943-09-01',
                 'id': 'bpt6k8724474',
-                'issue': '01 septembre 19431943/09/01 (N2)-1943/09/30.',
+                'issue': '01 septembre 1943 1943/09/01 (N2)-1943/09/30.',
                 'title': "Document n°... / Centre d'information et de documentation ; Éditions MUR",
                 'url': 'https://gallica.bnf.fr/ark:/12148/bpt6k8724474',
+            }
+        ],
+    },
+    'journaux-tranchees': {
+        'n_documents': 10,
+        'documents': [
+            {
+                'content': 'Première Année. No 1. 15 Février 1917; BABmiiflGB > Salut, mon vieux !',
+                'contributor': [],
+                'date': '1917-02-15',
+                'id': 'bpt6k57549079',
+                'issue': '15 février 1917 1917/02/15 (A1,N1).',
+                'title': 'Le Cafard muselé : organe des foyers du soldat n° 23, 27, 42 et 43',
+                'url': 'https://gallica.bnf.fr/ark:/12148/bpt6k57549079',
             }
         ],
     },
 }
 
 
-@pytest.mark.parametrize('corpus_name', ['caricature', 'figaro', 'journauxresistance'])
+@pytest.mark.parametrize(
+    'corpus_name', ['caricature', 'figaro', 'journaux-resistance', 'journaux-tranchees']
+)
 def test_gallica_import(corpus_name, monkeypatch, gallica_corpus_settings):
     mock = MockResponseFactory(corpus_name)
     monkeypatch.setattr(requests, "get", mock.mock_response)
