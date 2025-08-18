@@ -53,7 +53,7 @@
     "iv-viewer": "^2.0.1",
     "jsonschema": "^1.5.0",
     "lodash": "^4.17.21",
-    "marked": "^4.1.1",
+    "marked": "^15.0.0",
     "moment": "^2.29.4",
     "ng2-pdf-viewer": "^10.2.2",
     "ngx-cookie-service": "19.1.0",
