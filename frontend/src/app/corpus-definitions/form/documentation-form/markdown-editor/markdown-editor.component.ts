@@ -1,6 +1,24 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ContentChange, QuillModules } from 'ngx-quill';
+import { marked } from 'marked';
+import TurndownService from 'turndown';
+
+// functions to increase/decrease markdown header levels
+// this is because section headers within documentation should be <h2> (<h1> is the page
+// title), so users can create <h2>-<h6> in the editor, but the editor toolbar should
+// not start counting at 2.
+
+/** Increase markdown header levels; inserts a # before every header line. Does not
+ * affect level 6 headers. */
+export const increaseHeaderLevels = (content: string): string =>
+    content.replace(/^#{1,5}\s/mg, '#$&');
+
+/** Decrease markdown header levels; removes a # at the start of every header line. Does
+ * not affect level 1 headers. */
+export const decreaseHeaderLevels = (content: string): string =>
+    content.replace(/^##/mg, '#');
+
 
 
 @Component({
@@ -22,7 +40,6 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
     onChangeFn?: Function;
     onTouchedFn?: Function;
 
-
     modules: QuillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -39,9 +56,10 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
         ]
     };
 
+    turndownService = new TurndownService({ headingStyle: 'atx' });
 
     writeValue(value: string): void {
-        this.content = value;
+        this.content = this.markdownToHtml(value);
     }
 
     registerOnChange(fn: Function): void {
@@ -54,7 +72,8 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
 
     onChange(event: ContentChange) {
         if (this.onChangeFn) {
-            this.onChangeFn(event.html)
+            const value = this.htmlToMarkdown(event.html);
+            this.onChangeFn(value);
         }
     }
 
@@ -62,5 +81,17 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
         if (this.onTouchedFn) {
             this.onTouchedFn();
         }
+    }
+
+    private markdownToHtml(value: string): string {
+        const headersAdjusted = decreaseHeaderLevels(value);
+        const html = marked.parse(headersAdjusted, { async: false });
+        return html;
+    }
+
+    private htmlToMarkdown(value: string): string {
+        const markdown = this.turndownService.turndown(value);
+        const headersAdjusted = increaseHeaderLevels(markdown);
+        return headersAdjusted;
     }
 }
