@@ -195,3 +195,18 @@ a, button {
         }
     }
 }
+
+// quill
+
+.ql-container {
+    font-family: inherit;
+    font-size: inherit;
+
+    .ql-editor {
+        @extend .content;
+
+        ol, ul {
+            padding-left: 0em; // so spacing is not added in both margin AND padding
+        }
+    }
+}
