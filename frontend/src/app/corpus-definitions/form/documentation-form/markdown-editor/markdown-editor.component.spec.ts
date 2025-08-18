@@ -8,8 +8,7 @@ import { SharedModule } from '@shared/shared.module';
 @Component({
     standalone: false,
     template: `
-    <label id="story-label">Write a story</label>
-    <ia-markdown-editor [formControl]="control" ariaLabelledBy="story-label">
+    <ia-markdown-editor [formControl]="control">
     `
 })
 class EditorTestComponent {

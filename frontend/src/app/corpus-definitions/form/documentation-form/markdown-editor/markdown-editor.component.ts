@@ -1,5 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ContentChange } from 'ngx-quill';
 
 @Component({
     selector: 'ia-markdown-editor',
@@ -15,15 +16,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     ],
 })
 export class MarkdownEditorComponent implements ControlValueAccessor {
-    @Input({ required: true }) ariaLabelledBy: string;
-
-    value: string = '';
+    content: string = '';
 
     onChangeFn?: Function;
     onTouchedFn?: Function;
 
     writeValue(value: string): void {
-        this.value = value;
+        this.content = value;
     }
 
     registerOnChange(fn: Function): void {
@@ -34,9 +33,9 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
         this.onTouchedFn = fn;
     }
 
-    onChange(event) {
+    onChange(event: ContentChange) {
         if (this.onChangeFn) {
-            this.onChangeFn(this.value);
+            this.onChangeFn(event.html)
         }
     }
 
