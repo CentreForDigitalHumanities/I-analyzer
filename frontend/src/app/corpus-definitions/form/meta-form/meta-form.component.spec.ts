@@ -14,6 +14,7 @@ import { FormFeedbackComponent } from '../form-feedback/form-feedback.component'
 import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MarkdownEditorComponent } from '../documentation-form/markdown-editor/markdown-editor.component';
+import { QuillModule } from 'ngx-quill';
 
 
 describe('MetaFormComponent', () => {
@@ -34,6 +35,7 @@ describe('MetaFormComponent', () => {
                 SharedModule,
                 ReactiveFormsModule,
                 AutoCompleteModule,
+                QuillModule,
             ],
             providers: [
                 CorpusDefinitionService,

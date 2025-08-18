@@ -4,6 +4,7 @@ import { decreaseHeaderLevels, increaseHeaderLevels, MarkdownEditorComponent } f
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
+import { QuillModule } from 'ngx-quill';
 
 const contentH1H2 = `# Bla
 Bla bla
@@ -63,7 +64,7 @@ describe('MarkdownEditorComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [MarkdownEditorComponent, EditorTestComponent],
-            imports: [SharedModule, ReactiveFormsModule],
+            imports: [SharedModule, ReactiveFormsModule, QuillModule],
         })
             .compileComponents();
 
