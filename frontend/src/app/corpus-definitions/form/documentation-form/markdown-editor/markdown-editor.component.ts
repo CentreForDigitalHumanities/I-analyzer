@@ -1,6 +1,7 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { ContentChange } from 'ngx-quill';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ContentChange, QuillModules } from 'ngx-quill';
+
 
 @Component({
     selector: 'ia-markdown-editor',
@@ -20,6 +21,24 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
 
     onChangeFn?: Function;
     onTouchedFn?: Function;
+
+
+    modules: QuillModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+
+            [{ 'header': [1, 2, 3, 4, 5, false] }],
+            ['link', 'image'],
+
+            ['clean'],
+
+        ]
+    };
+
 
     writeValue(value: string): void {
         this.content = value;
