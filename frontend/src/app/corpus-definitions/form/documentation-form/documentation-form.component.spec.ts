@@ -8,6 +8,7 @@ import { ApiServiceMock } from 'mock-data/api';
 import { CorpusDefinition } from '@models/corpus-definition';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { MarkdownEditorComponent } from './markdown-editor/markdown-editor.component';
 
 describe('DocumentationFormComponent', () => {
     let component: DocumentationFormComponent;
@@ -18,6 +19,7 @@ describe('DocumentationFormComponent', () => {
             declarations: [
                 DocumentationFormComponent,
                 FormFeedbackComponent,
+                MarkdownEditorComponent,
             ],
             imports: [SharedModule, ReactiveFormsModule],
             providers: [

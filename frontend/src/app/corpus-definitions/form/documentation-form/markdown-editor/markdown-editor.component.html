@@ -1,0 +1,6 @@
+<textarea [(ngModel)]="value"
+    (change)="this.onChange($event)"
+    (blur)="this.onBlur()"
+    class="textarea" rows="10"
+    [attr.aria-labelledby]="this.ariaLabelledBy">
+</textarea>

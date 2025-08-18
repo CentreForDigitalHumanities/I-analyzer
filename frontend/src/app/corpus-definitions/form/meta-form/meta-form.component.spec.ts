@@ -13,6 +13,7 @@ import { ApiServiceMock } from 'mock-data/api';
 import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
 import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MarkdownEditorComponent } from '../documentation-form/markdown-editor/markdown-editor.component';
 
 
 describe('MetaFormComponent', () => {
@@ -27,6 +28,7 @@ describe('MetaFormComponent', () => {
                 ImageUploadComponent,
                 DocumentationFormComponent,
                 FormFeedbackComponent,
+                MarkdownEditorComponent,
             ],
             imports: [
                 SharedModule,

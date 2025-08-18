@@ -17,6 +17,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { IndexFormComponent } from './form/index-form/index-form.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
+import { MarkdownEditorComponent } from './form/documentation-form/markdown-editor/markdown-editor.component';
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { DropdownModule } from 'primeng/dropdown';
         ImageUploadComponent,
         FormFeedbackComponent,
         IndexFormComponent,
+        MarkdownEditorComponent,
     ],
     exports: [
         CreateDefinitionComponent,

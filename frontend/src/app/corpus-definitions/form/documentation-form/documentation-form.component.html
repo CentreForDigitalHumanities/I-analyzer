@@ -13,10 +13,14 @@
                  [id]="category.id" [title]="category.title">
                 <p class="block">{{category.description}}</p>
 
-                <textarea [formControl]="form.controls[category.id]"
+                <!-- <textarea [formControl]="form.controls[category.id]"
                     class="textarea" rows="10"
                     [attr.aria-labelledby]="'tab-' + category.id">
-                </textarea>
+                </textarea> -->
+                <ia-markdown-editor
+                    [formControl]="form.controls[category.id]"
+                    [ariaLabelledBy]="'tab-' + category.id"
+                />
             </ng-template>
         </ia-tabs>
     </div>
