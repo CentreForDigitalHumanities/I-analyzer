@@ -6,7 +6,7 @@
             </span>
         </span>
         <button class="button tag" [attr.aria-label]="'remove tag ' + tag.name"
-            iaBalloon="remove this tag" iaBalloonPosition="up"
+            iaBalloon="remove this tag" iaBalloonPosition="down"
             (click)="removeTag(tag)">
             <span class="icon"><fa-icon [icon]="actionIcons.remove" aria-hidden="true"></fa-icon></span>
         </button>
@@ -19,7 +19,7 @@
 
         <ng-template #toggleAddNew>
             <button class="button tag" aria-label="add a tag"
-                iaBalloon="add a tag" iaBalloonPosition="up"
+                iaBalloon="add a tag" iaBalloonPosition="down"
                 (click)="showAddNew = true"
                 #toggleAddNewButton>
                 <span class="icon"><fa-icon [icon]="actionIcons.add" aria-hidden="true"></fa-icon></span>
