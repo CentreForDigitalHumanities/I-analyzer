@@ -35,20 +35,38 @@
             <ia-search-sorting [pageResults]="resultsConfig" labelledBy="sort-by-label" />
         </div>
 
-        <!-- TODO: show this option when query-in-context download is fixed -->
-        <div class="field" *ngIf="queryModel.queryText" hidden>
+        <div class="field">
             <div role="group" class="control">
                 <legend class="label">
                     Additional columns
                 </legend>
-                <label>
-                    <!-- checkbox: include query? -->
-                     <!-- checkbox: include user tags? -->
-                    <input type="checkbox"
-                        [checked]="(resultsConfig.highlight$ | async) !== undefined"
-                        (change)="onHighlightChange($event)">
-                    Include "query in context" snippets
-                </label>
+                <!-- checkbox: include query? -->
+                <ul>
+                    <li>
+                        <label>
+                            <input name="tags" type="checkbox"
+                                [(ngModel)]="tagsSelected">
+                            Your tags
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input name="documentLink" type="checkbox"
+                                [checked]="documentLinkSelected"
+                                (change)="documentLinkSelected = !documentLinkSelected">
+                            Document URL
+                        </label>
+                    </li>
+                    <li>
+                        <label *ngIf="queryModel.queryText" hidden>
+                            <!-- TODO: show this option when query-in-context download is fixed -->
+                            <input  type="checkbox"
+                                [checked]="(resultsConfig.highlight$ | async) !== undefined"
+                                (change)="onHighlightChange($event)">
+                            "Query in context" snippets
+                        </label>
+                    </li>
+                </ul>
             </div>
         </div>
 

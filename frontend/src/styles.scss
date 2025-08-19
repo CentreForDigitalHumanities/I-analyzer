@@ -27,7 +27,7 @@
         box-shadow: var(--bulma-shadow);
     }
 
-    + section {
+    +section {
         padding-top: utilities.$size-6;
     }
 
@@ -45,16 +45,16 @@
 }
 
 .tag-dropdown .button {
-	align-items: center;
-	border-radius: 3px;
-	display: inline-flex;
-	font-size: 0.75rem;
-	height: 2em;
-	justify-content: center;
-	line-height: 1.5;
-	padding-left: 0.75em;
-	padding-right: 0.75em;
-	white-space: nowrap;
+    align-items: center;
+    border-radius: 3px;
+    display: inline-flex;
+    font-size: 0.75rem;
+    height: 2em;
+    justify-content: center;
+    line-height: 1.5;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    white-space: nowrap;
 }
 
 a.dropdown-item:focus {
@@ -76,7 +76,8 @@ a.dropdown-item[disabled] {
     border-bottom: .2em solid;
     border-color: $color;
 
-    .entity-icon, &.entity-icon {
+    .entity-icon,
+    &.entity-icon {
         padding-left: .3em;
         padding-right: .3em;
         color: $color;
@@ -122,7 +123,9 @@ a.dropdown-item[disabled] {
 table.spreadsheet {
     border: 2px solid var(--bulma-border);
 
-    thead th, tbody td, tbody th {
+    thead th,
+    tbody td,
+    tbody th {
         border-width: 1px;
     }
 
@@ -137,7 +140,12 @@ table.spreadsheet {
 
 // restore some rules from older bulma versions for compatibility
 
-.block, .message, .title, .box, .field, .content {
+.block,
+.message,
+.title,
+.box,
+.field,
+.content {
     @include utilities.block();
 }
 
@@ -157,7 +165,8 @@ table.spreadsheet {
 // reset focus styling for accessibility
 // bulma's customisation makes focus rings invisible on blue background
 
-a, button {
+a,
+button {
     &:focus-visible {
         outline: auto !important;
         border: inherit !important;
