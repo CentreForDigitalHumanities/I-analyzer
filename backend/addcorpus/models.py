@@ -314,18 +314,18 @@ class CorpusConfiguration(models.Model):
         return False
 
 
-FIELD_DISPLAY_TYPES = [
-    ('text_content', 'text content'),
-    (MappingType.TEXT.value, 'text'),
-    (MappingType.KEYWORD.value, 'keyword'),
-    (MappingType.DATE.value, 'date'),
-    (MappingType.DATE_RANGE.value, 'date_range'),
-    (MappingType.INTEGER.value, 'integer'),
-    (MappingType.FLOAT.value, 'float'),
-    (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point'),
-    ('url', 'url'),
-]
+class FieldDisplayTypes(models.TextChoices):
+    TEXT_CONTENT = ('text_content', 'text content')
+    TEXT = (MappingType.TEXT.value, 'text')
+    KEYWORD = (MappingType.KEYWORD.value, 'keyword')
+    DATE = (MappingType.DATE.value, 'date')
+    DATE_RANGE = (MappingType.DATE_RANGE.value, 'date_range')
+    INTEGER = (MappingType.INTEGER.value, 'integer')
+    FLOAT = (MappingType.FLOAT.value, 'float')
+    BOOLEAN = (MappingType.BOOLEAN.value, 'boolean')
+    GEO_POINT = (MappingType.GEO_POINT.value, 'geo_point')
+    URL = ('url', 'url')
+
 
 FIELD_VISUALIZATIONS = [
     (VisualizationType.RESULTS_COUNT.value, 'Number of results'),
@@ -364,7 +364,7 @@ class Field(models.Model):
     )
     display_type = models.CharField(
         max_length=16,
-        choices=FIELD_DISPLAY_TYPES,
+        choices=FieldDisplayTypes.choices,
         help_text='as what type of data this field is rendered in the interface',
     )
     description = models.CharField(
