@@ -78,6 +78,7 @@ def test_csv_query_in_context(result_csv_with_highlights):
         context = rows[0]['query in context: content']
         assert 'disaster' in context
         assert 'forebodings' in context
+        assert rows[0]['content'] == mock_es_result['hits']['hits'][0]['_source']['content']
 
 
 def test_csv_fieldnames(mock_corpus_results_csv, mock_corpus_specs):

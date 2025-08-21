@@ -108,14 +108,17 @@ def _results_csv_fieldnames(
 
 
 def _query_in_context_values(highlights: Dict, context_fields: List[str]) -> Dict:
-    values = {f: None for f in context_fields}
+    values = {}
 
     for field in context_fields:
+        col = _query_in_context_column(field)
         snippets = highlights.get(field)
         if snippets:
             plain_text_snippets = map(strip_tags, snippets)
             value = '\n\n'.join(plain_text_snippets)
-            values[_query_in_context_column(field)] = value
+        else:
+            value = None
+        values[col] = value
 
     return values
 
