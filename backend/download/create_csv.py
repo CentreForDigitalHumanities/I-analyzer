@@ -1,6 +1,7 @@
 import csv
 import os
 from typing import Dict, Iterable, List, Optional, Union
+from django.utils.html import strip_tags
 
 from django.conf import settings
 
@@ -102,19 +103,16 @@ def _results_csv_fieldnames(
 
 
 def _query_in_context_values(highlights: Dict, context_fields: List[str]) -> Dict:
-    return {
-        f: None
-        for f in context_fields
-    }
+    values = {f: None for f in context_fields}
 
-    # hi_fields = highlights.keys()
-    # for hf in hi_fields:
-    #     for index, hi in enumerate(highlights[hf]):
-    #         highlight_field_name = '{}{}{}'.format(
-    #             hf, QUERY_CONTEXT_INFIX, index + 1)
-    #         field_set.update([highlight_field_name])
-    #         soup = BeautifulSoup(hi, 'html.parser')
-    #         entry.update({highlight_field_name: soup.get_text()})
+    for field in context_fields:
+        snippets = highlights.get(field)
+        if snippets:
+            plain_text_snippets = map(strip_tags, snippets)
+            value = '\n\n'.join(plain_text_snippets)
+            values[_query_in_context_column(field)] = value
+
+    return values
 
 
 def generate_rows(
