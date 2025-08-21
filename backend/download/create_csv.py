@@ -79,11 +79,16 @@ def _query_in_context_column(field: str) -> str:
     return f'query in context: {field}'
 
 
+
 def _query_in_context_fields(corpus: Corpus, query: Dict, extra_columns: List[str]) -> List[str]:
     if 'context' in extra_columns:
         corpus_fields = corpus.configuration.fields.all()
         query_fieldnames = get_search_fields(query) or [f.name for f in corpus_fields]
-        content_fields = corpus_fields.filter(display_type=FieldDisplayTypes.TEXT_CONTENT)
+        content_fields = corpus_fields.filter(
+            display_type=FieldDisplayTypes.TEXT_CONTENT,
+            downloadable=True,
+            hidden=False,
+        )
         return [ f.name for f in content_fields if f.name in query_fieldnames ]
 
 
