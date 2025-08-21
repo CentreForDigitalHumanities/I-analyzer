@@ -301,6 +301,15 @@ class CorpusConfiguration(models.Model):
                     e
                 ])
 
+    @property
+    def visible_fields(self) -> models.QuerySet['Field']:
+        fields = self.fields.all()
+
+        if not self.has_named_entities:
+            fields = fields.exclude(name__endswith=':ner-kw').exclude(name__endswith=':ner')
+
+        return fields
+
 
 FIELD_DISPLAY_TYPES = [
     ('text_content', 'text content'),
