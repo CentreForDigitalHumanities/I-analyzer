@@ -17,6 +17,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { IndexFormComponent } from './form/index-form/index-form.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
+import { MarkdownEditorComponent } from './form/documentation-form/markdown-editor/markdown-editor.component';
+import { QuillModule } from 'ngx-quill';
 
 @NgModule({
     declarations: [
@@ -32,6 +34,7 @@ import { DropdownModule } from 'primeng/dropdown';
         ImageUploadComponent,
         FormFeedbackComponent,
         IndexFormComponent,
+        MarkdownEditorComponent,
     ],
     exports: [
         CreateDefinitionComponent,
@@ -46,6 +49,7 @@ import { DropdownModule } from 'primeng/dropdown';
         AutoCompleteModule,
         MultiSelectModule,
         DropdownModule,
+        QuillModule.forRoot(),
     ],
 })
 export class CorpusDefinitionsModule {}
