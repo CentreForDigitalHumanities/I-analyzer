@@ -58,8 +58,7 @@
                         </label>
                     </li>
                     <li>
-                        <label *ngIf="queryModel.queryText" hidden>
-                            <!-- TODO: show this option when query-in-context download is fixed -->
+                        <label *ngIf="queryModel.queryText">
                             <input  type="checkbox"
                                 [checked]="(resultsConfig.highlight$ | async) !== undefined"
                                 (change)="onHighlightChange($event)">
