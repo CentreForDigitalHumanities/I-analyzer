@@ -1,9 +1,11 @@
 import os
 from django.db import transaction
 from django.core.files.images import ImageFile
-from datetime import date, datetime
+import warnings
 import sys
 
+from es.client import elasticsearch
+from es.search import total_hits
 from addcorpus.python_corpora.corpus import CorpusDefinition, FieldDefinition
 from addcorpus.models import Corpus, CorpusConfiguration, Field, CorpusDocumentationPage
 from addcorpus.python_corpora.load_corpus import load_all_corpus_definitions, corpus_dir
@@ -37,6 +39,7 @@ def _save_corpus_configuration(corpus: Corpus, corpus_definition: CorpusDefiniti
     _save_corpus_fields_in_database(corpus_definition, configuration)
     _save_corpus_image(corpus_definition, configuration)
     _save_corpus_documentation(corpus_definition, configuration)
+    _save_has_named_entities(configuration)
 
 def get_defined_attributes(object, attributes):
     get = lambda attr: object.__getattribute__(attr)
@@ -158,6 +161,23 @@ def _save_corpus_documentation(corpus_definition: CorpusDefinition, configuratio
             )
             if pages.exists():
                 pages.delete()
+
+
+def _save_has_named_entities(configuration: CorpusConfiguration):
+    # we check if any fields exist for filtering named entities
+    if any(field.name.endswith(':ner-kw') for field in configuration.fields.all()):
+        client = elasticsearch(configuration.corpus.name)
+        try:
+            ner_exists = client.search(
+                index=configuration.es_index,
+                query={"exists": {"field": "*:ner-kw"}},
+                size=0
+            )
+            if total_hits(ner_exists):
+                configuration.has_named_entities = True
+                configuration.save()
+        except Exception as e:
+            warnings.warn(Warning('Could not check named enities:', e))
 
 
 def _prepare_for_import(corpus: Corpus):
