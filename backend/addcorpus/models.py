@@ -254,6 +254,10 @@ class CorpusConfiguration(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
+    has_named_entities = models.BooleanField(
+        default=False,
+        help_text='whether this corpus has named entity annotations',
+    )
     default_sort = models.JSONField(
         blank=True,
         validators=[validate_sort_configuration],
@@ -296,22 +300,6 @@ class CorpusConfiguration(models.Model):
                     'the corpus or correct the following errors.',
                     e
                 ])
-
-    @property
-    def has_named_entities(self):
-        from es.search import total_hits
-
-        client = elasticsearch(self.corpus.name)
-        try:
-            # we check if any fields exist for filtering named entities
-            ner_exists = client.search(
-                index=self.es_index, query={"exists": {"field": "*:ner-kw"}}, size=0
-            )
-            if total_hits(ner_exists):
-                return True
-        except:
-            return False
-        return False
 
 
 FIELD_DISPLAY_TYPES = [
