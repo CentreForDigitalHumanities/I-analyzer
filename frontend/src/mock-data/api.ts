@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { mockUserResponse } from './user';
 import { Corpus, CorpusDocumentationPage, TaskResult, TasksOutcome } from '../app/models';
 import { LimitedResultsDownloadParameters } from '../app/models/search-results';
-import { mockCorpusDefinition } from './corpus-definition';
+import { corpusDefinitionFactory } from './corpus-definition';
 import { APIEditableCorpus, CorpusDataFile } from '../app/models/corpus-definition';
 
 export const fakeNgramResult = {
@@ -101,12 +101,12 @@ export class ApiServiceMock {
     }
 
     corpusDefinitions(): Observable<APIEditableCorpus[]> {
-        const data = [{ id: 1, active: false, definition: mockCorpusDefinition }];
+        const data = [{ id: 1, active: false, definition: corpusDefinitionFactory() }];
         return of(data);
     }
 
     corpusDefinition(id: number): Observable<APIEditableCorpus> {
-        const data = { id, active: false, definition: mockCorpusDefinition };
+        const data = { id, active: false, definition: corpusDefinitionFactory() };
         return of(data);
     }
 
