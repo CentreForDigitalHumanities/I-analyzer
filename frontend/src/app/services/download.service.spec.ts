@@ -40,14 +40,13 @@ describe('DownloadService', () => {
         const size = 1;
         const route = `/search/${query.corpus.name}`;
         const sort: SortState = [query.corpus.fields[2], 'desc'];
-        const highlight = 200;
         const options: DownloadOptions = {
             encoding: 'utf-8',
         };
 
         spyOn(apiService, 'download').and.returnValue(Promise.resolve({}));
         const fieldNames = query.corpus.fields.map(field => field.name)
-        service.download(query.corpus, query, fieldNames, size, route, sort, highlight, options, []);
+        service.download(query.corpus, query, fieldNames, size, route, sort, undefined, options, []);
         const expectedBody: LimitedResultsDownloadParameters = {
             corpus: query.corpus.name,
             fields: ['genre', 'content', 'date'],
@@ -66,13 +65,6 @@ describe('DownloadService', () => {
                     },
                 },
                 sort: [{ date: 'desc' }],
-                highlight: {
-                    fragment_size: highlight,
-                    pre_tags: ['<mark class="highlight">'],
-                    post_tags: ['</mark>'],
-                    order: 'score',
-                    fields: [{ content: {} }],
-                },
                 from: 0,
                 size,
             },

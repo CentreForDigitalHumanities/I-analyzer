@@ -44,17 +44,31 @@ describe('es-query utils', () => {
         });
     });
 
-    it('should make a highlight specification', () => {
-        expect(makeHighlightSpecification(corpusFactory(), 'test', [], undefined)).toEqual({});
-        expect(makeHighlightSpecification(corpusFactory(), 'test', [], 100)).toEqual({
-            highlight: {
-                fragment_size: 100,
-                pre_tags: ['<mark class="highlight">'],
-                post_tags: ['</mark>'],
-                order: 'score',
-                fields: [{content: {}}]
-            }
+    describe('makeHighlightSpecification', () => {
+        it('should make a highlight specification', () => {
+            expect(_.keys(
+                makeHighlightSpecification(corpusFactory(), 'test', [], undefined)
+            )).toEqual([]);
+            expect(_.keys(
+                makeHighlightSpecification(corpusFactory(), 'test', [], 100)
+            )).toEqual(['highlight']);
         });
+
+        it('should select highlight fields', () => {
+            const corpus = corpusFactory();
+            corpus.fields[0] = keywordFieldFactory(true); // corpus now has 2 searchable fields
+
+            const highlightedFields = (spec) => spec.highlight.fields.map(f => _.keys(f)[0]);
+
+            expect(highlightedFields(
+                makeHighlightSpecification(corpus, 'test', [], 100)
+            )).toContain('content')
+
+            expect(highlightedFields(
+                makeHighlightSpecification(corpus, 'test', [corpus.fields[0]], 100)
+            )).not.toContain('content');
+        });
+
     });
 
     it('should create an API query for paged results', () => {

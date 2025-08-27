@@ -22,6 +22,7 @@ import { TagFilter } from '@models/tag-filter';
 import { PageResultsParameters } from '@models/page-results';
 import { DeepPartial } from 'chart.js/dist/types/utils';
 import { SimpleStore } from '../store/simple-store';
+import { searchFieldOptions } from './search-fields';
 
 // conversion from query model -> elasticsearch query language
 
@@ -90,18 +91,22 @@ export const makeSortSpecification = (sortBy: SortBy, sortDirection: SortDirecti
     }
 };
 
+const highlightFields = (corpus: Corpus, searchFields: CorpusField[]): CorpusField[]  => {
+    return searchFields.length ? searchFields : searchFieldOptions(corpus);
+}
+
 export const makeHighlightSpecification = (corpus: Corpus, queryText: string | undefined, searchFields: CorpusField[], highlightSize?: number) => {
     if (!queryText || !highlightSize) {
         return {};
     }
-    const highlightFields = corpus.fields.filter(field => field.searchable);
+    const fields = highlightFields(corpus, searchFields);
     return {
         highlight: {
             fragment_size: highlightSize,
             pre_tags: ['<mark class="highlight">'],
             post_tags: ['</mark>'],
             order: 'score',
-            fields: highlightFields.map((field) =>
+            fields: fields.map((field) =>
                 field.displayType === 'text_content' &&
                 field.positionsOffsets &&
                 // add matched_fields for stemmed highlighting
