@@ -91,8 +91,8 @@ export const makeSortSpecification = (sortBy: SortBy, sortDirection: SortDirecti
     }
 };
 
-const highlightFieldNames = (corpus: Corpus, searchFields: CorpusField[]): string[]  => {
-    const fields = searchFields.length ? searchFields : searchFieldOptions(corpus);
+const highlightFieldNames = (corpus: Corpus, searchFields?: CorpusField[]): string[]  => {
+    const fields = searchFields?.length ? searchFields : searchFieldOptions(corpus);
     return fields.map(f => f.name);
 };
 
