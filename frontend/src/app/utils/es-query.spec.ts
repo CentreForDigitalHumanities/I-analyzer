@@ -75,20 +75,16 @@ describe('es-query utils', () => {
             const corpus = corpusFactory();
             const makeSpec = (fields: CorpusField[]) =>
                 makeHighlightSpecification(corpus, 'test', fields, 100);
-            expect(
-                _.get(makeSpec([]), [0, 'content', 'matched_fields'])
-            ).toEqual(['content', 'content.stemmed']);
+            const matchedFields = spec => spec.highlight.fields[0].content.matched_fields;
+
+            expect(matchedFields(makeSpec([]))).toEqual(['content', 'content.stemmed']);
 
             const searchFields = searchFieldOptions(corpus);
             const baseField = findByName(searchFields, 'content');
             const stemmedField = findByName(searchFields, 'content.stemmed');
 
-            expect(
-                _.get(makeSpec([baseField]), [0, 'content', 'matched_fields'])
-            ).toEqual(['content']);
-            expect(
-                _.get(makeSpec([stemmedField]), [0, 'content', 'matched_fields'])
-            ).toEqual(['content.stemmed']);
+            expect(matchedFields(makeSpec([baseField]))).toEqual(['content']);
+            expect(matchedFields(makeSpec([stemmedField]))).toEqual(['content.stemmed']);
 
         })
     });

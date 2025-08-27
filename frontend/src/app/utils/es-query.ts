@@ -91,38 +91,41 @@ export const makeSortSpecification = (sortBy: SortBy, sortDirection: SortDirecti
     }
 };
 
-const highlightFields = (corpus: Corpus, searchFields: CorpusField[]): CorpusField[]  => {
-    return searchFields.length ? searchFields : searchFieldOptions(corpus);
-}
+const highlightFieldNames = (corpus: Corpus, searchFields: CorpusField[]): string[]  => {
+    const fields = searchFields.length ? searchFields : searchFieldOptions(corpus);
+    return fields.map(f => f.name);
+};
+
+const baseFieldName = (searchFieldName: string): string =>
+    searchFieldName.split('.')[0];
+
+const includeHighlight = (field: CorpusField, highlightFields: string[]): boolean =>
+    _.some(highlightFields, f => baseFieldName(f) == field.name);
+
+const makeFieldHighlightSpec = (field: CorpusField, highlightFields: string[]) => {
+    if (field.positionsOffsets && field.multiFields) {
+        const matchedFields = highlightFields.filter(f => baseFieldName(f) == field.name);
+        return { [field.name]: { type: 'fvh', matched_fields: matchedFields }};
+    } else {
+        return { [field.name]: {} }
+    }
+};
 
 export const makeHighlightSpecification = (corpus: Corpus, queryText: string | undefined, searchFields: CorpusField[], highlightSize?: number) => {
     if (!queryText || !highlightSize) {
         return {};
     }
-    const fields = highlightFields(corpus, searchFields);
+    const highlightFields = highlightFieldNames(corpus, searchFields);
+
     return {
         highlight: {
             fragment_size: highlightSize,
             pre_tags: ['<mark class="highlight">'],
             post_tags: ['</mark>'],
             order: 'score',
-            fields: fields.map((field) =>
-                field.displayType === 'text_content' &&
-                field.positionsOffsets &&
-                // add matched_fields for stemmed highlighting
-                // ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
-                corpus['newHighlight']
-                    ? {
-                          [field.name]: {
-                              type: 'fvh',
-                              matched_fields: [
-                                  field.name,
-                                  field.name + '.stemmed',
-                              ],
-                          },
-                      }
-                    : { [field.name]: {} }
-            ),
+            fields: corpus.fields
+                .filter(f => includeHighlight(f, highlightFields))
+                .map(f => makeFieldHighlightSpec(f, highlightFields)),
         },
     };
 };
