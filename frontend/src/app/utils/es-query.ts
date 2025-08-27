@@ -104,7 +104,7 @@ const includeHighlight = (field: CorpusField, highlightFields: string[]): boolea
 
 const makeFieldHighlightSpec = (field: CorpusField, highlightFields: string[]) => {
     const spec = {};
-    if (field.positionsOffsets) {
+    if (field.fastVectorHighlight) {
         spec['type'] = 'fvh';
     }
     if (field.multiFields) {
