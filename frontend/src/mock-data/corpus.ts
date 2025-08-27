@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { BehaviorSubject } from 'rxjs';
-import { findByName } from '../app/utils/utils';
+import { of } from 'rxjs';
 import { Corpus, CorpusField } from '../app/models';
 
 
@@ -171,23 +170,9 @@ export const corpusFactory = () =>
 
 
 export class CorpusServiceMock {
-    private currentCorpusSubject = new BehaviorSubject<Corpus>(corpusFactory());
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    public currentCorpus = this.currentCorpusSubject.asObservable();
+    public currentCorpus = of(corpusFactory());
 
-    public get(refresh = false): Promise<Corpus[]> {
+    public get(): Promise<Corpus[]> {
         return Promise.resolve([corpusFactory()]);
-    }
-
-    public set(corpusName = 'test1'): Promise<boolean> {
-        return this.get().then((all) => {
-            const corpus = findByName(all, corpusName);
-            if (!corpus) {
-                return false;
-            } else {
-                this.currentCorpusSubject.next(corpus);
-                return true;
-            }
-        });
     }
 }
