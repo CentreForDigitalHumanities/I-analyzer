@@ -86,10 +86,6 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER', 'redis://')
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'
 
-# list of corpora that have been re-indexed using the top-level term vector
-# for main content fields, needed for the new highlighter
-NEW_HIGHLIGHT_CORPORA = []
-
 DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
 
 LOGGING = {
