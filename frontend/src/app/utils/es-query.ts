@@ -103,12 +103,14 @@ const includeHighlight = (field: CorpusField, highlightFields: string[]): boolea
     _.some(highlightFields, f => baseFieldName(f) == field.name);
 
 const makeFieldHighlightSpec = (field: CorpusField, highlightFields: string[]) => {
-    if (field.positionsOffsets && field.multiFields) {
-        const matchedFields = highlightFields.filter(f => baseFieldName(f) == field.name);
-        return { [field.name]: { type: 'fvh', matched_fields: matchedFields }};
-    } else {
-        return { [field.name]: {} }
+    const spec = {};
+    if (field.positionsOffsets) {
+        spec['type'] = 'fvh';
     }
+    if (field.multiFields) {
+        spec['matched_fields'] = highlightFields.filter(f => baseFieldName(f) == field.name);
+    }
+    return { [field.name]: spec };
 };
 
 export const makeHighlightSpecification = (corpus: Corpus, queryText: string | undefined, searchFields: CorpusField[], highlightSize?: number) => {
