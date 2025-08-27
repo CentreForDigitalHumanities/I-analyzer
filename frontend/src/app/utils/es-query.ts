@@ -90,7 +90,7 @@ export const makeSortSpecification = (sortBy: SortBy, sortDirection: SortDirecti
     }
 };
 
-export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, highlightSize?: number) => {
+export const makeHighlightSpecification = (corpus: Corpus, queryText: string | undefined, searchFields: CorpusField[], highlightSize?: number) => {
     if (!queryText || !highlightSize) {
         return {};
     }
@@ -173,7 +173,7 @@ export const resultsParamsToAPIQuery = (queryModel: QueryModel, params: PageResu
     const query = queryModel.toAPIQuery();
 
     const sort = makeSortSpecification(...params.sort);
-    const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, params.highlight);
+    const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, queryModel.searchFields, params.highlight);
     const addToQuery: DeepPartial<APIQuery> = {
         es_query: {
             ...sort,

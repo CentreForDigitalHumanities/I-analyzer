@@ -45,9 +45,8 @@ describe('es-query utils', () => {
     });
 
     it('should make a highlight specification', () => {
-        expect(makeHighlightSpecification(corpusFactory(), 'test', undefined)).toEqual({});
-
-        expect(makeHighlightSpecification(corpusFactory(), 'test', 100)).toEqual({
+        expect(makeHighlightSpecification(corpusFactory(), 'test', [], undefined)).toEqual({});
+        expect(makeHighlightSpecification(corpusFactory(), 'test', [], 100)).toEqual({
             highlight: {
                 fragment_size: 100,
                 pre_tags: ['<mark class="highlight">'],
