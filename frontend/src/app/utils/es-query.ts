@@ -106,7 +106,7 @@ export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, h
                 field.positionsOffsets &&
                 // add matched_fields for stemmed highlighting
                 // ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
-                corpus.newHighlight
+                corpus['newHighlight']
                     ? {
                           [field.name]: {
                               type: 'fvh',

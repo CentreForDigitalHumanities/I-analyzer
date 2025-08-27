@@ -31,7 +31,6 @@ export class Corpus {
         public category: string,
         public hasNamedEntities: boolean,
         public documentContext?: DocumentContext,
-        public newHighlight?: boolean,
         public defaultSort?: SortState,
         public languageField?: CorpusField,
     ) { }
