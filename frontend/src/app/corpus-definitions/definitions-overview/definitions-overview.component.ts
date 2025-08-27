@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { APIEditableCorpus } from '@models/corpus-definition';
 import { ApiService } from '@services';
 import { actionIcons, documentIcons } from '@shared/icons';
 import { pageTitle } from '@utils/app';
-import { showLoading } from '@utils/utils';
-import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'ia-definitions-overview',
@@ -19,8 +18,7 @@ export class DefinitionsOverviewComponent {
 
     corpora$: Observable<APIEditableCorpus[]>;
 
-    corpusToDelete$ = new BehaviorSubject<APIEditableCorpus|null>(null);
-    deleteLoading$ = new BehaviorSubject<boolean>(false);
+    handleDelete = this.requestDelete.bind(this);
 
     constructor(
         private apiService: ApiService,
@@ -30,22 +28,11 @@ export class DefinitionsOverviewComponent {
         this.title.setTitle(pageTitle('Corpus definitions'));
     }
 
-    openDelete(corpus: APIEditableCorpus) {
-        this.corpusToDelete$.next(corpus);
+    onDeleteComplete() {
+        this.corpora$ = this.apiService.corpusDefinitions();
     }
 
-    confirmDelete(corpus: APIEditableCorpus) {
-        const request$ = this.apiService.deleteCorpus(corpus.id);
-        showLoading(
-            this.deleteLoading$,
-            lastValueFrom(request$)
-        ).then(() => {
-            this.corpora$ = this.apiService.corpusDefinitions();
-            this.corpusToDelete$.next(null);
-        });
-    }
-
-    cancelDelete() {
-        this.corpusToDelete$.next(null);
+    private requestDelete(corpus: APIEditableCorpus) {
+        return this.apiService.deleteCorpus(corpus.id);
     }
 }

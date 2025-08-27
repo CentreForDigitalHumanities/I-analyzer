@@ -33,10 +33,11 @@ class MockCSVCorpus(CSVCorpusDefinition):
 
     def sources(self, *args, **kwargs):
         for filename in os.listdir(self.data_directory):
-            full_path = os.path.join(self.data_directory, filename)
-            yield full_path, {
-                    'filename': filename
-                }
+            if filename.endswith('.csv'):
+                full_path = os.path.join(self.data_directory, filename)
+                yield full_path, {
+                        'filename': filename
+                    }
 
     fields = [
         FieldDefinition(

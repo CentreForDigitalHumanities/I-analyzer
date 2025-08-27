@@ -47,7 +47,7 @@ describe('DownloadService', () => {
 
         spyOn(apiService, 'download').and.returnValue(Promise.resolve({}));
         const fieldNames = query.corpus.fields.map(field => field.name)
-        service.download(query.corpus, query, fieldNames, size, route, sort, highlight, options);
+        service.download(query.corpus, query, fieldNames, size, route, sort, highlight, options, []);
         const expectedBody: LimitedResultsDownloadParameters = {
             corpus: query.corpus.name,
             fields: ['genre', 'content', 'date'],
@@ -77,6 +77,7 @@ describe('DownloadService', () => {
                 size,
             },
             encoding: 'utf-8',
+            extra: [],
         };
         expect(apiService.download).toHaveBeenCalledWith(expectedBody);
     });

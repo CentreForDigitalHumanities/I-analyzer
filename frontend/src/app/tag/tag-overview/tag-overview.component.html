@@ -53,8 +53,13 @@
                 <footer class="card-footer">
                     <a class="card-footer-item" (click)="startEdit(tag)" (keydown.enter)="startEdit(tag)" role="button" tabindex="0"
                         aria-label="edit tag">Edit</a>
-                    <a class="card-footer-item" (click)="delete(tag)" (keydown.enter)="delete(tag)" role="button" tabindex="0"
-                        aria-label="delete tag">Delete</a>
+                    <a class="card-footer-item"
+                        (click)="confirmDelete.open(tag)"
+                        (keydown.enter)="confirmDelete.open(tag)"
+                        (keydown.space)="confirmDelete.open(tag)"
+                        role="button" tabindex="0">
+                        Delete
+                    </a>
                 </footer>
                 </div>
 
@@ -105,3 +110,12 @@
         </footer>
     </div>
 </div>
+
+
+<ia-confirm-modal #confirmDelete actionText="Delete tag" [handleAsync]="handleDelete"
+    [icon]="actionIcons.delete" actionButtonClass="is-danger">
+    <p>
+        Are you sure you want to delete your tag
+        <strong>{{confirmDelete.data?.name}}</strong>?
+    </p>
+</ia-confirm-modal>

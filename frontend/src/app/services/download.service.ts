@@ -6,6 +6,7 @@ import {
     Corpus,
     CorpusField,
     DownloadOptions,
+    ExtraDownloadColumns,
     LimitedResultsDownloadParameters,
     QueryModel,
     SortState,
@@ -31,7 +32,8 @@ export class DownloadService {
         route: string,
         sort: SortState,
         highlightFragmentSize: number|undefined,
-        fileOptions: DownloadOptions
+        fileOptions: DownloadOptions,
+        extra: ExtraDownloadColumns,
     ): Promise<string | void> {
         const resultsParameters: PageResultsParameters = {
             sort,
@@ -47,6 +49,7 @@ export class DownloadService {
                 corpus: corpus.name,
                 fields: fieldNames,
                 route,
+                extra,
             },
             fileOptions
         );
@@ -85,10 +88,11 @@ export class DownloadService {
         fields: string[],
         route: string,
         sort: SortState,
-        highlightFragmentSize: number
+        highlightFragmentSize: number,
+        extra: ExtraDownloadColumns,
     ) {
         const query = queryModel.toAPIQuery();
-        return this.apiService.downloadTask({ corpus: corpus.name, ...query, fields, route })
+        return this.apiService.downloadTask({ corpus: corpus.name, ...query, fields, route, extra })
             .then(result => result)
             .catch(error => {
                 throw new Error(error.headers.message[0]);

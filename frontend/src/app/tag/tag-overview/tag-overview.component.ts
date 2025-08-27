@@ -27,6 +27,8 @@ export class TagOverviewComponent implements OnInit {
 
     editedTag: Partial<Tag>;
 
+    handleDelete = this.tagService.deleteTag.bind(this.tagService);
+
     constructor(
         private tagService: TagService,
         private corpusService: CorpusService,
@@ -37,10 +39,6 @@ export class TagOverviewComponent implements OnInit {
         this.corpora = await this.corpusService.get(false);
         this.tagService.fetch();
         this.title.setTitle(pageTitle('Tags'));
-    }
-
-    delete(tag: Tag) {
-        this.tagService.deleteTag(tag).subscribe();
     }
 
     startEdit(tag: Tag) {

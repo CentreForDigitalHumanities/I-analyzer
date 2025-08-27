@@ -1,7 +1,8 @@
-from addcorpus.models import Corpus
 from django.conf import settings
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+
+from addcorpus.models import Corpus
 
 DOCS_PER_TAG_LIMIT = 500
 
