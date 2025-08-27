@@ -109,12 +109,6 @@ The maximum number of documents that is analysed in the wordcloud (a.k.a. "most 
 
 The base URL for the application. This URL can be used to generate links to the frontend in emails and citation templates.
 
-### `NEW_HIGHLIGHT_CORPORA`
-
-List of corpora that have been re-indexed, so that the top-level term vectors for main content fields include positions and offsets. This is needed for the updated highlight functionality that was introduced in version 4.2.0 of I-analyzer.
-
-The list should contain the _titles_ (not names) of updated corpora. You only need to list corpora with a Python definition; legacy highlighting is not supported for database-only corpora.
-
 ### `SAML_GROUP_NAME`
 
 Optional, should be a string.

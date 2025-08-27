@@ -5,10 +5,12 @@ import {
     makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification,
     resultsParamsToAPIQuery
 } from './es-query';
-import { QueryModel } from '@models';
+import { CorpusField, QueryModel } from '@models';
 import { PageResultsParameters } from '@models/page-results';
 import { APIQuery } from '@models/search-requests';
 import { isTagFilter } from '@models/tag-filter';
+import { searchFieldOptions } from './search-fields';
+import { findByName } from './utils';
 
 describe('es-query utils', () => {
     it('should make a simple query string clause', () => {
@@ -44,18 +46,47 @@ describe('es-query utils', () => {
         });
     });
 
-    it('should make a highlight specification', () => {
-        expect(makeHighlightSpecification(corpusFactory(), 'test', undefined)).toEqual({});
-
-        expect(makeHighlightSpecification(corpusFactory(), 'test', 100)).toEqual({
-            highlight: {
-                fragment_size: 100,
-                pre_tags: ['<mark class="highlight">'],
-                post_tags: ['</mark>'],
-                order: 'score',
-                fields: [{content: {}}]
-            }
+    describe('makeHighlightSpecification', () => {
+        it('should make a highlight specification', () => {
+            expect(_.keys(
+                makeHighlightSpecification(corpusFactory(), 'test', [], undefined)
+            )).toEqual([]);
+            expect(_.keys(
+                makeHighlightSpecification(corpusFactory(), 'test', [], 100)
+            )).toEqual(['highlight']);
         });
+
+
+        it('should select highlight fields', () => {
+            const corpus = corpusFactory();
+            corpus.fields[0] = keywordFieldFactory(true); // corpus now has 2 searchable fields
+
+            const highlightedFields = (spec) => spec.highlight.fields.map(f => _.keys(f)[0]);
+            expect(highlightedFields(
+                makeHighlightSpecification(corpus, 'test', [], 100)
+            )).toContain('content')
+
+            expect(highlightedFields(
+                makeHighlightSpecification(corpus, 'test', [corpus.fields[0]], 100)
+            )).not.toContain('content');
+        });
+
+        it('should select stemmed fields', () => {
+            const corpus = corpusFactory();
+            const makeSpec = (fields: CorpusField[]) =>
+                makeHighlightSpecification(corpus, 'test', fields, 100);
+            const matchedFields = spec => spec.highlight.fields[0].content.matched_fields;
+
+            expect(matchedFields(makeSpec([]))).toEqual(['content', 'content.stemmed']);
+
+            const searchFields = searchFieldOptions(corpus);
+            const baseField = findByName(searchFields, 'content');
+            const stemmedField = findByName(searchFields, 'content.stemmed');
+
+            expect(matchedFields(makeSpec([baseField]))).toEqual(['content']);
+            expect(matchedFields(makeSpec([stemmedField]))).toEqual(['content.stemmed']);
+
+        })
     });
 
     it('should create an API query for paged results', () => {

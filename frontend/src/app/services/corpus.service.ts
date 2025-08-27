@@ -95,7 +95,6 @@ export class CorpusService {
             data.category,
             data.has_named_entities,
             this.parseDocumentContext(data.document_context, allFields),
-            data.new_highlight,
             this.parseDefaultSort(data.default_sort, allFields),
             findByName(allFields, data.language_field),
         );
