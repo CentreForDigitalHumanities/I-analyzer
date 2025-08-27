@@ -5,10 +5,12 @@ import {
     makeEsSearchClause, makeHighlightSpecification, makeSimpleQueryString, makeSortSpecification,
     resultsParamsToAPIQuery
 } from './es-query';
-import { QueryModel } from '@models';
+import { CorpusField, QueryModel } from '@models';
 import { PageResultsParameters } from '@models/page-results';
 import { APIQuery } from '@models/search-requests';
 import { isTagFilter } from '@models/tag-filter';
+import { searchFieldOptions } from './search-fields';
+import { findByName } from './utils';
 
 describe('es-query utils', () => {
     it('should make a simple query string clause', () => {
@@ -54,12 +56,12 @@ describe('es-query utils', () => {
             )).toEqual(['highlight']);
         });
 
+
         it('should select highlight fields', () => {
             const corpus = corpusFactory();
             corpus.fields[0] = keywordFieldFactory(true); // corpus now has 2 searchable fields
 
             const highlightedFields = (spec) => spec.highlight.fields.map(f => _.keys(f)[0]);
-
             expect(highlightedFields(
                 makeHighlightSpecification(corpus, 'test', [], 100)
             )).toContain('content')
@@ -69,6 +71,26 @@ describe('es-query utils', () => {
             )).not.toContain('content');
         });
 
+        it('should select stemmed fields', () => {
+            const corpus = corpusFactory();
+            const makeSpec = (fields: CorpusField[]) =>
+                makeHighlightSpecification(corpus, 'test', fields, 100);
+            expect(
+                _.get(makeSpec([]), [0, 'content', 'matched_fields'])
+            ).toEqual(['content', 'content.stemmed']);
+
+            const searchFields = searchFieldOptions(corpus);
+            const baseField = findByName(searchFields, 'content');
+            const stemmedField = findByName(searchFields, 'content.stemmed');
+
+            expect(
+                _.get(makeSpec([baseField]), [0, 'content', 'matched_fields'])
+            ).toEqual(['content']);
+            expect(
+                _.get(makeSpec([stemmedField]), [0, 'content', 'matched_fields'])
+            ).toEqual(['content.stemmed']);
+
+        })
     });
 
     it('should create an API query for paged results', () => {
