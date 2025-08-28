@@ -8,9 +8,9 @@ def test_tag_import(traces_corpora_settings):
     assert len(documents) == 3
 
     expected = [
-        { 'sound_carrier': None, 'sound_source': ['nightingale', 'leopard'], 'sound_quality': None },
-        { 'sound_carrier': ['ground'], 'sound_source': None, 'sound_quality': ['loud'] },
-        { 'sound_carrier': None, 'sound_source': ['rain'], 'sound_quality': ['soft'] },
+        {'sound_source': ['nightingale', 'leopard'], 'sound_location': None},
+        {'sound_source': ['ground'], 'sound_location': ['Suriname']},
+        {'sound_source': ['rain'], 'sound_location': ['Harbour']},
     ]
 
     for doc, expected_doc in zip(documents, expected):
