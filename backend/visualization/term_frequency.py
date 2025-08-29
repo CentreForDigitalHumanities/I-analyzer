@@ -71,7 +71,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         query_model=es_query,
         download_size=size,
         client=es_client,
-        source=[]
+        source=[],
     )
     found_hits = list(found_hits)
 
@@ -87,13 +87,16 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
     skipped_docs = total_results - len(found_hits)
     if not skipped_docs:
         return n_matches
+    match_count = n_matches + estimate_skipped_count(matches, skipped_docs)
+    return match_count
 
+def estimate_skipped_count(matches, skipped_docs: int) -> int:
     mean_last_matches = sum(matches[-ESTIMATE_WINDOW:]) / ESTIMATE_WINDOW
     # we estimate that skipped contain matches linearly decrease
     # from average in ESTIMATE_WINDOW to 1
     estimate_skipped = int(math.ceil(mean_last_matches - 1) * skipped_docs / 2) + skipped_docs
-    match_count = n_matches + estimate_skipped
-    return match_count
+    return estimate_skipped
+
 
 def count_matches_in_document(id, index, fieldnames, query_text, es_client):
     # get the term vectors for the hit
