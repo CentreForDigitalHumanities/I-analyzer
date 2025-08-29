@@ -46,8 +46,6 @@ FORBIDDEN_FIELD_NAMES = [
     'visualizedField',
     'normalize',
     'ngramSettings',
-    'scan',
-    'tab-scan'
     'p',
     'tags',
     'tab',
@@ -61,5 +59,4 @@ would make routing ambiguous.
 
 `query` and `document_link` are forbidden because they are reserved columns in CSV downloads.
 
-`scan` and `tab-scan` are added because they interfere with element IDs in the DOM.
 '''
