@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { provideHttpClient, withInterceptorsFromDi, withXsrfConfiguration } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -66,7 +66,8 @@ import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
         TableModule,
         DropdownModule,
         FontAwesomeModule,
-        RouterModule
+        RouterModule,
+        ReactiveFormsModule,
     ], providers: [
         SlugifyPipe,
         provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({
