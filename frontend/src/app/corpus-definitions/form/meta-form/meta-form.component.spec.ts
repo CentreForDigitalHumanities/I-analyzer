@@ -6,7 +6,6 @@ import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CorpusDefinition } from '@models/corpus-definition';
-import { mockCorpusDefinition } from 'mock-data/corpus-definition';
 import { ApiService } from '@services';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { ApiServiceMock } from 'mock-data/api';

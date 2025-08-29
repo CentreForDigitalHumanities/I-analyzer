@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ElasticSearchService, SearchResponse } from './elastic-search.service';
 import { QueryModel } from '@models';
-import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { EntityService } from './entity.service';
 import { EntityServiceMock } from '../../mock-data/entity';
 import { TagServiceMock } from '../../mock-data/tag';
@@ -25,15 +25,17 @@ const mockResponse: SearchResponse = {
                 _score: 1.0,
                 _id: 'doc1',
                 _source: {
-                    great_field: 'test',
-                    speech: 'This is a test',
+                    genre: 'test',
+                    content: 'This is a test',
+                    date: '1810-01-01',
                 }
             }, {
                 _score: 0.8,
                 _id: 'doc2',
                 _source: {
-                    great_field: 'test',
-                    speech: 'This is a another test',
+                    genre: 'test',
+                    content: 'This is a another test',
+                    date: '1820-01-01',
                 }
             },
         ],
@@ -52,7 +54,7 @@ const mockAggregationResponse: SearchResponse = {
         hits: [],
     },
     aggregations: {
-        terms_great_field: {
+        terms_genre: {
             buckets: [
                 { key: 'test', doc_count: 15 },
                 { key: 'testtest', doc_count: 5 },
@@ -85,11 +87,12 @@ describe('ElasticSearchService', () => {
     });
 
     it('should make a search request', async () => {
-        const queryModel = new QueryModel(mockCorpus);
+        const corpus = corpusFactory();
+        const queryModel = new QueryModel(corpus);
         const size = 2;
         const response = service.loadResults(queryModel, {from: 0, size, sort: [undefined, 'desc']});
 
-        const searchUrl = `/api/es/${mockCorpus.name}/_search`;
+        const searchUrl = `/api/es/${corpus.name}/_search`;
         httpTestingController.expectOne(searchUrl).flush(mockResponse);
         httpTestingController.verify();
 
@@ -99,26 +102,28 @@ describe('ElasticSearchService', () => {
     });
 
     it('should request a document by ID', async () => {
-        const response = service.getDocumentById('doc1', mockCorpus);
+        const corpus = corpusFactory();
+        const response = service.getDocumentById('doc1', corpus);
 
-        const searchUrl = `/api/es/${mockCorpus.name}/_search`;
+        const searchUrl = `/api/es/${corpus.name}/_search`;
         httpTestingController.expectOne(searchUrl).flush(mockResponse);
         httpTestingController.verify();
 
         const result = await response;
-        expect(result.fieldValue(mockField2)).toBe('This is a test');
+        expect(result.fieldValue(corpus.fields[1])).toBe('This is a test');
     });
 
     it('should make an aggregation request', async () => {
-        const queryModel = new QueryModel(mockCorpus);
-        const aggregator = new TermsAggregator(mockField, 10);
+        const corpus = corpusFactory();
+        const queryModel = new QueryModel(corpus);
+        const aggregator = new TermsAggregator(corpus.fields[0], 10);
         const response = service.aggregateSearch(
-            mockCorpus,
+            corpus,
             queryModel,
             aggregator
         );
 
-        const searchUrl = `/api/es/${mockCorpus.name}/_search`;
+        const searchUrl = `/api/es/${corpus.name}/_search`;
         httpTestingController.expectOne(searchUrl).flush(mockAggregationResponse);
         httpTestingController.verify();
 

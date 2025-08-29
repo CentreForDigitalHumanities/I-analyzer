@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import * as _ from 'lodash';
-import { mockCorpus, mockField } from '../../mock-data/corpus';
+import { corpusFactory, keywordFieldFactory, } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 
 import { CorpusField, FoundDocument, QueryModel } from '@models/index';
@@ -15,18 +15,19 @@ import { SimpleStore } from '../store/simple-store';
 import { take } from 'rxjs/operators';
 
 const createField = (name: string): CorpusField => {
-    const field = _.cloneDeep(mockField);
+    const field = keywordFieldFactory();
     field.name = name;
     return field;
 };
 
+const corpus = corpusFactory();
 const documents: FoundDocument[] = [
     makeDocument(
         {
             a: '1',
             b: '2',
             c: 'Hide-and-seek!'
-        }, mockCorpus, '1', 1,
+        }, corpus, '1', 1,
         {
             c: ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
         }
@@ -36,7 +37,7 @@ const documents: FoundDocument[] = [
             a: '3',
             b: '4',
             c: 'Wally is here'
-        }, mockCorpus, '2', 0.5
+        }, corpus, '2', 0.5
     )
 ];
 
@@ -64,7 +65,7 @@ describe('Search Results Component', () => {
     });
 
     beforeEach(() => {
-        const corpus = _.merge(mockCorpus, fields);
+        const corpus = _.merge(corpusFactory(), fields);
         const query = new QueryModel(corpus);
         query.setQueryText('wally');
         component.queryModel = query;

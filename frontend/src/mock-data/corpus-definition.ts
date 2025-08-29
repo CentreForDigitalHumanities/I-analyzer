@@ -1,6 +1,6 @@
 import { APICorpusDefinition } from '../app/models/corpus-definition';
 
-export const mockCorpusDefinition: APICorpusDefinition = {
+export const corpusDefinitionFactory = (): APICorpusDefinition => ({
     name: 'test',
     meta: {
         title: 'Test corpus',
@@ -51,4 +51,4 @@ export const mockCorpusDefinition: APICorpusDefinition = {
             }
         }
     ]
-};
+});

@@ -2,12 +2,14 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusFilterComponent } from './corpus-filter.component';
 import { commonTestBed } from '../../common-test-bed';
-import { mockCorpus, mockCorpus2 } from '../../../mock-data/corpus';
+import { corpusFactory } from '../../../mock-data/corpus';
 import { Corpus } from '@models';
 
 describe('CorpusFilterComponent', () => {
     let component: CorpusFilterComponent;
     let fixture: ComponentFixture<CorpusFilterComponent>;
+    let corpus1;
+    let corpus2;
 
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
@@ -16,7 +18,16 @@ describe('CorpusFilterComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CorpusFilterComponent);
         component = fixture.componentInstance;
-        component.corpora = [mockCorpus, mockCorpus2];
+
+        corpus1 = corpusFactory();
+
+        corpus2 = corpusFactory();
+        corpus2.languages = ['English', 'French'];
+        corpus2.category = 'Poems';
+        corpus2.minYear = 1850;
+        corpus2.maxYear = 2000;
+
+        component.corpora = [corpus1, corpus2];
         fixture.detectChanges();
     });
 
@@ -37,22 +48,22 @@ describe('CorpusFilterComponent', () => {
         };
 
         expect(await filterResult('English', null, 1800, 2000))
-            .toEqual([mockCorpus, mockCorpus2]);
+            .toEqual([corpus1, corpus2]);
         expect(await filterResult('French', null, 1800, 2000))
-            .toEqual([mockCorpus2]);
+            .toEqual([corpus2]);
         expect(await filterResult(null, null, 1800, 2000))
-            .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult(null, 'Tests', 1800, 2000))
-            .toEqual([mockCorpus]);
-        expect(await filterResult('French', 'Different tests', 1800, 2000))
-            .toEqual([mockCorpus2]);
-        expect(await filterResult('French', 'Tests', 1800, 2000))
+            .toEqual([corpus1, corpus2]);
+        expect(await filterResult(null, 'Books', 1800, 2000))
+            .toEqual([corpus1]);
+        expect(await filterResult('French', 'Poems', 1800, 2000))
+            .toEqual([corpus2]);
+        expect(await filterResult('French', 'Books', 1800, 2000))
             .toEqual([]);
         expect(await filterResult(null, null, 1920, 2000))
-            .toEqual([mockCorpus2]);
+            .toEqual([corpus2]);
         expect(await filterResult(null, null, 1820, 2000))
-            .toEqual([mockCorpus, mockCorpus2]);
+            .toEqual([corpus1, corpus2]);
         expect(await filterResult(null, null, 1800, 1830))
-            .toEqual([mockCorpus]);
+            .toEqual([corpus1]);
     });
 });

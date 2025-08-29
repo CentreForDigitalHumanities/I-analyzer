@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SelectFieldComponent } from './select-field.component';
 import { commonTestBed } from '../common-test-bed';
-import { mockCorpus3, } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { QueryModel } from '@models';
 
 describe('SelectFieldComponent', () => {
@@ -15,7 +15,7 @@ describe('SelectFieldComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectFieldComponent);
     component = fixture.componentInstance;
-    component.queryModel = new QueryModel(mockCorpus3);
+    component.queryModel = new QueryModel(corpusFactory());
     fixture.detectChanges();
   });
 

@@ -1,14 +1,15 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { mockCorpus3, mockField } from '../../../mock-data/corpus';
+import { booleanFieldFactory, corpusFactory } from '../../../mock-data/corpus';
 
 import { commonTestBed } from '../../common-test-bed';
-import { BooleanFilter, QueryModel } from '@models';
+import { BooleanFilter, CorpusField, QueryModel } from '@models';
 import { BooleanFilterComponent } from './boolean-filter.component';
 import { By } from '@angular/platform-browser';
 
 describe('BooleanFilterComponent', () => {
     let component: BooleanFilterComponent;
     let fixture: ComponentFixture<BooleanFilterComponent>;
+    let field: CorpusField;
 
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
@@ -17,8 +18,11 @@ describe('BooleanFilterComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BooleanFilterComponent);
         component = fixture.componentInstance;
-        component.queryModel = new QueryModel(mockCorpus3);
-        component.filter = component.queryModel.filterForField(mockField) as BooleanFilter;
+        field = booleanFieldFactory();
+        const corpus = corpusFactory();
+        corpus.fields.push(field);
+        component.queryModel = new QueryModel(corpus);
+        component.filter = component.queryModel.filterForField(field) as BooleanFilter;
         fixture.detectChanges();
     });
 

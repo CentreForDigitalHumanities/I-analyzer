@@ -23,11 +23,3 @@ export const MockCorpusResponse = [
         min_year: 1785,
     },
 ];
-
-export type MockCorpusName = keyof (typeof MockCorpusResponse);
-export const MockCorpusRoles =
-    Object.keys(MockCorpusResponse).map(name => ({
-            name,
-            description: '',
-            corpora: []
-        }));
