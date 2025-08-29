@@ -1,4 +1,6 @@
 import math
+from typing import Callable, Dict, Any
+import re
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
@@ -72,6 +74,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         download_size=size,
         client=es_client,
         source=[],
+        explain=True,
     )
     found_hits = list(found_hits)
 
@@ -96,6 +99,35 @@ def estimate_skipped_count(matches, skipped_docs: int) -> int:
     # from average in ESTIMATE_WINDOW to 1
     estimate_skipped = int(math.ceil(mean_last_matches - 1) * skipped_docs / 2) + skipped_docs
     return estimate_skipped
+
+def get_term_count_from_explain(hit) -> int:
+    explanation = hit['_explanation']
+
+    matches = find_recursive(explanation, is_description)
+    total = sum(match['value'] for match in matches)
+    return total
+
+
+def is_description(doc: Dict):
+    if description := doc.get('description'):
+        if re.match(r'freq,|phraseFreq=', description):
+            return True
+    return False
+
+
+def find_recursive(doc: Any, predicate: Callable):
+    if isinstance(doc, dict):
+        if predicate(doc):
+            yield doc
+
+        for value in doc.values():
+            for match in find_recursive(value, predicate):
+                yield match
+
+    if isinstance(doc, list):
+        for item in doc:
+            for match in find_recursive(item, predicate):
+                yield match
 
 
 def count_matches_in_document(id, index, fieldnames, query_text, es_client):
@@ -124,7 +156,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
         query['aggs'] = token_count_aggregators
 
     results = search(
-        corpus = corpus,
+        corpus_name = corpus,
         query_model = query,
         size = 0, # don't include documents
         track_total_hits = True
@@ -149,7 +181,7 @@ def get_term_frequency(es_query, corpus, size):
     fieldnames, token_count_aggregators = extract_data_for_term_frequency(corpus, es_query)
 
     # count number of matches
-    match_count = get_match_count(client, deepcopy(es_query), corpus, size, fieldnames)
+    match_count = get_term_count_from_explain(client, deepcopy(es_query), corpus, size, fieldnames)
 
     # get total document count and (if available) token count for bin
     agg_query = query.remove_query(es_query) #remove search term filter

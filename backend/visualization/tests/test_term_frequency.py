@@ -1,5 +1,7 @@
 import pytest
 from visualization import term_frequency
+from es.search import search, hits
+import pytest
 
 def test_extract_data_for_term_frequency(small_mock_corpus):
     es_query = make_query('test', ['content', 'title'])
@@ -172,3 +174,38 @@ def make_query(query_text=None, search_in_fields=None):
 
 
     return query
+
+
+term_count_cases = [
+    ('nonsense', 0),
+    ('disaster', 1),
+    ('DISASTER', 1),
+    ('disaster regarded', 2),
+    ('disaster + regarded', 2),
+    ('"evil forebodings"', 1),
+    ('disaster "evil forebodings"', 2),
+]
+
+@pytest.mark.parametrize('query_text,expected_count', term_count_cases)
+def test_term_count_from_explain(small_mock_corpus, index_small_mock_corpus, query_text, expected_count):
+    def query(query_text: str):
+        return {
+            "query": {
+                "bool": {
+                    "must": {
+                        "simple_query_string": {
+                            "query": query_text,
+                            "fields": ["content"]
+                        }
+                    },
+                }
+            },
+            "explain": True,
+        }
+
+    result = search(small_mock_corpus, query(query_text))
+    count = sum(
+        term_frequency.get_term_count_from_explain(hit)
+        for hit in hits(result)
+    )
+    assert count == expected_count
