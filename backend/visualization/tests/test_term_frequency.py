@@ -206,7 +206,7 @@ def test_term_count_from_explain(small_mock_corpus, index_small_mock_corpus, que
 
     result = search(small_mock_corpus, query(query_text))
     count = sum(
-        term_frequency.get_term_count_from_explain(hit)
+        term_frequency.count_matches_from_explanation(hit)
         for hit in hits(result)
     )
     assert count == expected_count

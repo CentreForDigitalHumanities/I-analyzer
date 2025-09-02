@@ -69,6 +69,7 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
+    es_query = query.set_search_fields(es_query, fieldnames)
     found_hits, total_results = download.scroll(corpus=corpus,
         query_model=es_query,
         download_size=size,
@@ -77,8 +78,10 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         explain=True,
     )
 
+    query_text = query.get_query_text(es_query)
+
     matches = [
-        get_term_count_from_explain(hit)
+        count_matches_in_document(hit, query_text, fieldnames, es_client)
         for hit in found_hits
     ]
 
@@ -96,7 +99,17 @@ def estimate_skipped_count(matches, skipped_docs: int) -> int:
     estimate_skipped = int(math.ceil(mean_last_matches - 1) * skipped_docs / 2) + skipped_docs
     return estimate_skipped
 
-def get_term_count_from_explain(hit) -> int:
+
+def count_matches_in_document(hit, query_text, search_fields, es_client):
+    if ('*' in query_text) or (not '_explanation' in hit):
+        return count_matches_from_termvectors(
+            hit['_id'], hit['_index'], search_fields, query_text, es_client
+        )
+    else:
+        return count_matches_from_explanation(hit)
+
+
+def count_matches_from_explanation(hit) -> int:
     explanation = hit['_explanation']
 
     matches = find_recursive(explanation, is_description)
@@ -126,7 +139,7 @@ def find_recursive(doc: Any, predicate: Callable):
                 yield match
 
 
-def count_matches_in_document(id, index, fieldnames, query_text, es_client):
+def count_matches_from_termvectors(id, index, fieldnames, query_text, es_client):
     # get the term vectors for the hit
     result = es_client.termvectors(
         index=index,
