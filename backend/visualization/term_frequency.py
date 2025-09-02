@@ -1,12 +1,12 @@
 import math
-from typing import Callable, Dict, Any
+from typing import Callable, Dict, Any, Optional
 import re
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
 from es.client import elasticsearch
 from copy import deepcopy
-from visualization import query, termvectors
+from visualization import query, termvectors, simple_query_string
 from es import download
 
 DEFAULT_SIZE = 100
@@ -79,9 +79,11 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
     )
 
     query_text = query.get_query_text(es_query)
+    terms = simple_query_string.collect_terms(query_text)
+    prefix_query = ' '.join(filter(simple_query_string.is_prefix, terms))
 
     matches = [
-        count_matches_in_document(hit, query_text, fieldnames, es_client)
+        count_matches_in_document(hit, prefix_query, fieldnames, es_client)
         for hit in found_hits
     ]
 
@@ -100,22 +102,28 @@ def estimate_skipped_count(matches, skipped_docs: int) -> int:
     return estimate_skipped
 
 
-def count_matches_in_document(hit, query_text, search_fields, es_client):
+def count_matches_in_document(hit, prefix_query: Optional[str], search_fields, es_client):
     '''
     Count matches of a query in a document.
 
     Will use the explain API if possible, which is faster.
 
-    Because the explain API does not return information on wildcard terms, this includes
-    a fallback to use the termvectors API.
+    Because this API will not count prefix queries, `prefix_query` specificies the
+    section of the query that should be counted using termvectors. Will do nothing
+    if this is empty.
     '''
-    if '*' in query_text:
-        # TODO: split query if it contains both phrase AND wildcard terms
-        return count_matches_from_termvectors(
-            hit['_id'], hit['_index'], search_fields, query_text, es_client
+    if prefix_query:
+        # If the query contains a prefix query, use termvectors to get matches
+        # for it.
+        prefix_matches = count_matches_from_termvectors(
+            hit['_id'], hit['_index'], search_fields, prefix_query, es_client
         )
-    else:
-        return count_matches_from_explanation(hit)
+        # Use explanation for other terms in the query (this is faster and more
+        # accurate if the query includes certain other operators)
+        rest_matches = count_matches_from_explanation(hit)
+        return prefix_matches + rest_matches
+
+    return count_matches_from_explanation(hit)
 
 
 def count_matches_from_explanation(hit) -> int:
