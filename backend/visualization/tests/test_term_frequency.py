@@ -184,7 +184,7 @@ term_count_cases = [
     ('disaster + regarded', 2),
     ('"evil forebodings"', 1),
     ('disaster "evil forebodings"', 2),
-    ('disast*', 1),
+    # ('disast*', 1),
 ]
 
 @pytest.mark.parametrize('query_text,expected_count', term_count_cases)

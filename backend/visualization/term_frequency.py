@@ -76,18 +76,14 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         source=[],
         explain=True,
     )
-    found_hits = list(found_hits)
-
-    index = get_index(corpus)
-    query_text = query.get_query_text(es_query)
 
     matches = [
-        count_matches_in_document(hit['_id'], index, fieldnames, query_text, es_client)
+        get_term_count_from_explain(hit)
         for hit in found_hits
     ]
 
     n_matches = sum(matches)
-    skipped_docs = total_results - len(found_hits)
+    skipped_docs = total_results - len(matches)
     if not skipped_docs:
         return n_matches
     match_count = n_matches + estimate_skipped_count(matches, skipped_docs)
@@ -181,7 +177,7 @@ def get_term_frequency(es_query, corpus, size):
     fieldnames, token_count_aggregators = extract_data_for_term_frequency(corpus, es_query)
 
     # count number of matches
-    match_count = get_term_count_from_explain(client, deepcopy(es_query), corpus, size, fieldnames)
+    match_count = get_match_count(client, deepcopy(es_query), corpus, size, fieldnames)
 
     # get total document count and (if available) token count for bin
     agg_query = query.remove_query(es_query) #remove search term filter
