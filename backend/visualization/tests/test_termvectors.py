@@ -89,7 +89,7 @@ QUERY_ANALYSIS_CASES = [
 
 def test_query_components():
     for case in QUERY_ANALYSIS_CASES:
-        components = termvectors.get_query_components(case['query_text'])
+        components = termvectors.collect_terms(case['query_text'])
         assert sorted(components) == sorted(case['components']) # ignore order
 
 

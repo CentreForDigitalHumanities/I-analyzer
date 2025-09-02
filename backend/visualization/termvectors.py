@@ -1,7 +1,8 @@
 from es.client import elasticsearch
 import re
 from textdistance import damerau_levenshtein
-from simple_query_string import get_query_components
+
+from visualization.simple_query_string import collect_terms
 
 def get_terms(termvector_result, field):
     termvectors = termvector_result['term_vectors']
@@ -81,7 +82,7 @@ def analyze_query(query_text, index, field, es_client = None):
     if not es_client:
         es_client = elasticsearch(index)
 
-    components = get_query_components(query_text)
+    components = collect_terms(query_text)
     analyzed_components = [analyze_query_component(component, index, field, es_client) for component in components]
 
     nonempty = list(filter(None, analyzed_components))
