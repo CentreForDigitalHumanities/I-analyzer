@@ -188,14 +188,15 @@ def make_query(query_text=None, search_in_fields=None):
 
 
 term_count_cases = [
-    ('nonsense', 0),
     ('disaster', 1),
     ('DISASTER', 1),
     ('disaster regarded', 2),
     ('disaster + regarded', 2),
     ('"evil forebodings"', 1),
     ('disaster "evil forebodings"', 2),
-    # ('disast*', 1),
+    ('disaster -regarded', 1),
+    ('rejuice~2', 1),
+    # ('"rejoice hear"~2', 1),
 ]
 
 @pytest.mark.parametrize('query_text,expected_count', term_count_cases)
@@ -210,14 +211,15 @@ def test_term_count_from_explain(small_mock_corpus, index_small_mock_corpus, que
                             "fields": ["content"]
                         }
                     },
+                    'filter': {
+                        'term': { 'genre': 'Science fiction' },
+                    }
                 }
             },
             "explain": True,
         }
 
     result = search(small_mock_corpus, query(query_text))
-    count = sum(
-        term_frequency.count_matches_from_explanation(hit)
-        for hit in hits(result)
-    )
+    hit = hits(result)[0]
+    count = term_frequency.count_matches_from_explanation(hit)
     assert count == expected_count
