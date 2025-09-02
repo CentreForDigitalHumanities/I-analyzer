@@ -101,7 +101,16 @@ def estimate_skipped_count(matches, skipped_docs: int) -> int:
 
 
 def count_matches_in_document(hit, query_text, search_fields, es_client):
-    if ('*' in query_text) or (not '_explanation' in hit):
+    '''
+    Count matches of a query in a document.
+
+    Will use the explain API if possible, which is faster.
+
+    Because the explain API does not return information on wildcard terms, this includes
+    a fallback to use the termvectors API.
+    '''
+    if '*' in query_text:
+        # TODO: split query if it contains both phrase AND wildcard terms
         return count_matches_from_termvectors(
             hit['_id'], hit['_index'], search_fields, query_text, es_client
         )
@@ -110,8 +119,8 @@ def count_matches_in_document(hit, query_text, search_fields, es_client):
 
 
 def count_matches_from_explanation(hit) -> int:
+    '''Count matches of a query in a document using the explain API'''
     explanation = hit['_explanation']
-
     matches = find_recursive(explanation, is_description)
     total = sum(match['value'] for match in matches)
     return total
@@ -140,6 +149,9 @@ def find_recursive(doc: Any, predicate: Callable):
 
 
 def count_matches_from_termvectors(id, index, fieldnames, query_text, es_client):
+    '''
+    Count matches of a query in a document using the termvectors API
+    '''
     # get the term vectors for the hit
     result = es_client.termvectors(
         index=index,
