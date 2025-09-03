@@ -4,7 +4,7 @@ import re
 from typing import Dict
 
 from django.conf import settings
-from ianalyzer_readers.extract import CSV
+from ianalyzer_readers.extract import Backup, CSV
 
 from addcorpus.es_mappings import keyword_mapping
 from addcorpus.es_settings import es_settings
@@ -42,8 +42,10 @@ class TracesOfSound(CSVCorpusDefinition):
     es_index = getattr(settings, 'TRACES_OF_SOUND_ES_INDEX', 'traces-of-sound')
     languages = DutchNewspapersPublic.languages
     category = DutchNewspapersPublic.category
-    # description_page = 'traces_of_sound.md'
-    image = 'Stilleven met boeken.png'
+    description_page = 'traces_of_sound.md'
+    image = 'Oren.webp'
+    word_model_path = getattr(settings, "DUTCHNEWSPAPERS_WM", None)
+    delimiter = ';'
 
     @property
     def es_settings(self):
@@ -53,25 +55,74 @@ class TracesOfSound(CSVCorpusDefinition):
         for csv_file in glob(f"{self.data_directory}/*.csv"):
             yield csv_file
 
-    sound_carrier = FieldDefinition(
-        name="sound_carrier",
-        display_name="Sound carrier",
-        description="The carrier of the sound.",
+    sound_affect = FieldDefinition(
+        name="sound_affect",
+        display_name="Sound affect",
+        description="The affect evoked by the sound.",
         es_mapping=keyword_mapping(),
-        extractor=RegexCSV('tag: Carrier: ', transform=format_tags),
+        extractor=RegexCSV('tag: Affect: ', transform=format_tags),
         search_filter=MultipleChoiceFilter(
-            description="Accept only articles with these sound carriers.",
+            description="Accept only articles with these sound affects.",
         ),
     )
 
-    sound_quality = FieldDefinition(
-        name="sound_quality",
-        display_name="Sound quality",
-        description="The quality of the sound.",
+    sound_context = FieldDefinition(
+        name="sound_context",
+        display_name="Sound context",
+        description="The context of the sound.",
         es_mapping=keyword_mapping(),
-        extractor=RegexCSV('tag: Quality: ', transform=format_tags),
+        extractor=RegexCSV('tag: Context: ', transform=format_tags),
         search_filter=MultipleChoiceFilter(
-            description="Accept only articles with these sound qualities.",
+            description="Accept only articles with these sound contexts.",
+        ),
+    )
+
+    sound_effect = FieldDefinition(
+        name="sound_effect",
+        display_name="Sound effect",
+        description="The effect of the sound.",
+        es_mapping=keyword_mapping(),
+        extractor=RegexCSV('tag: Effect: ', transform=format_tags),
+        search_filter=MultipleChoiceFilter(
+            description="Accept only articles in which sound had these effects.",
+        ),
+    )
+
+    sound_evocation = FieldDefinition(
+        name="sound_evocation",
+        display_name="Sound evocation",
+        description="The association the sound evoked.",
+        es_mapping=keyword_mapping(),
+        extractor=RegexCSV('tag: Evocation: ', transform=format_tags),
+        search_filter=MultipleChoiceFilter(
+            description="Accept only articles in which sounds evoked this association.",
+        ),
+    )
+
+    sound_function = FieldDefinition(
+        name="sound_function",
+        display_name="Sound function",
+        description="The function of the sound.",
+        es_mapping=keyword_mapping(),
+        extractor=RegexCSV('tag: Function: ', transform=format_tags),
+        search_filter=MultipleChoiceFilter(
+            description="Accept only articles with these sound functions.",
+        ),
+    )
+
+    sound_location = FieldDefinition(
+        name="sound_location",
+        display_name="Sound location",
+        description="The location of the sound.",
+        es_mapping=keyword_mapping(),
+        extractor=Backup(
+            RegexCSV('tag: Location: ', transform=format_tags),
+            RegexCSV('tag: Geolocation: ', transform=format_tags),
+            RegexCSV('tag: LOO: ', transform=format_tags),
+            RegexCSV('tag: LOP: ', transform=format_tags),
+        ),
+        search_filter=MultipleChoiceFilter(
+            description="Accept only articles with these sound locations.",
         ),
     )
 
@@ -80,13 +131,50 @@ class TracesOfSound(CSVCorpusDefinition):
         display_name="Sound source",
         description="The source of the sound.",
         es_mapping=keyword_mapping(),
-        extractor=RegexCSV('tag: Source: ', transform=format_tags),
+        extractor=Backup(
+            RegexCSV('tag: Source: ', transform=format_tags),
+            RegexCSV('tag: Carrier: ', transform=format_tags),
+        ),
         search_filter=MultipleChoiceFilter(
             description="Accept only articles with these sound sources.",
         ),
     )
 
-    extra_fields = [sound_carrier, sound_quality, sound_source]
+    sound_time = FieldDefinition(
+        name="sound_time",
+        display_name="Sound time",
+        description="The time of the sound.",
+        es_mapping=keyword_mapping(),
+        extractor=RegexCSV('tag: Time: ', transform=format_tags),
+        search_filter=MultipleChoiceFilter(
+            description="Accept only articles in which sounds occurred in this time.",
+        ),
+    )
+
+    sound_type = FieldDefinition(
+        name="sound_type",
+        display_name="Sound type",
+        description="The type of sound.",
+        es_mapping=keyword_mapping(),
+        extractor=Backup(
+            RegexCSV('tag: Type: ', transform=format_tags),
+            RegexCSV('tag: Sound: ', transform=format_tags),
+        ),
+        search_filter=MultipleChoiceFilter(
+            description="Accept only articles with these sound types.",
+        ),
+    )
+
+    extra_fields = [
+        sound_source,
+        sound_location,
+        sound_type,
+        sound_evocation,
+        sound_function,
+        sound_effect,
+        sound_affect,
+        sound_time,
+    ]
 
     @property
     def fields(self):
@@ -94,7 +182,6 @@ class TracesOfSound(CSVCorpusDefinition):
             self._copy_field(field) for field in DutchNewspapersPublic().fields
         ]
         return base_fields[:1] + self.extra_fields + base_fields[1:]
-
 
     def _copy_field(self, field: FieldDefinition) -> FieldDefinition:
         clone = copy(field)
