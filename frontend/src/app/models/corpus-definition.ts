@@ -198,6 +198,6 @@ export const FIELD_TYPE_OPTIONS: {
     {
         label: 'url',
         value: 'url',
-        helpText: "This field contains URL's",
+        helpText: 'This field contains URLs',
     },
 ];
