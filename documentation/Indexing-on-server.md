@@ -2,6 +2,11 @@
 
 For production environments, we use *versioned* index names (e.g. `times-1`, `times-2`), and use an alias (e.g. `times`) to point to the correct version. The advantage of this approach is that an old version of the index can be kept in place as long as is needed, for example while a new version of the index is created.
 
+## Check running index jobs
+
+Before you start, open a terminal in the index server and (from the source repository) run `yarn django indexjob list`. Check if there are any jobs with status `working`.
+
+It is not necessarily a problem to run two index jobs simultaneously, but you should not re-deploy or switch to a different branch while a job is running.
 
 ## Moving data to server
 On the server, move data to a location in the `/its` share.
@@ -10,7 +15,7 @@ On the server, move data to a location in the `/its` share.
 
 ### Database-only corpora
 
-Add the corpus to the database of the indexing server. You can use the JSON export/import to do this easily. After importing the JSON representation, use the Django admin menu to specify the data directory for the corpus (the path to the data directory on the server).
+Unlike Python corpora, database-only corpora are not intended to be indexed on a separate server. However, you could use JSON import/export to clone the corpus to the index server. After importing the JSON representation, use the Django admin menu to specify the data directory for the corpus (the path to the data directory on the server).
 
 ### Python corpora
 
