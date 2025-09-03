@@ -138,7 +138,7 @@ export class CorpusDefinitionService implements OnDestroy {
             }
             case 'url': {
                 field.options = {
-                    search: true,
+                    search: false,
                     filter: 'none',
                     preview: false,
                     visualize: false,
