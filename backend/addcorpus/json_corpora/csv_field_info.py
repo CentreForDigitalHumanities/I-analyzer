@@ -1,6 +1,6 @@
 import datetime
 import os
-from typing import Dict, Optional, Union, Any
+from typing import Callable, Dict, Optional, Union, Any
 
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
 
 def map_col(col: pd.Series) -> str:
     if col.dtypes == object:
-        if col.apply(is_url).all():
+        if is_url_col(col):
             return 'url'
         if is_date_col(col):
             return 'date'
@@ -35,16 +35,24 @@ def map_col(col: pd.Series) -> str:
     return 'text_metadata'
 
 
-def is_date_col(col: pd.Series) -> bool:
-    '''Check if a column only contains dates or missing values
-    Converts empty strings to None because they are non picked up by `isna()`
+def col_is_null_or_type(col: pd.Series, coltype: Callable[[Any], bool]) -> bool:
+    '''Check if a column only contains the desired type or missing values.
+    Converts empty strings to None because they are not picked up by `isna()`
     '''
     non_null = col.replace('', None)
     non_null = non_null[~non_null.isna()]
     if non_null.empty:
         return False
-    mask = non_null.transform(is_date)
+    mask = non_null.transform(coltype)
     return mask.all()
+
+
+def is_date_col(col: pd.Series) -> bool:
+    return col_is_null_or_type(col, is_date)
+
+
+def is_url_col(col: pd.Series) -> bool:
+    return col_is_null_or_type(col, is_url)
 
 
 def is_date(input: str) -> Optional[datetime.datetime]:
