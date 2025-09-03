@@ -12,7 +12,7 @@
         </section>
         <footer class="modal-card-foot">
             <div class="buttons">
-                <button class="button" (click)="confirm(data)"
+                <button class="button" (click)="confirm(data.data)"
                     [class]="actionButtonClass"
                     [class.is-loading]="loading$ | async">
                     <span class="icon" *ngIf="icon">

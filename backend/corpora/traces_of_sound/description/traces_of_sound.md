@@ -1,14 +1,15 @@
 ## Introduction
-This corpus was created within the research project ‘Audible Empire? Dutch Acoustic Colonialism in the Caribbean’ (2024-2025), conducted by dr. Renée Vulto (Cultural History) in collaboration with the Research Software Lab of Utrecht University's Centre for Digital Humanities. 
+This corpus was created within the research project ‘Audible Empire? Dutch Acoustic Colonialism in the Caribbean’ (2024-2025), conducted by dr. Renée Vulto (Cultural History) in collaboration with the Research Software Lab of Utrecht University's Centre for Digital Humanities.
 The Traces of Sound corpus contains digitized historical documents with sound references (building on work by the large-scale [Odeuropa project](https://odeuropa.eu/), which has achieved automatic extraction of textual and pictorial references to smell). The Traces of Sound corpus was created through manual annotation in the parent corpus Dutch Newspapers (public). The corpus can be explored through search terms, and it is possible to create visualizations to understand broader trends in the results. It is regularly updated with new materials and forms the source base for annotation of the exact location and category of references through [INCEpTION](https://inception-project.github.io/). With these annotations, a state-of-the-art large language model for Dutch ([BERTje](https://huggingface.co/GroNLP/bert-base-dutch-cased)) will be created, that can tag and categorize references to sound in other texts.
 
 ## Case study example
 A systematic review of traces of sound in the digital corpus offers, for example, insight in the colonial perception of music and dance practices of Surinamese Creoles and Marrons. A search for ‘geluid’ in the word model of this corpus indicates neigbouring words such as ‘vuur’ and ‘gezang’, which points us to the music and dance practices (both secular festivities and spiritual practices) of non-European groups in Suriname.In late nineteenth-century travelogues and correspondences, Europeans consistently describe the sound of drumming (likely on apinti) as “dull” and the singing as “monotonous”. Many reports on these music practices refer to the performances that they describe in negative terms, as “unpleseant” and/or “boring” and the European witnesses seem to fail to grasp the spiritual significance of these practices in the context of the Surinamese Winti religion. For examples, see:
--	1865: https://resolver.kb.nl/resolve?urn=ddd:010479042:mpeg21:p002
--	1868: https://resolver.kb.nl/resolve?urn=ddd:010504290:mpeg21:p003 
--	1882: https://resolver.kb.nl/resolve?urn=ddd:010342959:mpeg21:a0006
--	1883: https://resolver.kb.nl/resolve?urn=ddd:011024083:mpeg21:a0007 
-It is evident that these perceptions were shaped by the adverse attitude of European colonisers and settlers towards enslaved Black people and Native Surinamese. The references to their sound practices in these explicitly rejecting terminologies likely reinforced the racialised distinction between ‘civilised’ White people and ‘uncivilised’ people of colour, and made music practices one more tool in the dehumanising discourse of colonialism. 
+- 1865: https://resolver.kb.nl/resolve?urn=ddd:010479042:mpeg21:p002
+- 1868: https://resolver.kb.nl/resolve?urn=ddd:010504290:mpeg21:p003
+- 1882: https://resolver.kb.nl/resolve?urn=ddd:010342959:mpeg21:a0006
+- 1883: https://resolver.kb.nl/resolve?urn=ddd:011024083:mpeg21:a0007
+
+It is evident that these perceptions were shaped by the adverse attitude of European colonisers and settlers towards enslaved Black people and Native Surinamese. The references to their sound practices in these explicitly rejecting terminologies likely reinforced the racialised distinction between ‘civilised’ White people and ‘uncivilised’ people of colour, and made music practices one more tool in the dehumanising discourse of colonialism.
 
 ## User information
 When working with this corpus, please inform project leader dr. Renée Vulto (r.vulto (at) uu.nl). In due course, the training data and code, as well as the fine-tuned large language model, will be released.
