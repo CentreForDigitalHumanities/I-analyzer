@@ -1,12 +1,19 @@
 import csv
 import os
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Optional, Union
+from django.utils.html import strip_tags
 
-from bs4 import BeautifulSoup
 from django.conf import settings
-from visualization.term_frequency import parse_datestring
 
-QUERY_CONTEXT_INFIX = '_qic_'
+from addcorpus.models import Corpus, FieldDisplayTypes
+from tag.models import TaggedDocument, Tag
+from users.models import CustomUser
+from visualization.term_frequency import parse_datestring
+from tag.filter import corpus_tags
+from visualization.query import get_search_fields, get_query_text
+
+
+DOCUMENT_URL_COL = 'document_link'
 
 
 def write_file(filename, fieldnames, rows, dialect='excel'):
@@ -28,60 +35,136 @@ def create_filename(download_id):
     return f'{download_id}.csv'
 
 
-def is_context_fieldname(fn: str) -> bool:
-    return QUERY_CONTEXT_INFIX in fn
-
-
-def sort_fieldnames(fns: Iterable[str]) -> List[str]:
-    '''Sorts fieldnames.
-    Retains input order, but puts all query context fields at the end (sorted)
-    '''
-    context_fieldnames = [fn for fn in fns if is_context_fieldname(fn)]
-    reg_fieldnames = [fn for fn in fns if not is_context_fieldname(fn)]
-    return reg_fieldnames + sorted(context_fieldnames)
-
-
-def search_results_csv(results: Iterable[Dict], fields, query, download_id) -> Union[os.PathLike, str]:
+def search_results_csv(
+    results: Iterable[Dict],
+    fields: List[str],
+    query: Dict,
+    download_id: str,
+    corpus: Corpus,
+    user: Optional[CustomUser],
+    extra_columns: List[str] = []
+) -> Union[os.PathLike, str]:
     '''Writes a CSV file for search results.
     Operates on either lists or generator containing results.
     '''
-    field_set = set(fields)
-    field_set.update(['query'])
-
     # create csv file
-    filename = create_filename(download_id)
-    field_set.discard('context')
-    fieldnames = sort_fieldnames(field_set)
+    include_link = 'document_link' in extra_columns
+    context_fields = _query_in_context_fields(corpus, query, extra_columns)
+    tags = _tags_to_include(user, corpus, extra_columns)
 
-    entries = generate_rows(results, fields, query, field_set)
+    filename = create_filename(download_id)
+    fieldnames = _results_csv_fieldnames(fields, include_link, tags, context_fields)
+    entries = generate_rows(
+        results, fields, get_query_text(query), corpus, include_link, tags, context_fields
+    )
 
     filepath = write_file(filename, fieldnames, entries,
                           dialect='resultsDialect')
     return filepath
 
 
-def generate_rows(results: Iterable[Dict], fields, query, field_set):
+def _tags_to_include(
+        user: Optional[CustomUser], corpus: Corpus, extra_columns: List[str]
+    ) -> List[Tag]:
+    if 'tags' in extra_columns and user and not user.is_anonymous:
+        return corpus_tags(user, corpus)
+    return []
+
+
+def _tag_column(tag: Tag) -> str:
+    return f'tag: {tag.name}'
+
+
+def _query_in_context_column(field: str) -> str:
+    return f'query in context: {field}'
+
+
+
+def _query_in_context_fields(corpus: Corpus, query: Dict, extra_columns: List[str]) -> List[str]:
+    if 'context' in extra_columns:
+        corpus_fields = corpus.configuration.fields.all()
+        query_fieldnames = get_search_fields(query) or [f.name for f in corpus_fields]
+        content_fields = corpus_fields.filter(
+            display_type=FieldDisplayTypes.TEXT_CONTENT,
+            downloadable=True,
+            hidden=False,
+        )
+        return [ f.name for f in content_fields if f.name in query_fieldnames ]
+
+
+def _results_csv_fieldnames(
+        fields: List[str], include_link: bool,
+        tags: Optional[List[Tag]],
+        context_fields: List[str]
+    ) -> List[str]:
+    fields = ['query'] + fields
+    if include_link:
+        fields += [DOCUMENT_URL_COL]
+    if tags:
+        fields += list(map(_tag_column, tags))
+    if context_fields:
+        fields += [_query_in_context_column(f) for f in context_fields]
+    return fields
+
+
+def _query_in_context_values(highlights: Dict, context_fields: List[str]) -> Dict:
+    values = {}
+
+    for field in context_fields:
+        col = _query_in_context_column(field)
+        snippets = highlights.get(field)
+        if snippets:
+            plain_text_snippets = map(strip_tags, snippets)
+            value = '\n\n'.join(plain_text_snippets)
+        else:
+            value = None
+        values[col] = value
+
+    return values
+
+
+def generate_rows(
+        results: Iterable[Dict],
+        download_fields: List[str],
+        query: str,
+        corpus: Corpus,
+        include_link: bool,
+        tags: Optional[List[Tag]] = None,
+        context_fields: Optional[List[str]] = None,
+):
     ''' Yields rows of data to be written to the CSV file'''
+
     for result in results:
         entry = {'query': query}
-        for field in fields:
+        doc_id = result['_id']
+
+        for field in download_fields:
             # this assures that old indices, which have their id on
             # the top level '_id' field, will fill in id here
             if field == "id" and "_id" in result:
-                entry.update({field: result['_id']})
+                entry.update({field: doc_id})
             if field in result['_source']:
                 entry.update({field: result['_source'][field]})
-        highlights = result.get('highlight')
-        if 'context' in fields and highlights:
-            hi_fields = highlights.keys()
-            for hf in hi_fields:
-                for index, hi in enumerate(highlights[hf]):
-                    highlight_field_name = '{}{}{}'.format(
-                        hf, QUERY_CONTEXT_INFIX, index + 1)
-                    field_set.update([highlight_field_name])
-                    soup = BeautifulSoup(hi, 'html.parser')
-                    entry.update({highlight_field_name: soup.get_text()})
+
+        if context_fields:
+            entry.update(
+                _query_in_context_values(result.get('highlight', {}), context_fields)
+            )
+        if tags:
+            entry.update(_tag_values(corpus, doc_id, tags))
+        if include_link:
+            entry.update(
+                {DOCUMENT_URL_COL: f'{settings.BASE_URL}/document/{corpus.name}/{doc_id}'}
+            )
         yield entry
+
+
+def _tag_values(corpus: Corpus, id: str, tags: List[Tag]) -> Dict[str, any]:
+    return {
+        _tag_column(tag): TaggedDocument.objects.filter(
+            corpus=corpus, doc_id=id, tags=tag).exists()
+        for tag in tags
+    }
 
 
 def term_frequency_csv(queries, results, field_name, download_id, unit = None):

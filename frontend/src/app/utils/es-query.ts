@@ -22,6 +22,7 @@ import { TagFilter } from '@models/tag-filter';
 import { PageResultsParameters } from '@models/page-results';
 import { DeepPartial } from 'chart.js/dist/types/utils';
 import { SimpleStore } from '../store/simple-store';
+import { searchFieldOptions } from './search-fields';
 
 // conversion from query model -> elasticsearch query language
 
@@ -90,34 +91,43 @@ export const makeSortSpecification = (sortBy: SortBy, sortDirection: SortDirecti
     }
 };
 
-export const makeHighlightSpecification = (corpus: Corpus, queryText?: string, highlightSize?: number) => {
+const highlightFieldNames = (corpus: Corpus, searchFields?: CorpusField[]): string[]  => {
+    const fields = searchFields?.length ? searchFields : searchFieldOptions(corpus);
+    return fields.map(f => f.name);
+};
+
+const baseFieldName = (searchFieldName: string): string =>
+    searchFieldName.split('.')[0];
+
+const includeHighlight = (field: CorpusField, highlightFields: string[]): boolean =>
+    _.some(highlightFields, f => baseFieldName(f) == field.name);
+
+const makeFieldHighlightSpec = (field: CorpusField, highlightFields: string[]) => {
+    const spec = {};
+    if (field.fastVectorHighlight) {
+        spec['type'] = 'fvh';
+    }
+    if (field.multiFields) {
+        spec['matched_fields'] = highlightFields.filter(f => baseFieldName(f) == field.name);
+    }
+    return { [field.name]: spec };
+};
+
+export const makeHighlightSpecification = (corpus: Corpus, queryText: string | undefined, searchFields: CorpusField[], highlightSize?: number) => {
     if (!queryText || !highlightSize) {
         return {};
     }
-    const highlightFields = corpus.fields.filter(field => field.searchable);
+    const highlightFields = highlightFieldNames(corpus, searchFields);
+
     return {
         highlight: {
             fragment_size: highlightSize,
             pre_tags: ['<mark class="highlight">'],
             post_tags: ['</mark>'],
             order: 'score',
-            fields: highlightFields.map((field) =>
-                field.displayType === 'text_content' &&
-                field.positionsOffsets &&
-                // add matched_fields for stemmed highlighting
-                // ({ [field.name]: {"type": "fvh", "matched_fields": ["speech", "speech.stemmed"] }}):
-                corpus.newHighlight
-                    ? {
-                          [field.name]: {
-                              type: 'fvh',
-                              matched_fields: [
-                                  field.name,
-                                  field.name + '.stemmed',
-                              ],
-                          },
-                      }
-                    : { [field.name]: {} }
-            ),
+            fields: corpus.fields
+                .filter(f => includeHighlight(f, highlightFields))
+                .map(f => makeFieldHighlightSpec(f, highlightFields)),
         },
     };
 };
@@ -173,7 +183,7 @@ export const resultsParamsToAPIQuery = (queryModel: QueryModel, params: PageResu
     const query = queryModel.toAPIQuery();
 
     const sort = makeSortSpecification(...params.sort);
-    const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, params.highlight);
+    const highlight = makeHighlightSpecification(queryModel.corpus, queryModel.queryText, queryModel.searchFields, params.highlight);
     const addToQuery: DeepPartial<APIQuery> = {
         es_query: {
             ...sort,

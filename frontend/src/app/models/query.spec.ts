@@ -1,4 +1,4 @@
-import { mockField2, mockFieldDate, mockFieldMultipleChoice } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { Corpus, } from './corpus';
 import { QueryModel } from './query';
 import { SearchFilter } from './field-filter';
@@ -6,30 +6,8 @@ import * as _ from 'lodash';
 import { Store } from '../store/types';
 import { SimpleStore } from '../store/simple-store';
 
-const corpus: Corpus = {
-    name: 'mock-corpus',
-    title: 'Mock Corpus',
-    description: '',
-    index: 'mock-corpus',
-    minDate: new Date('1800-01-01'),
-    minYear: 1800,
-    maxDate: new Date('1900-01-01'),
-    maxYear: 1900,
-    scanImageType: null,
-    allowImageDownload: true,
-    wordModelsPresent: false,
-    fields: [
-        mockField2,
-        mockFieldDate,
-        mockFieldMultipleChoice,
-    ],
-    languages: ['English'],
-    displayLanguages: 'English',
-    category: 'Tests',
-    hasNamedEntities: false,
-} as Corpus;
-
 describe('QueryModel', () => {
+    let corpus: Corpus;
     let store: Store;
     let query: QueryModel;
     let filter: SearchFilter;
@@ -39,11 +17,12 @@ describe('QueryModel', () => {
     const someSelection = ['hooray!'];
 
     beforeEach(() => {
+        corpus = corpusFactory();
         store = new SimpleStore();
         query = new QueryModel(corpus, store);
 
-        filter = query.filterForField(mockFieldDate);
-        filter2 = query.filterForField(mockFieldMultipleChoice);
+        filter = query.filterForField(corpus.fields[2]);
+        filter2 = query.filterForField(corpus.fields[0]);
     });
 
     it('should create', () => {
@@ -177,7 +156,7 @@ describe('QueryModel', () => {
         expect(clone.queryText).toEqual('test');
 
         filter.setToValue(new Date('Jan 2 1850'));
-        expect(query.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 2 1850'));
-        expect(clone.filterForField(mockFieldDate).currentData.min).toEqual(new Date('Jan 1 1850'));
+        expect(query.filterForField(corpus.fields[2]).currentData.min).toEqual(new Date('Jan 2 1850'));
+        expect(clone.filterForField(corpus.fields[2]).currentData.min).toEqual(new Date('Jan 1 1850'));
     });
 });

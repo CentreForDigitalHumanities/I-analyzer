@@ -25,7 +25,6 @@ export type RangeFilterOptions = {
 
 export type BooleanFilterOptions = {
     name: 'BooleanFilter';
-    checked: boolean;
 } & HasDescription;
 
 export type FieldFilterOptions =

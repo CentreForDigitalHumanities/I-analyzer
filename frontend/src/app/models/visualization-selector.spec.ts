@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
-import { mockCorpus3 } from '../../mock-data/corpus';
 import { SimpleStore } from '../store/simple-store';
 import { Store } from '../store/types';
 import { Corpus } from './corpus';
 import { QueryModel } from './query';
 import { VisualizationSelector } from './visualization-selector';
+import { corpusFactory } from 'mock-data/corpus';
 
 describe('VisualizationSelector', () => {
     let store: Store;
@@ -13,15 +13,8 @@ describe('VisualizationSelector', () => {
     let selector: VisualizationSelector;
 
     beforeEach(() => {
-        corpus = _.cloneDeep(mockCorpus3);
-        corpus.fields[0].visualizations = ['resultscount', 'termfrequency'];
-        corpus.fields[1].visualizations = ['wordcloud'];
-        corpus.fields[2].visualizations = ['resultscount', 'termfrequency'];
-
-    });
-
-    beforeEach(() => {
         store = new SimpleStore();
+        corpus = corpusFactory();
         query = new QueryModel(corpus);
     });
 
@@ -37,14 +30,14 @@ describe('VisualizationSelector', () => {
         selector = new VisualizationSelector(store, query);
         expect(store.currentParams()).toEqual({
             visualize: 'resultscount',
-            visualizedField: 'great_field',
+            visualizedField: 'genre',
         });
     });
 
     it('should intialise from parameters', () => {
         store.paramUpdates$.next({
             visualize: 'wordcloud',
-            visualizedField: 'speech'
+            visualizedField: 'content'
         });
 
         selector = new VisualizationSelector(store, query);
