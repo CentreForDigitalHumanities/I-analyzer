@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import * as _ from 'lodash';
-import { mockCorpus, mockField } from '../../../mock-data/corpus';
+import { corpusFactory } from '../../../mock-data/corpus';
 
 import { commonTestBed } from '../../common-test-bed';
 
@@ -19,10 +19,9 @@ describe('DocumentViewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DocumentViewComponent);
         component = fixture.componentInstance;
-        component.corpus = _.merge({
-            scanImageType: 'farout_image_type'
-        }, mockCorpus);
-        component.document = makeDocument({ great_field: 'Hello world!', speech: 'Wally was last seen in Paris' });
+        component.corpus = corpusFactory();
+        component.corpus.scanImageType = 'image/png';
+        component.document = makeDocument();
         fixture.detectChanges();
     });
 
@@ -30,18 +29,21 @@ describe('DocumentViewComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should render fields', () => {
-        expect(component.propertyFields).toEqual([mockField]);
+    it('should render metadata fields', () => {
+        expect(component.propertyFields).toEqual([
+            component.corpus.fields[0],
+            component.corpus.fields[2]
+        ]);
         const debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));
-        expect(debug.length).toEqual(1); // number of fields
+        expect(debug.length).toEqual(2); // number of fields
         const element = debug[0].nativeElement as Element;
-        expect(element.textContent.trim()).toBe('Hello world!');
+        expect(element.textContent.trim()).toBe('Science Fiction');
     });
 
     it('should create tabs', () => {
         const debug = fixture.debugElement.queryAll(By.css('[role=tab]'));
         expect(debug.length).toBe(2);
-        expect(debug[0].attributes['id']).toBe('tab-field-speech');
+        expect(debug[0].attributes['id']).toBe('tab-field-content');
         expect(debug[1].attributes['id']).toBe('tab-scan');
     });
 
