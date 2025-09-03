@@ -69,7 +69,11 @@ export class DocumentViewComponent implements OnChanges {
         if (view === 'scan' && this.showScanTab) {
             return 'scan';
         }
-        return _.first(this.contentFields)['name'];
+        return this.fieldTabID(_.first(this.contentFields));
+    }
+
+    fieldTabID(field: CorpusField) {
+        return `field-${field.name}`;
     }
 
 }
