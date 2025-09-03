@@ -86,9 +86,9 @@ export class DownloadComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.corpus) {
-            this.fieldOptions = _.filter(this.corpus?.fields, 'downloadable').map(f => ({
-                value: f.name, label: f.displayName
-            }));
+            this.fieldOptions = this.corpus?.fields
+                .filter(f => f.downloadable && !f.hidden)
+                .map(f => ({value: f.name, label: f.displayName}));
             this.fieldSelection = _.filter(this.corpus?.fields, 'csvCore').map(f => f.name);
         }
         if (changes.queryModel) {

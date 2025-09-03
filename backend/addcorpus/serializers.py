@@ -78,11 +78,10 @@ class PrettyChoiceField(serializers.ChoiceField):
         return super().to_internal_value(value)
 
 class CorpusConfigurationSerializer(serializers.ModelSerializer):
-    fields = FieldSerializer(many=True)
+    fields = FieldSerializer(many=True, source='visible_fields')
     languages = serializers.ListField(child=LanguageField())
     category = PrettyChoiceField(choices=CATEGORIES)
     default_sort = NonEmptyJSONField()
-    has_named_entities = serializers.ReadOnlyField()
 
     class Meta:
         model = CorpusConfiguration
