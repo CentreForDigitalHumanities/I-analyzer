@@ -59,7 +59,7 @@ export class ConfirmModalComponent implements OnDestroy {
 
     @ViewChild('modalTitle') title: ElementRef<HTMLElement>;
 
-    confirmAction$ = new BehaviorSubject<any>(undefined);
+    confirmAction$ = new BehaviorSubject<{data: any} | undefined>(undefined);
     loading$ = new BehaviorSubject<boolean>(false);
 
     data: any; // for briefer notation, this provides the action data
@@ -77,7 +77,7 @@ export class ConfirmModalComponent implements OnDestroy {
     }
 
     open(data: any) {
-        this.confirmAction$.next(data);
+        this.confirmAction$.next({data});
         setTimeout(() => this.title.nativeElement.focus());
     }
 
