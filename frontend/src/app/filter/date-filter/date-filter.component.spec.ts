@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } from '@angular/core/testing';
-import { mockCorpus3, mockFieldDate } from '../../../mock-data/corpus';
+import { corpusFactory, dateFieldFactory } from '../../../mock-data/corpus';
 
 import { commonTestBed } from '../../common-test-bed';
 import { DateFilter, DateFilterData, QueryModel } from '@models';
@@ -18,6 +18,7 @@ describe('DateFilterComponent', () => {
         max: new Date('Dec 31 1860')
     };
 
+
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
     }));
@@ -26,8 +27,10 @@ describe('DateFilterComponent', () => {
         searchService = TestBed.inject(SearchService);
         fixture = TestBed.createComponent(DateFilterComponent);
         component = fixture.componentInstance;
-        component.queryModel = new QueryModel(mockCorpus3);
-        component.filter = component.queryModel.filterForField(mockFieldDate) as DateFilter;
+        const corpus = corpusFactory();
+        component.queryModel = new QueryModel(corpus);
+        const dateField = corpus.fields[2];
+        component.filter = component.queryModel.filterForField(dateField) as DateFilter;
         component.filter.set({
             min: new Date('Jan 1 1810'),
             max: new Date('Dec 31 1820')
@@ -47,7 +50,7 @@ describe('DateFilterComponent', () => {
     });
 
     it('should use the specified data range', fakeAsync(() => {
-        const newFilter = new DateFilter(new SimpleStore(), mockFieldDate);
+        const newFilter = new DateFilter(new SimpleStore(), component.filter.corpusField);
         component.onFilterSet(newFilter);
 
         flushMicrotasks();
@@ -65,7 +68,7 @@ describe('DateFilterComponent', () => {
             Promise.resolve(minDate), Promise.resolve(maxDate)
         );
 
-        const field = _.cloneDeep(mockFieldDate);
+        const field = dateFieldFactory();
         field.filterOptions = {
             name: 'DateFilter',
             lower: null,

@@ -1,4 +1,4 @@
-import { mockCorpus } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { SimpleStore } from '../store/simple-store';
 import { ComparedQueries } from './compared-queries';
 import { QueryModel } from './query';
@@ -10,7 +10,7 @@ describe('ComparedQueries', () => {
 
     beforeEach(() => {
         store = new SimpleStore();
-        query = new QueryModel(mockCorpus, store);
+        query = new QueryModel(corpusFactory(), store);
         compared = new ComparedQueries(store);
     });
 
@@ -59,7 +59,7 @@ describe('ComparedQueries', () => {
             compareTerms: 'test2,test3,test4'
         });
 
-        query = new QueryModel(mockCorpus, store);
+        query = new QueryModel(corpusFactory(), store);
         compared = new ComparedQueries(store);
 
         expect(query.state$.value.queryText).toEqual('test');

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { mockCorpus } from '../../../mock-data/corpus';
+import { corpusFactory } from '../../../mock-data/corpus';
 import { commonTestBed } from '../../common-test-bed';
 import { QueryModel } from '@models';
 
@@ -24,7 +24,7 @@ describe('Search Sorting Component', () => {
         component.pageResults = new PageResults(
             new SimpleStore(),
             new SearchServiceMock() as unknown as SearchService,
-            new QueryModel(mockCorpus),
+            new QueryModel(corpusFactory()),
         );
         fixture.detectChanges();
     });

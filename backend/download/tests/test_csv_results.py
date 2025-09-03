@@ -1,7 +1,15 @@
-import pytest
+from contextlib import contextmanager
 import csv
+
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+import pytest
+
+from addcorpus.models import Corpus
 from es.search import hits
 from download import create_csv
+from tag.conftest import *
+from visualization import query as query_utils
 
 ### SEARCH RESULTS
 
@@ -15,25 +23,20 @@ mock_es_result = {
         },
         "max_score": 4.22,
         "hits": [
-            {   "_index" : "parliament-netherlands",
+            {   "_index" : "test-mock-corpus",
                 "_type" : "_doc",
-                "_id": "nl.proc.ob.d.h-ek-19992000-552-587.1.19.1",
+                "_id": "1",
                 "_score" :  4.22,
                 "_source": {
-                    "speech_id" : "nl.proc.ob.d.h-ek-19992000-552-587.1.19.1",
-                    "speaker" : "Staatssecretaris Adelmund",
-                    "speaker_id" : "nl.m.02500",
-                    "role" : "Government",
-                    "party" : "null",
-                    "party_id" : "null",
-                    "page" : "552-587",
-                    "column" : "null",
-                    "speech": "very long field"
+                    "date" : "1818-01-01",
+                    "content" : "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
+                    "genre" : "Science fiction",
+                    "title" : "Frankenstein, or, the Modern Prometheus",
                 },
                 "highlight" : {
-                    "speech" : [
-                        "Het gaat om een driehoek waarin <em>testen</em> en toetsen een",
-                        "om de highlights te <em>testen</em>"
+                    "content" : [
+                        "that no <em>disaster</em> has accompanied",
+                        "with such <em>evil</em> forebodings."
                     ]
                 }
             }
@@ -41,22 +44,42 @@ mock_es_result = {
     }
 }
 
+
 @pytest.fixture()
-def result_csv_with_highlights(csv_directory):
-    route = 'parliament-netherlands_query=test'
-    fields = ['speech']
-    file = create_csv.search_results_csv(hits(mock_es_result), fields, route, 0)
+def result_csv_with_highlights(csv_directory, small_mock_corpus, auth_user):
+    query = query_utils.set_query_text(query_utils.MATCH_ALL, 'disaster evil')
+    fields = ['content']
+    corpus = Corpus.objects.get(name=small_mock_corpus)
+    file = create_csv.search_results_csv(
+        hits(mock_es_result), fields, query, 0, corpus, auth_user, ['context']
+    )
     return file
 
-def test_create_csv(result_csv_with_highlights):
-    counter = 0
+
+def test_query_in_context_fields(small_mock_corpus, small_mock_corpus_specs):
+    query = query_utils.set_query_text(query_utils.MATCH_ALL, 'test')
+    corpus = Corpus.objects.get(name=small_mock_corpus)
+    content_field = small_mock_corpus_specs['content_field']
+
+    assert not create_csv._query_in_context_fields(corpus, query, [])
+    assert create_csv._query_in_context_fields(corpus, query, ['context']) == [content_field]
+
+    other_fields = [f for f in small_mock_corpus_specs['fields'] if f != content_field]
+    query_other_fields = query_utils.set_search_fields(query, other_fields)
+    assert not create_csv._query_in_context_fields(corpus, query_other_fields, ['context'])
+
+
+def test_csv_query_in_context(result_csv_with_highlights):
     with open(result_csv_with_highlights) as f:
         csv_output = csv.DictReader(f, delimiter=';', quotechar='"')
-        assert csv_output != None
-        for row in csv_output:
-            counter += 1
-            assert 'speech' in row
-        assert counter == 1
+        rows = list(row for row in csv_output)
+        assert len(rows) == 1
+        assert csv_output.fieldnames == ['query', 'content', 'query in context: content']
+        context = rows[0]['query in context: content']
+        assert 'disaster' in context
+        assert 'forebodings' in context
+        assert rows[0]['content'] == mock_es_result['hits']['hits'][0]['_source']['content']
+
 
 def test_csv_fieldnames(mock_corpus_results_csv, mock_corpus_specs):
     with open(mock_corpus_results_csv) as csv_file:
@@ -84,14 +107,17 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
     that none of the steps in the download make encoding issues.'''
 
     if mock_corpus == small_mock_corpus:
-        expected = [{
-            'date': '1818-01-01',
-            'genre': "Science fiction",
-            'title': "Frankenstein, or, the Modern Prometheus",
-            'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
-        }, {
-            'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
-        }]
+        expected = [
+            {
+                'date': '1818-01-01',
+                'genre': "Science fiction",
+                'title': "Frankenstein, or, the Modern Prometheus",
+                'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
+            },
+            {
+                'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+            },
+        ]
     elif mock_corpus == ml_mock_corpus:
         expected = [{
             'language': 'Swedish',
@@ -104,6 +130,71 @@ def test_csv_contents(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
         expected = []
 
     assert_result_csv_expectations(mock_corpus_results_csv, expected, delimiter=';')
+
+def test_tags_to_include(auth_user, admin_user, tag_mock_corpus, basic_mock_corpus, tagged_documents, auth_user_tag):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    assert auth_user_tag in create_csv._tags_to_include(auth_user, corpus, ['tags'])
+    assert auth_user_tag not in create_csv._tags_to_include(admin_user, corpus, ['tags'])
+    assert auth_user_tag not in create_csv._tags_to_include(auth_user, corpus, [])
+
+    other_corpus = Corpus.objects.get(name=basic_mock_corpus)
+    assert auth_user_tag not in create_csv._tags_to_include(auth_user, other_corpus, ['tags'])
+
+
+def test_csv_exports_tags(
+    tag_mock_corpus, tagged_documents, tag_mock_corpus_elasticsearch_results,
+    auth_user_tag
+):
+    '''Assert that tags are exported'''
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    fields = ['id', 'content']
+    rows = list(
+        create_csv.generate_rows(
+            tag_mock_corpus_elasticsearch_results,
+            fields,
+            'myquery',
+            corpus,
+            False,
+            [auth_user_tag]
+        )
+    )
+    for row in rows:
+        assert 'tag: fascinating' in row
+        assert (row['tag: fascinating']) == (row['id'] in ['1', '2', '3'])
+
+
+
+@contextmanager
+def not_raises(exception):
+    try:
+        yield
+    except exception:
+        pytest.fail("DID RAISE {0}".format(exception))
+
+
+def test_csv_exports_document_link(
+    tag_mock_corpus, tag_mock_corpus_elasticsearch_results, auth_user
+):
+    fields = ['id', 'content']
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    rows = list(
+        create_csv.generate_rows(
+            tag_mock_corpus_elasticsearch_results,
+            fields,
+            'myquery',
+            corpus,
+            True,
+            [],
+        )
+    )
+    validate_url = URLValidator()
+    for row in rows:
+        doc_link = row.get('document_link')
+        assert doc_link
+        assert doc_link.endswith(str(row['id']))
+        with not_raises(ValidationError):
+            assert validate_url(doc_link) is None
+
 
 def test_csv_encoding(ml_mock_corpus_results_csv):
     '''Assert that the results csv file matches utf-8 encoding'''

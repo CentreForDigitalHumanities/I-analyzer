@@ -2,7 +2,7 @@ import { TestBed, inject, waitForAsync } from '@angular/core/testing';
 import { SearchService } from '@services/search.service';
 import { PageResults } from './page-results';
 import { QueryModel } from './query';
-import { mockCorpus, mockField } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { SimpleStore } from '../store/simple-store';
 import { take } from 'rxjs/operators';
 import { SearchServiceMock } from '../../mock-data/search';
@@ -24,7 +24,7 @@ describe('PageResults', () => {
     beforeEach(inject([SearchService], (searchService: SearchService) => {
         store = new SimpleStore();
         service = searchService;
-        queryModel = new QueryModel(mockCorpus, store);
+        queryModel = new QueryModel(corpusFactory(), store);
         service = searchService;
         results = new PageResults(store, searchService, queryModel);
     }));
@@ -38,27 +38,29 @@ describe('PageResults', () => {
             query: 'test',
             highlight: '200',
         });
-        queryModel = new QueryModel(mockCorpus, store);
+        queryModel = new QueryModel(corpusFactory(), store);
         results = new PageResults(store, service, queryModel);
         expect(results.state$.value.highlight).toBe(200);
     });
 
     it('should set the sort state', () => {
-        results.setSortBy(mockField);
-        expect(results.state$.value.sort).toEqual([mockField, 'desc']);
+        const field = queryModel.corpus.fields[2];
+        results.setSortBy(field);
+        expect(results.state$.value.sort).toEqual([field, 'desc']);
 
         results.setSortDirection('asc');
-        expect(results.state$.value.sort).toEqual([mockField, 'asc']);
+        expect(results.state$.value.sort).toEqual([field, 'asc']);
 
         results.setSortBy(undefined);
         expect(results.state$.value.sort).toEqual([undefined, 'desc']);
     });
 
     it('should reset the page when changing sorting', () => {
+        const field = queryModel.corpus.fields[2];
         results.setParams({from: 20});
         expect(results.state$.value.from).toBe(20);
 
-        results.setSortBy(mockField);
+        results.setSortBy(field);
         expect(results.state$.value.from).toBe(0);
 
         results.setParams({from: 20});
