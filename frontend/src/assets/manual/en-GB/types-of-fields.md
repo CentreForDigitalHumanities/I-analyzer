@@ -56,3 +56,10 @@ I-analyzer does not support negative years in date fields. If you want to add in
 A boolean field contains true/false values.
 
 You can enable filtering on boolean fields. The filter widget will show a checkbox.
+
+## URL
+An URL field contains URLs, for example to link to an external source location.
+
+They are displayed in the metadata overview of a document, but not shown in the search results overview.
+
+Filtering, visualization, and sorting is disabled for URL fields.
