@@ -134,7 +134,17 @@ export class CorpusDefinitionService implements OnDestroy {
                     visualize: true,
                     sort: false,
                     hidden: false,
-                }
+                };
+            }
+            case 'url': {
+                field.options = {
+                    search: false,
+                    filter: 'none',
+                    preview: false,
+                    visualize: false,
+                    sort: false,
+                    hidden: false,
+                };
             }
         }
         return field as APICorpusDefinitionField;
