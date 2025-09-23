@@ -2,7 +2,7 @@
 Utilities for Simple Query String syntax
 '''
 
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
 import re
 
 def collect_terms(query_text: str) -> List[str]:
@@ -18,18 +18,16 @@ def collect_terms(query_text: str) -> List[str]:
     '''
 
     if '(' in query_text and ')' in query_text:
-        in_group, outside_group = _extract_group(query_text, '(', ')', False)
+        opening = re.compile(r'\(')
+        closing = re.compile(r'\)')
+        in_group, outside_group = _extract_group(query_text, opening, closing, False)
         if in_group:
             return collect_terms(in_group) + collect_terms(outside_group)
 
-    if match := re.search(r'\"~\d', query_text):
-        closing = match.group(0)
-        phrase, outside_phrase = _extract_group(query_text, '"', closing, True)
-        if phrase:
-            return [phrase] + collect_terms(outside_phrase)
-
     if '"' in query_text:
-        in_qoutes, outside_qoutes = _extract_group(query_text, '"', '"', True)
+        opening = re.compile(r'-?"')
+        closing = re.compile(r'"(~\d+)?')
+        in_qoutes, outside_qoutes = _extract_group(query_text, opening, closing, True)
         if in_qoutes:
             return [in_qoutes] + collect_terms(outside_qoutes)
 
@@ -45,7 +43,7 @@ def _is_term(query_part: str) -> bool:
 
 
 def _extract_group(
-    query_text: str, opening: str, closing: str, keep_bounds: bool,
+    query_text: str, opening: re.Pattern, closing: re.Pattern, keep_bounds: bool,
 ) -> Tuple[Optional[str], str]:
     '''
     Split a group from the rest of the query. Used to extract sections in parentheses
@@ -53,8 +51,8 @@ def _extract_group(
 
     Parameters:
         query_text: query text
-        opening: opening character(s)
-        closing: closing character(s)
+        opening: opening pattern
+        closing: closing pattern
         keep_bounds: whether to include the opening/closing characters or strip them
 
     Returns:
@@ -66,35 +64,43 @@ def _extract_group(
     bounds = _find_group(query_text, opening, closing)
 
     if bounds:
-        opens_at, closes_at = bounds
+        opening_start, opening_end, closing_start, closing_end = bounds
         if keep_bounds:
-            in_group = query_text[opens_at : closes_at  + len(closing)]
+            in_group = query_text[opening_start : closing_end]
         else:
-            in_group = query_text[opens_at + len(opening) : closes_at]
-        outside_group = query_text[:opens_at] + query_text[closes_at + len(closing):]
+            in_group = query_text[opening_end : closing_start]
+        outside_group = query_text[:opening_start] + query_text[closing_end:]
         return in_group, outside_group
 
     return (None, query_text)
 
 
-def _find_group(query_text: str, opening: str, closing: str) -> Optional[Tuple[int, int]]:
+def _find_group(
+    query_text: str, opening: re.Pattern, closing: re.Pattern,
+) -> Optional[Tuple[int, int, int, int]]:
     '''
-    Find start/end index for a group.
-    '''
-    opens_at = query_text.find(opening)
+    Find the opening/closing indices for a group. Will respect nesting if opening and
+    closing patterns do not overlap.
 
-    if opens_at == -1:
+    Returns:
+        Tuple with indices of the start of the opening substring, end of the opening
+            substring, start of the closing substring, end of the closing substring.
+    '''
+    opening_match = re.search(opening, query_text)
+
+    if not opening_match:
         return
 
     nesting = 0
-    for i in range(opens_at + len(opening), len(query_text)):
+    for i in range(opening_match.end(), len(query_text)):
         substring = query_text[i:]
-        if substring.startswith(closing):
+        if closing_match := re.match(closing, substring):
             if not nesting:
-                return (opens_at, i)
+                return opening_match.start(), opening_match.end(), \
+                    i, i + closing_match.end()
             else:
                 nesting -= 1
-        elif substring.startswith(opening):
+        elif re.match(opening, substring):
             nesting += 1
 
 

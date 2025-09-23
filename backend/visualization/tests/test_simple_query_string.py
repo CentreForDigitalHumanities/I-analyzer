@@ -14,7 +14,8 @@ query_cases = [
     ('rejoice + (evil | forebodings)', ['rejoice', 'evil', 'forebodings']),
     ('rejoice + ("evil forebodings" regarded)', ['rejoice', '"evil forebodings"', 'regarded']),
     ('"evil forebodings"~2 regarded', ['"evil forebodings"~2', 'regarded']),
-    ('rejoice + (regarded | (evil + forebodings))', ['rejoice', 'regarded', 'evil', 'forebodings'])
+    ('rejoice + (regarded | (evil + forebodings))', ['rejoice', 'regarded', 'evil', 'forebodings']),
+    ('enterprise + -"evil forebodings"', ['enterprise', '-"evil forebodings"'])
 ]
 
 @pytest.mark.parametrize('query_text,terms', query_cases)
