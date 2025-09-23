@@ -47,6 +47,7 @@ frequencies = [
     ('rejuice~1', 1), #fuzzy match
     ('hav*', 2), # wildcard match
     ('sit* hav*' , 3),
+    ('-sit* hav*' , 2),
     ('-sit* + hav*' , 1),
     ('nomatches', 0),
 ]

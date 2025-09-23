@@ -80,7 +80,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
 
     query_text = query.get_query_text(es_query)
     terms = simple_query_string.collect_terms(query_text)
-    prefix_query = ' '.join(filter(simple_query_string.is_prefix, terms))
+    prefix_query = ' '.join(filter(requires_termvectors_analysis, terms))
 
     matches = [
         count_matches_in_document(hit, prefix_query, fieldnames, es_client)
@@ -93,6 +93,11 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         return n_matches
     match_count = n_matches + estimate_skipped_count(matches, skipped_docs)
     return match_count
+
+
+def requires_termvectors_analysis(term: str) -> bool:
+    return simple_query_string.is_prefix(term) and not simple_query_string.is_negated(term)
+
 
 def estimate_skipped_count(matches, skipped_docs: int) -> int:
     mean_last_matches = sum(matches[-ESTIMATE_WINDOW:]) / ESTIMATE_WINDOW
