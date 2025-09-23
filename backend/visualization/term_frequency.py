@@ -1,9 +1,9 @@
 import math
-from typing import Callable, Dict, Any, Optional
+from typing import Callable, Dict, Any, Optional, List
 import re
-from addcorpus.models import CorpusConfiguration
+from addcorpus.models import CorpusConfiguration, Field
 from datetime import datetime
-from es.search import get_index, total_hits, search
+from es.search import total_hits, search
 from es.client import elasticsearch
 from copy import deepcopy
 from visualization import query, termvectors, simple_query_string
@@ -40,19 +40,10 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     return data
 
 def extract_data_for_term_frequency(corpus, es_query):
-    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus)
-
-    all_fields = corpus_conf.fields.all()
-    search_fields = query.get_search_fields(es_query)
-    if search_fields:
-        fields = list(filter(lambda field: field.name in search_fields, all_fields))
-    else:
-        fields =list(filter(lambda field: field.es_mapping['type'] == 'text', all_fields))
-
-    fieldnames = [field.name for field in fields]
-
+    fields = _term_frequency_search_fields(corpus, es_query)
     has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
     include_token_count = all(has_length_count(field) for field in fields)
+    fieldnames = [field.name for field in fields]
 
     if include_token_count:
         token_count_aggregators = {
@@ -67,6 +58,18 @@ def extract_data_for_term_frequency(corpus, es_query):
         token_count_aggregators = None
 
     return fieldnames, token_count_aggregators
+
+def _term_frequency_search_fields(corpus, es_query) -> List[Field]:
+    corpus_conf = CorpusConfiguration.objects.get(corpus__name=corpus)
+    all_fields = corpus_conf.fields.all()
+    search_fields = query.get_search_fields(es_query)
+    if search_fields:
+        fields = list(filter(lambda field: field.name in search_fields, all_fields))
+    else:
+        fields = list(filter(lambda field: field.es_mapping['type'] == 'text', all_fields))
+
+    return fields
+
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
     es_query = query.set_search_fields(es_query, fieldnames)
