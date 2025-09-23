@@ -166,21 +166,14 @@ def count_matches_from_termvectors(id, index, fieldnames, query_text, es_client)
     Count matches of a query in a document using the termvectors API
     '''
     # get the term vectors for the hit
-    result = es_client.termvectors(
-        index=index,
-        id=id,
-        fields = fieldnames
-    )
-
-    # whether the query contains multi-word phrases
-    match_phrases = '"' in query_text
+    result = es_client.termvectors(index=index, id=id, fields = fieldnames)
 
     matches = 0
 
     for field in fieldnames:
         terms = termvectors.get_terms(result, field)
-        tokens = termvectors.get_tokens(terms, sort = match_phrases)
-        matches += sum(1 for match in termvectors.token_matches(tokens, query_text, index, field, es_client))
+        tokens = termvectors.get_tokens(terms, sort = False)
+        matches += sum(1 for _ in termvectors.token_matches(tokens, query_text, index, field, es_client))
 
     return matches
 
