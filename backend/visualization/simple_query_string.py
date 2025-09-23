@@ -12,8 +12,9 @@ def collect_terms(query_text: str) -> List[str]:
     Splits a query into terms, which may be either phrase terms or single terms. Operators
     are not included.
 
-    Returns a list of strings, each of which is a single term. These may still include
-    decorators like fuzzy search, negation, or quotation marks for phrase terms.
+    Returns a list of strings, each of which is a single term. These still include
+    decorators like fuzzy search, negation, or quotation marks for phrase terms. Order
+    may not match the query.
     '''
 
     if '(' in query_text and ')' in query_text:
@@ -37,12 +38,30 @@ def collect_terms(query_text: str) -> List[str]:
 
 
 def _is_term(query_part: str) -> bool:
+    '''
+    Whether a query section is a term (and not an operator)
+    '''
     return query_part not in ['+', '|']
 
 
 def _extract_group(
     query_text: str, opening: str, closing: str, keep_bounds: bool,
 ) -> Tuple[Optional[str], str]:
+    '''
+    Split a group from the rest of the query. Used to extract sections in parentheses
+    or quotes.
+
+    Parameters:
+        query_text: query text
+        opening: opening character(s)
+        closing: closing character(s)
+        keep_bounds: whether to include the opening/closing characters or strip them
+
+    Returns:
+        A tuple with the extracted group (`None` if there is none), and the query
+        with the group removed. If `keep_bounds` is true, the extracted group will
+        include the opening/closing characters.
+    '''
     opens_at = query_text.find(opening)
     closes_at = query_text.find(closing, opens_at + len(opening))
 

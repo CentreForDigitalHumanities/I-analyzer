@@ -169,4 +169,3 @@ def make_query(query_text=None, search_in_fields=None):
 
 
     return query
-
