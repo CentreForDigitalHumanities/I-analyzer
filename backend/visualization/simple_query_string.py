@@ -62,10 +62,11 @@ def _extract_group(
         with the group removed. If `keep_bounds` is true, the extracted group will
         include the opening/closing characters.
     '''
-    opens_at = query_text.find(opening)
-    closes_at = query_text.find(closing, opens_at + len(opening))
 
-    if opens_at != -1 and closes_at != -1:
+    bounds = _find_group(query_text, opening, closing)
+
+    if bounds:
+        opens_at, closes_at = bounds
         if keep_bounds:
             in_group = query_text[opens_at : closes_at  + len(closing)]
         else:
@@ -75,3 +76,28 @@ def _extract_group(
 
     return (None, query_text)
 
+
+def _find_group(query_text: str, opening: str, closing: str) -> Optional[Tuple[int, int]]:
+    '''
+    Find start/end index for a group.
+    '''
+    opens_at = query_text.find(opening)
+
+    if opens_at == -1:
+        return
+
+    nesting = 0
+    for i in range(opens_at + len(opening), len(query_text)):
+        substring = query_text[i:]
+        if substring.startswith(closing):
+            if not nesting:
+                return (opens_at, i)
+            else:
+                nesting -= 1
+        elif substring.startswith(opening):
+            nesting += 1
+
+
+
+def is_prefix(term: str) -> bool:
+    return term.endswith('*')
