@@ -290,7 +290,7 @@ class CorpusDefinition(Reader):
         (e.g. converting to a different format)
         '''
         logger.info("process_scan() called but it's the empty base implementation")
-        raise NotImplementederror()
+        raise NotImplementedError()
 
 
 class ParentCorpusDefinition(CorpusDefinition):

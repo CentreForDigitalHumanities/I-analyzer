@@ -3,12 +3,13 @@ from datetime import datetime
 import openpyxl
 import os.path
 import PIL
+from tqdm import tqdm
 
 from ianalyzer_readers.xml_tag import Tag, SiblingTag, ParentTag
 from ianalyzer_readers import extract
 
 from addcorpus.python_corpora import filters
-from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
+from addcorpus.python_corpora.corpus import XLSXCorpusDefinition, XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
 from api.utils import find_media_file
@@ -16,7 +17,72 @@ from media.media_url import media_url
 
 
 def fix_path_sep(path):
+    """Replaces backward slashes with the current platforms preferred path separator.
+    Removes path spearator if present at the end of the path"""
     return path.replace('\\', os.path.sep).lstrip(os.path.sep).strip()
+
+
+def clean_date(issue_date):
+    if issue_date.startswith('[') and issue_date.endswith(']'):
+        issue_date = issue_date[1:-1]
+    if issue_date == 'Date Unknown':
+        return None
+    return datetime.strptime(issue_date, '%B %d, %Y').strftime('%Y-%m-%d')
+
+
+class GaleMetadata(XLSXCorpusDefinition):
+    """Helper corpus for extracting metadata"""
+
+    def __init__(self, data_directory, filename, sheet):
+        self.data_directory = data_directory
+        self.filename = filename
+        self.sheet = sheet
+
+    def sources(self, start=None, end=None):
+        xlsx_path = os.path.join(self.data_directory, self.filename)
+        yield xlsx_path, {}
+
+    required_field = 'PublicationTitle'
+    fields = [
+        FieldDefinition(
+            name='title',
+            extractor=extract.CSV('PublicationTitle')
+        ),
+        FieldDefinition(
+            name='date',
+            extractor=extract.CSV(
+                'IssueDate',
+                transform=clean_date
+            )
+        ),
+        FieldDefinition(
+            name='image_path',
+            extractor=extract.CSV(
+                'ImageLocation',
+                transform=fix_path_sep
+            )
+        ),
+        FieldDefinition(
+            name='data_location',
+            extractor=extract.CSV(
+                'DataLocation',
+                transform=fix_path_sep
+            )
+        ),
+        FieldDefinition(
+            name='filename',
+            extractor=extract.CSV('Filename')
+        ),
+        FieldDefinition(
+            name='issue_id',
+            extractor=extract.CSV(
+                'Filename',
+                transform=lambda filename: filename.split("_")[0]
+            )
+        ),
+
+
+    ]
 
 
 class GaleCorpus(XMLCorpusDefinition):
@@ -28,39 +94,24 @@ class GaleCorpus(XMLCorpusDefinition):
     tag_entry = Tag('artInfo')
     external_file_tag_toplevel = Tag('issue')
 
+    language = 'en'
     scan_image_type = 'image/png'
 
     def sources(self, start, end):
         filename, sheet = self.metafile
-        wb = openpyxl.load_workbook(filename=filename)
-        for index, row in enumerate(wb[sheet].values):
-            # skip first row, and rows without date
-            if index==0 or not row[1]:
-                continue
+        metadata_corpus = GaleMetadata(self.data_directory, filename, sheet)
+        all_metadata = {row['issue_id']: row for row in metadata_corpus.documents()}
 
-            publication_tile, issue_date, image_location, data_location, filename = row
-
-            data_location = fix_path_sep(data_location)
-            image_path = fix_path_sep(image_location)
-
-            if issue_date.startswith('[') and issue_date.endswith(']'):
-                issue_date = issue_date[1:-1]
-
-            if issue_date == 'Date Unknown':
-                date_full = None
-            else:
-                date_full = datetime.strptime(issue_date, '%B %d, %Y').strftime('%Y-%m-%d')
-
-            issue_id = filename.split("_")[0]
-            external_file = os.path.join(self.data_directory, data_location, filename)
-            xml_file = os.path.join(self.data_directory, data_location, issue_id + '_Text.xml')
+        for issue_id in tqdm(list(all_metadata.keys())):
+            metadata = all_metadata.pop(issue_id)
+            external_file = os.path.join(self.data_directory, metadata['data_location'], metadata['filename'])
+            xml_file = os.path.join(self.data_directory, metadata['data_location'], issue_id + '_Text.xml')
             if not os.path.isfile(xml_file):
                 print("File {} not found".format(xml_file))
                 continue
 
-            meta = dict(title=publication_tile, image_path=image_path, issue_id=issue_id, external_file=external_file,
-                        date_full=date_full)
-            yield xml_file, meta
+            metadata['external_file'] = external_file
+            yield xml_file, metadata
 
     def process_scan(self, src):
         dst = src
@@ -75,8 +126,8 @@ class GaleCorpus(XMLCorpusDefinition):
     def date(cls):
         return FieldDefinition(
             name="date",
-            display_name="Formatted Date",
-            description="Publication date, formatted from the full date",
+            display_name="Publication Date",
+            description="Publication date",
             es_mapping={"type": "date", "format": "yyyy-MM-dd"},
             histogram=True,
             search_filter=filters.DateFilter(
@@ -89,15 +140,8 @@ class GaleCorpus(XMLCorpusDefinition):
             extractor=extract.Metadata("date"),
             csv_core=True,
             visualizations=["resultscount", "termfrequency"],
+            results_overview=True
         )
-    date_pub = FieldDefinition(
-        name="date_pub",
-        display_name="Publication Date",
-        description="Publication date as full string, as found in source file",
-        es_mapping=keyword_mapping(),
-        results_overview=True,
-        extractor=extract.Metadata("date_full"),
-    )
     id = FieldDefinition(
         name="id",
         display_name="ID",
@@ -117,7 +161,6 @@ class GaleCorpus(XMLCorpusDefinition):
     periodical = FieldDefinition(
         name="periodical",
         display_name="Periodical name",
-        histogram=True,
         results_overview=True,
         es_mapping={"type": "keyword"},
         description="Periodical name.",
@@ -128,18 +171,21 @@ class GaleCorpus(XMLCorpusDefinition):
         csv_core=True,
         visualizations=["resultscount", "termfrequency"],
     )
-    content = FieldDefinition(
-        name="content",
-        display_name="Content",
-        display_type="text_content",
-        description="Text content.",
-        es_mapping=main_content_mapping(True, True, True, "en"),
-        results_overview=True,
-        extractor=extract.XML(Tag("ocrText"), flatten=True),
-        search_field_core=True,
-        visualizations=["wordcloud", "ngram"],
-        language="en",
-    )
+
+    @property
+    def content(cls):
+        return FieldDefinition(
+            name="content",
+            display_name="Content",
+            display_type="text_content",
+            description="Text content.",
+            es_mapping=main_content_mapping(True, True, True, cls.language),
+            results_overview=True,
+            extractor=extract.XML(Tag("ocrText"), flatten=True),
+            search_field_core=True,
+            visualizations=["wordcloud", "ngram"],
+            language=cls.language,
+        )
     ocr = FieldDefinition(
         name="ocr",
         display_name="OCR confidence",
@@ -252,7 +298,6 @@ class GaleCorpus(XMLCorpusDefinition):
     def fields(self):
         return [
             self.date,
-            self.date_pub,
             self.id,
             self.issue,
             self.periodical,

@@ -1,5 +1,6 @@
 import logging
-from es.client import elasticsearch
+import elasticsearch.helpers
+from es.client import elasticsearch as es_client
 from es.search import get_index
 from django.core.management import BaseCommand
 
@@ -18,11 +19,11 @@ class Command(BaseCommand):
     def handle(self, corpus, **kwargs):
         corpus_definition = load_corpus_definition(corpus)
 
-        client = elasticsearch(corpus)
+        client = es_client(corpus)
         index = get_index(corpus)
-        results = client.search(index=index)
+        results = elasticsearch.helpers.scan(client, index=index)
 
-        for hit in results['hits']['hits']:
+        for hit in results:
             doc = hit['_source']
             for scan in corpus_definition.resolve_media_path(doc, corpus):
                 log.info('Processing scan: %s', scan)
