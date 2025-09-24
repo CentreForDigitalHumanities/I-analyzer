@@ -73,7 +73,7 @@ defusedxml==0.7.1
     #   djangosaml2
     #   pysaml2
     #   python3-openid
-dj-rest-auth[with-social,with_social]==4.0.1
+dj-rest-auth[with-social]==4.0.1
     # via -r requirements.in
 django==4.2.24
     # via
@@ -191,7 +191,7 @@ numpy==1.24.4
     #   scikit-learn
     #   scipy
     #   simpful
-oauthlib==3.2.2
+oauthlib==3.3.1
     # via requests-oauthlib
 openpyxl==3.1.2
     # via
@@ -249,7 +249,7 @@ pygments==2.16.1
     #   pdbp
     #   rich
     #   seleniumbase
-pyjwt[crypto]==2.8.0
+pyjwt[crypto]==2.10.1
     # via django-allauth
 pynose==1.4.8
     # via seleniumbase
@@ -322,7 +322,7 @@ requests==2.31.0
     #   pysaml2
     #   requests-oauthlib
     #   seleniumbase
-requests-oauthlib==1.3.1
+requests-oauthlib==2.0.0
     # via django-allauth
 rich==13.5.2
     # via seleniumbase
