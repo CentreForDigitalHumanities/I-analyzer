@@ -14,3 +14,13 @@ The collection is composed of about 400 publications, including:
 
 
 In addition to coverage of the American Civil War, African American culture and history, westward migration, Antebellum-era life, and other major topics, the collection also includes scholarly essays on nineteenth-century American history written by prominent historians. Titles were selected by leading scholars of the nineteenth-century American press, and headnotes have been included for the individual titles.
+
+
+### Read more
+
+Additional information can be found in the links below:
+- [About this archive (publisher website)](https://www.gale.com/product-catalog/225178)
+
+### Availability
+
+*19th Century US Newspapers* is published by [Gale](https://en.wikipedia.org/wiki/Gale_(publisher)) and is only available to members of Utrecht University.
