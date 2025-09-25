@@ -35,6 +35,9 @@ This class will describe all metadata for the corpus, but various attributes and
 
 Many of these values will be hard-coded in the definition class, but some will need to be imported from the project settings, because they need to be configurable. (For example, the location of source data.) More on the use of settings below.
 
+> [!NOTE]
+> Ensure that your class name is a [CamelCased](https://en.wikipedia.org/wiki/Camel_case) version of the index name without punctionation that you are using in the django settings. For example, if your corpus name is `'dutchnewspapers-public'` in the settings, the corpus definition class name needs to be `DutchnewspapersPublic`
+
 ## Attributes and methods
 
 ### Required attributes
