@@ -1,4 +1,5 @@
 @use "balloon-css/src/balloon";
+@use "quill/dist/quill.snow";
 @use "utilities";
 @use "bulma/bulma";
 
@@ -200,6 +201,21 @@ button {
 
         select {
             @extend .select;
+        }
+    }
+}
+
+// quill
+
+.ql-container {
+    font-family: inherit;
+    font-size: inherit;
+
+    .ql-editor {
+        @extend .content;
+
+        ol, ul {
+            padding-left: 0em; // so spacing is not added in both margin AND padding
         }
     }
 }

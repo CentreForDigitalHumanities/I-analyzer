@@ -15,6 +15,8 @@ import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
 import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MarkdownEditorComponent } from '../documentation-form/markdown-editor/markdown-editor.component';
+import { QuillModule } from 'ngx-quill';
 
 describe('CorpusFormComponent', () => {
     let component: CorpusFormComponent;
@@ -32,12 +34,14 @@ describe('CorpusFormComponent', () => {
                 ImageUploadComponent,
                 FormFeedbackComponent,
                 DocumentationFormComponent,
+                MarkdownEditorComponent,
             ],
             imports: [
                 SharedModule,
                 StepsModule,
                 ReactiveFormsModule,
                 AutoCompleteModule,
+                QuillModule,
             ],
             providers: [
                 SlugifyPipe,
