@@ -67,9 +67,9 @@ def populate(task: PopulateIndexTask):
     logger.info('Attempting to populate index...')
 
     # Obtain source documents
-    files = list(reader.sources(
+    files = reader.sources(
         start=task.document_min_date,
-        end=task.document_max_date))
+        end=task.document_max_date)
 
     if settings.INDEX_MULTIPROCESSING:
         db.connections.close_all()  # have worker processes make their own db connection
