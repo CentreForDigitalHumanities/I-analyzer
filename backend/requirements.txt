@@ -102,7 +102,7 @@ gensim==4.3.0
     # via -r requirements.in
 humanize==4.9.0
     # via flower
-ianalyzer-readers==0.3.1
+ianalyzer-readers==0.3.2
     # via -r requirements.in
 idna==3.10
     # via requests
