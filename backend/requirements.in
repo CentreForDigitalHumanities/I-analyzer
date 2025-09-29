@@ -19,8 +19,7 @@ textdistance
 gensim
 scikit-learn
 pandas
-celery
-Redis
+celery[redis]
 pypdf
 openpyxl
 tqdm
