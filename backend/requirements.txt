@@ -72,7 +72,7 @@ django-allauth==0.54.0
     # via dj-rest-auth
 django-livereload-server==0.4
     # via -r requirements.in
-django-revproxy @ git+https://github.com/jazzband/django-revproxy.git@1defbb2dad5c0632391d54bcd3dbdaeabf46266a
+django-revproxy==0.13.0
     # via -r requirements.in
 djangorestframework==3.15.2
     # via
