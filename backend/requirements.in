@@ -24,8 +24,6 @@ celery
 Redis
 pypdf
 openpyxl
-selenium
-seleniumbase>3
 tqdm
 langcodes
 language_data
