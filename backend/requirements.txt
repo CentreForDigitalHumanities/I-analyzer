@@ -104,7 +104,7 @@ humanize==4.9.0
     # via flower
 ianalyzer-readers==0.3.1
     # via -r requirements.in
-idna==3.4
+idna==3.10
     # via requests
 iniconfig==2.0.0
     # via pytest
