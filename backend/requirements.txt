@@ -277,7 +277,7 @@ tzdata==2023.3
     # via
     #   celery
     #   pandas
-urllib3==1.26.16
+urllib3==1.26.20
     # via
     #   django-revproxy
     #   elastic-transport
