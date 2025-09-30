@@ -1,13 +1,164 @@
-from datetime import date
+from datetime import date, datetime
 import os
 import glob
+import csv
+from typing import Optional, Iterable, Callable, Dict, List
+
 from django.conf import settings
 from ianalyzer_readers.readers.xml import XMLReader
-from ianalyzer_readers.extract import Constant, XML
-from ianalyzer_readers.xml_tag import Tag
+from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order
+from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
 
 from corpora.parliament.parliament import Parliament
 from corpora.parliament.utils import field_defaults
+
+def _find(items: Iterable, predicate: Callable):
+    return next((item for item in items if predicate(item)), None)
+
+
+def group_metadata(csv_filename: str, group_by: str) -> Dict[str, List[Dict[str, str]]]:
+    '''
+    Collect metadata from CSV file and group by ID
+    '''
+    data = {}
+    with open(csv_filename) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            group = row.copy().pop(group_by)
+            if group in data:
+                data[group] += [row]
+            else:
+                data[group] = [row]
+    return data
+
+
+def _get_speaker_data(speaker_id, all_data) -> List[Dict]:
+    '''Convenience function to get metadata associated with a speaker, from a data
+    table grouped by speaker ID.'''
+    return all_data.get(speaker_id, [])
+
+def _parse_date(date_str: str) -> date:
+    return datetime.strptime(date_str, '%Y-%m-%d').date()
+
+def _year_from_date_str(value: str) -> Optional[int]:
+    if value:
+        date = _parse_date(value)
+        return date.year
+
+def _get_speaker_birth_year(values) -> Optional[int]:
+    speaker_data = _get_speaker_data(*values)
+    if speaker_data:
+        speaker_datum = speaker_data[0]
+        return _year_from_date_str(speaker_datum['born'])
+
+def _get_speaker_death_year(values) -> Optional[int]:
+    speaker_data = _get_speaker_data(*values)
+    if speaker_data:
+        speaker_datum = speaker_data[0]
+        return _year_from_date_str(speaker_datum['dead'])
+
+def _get_speaker_gender(values) -> Optional[str]:
+    speaker_data = _get_speaker_data(*values)
+    if speaker_data:
+        speaker_datum = speaker_data[0]
+        return speaker_datum['gender']
+
+def _get_speaker_name(values) -> Optional[str]:
+    speaker_data = _get_speaker_data(*values)
+    is_primary = lambda d: d['primary_name'] == 'True'
+    primary_datum = _find(speaker_data, is_primary)
+    if primary_datum:
+        return primary_datum['name']
+
+def _in_date_range(datum: Dict, debate_date: date) -> bool:
+    '''
+    Whether the debate date is in range of a party affiliation datum.
+    Returns `False` if the affiliation has no date.
+
+    Data columns can include `start_precision`/`end_precision`, which can be `day` or
+    `year`. If these columns are absent, dates should be days. If they are present but
+    empty, the date is assumed to be empty too.
+    '''
+    if 'start_precision' not in datum or datum['start_precision'] == 'day':
+        start = _parse_date(datum['start'])
+        if start > debate_date:
+            return False
+    elif datum['start_precision'] == 'year':
+        start_year = int(datum['start'])
+        if start_year > debate_date.year:
+            return False
+    else: # i.e. if no date is provided
+        return False
+
+    if 'end_precision' not in datum or datum['end_precision'] == 'day':
+        end = _parse_date(datum['end'])
+        if end < debate_date:
+            return False
+    elif datum['end_precision'] == 'year':
+        end_year = int(datum['end'])
+        if end_year < debate_date.year:
+            return False
+    else:
+        return False
+
+    return True
+
+def _filter_in_date_range(data: List, date_str: str) -> List:
+    debate_date = _parse_date(date_str)
+    is_in_range = lambda d: _in_date_range(d, debate_date)
+    return list(filter(is_in_range, data))
+
+
+def _get_party_affiliation(values) -> Dict:
+    '''Return party affiliation data for the speaker'''
+    speaker_id, date_str, all_affiliation_data = values
+    speaker_affiliations = _get_speaker_data(speaker_id, all_affiliation_data)
+
+    # check for a dated affiliation
+    if current := _filter_in_date_range(speaker_affiliations, date_str):
+        return current[0]
+
+    # if no dated affiliation, return the primary (or None)
+    is_primary = lambda d: not (d['start'] or d['end'])
+    return _find(speaker_affiliations, is_primary)
+
+
+def _get_speaker_party(values):
+    affiliation = _get_party_affiliation(values)
+    if affiliation:
+        return affiliation['party']
+
+def _get_speaker_party_id(values):
+    affiliation = _get_party_affiliation(values)
+    if affiliation:
+        return affiliation['party_id']
+
+def _get_speaker_wiki_id(values):
+    speaker_data = _get_speaker_data(*values)
+    if speaker_data:
+        return speaker_data[0]['wiki_id']
+
+def _get_ministerial_role(values):
+    speaker_id, date_str, all_data = values
+    speaker_roles = _get_speaker_data(speaker_id, all_data)
+
+    if current := _filter_in_date_range(speaker_roles, date_str):
+        roles = set(datum['role'] for datum in current)
+        return list(roles)
+
+def _get_parliamentary_role(values):
+    speaker_id, date_str, all_data = values
+    speaker_roles = _get_speaker_data(speaker_id, all_data)
+
+    if current := _filter_in_date_range(speaker_roles, date_str):
+        return current[0]['role']
+
+def _get_speaker_constituency(values):
+    speaker_id, date_str, all_data = values
+    speaker_roles = _get_speaker_data(speaker_id, all_data)
+
+    if current := _filter_in_date_range(speaker_roles, date_str):
+        return current[0]['district']
 
 
 class ParliamentSwedenSwerik(Parliament, XMLReader):
@@ -25,21 +176,41 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     tag_entry = Tag(lambda tag: tag.name == 'u' and tag.get('who') != 'unknown')
 
     def sources(self, **kwargs):
+        metadata = self._collect_person_metadata()
         records_path = os.path.join(self.data_directory, 'records', 'data')
         for path in glob.glob(records_path + '/*/*.xml'):
-            yield path
+            yield path, metadata
 
-    country = field_defaults.country()
-    country.extractor = Constant('Sweden')
+    def _collect_person_metadata(self):
+        persons_path = os.path.join(self.data_directory, 'persons', 'data')
 
-    date = field_defaults.date()
-    date.extractor = XML(
-        Tag('text'),
+        metadata = dict()
+        datafiles = ['person', 'party_affiliation', 'name', 'wiki_id', 'minister',
+            'member_of_parliament'
+        ]
+
+        for datafile in datafiles:
+            path = os.path.join(persons_path, datafile + '.csv')
+            data = group_metadata(path, 'person_id')
+            metadata[datafile] = data
+
+        return metadata
+
+
+    _speaker_id_extractor = XML(attribute='who')
+    _date_extractor = XML(
+        Tag('text', recursive=False),
         Tag('front', recursive=False),
         Tag('docDate'),
         attribute='when',
         toplevel=True,
     )
+
+    country = field_defaults.country()
+    country.extractor = Constant('Sweden')
+
+    date = field_defaults.date()
+    date.extractor = _date_extractor
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = XML(
@@ -47,8 +218,84 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         attribute='xml:id',
     )
 
+    ministerial_role = field_defaults.ministerial_role()
+    ministerial_role.extractor = Combined(
+        _speaker_id_extractor,
+        _date_extractor,
+        Metadata('minister'),
+        transform=_get_ministerial_role,
+    )
+
+    parliamentary_role = field_defaults.parliamentary_role()
+    parliamentary_role.extractor = Combined(
+        _speaker_id_extractor,
+        _date_extractor,
+        Metadata('member_of_parliament'),
+        transform=_get_parliamentary_role,
+    )
+
+    party = field_defaults.party()
+    party.extractor = Combined(
+        _speaker_id_extractor,
+        _date_extractor,
+        Metadata('party_affiliation'),
+        transform=_get_speaker_party,
+    )
+
+    party_id = field_defaults.party_id()
+    party_id.extractor = Combined(
+        _speaker_id_extractor,
+        _date_extractor,
+        Metadata('party_affiliation'),
+        transform=_get_speaker_party_id,
+    )
+
+    sequence = field_defaults.sequence()
+    sequence.extractor = Order(transform = lambda n: n + 1)
+
+    speaker = field_defaults.speaker()
+    speaker.extractor = Combined(
+        _speaker_id_extractor,
+        Metadata('name'),
+        transform=_get_speaker_name,
+    )
+
+    speaker_constituency = field_defaults.speaker_constituency()
+    speaker_constituency.extractor = Combined(
+        _speaker_id_extractor,
+        _date_extractor,
+        Metadata('member_of_parliament'),
+        transform=_get_speaker_constituency,
+    )
+
+    speaker_birth_year = field_defaults.speaker_birth_year()
+    speaker_birth_year.extractor = Combined(
+        _speaker_id_extractor,
+        Metadata('person'),
+        transform=_get_speaker_birth_year,
+    )
+
+    speaker_death_year = field_defaults.speaker_death_year()
+    speaker_death_year.extractor = Combined(
+        _speaker_id_extractor,
+        Metadata('person'),
+        transform=_get_speaker_death_year,
+    )
+
+    speaker_gender = field_defaults.speaker_gender()
+    speaker_gender.extractor = Combined(
+        _speaker_id_extractor,
+        Metadata('person'),
+        transform=_get_speaker_gender,
+    )
+
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = XML(attribute='who')
+    # use the wikidata ID rather than the swerik ID
+    speaker_id.extractor = Combined(
+        _speaker_id_extractor,
+        Metadata('wiki_id'),
+        transform=_get_speaker_wiki_id,
+    )
 
     speech = field_defaults.speech(language='sv')
     speech.extractor = XML(flatten=True)
@@ -56,12 +303,29 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(attribute='xml:id')
 
+    topic = field_defaults.topic()
+    topic.extractor = XML(
+        PreviousSiblingTag('note', type='title'),
+        transform=str.strip,
+    )
+
     def __init__(self):
         self.fields = [
             self.country,
             self.date,
             self.debate_id,
+            self.ministerial_role,
+            self.parliamentary_role,
+            self.party,
+            self.party_id,
+            self.speaker,
+            self.speaker_constituency,
+            self.speaker_gender,
+            self.speaker_birth_year,
+            self.speaker_death_year,
             self.speaker_id,
+            self.sequence,
             self.speech,
             self.speech_id,
+            self.topic,
         ]

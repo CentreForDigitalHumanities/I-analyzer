@@ -734,7 +734,17 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 'country': 'Sweden',
                 'date': '2000-03-27',
                 'debate_id': 'prot-19992000--086',
-                'speaker_id': 'i-3wVE19WEnkoueWU41a2FfR',
+                'ministerial_role': ['skolminister'],
+                'role': None,
+                'party': 'Socialdemokraterna',
+                'party_id': 'Q105112',
+                'sequence': 1,
+                'speaker': 'Ingegerd Wärnersson',
+                'speaker_constituency': None,
+                'speaker_gender': 'woman',
+                'speaker_birth_year': 1947,
+                'speaker_death_year': None,
+                'speaker_id': 'Q4990768',
                 'id': 'i-eb684fe711216620-0',
                 'speech': '''Fru talman! Birgitta Sellén har frågat kulturminister Marita
  Ulvskog vad hon avser att vidta för åtgärder för att åstadkomma
@@ -742,7 +752,16 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
  dels för att öka de kommunala anslagen, dels för att bidragsgivningen
  följer de principer som formats i vår nationella folkbildningspolitik.
  Eftersom dessa frågor huvudsakligen faller inom mitt ansvarsområde
- har interpellationen överlämnats till mig för besvarande.'''
+ har interpellationen överlämnats till mig för besvarande.''',
+                'topic': '3 § Svar på interpellation 1999/2000:296 om folkbildningen folkbildningen',
+            },
+            {}, {}, {}, {}, {},
+            {
+                'speaker': 'Birgitta Sellén',
+                'ministerial_role': None,
+                'role': 'ledamot',
+                'party': 'Centerpartiet',
+                'speaker_constituency': 'Västernorrlands läns valkrets',
             }
         ],
         'n_documents': 8,
