@@ -19,6 +19,7 @@ def parliament_corpora_settings(settings):
         'parliament-france': os.path.join(here, 'france.py'),
         'parliament-sweden': os.path.join(here, 'sweden.py'),
         'parliament-sweden-old': os.path.join(here, 'sweden-old.py'),
+        'parliament-sweden-swerik': os.path.join(here, 'sweden-swerik.py'),
         'parliament-denmark': os.path.join(here, 'denmark.py'),
         'parliament-denmark-new': os.path.join(here, 'denmark-new.py'),
         'parliament-finland': os.path.join(here, 'finland.py'),
@@ -45,6 +46,7 @@ def parliament_corpora_settings(settings):
     settings.PP_NORWAY_NEW_DATA = os.path.join(here, 'tests', 'data', 'norway-new')
     settings.PP_SWEDEN_DATA = os.path.join(here, 'tests', 'data', 'sweden')
     settings.PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
+    settings.PP_SWEDEN_SWERIK_DATA = os.path.join(here, 'tests', 'data', 'sweden-swerik')
     settings.PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
 
 
@@ -724,6 +726,11 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
             },
         ],
         "n_documents": 3,
+    },
+    {
+        'name': 'parliament-sweden-swerik',
+        'docs': [],
+        'n_documents': 1,
     },
 ]
 
