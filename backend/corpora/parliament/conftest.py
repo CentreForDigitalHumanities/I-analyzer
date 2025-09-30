@@ -729,8 +729,23 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
     },
     {
         'name': 'parliament-sweden-swerik',
-        'docs': [],
-        'n_documents': 1,
+        'docs': [
+            {
+                'country': 'Sweden',
+                'date': '2000-03-27',
+                'debate_id': 'prot-19992000--086',
+                'speaker_id': 'i-3wVE19WEnkoueWU41a2FfR',
+                'id': 'i-eb684fe711216620-0',
+                'speech': '''Fru talman! Birgitta Sellén har frågat kulturminister Marita
+ Ulvskog vad hon avser att vidta för åtgärder för att åstadkomma
+ ett förändrat synsätt vid kommunernas bidragsgivning till studieförbunden,
+ dels för att öka de kommunala anslagen, dels för att bidragsgivningen
+ följer de principer som formats i vår nationella folkbildningspolitik.
+ Eftersom dessa frågor huvudsakligen faller inom mitt ansvarsområde
+ har interpellationen överlämnats till mig för besvarande.'''
+            }
+        ],
+        'n_documents': 8,
     },
 ]
 
