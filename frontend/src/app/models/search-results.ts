@@ -110,10 +110,13 @@ export interface SuccessfulTask<T> {
 
 export type TasksOutcome = HttpErrorResponse | WorkingTask | SuccessfulTask<NgramResults[] | TermFrequencyResult[]>;
 
+export type ExtraDownloadColumns = ('context'|'document_link'|'tags')[]
+
 export type ResultsDownloadParameters = {
     corpus: string;
     fields: string[];
     route: string;
+    extra: ExtraDownloadColumns
 } & APIQuery;
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];

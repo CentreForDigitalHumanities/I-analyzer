@@ -2,30 +2,26 @@ import {
     highlightFromParams, omitNullParameters, pageFromParams, pageToParams, searchFieldsFromParams,
     sortSettingsFromParams, sortSettingsToParams
 } from './params';
-import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
-import { SortState } from '@models';
+import { corpusFactory } from '../../mock-data/corpus';
+import { Corpus, CorpusField, SortState } from '@models';
 import * as _ from 'lodash';
 import { PageParameters, PageResultsParameters } from '@models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = {fields: 'speech'};
-        const corpus = mockCorpus3;
+        const params = {fields: 'content'};
+        const corpus = corpusFactory();
         const fields = searchFieldsFromParams(params, corpus);
-        expect(fields.map(f => f.name)).toEqual(['speech']);
+        expect(fields.map(f => f.name)).toEqual(['content']);
     });
 
     it('should include stemmed multifields', () => {
-        const fieldWithStemming = _.cloneDeep(mockField2);
-        fieldWithStemming.multiFields = ['length', 'clean', 'stemmed'];
-        const corpus = _.cloneDeep(mockCorpus3);
-        corpus.fields[1] = fieldWithStemming;
-
+        const corpus = corpusFactory();
         const fields = searchFieldsFromParams(
-            { fields: 'speech,speech.stemmed' },
+            { fields: 'content,content.stemmed' },
             corpus
         );
-        expect(fields.map(f => f.name)).toEqual(['speech', 'speech.stemmed']);
+        expect(fields.map(f => f.name)).toEqual(['content', 'content.stemmed']);
     })
 });
 
@@ -43,21 +39,27 @@ describe('highlightFromParams', () => {
 });
 
 describe('sortSettingsFromParams', () => {
+    let corpus: Corpus;
+    let sortField: CorpusField;
+
+    beforeEach(() => {
+        corpus = corpusFactory();
+        sortField = corpus.fields[2]
+    })
+
     it('should parse the default state', () => {
-        const corpus = _.cloneDeep(mockCorpus);
         const empty = {};
 
         expect(sortSettingsFromParams(empty, corpus)).toEqual([undefined, 'desc']);
 
-        const field = corpus.fields[0];
-        (corpus as any).defaultSort = [field, 'desc'];
-        expect(sortSettingsFromParams(empty, corpus)).toEqual([field, 'desc']);
+        corpus.defaultSort = [sortField, 'desc'];
+        expect(sortSettingsFromParams(empty, corpus)).toEqual([sortField, 'desc']);
     });
 
     it('should be the inverse of sortSettingsToParams', () => {
-        const sort: SortState = [mockField, 'asc'];
-        const params = sortSettingsToParams(...sort, mockCorpus);
-        expect(sortSettingsFromParams(params, mockCorpus)).toEqual(sort);
+        const sort: SortState = [sortField, 'asc'];
+        const params = sortSettingsToParams(...sort, corpus);
+        expect(sortSettingsFromParams(params, corpus)).toEqual(sort);
     });
 });
 

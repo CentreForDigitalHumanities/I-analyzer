@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { mockCorpus, mockCorpus2 } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 import { QueryModel } from '@models';
 
@@ -25,7 +25,7 @@ describe('HighlightSelectorComponent', () => {
         component.pageResults = new PageResults(
             new SimpleStore(),
             new SearchServiceMock() as any as SearchService,
-            new QueryModel(mockCorpus2)
+            new QueryModel(corpusFactory())
         );
         fixture.detectChanges();
     });

@@ -71,7 +71,7 @@ export class FoundDocument {
     get hasContext(): boolean {
         const spec = this.corpus.documentContext;
 
-        if (_.isUndefined(spec)) {
+        if (!spec || !spec.contextFields?.length) {
             return false;
         }
 

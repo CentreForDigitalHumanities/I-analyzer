@@ -37,7 +37,9 @@
         <div class="column is-7">
             <div class="box">
                 <ia-tabs [activeTab]="activeTab">
-                    <ng-template iaTabPanel *ngFor="let field of contentFields" [id]="field.name" [title]="field.displayName" [icon]="documentIcons.text">
+                    <ng-template iaTabPanel *ngFor="let field of contentFields"
+                        [id]="fieldTabID(field)"
+                        [title]="field.displayName" [icon]="documentIcons.text">
                         <ia-content-field
                             [field]="field"
                             [document]="document"

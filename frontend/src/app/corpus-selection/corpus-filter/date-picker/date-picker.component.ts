@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
-import { parse } from 'date-fns';
+import { FormControl } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ia-date-picker',
@@ -12,30 +13,35 @@ export class DatePickerComponent {
     @Input() value: Date;
     @Input() minDate: Date;
     @Input() maxDate: Date;
-    @Input() default: Date;
+    @Input({ required: true }) default!: Date;
     @Input() unit: 'year'|'date' = 'year';
     @Input() ariaLabel: string;
     @Output() onChange = new EventEmitter<Date>();
 
-    constructor() { }
+    control = new FormControl<Date>(null);
+
+    constructor(private destroyRef: DestroyRef) { }
 
     get dateFormat(): string {
         return this.unit === 'year' ? 'yy' : 'dd-mm-yy';
     }
 
-    formatInput(value: string|Date): Date {
-        if (typeof(value) == 'string') {
-            const dateFormat = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
-            return parse(value, dateFormat, null, null);
-        } else {
-            return value;
+    ngOnInit() {
+        this.control.valueChanges.pipe(
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(() => this.onValueChange());
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.value || changes.default) {
+            this.control.setValue(this.value || this.default);
         }
     }
 
-    set(value: string|Date) {
-        const valueAsDate = this.formatInput(value);
-        const checkedValue = _.min([_.max([valueAsDate, this.minDate]), this.maxDate]);
-        this.onChange.emit(checkedValue);
+    onValueChange() {
+        if (this.control.value) { // value is null when text input is invalid, e.g while typing
+            const checkedValue = _.min([_.max([this.control.value, this.minDate]), this.maxDate]);
+            this.onChange.emit(checkedValue);
+        }
     }
-
 }
