@@ -173,7 +173,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     es_index = getattr(settings, 'PP_SWEDEN_SWERIK_INDEX', 'parliament-sweden-swerik')
 
     tag_toplevel = Tag('TEI')
-    tag_entry = Tag(lambda tag: tag.name == 'u' and tag.get('who') != 'unknown')
+    tag_entry = Tag('u')
 
     def sources(self, **kwargs):
         metadata = self._collect_person_metadata()
@@ -306,7 +306,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     topic = field_defaults.topic()
     topic.extractor = XML(
         PreviousSiblingTag('note', type='title'),
-        transform=str.strip,
+        transform=lambda value: str.strip(value) if value else None,
     )
 
     def __init__(self):

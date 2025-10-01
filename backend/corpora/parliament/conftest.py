@@ -731,6 +731,10 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
         'name': 'parliament-sweden-swerik',
         'docs': [
             {
+                'speaker': None,
+                'speaker_id': None,
+            },
+            {
                 'country': 'Sweden',
                 'date': '2000-03-27',
                 'debate_id': 'prot-19992000--086',
@@ -738,7 +742,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 'role': None,
                 'party': 'Socialdemokraterna',
                 'party_id': 'Q105112',
-                'sequence': 1,
+                'sequence': 2,
                 'speaker': 'Ingegerd Wärnersson',
                 'speaker_constituency': None,
                 'speaker_gender': 'woman',
@@ -764,7 +768,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 'speaker_constituency': 'Västernorrlands läns valkrets',
             }
         ],
-        'n_documents': 8,
+        'n_documents': 9,
     },
 ]
 
