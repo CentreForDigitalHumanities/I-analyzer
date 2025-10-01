@@ -735,6 +735,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 'speaker_id': None,
             },
             {
+                'chamber': 'Riksdag',
                 'country': 'Sweden',
                 'date': {'gte': '2000-03-27', 'lte': '2000-03-27'},
                 'debate_id': 'prot-19992000--086',

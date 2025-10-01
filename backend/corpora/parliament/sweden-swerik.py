@@ -8,6 +8,7 @@ from django.conf import settings
 from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order, Pass
 from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
+from ianalyzer_readers.readers.core import Field
 
 from corpora.parliament.parliament import Parliament
 from corpora.parliament.utils import field_defaults
@@ -17,7 +18,7 @@ def _find(items: Iterable, predicate: Callable):
     return next((item for item in items if predicate(item)), None)
 
 
-def group_metadata(csv_filename: str, group_by: str) -> Dict[str, List[Dict[str, str]]]:
+def _group_metadata(csv_filename: str, group_by: str) -> Dict[str, List[Dict[str, str]]]:
     '''
     Collect metadata from CSV file and group by ID
     '''
@@ -168,6 +169,32 @@ def _get_speaker_constituency(values):
     if current := _filter_in_date_range(speaker_roles, date_range):
         return current[0]['district']
 
+_chambers = {
+    'ak': 'Andra Kammaren',
+    'fk': 'Första Kammaren',
+    'ek': 'Riksdag'
+}
+
+
+class SwerikMetadataReader(XMLReader):
+    '''Extracts XML file index from metadata file. This step is needed to get Chamber
+    metadata.'''
+
+    tag_entry = Tag('xi:include')
+    data_directory = os.path.join(
+        settings.PP_SWEDEN_SWERIK_DATA, 'records', 'data'
+    )
+
+    def sources(self, **kwargs):
+        for chamber in _chambers.keys():
+            path = os.path.join(self.data_directory, f'prot-{chamber}.xml')
+            yield path, {'chamber': chamber}
+
+    fields = [
+        Field(name='path', extractor=XML(attribute='href')),
+        Field(name='chamber', extractor=Metadata('chamber')),
+    ]
+
 
 class ParliamentSwedenSwerik(Parliament, XMLReader):
     title = 'People & Parliament (Sweden, Swerik dataset)'
@@ -185,9 +212,12 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
 
     def sources(self, **kwargs):
         metadata = self._collect_person_metadata()
-        records_path = os.path.join(self.data_directory, 'records', 'data')
-        for path in glob.glob(records_path + '/*/*.xml'):
-            yield path, metadata
+        records_reader = SwerikMetadataReader()
+
+        for doc in records_reader.documents():
+            path = os.path.join(records_reader.data_directory, doc['path'])
+            doc.update(metadata)
+            yield path, doc
 
     def _collect_person_metadata(self):
         persons_path = os.path.join(self.data_directory, 'persons', 'data')
@@ -199,7 +229,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
 
         for datafile in datafiles:
             path = os.path.join(persons_path, datafile + '.csv')
-            data = group_metadata(path, 'person_id')
+            data = _group_metadata(path, 'person_id')
             metadata[datafile] = data
 
         return metadata
@@ -215,6 +245,9 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         multiple=True,
         transform=_get_date_range,
     )
+
+    chamber = field_defaults.chamber()
+    chamber.extractor = Metadata('chamber', transform=_chambers.get)
 
     country = field_defaults.country()
     country.extractor = Constant('Sweden')
@@ -325,6 +358,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
 
     def __init__(self):
         self.fields = [
+            self.chamber,
             self.country,
             self.date,
             self.debate_id,
