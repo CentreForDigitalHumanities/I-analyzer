@@ -1,6 +1,5 @@
 from datetime import date, datetime
 import os
-import glob
 import csv
 from typing import Optional, Iterable, Callable, Dict, List, Tuple
 
@@ -9,6 +8,7 @@ from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order, Pass
 from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
 from ianalyzer_readers.readers.core import Field
+from tqdm import tqdm
 
 from corpora.parliament.parliament import Parliament
 from corpora.parliament.utils import field_defaults
@@ -211,10 +211,14 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     tag_entry = Tag('u')
 
     def sources(self, **kwargs):
+        print('Extracting person metadata...')
         metadata = self._collect_person_metadata()
-        records_reader = SwerikMetadataReader()
 
-        for doc in records_reader.documents():
+        print('Extracting records...')
+        records_reader = SwerikMetadataReader()
+        records = list(records_reader.documents())
+
+        for doc in tqdm(records):
             path = os.path.join(records_reader.data_directory, doc['path'])
             doc.update(metadata)
             yield path, doc
