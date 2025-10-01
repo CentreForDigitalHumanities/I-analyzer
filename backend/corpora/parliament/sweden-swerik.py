@@ -15,6 +15,9 @@ from tqdm import tqdm
 from corpora.parliament.parliament import Parliament
 from corpora.parliament.utils import field_defaults
 from addcorpus.es_mappings import date_estimate_mapping
+from addcorpus.python_corpora.corpus import FieldDefinition
+from api.utils import document_link
+from corpora.parliament.sweden import ParliamentSweden
 
 def _find(items: Iterable, predicate: Callable):
     return next((item for item in items if predicate(item)), None)
@@ -163,6 +166,19 @@ def _get_speaker_constituency(values):
 
     if current := _filter_in_date_range(speaker_roles, date_range):
         return current[0]['district']
+
+def _is_known(speaker_id: str) -> bool:
+    return speaker_id and speaker_id != 'unknown'
+
+
+def _is_in_sweden_corpus_range(debate_date_range: Tuple[date, date]) -> bool:
+    return ParliamentSweden.min_date < debate_date_range[0] < ParliamentSweden.max_date
+
+def _format_sweden_corpus_link(speech_id: str) -> str:
+    # For the sake of simplicity, this just assumes that the sweden corpus is called
+    # `parliament-sweden`
+    return document_link('parliament-sweden', speech_id)
+
 
 _chambers = {
     'ak': 'Andra Kammaren',
@@ -362,6 +378,25 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         transform=lambda value: str.strip(value) if value else None,
     )
 
+    url_sweden_corpus = FieldDefinition(
+        name='url_sweden_corpus',
+        display_name='Speech in Sweden 1920-2022 corpus',
+        description='Link to the corresponding speech in the Sweden 1920-2022 corpus',
+        display_type='url',
+        hidden=getattr(settings, 'PP_SWEDEN_SWERIK_HIDE_CROSSCORPUS_LINK', False),
+        es_mapping = {'type': 'keyword', 'index': False, 'doc_values': False},
+        extractor=XML(
+            attribute='xml:id',
+            applicable=Combined(
+                Pass(_date_extractor, transform=_is_in_sweden_corpus_range),
+                # speeches with unknown speaker are apparently not included in the sweden corpus
+                Pass(_speaker_id_extractor, transform=_is_known),
+                transform=all,
+            ),
+            transform=_format_sweden_corpus_link,
+        )
+    )
+
     def __init__(self):
         self.fields = [
             self.chamber,
@@ -382,4 +417,5 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
             self.speech,
             self.speech_id,
             self.topic,
+            self.url_sweden_corpus,
         ]

@@ -5,6 +5,7 @@ import os
 import pytest
 from requests import Response
 from unittest.mock import Mock
+from django.conf import settings
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -733,6 +734,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
             {
                 'speaker': None,
                 'speaker_id': None,
+                'url_sweden_corpus': None,
             },
             {
                 'chamber': 'Riksdag',
@@ -759,6 +761,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
  Eftersom dessa frågor huvudsakligen faller inom mitt ansvarsområde
  har interpellationen överlämnats till mig för besvarande.''',
                 'topic': '3 § Svar på interpellation 1999/2000:296 om folkbildningen folkbildningen',
+                'url_sweden_corpus': settings.BASE_URL + '/document/parliament-sweden/i-eb684fe711216620-0'
             },
             {}, {}, {}, {}, {},
             {
