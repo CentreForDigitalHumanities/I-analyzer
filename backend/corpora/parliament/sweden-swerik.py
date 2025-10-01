@@ -2,15 +2,16 @@ from datetime import date, datetime
 import os
 import glob
 import csv
-from typing import Optional, Iterable, Callable, Dict, List
+from typing import Optional, Iterable, Callable, Dict, List, Tuple
 
 from django.conf import settings
 from ianalyzer_readers.readers.xml import XMLReader
-from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order
+from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order, Pass
 from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
 
 from corpora.parliament.parliament import Parliament
 from corpora.parliament.utils import field_defaults
+from addcorpus.es_mappings import date_estimate_mapping
 
 def _find(items: Iterable, predicate: Callable):
     return next((item for item in items if predicate(item)), None)
@@ -39,6 +40,14 @@ def _get_speaker_data(speaker_id, all_data) -> List[Dict]:
 
 def _parse_date(date_str: str) -> date:
     return datetime.strptime(date_str, '%Y-%m-%d').date()
+
+def _get_date_range(date_values: List[str]) -> Tuple[date, date]:
+    dates = [_parse_date(value) for value in date_values]
+    return min(dates), max(dates)
+
+def _format_date_range(values: Tuple[date, date]) -> Dict:
+    format = lambda value: value.strftime('%Y-%m-%d')
+    return {'gte': format(values[0]), 'lte':  format(values[1])}
 
 def _year_from_date_str(value: str) -> Optional[int]:
     if value:
@@ -70,7 +79,7 @@ def _get_speaker_name(values) -> Optional[str]:
     if primary_datum:
         return primary_datum['name']
 
-def _in_date_range(datum: Dict, debate_date: date) -> bool:
+def _in_date_range(datum: Dict, debate_date_range: Tuple[date, date]) -> bool:
     '''
     Whether the debate date is in range of a party affiliation datum.
     Returns `False` if the affiliation has no date.
@@ -81,31 +90,30 @@ def _in_date_range(datum: Dict, debate_date: date) -> bool:
     '''
     if 'start_precision' not in datum or datum['start_precision'] == 'day':
         start = _parse_date(datum['start'])
-        if start > debate_date:
+        if start > debate_date_range[1]:
             return False
     elif datum['start_precision'] == 'year':
         start_year = int(datum['start'])
-        if start_year > debate_date.year:
+        if start_year > debate_date_range[1].year:
             return False
     else: # i.e. if no date is provided
         return False
 
     if 'end_precision' not in datum or datum['end_precision'] == 'day':
         end = _parse_date(datum['end'])
-        if end < debate_date:
+        if end < debate_date_range[0]:
             return False
     elif datum['end_precision'] == 'year':
         end_year = int(datum['end'])
-        if end_year < debate_date.year:
+        if end_year < debate_date_range[0].year:
             return False
     else:
         return False
 
     return True
 
-def _filter_in_date_range(data: List, date_str: str) -> List:
-    debate_date = _parse_date(date_str)
-    is_in_range = lambda d: _in_date_range(d, debate_date)
+def _filter_in_date_range(data: List, date_range: Tuple[date, date]) -> List:
+    is_in_range = lambda d: _in_date_range(d, date_range)
     return list(filter(is_in_range, data))
 
 
@@ -139,25 +147,25 @@ def _get_speaker_wiki_id(values):
         return speaker_data[0]['wiki_id']
 
 def _get_ministerial_role(values):
-    speaker_id, date_str, all_data = values
+    speaker_id, date_range, all_data = values
     speaker_roles = _get_speaker_data(speaker_id, all_data)
 
-    if current := _filter_in_date_range(speaker_roles, date_str):
+    if current := _filter_in_date_range(speaker_roles, date_range):
         roles = set(datum['role'] for datum in current)
         return list(roles)
 
 def _get_parliamentary_role(values):
-    speaker_id, date_str, all_data = values
+    speaker_id, date_range, all_data = values
     speaker_roles = _get_speaker_data(speaker_id, all_data)
 
-    if current := _filter_in_date_range(speaker_roles, date_str):
+    if current := _filter_in_date_range(speaker_roles, date_range):
         return current[0]['role']
 
 def _get_speaker_constituency(values):
-    speaker_id, date_str, all_data = values
+    speaker_id, date_range, all_data = values
     speaker_roles = _get_speaker_data(speaker_id, all_data)
 
-    if current := _filter_in_date_range(speaker_roles, date_str):
+    if current := _filter_in_date_range(speaker_roles, date_range):
         return current[0]['district']
 
 
@@ -202,15 +210,21 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         Tag('text', recursive=False),
         Tag('front', recursive=False),
         Tag('docDate'),
-        attribute='when',
         toplevel=True,
+        attribute='when',
+        multiple=True,
+        transform=_get_date_range,
     )
 
     country = field_defaults.country()
     country.extractor = Constant('Sweden')
 
     date = field_defaults.date()
-    date.extractor = _date_extractor
+    date.es_mapping = date_estimate_mapping()
+    date.extractor = Pass(
+        _date_extractor,
+        transform=_format_date_range,
+    )
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = XML(

@@ -736,7 +736,7 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
             },
             {
                 'country': 'Sweden',
-                'date': '2000-03-27',
+                'date': {'gte': '2000-03-27', 'lte': '2000-03-27'},
                 'debate_id': 'prot-19992000--086',
                 'ministerial_role': ['skolminister'],
                 'role': None,
