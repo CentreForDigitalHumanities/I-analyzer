@@ -1,6 +1,8 @@
 from datetime import date, datetime
 import os
 import csv
+import re
+import operator
 from typing import Optional, Iterable, Callable, Dict, List, Tuple
 
 from django.conf import settings
@@ -50,10 +52,18 @@ def _format_date_range(values: Tuple[date, date]) -> Dict:
     format = lambda value: value.strftime('%Y-%m-%d')
     return {'gte': format(values[0]), 'lte':  format(values[1])}
 
+def _is_day(date_str: str) -> bool:
+    return re.match(r'\d{4}-\d{2}-\d{2}', date_str) is not None
+
+def _is_year(date_str: str) -> bool:
+    return date_str.isnumeric()
+
 def _year_from_date_str(value: str) -> Optional[int]:
-    if value:
+    if _is_day(value):
         date = _parse_date(value)
         return date.year
+    if _is_year(value):
+        return int(value)
 
 def _get_speaker_birth_year(values) -> Optional[int]:
     speaker_data = _get_speaker_data(*values)
@@ -80,38 +90,23 @@ def _get_speaker_name(values) -> Optional[str]:
     if primary_datum:
         return primary_datum['name']
 
+def _compare_dates(date_str: str, limit: date, compare: Callable):
+    if _is_day(date_str):
+        start = _parse_date(date_str)
+        return compare(start, limit)
+    if _is_year(date_str):
+        start_year = int(date_str)
+        return compare(start_year, limit.year)
+
 def _in_date_range(datum: Dict, debate_date_range: Tuple[date, date]) -> bool:
     '''
-    Whether the debate date is in range of a party affiliation datum.
-    Returns `False` if the affiliation has no date.
-
-    Data columns can include `start_precision`/`end_precision`, which can be `day` or
-    `year`. If these columns are absent, dates should be days. If they are present but
-    empty, the date is assumed to be empty too.
+    Whether the debate date is in range of a data row with a date range.
+    Returns `False` if the data row has no date.
     '''
-    if 'start_precision' not in datum or datum['start_precision'] == 'day':
-        start = _parse_date(datum['start'])
-        if start > debate_date_range[1]:
-            return False
-    elif datum['start_precision'] == 'year':
-        start_year = int(datum['start'])
-        if start_year > debate_date_range[1].year:
-            return False
-    else: # i.e. if no date is provided
-        return False
 
-    if 'end_precision' not in datum or datum['end_precision'] == 'day':
-        end = _parse_date(datum['end'])
-        if end < debate_date_range[0]:
-            return False
-    elif datum['end_precision'] == 'year':
-        end_year = int(datum['end'])
-        if end_year < debate_date_range[0].year:
-            return False
-    else:
-        return False
-
-    return True
+    debate_start, debate_end = debate_date_range
+    return _compare_dates(datum['start'], debate_end, operator.le) \
+        and _compare_dates(datum['end'], debate_start, operator.ge)
 
 def _filter_in_date_range(data: List, date_range: Tuple[date, date]) -> List:
     is_in_range = lambda d: _in_date_range(d, date_range)
@@ -201,8 +196,10 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     description = 'Speeches from the Riksdag. This corpus is based on the Swedish' \
         'Parliament Corpus published by the Swerik project.'
     min_date = date(1867, 1, 1)
-    max_date = date(2000, 12, 31)
+    max_date = date(2023, 12, 31)
     languages = ['sv']
+    image = 'sweden.jpg'
+    default_sort = {}
 
     data_directory = settings.PP_SWEDEN_SWERIK_DATA
     es_index = getattr(settings, 'PP_SWEDEN_SWERIK_INDEX', 'parliament-sweden-swerik')
@@ -258,6 +255,10 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
 
     date = field_defaults.date()
     date.es_mapping = date_estimate_mapping()
+    date.search_filter.lower = min_date
+    date.search_filter.upper = max_date
+    date.display_type = 'date_range'
+    date.sortable = False
     date.extractor = Pass(
         _date_extractor,
         transform=_format_date_range,
@@ -350,6 +351,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
 
     speech = field_defaults.speech(language='sv')
     speech.extractor = XML(flatten=True)
+    speech.visualizations.remove('ngram')
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(attribute='xml:id')
