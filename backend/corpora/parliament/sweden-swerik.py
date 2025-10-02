@@ -232,13 +232,13 @@ def _extract_utterance_text(element: BS4Tag) -> str:
 
 class ParliamentSwedenSwerik(Parliament, XMLReader):
     title = 'People & Parliament (Sweden, Swerik dataset)'
-    description = 'Speeches from the Riksdag. This corpus is based on the Swedish' \
-        'Parliament Corpus published by the Swerik project.'
+    description = 'Speeches from the Riksdag. This corpus is based on data published ' \
+        'by the Swerik project.'
     min_date = date(1867, 1, 1)
     max_date = date(2023, 12, 31)
     languages = ['sv']
     image = 'sweden.jpg'
-    default_sort = {}
+    description_page = 'sweden-swerik.md'
 
     data_directory = settings.PP_SWEDEN_SWERIK_DATA
     es_index = getattr(settings, 'PP_SWEDEN_SWERIK_INDEX', 'parliament-sweden-swerik')
