@@ -15,7 +15,8 @@ from tqdm import tqdm
 
 from corpora.parliament.parliament import Parliament
 from corpora.parliament.utils import field_defaults
-from addcorpus.es_mappings import date_estimate_mapping
+from addcorpus.es_mappings import date_estimate_mapping, date_mapping
+from addcorpus.python_corpora.filters import DateFilter
 from addcorpus.python_corpora.corpus import FieldDefinition
 from api.utils import document_link
 from corpora.parliament.sweden import ParliamentSweden
@@ -52,9 +53,15 @@ def _get_date_range(date_values: List[str]) -> Tuple[date, date]:
     dates = [_parse_date(value) for value in date_values]
     return min(dates), max(dates)
 
+def _format_date(value: date) -> str:
+    return value.strftime('%Y-%m-%d')
+
 def _format_date_range(values: Tuple[date, date]) -> Dict:
-    format = lambda value: value.strftime('%Y-%m-%d')
-    return {'gte': format(values[0]), 'lte':  format(values[1])}
+    return {'gte': _format_date(values[0]), 'lte':  _format_date(values[1])}
+
+def _get_approximate_date(date_range: Tuple[date, date]) -> date:
+    start, end = date_range
+    return start + (end - start) / 2
 
 def _is_day(date_str: str) -> bool:
     return re.match(r'\d{4}-\d{2}-\d{2}', date_str) is not None
@@ -285,15 +292,22 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     country = field_defaults.country()
     country.extractor = Constant('Sweden')
 
-    date = field_defaults.date()
-    date.es_mapping = date_estimate_mapping()
-    date.search_filter.lower = min_date
-    date.search_filter.upper = max_date
-    date.display_type = 'date_range'
-    date.sortable = False
+    date = field_defaults.date(min_date, max_date)
+    date.description = 'Date on which the debate took place (may be approximate)'
     date.extractor = Pass(
-        _date_extractor,
-        transform=_format_date_range,
+        Pass(_date_extractor, transform=_get_approximate_date),
+        transform=_format_date,
+    )
+
+    date_range = FieldDefinition(
+        name='date_range',
+        display_name='Date range',
+        description='Date range for the debate',
+        es_mapping=date_estimate_mapping(),
+        extractor=Pass(
+            _date_extractor,
+            transform=_format_date_range,
+        )
     )
 
     debate_id = field_defaults.debate_id()
@@ -388,7 +402,6 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         multiple=True,
         extract_soup_func=_extract_utterance_text,
     )
-    speech.visualizations.remove('ngram')
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(attribute='xml:id')
@@ -423,6 +436,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
             self.chamber,
             self.country,
             self.date,
+            self.date_range,
             self.debate_id,
             self.ministerial_role,
             self.parliamentary_role,
