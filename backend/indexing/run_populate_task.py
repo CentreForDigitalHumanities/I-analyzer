@@ -23,6 +23,8 @@ def batched(iterable, n):
 
 
 def process_batch(task_id, files):
+    db.connections['default'].connect()
+
     task = PopulateIndexTask.objects.get(pk=task_id)
     reader = make_reader(task.corpus)
     docs = reader.documents(files)
@@ -72,9 +74,8 @@ def populate(task: PopulateIndexTask):
         end=task.document_max_date)
 
     if settings.INDEX_MULTIPROCESSING:
-        db.connections.close_all()  # have worker processes make their own db connection
-        pool = multiprocessing.Pool()
-        args = zip(itertools.repeat(task.pk), batched(files, settings.INDEX_BATCH_SIZE))
-        pool.starmap(process_batch, args)
+        with multiprocessing.Pool() as pool:
+            args = zip(itertools.repeat(task.pk), batched(files, settings.INDEX_BATCH_SIZE))
+            pool.starmap(process_batch, args)
     else:
         process_batch(task.pk, files)
