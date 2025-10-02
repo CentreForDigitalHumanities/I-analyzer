@@ -753,26 +753,28 @@ I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them f
                 'speaker_death_year': None,
                 'speaker_id': 'Q4990768',
                 'id': 'i-eb684fe711216620-0',
-                'speech': '''Fru talman! Birgitta Sellén har frågat kulturminister Marita
- Ulvskog vad hon avser att vidta för åtgärder för att åstadkomma
- ett förändrat synsätt vid kommunernas bidragsgivning till studieförbunden,
- dels för att öka de kommunala anslagen, dels för att bidragsgivningen
- följer de principer som formats i vår nationella folkbildningspolitik.
- Eftersom dessa frågor huvudsakligen faller inom mitt ansvarsområde
- har interpellationen överlämnats till mig för besvarande.''',
                 'topic': '3 § Svar på interpellation 1999/2000:296 om folkbildningen folkbildningen',
                 'url_sweden_corpus': settings.BASE_URL + '/document/parliament-sweden/i-eb684fe711216620-0'
             },
-            {}, {}, {}, {}, {},
             {
                 'speaker': 'Birgitta Sellén',
                 'ministerial_role': None,
                 'role': 'ledamot',
                 'party': 'Centerpartiet',
                 'speaker_constituency': 'Västernorrlands läns valkrets',
+                'speech': [
+                    'Fru talman! Jag tackar för svaret. Jag har ställt min ' \
+                    'interpellation på grund av att vi i dag kan se att kommunerna ' \
+                    'inte följer de statliga direktiv som skrevs in i ' \
+                    'folkbildningsreformen 1991. Enligt dessa ska man övergå från ' \
+                    'regelstyrning till målstyrning.',
+                    'Det innebär enligt förordningen att folkbildningsverksamheten ' \
+                    'ska bedrivas "fritt och frivilligt utifrån deltagarnas behov och ' \
+                    'intressen".'
+                ]
             }
         ],
-        'n_documents': 9,
+        'n_documents': 3,
     },
 ]
 

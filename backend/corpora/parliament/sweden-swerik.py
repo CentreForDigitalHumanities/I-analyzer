@@ -4,11 +4,12 @@ import csv
 import re
 import operator
 from typing import Optional, Iterable, Callable, Dict, List, Tuple
+from bs4.element import Tag as BS4Tag
 
 from django.conf import settings
 from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order, Pass
-from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag
+from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag, TransformTag
 from ianalyzer_readers.readers.core import Field
 from tqdm import tqdm
 
@@ -206,6 +207,21 @@ class SwerikMetadataReader(XMLReader):
         Field(name='chamber', extractor=Metadata('chamber')),
     ]
 
+def _iterate_utterance_sequence(element: BS4Tag) -> Iterable[BS4Tag]:
+    yield element
+
+    if element.has_attr('next'):
+        next_element = element.find_next_sibling(name='u', attrs={'xml:id': element['next']})
+        if next_element:
+            for el in _iterate_utterance_sequence(next_element):
+                yield el
+
+
+def _extract_utterance_text(element: BS4Tag) -> str:
+    raw = element.getText()
+    clean = re.sub(r'\s+', ' ', raw).strip()
+    return clean
+
 
 class ParliamentSwedenSwerik(Parliament, XMLReader):
     title = 'People & Parliament (Sweden, Swerik dataset)'
@@ -221,7 +237,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     es_index = getattr(settings, 'PP_SWEDEN_SWERIK_INDEX', 'parliament-sweden-swerik')
 
     tag_toplevel = Tag('TEI')
-    tag_entry = Tag('u')
+    tag_entry = Tag('u', attrs={'prev': None})
 
     def sources(self, **kwargs):
         print('Extracting person metadata...')
@@ -366,7 +382,12 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
     )
 
     speech = field_defaults.speech(language='sv')
-    speech.extractor = XML(flatten=True)
+    speech.extractor = XML(
+        TransformTag(_iterate_utterance_sequence),
+        Tag('seg', recursive=False),
+        multiple=True,
+        extract_soup_func=_extract_utterance_text,
+    )
     speech.visualizations.remove('ngram')
 
     speech_id = field_defaults.speech_id()
