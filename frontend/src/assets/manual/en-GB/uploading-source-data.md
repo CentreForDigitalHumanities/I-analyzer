@@ -108,6 +108,7 @@ The table below describes formatting requirements per data type.
 | number (integer) | Plain numbers, without decimal points or units. |
 | number (decimal) | Use a demical point (`.`), not a comma (`,`). The column can contain a mix of decimal and whole numbers. |
 | boolean   | Write values as `true` or `false`. This is not case-sensitive, so `True`/`False` or `TRUE`/`FALSE` are also fine. |
+| url       | Write the full URL including protocol (e.g. `http://` or `https://`) |
 
 ### Example
 

@@ -32,7 +32,7 @@ In your local environment, start up elasticsearch and run backend tests with `ya
 
 Publish the release branch with `git flow release publish x.x.x`. Deploy on the test or acc server. Check that everything works as intended.
 
-## Publish the release
+## Finish the release
 
 Make a tag for your release and merge it into `develop` and `master`. You can do all this with `git flow release finish x.x.x`. Push the tag and the changes to develop and master.
 

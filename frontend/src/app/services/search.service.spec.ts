@@ -12,7 +12,7 @@ import { SearchService } from './search.service';
 import { SessionService } from './session.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { QueryModel } from '@models';
-import { mockCorpus } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { AuthService } from './auth.service';
 import { AuthServiceMock } from '../../mock-data/auth';
 import { appRoutes } from 'app/app.module';
@@ -44,7 +44,7 @@ describe('SearchService', () => {
     }));
 
     it('should search', inject([SearchService], async (service: SearchService) => {
-        const queryModel = new QueryModel(mockCorpus);
+        const queryModel = new QueryModel(corpusFactory());
         const results = await service.loadResults(queryModel, {from: 0, size: 20, sort: [undefined, 'desc']});
         expect(results).toBeTruthy();
         expect(results.total.value).toBeGreaterThan(0);

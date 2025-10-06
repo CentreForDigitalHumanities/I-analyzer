@@ -4,8 +4,8 @@ import { commonTestBed } from '../../common-test-bed';
 
 import { SearchService } from '@services';
 import * as _ from 'lodash';
-import { mockCorpus3, mockField3 } from '../../../mock-data/corpus';
-import { QueryModel, RangeFilter } from '@models';
+import { corpusFactory, intFieldFactory } from '../../../mock-data/corpus';
+import { CorpusField, QueryModel, RangeFilter } from '@models';
 import { SimpleStore } from '../../store/simple-store';
 import { RangeFilterComponent } from './range-filter.component';
 
@@ -13,18 +13,23 @@ describe('RangeFilterComponent', () => {
     let component: RangeFilterComponent;
     let searchService: SearchService;
     let fixture: ComponentFixture<RangeFilterComponent>;
+    let field: CorpusField;
 
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {
+        const corpus = corpusFactory();
+        field = intFieldFactory();
+        corpus.fields.push(field);
+
         searchService = TestBed.inject(SearchService);
         fixture = TestBed.createComponent(RangeFilterComponent);
         component = fixture.componentInstance;
-        component.queryModel = new QueryModel(mockCorpus3);
-        component.filter = component.queryModel.filterForField(mockField3) as RangeFilter;
-        component.filter.set({ min: 1984, max: 1984 });
+        component.queryModel = new QueryModel(corpus);
+        component.filter = component.queryModel.filterForField(field) as RangeFilter;
+        component.filter.set({ min: 50, max: 60 });
         fixture.detectChanges();
     });
 
@@ -33,7 +38,7 @@ describe('RangeFilterComponent', () => {
     });
 
     it('should use the specified data range', fakeAsync(() => {
-        const newFilter = new RangeFilter(new SimpleStore(), mockField3);
+        const newFilter = new RangeFilter(new SimpleStore(), field);
         component.onFilterSet(newFilter);
 
         flushMicrotasks();
@@ -50,7 +55,6 @@ describe('RangeFilterComponent', () => {
             Promise.resolve(min), Promise.resolve(max)
         );
 
-        const field = _.cloneDeep(mockField3);
         field.filterOptions = {
             name: 'RangeFilter',
             lower: null,
