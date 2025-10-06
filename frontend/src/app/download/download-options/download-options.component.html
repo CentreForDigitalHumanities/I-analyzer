@@ -21,8 +21,8 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="control">
-                        <label class="label">File encoding</label>
+                    <label class="label">File encoding</label>
+                    <div class="control radios">
                         <label class="radio" *ngFor="let encodingOption of encodingOptions">
                             <input type="radio" name="encoding" (click)="encoding=encodingOption" [checked]="encoding===encodingOption">
                             {{encodingOption}}
@@ -37,7 +37,7 @@
         </section>
         <footer class="modal-card-foot">
             <button class="button is-primary" (click)="confirmDownload()"
-                [class.is-loading]="hasConfirmed">
+                [class.is-loading]="isDownloading">
                 Download
             </button>
             <button class="button" (click)="cancelDownload()">

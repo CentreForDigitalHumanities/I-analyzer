@@ -1,12 +1,13 @@
 import { Component, Input, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 
-import { ApiService } from '../services';
+import { ApiService } from '@services';
 
 
 @Component({
     selector: 'ia-scan-pdf',
     templateUrl: './scan-pdf.component.html',
     styleUrls: ['./scan-pdf.component.scss'],
+    standalone: false
 })
 export class ScanPdfComponent implements OnChanges {
     @Input() public imagePaths: string[];

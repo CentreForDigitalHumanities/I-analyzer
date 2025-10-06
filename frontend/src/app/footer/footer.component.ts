@@ -1,18 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { environment } from '../../environments/environment';
+import { environment } from '@environments/environment';
 
 @Component({
     selector: 'ia-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss']
+    templateUrl: './footer.component.html',
+    styleUrls: ['./footer.component.scss'],
+    standalone: false
 })
-export class FooterComponent implements OnInit {
-    logos: {url: string; path: string; alt: string}[] = environment.logos;
+export class FooterComponent {
+    environment = environment as any;
 
     constructor() { }
-
-    ngOnInit(): void {
-    }
 
 }

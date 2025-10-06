@@ -1,3 +1,5 @@
+import { modulo } from './utils';
+
 export const PALETTES = [
     ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'],
     // colour-blind friendly colorPalette retrieved from colorbrewer2.org
@@ -11,7 +13,7 @@ export const PALETTES = [
 export const selectColor = (palette?: string[], index?: number): string => {
     if (palette) {
         const i = index || 0;
-        return palette[i % palette.length];
+        return palette[modulo(i, palette.length)];
     } else {
         return '#3F51B5'; // ianalyzer primary
     }

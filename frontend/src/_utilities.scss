@@ -7,30 +7,21 @@
 //
 //
 
-$primary: #303F9F;
-$contrast-primary-color: #3F51B5;
-$contrast-primary-accent-color: #495cc9;
-$text-primary-color: #FFFFFF;
-$highlight-color: #D6D6D6;
+@use "bulma/sass/utilities/mixins";
 
-$borderWidth: 1px;
+$theme-color: #303F9F;
 
-$disabledOpacity: 0.35;
+@forward 'bulma/sass/utilities/initial-variables';
+@forward 'bulma/sass/utilities/derived-variables' with (
+    $primary: $theme-color,
+    $link: $theme-color,
+);
+@forward "bulma/sass/utilities/mixins";
 
-$spacing: 1rem;
-
-//Highlight State
-$stateHighlightBorderColor: $highlight-color;
-$stateHighlightBgColor: $highlight-color;
-$stateHighlightTextColor: #000000;
-
-//Section padding
-$section-padding:	3rem 1.5rem;
-
-$boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-$boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
-
-@import "~bulma/sass/utilities/_all";
+$entity-person:  #303F9F;
+$entity-location: #4e8f2d;
+$entity-organization: #efb71d;
+$entity-miscellaneous: #ee5986;
 
 // based on the Bulma loader
 
@@ -41,8 +32,8 @@ $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
     position: relative;
 
     &:after {
-        @include loader;
-        border-color: transparent transparent $primary $primary !important;
+        @include mixins.loader;
+        border-color: transparent transparent $theme-color $theme-color !important;
         border-style: solid;
         border-width: 0.25em;
         height: 5em;

@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { PALETTES } from '../../../utils/select-color';
-import { visualizationIcons } from '../../../shared/icons';
+import { PALETTES } from '@utils/select-color';
+import { visualizationIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-palette-select',
     templateUrl: './palette-select.component.html',
     styleUrls: ['./palette-select.component.scss'],
+    standalone: false
 })
 export class PaletteSelectComponent {
     @Output() paletteChanged = new EventEmitter<string[]>();

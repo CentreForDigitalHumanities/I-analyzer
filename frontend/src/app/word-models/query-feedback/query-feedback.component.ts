@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as _ from 'lodash';
-import { QueryFeedback } from '../../models';
+import { QueryFeedback } from '@models';
 
 @Component({
     selector: 'ia-query-feedback',
     templateUrl: './query-feedback.component.html',
     styleUrls: ['./query-feedback.component.scss'],
+    standalone: false
 })
 export class QueryFeedbackComponent {
     @Input() query: string;

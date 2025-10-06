@@ -3,12 +3,15 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services/auth.service';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-verify-email',
     templateUrl: './verify-email.component.html',
     styleUrls: ['./verify-email.component.scss'],
+    standalone: false
 })
 export class VerifyEmailComponent implements OnInit {
     public key: string;
@@ -18,7 +21,8 @@ export class VerifyEmailComponent implements OnInit {
 
     constructor(
         private activatedRoute: ActivatedRoute,
-        private authService: AuthService
+        private authService: AuthService,
+        private title: Title,
     ) {
         this.activatedRoute.paramMap.subscribe(
             (params) => (this.key = params.get('key'))
@@ -32,6 +36,7 @@ export class VerifyEmailComponent implements OnInit {
                 return throwError(err);
             })
         );
+        this.title.setTitle(pageTitle('Verify email'));
     }
 
     confirm() {

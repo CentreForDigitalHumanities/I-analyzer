@@ -25,6 +25,7 @@ class MappingType(Enum):
     INTEGER  = 'integer'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
+    GEO_POINT = 'geo_point'
 
 
 class VisualizationType(Enum):
@@ -34,6 +35,7 @@ class VisualizationType(Enum):
     TERM_FREQUENCY = 'termfrequency'
     NGRAM = 'ngram'
     WORDCLOUD = 'wordcloud'
+    MAP = 'map'
 
 FORBIDDEN_FIELD_NAMES = [
     'query',
@@ -43,10 +45,18 @@ FORBIDDEN_FIELD_NAMES = [
     'visualize',
     'visualizedField',
     'normalize',
-    'ngramSettings'
+    'ngramSettings',
+    'p',
+    'tags',
+    'tab',
+    'document_link',
 ]
 '''
-Field names that cannot be used because they are also query parameters in frontend routes.
+Field names that cannot be used because they interfere with other functionality.
 
-Using them would make routing ambiguous.
+This is usually because they are also query parameters in frontend routes, and using them
+would make routing ambiguous.
+
+`query` and `document_link` are forbidden because they are reserved columns in CSV downloads.
+
 '''

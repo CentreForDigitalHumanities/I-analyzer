@@ -9,11 +9,11 @@
         [queryText]="queryText" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading"
         [frequencyMeasure]="frequencyMeasure"
         [freqTable]="asTable" [histogram]="true"
-        (chartParameters)="onOptionChange($event)" (queriesChanged)="updateQueries($event)"  (clearQueries)="clearAddedQueries()">
+        (chartParameters)="onOptionChange($event)" (queriesChanged)="updateQueries($event)">
     </ia-barchart-options>
 </div>
 
-<div class="block" [ngClass]="{ 'is-hidden': asTable }">
+<div class="block" [ngClass]="{ 'is-hidden': asTable, 'is-loading': isLoading}">
     <canvas id="barchart" width="400" height="200" aria-label="histogram" role="img"></canvas>
 </div>
 

@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Corpus, CorpusConfiguration, Field
+from .models import Corpus, CorpusConfiguration, CorpusDataFile, Field, CorpusDocumentationPage
 
 def show_warning_message(request):
     '''
@@ -9,12 +9,28 @@ def show_warning_message(request):
     messages.add_message(
         request,
         messages.WARNING,
-        'Corpus configurations are based on python classes; any changes here will be reset on server startup'
+        'This corpus configuration is specified in the source code; '
+        'any changes here will be reset when the server is restarted.'
     )
 
+
+class InlineDatafileAdmin(admin.StackedInline):
+    model = CorpusDataFile
+    fields = ['file', 'is_sample']
+    show_change_link = True,
+    extra = 0
+
 class CorpusAdmin(admin.ModelAdmin):
-    readonly_fields = ['name', 'configuration']
-    fields = ['name', 'groups', 'configuration']
+    readonly_fields = [
+        'configuration', 'ready_to_index', 'ready_to_publish', 'date_created',
+    ]
+    fields = [
+        'name', 'groups', 'configuration', 'date_created', 'has_python_definition',
+        'ready_to_index', 'ready_to_publish', 'active', 'owner',
+    ]
+    list_display = ['name', 'active']
+    list_filter = ['groups', 'active']
+    inlines = [InlineDatafileAdmin]
 
 class InlineFieldAdmin(admin.StackedInline):
     model = Field
@@ -22,9 +38,8 @@ class InlineFieldAdmin(admin.StackedInline):
     show_change_link = True
     extra = 0
 
-class CorpusConfigurationAdmin(admin.ModelAdmin):
-    readonly_fields = ['corpus']
 
+class CorpusConfigurationAdmin(admin.ModelAdmin):
     inlines = [
         InlineFieldAdmin
     ]
@@ -37,8 +52,15 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                     'corpus',
                     'title',
                     'description',
-                    'description_page',
                     'image',
+                ]
+            }
+        ), (
+            'Source data extraction',
+            {
+                'fields': [
+                    'data_directory',
+                    'source_data_delimiter',
                 ]
             }
         ), (
@@ -47,9 +69,10 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
                 'fields': [
                     'category',
                     'languages',
-                    'min_date',
-                    'max_date',
+                    'min_year',
+                    'max_year',
                     'document_context',
+                    'default_sort',
                 ]
             }
         ), (
@@ -77,12 +100,14 @@ class CorpusConfigurationAdmin(admin.ModelAdmin):
     ]
 
     def get_form(self, request, obj=None, **kwargs):
-        show_warning_message(request)
+        if obj and obj.corpus.has_python_definition:
+            show_warning_message(request)
         return super().get_form(request, obj, **kwargs)
 
 
 class FieldAdmin(admin.ModelAdmin):
     readonly_fields = ['corpus_configuration']
+    list_filter = ['corpus_configuration']
 
     fieldsets = [
         (
@@ -99,12 +124,20 @@ class FieldAdmin(admin.ModelAdmin):
             }
         ),
         (
+            'Source data extraction',
+            {
+                'fields': [
+                    'extract_column',
+                    'required',
+                ]
+            }
+        ),
+        (
             'Indexing options',
             {
                 'fields': [
                     'es_mapping',
                     'indexed',
-                    'required',
                 ]
             }
         ), (
@@ -116,7 +149,6 @@ class FieldAdmin(admin.ModelAdmin):
                     'searchable',
                     'search_field_core',
                     'sortable',
-                    'primary_sort',
                 ]
             }
         ), (
@@ -131,10 +163,18 @@ class FieldAdmin(admin.ModelAdmin):
     ]
 
     def get_form(self, request, obj=None, **kwargs):
-        show_warning_message(request)
+        if obj and obj.corpus_configuration.corpus.has_python_definition:
+            show_warning_message(request)
         return super().get_form(request, obj, **kwargs)
 
+
+class CorpusDocumentationAdmin(admin.ModelAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        if obj and obj.corpus_configuration.corpus.has_python_definition:
+            show_warning_message(request)
+        return super().get_form(request, obj, **kwargs)
 
 admin.site.register(Corpus, CorpusAdmin)
 admin.site.register(CorpusConfiguration, CorpusConfigurationAdmin)
 admin.site.register(Field, FieldAdmin)
+admin.site.register(CorpusDocumentationPage, CorpusDocumentationAdmin)

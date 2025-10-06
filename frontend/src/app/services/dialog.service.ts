@@ -2,23 +2,20 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 import { marked } from 'marked';
-import { ApiService } from './api.service';
-
-import { Corpus } from '../models/index';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DialogService {
     private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
-    private manifest: Promise<ManualPageMetaData[]> | undefined;
+    private manifest: Promise<ManualSection[]> | undefined;
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     public pageEvent = this.behavior.asObservable();
 
     public constructor(
-        private domSanitizer: DomSanitizer,
-        private apiService: ApiService) {
+        private domSanitizer: DomSanitizer) {
     }
 
     public closePage() {
@@ -37,18 +34,22 @@ export class DialogService {
 
         const html = await pagePromise;
         const manifest = await this.getManifest();
-        const title = manifest.find(page => page.id === identifier).title;
+        const pages = _.flatMap(manifest, 'pages');
+        const title = pages.find(page => page.id === identifier).title;
 
         return { html, title };
     }
 
-    public getManifest(): Promise<ManualPageMetaData[]> {
+    public getManifest(): Promise<ManualSection[]> {
         if (this.manifest) {
             return this.manifest;
         }
 
-        const path = this.getLocalizedPath(`manual`, `/manifest.json`);
-        return this.manifest = fetch(path).then(response => response.json());
+        const path = this.getLocalizedPath(`manual`, `manifest.json`);
+        return this.manifest = fetch(path).then(response => {
+            console.log(response);
+            return response.json();
+        });
     }
 
     /**
@@ -72,15 +73,6 @@ export class DialogService {
                 routerLink: ['/manual', identifier]
             }
         });
-    }
-
-    public async showDescriptionPage(corpus: Corpus) {
-        const description = this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name});
-        this.showDocumentation(
-            corpus.name,
-            corpus.title,
-            description,
-        );
     }
 
     /**
@@ -133,7 +125,13 @@ export type DialogPageEvent =
   };
 
 
-export interface ManualPageMetaData {
+export interface ManualPage {
     title: string;
     id: string;
 }
+
+export interface ManualSection {
+    title: string;
+    permissions?: 'canEditCorpus'[]
+    pages: ManualPage[];
+};

@@ -2,66 +2,64 @@ import logging
 import os
 
 from addcorpus.models import Corpus
-from addcorpus.permissions import (CorpusAccessPermission,
-                                   corpus_name_from_request)
+from addcorpus.permissions import CanSearchCorpus, corpus_name_from_request
+from api.utils import check_json_keys
 from django.conf import settings
 from django.http.response import FileResponse
 from download import convert_csv, tasks
 from download.models import Download
 from download.serializers import DownloadSerializer
-from es import download as es_download
+from download.throttles import DownloadThrottleMixin
 from rest_framework.exceptions import (APIException, NotFound, ParseError,
                                        PermissionDenied)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from api.utils import check_json_keys
-from tag.filter import handle_tags_in_request
 
 logger = logging.getLogger()
 
-def send_csv_file(download, directory, encoding, format=None):
+
+def send_csv_file(download, directory, encoding, format=None, delete_after_sent=False):
     '''
     Perform final formatting and send a CSV file as a FileResponse
     '''
-    converted_filename = convert_csv.convert_csv(
-        directory, download.filename, download.download_type, encoding, format)
-    path = os.path.join(directory, converted_filename)
+    try:
+        converted_filename = convert_csv.convert_csv(
+            directory, download.filename, download.download_type, encoding, format)
+        path = os.path.join(directory, converted_filename)
+        return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
+    finally:
+        if delete_after_sent:
+            download.delete()
 
-    return FileResponse(open(path, 'rb'), filename=download.descriptive_filename(), as_attachment=True)
 
-class ResultsDownloadView(APIView):
+class ResultsDownloadView(DownloadThrottleMixin, APIView):
     '''
     Download search results up to 1.000 documents
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route', 'encoding'])
-        max_size = 1000
-        size = request.data.get('size', max_size)
-
-        if size > max_size:
-            raise ParseError(detail='Download failed: too many documents requested')
-
         try:
             corpus_name = corpus_name_from_request(request)
             corpus = Corpus.objects.get(name=corpus_name)
-            handle_tags_in_request(request)
-            search_results = es_download.normal_search(
-                corpus_name, request.data['es_query'], request.data['size'])
+            size = request.data.get('es_query').pop('size')
+            user = request.user if request.user.is_authenticated else None
             download = Download.objects.create(
-                download_type='search_results', corpus=corpus, parameters=request.data, user=request.user)
-            csv_path = tasks.make_csv(search_results, request.data, download.id)
+                download_type='search_results', corpus=corpus, parameters=request.data, user=user)
+            csv_path = tasks.make_download(request.data, download.id, size, user)
             directory, filename = os.path.split(csv_path)
             # Create download for download history
             download.complete(filename=filename)
-            return send_csv_file(download, directory, request.data['encoding'])
+            delete_after_sent = user is None
+            return send_csv_file(download, directory, request.data['encoding'], delete_after_sent=delete_after_sent)
         except Exception as e:
             logger.error(e)
-            raise APIException(detail = 'Download failed: could not generate csv file')
+            raise APIException(
+                detail='Download failed: could not generate csv file')
 
 
 class ResultsDownloadTaskView(APIView):
@@ -70,7 +68,7 @@ class ResultsDownloadTaskView(APIView):
     over 10.000 documents
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['es_query', 'corpus', 'fields', 'route'])
@@ -80,7 +78,6 @@ class ResultsDownloadTaskView(APIView):
 
         # Celery task
         try:
-            handle_tags_in_request(request)
             task_chain = tasks.download_search_results(request.data, request.user)
             result = task_chain.apply_async()
             return Response({'task_ids': [result.id, result.parent.id]})
@@ -95,7 +92,7 @@ class FullDataDownloadTaskView(APIView):
     for a visualisation.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+    permission_classes = [IsAuthenticated, CanSearchCorpus]
 
     def post(self, request, *args, **kwargs):
         check_json_keys(request, ['visualization', 'parameters', 'corpus_name'])
@@ -106,7 +103,6 @@ class FullDataDownloadTaskView(APIView):
             raise ParseError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
         try:
-            handle_tags_in_request(request, 'parameters')
             task_chain = tasks.download_full_data(request.data, request.user)
             result = task_chain.apply_async()
             return Response({'task_ids': [result.id]})

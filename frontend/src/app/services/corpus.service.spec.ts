@@ -1,4 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
@@ -6,8 +7,8 @@ import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
 import { SessionService } from './session.service';
 
-import { RouterTestingModule } from '@angular/router/testing';
 import * as _ from 'lodash';
+import { appRoutes } from 'app/app.module';
 
 describe('CorpusService', () => {
     let service: CorpusService;
@@ -21,8 +22,8 @@ describe('CorpusService', () => {
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
                 SessionService,
+                provideRouter(appRoutes)
             ],
-            imports: [RouterTestingModule],
         });
         service = TestBed.inject(CorpusService);
     });
@@ -43,14 +44,8 @@ describe('CorpusService', () => {
                 es_index: 'test1',
                 overview_fields: [],
                 fields: [],
-                max_date: {
-                    day: 31,
-                    hour: 0,
-                    minute: 0,
-                    month: 12,
-                    year: 2010,
-                },
-                min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
+                max_year: 2010,
+                min_year: 1785,
                 scan_image_type: 'png',
                 allow_image_download: false,
                 word_models_present: false,
@@ -62,14 +57,8 @@ describe('CorpusService', () => {
                 es_index: 'test2',
                 overview_fields: [],
                 fields: [],
-                max_date: {
-                    day: 31,
-                    hour: 0,
-                    minute: 0,
-                    month: 12,
-                    year: 2010,
-                },
-                min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
+                max_year: 2010,
+                min_year: 1785,
                 scan_image_type: 'jpg',
                 allow_image_download: true,
                 word_models_present: true,
@@ -89,6 +78,10 @@ describe('CorpusService', () => {
                 es_index: 'times',
                 languages: ['English'],
                 category: 'Tests',
+                default_sort: {
+                    field: 'year',
+                    ascending: false
+                },
                 fields: [
                     {
                         description:
@@ -96,7 +89,6 @@ describe('CorpusService', () => {
                         es_mapping: { type: 'keyword' },
                         hidden: true,
                         sortable: false,
-                        primary_sort: false,
                         searchable: true,
                         downloadable: false,
                         name: 'bank',
@@ -119,7 +111,6 @@ describe('CorpusService', () => {
                         es_mapping: { type: 'integer' },
                         hidden: false,
                         sortable: true,
-                        primary_sort: true,
                         searchable: false,
                         downloadable: true,
                         name: 'year',
@@ -168,7 +159,6 @@ describe('CorpusService', () => {
                         hidden: false,
                         indexed: true,
                         sortable: false,
-                        primary_sort: false,
                         searchable: true,
                         downloadable: true,
                         name: 'speech',
@@ -180,14 +170,8 @@ describe('CorpusService', () => {
                         visualization_sort: null,
                     },
                 ],
-                min_date: { day: 1, hour: 0, minute: 0, month: 1, year: 1785 },
-                max_date: {
-                    day: 31,
-                    hour: 0,
-                    minute: 0,
-                    month: 12,
-                    year: 2010,
-                },
+                min_year: 1785,
+                max_year: 2010,
                 image: '/static/no-image.jpg',
                 scan_image_type: 'png',
                 allow_image_download: false,
@@ -199,7 +183,7 @@ describe('CorpusService', () => {
             expect(items.length).toBe(1);
             const corpus = _.first(items);
 
-            expect(corpus.scan_image_type).toBe('png');
+            expect(corpus.scanImageType).toBe('png');
 
             const fieldData = [
                 {
@@ -214,7 +198,6 @@ describe('CorpusService', () => {
                     multiFields: undefined,
                     hidden: true,
                     sortable: false,
-                    primarySort: false,
                     searchable: true,
                     downloadable: false,
                     name: 'bank',
@@ -229,7 +212,6 @@ describe('CorpusService', () => {
                     description: 'Year of the financial report.',
                     hidden: false,
                     sortable: true,
-                    primarySort: true,
                     searchable: false,
                     downloadable: true,
                     name: 'year',
@@ -255,7 +237,6 @@ describe('CorpusService', () => {
                     description: 'The transcribed speech',
                     hidden: false,
                     sortable: false,
-                    primarySort: false,
                     searchable: true,
                     downloadable: true,
                     name: 'speech',

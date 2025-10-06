@@ -6,18 +6,15 @@ locations.
 import logging
 logger = logging.getLogger(__name__)
 import os
-from os.path import join, isfile, splitext, isfile
-from datetime import datetime, timedelta
-import re
-import random
-from pprint import pprint
+from os.path import join, splitext
+from datetime import datetime
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus import extract
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition, until, after, string_contains
-from addcorpus.load_corpus import corpus_dir
+from ianalyzer_readers import extract
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from addcorpus.es_settings import es_settings
@@ -34,24 +31,25 @@ class Troonredes(XMLCorpusDefinition):
     title = "Troonredes"
     description = "Speeches by Dutch monarchs"
     min_date = datetime(year=1814, month=1, day=1)
-    max_date = datetime(year=2023, month=12, day=31)
+    max_date = datetime(year=2025, month=12, day=31)
     data_directory = settings.TROONREDES_DATA
     es_index = getattr(settings, 'TROONREDES_ES_INDEX', 'troonredes')
-    image = 'troon.jpg'
+    image = 'troonrede.jpg'
     word_model_path = getattr(settings, 'TROONREDES_WM', None)
     languages = ['nl']
     category = 'oration'
     description_page = 'troonredes.md'
+    citation_page = 'citation.md'
+    wordmodels_page = 'documentation.md'
 
     @property
     def es_settings(self):
         return es_settings(self.languages[:1], stopword_analysis=True, stemming_analysis=True)
 
-    tag_toplevel = 'doc'
-    tag_entry = 'entry'
+    tag_toplevel = Tag('doc')
+    tag_entry = Tag('entry')
 
     non_xml_msg = 'Skipping non-XML file {}'
-    non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
@@ -70,15 +68,13 @@ class Troonredes(XMLCorpusDefinition):
             name='date',
             display_name='Date',
             description='Date of the speech',
-            extractor=extract.XML(tag='date'),
+            extractor=extract.XML(Tag('date')),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
             csv_core=True,
             search_filter=filters.DateFilter(
-                min_date,
-                max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
+                    'Accept only speeches given between these dates.'
                 )
             ),
             sortable=True
@@ -94,15 +90,16 @@ class Troonredes(XMLCorpusDefinition):
             name='title',
             display_name='Title',
             description='title.',
-            extractor=extract.XML(tag='title'),
+            extractor=extract.XML(Tag('title')),
             results_overview=True,
             search_field_core=True,
+            language='nl',
         ),
         FieldDefinition(
             name='monarch',
             display_name='Monarch',
             description='Monarch that gave the speech.',
-            extractor=extract.XML(tag='monarch'),
+            extractor=extract.XML(Tag('monarch')),
             es_mapping={'type': 'keyword'},
             results_overview=True,
             csv_core=True,
@@ -119,7 +116,7 @@ class Troonredes(XMLCorpusDefinition):
             name='speech_type',
             display_name='Speech type',
             description='Type of speech.',
-            extractor=extract.XML(tag='speech_type'),
+            extractor=extract.XML(Tag('speech_type')),
             es_mapping={'type': 'keyword'},
             results_overview=True,
             csv_core=True,
@@ -141,6 +138,7 @@ class Troonredes(XMLCorpusDefinition):
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],
-            extractor=extract.XML(tag='content')
+            extractor=extract.XML(Tag('content')),
+            language='nl',
         ),
     ]

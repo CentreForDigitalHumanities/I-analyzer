@@ -1,9 +1,9 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 
-import { ParamService } from '../services';
+import { ParamService } from '@services';
 
 @Directive()
 export abstract class ParamDirective implements OnDestroy, OnInit {
@@ -57,5 +57,5 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
 
     abstract teardown();
 
-    abstract setStateFromParams(params: Params);
+    abstract setStateFromParams(params: ParamMap);
 }

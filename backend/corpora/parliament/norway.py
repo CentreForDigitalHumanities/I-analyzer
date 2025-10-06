@@ -4,8 +4,8 @@ import re
 from django.conf import settings
 import os
 
-from addcorpus.extract import Combined, Constant, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from ianalyzer_readers.extract import Combined, Constant, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -33,6 +33,10 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
         context_fields=['book_id'],
         context_display_name='book',
     )
+    default_sort = {
+        'field': 'date_latest',
+        'ascending': False,
+    }
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
@@ -45,14 +49,14 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(
-        field = 'source_file',
+        'source_file',
         transform = remove_file_extension,
     )
 
     book_label = field_defaults.book_label()
     book_label.extractor = Combined(
-        CSV(field = 'title'),
-        CSV(field = 'subtitle'),
+        CSV('title'),
+        CSV('subtitle'),
         transform = lambda parts: '; '.join(parts)
     )
 
@@ -69,7 +73,7 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
-        field = 'year',
+        'year',
         transform = lambda value : formatting.get_date_from_year(value, 'earliest')
     )
     date_earliest.search_filter.lower = min_date
@@ -77,7 +81,7 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
-        field = 'year',
+        'year',
         transform = lambda value : formatting.get_date_from_year(value, 'latest')
     )
     date_latest.search_filter.lower = min_date
@@ -85,13 +89,13 @@ class ParliamentNorway(Parliament, CSVCorpusDefinition):
 
 
     page = field_defaults.page()
-    page.extractor = CSV(field = 'page')
+    page.extractor = CSV('page')
 
-    speech = field_defaults.speech()
-    speech.extractor = CSV(field = 'text')
+    speech = field_defaults.speech(language='no')
+    speech.extractor = CSV('text')
 
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(field = 'page')
+    sequence.extractor = CSV('page')
 
     def __init__(self):
         self.fields = [

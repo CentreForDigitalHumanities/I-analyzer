@@ -1,13 +1,39 @@
 import pytest
 from addcorpus.models import Field
-from addcorpus.es_mappings import int_mapping, text_mapping, keyword_mapping, main_content_mapping, date_mapping
-from addcorpus.validators import *
+from addcorpus.es_mappings import (
+    non_indexed_text_mapping,
+    date_mapping,
+    int_mapping,
+    text_mapping,
+    keyword_mapping,
+)
+from addcorpus.validation.creation import *
 
 def test_validate_mimetype():
     validate_mimetype('image/jpeg')
 
     with pytest.raises(ValidationError):
         validate_mimetype('nonsense')
+
+
+def test_validate_field_name_permissible_characters():
+    validate_field_name_permissible_characters("valid:slug")
+    with pytest.raises(ValidationError):
+        validate_field_name_permissible_characters("some invalid slug!")
+
+
+def test_validate_ner_slug():
+    with pytest.raises(ValidationError):
+        validate_ner_slug({}, "some:slug")
+    with pytest.raises(ValidationError):
+        validate_ner_slug({}, "some:ner_inslug")
+    with pytest.raises(ValidationError):
+        validate_ner_slug(keyword_mapping(), "slug:ner")
+    validate_ner_slug(non_indexed_text_mapping(), "slug:ner")
+    with pytest.raises(ValidationError):
+        validate_ner_slug(date_mapping(), "slug:ner-kw")
+    validate_ner_slug(keyword_mapping(), "slug:ner-kw")
+
 
 def test_validate_es_mapping():
     validate_es_mapping({'type': 'text'})
@@ -66,38 +92,16 @@ def test_validate_searchable_fields_has_fts():
     with pytest.warns(Warning):
         validate_searchable_field_has_full_text_search(keyword_mapping(), True)
 
-def test_filename_validation():
-    validate_image_filename_extension('image.jpg')
+def test_validate_sort_configuration():
+    validate_sort_configuration({})
+
+    validate_sort_configuration({
+        'field': 'date',
+        'ascending': False
+    })
 
     with pytest.raises(ValidationError):
-        validate_image_filename_extension('image.txt')
-
-def test_validate_ngram_has_date_field():
-    text_field = Field(
-        name='content',
-        es_mapping=main_content_mapping(),
-        visualizations=['wordcloud', 'ngram']
-    )
-
-    date_field = Field(
-        name='date',
-        es_mapping=date_mapping()
-    )
-
-    with_date_field = [text_field, date_field]
-    without_date_field = [text_field]
-
-    validate_implication(
-        text_field.visualizations, with_date_field,
-        '',
-        visualisations_require_date_field,
-        any_date_fields
-    )
-
-    with pytest.raises(ValidationError):
-        validate_implication(
-            text_field.visualizations, without_date_field,
-            '',
-            visualisations_require_date_field,
-            any_date_fields
-        )
+        validate_sort_configuration({
+            'field': 'date',
+            'ascending': None
+        })

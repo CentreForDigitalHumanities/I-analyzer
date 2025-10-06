@@ -1,70 +1,78 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DropdownComponent } from '../dropdown/dropdown.component';
-import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
-import { ErrorComponent } from '../error/error.component';
-import { CalendarModule } from 'primeng/calendar';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FormsModule } from '@angular/forms';
-import { BalloonDirective } from '../balloon.directive';
-import { HighlightPipe } from '../search';
-import { ScrollToDirective } from '../scroll-to.directive';
+import { provideHttpClient, withInterceptorsFromDi, withXsrfConfiguration } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-    HttpClient,
-    HttpClientModule,
-    HttpClientXsrfModule,
-} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-import { TabsComponent } from './tabs/tabs.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
+import { TableModule } from 'primeng/table';
+import { BalloonDirective } from '../balloon.directive';
+import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
+import { ErrorComponent } from '../error/error.component';
+import { ScrollToDirective } from '../scroll-to.directive';
+import { DropdownModule } from './dropdown/dropdown.module';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
+import { TabsComponent } from './tabs/tabs.component';
+import { ToggleComponent } from './toggle/toggle.component';
+import { SlugifyPipe } from './pipes/slugify.pipe';
+import { ToggleButtonDirective } from './toggle-button.directive';
+import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
 @NgModule({
     declarations: [
-        DropdownComponent,
         DatePickerComponent,
         ErrorComponent,
         BalloonDirective,
-        HighlightPipe,
         ScrollToDirective,
         TabsComponent,
         TabPanelDirective,
+        ToggleComponent,
+        SlugifyPipe,
+        ToggleButtonDirective,
+        ConfirmModalComponent,
     ],
     exports: [
         // shared components
-        DropdownComponent,
         DatePickerComponent,
         ErrorComponent,
         ScrollToDirective,
         TabsComponent,
         TabPanelDirective,
-
+        ToggleButtonDirective,
+        ConfirmModalComponent,
         // shared modules
         BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
+        DropdownModule,
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
-        HighlightPipe,
-        HttpClientModule,
-        HttpClientXsrfModule,
         RouterModule,
-    ],
-    imports: [
+        TableModule,
+        ToggleComponent,
+        // Shared pipes
+        SlugifyPipe,
+    ], imports: [
         BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
+        DatePickerModule,
+        DialogModule,
         FormsModule,
-        CalendarModule,
+        TableModule,
+        DropdownModule,
         FontAwesomeModule,
-        HttpClientModule,
-        HttpClientXsrfModule.withOptions({
+        RouterModule,
+        ReactiveFormsModule,
+    ], providers: [
+        SlugifyPipe,
+        provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
-        }),
-        RouterModule,
-    ],
-})
+        }))
+    ] })
 export class SharedModule {}

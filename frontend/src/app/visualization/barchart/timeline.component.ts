@@ -1,24 +1,34 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
-
-import { QueryModel, AggregateResult, TimelineSeries, TimelineDataPoint, TermFrequencyResult,
-    TimeCategory,
-    DateFilterData} from '../../models/index';
-import { BarchartDirective } from './barchart.directive';
-import * as moment from 'moment';
+import { addDays, addMonths, addWeeks, addYears, differenceInDays, format } from 'date-fns';
 import 'chartjs-adapter-moment';
-import { selectColor } from '../../utils/select-color';
-import { showLoading } from '../../utils/utils';
+
+import {
+    QueryModel,
+    TimelineSeries,
+    TimelineDataPoint,
+    TimeCategory,
+    DateFilterData,
+} from '@models/index';
+import { BarchartDirective } from './barchart.directive';
+
+import { selectColor } from '@utils/select-color';
+import { showLoading } from '@utils/utils';
+import {
+    DateHistogramAggregator,
+    DateHistogramResult,
+} from '@models/aggregation';
 
 
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss'],
+    standalone: false
 })
 export class TimelineComponent
-    extends BarchartDirective<TimelineDataPoint>
+    extends BarchartDirective<DateHistogramResult, TimelineDataPoint>
     implements OnChanges, OnInit {
     /** domain on the axis */
     public xDomain: [Date, Date];
@@ -36,10 +46,8 @@ export class TimelineComponent
 
     /** get min/max date for the entire graph and set domain and time category */
     setTimeDomain() {
-        const filter =
-            this.queryModel.filters.find(
-                (f) => f.corpusField.name === this.visualizedField.name
-            ) || this.visualizedField.makeSearchFilter();
+        const filter = this.queryModel.filterForField(this.visualizedField)
+            || this.visualizedField.makeSearchFilter();
         const currentDomain = filter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
@@ -47,7 +55,7 @@ export class TimelineComponent
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
-    aggregateResultToDataPoint(cat: AggregateResult): TimelineDataPoint {
+    aggregateResultToDataPoint(cat: DateHistogramResult): TimelineDataPoint {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
@@ -64,12 +72,11 @@ export class TimelineComponent
      * True when retrieving results for the entire series, false when retrieving a window.
      */
     requestSeriesDocCounts(queryModel: QueryModel) {
-        return this.searchService.dateHistogramSearch(
-            this.corpus,
-            queryModel,
-            this.visualizedField.name,
+        const aggregation = new DateHistogramAggregator(
+            this.visualizedField,
             this.currentTimeCategory
         );
+        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregation);
     }
 
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
@@ -96,17 +103,6 @@ export class TimelineComponent
                 size: this.documentLimitForCategory(bin, series),
             };
         });
-    }
-
-    processSeriesTermFrequency(
-        results: TermFrequencyResult[],
-        series: TimelineSeries
-    ) {
-        series.data = _.zip(series.data, results).map((pair) => {
-            const [bin, res] = pair;
-            return this.addTermFrequencyToCategory(res, bin);
-        });
-        return series;
     }
 
     /** time domain for a bin */
@@ -182,13 +178,26 @@ export class TimelineComponent
         }));
     }
 
+    callibratexAxis(date: Date, margin: number = 1) {
+        switch(this.currentTimeCategory) {
+            case 'day':
+                return addDays(date, margin);
+            case 'week':
+                return addWeeks(date, margin);
+            case 'month':
+                return addMonths(date, margin);
+            case 'year':
+                return addYears(date, margin);
+
+        }
+    }
+
     chartOptions(datasets) {
         const xLabel = this.visualizedField.displayName
             ? this.visualizedField.displayName
             : this.visualizedField.name;
-        const margin = moment.duration(1, this.currentTimeCategory);
-        const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
-        const xMax = moment(this.xDomain[1]).add(margin).toDate();
+        const xMin = this.callibratexAxis(this.xDomain[0], -1);
+        const xMax = this.callibratexAxis(this.xDomain[1]);
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
@@ -340,15 +349,15 @@ export class TimelineComponent
      * based on minimum and maximum dates on the x axis.
      */
     public calculateTimeCategory(min: Date, max: Date): TimeCategory {
-        const diff = moment.duration(moment(max).diff(moment(min)));
-        if (diff.asYears() >= this.scaleDownThreshold) {
-            return 'year';
-        } else if (diff.asMonths() >= this.scaleDownThreshold) {
-            return 'month';
-        } else if (diff.asWeeks() >= this.scaleDownThreshold) {
-            return 'week';
-        } else {
+        const diff = differenceInDays(max, min);
+        if (diff <= this.scaleDownThreshold) {
             return 'day';
+        } else if (diff <= this.scaleDownThreshold * 7) {
+            return 'week';
+        } else if (diff <= this.scaleDownThreshold * 30) {
+            return 'month';
+        } else {
+            return 'year';
         }
     }
 
@@ -424,17 +433,17 @@ export class TimelineComponent
         let dateFormat: string;
         switch (this.currentTimeCategory) {
             case 'year':
-                dateFormat = 'YYYY';
+                dateFormat = 'yyyy';
                 break;
             case 'month':
-                dateFormat = 'MMMM YYYY';
+                dateFormat = 'MM yyyy';
                 break;
             default:
-                dateFormat = 'YYYY-MM-DD';
+                dateFormat = 'yyyy-MM-dd';
                 break;
         }
 
-        return (date: Date) => moment(date).format(dateFormat);
+        return (date: Date) => format(date, dateFormat);
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering

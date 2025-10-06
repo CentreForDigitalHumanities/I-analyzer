@@ -5,8 +5,8 @@ from datetime import datetime
 from django.conf import settings
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, Combined, CSV
-from addcorpus.corpus import CSVCorpusDefinition
+from ianalyzer_readers.extract import Constant, Combined, CSV
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.utils.formatting import underscore_to_space
 from corpora.utils.constants import document_context
@@ -17,7 +17,7 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     min_date = datetime(year=1881, month=1, day=1)
     data_directory = settings.PP_FR_DATA
     es_index = getattr(settings, 'PP_FR_INDEX', 'parliament-france')
-    image = 'france.jpeg'
+    image = 'france.jpg'
     languages = ['fr']
     description_page = 'france.md'
     word_model_path = getattr(settings, 'PP_FR_WM', None)
@@ -34,17 +34,18 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
 
     book_id = field_defaults.book_id()
     book_id.extractor = Combined(
-        CSV(field='book_id'),
-        CSV(field='book_part_id'),
-        CSV(field='page_id'),
+        CSV('book_id'),
+        CSV('book_part_id'),
+        CSV('page_id'),
         transform=lambda x: ' '.join(filter(None, x))
     )
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(
-        field='chamber',
+        'chamber',
         transform=underscore_to_space
     )
+    chamber.language = 'fr'
 
     country = field_defaults.country()
     country.extractor = Constant(
@@ -52,20 +53,18 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     )
 
     date = field_defaults.date()
-    date.extractor = CSV(
-        field='date'
-    )
+    date.extractor = CSV('date')
 
     date_is_estimate = field_defaults.date_is_estimate()
     date_is_estimate.extractor = CSV(
-        field='date_is_estimate',
+        'date_is_estimate',
         transform=lambda x: x=='True'
     )
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = Combined(
-        CSV(field='date'),
-        CSV(field='seance_order'),
+        CSV('date'),
+        CSV('seance_order'),
         transform=lambda x: '_'.join(filter(None, x))
     )
 
@@ -73,63 +72,45 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
     # the values of 'seance' field seem very limited (Première séance, Deuxième séance, etc.,)
     # so we don't want this to be treated as a text field
     debate_title = field_defaults.debate_title()
-    debate_title.extractor = CSV(
-        field='seance'
-    )
+    debate_title.extractor = CSV('seance')
 
     debate_type = field_defaults.debate_type()
     debate_type.extractor = CSV(
-        field='session_type',
+        'session_type',
         transform=lambda x: x.title() if x else None,
     )
 
     era = field_defaults.era(include_aggregations=False)
     era.extractor = CSV(
-        field='era',
+        'era',
         transform=underscore_to_space
     )
 
     legislature = field_defaults.legislature()
-    legislature.extractor = CSV(
-        field='legislature'
-    )
+    legislature.extractor = CSV('legislature')
 
     page = field_defaults.page()
-    page.extractor = CSV(
-        field='page_order'
-    )
+    page.extractor = CSV('page_order')
 
     page_source = field_defaults.page_source()
-    page_source.extractor = CSV(
-        field='page_source'
-    )
+    page_source.extractor = CSV('page_source')
 
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(
-        field='sequence'
-    )
+    sequence.extractor = CSV('sequence')
 
-    speech = field_defaults.speech()
-    speech.extractor = CSV(
-        field='page_text'
-    )
+    speech = field_defaults.speech(language='fr')
+    speech.extractor = CSV('page_text')
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = CSV(
-        field='speech_id'
-    )
+    speech_id.extractor = CSV('speech_id')
 
     url_pdf = field_defaults.url()
-    url_pdf.extractor = CSV(
-        field='pdf_url'
-    )
+    url_pdf.extractor = CSV('pdf_url')
     url_pdf.display_name = 'Source url (PDF)'
     url_pdf.description = 'URL to PDF source file of this speech'
 
     url_html = field_defaults.url()
-    url_html.extractor = CSV(
-        field='html_url'
-    )
+    url_html.extractor = CSV('html_url')
     url_html.name = 'url_html'
     url_html.display_name = 'Source url (HTML)'
     url_html.description = 'URL to HTML source file of this speech'
@@ -149,12 +130,3 @@ class ParliamentFrance(Parliament, CSVCorpusDefinition):
             self.speech, self.speech_id,
             self.url_pdf, self.url_html
         ]
-
-
-
-
-
-
-
-
-

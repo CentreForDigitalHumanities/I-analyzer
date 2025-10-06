@@ -8,8 +8,8 @@ export interface HasDescription {
 
 export type DateFilterOptions = {
     name: 'DateFilter';
-    lower: string;
-    upper: string;
+    lower: string|null;
+    upper: string|null;
 } & HasDescription;
 
 export type MultipleChoiceFilterOptions = {
@@ -19,13 +19,12 @@ export type MultipleChoiceFilterOptions = {
 
 export type RangeFilterOptions = {
     name: 'RangeFilter';
-    lower: number;
-    upper: number;
+    lower: number|null;
+    upper: number|null;
 } & HasDescription;
 
 export type BooleanFilterOptions = {
     name: 'BooleanFilter';
-    checked: boolean;
 } & HasDescription;
 
 export type FieldFilterOptions =

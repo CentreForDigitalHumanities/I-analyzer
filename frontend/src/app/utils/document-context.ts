@@ -1,6 +1,9 @@
-import { Corpus, FoundDocument, QueryModel } from '../models';
+import { Params } from '@angular/router';
+import { Corpus, FoundDocument, QueryModel } from '@models';
+import { PageResultsParameters } from '@models/page-results';
+import { omitNullParameters, pageResultsParametersToParams } from './params';
 
-const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryModel => {
+const documentContextQuery = (corpus: Corpus, document: FoundDocument): [QueryModel, PageResultsParameters] => {
     const queryModel = new QueryModel(corpus);
 
     const spec = corpus.documentContext;
@@ -11,14 +14,21 @@ const documentContextQuery = (corpus: Corpus, document: FoundDocument): QueryMod
         queryModel.addFilter(filter);
     });
 
-    queryModel.sort.sortBy.next(spec.sortField);
-    queryModel.sort.sortDirection.next(spec.sortDirection);
+    const resultsParams: PageResultsParameters = {
+        sort: [spec.sortField, spec.sortDirection],
+        from: 0,
+        size: 20
+    };
 
-    return queryModel;
+    return [queryModel, resultsParams];
 };
 
-export const makeContextParams = (document: FoundDocument, corpus: Corpus): any => {
-    const queryModel = documentContextQuery(corpus, document);
-    return queryModel.toQueryParams();
+export const makeContextParams = (document: FoundDocument, corpus: Corpus): Params => {
+    const [queryModel, pageResultsParams] = documentContextQuery(corpus, document);
+    const params = {
+        ...queryModel.toQueryParams(),
+        ...pageResultsParametersToParams(pageResultsParams, corpus),
+    };
+    return omitNullParameters(params);
 };
 

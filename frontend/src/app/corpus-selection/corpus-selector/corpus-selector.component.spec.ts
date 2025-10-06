@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusSelectorComponent } from './corpus-selector.component';
 import { commonTestBed } from '../../common-test-bed';
-import { mockCorpus } from '../../../mock-data/corpus';
+import { corpusFactory } from '../../../mock-data/corpus';
 
 describe('CorpusSelectorComponent', () => {
     let component: CorpusSelectorComponent;
@@ -15,7 +15,7 @@ describe('CorpusSelectorComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CorpusSelectorComponent);
         component = fixture.componentInstance;
-        component.corpus = mockCorpus;
+        component.corpus = corpusFactory();
         fixture.detectChanges();
     });
 

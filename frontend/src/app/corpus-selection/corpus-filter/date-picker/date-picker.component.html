@@ -1,6 +1,5 @@
-<p-calendar name="minYear" [view]="unit" [dateFormat]="dateFormat"
+<p-datepicker name="minYear" [view]="unit" [dateFormat]="dateFormat"
     [minDate]="minDate" [maxDate]="maxDate"
-    [ngModel]="subject?.value || default"
-    (onSelect)="set($event)"
-    (keydown.enter)="set($event.target.value)">
-</p-calendar>
+    [formControl]="control"
+    [ariaLabel]="ariaLabel"
+/>

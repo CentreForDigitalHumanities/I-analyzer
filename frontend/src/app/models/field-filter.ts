@@ -1,17 +1,20 @@
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { format } from 'date-fns';
 import { CorpusField } from './corpus';
 import { EsBooleanFilter, EsDateFilter, EsFilter, EsTermsFilter, EsRangeFilter, EsTermFilter } from './elasticsearch';
 import {
     BooleanFilterOptions, DateFilterOptions, FieldFilterOptions, MultipleChoiceFilterOptions,
     RangeFilterOptions
 } from './field-filter-options';
-import { BaseFilter } from './base-filter';
+import { BaseFilter, FilterInterface } from './base-filter';
+import { Store } from '../store/types';
 
 
-abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> extends BaseFilter<FieldFilterOptions, FilterData> {
-    constructor(public corpusField: CorpusField) {
-        super(corpusField.filterOptions);
+abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter>
+    extends BaseFilter<FieldFilterOptions, FilterData> {
+
+    constructor(store: Store, public corpusField: CorpusField) {
+        super(store, corpusField.name, corpusField.filterOptions);
     }
 
     get filterType() {
@@ -23,16 +26,16 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
         return !(this.corpusField.filterOptions);
     }
 
+    get displayName() {
+        return this.corpusField.displayName;
+    }
+
     get description() {
         if (this.corpusField?.filterOptions?.description) {
             return this.corpusField.filterOptions.description;
         } else {
             return `Filter results based on ${this.corpusField.displayName}`;
         }
-    }
-
-    get routeParamName() {
-        return this.corpusField.name;
     }
 
     /**
@@ -49,7 +52,7 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
      * returns undefined if the filter is inactive
      */
     toEsFilter(): EsFilterType {
-        if (this.active.value) {
+        if (this.state$.value.active) {
             return this.dataToEsFilter();
         }
     }
@@ -66,15 +69,27 @@ abstract class AbstractFieldFilter<FilterData, EsFilterType extends EsFilter> ex
 }
 
 export interface DateFilterData {
-    min: Date;
-    max: Date;
+    min?: Date;
+    max?: Date;
 }
 
+/**
+ * Filter for date fields
+ *
+ * Filter data is a range, e.g. [1st Jan 2000, 31st Dec 2000]. The min and max values can
+ * also be undefined, which means no bound in that direction.
+ *
+ * The default data is always the widest possible range. This can be specified on the
+ * field; if not specified, the default range will be (∞,∞). However, note that if the
+ * DateFilter is controlled by a DateFilterComponent, the component will fill in finite
+ * bounds based on an aggregation.
+ */
 export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter> {
     makeDefaultData(filterOptions: DateFilterOptions) {
+        const parse = value => (_.isNull(value) || _.isUndefined(value)) ? undefined : this.parseDate(value);
         return {
-            min: this.parseDate(filterOptions.lower),
-            max: this.parseDate(filterOptions.upper)
+            min: parse(filterOptions.lower),
+            max: parse(filterOptions.upper)
         };
     }
 
@@ -85,7 +100,7 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
         };
     }
 
-    dataFromString(value: string) {
+    dataFromString(value: string): DateFilterData {
         const [minString, maxString] = parseMinMax(value.split(','));
         return {
             min: this.parseDate(minString),
@@ -93,18 +108,19 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
         };
     }
 
-    dataToString(data: DateFilterData) {
+    dataToString(data: DateFilterData): string {
         const min = this.formatDate(data.min);
         const max = this.formatDate(data.max);
         return `${min}:${max}`;
     }
 
     dataToEsFilter(): EsDateFilter {
+        const data = this.currentData;
         return {
             range: {
                 [this.corpusField.name]: {
-                    gte: this.formatDate(this.currentData.min),
-                    lte: this.formatDate(this.currentData.max),
+                    gte: data.min ? this.formatDate(this.currentData.min) : null,
+                    lte: data.max ? this.formatDate(this.currentData.max) : null,
                     format: 'yyyy-MM-dd',
                     relation: 'within'
                 }
@@ -114,24 +130,34 @@ export class DateFilter extends AbstractFieldFilter<DateFilterData, EsDateFilter
 
     dataFromEsFilter(esFilter: EsDateFilter): DateFilterData {
         const data = _.first(_.values(esFilter.range));
-        const min = this.parseDate(data.gte);
-        const max = this.parseDate(data.lte);
+        const min = data.gte ? this.parseDate(data.gte) : undefined;
+        const max = data.lte ? this.parseDate(data.lte) : undefined;
         return { min, max };
     }
 
-    private formatDate(date: Date): string {
-        return moment(date).format('YYYY-MM-DD');
+    private formatDate(date?: Date): string {
+        if (date) {
+            return format(date, 'yyyy-MM-dd');
+        }
+        return '';
     }
 
-    private parseDate(dateString: string): Date {
-        return moment(dateString, 'YYYY-MM-DD').toDate();
+    private parseDate(dateString?: string): Date|undefined {
+        if (dateString.length) {
+            const date = new Date(dateString);
+            date.setHours(0, 0, 0); // make sure that time-zone induced shifts in historical dates are set to 0
+            return date;
+        }
     }
 }
 
+/**
+ * Filter for boolean fields
+ */
 export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter> {
 
     makeDefaultData(filterOptions: BooleanFilterOptions) {
-        return false;
+        return undefined;
     }
 
     dataFromValue(value: any): boolean {
@@ -139,7 +165,11 @@ export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter>
     }
 
     dataFromString(value: string): boolean {
-        return value === 'true';
+        if (value === 'true') {
+            return true;
+        } else if (value === 'false') {
+            return false;
+        }
     }
 
     dataToString(data: boolean): string {
@@ -162,6 +192,9 @@ export class BooleanFilter extends AbstractFieldFilter<boolean, EsBooleanFilter>
 
 type MultipleChoiceFilterData = string[];
 
+/**
+ * Filter for keyword fields
+ */
 export class MultipleChoiceFilter extends AbstractFieldFilter<MultipleChoiceFilterData, EsTermsFilter> {
     makeDefaultData(filterOptions: MultipleChoiceFilterOptions): MultipleChoiceFilterData {
         return [];
@@ -196,15 +229,27 @@ export class MultipleChoiceFilter extends AbstractFieldFilter<MultipleChoiceFilt
 }
 
 export interface RangeFilterData {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
 }
 
+/**
+ * Filter for int and float fields
+ *
+ * Filter data is a range, e.g. [0, 100]. The min and max values can also be undefined, which
+ * means no bound in that direction.
+ *
+ * The default data is always the widest possible range. This can be specified on the field;
+ * if not specified, the default range will be (∞,∞). However, note that if the RangeFilter
+ * is controlled by a RangeFilterComponent, the component will fill in finite bounds based
+ * on an aggregation.
+ */
 export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFilter> {
     makeDefaultData(filterOptions: RangeFilterOptions): RangeFilterData {
+        const parse = (value) => _.isNull(value) ? undefined : value;
         return {
-            min: filterOptions.lower,
-            max: filterOptions.upper
+            min: parse(filterOptions.lower),
+            max: parse(filterOptions.upper)
         };
     }
 
@@ -215,13 +260,13 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
     dataFromString(value: string): RangeFilterData {
         const [minString, maxString] = parseMinMax(value.split(','));
         return {
-            min: parseFloat(minString),
-            max: parseFloat(maxString)
+            min: this.parseValue(minString),
+            max: this.parseValue(maxString),
         };
     }
 
     dataToString(data: RangeFilterData): string {
-        return `${data.min},${data.max}`;
+        return `${this.formatValue(data.min)},${this.formatValue(data.max)}`;
     }
 
     dataToEsFilter(): EsRangeFilter {
@@ -241,8 +286,27 @@ export class RangeFilter extends AbstractFieldFilter<RangeFilterData, EsRangeFil
         const max = data.lte;
         return { min, max };
     }
+
+    private parseValue(value: string): number {
+        if (value.length) {
+            return parseFloat(value);
+        }
+    }
+
+    private formatValue(value?: number): string {
+        if (_.isUndefined(value)) {
+            return '';
+        }
+        return `${value}`;
+    }
 }
 
+/**
+ * Filter for fields with no filter specification
+ *
+ * This filter can be activated when the user requests to filter on a specific
+ * value.
+ */
 export class AdHocFilter extends AbstractFieldFilter<any, EsTermFilter> {
     makeDefaultData(filterOptions: FieldFilterOptions) { }
 
@@ -284,3 +348,6 @@ const parseMinMax = (value: string[]): [string, string] => {
 };
 
 export type SearchFilter = DateFilter | MultipleChoiceFilter | RangeFilter | BooleanFilter | AdHocFilter;
+
+export const isFieldFilter = (filter: FilterInterface): filter is SearchFilter =>
+    'corpusField' in filter;

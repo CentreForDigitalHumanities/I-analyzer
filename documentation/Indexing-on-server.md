@@ -2,12 +2,24 @@
 
 For production environments, we use *versioned* index names (e.g. `times-1`, `times-2`), and use an alias (e.g. `times`) to point to the correct version. The advantage of this approach is that an old version of the index can be kept in place as long as is needed, for example while a new version of the index is created.
 
+## Check running index jobs
+
+Before you start, open a terminal in the index server and (from the source repository) run `yarn django indexjob list`. Check if there are any jobs with status `working`.
+
+It is not necessarily a problem to run two index jobs simultaneously, but you should not re-deploy or switch to a different branch while a job is running.
 
 ## Moving data to server
 On the server, move data to a location in the `/its` share.
 
-## Deployment settings
-In the Deployment repository, set the variables of the corpus.
+## Import the corpus
+
+### Database-only corpora
+
+Unlike Python corpora, database-only corpora are not intended to be indexed on a separate server. However, you could use JSON import/export to clone the corpus to the index server. After importing the JSON representation, use the Django admin menu to specify the data directory for the corpus (the path to the data directory on the server).
+
+### Python corpora
+
+If the corpus is based on a Python definition, adjust the deployment repository to include necessary settings.
 
 At the very least, you should set:
 - `YOUR_CORPUS_DATA` the location on the `/its` share.
@@ -39,7 +51,7 @@ Note that removing an alias does not remove the index itself, but removing an in
 ## Indexing from multiple corpus definitions
 If you have separate datasets for different parts of a corpus, you may combine them by setting the `ES_INDEX` variable in the corpus definitions to the same `overarching-corpus` index name.
 
-Then, you can define multiple corpora in the deployment module, e.g.,
+Then, you can define multiple corpora in the deployment settings module, e.g.,
 ```
 CORPORA = {
     'corpus1': 'path/to/corpus1',

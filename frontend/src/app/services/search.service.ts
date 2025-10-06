@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import {
-    Corpus, QueryModel, SearchResults,
-    AggregateQueryFeedback
-} from '../models/index';
+import { Corpus, QueryModel, SearchResults } from '@models/index';
+import { PageResultsParameters } from '@models/page-results';
+import { Aggregator } from '@models/aggregation';
 
 
 @Injectable()
@@ -22,40 +21,24 @@ export class SearchService {
      */
     public async loadResults(
         queryModel: QueryModel,
-        from: number,
-        size: number
+        resultsParams: PageResultsParameters,
     ): Promise<SearchResults> {
         const results = await this.elasticSearchService.loadResults(
             queryModel,
-            from,
-            size
+            resultsParams,
         );
         return this.filterResultsFields(results, queryModel);
     }
 
-    public async aggregateSearch(
+    public async aggregateSearch<Result>(
         corpus: Corpus,
         queryModel: QueryModel,
-        aggregators: any
-    ): Promise<AggregateQueryFeedback> {
+        aggregator: Aggregator<Result>,
+    ): Promise<Result> {
         return this.elasticSearchService.aggregateSearch(
             corpus,
             queryModel,
-            aggregators
-        );
-    }
-
-    public async dateHistogramSearch(
-        corpus: Corpus,
-        queryModel: QueryModel,
-        fieldName: string,
-        timeInterval: string
-    ): Promise<AggregateQueryFeedback> {
-        return this.elasticSearchService.dateHistogramSearch(
-            corpus,
-            queryModel,
-            fieldName,
-            timeInterval
+            aggregator
         );
     }
 

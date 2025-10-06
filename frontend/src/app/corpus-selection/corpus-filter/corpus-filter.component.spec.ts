@@ -2,12 +2,14 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusFilterComponent } from './corpus-filter.component';
 import { commonTestBed } from '../../common-test-bed';
-import { mockCorpus, mockCorpus2 } from '../../../mock-data/corpus';
-import { Corpus } from '../../models';
+import { corpusFactory } from '../../../mock-data/corpus';
+import { Corpus } from '@models';
 
 describe('CorpusFilterComponent', () => {
     let component: CorpusFilterComponent;
     let fixture: ComponentFixture<CorpusFilterComponent>;
+    let corpus1;
+    let corpus2;
 
     beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
@@ -16,7 +18,16 @@ describe('CorpusFilterComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CorpusFilterComponent);
         component = fixture.componentInstance;
-        component.corpora = [mockCorpus, mockCorpus2];
+
+        corpus1 = corpusFactory();
+
+        corpus2 = corpusFactory();
+        corpus2.languages = ['English', 'French'];
+        corpus2.category = 'Poems';
+        corpus2.minYear = 1850;
+        corpus2.maxYear = 2000;
+
+        component.corpora = [corpus1, corpus2];
         fixture.detectChanges();
     });
 
@@ -28,32 +39,31 @@ describe('CorpusFilterComponent', () => {
         let result: Corpus[];
         component.filtered.subscribe(data => result = data);
 
-        const filterResult = async (language: string, category: string, minDate: Date, maxDate: Date) => {
-            component.selectedLanguage.next(language);
-            component.selectedCategory.next(category);
-            component.selectedMinDate.next(minDate);
-            component.selectedMaxDate.next(maxDate);
+        const filterResult = async (language: string | null, category: string | null, minYear: number, maxYear: number) => {
+            component.form.setValue({
+                language, category, minYear, maxYear
+            });
             await fixture.whenStable();
             return result;
         };
 
-        expect(await filterResult('English', undefined, undefined, undefined))
-            .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult('French', undefined, undefined, undefined))
-            .toEqual([mockCorpus2]);
-        expect(await filterResult(undefined, undefined, undefined, undefined))
-            .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult(undefined, 'Tests', undefined, undefined))
-            .toEqual([mockCorpus]);
-        expect(await filterResult('French', 'Different tests', undefined, undefined))
-            .toEqual([mockCorpus2]);
-        expect(await filterResult('French', 'Tests', undefined, undefined))
+        expect(await filterResult('English', null, 1800, 2000))
+            .toEqual([corpus1, corpus2]);
+        expect(await filterResult('French', null, 1800, 2000))
+            .toEqual([corpus2]);
+        expect(await filterResult(null, null, 1800, 2000))
+            .toEqual([corpus1, corpus2]);
+        expect(await filterResult(null, 'Books', 1800, 2000))
+            .toEqual([corpus1]);
+        expect(await filterResult('French', 'Poems', 1800, 2000))
+            .toEqual([corpus2]);
+        expect(await filterResult('French', 'Books', 1800, 2000))
             .toEqual([]);
-        expect(await filterResult(undefined, undefined, new Date('1920-01-01'), undefined))
-            .toEqual([mockCorpus2]);
-        expect(await filterResult(undefined, undefined, new Date('1820-01-01'), undefined))
-            .toEqual([mockCorpus, mockCorpus2]);
-        expect(await filterResult(undefined, undefined, undefined, new Date('1830-01-01')))
-            .toEqual([mockCorpus]);
+        expect(await filterResult(null, null, 1920, 2000))
+            .toEqual([corpus2]);
+        expect(await filterResult(null, null, 1820, 2000))
+            .toEqual([corpus1, corpus2]);
+        expect(await filterResult(null, null, 1800, 1830))
+            .toEqual([corpus1]);
     });
 });

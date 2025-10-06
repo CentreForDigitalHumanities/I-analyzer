@@ -1,45 +1,60 @@
+import { PageResultsParameters } from '../app/models/page-results';
 import { SearchFilter } from '../app/models/field-filter';
-import { AggregateQueryFeedback, Corpus, CorpusField, QueryModel } from '../app/models/index';
+import { Corpus, CorpusField, FoundDocument, QueryModel, SearchResults } from '../app/models/index';
+import { corpusFactory } from './corpus';
+import { TagServiceMock } from './tag';
+import { ElasticSearchServiceMock } from './elastic-search';
+import { Aggregator } from '../app/models/aggregation';
 
 export class SearchServiceMock {
-    public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: [{name: string}]): Promise<AggregateQueryFeedback> {
-        const name = aggregator[0].name;
-        return {
-            completed: false,
-            aggregations: {
-                [name]: [{
-                    key: '1999',
-                    doc_count: 200
-                }, {
-                    key: '2000',
-                    doc_count: 300
-                }, {
-                    key: '2001',
-                    doc_count: 400
-                }]
+    public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: Aggregator<any>): Promise<any> {
+        return [
+            {
+                key: '1999',
+                doc_count: 200
+            }, {
+                key: '2000',
+                doc_count: 300
+            }, {
+                key: '2001',
+                doc_count: 400
             }
-        };
+        ];
     }
 
     public async getRelatedWords() {}
 
     createQueryModel(
         corpus: Corpus,
-        queryText: string = '', fields: CorpusField[] | null = null, filters: SearchFilter[] = [],
-        sortField: CorpusField = null, sortAscending = false, highlight: number = null
-    ): QueryModel {
+        queryText: string = '', fields: CorpusField[] | null = null, filters: SearchFilter[] = []): QueryModel {
         const model = new QueryModel(corpus);
-        model.setQueryText(queryText);
-        model.searchFields = fields;
+        model.setParams({
+            queryText,
+            searchFields: fields
+        });
         filters.forEach(model.addFilter);
 
-        if (sortField) {
-            model.setSortBy(sortField);
-            model.setSortDirection(sortAscending ? 'asc' : 'desc');
-        }
-
-        model.highlightSize = highlight;
-
         return model;
+    }
+
+    loadResults(queryModel: QueryModel, resultsParams: PageResultsParameters): Promise<SearchResults> {
+        const doc = new FoundDocument(
+            new TagServiceMock() as any,
+            new ElasticSearchServiceMock() as any,
+            corpusFactory(),
+            {
+                _id: 'test_1',
+                _score: 1.0,
+                _source: {
+                    genre: 'Test',
+                    content: 'This is a document!'
+                },
+            },
+            1.0
+        );
+        return Promise.resolve({
+            documents: [doc],
+            total: { value: 1, relation: 'eq' }
+        });
     }
 }

@@ -1,93 +1,108 @@
-import { convertToParamMap } from '@angular/router';
-import { highlightFromParams, omitNullParameters, paramsHaveChanged, searchFieldsFromParams } from './params';
-import { mockCorpus, mockCorpus3, mockField2, mockField } from '../../mock-data/corpus';
-import { MultipleChoiceFilter, QueryModel } from '../models';
+import {
+    highlightFromParams, omitNullParameters, pageFromParams, pageToParams, searchFieldsFromParams,
+    sortSettingsFromParams, sortSettingsToParams
+} from './params';
+import { corpusFactory } from '../../mock-data/corpus';
+import { Corpus, CorpusField, SortState } from '@models';
+import * as _ from 'lodash';
+import { PageParameters, PageResultsParameters } from '@models/page-results';
 
 describe('searchFieldsFromParams', () => {
     it('should parse field parameters', () => {
-        const params = convertToParamMap({fields: 'speech,great_field'});
-        const corpus = mockCorpus3;
+        const params = {fields: 'content'};
+        const corpus = corpusFactory();
         const fields = searchFieldsFromParams(params, corpus);
-        expect(fields.length).toEqual(2);
-        expect(fields).toContain(mockField2);
+        expect(fields.map(f => f.name)).toEqual(['content']);
     });
+
+    it('should include stemmed multifields', () => {
+        const corpus = corpusFactory();
+        const fields = searchFieldsFromParams(
+            { fields: 'content,content.stemmed' },
+            corpus
+        );
+        expect(fields.map(f => f.name)).toEqual(['content', 'content.stemmed']);
+    })
 });
 
 describe('highlightFromParams', () => {
     it('should parse highlight parameters', () => {
-        const params = convertToParamMap({highlight: '100'});
+        const params = {highlight: '100'};
         const highlight = highlightFromParams(params);
         expect(highlight).toBe(100);
     });
-});
 
-describe('omitNullParameters', () => {
-    it('should omit null parameters', () => {
-        const p = { a: null, b: '1', c: 'test' };
-
-        expect(omitNullParameters(p)).toEqual(
-            { b: '1', c: 'test' }
-        );
+    it('should parse empty parameters', () => {
+        const highlight = highlightFromParams({});
+        expect(highlight).toBe(undefined);
     });
 });
 
-describe('omitNullParameters', () => {
-    it('should omit null parameters', () => {
-        const p = { a: null, b: '1', c: 'test' };
-
-        expect(omitNullParameters(p)).toEqual(
-            { b: '1', c: 'test' }
-        );
-    });
-});
-
-describe('paramsHaveChanged', () => {
-    const corpus = mockCorpus;
-    let queryModel: QueryModel;
+describe('sortSettingsFromParams', () => {
+    let corpus: Corpus;
+    let sortField: CorpusField;
 
     beforeEach(() => {
-        queryModel = new QueryModel(corpus);
+        corpus = corpusFactory();
+        sortField = corpus.fields[2]
+    })
+
+    it('should parse the default state', () => {
+        const empty = {};
+
+        expect(sortSettingsFromParams(empty, corpus)).toEqual([undefined, 'desc']);
+
+        corpus.defaultSort = [sortField, 'desc'];
+        expect(sortSettingsFromParams(empty, corpus)).toEqual([sortField, 'desc']);
     });
 
-    it('should detect changes in parameters', () => {
-        const params1 = convertToParamMap({});
-        const params2 = convertToParamMap({query: 'test'});
+    it('should be the inverse of sortSettingsToParams', () => {
+        const sort: SortState = [sortField, 'asc'];
+        const params = sortSettingsToParams(...sort, corpus);
+        expect(sortSettingsFromParams(params, corpus)).toEqual(sort);
+    });
+});
 
-        expect(paramsHaveChanged(queryModel, params1)).toBeFalse();
-        expect(paramsHaveChanged(queryModel, params2)).toBeTrue();
+describe('pageFromParams', () => {
+    it('should be the inverse of pageToParams', () => {
+        const state: PageParameters = {
+            from: 0,
+            size: 20,
+        };
 
-        queryModel = new QueryModel(corpus, params2);
+        expect(pageFromParams(pageToParams(state))).toEqual(state);
 
-        expect(paramsHaveChanged(queryModel, params2)).toBeFalse();
-        expect(paramsHaveChanged(queryModel, params1)).toBeTrue();
-
+        state.from = 40;
+        expect(pageFromParams(pageToParams(state))).toEqual(state);
     });
 
-    it('should detect new filters', () => {
-        const filter = mockField.makeSearchFilter() as MultipleChoiceFilter;
-        filter.set(['test']);
-        const params = convertToParamMap(filter.toRouteParam());
+    it('should use blank parameters for the default state', () => {
+        const state: PageParameters = {
+            from: 0,
+            size: 20,
+        };
 
-        expect(paramsHaveChanged(queryModel, params)).toBeTrue();
+        expect(pageToParams(state)).toEqual({ p: null });
+        expect(pageFromParams({})).toEqual(state);
     });
+});
 
-    it('should detect changes in highlighting', () => {
-        queryModel.setQueryText('test');
+describe('omitNullParameters', () => {
+    it('should omit null parameters', () => {
+        const p = { a: null, b: '1', c: 'test' };
 
-        const noHighlight = convertToParamMap({ query: 'test' });
-        const withHighlight = convertToParamMap({ query: 'test', highlight: '200' });
+        expect(omitNullParameters(p)).toEqual(
+            { b: '1', c: 'test' }
+        );
+    });
+});
 
-        expect(paramsHaveChanged(queryModel, noHighlight)).toBeFalse();
-        expect(paramsHaveChanged(queryModel, withHighlight)).toBeTrue();
+describe('omitNullParameters', () => {
+    it('should omit null parameters', () => {
+        const p = { a: null, b: '1', c: 'test' };
 
-        queryModel.setHighlight(200);
-
-        expect(paramsHaveChanged(queryModel, noHighlight)).toBeTrue();
-        expect(paramsHaveChanged(queryModel, withHighlight)).toBeFalse();
-
-        queryModel.setHighlight();
-
-        expect(paramsHaveChanged(queryModel, noHighlight)).toBeFalse();
-        expect(paramsHaveChanged(queryModel, withHighlight)).toBeTrue();
+        expect(omitNullParameters(p)).toEqual(
+            { b: '1', c: 'test' }
+        );
     });
 });

@@ -1,11 +1,13 @@
 import pytest
 import os
-from download.tests.mock_corpora.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
-from visualization.conftest import small_mock_corpus, large_mock_corpus, index_small_mock_corpus, \
-    index_large_mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs
-from conftest import index_test_corpus, clear_test_corpus
-from visualization.query import MATCH_ALL
+
+from addcorpus.models import Corpus
+from addcorpus.reader import make_reader
+from corpora_test.mixed_language.multilingual_mock_corpus import SPECS as ML_MOCK_CORPUS_SPECS
 from download import tasks
+from tag.models import Tag, TaggedDocument
+from visualization.conftest import small_mock_corpus_specs, large_mock_corpus_specs
+from visualization.query import MATCH_ALL
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,6 +31,7 @@ def mock_corpus(request):
 def ml_mock_corpus_specs():
     return ML_MOCK_CORPUS_SPECS
 
+
 @pytest.fixture()
 def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock_corpus, small_mock_corpus_specs, large_mock_corpus_specs, ml_mock_corpus_specs):
     '''Return various specifications for the mock corpus (number of documents etc.)'''
@@ -40,13 +43,7 @@ def mock_corpus_specs(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock
     }
     return specs[mock_corpus]
 
-@pytest.fixture(scope='session')
-def index_ml_mock_corpus(es_client, ml_mock_corpus):
-    index_test_corpus(es_client, ml_mock_corpus)
-    yield ml_mock_corpus
-    clear_test_corpus(es_client, ml_mock_corpus)
-
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def index_mock_corpus(es_client, mock_corpus, index_small_mock_corpus, index_large_mock_corpus, index_ml_mock_corpus):
     yield mock_corpus
 
@@ -63,9 +60,8 @@ def all_results_request_json(mock_corpus, mock_corpus_specs):
 
 def save_all_results_csv(mock_corpus, mock_corpus_specs):
     request_json = all_results_request_json(mock_corpus, mock_corpus_specs)
-    results = tasks.download_scroll(request_json)
     fake_id = mock_corpus + '_all_results'
-    filename = tasks.make_csv(results, request_json, fake_id)
+    filename = tasks.make_download(request_json, fake_id)
 
     return filename
 
@@ -80,6 +76,17 @@ def large_mock_corpus_results_csv(large_mock_corpus, large_mock_corpus_specs, in
 @pytest.fixture()
 def ml_mock_corpus_results_csv(ml_mock_corpus, ml_mock_corpus_specs, index_ml_mock_corpus, csv_directory):
     return save_all_results_csv(ml_mock_corpus, ml_mock_corpus_specs)
+
+
+@pytest.fixture()
+def tag_mock_corpus_elasticsearch_results(tag_mock_corpus):
+    corpus = Corpus.objects.get(name=tag_mock_corpus)
+    docs = make_reader(corpus).documents()
+    return [
+        { '_id': doc['id'], '_source': doc }
+        for doc in docs
+    ]
+
 
 @pytest.fixture()
 def mock_corpus_results_csv(mock_corpus, small_mock_corpus, large_mock_corpus, ml_mock_corpus, small_mock_corpus_results_csv, large_mock_corpus_results_csv, ml_mock_corpus_results_csv):

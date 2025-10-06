@@ -1,45 +1,47 @@
-import { Component, Input, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
-import * as moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ia-date-picker',
-  templateUrl: './date-picker.component.html',
-  styleUrls: ['./date-picker.component.scss']
+    selector: 'ia-date-picker',
+    templateUrl: './date-picker.component.html',
+    styleUrls: ['./date-picker.component.scss'],
+    standalone: false
 })
 export class DatePickerComponent {
-    @Input() @Output() subject: BehaviorSubject<Date> = new BehaviorSubject<Date>(undefined);
+    @Input() value: Date;
     @Input() minDate: Date;
     @Input() maxDate: Date;
-    @Input() default: Date;
+    @Input({ required: true }) default!: Date;
     @Input() unit: 'year'|'date' = 'year';
+    @Input() ariaLabel: string;
+    @Output() onChange = new EventEmitter<Date>();
 
-    constructor() { }
+    control = new FormControl<Date>(null);
+
+    constructor(private destroyRef: DestroyRef) { }
 
     get dateFormat(): string {
         return this.unit === 'year' ? 'yy' : 'dd-mm-yy';
     }
 
-    formatInput(value: string|Date): Date {
-        let valueAsDate: Date;
-        if (typeof(value) == 'string') {
-            const format = this.unit === 'year' ? 'YYYY' : 'DD-MM-YYYY';
-            const m = moment(value, format);
-            if (m.isValid()) {
-                valueAsDate = m.toDate();
-            }
-        } else {
-            valueAsDate = value;
+    ngOnInit() {
+        this.control.valueChanges.pipe(
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(() => this.onValueChange());
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.value || changes.default) {
+            this.control.setValue(this.value || this.default);
         }
-
-        return valueAsDate;
     }
 
-    set(value: string|Date) {
-        const valueAsDate = this.formatInput(value);
-        const checkedValue = _.min([_.max([valueAsDate, this.minDate]), this.maxDate]);
-        this.subject.next(checkedValue);
+    onValueChange() {
+        if (this.control.value) { // value is null when text input is invalid, e.g while typing
+            const checkedValue = _.min([_.max([this.control.value, this.minDate]), this.maxDate]);
+            this.onChange.emit(checkedValue);
+        }
     }
-
 }

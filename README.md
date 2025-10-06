@@ -1,7 +1,7 @@
 # I-analyzer
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8064133.svg)](https://doi.org/10.5281/zenodo.8064133)
-[![Actions Status](https://github.com/UUDigitalHumanitiesLab/I-analyzer/workflows/Unit%20tests/badge.svg)](https://github.com/UUDigitalHumanitiesLab/I-analyzer/actions)
+[![Actions Status](https://github.com/CentreForDigitalHumanities/I-analyzer/workflows/Unit%20tests/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions)
 
 > "The great text mining tool that obviates all others."
 > — Julian Gonggrijp
@@ -18,7 +18,7 @@ For corpora included in I-analyzer, the backend includes a definition file that 
 
 ## Usage
 
-If you are interested in using I-analyzer, the most straightforward way to get started is to make an account at [ianalyzer.hum.uu.nl](https://ianalyzer.hum.uu.nl/). This server is maintained by the Research Software Lab and contains corpora focused on a variety of fields. We also maintain more specialised collections at [PEACE portal](https://peace.sites.uu.nl/epigraphy/search/) and [People & Parliament  (not publicly accessible)](https://people-and-parliament.hum.uu.nl/).
+If you are interested in using I-analyzer, the most straightforward way to get started is to visit [ianalyzer.hum.uu.nl](https://ianalyzer.hum.uu.nl/). This server is maintained by the Research Software Lab and contains corpora focused on a variety of fields. We also maintain more specialised collections at [PEACE portal](https://peace.sites.uu.nl/epigraphy/search/) and [People & Parliament](https://people-and-parliament.hum.uu.nl/).
 
 I-analyzer does not have an "upload data" option (yet!). If you are interested in using I-analyzer as a way to publish your dataset, or to make it easier to search and analyse, you can go about this two ways:
 
@@ -31,7 +31,15 @@ The [documentation directory](./documentation/) contains documentation for devel
 
 ## Licence
 
-I-analyzer is shared under an MIT licence. See [LICENSE](./LICENSE) for more information.
+The source code of I-analyzer is shared under an MIT licence. See [LICENSE](./LICENSE) for the full licence statement.
+
+### Images
+
+This licence does *not* cover the images used for corpora, which are licensed individually. These images are located in the [corpora directory](/backend/corpora/), in the "images" folder for each corpus.
+
+Each image is accompanied by a `*.license` file that provides information on licensing for that image. If you wish to reuse or distribute this repository including these images, you will have to ensure that you comply with the license terms of the image as well.
+
+Some images currently lack a licence file. We are working on providing clear copyright information for all images; until then, assume that these images are protected under copyright.
 
 ## Citation
 
@@ -41,7 +49,7 @@ If you wish to cite material that you accessed through I-analyzer, or you are no
 
 ## Contact
 
-For questions, small feature suggestions, and bug reports, feel free to [create an issue](https://github.com/UUDigitalHumanitieslab/I-analyzer/issues/new/choose). If you don't have a Github account, you can also [contact the Centre for Digital Humanities](https://cdh.uu.nl/contact/).
+For questions, small feature suggestions, and bug reports, feel free to [create an issue](https://github.com/CentreForDigitalHumanities/I-analyzer/issues/new/choose). If you don't have a Github account, you can also [contact the Centre for Digital Humanities](https://cdh.uu.nl/contact/).
 
 If you want to add a new corpus to I-analyzer, or have an idea for a project, please [contact the Centre for Digital Humanities](https://cdh.uu.nl/contact/) rather than making an issue, so we can discuss the possibilities with you.
 

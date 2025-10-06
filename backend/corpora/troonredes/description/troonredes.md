@@ -3,3 +3,7 @@ Troonredes (throne speeches) are the speeches from the throne that formally mark
 Missing years: in 1940-1944 no speech was written.
 
 The transcripts are provided by [troonredes.nl](https://www.troonredes.nl).
+
+The transcripts were enriched with named entities using the [the TextMiNER library](https://github.com/CentreForDigitalHumanities/TextMiNER).
+
+Image used for this corpus: ["Koninging Juliana leest de troonrede voor" by Bert Verhoeff, Nationaal Archief / Anefo](http://hdl.handle.net/10648/ad93a2dc-d0b4-102d-bcf8-003048976d84).

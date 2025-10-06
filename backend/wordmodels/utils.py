@@ -5,7 +5,7 @@ from string import punctuation
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import corpus_dir, load_corpus_definition
+from addcorpus.python_corpora.load_corpus import corpus_dir, load_corpus_definition
 
 from glob import glob
 
@@ -45,15 +45,9 @@ def word_in_models(query_term, corpus, max_distance=2):
     }
 
 
-def load_wm_documentation(corpus_string):
-    corpus = load_corpus_definition(corpus_string)
-    description_file = join(corpus_dir(corpus_string), 'wm', 'documentation.md')
-    if exists(description_file):
-        with open(description_file) as f:
-            contents = f.read()
-            return contents
-    else:
-        return None
+def word_in_model(query_term, wm):
+    return query_term in wm['vectors']
+
 
 def transform_query(query):
     if not has_whitespace(query):
@@ -73,3 +67,17 @@ def term_to_index(query, model):
 
 def index_to_term(index, vocab):
     return vocab[index]
+
+
+def time_label(model):
+    start_year = model['start_year']
+    end_year = model['end_year']
+    return f'{start_year}-{end_year}'
+
+
+def time_labels(models, sort=False):
+    ordered = sorted(models, key=lambda wm: wm['start_year']) if sort else models
+    return [
+        time_label(wm) for wm in ordered
+    ]
+

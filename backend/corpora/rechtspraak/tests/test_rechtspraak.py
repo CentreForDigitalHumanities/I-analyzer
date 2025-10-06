@@ -1,5 +1,5 @@
 from operator import itemgetter
-from addcorpus.save_corpus import load_and_save_all_corpora
+from addcorpus.python_corpora.save_corpus import load_and_save_all_corpora
 from addcorpus.models import Corpus
 
 def test_rechtspraak_sources(test_corpus):
@@ -26,4 +26,4 @@ def test_rechtspraak_validation(db, rechtspraak_test_settings):
     load_and_save_all_corpora()
 
     corpus = Corpus.objects.get(name='rechtspraak')
-    assert corpus.active
+    assert corpus.ready_to_publish()

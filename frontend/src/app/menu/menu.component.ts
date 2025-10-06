@@ -1,24 +1,23 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
-import { User } from '../models/index';
-import { environment } from '../../environments/environment';
-import { AuthService } from '../services/auth.service';
-import { catchError, filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { User } from '@models/index';
+import { environment } from '@environments/environment';
+import { AuthService } from '@services/auth.service';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
-import {
-    faBook, faCog, faCogs, faDatabase, faDownload, faHistory, faInfoCircle, faSignOut,
-    faUser
-} from '@fortawesome/free-solid-svg-icons';
+import { navIcons, userIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss'],
+    standalone: false
 })
 export class MenuComponent implements OnDestroy, OnInit {
     @ViewChild('userDropdown') userDropdown: ElementRef;
 
+    brand = environment.navbarBrand;
     adminUrl = environment.adminUrl;
 
     menuOpen$ = new BehaviorSubject<boolean>(false);
@@ -32,38 +31,28 @@ export class MenuComponent implements OnDestroy, OnInit {
         queryParams: Params;
     }>;
 
-    icons = {
-        corpora: faDatabase,
-        manual: faBook,
-        about: faInfoCircle,
-        user: faUser,
-        searchHistory: faHistory,
-        downloads: faDownload,
-        settings: faCog,
-        admin: faCogs,
-        logout: faSignOut,
-    };
+    navIcons = navIcons;
+    userIcons = userIcons;
 
     private destroy$ = new Subject<void>();
 
     constructor(
         private authService: AuthService,
         private router: Router,
-        private route: ActivatedRoute,
-    ) { }
+        private route: ActivatedRoute
+    ) {}
 
     ngOnDestroy() {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
     }
 
     ngOnInit() {
         this.user$ = this.authService.currentUser$;
-        this.isAdmin$ = this.user$.pipe(map(user => user?.isAdmin));
+        this.isAdmin$ = this.user$.pipe(map((user) => user?.isAdmin));
 
-        this.dropdownOpen$.pipe(
-            takeUntil(this.destroy$),
-            filter(_.identity)
-        ).subscribe(this.triggerCloseDropdown.bind(this));
+        this.dropdownOpen$
+            .pipe(takeUntil(this.destroy$), filter(_.identity))
+            .subscribe(this.triggerCloseDropdown.bind(this));
 
         this.makeRoute();
     }
@@ -88,13 +77,15 @@ export class MenuComponent implements OnDestroy, OnInit {
         // observable that fires immediately, and after navigation
         const routeUpdates$ = merge(
             of(null),
-            this.router.events.pipe(filter(event => event instanceof NavigationEnd))
+            this.router.events.pipe(
+                filter((event) => event instanceof NavigationEnd)
+            )
         );
 
         this.route$ = routeUpdates$.pipe(
             map(() => this.route.firstChild?.snapshot),
-            map(snapshot => ({
-                url: snapshot?.url.map(segment => segment.path),
+            map((snapshot) => ({
+                url: snapshot?.url.map((segment) => segment.path),
                 queryParams: snapshot?.queryParams,
             }))
         );
@@ -105,26 +96,24 @@ export class MenuComponent implements OnDestroy, OnInit {
         // observable of the next click
         // timer(0) is used to avoid the opening click event being registered
         const clicks$ = timer(0).pipe(
-            switchMap(() => fromEvent(document, 'click')),
+            switchMap(() => fromEvent(document, 'click'))
         );
 
         // observable of the dropdown losing focus
 
         const focusOutOfDropdown = (event: FocusEvent) =>
             _.isNull(event.relatedTarget) ||
-            (event.relatedTarget as Element).parentElement.id !== 'userDropdown';
+            (event.relatedTarget as Element).parentElement.id !==
+                'userDropdown';
 
         const focusOut$ = fromEvent<FocusEvent>(
             this.userDropdown.nativeElement,
             'focusout'
-        ).pipe(
-            filter(focusOutOfDropdown),
-        );
+        ).pipe(filter(focusOutOfDropdown));
 
         // when either of these happens, close the dropdown
-        merge(clicks$, focusOut$).pipe(
-            take(1)
-        ).subscribe(() => this.dropdownOpen$.next(false));
+        merge(clicks$, focusOut$)
+            .pipe(take(1))
+            .subscribe(() => this.dropdownOpen$.next(false));
     }
-
 }

@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import {
-    AggregateResult,
     AggregateTermFrequencyParameters,
     Corpus,
     DateTermFrequencyParameters,
+    GeoDocument,
+    GeoLocation,
+    MostFrequentWordsResult,
     NGramRequestParameters,
-    NgramParameters,
     QueryModel,
     TaskResult,
     TimeCategory,
-} from '../models';
+} from '@models';
 import { ApiService } from './api.service';
+import { Observable } from 'rxjs';
+import { NgramSettings } from '@models/ngram';
 
 @Injectable({
   providedIn: 'root'
@@ -23,24 +26,42 @@ export class VisualizationService {
     }
 
 
-    public async getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
-        Promise<AggregateResult[]> {
-        const esQuery = queryModel.toEsQuery();
+    public getWordcloudData(fieldName: string, queryModel: QueryModel, corpus: Corpus, size: number):
+        Observable<MostFrequentWordsResult[]> {
+        const query = queryModel.toAPIQuery();
         return this.apiService.wordCloud({
-            es_query: esQuery,
+            ...query,
             corpus: corpus.name,
             field: fieldName,
             size,
         });
     }
 
+    public getGeoData(fieldName: string, queryModel: QueryModel, corpus: Corpus):
+        Observable<GeoDocument[]> {
+        const query = queryModel.toAPIQuery();
+        return this.apiService.geoData({
+            ...query,
+            corpus: corpus.name,
+            field: fieldName,
+        });
+    }
+
+    public async getGeoCentroid(fieldName: string, corpus: Corpus):
+    Promise<GeoLocation> {
+    return this.apiService.geoCentroid({
+        corpus: corpus.name,
+        field: fieldName,
+    });
+}
+
     public makeAggregateTermFrequencyParameters(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number; size: number}[],
     ): AggregateTermFrequencyParameters {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return {
             corpus_name: corpus.name,
-            es_query: esQuery,
+            ...query,
             field_name: fieldName,
             bins: bins.map(bin => ({field_value: bin.fieldValue, size: bin.size})),
         };
@@ -57,10 +78,10 @@ export class VisualizationService {
         corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number; start_date: Date; end_date?: Date}[],
         unit: TimeCategory,
     ): DateTermFrequencyParameters {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return {
             corpus_name: corpus.name,
-            es_query: esQuery,
+            ...query,
             field_name: fieldName,
             bins: bins.map(bin => ({
                 start_date: bin.start_date.toISOString().slice(0, 10),
@@ -75,11 +96,12 @@ export class VisualizationService {
         corpus: Corpus,
         queryModel: QueryModel,
         field: string,
-        params: NgramParameters
+        params: NgramSettings,
+        dateField: string
     ): NGramRequestParameters {
-        const esQuery = queryModel.toEsQuery();
+        const query = queryModel.toAPIQuery();
         return {
-            es_query: esQuery,
+            ...query,
             corpus_name: corpus.name,
             field,
             ngram_size: params.size,
@@ -88,7 +110,7 @@ export class VisualizationService {
             subfield: params.analysis,
             max_size_per_interval: params.maxDocuments,
             number_of_ngrams: params.numberOfNgrams,
-            date_field: params.dateField
+            date_field: dateField
         };
     }
 
@@ -100,8 +122,8 @@ export class VisualizationService {
         return this.apiService.getDateTermFrequency(params);
     }
 
-    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramParameters): Promise<TaskResult> {
-        const ngramRequestParams = this.makeNgramRequestParameters(corpus, queryModel, field, params);
+    getNgramTasks(queryModel: QueryModel, corpus: Corpus, field: string, params: NgramSettings, dateField: string): Promise<TaskResult> {
+        const ngramRequestParams = this.makeNgramRequestParameters(corpus, queryModel, field, params, dateField);
         return this.apiService.ngramTasks(ngramRequestParams);
     }
 

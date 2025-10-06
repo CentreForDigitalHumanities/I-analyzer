@@ -1,27 +1,33 @@
+import logging
+import re
+
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from ianalyzer.elasticsearch import elasticsearch
-from es.search import get_index, total_hits, hits
-import logging
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
-from addcorpus.permissions import CorpusAccessPermission
-from tag.filter import handle_tags_in_request
-from tag.permissions import CanSearchTags
+from addcorpus.permissions import CanSearchCorpus
 from api.save_query import should_save_query
 from addcorpus.models import Corpus
+from addcorpus.permissions import corpus_config_from_request
 from api.models import Query
+from api.api_query import api_query_to_es_query
+from es.es_alias import get_current_index_name
+from es.search import get_index, total_hits, hits
+from es.client import elasticsearch
+from tag.permissions import CanSearchTags
 
 logger = logging.getLogger(__name__)
 
 def get_query_parameters(request):
         'get query params from a request'
 
+        IGNORE_KEYS = ['tags']
+
         # extract each query_param with .get, otherwise they return as lists
         return {
             key: request.query_params.get(key)
             for key in request.query_params
+            if key not in IGNORE_KEYS
         }
 
 class ForwardSearchView(APIView):
@@ -41,27 +47,23 @@ class ForwardSearchView(APIView):
     the query parameter will be used.
     '''
 
-    permission_classes = [IsAuthenticated, CorpusAccessPermission, CanSearchTags]
+    permission_classes = [CanSearchCorpus, CanSearchTags]
 
     def post(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
 
-        handle_tags_in_request(request)
-
         # combine request json with query parameters (size, scroll)
-        query = {
-            **request.data.get('es_query', {}),
-            **get_query_parameters(request)
-        }
+        api_query = self._extract_api_query(request)
+        history_obj = self._save_query_started(request, corpus_name, api_query)
 
-        history_obj = self._save_query_started(request, corpus_name, query)
+        es_query = api_query_to_es_query(api_query, corpus_name)
 
         try:
             results = client.search(
                 index=index,
-                **query,
+                **es_query,
                 track_total_hits=True,
             )
         except Exception as e:
@@ -73,13 +75,25 @@ class ForwardSearchView(APIView):
 
         return Response(results)
 
-    def _save_query_started(self, request, corpus_name, es_query):
-        if should_save_query(request.user, es_query):
+    def _extract_api_query(self, request):
+        es_query = {
+            **request.data.get('es_query', {}),
+            **get_query_parameters(request)
+        }
+        api_query = {'es_query': es_query}
+        if 'tags' in request.data:
+            api_query['tags'] = request.data.get('tags')
+
+        return api_query
+
+    def _save_query_started(self, request, corpus_name, api_query):
+        es_query = api_query_to_es_query(api_query, corpus_name)
+        if should_save_query(request.user, api_query):
             corpus = Corpus.objects.get(name=corpus_name)
             return Query.objects.create(
                 user=request.user,
                 corpus=corpus,
-                query_json=es_query,
+                query_json=api_query,
             )
 
     def _save_query_done(self, query, results):
@@ -87,3 +101,82 @@ class ForwardSearchView(APIView):
         query.total_results = total_hits(results)
         query.transferred = len(hits(results))
         query.save()
+
+
+class NamedEntitySearchView(APIView):
+    ''' Construct a terms query for named entities, combined with a term query of the id
+        Perform search via Elasticsearch and reformat the output
+    '''
+    entity_dict = {
+        'PER': 'person',
+        'LOC': 'location',
+        'ORG': 'organization',
+        'MISC': 'miscellaneous'
+    }
+
+    permission_classes = [CanSearchCorpus]
+
+    def get(self, request, *args, **kwargs):
+        corpus_config = corpus_config_from_request(request)
+        document_id = kwargs.get('id')
+        client = elasticsearch(corpus_config.corpus.name)
+        index = get_current_index_name(corpus_config, client)
+        fields = self.find_named_entity_fields(client, index)
+        query = self.construct_named_entity_query(document_id)
+        response = client.search(index=index, query=query)
+        results = hits(response)
+        annotations = {}
+        response = {}
+        if len(results):
+            source = results[0]['_source']
+            for field in fields:
+                text_with_entities = source.get(field)
+                annotations.update({field.replace(':ner', ''): self.find_entities(
+                    text_with_entities)})
+        return Response(annotations)
+
+    def find_named_entity_fields(self, client, index: str) -> list[str]:
+        mapping = client.indices.get_mapping(index=index)
+        fields = mapping[index]['mappings']['properties']
+        field_names = fields.keys()
+        return [name for name in field_names if name.endswith(':ner')]
+
+    def construct_named_entity_query(self, document_id: str) -> dict:
+        """construct a query in which the document_id is obligatory, and any of the :ner-kw fields is present"""
+        return {
+            "bool": {
+                "must": {"term": {"id": document_id}},
+                "should": [*self.add_terms()],
+            }
+        }
+
+    def add_terms(self) -> list[dict]:
+        return [
+            {"exists": {"field": field_name}}
+            for field_name in [
+                "location:ner-kw",
+                "miscellaneous:ner-kw",
+                "organization:ner-kw",
+                "person:ner-kw",
+            ]
+        ]
+
+    def find_entities(self, input_text: str) -> str:
+        # regex pattern to match annotations of format "[Wally](Person)" and split it into two groups
+        pattern = re.compile('(\[[^]]+\])(\([A-Z]+\))')
+        annotations = pattern.split(input_text)
+        output = []
+        for index, annotation in enumerate(annotations):
+            if annotation.startswith('('):
+                continue
+            elif annotation.startswith('['):
+                output.append(
+                    {
+                        'entity': self.entity_dict.get(annotations[index + 1][1:-1]),
+                        'text': annotation[1:-1],
+                    }
+                )
+            else:
+                if annotation:
+                    output.append({'entity': 'flat', 'text': annotation})
+        return output

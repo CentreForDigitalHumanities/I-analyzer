@@ -14,6 +14,7 @@ def test_user_serializer(auth_client,
         'saml': False,
         'profile': {
             'enable_search_history': True,
+            'can_edit_corpora': False,
         },
     }
 
@@ -25,11 +26,12 @@ def test_admin_serializer(admin_client, admin_credentials):
         'id': ANY,
         'username': admin_credentials['username'],
         'email': admin_credentials['email'],
-        'download_limit': 10000,
+        'download_limit': 1000000,
         'is_admin': True,
         'saml': False,
         'profile': {
             'enable_search_history': True,
+            'can_edit_corpora': True,
         },
     }
 
@@ -44,3 +46,16 @@ def test_user_updates(auth_client):
     assert response.status_code == 200
 
     assert not search_history_enabled()
+
+def test_readonly_fields(auth_client):
+    '''
+    Test that is_admin is readonly
+    '''
+
+    route = '/users/user/'
+    details = lambda: auth_client.get(route)
+    is_admin = lambda: details().data.get('is_admin')
+
+    assert not is_admin()
+    response = auth_client.patch(route, {'is_admin': True}, content_type='application/json')
+    assert not is_admin()

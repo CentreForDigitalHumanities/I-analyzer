@@ -1,0 +1,5 @@
+This is a collection of newspapers clandestinely printed and distributed among the French populace under the German occupation during World War 2. The newspapers were digitised and made publicly available by (Gallica)[https://gallica.bnf.fr/selections/fr/html/presse-et-revues/journaux-clandestins-de-la-resistance].
+
+Given the precarious conditions of production and distribution, the exact number of issues for each title is sometimes unknown or uncertain. Despite the information provided by donors, the number and order of issues of the same title is often unknown. An issue may have been printed in several different places: hence, variants of the same issue may appear several times.
+
+Please note: under censorship, the clandestine press did not have the means of verifying its information. Therefore, information found in this corpus should be cross-referenced against other sources.

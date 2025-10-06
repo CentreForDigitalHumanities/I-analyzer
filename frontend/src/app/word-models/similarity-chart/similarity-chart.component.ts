@@ -3,8 +3,8 @@ import { Chart, ChartData, ChartOptions, ChartType, Filler, TooltipItem } from '
 import Zoom from 'chartjs-plugin-zoom';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { selectColor } from '../../utils/select-color';
-import { FreqTableHeaders, WordSimilarity } from '../../models';
+import { selectColor } from '@utils/select-color';
+import { FreqTableHeaders, WordSimilarity } from '@models';
 
 /**
  * Child component of the related words and compare similarity graphs.
@@ -14,6 +14,7 @@ import { FreqTableHeaders, WordSimilarity } from '../../models';
     selector: 'ia-similarity-chart',
     templateUrl: './similarity-chart.component.html',
     styleUrls: ['./similarity-chart.component.scss'],
+    standalone: false
 })
 export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() timeIntervals: string[];

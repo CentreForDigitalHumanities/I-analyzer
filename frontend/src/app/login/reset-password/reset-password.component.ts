@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
-import { throwError } from 'rxjs';
-import { catchError, finalize, mergeMap, tap } from 'rxjs/operators';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { userIcons } from '../../shared/icons';
+import { userIcons } from '@shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-reset-password',
     templateUrl: './reset-password.component.html',
     styleUrls: ['./reset-password.component.scss'],
+    standalone: false
 })
 export class ResetPasswordComponent implements OnInit {
     public submitted: boolean;
@@ -29,7 +29,8 @@ export class ResetPasswordComponent implements OnInit {
 
     constructor(
         private activatedRoute: ActivatedRoute,
-        private authService: AuthService
+        private authService: AuthService,
+        private title: Title,
     ) {}
 
     ngOnInit() {
@@ -37,6 +38,7 @@ export class ResetPasswordComponent implements OnInit {
             this.uid = params['uid'];
             this.token = params['token'];
         });
+        this.title.setTitle(pageTitle('New password'));
     }
 
     reset(resetForm: NgForm) {

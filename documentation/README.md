@@ -11,16 +11,27 @@ This directory contains documentation for developers.
 ## Adding corpora
 
 - [Corpus definitions](./Corpus-definitions.md)
-- [How to add a new corpus to I-analyzer](./How-to-add-a-new-corpus-to-Ianalyzer.md)
-- [Defining corpus fields](./Defining-corpus-fields.md)
+- [Corpus database models](/Corpus-database-models.md)
+- [Writing a corpus definition in Python](./Writing-a-corpus-definition-in-Python.md)
+- [Elasticsearch index settings](./Elasticsearch-index-settings.md)
 - [Indexing corpora](./Indexing-corpora.md)
 - [Indexing in deployment](./Indexing-on-server.md)
+- [Corpus validation](./Corpus-validation.md)
+- [Writing documentation for corpora](./Corpus-documentation.md)
 
 ## Feature development
 
+### Backend and API
+
 - [Celery](./Celery.md) (used for downloads and visualisations)
 - [Email](./Email.md) (used for downloads and authentication)
+- [Downloads](./Downloads.md)
 - [Adding word models](./Adding-word-models.md)
+- [Query API](./Query-api.md)
+
+### Frontend
+
+- [Deep routing and state management](./Frontend-deep-routing-and-state-management.md)
 
 ## Authentication
 
@@ -28,6 +39,7 @@ This directory contains documentation for developers.
 - [Email](./Email.md) (used for downloads and authentication)
 - [SAML](./SAML.md)
 
-## Other
+## Making releases
 
+- [Versioning](./Versioning.md)
 - [Making a release](./Making-a-release.md)

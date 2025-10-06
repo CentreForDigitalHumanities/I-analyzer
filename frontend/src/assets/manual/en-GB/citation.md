@@ -4,11 +4,11 @@ If you want to cite a document that you accessed through I-analyzer, be sure to 
 
 ### Citing a document from the I-analyzer interface
 
-If you downloaded a document in I-analyzer, or read it online in the I-analyzer interface, your citation should make it clear that you retrieved it through here. This provides accountability: loading corpora into I-analyzer is a process that may introduce mistakes, so you should always cite the resource that you actually referenced.
+If you downloaded a document from I-analyzer, or read it online in the I-analyzer interface, your citation should make it clear that you retrieved it through here. This provides accountability: loading corpora into I-analyzer is a process that may introduce mistakes, so you should always cite the resource that you actually referenced.
 
 For example, a citation might look something like the following:
 
-> Doe, J. (1900). A very interesting article. *Fascinating Periodical*, *10*(2), 10-13. http://ianalyzer.hum.uu.nl/document/fascinating-corpus/12345678
+> Doe, J. (1900). A very interesting article. *Fascinating Periodical*, *10*(2), 10-13. http://ianalyzer.hum.uu.nl/document/fascinating-periodical/12345678
 
 The specifics will depend on the citation style you are using and the type of data in the corpus.
 
@@ -22,7 +22,7 @@ For distant reading research, you may want to cite a large collection of documen
 
 > Research Software Lab, Centre for Digital Humanities, Utrecht University (2023). *Troonredes* [data set]. http://ianalyzer.hum.uu.nl/search/troonredes
 
-Be aware that some corpora may have other contributors. We are working on providing more specific guidelines per corpus. Feel free to contact us if you want to make sure you are referencing a corpus correctly.
+Be aware that some corpora may have other contributors who collected, digitised or processed the data. Many corpora provide citation guidelines on their information page. Feel free to contact us if you want to make sure you are referencing a corpus correctly.
 
 ### Citing a document available elsewhere
 
@@ -35,4 +35,4 @@ However, even if you cite an external source, a proper account of your research 
 
 ## Citing I-analyzer itself
 
-To cite I-analyzer as a piece of software, consult our [zenodo page](https://zenodo.org/record/8091461). This page details how you can cite I-analyzer; it includes templates for various citation styles, and the option to export a template as a bibtex file, among others.
+To cite I-analyzer as a piece of software, consult our [zenodo page](https://zenodo.org/doi/10.5281/zenodo.8064133). This page details how you can cite I-analyzer; it includes templates for various citation styles, and the option to export a template as a bibtex file, among others.

@@ -1,5 +1,6 @@
-import { AggregateResult, DateResult } from '.';
-import { QueryParameters } from './search-requests';
+import { DateResult } from '.';
+import { TermsResult } from './aggregation';
+import { APIQuery } from './search-requests';
 
 export interface TermFrequencyResult {
     key: string;
@@ -31,9 +32,6 @@ export interface TimelineDataPoint {
     matches_by_doc_count?: number;
 }
 
-// common type for all histogram/timeline results
-export type BarchartResult = DateResult|AggregateResult;
-
 /**
  * Dataseries for barcharts.
  * Each dataseries defines its own query text
@@ -48,7 +46,7 @@ export type BarchartResult = DateResult|AggregateResult;
     queryText?: string; // replaces the text in this.queryModel when searching
 }
 
-export type HistogramSeries = BarchartSeries<AggregateResult>;
+export type HistogramSeries = BarchartSeries<TermsResult>;
 export type TimelineSeries = BarchartSeries<DateResult>;
 
 
@@ -63,7 +61,7 @@ export type TermFrequencyParameters<Bin> = {
     bins: Bin[];
     full_data?: boolean;
     unit?: TimeCategory;
-} & QueryParameters;
+} & APIQuery;
 
 
 export type AggregateTermFrequencyParameters = TermFrequencyParameters<HistogramBin>;
@@ -74,7 +72,20 @@ export type WordcloudParameters = {
     corpus: string;
     field: string;
     size?: number;
-} & QueryParameters;
+} & APIQuery;
+
+
+export type NGramRequestParameters = {
+    corpus_name: string;
+    field: string;
+    ngram_size?: number;
+    term_position?: string;
+    freq_compensation?: boolean;
+    subfield?: string;
+    max_size_per_interval?: number;
+    number_of_ngrams?: number;
+    date_field: string;
+} & APIQuery;
 
 
 export interface FreqTableHeader {
@@ -96,69 +107,6 @@ export type ChartType = 'bar' | 'line' | 'scatter';
 export interface ChartParameters {
     normalizer: Normalizer;
     chartType: ChartType;
-}
-
-export type NGramRequestParameters = {
-    corpus_name: string;
-    field: string;
-    ngram_size?: number;
-    term_position?: string;
-    freq_compensation?: boolean;
-    subfield?: string;
-    max_size_per_interval?: number;
-    number_of_ngrams?: number;
-    date_field: string;
-} & QueryParameters;
-
-export class NgramParameters {
-    size: number;
-    positions: string;
-    freqCompensation: boolean;
-    analysis: string;
-    maxDocuments: number;
-    numberOfNgrams: number;
-    dateField: string;
-
-    ngramSettings: string [];
-
-    constructor(size: number,
-        positions: string,
-        freqCompensation: boolean,
-        analysis: string,
-        maxDocuments: number,
-        numberOfNgrams: number,
-        dateField: string
-    ) {
-        this.size = size;
-        this.positions = positions;
-        this.freqCompensation = freqCompensation;
-        this.analysis = analysis;
-        this.maxDocuments = maxDocuments;
-        this.numberOfNgrams = numberOfNgrams;
-        this.dateField = dateField;
-    }
-
-    toRouteParam(): string {
-       return [`s:${this.size}`,`p:${this.positions}`,`c:${this.freqCompensation}`,
-       `a:${this.analysis}`,`m:${this.maxDocuments}`,`n:${this.numberOfNgrams}`,
-       `f:${this.dateField}`].join(',');
-    }
-
-    fromRouteParam(paramString: string) {
-        this.ngramSettings = paramString.split(',');
-        this.size = parseInt(this.findSetting('s'), 10);
-        this.positions = this.findSetting('p');
-        this.freqCompensation = this.findSetting('c') === 'true';
-        this.analysis = this.findSetting('a');
-        this.maxDocuments = parseInt(this.findSetting('m'), 10);
-        this.numberOfNgrams = parseInt(this.findSetting('n'), 10);
-        this.dateField = this.findSetting('f');
-    }
-
-    findSetting(abbreviation: string): string | undefined{
-        const setting = this.ngramSettings.find(s => s[0] === abbreviation);
-        return setting.split(':')[1];
-    }
 }
 
 export interface FieldCoverage {

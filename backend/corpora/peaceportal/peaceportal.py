@@ -2,16 +2,14 @@ from glob import glob
 import datetime
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.corpus import ParentCorpusDefinition, FieldDefinition
-from addcorpus.extract import XML
-from addcorpus.es_mappings import date_estimate_mapping, date_mapping, \
-    int_mapping, keyword_mapping, main_content_mapping, text_mapping
+from addcorpus.python_corpora.corpus import ParentCorpusDefinition
+from ianalyzer_readers.extract import XML
 from addcorpus.es_settings import es_settings
-from addcorpus.extract import Constant
-from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+from corpora.peaceportal.utils import field_defaults
 
 
 class PeacePortal(ParentCorpusDefinition):
@@ -35,21 +33,18 @@ class PeacePortal(ParentCorpusDefinition):
     es_alias = getattr(settings, 'PEACEPORTAL_ALIAS', 'peaceportal')
     scan_image_type = 'image/png'
     # fields below are required by code but not actually used
-    min_date = datetime.datetime(year=746, month=1, day=1)
-    image = 'bogus.jpg'
+    min_date = datetime.datetime(year=1, month=1, day=1)
     category = 'inscription'
-    data_directory = 'bogus'
 
-    # Data overrides from .common.XMLCorpus
-    tag_entry = 'TEI'
+    tag_entry = Tag('TEI')
 
-    # New data members
-    non_xml_msg = 'Skipping non-XML file {}'
-    non_match_msg = 'Skipping XML file with nonmatching name {}'
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
     # el stands for modern Greek (1500-)
     languages = ['en', 'de', 'nl', 'he', 'la', 'el']
+
+    # placeholder data directory
+    data_directory = ''
 
     @property
     def es_settings(self):
@@ -71,308 +66,41 @@ class PeacePortal(ParentCorpusDefinition):
             images = []
         return {'media': images}
 
-    source_database = FieldDefinition(
-        name='source_database',
-        display_name='Source database',
-        description='The database a record originates from.',
-        es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these databases.',
-            option_count=4,
-        ),
-        csv_core=True
-    )
-
-    _id = FieldDefinition(
-        name='id',
-        display_name='ID',
-        description='ID of the inscription entry.',
-        csv_core=True,
-        es_mapping=keyword_mapping(),
-        search_field_core=True
-    )
-
-    url = FieldDefinition(
-        name='url',
-        display_name='URL',
-        description='URL of the inscription entry.',
-        es_mapping=keyword_mapping(),
-        search_field_core=True
-    )
-
-    year = FieldDefinition(
-        name='year',
-        display_name='Year',
-        description='Year of origin of the inscription.',
-        es_mapping=int_mapping(),
-        search_filter=RangeFilter(
-            description='Restrict the years from which search results will be returned.',
-            lower=min_year,
-            upper=max_date.year,
-        ),
-        csv_core=True,
-        sortable=True,
-        visualization_type='term_frequency',
-        visualization_sort='key',
-        results_overview=True
-    )
-
-    not_before = FieldDefinition(
-        name='not_before',
-        display_name='Not before',
-        description='Inscription is dated not earlier than this year.',
-        es_mapping=date_mapping(),
-        hidden=True
-    )
-
-    not_after = FieldDefinition(
-        name='not_after',
-        display_name='Not after',
-        description='Inscription is dated not later than this year.',
-        es_mapping=date_mapping(),
-        hidden=True
-    )
-
-    date = FieldDefinition(
-        name='date',
-        display_name='Estimated date range',
-        description='The estimated date of the description range',
-        es_mapping=date_estimate_mapping(),
-        search_filter=DateFilter(
-            description='Restrict the dates from which search results will be returned.',
-            lower=min_date,
-            upper=max_date,
-        )
-    )
-
-    transcription = FieldDefinition(
-        name='transcription',
-        es_mapping=main_content_mapping(),
-        display_name='Transcription',
-        description='Text content of the inscription.',
-        search_field_core=True,
-        results_overview=True,
-        display_type='text_content'
-    )
-
-    transcription_german = FieldDefinition(
-        name='transcription_de',
-        es_mapping=main_content_mapping(
-            stopword_analysis=True, stemming_analysis=True, language='de'),
-        language='de',
-        hidden=True
-    )
-
-    transcription_english = FieldDefinition(
-        name='transcription_en',
-        es_mapping=main_content_mapping(
-            stopword_analysis=True, stemming_analysis=True, language='en'),
-        language='en',
-        hidden=True
-    )
-
-    transcription_hebrew = FieldDefinition(
-        name='transcription_he',  # no stemmers available
-        es_mapping=main_content_mapping(stopword_analysis=True, language='he'),
-        language='he',
-        hidden=True
-    )
-
-    transcription_latin = FieldDefinition(
-        name='transcription_la',
-        es_mapping={'type': 'text'},  # no stopwords / stemmers available
-        language='la',
-        hidden=True
-    )
-
-    transcription_greek = FieldDefinition(
-        name='transcription_el',
-        es_mapping=main_content_mapping(
-            stopword_analysis=True, stemming_analysis=True, language='el'),
-        language='el',
-        hidden=True
-    )
-
-    transcription_dutch = FieldDefinition(
-        name='transcription_nl',
-        es_mapping=main_content_mapping(
-            stopword_analysis=True, stemming_analysis=True, language='nl'),
-        language='nl',
-        hidden=True
-    )
-
-    age = FieldDefinition(
-        name='age',
-        display_name='Age',
-        description='Age of the buried person(s)',
-        es_mapping=int_mapping(),
-        search_filter=RangeFilter(
-            description='Filter by age of the buried persons.',
-            lower=0,
-            upper=100,
-        ),
-        extractor=Constant(
-            value=None
-        )
-    )
-
-    # A string with all the names occuring in the source
-    names = FieldDefinition(
-        name='names',
-        es_mapping=text_mapping(),
-        display_name='Names',
-        description='Names of the buried persons.',
-        search_field_core=True
-    )
-
-    # Should be an array with potentially multiple values from these: 'M', 'F', or None.
-    sex = FieldDefinition(
-        name='sex',
-        display_name='Sex',
-        description='Gender(s) of the buried person(s). None if the sex is unknown.',
-        es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these genders.',
-            option_count=3,
-        ),
-        csv_core=True
-    )
-
-    country = FieldDefinition(
-        name='country',
-        display_name='Country',
-        description='Country where the inscription was found.',
-        es_mapping=keyword_mapping(True),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these countries.',
-            option_count=5
-        ),
-        visualization_type='term_frequency',
-        results_overview=True
-    )
-
-    settlement = FieldDefinition(
-        name='settlement',
-        display_name='Settlement',
-        description='The settlement where the inscription was found.',
-        es_mapping=keyword_mapping(True),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these settlements.',
-            option_count=29
-        ),
-        visualization_type='term_frequency'
-    )
-
-    region = FieldDefinition(
-        name='region',
-        display_name='Region',
-        description='The region where the inscription was found.',
-        es_mapping=keyword_mapping(True),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these regions.',
-            option_count=29
-        ),
-        visualization_type='term_frequency'
-    )
-
-    location_details = FieldDefinition(
-        name='location_details',
-        display_name='Location details',
-        description='Details about the location of the inscription',
-        es_mapping=text_mapping()
-    )
-
-    material = FieldDefinition(
-        name='material',
-        display_name='Material',
-        description='Type of material the inscription is written on.',
-        es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these material types.',
-            option_count=39
-        ),
-        visualization_type='term_frequency'
-    )
-
-    material_details = FieldDefinition(
-        name='material_details',
-        display_name='Material details',
-        description='Details about the material the inscription is written on.',
-        es_mapping=text_mapping(),
-        search_field_core=True
-    )
-
-    language = FieldDefinition(
-        name='language',
-        display_name='Language',
-        description='Language of the inscription.',
-        es_mapping=keyword_mapping(),
-        search_filter=MultipleChoiceFilter(
-            description='Search only within these languages.',
-            option_count=10
-        ),
-        csv_core=True,
-        visualization_type='term_frequency'
-    )
-
-    language_code = FieldDefinition(
-        name='language_code',
-        display_name='Language code',
-        description='ISO 639 code for the language of the inscription.',
-        es_mapping=keyword_mapping()
-    )
-
-    bibliography = FieldDefinition(
-        name='bibliography',
-        es_mapping=keyword_mapping(),
-        display_name='Bibliography',
-        description='Reference(s) to who edited and published this funerary inscription.'
-    )
-
-    comments = FieldDefinition(
-        name='comments',
-        es_mapping=text_mapping(),
-        display_name='Commentary',
-        description='Extra comments, questions or remarks on this inscription.',
-        search_field_core=True,
-    )
-
-    images = FieldDefinition(
-        name='images',
-        es_mapping=keyword_mapping(),
-        display_name='Images',
-        description='Links to image(s) of the inscription.',
-        hidden=True
-    )
-
-    coordinates = FieldDefinition(
-        name='coordinates',
-        es_mapping=keyword_mapping(),
-        display_name='Coordinates',
-        description='GIS coordinates for the inscription.'
-    )
-
-    iconography = FieldDefinition(
-        name='iconography',
-        es_mapping=text_mapping(),
-        display_name='Iconography',
-        description='Description of the icons used in the inscription.',
-        search_field_core=True
-    )
-
-    dates_of_death = FieldDefinition(
-        name='dates_of_death',
-        es_mapping=keyword_mapping(),
-        display_name='Date of death',
-    )
-
     def __init__(self):
+        self.source_database = field_defaults.source_database()
+        self._id = field_defaults.id()
+        self.url = field_defaults.url()
+        self.year = field_defaults.year(self.min_year, self.max_date.year)
+        self.date = field_defaults.date(self.min_date, self.max_date)
+        self.transcription = field_defaults.transcription()
+        self.transcription_german = field_defaults.transcription_german()
+        self.transcription_english = field_defaults.transcription_english()
+        self.transcription_hebrew = field_defaults.transcription_hebrew()
+        self.transcription_latin = field_defaults.transcription_latin()
+        self.transcription_greek = field_defaults.transcription_greek()
+        self.transcription_dutch = field_defaults.transcription_dutch()
+        self.age = field_defaults.age()
+        self.names = field_defaults.names()
+        self.sex = field_defaults.sex()
+        self.country = field_defaults.country()
+        self.settlement = field_defaults.settlement()
+        self.region = field_defaults.region()
+        self.location_details = field_defaults.location_details()
+        self.material = field_defaults.material()
+        self.material_details = field_defaults.material_details()
+        self.language = field_defaults.language()
+        self.language_code = field_defaults.language_code()
+        self.bibliography = field_defaults.bibliography()
+        self.comments = field_defaults.comments()
+        self.images = field_defaults.images()
+        self.coordinates = field_defaults.coordinates()
+        self.iconography = field_defaults.iconography()
+        self.dates_of_death = field_defaults.dates_of_death()
+
         self.fields = [
             self._id,
             self.url,
             self.year,
-            self.not_before,
-            self.not_after,
             self.date,
             self.source_database,
             self.transcription,
@@ -398,7 +126,7 @@ class PeacePortal(ParentCorpusDefinition):
             self.transcription_latin,
             self.transcription_greek,
             self.transcription_english,
-            self.transcription_dutch
+            self.transcription_dutch,
         ]
 
 
@@ -427,15 +155,12 @@ def clean_commentary(commentary):
     return ' '.join(commentary.split())
 
 
-def join_commentaries(commentaries):
+def join_commentaries(commentaries) -> str:
     '''
     Helper function to join the result of a Combined extractor
     into one string, separating items by a newline
     '''
-    results = []
-    for comm in commentaries:
-        if comm:
-            results.append(comm)
+    results = filter(None, commentaries)
     return "\n".join(results)
 
 
@@ -561,8 +286,12 @@ def zero_pad_year(input):
 def transform_to_date_range(earliest, latest):
     if not earliest:
         earliest = PeacePortal.min_date
+        if isinstance(earliest, datetime.datetime):
+            earliest = earliest.date()
     if not latest:
         latest = PeacePortal.max_date
+        if isinstance(latest, datetime.datetime):
+            latest = latest.date()
     return {
         'gte': earliest,
         'lte': latest
@@ -572,9 +301,8 @@ def transform_to_date_range(earliest, latest):
 def not_after_extractor(transform=True):
     ''' extractor for standard epidat format '''
     return XML(
-        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-             'history', 'origin', 'origDate', 'date'],
-        toplevel=False,
+        Tag('teiHeader'), Tag('fileDesc'), Tag('sourceDesc'), Tag('msDesc'),
+        Tag('history'), Tag('origin'), Tag('origDate'), Tag('date'),
         attribute='notAfter',
         transform=lambda x: transform_to_date(x, 'upper') if transform else x
     )
@@ -583,9 +311,8 @@ def not_after_extractor(transform=True):
 def not_before_extractor(transform=True):
     ''' extractor for standard epidat format '''
     return XML(
-        tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
-             'history', 'origin', 'origDate', 'date'],
-        toplevel=False,
+        Tag('teiHeader'), Tag('fileDesc'), Tag('sourceDesc'), Tag('msDesc'),
+        Tag('history'), Tag('origin'), Tag('origDate'), Tag('date'),
         attribute='notBefore',
         transform=lambda x: transform_to_date(x, 'lower') if transform else x
     )

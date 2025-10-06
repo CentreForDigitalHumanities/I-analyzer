@@ -43,8 +43,6 @@ ianalyzer/config.py
 # csv downloads
 download/csv_files/
 
-# word models
-corpora/*/wm/*
-!corpora/*/wm/documentation.md
-
-
+# file storage
+/test_data/
+/data/

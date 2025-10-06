@@ -1,20 +1,27 @@
-<div class="tabs is-boxed">
+<div class="tabs is-boxed block">
     <ul role="tablist" aria-label="select content to display">
-        <li *ngFor="let tab of tabs" [class.is-active]="activeTab === tab.id">
-            <a #tabLink id="{{tabLinkId(tab.id)}}" role="tab"
-                [attr.tabindex]="activeTab === tab.id ? 0 : -1"
-                [attr.aria-selected]="activeTab === tab.id"
-                [attr.aria-controls]="tab.id"
-                (click)="selectTab(tab)"
-                (keydown.ArrowLeft)="cycleTab($event)" (keydown.ArrowRight)="cycleTab($event)">
-                <span class="icon" *ngIf="tab.icon"><fa-icon [icon]="tab.icon" aria-hidden="true"></fa-icon></span>
+        <li *ngFor="let tab of tabs"
+            role="tab"
+            #tabLink [id]="tab.elementId"
+            [attr.tabindex]="activeTab === tab.id ? 0 : -1"
+            [class.is-active]="activeTab === tab.id"
+            [attr.aria-selected]="activeTab === tab.id"
+            [attr.aria-controls]="tab.id | slugify"
+            (click)="selectTab(tab)"
+            (keydown.ArrowLeft)="cycleTab($event)"
+            (keydown.ArrowRight)="cycleTab($event)">
+            <a role="none">
+                <span class="icon" *ngIf="tab.icon">
+                    <fa-icon [icon]="tab.icon" aria-hidden="true" />
+                </span>
                 <span>{{tab.label}}</span>
             </a>
         </li>
     </ul>
 </div>
 
-<div *ngFor="let panel of tabPanels" [attr.id]="panel.id" role="tabpanel" tabindex="-1" [hidden]="panel.id !== activeTab">
+<div *ngFor="let panel of tabPanels" [attr.id]="panel.id | slugify"
+    role="tabpanel" tabindex="-1" [hidden]="panel.id !== activeTab">
     <ng-container *ngIf="panel.id === activeTab" [ngTemplateOutlet]="panel.templateRef">
     </ng-container>
 </div>

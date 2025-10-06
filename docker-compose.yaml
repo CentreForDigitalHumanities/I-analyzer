@@ -1,6 +1,6 @@
 services:
   db:
-    image: docker.io/library/postgres
+    image: docker.io/library/postgres:17
     environment:
       - POSTGRES_DB=${SQL_DATABASE}
       - POSTGRES_USER=${SQL_USER}
@@ -9,16 +9,18 @@ services:
       - PGPORT=${SQL_PORT}
       - PGUSER=${SQL_USER}
       - PGDATABASE=${SQL_DATABASE}
-      - PGPASSWORD=${SQL_PASSWORD}    
+      - PGPASSWORD=${SQL_PASSWORD}
     volumes:
       - ianalyzer-db:/var/lib/postgresql/data/
   backend:
     build:
       context: ./backend
+      target: ianalyzer
     depends_on:
       - db
       - celery
       - redis
+      - elasticsearch
     environment:
       SQL_DATABASE: $SQL_DATABASE
       SQL_USER: $SQL_USER
@@ -46,9 +48,12 @@ services:
       - type: bind
         source: ./frontend/src
         target: /frontend/src
-    command: sh -c "yarn start-docker"
+      - type: bind
+        source: ./frontend/build
+        target: /frontend/build
+    command: sh -c "yarn prebuild && yarn start-docker"
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.3
     environment:
       - node.name=ianalyzer-node
       - discovery.type=single-node
@@ -69,14 +74,6 @@ services:
       - ianalyzer-es:/usr/share/elasticsearch/data
     ports:
       - 127.0.0.1:9200:9200
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.5.0
-    depends_on:
-      - elasticsearch
-    environment:
-        - "ELASTICSEARCH_URL=http://elasticsearch:9200"
-    ports:
-      - 127.0.0.1:5601:5601
   redis:
     image: redis:latest
     restart: unless-stopped

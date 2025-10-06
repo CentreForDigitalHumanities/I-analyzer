@@ -3,16 +3,18 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@services/auth.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { userIcons } from '../shared/icons';
+import { environment } from '@environments/environment';
+import { userIcons } from '@shared/icons';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
     public static activated = false;
@@ -37,10 +39,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         private router: Router,
         private title: Title
     ) {
-        this.title.setTitle('I-Analyzer');
     }
 
     ngOnInit() {
+        this.title.setTitle(pageTitle('Sign in'));
         // get return url from route parameters or default to '/'
         this.returnUrl =
             this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';

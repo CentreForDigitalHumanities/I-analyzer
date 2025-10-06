@@ -1,22 +1,17 @@
-<nav class="panel" *ngIf="filtered" aria-label="secondary navigation">
-    <p class="panel-heading">
-        Manual Topics
-    </p>
-    <div class="panel-block">
-        <p class="control has-icons-left">
-            <input class="input is-small" type="text" placeholder="search" [(ngModel)]="filterText"
-                aria-label="search">
-            <span class="icon is-left" aria-hidden="true">
-                <fa-icon [icon]="actionIcons.search"></fa-icon>
-            </span>
-        </p>
-    </div>
-    <ng-container *ngFor="let page of filtered | async">
-        <a class="panel-block" routerLinkActive="is-active" [routerLink]="['/manual', page.id]">
-            <span class="panel-icon" aria-hidden="true">
-                <fa-icon [icon]="navIcons.manual"></fa-icon>
-            </span>
-            <span [innerHtml]="page.title | highlight:highlightText"></span>
-        </a>
+<nav class="menu" aria-labelledby="topics-header">
+    <h2 class="title is-5" id="topics-header">Manual topics</h2>
+        <ng-container *ngFor="let section of (manifest$ | async)">
+            <ng-container *ngIf="hasPermission(section) | async">
+                <h3 class="menu-label">{{section.title}}</h3>
+                <ul class="menu-list">
+                    <li *ngFor="let page of section.pages">
+                        <a [routerLink]="['/manual', page.id]"
+                            routerLinkActive="is-active"
+                            ariaCurrentWhenActive="page">
+                            {{page.title}}
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
     </ng-container>
 </nav>

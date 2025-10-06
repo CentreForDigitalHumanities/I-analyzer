@@ -1,30 +1,33 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import * as _ from 'lodash';
-import { mockCorpus, mockField } from '../../mock-data/corpus';
+import { corpusFactory, keywordFieldFactory, } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 
-import { CorpusField, FoundDocument, QueryModel } from '../models/index';
+import { CorpusField, FoundDocument, QueryModel } from '@models/index';
 
 import { SearchResultsComponent } from './search-results.component';
 import { makeDocument } from '../../mock-data/constructor-helpers';
-import { PageResults } from '../models/page-results';
-import { DocumentPage } from '../models/document-page';
+import { PageResults } from '@models/page-results';
+import { DocumentPage } from '@models/document-page';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+import { SimpleStore } from '../store/simple-store';
+import { take } from 'rxjs/operators';
 
 const createField = (name: string): CorpusField => {
-    const field = _.cloneDeep(mockField);
+    const field = keywordFieldFactory();
     field.name = name;
     return field;
 };
 
+const corpus = corpusFactory();
 const documents: FoundDocument[] = [
     makeDocument(
         {
             a: '1',
             b: '2',
             c: 'Hide-and-seek!'
-        }, mockCorpus, '1', 1,
+        }, corpus, '1', 1,
         {
             c: ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
         }
@@ -34,7 +37,7 @@ const documents: FoundDocument[] = [
             a: '3',
             b: '4',
             c: 'Wally is here'
-        }, mockCorpus, '2', 0.5
+        }, corpus, '2', 0.5
     )
 ];
 
@@ -62,13 +65,13 @@ describe('Search Results Component', () => {
     });
 
     beforeEach(() => {
-        const corpus = _.merge(mockCorpus, fields);
+        const corpus = _.merge(corpusFactory(), fields);
         const query = new QueryModel(corpus);
         query.setQueryText('wally');
-        query.setHighlight(10);
         component.queryModel = query;
         fixture.detectChanges();
-        component.pageResults = new MockResults(undefined, component.queryModel);
+        const store = new SimpleStore();
+        component.pageResults = new MockResults(store, undefined, component.queryModel);
     });
 
 
@@ -84,6 +87,7 @@ describe('Search Results Component', () => {
     });
 
     it('should render result', async () => {
+        await component.pageResults.result$.pipe(take(1)).toPromise();
         await fixture.whenStable();
         fixture.detectChanges();
 
@@ -95,6 +99,21 @@ describe('Search Results Component', () => {
         expect(docs.length).toBe(2);
 
         expect(element.nativeElement.innerHTML).toContain('Wally is here');
+    });
+
+    it('should only show the highlight selector with query text', async () => {
+        await component.pageResults.result$.pipe(take(1)).toPromise();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        const element = fixture.debugElement;
+
+        const findHighlightSelector = () => element.query(By.css('ia-highlight-selector'));
+        expect(findHighlightSelector()).toBeTruthy();
+
+        component.queryModel.setQueryText(undefined);
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(findHighlightSelector()).toBeFalsy();
     });
 });
 

@@ -1,16 +1,13 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-
-import { ConfirmationService } from 'primeng/api';
-
-import { FoundDocument, Corpus } from '../models';
-import { ApiService } from '../services';
-import { scanIcons, actionIcons, formIcons } from '../shared/icons';
+import { FoundDocument, Corpus } from '@models';
+import { ApiService } from '@services';
+import { scanIcons, actionIcons, formIcons } from '@shared/icons';
 
 @Component({
     selector: 'ia-image-view',
     templateUrl: './image-view.component.html',
     styleUrls: ['./image-view.component.scss'],
-    providers: [ConfirmationService],
+    standalone: false
 })
 export class ImageViewComponent implements OnChanges {
     @Input() public corpus: Corpus;
@@ -38,13 +35,12 @@ export class ImageViewComponent implements OnChanges {
 
     constructor(
         private apiService: ApiService,
-        private confirmationService: ConfirmationService
     ) {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus) {
-            this.allowDownload = this.corpus.allow_image_download;
-            this.mediaType = this.corpus.scan_image_type;
+            this.allowDownload = this.corpus.allowImageDownload;
+            this.mediaType = this.corpus.scanImageType;
         }
         if (
             changes.document &&
@@ -98,22 +94,7 @@ export class ImageViewComponent implements OnChanges {
 
     download() {
         const url = this.imagePaths[this.showPage];
-        if (this.imageInfo) {
-            this.confirmDownload(url);
-        } else {
-            window.location.href = url;
-        }
-    }
-
-    confirmDownload(url: string) {
-        this.confirmationService.confirm({
-            message: `File: \t${this.imageInfo.fileName}<br/> Size:\t ${this.imageInfo.fileSize}`,
-            header: 'Confirm download',
-            accept: () => {
-                window.location.href = url;
-            },
-            reject: () => {},
-        });
+        window.location.href = url;
     }
 
     pageIndexChange(event: number) {

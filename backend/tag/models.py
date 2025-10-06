@@ -1,7 +1,8 @@
-from addcorpus.models import Corpus
 from django.conf import settings
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+
+from addcorpus.models import Corpus
 
 DOCS_PER_TAG_LIMIT = 500
 
@@ -26,9 +27,16 @@ class Tag(models.Model):
     def count(self):
         return self.tagged_docs.count()
 
+    @property
+    def corpus_counts(self):
+        counts = self.tagged_docs.values('corpus').annotate(
+            count=models.Count('corpus')
+        )
+        return counts
 
     def __str__(self):
         return f'Tag #{self.id}: "{self.name}" by {self.user.username}'
+
 
 class TaggedDocument(models.Model):
     doc_id = models.CharField(max_length=512)

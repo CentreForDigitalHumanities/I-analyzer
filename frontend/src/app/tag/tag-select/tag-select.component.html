@@ -1,29 +1,34 @@
 <form class="field has-addons">
     <div class="control" *ngIf="!createMode">
         <ng-container *ngIf="filterTags(tags$ | async, exclude) as filteredTags">
-            <ia-dropdown
-                [options]="filteredTags"
-                optionLabel="name"
-                (onChange)="selectedTag = $event"
-                placeholder="Assign a tag"
-                styleClass="tag-button"
-                >
-                <footer>
-                    <a role="button" class="dropdown-item"
-                        tabindex="0"
-                        (click)="toggleCreate()"
-                        (keydown.enter)="toggleCreate()">
+            <ia-dropdown (onChange)="selectedTag = $event" class="tag-dropdown"
+                labelledBy="select-tag-placeholder">
+                <span iaDropdownLabel>
+                    {{ selectedTag?.name }}
+                    <span [class.is-hidden]="selectedTag?.name !== null"
+                        id="select-tag-placeholder">
+                        Assign a tag
+                    </span>
+                </span>
+                <div iaDropdownMenu>
+                    <a *ngFor="let tag of filteredTags"
+                        iaDropdownItem [value]="tag">
+                        {{tag.name}}
+                    </a>
+                    <a iaDropdownItem (onSelect)="toggleCreate()" [value]="null">
                         <span class="icon"><fa-icon [icon]="actionIcons.add"></fa-icon></span>
                         <span>Create a new tag</span>
                     </a>
-                </footer>
+                </div>
             </ia-dropdown>
         </ng-container>
     </div>
     <div class="control"  *ngIf="createMode">
         <input type="text"
+            aria-label="new tag name"
             class="input is-small tag-input" placeholder="Enter tag name"
             name="tag-name"
+            #newTagNameInput
             [(ngModel)]="newTagName">
     </div>
     <div class="control">

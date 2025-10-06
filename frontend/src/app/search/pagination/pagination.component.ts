@@ -1,18 +1,19 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { PageResultsParameters } from '../../models/page-results';
+import { PageResultsParameters } from '@models/page-results';
 
 @Component({
     selector: 'ia-pagination',
     templateUrl: './pagination.component.html',
     styleUrls: ['./pagination.component.scss'],
+    standalone: false
 })
 export class PaginationComponent implements OnChanges {
     @Input() public totalResults: number;
     @Input() public fromIndex = 0;
 
     @Output()
-    public parameters = new EventEmitter<PageResultsParameters>();
+    public parameters = new EventEmitter<Partial<PageResultsParameters>>();
 
     public totalPages: number;
     public resultsPerPage = 20;

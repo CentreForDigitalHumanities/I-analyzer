@@ -1,12 +1,7 @@
-@import "../../_utilities";
-
- ::ng-deep .p-dialog-footer {
+::ng-deep .p-dialog-footer {
     text-align: center;
 }
 
 .pdf {
-    &.is-loading {
-        @extend %content-loader;
-    }
     overflow: auto;
 }

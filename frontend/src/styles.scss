@@ -1,8 +1,7 @@
-@import "_utilities";
-@import "~bulma/bulma.sass";
-@import "_primeng";
-@import "~balloon-css";
-@import "~bulma-switch";
+@use "balloon-css/src/balloon";
+@use "utilities";
+@use "bulma/bulma";
+
 
 [data-balloon]:after {
     border-radius: 0;
@@ -13,23 +12,23 @@
 }
 
 .search-section {
-    background: rgba(255, 255, 255, 1);
+    background: var(--bulma-body-background-color);
     position: sticky;
-    z-index: 1000;
     top: 0;
     transition: box-shadow 0.2s;
+    z-index: 500;
 
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     // (or at least meaningfully sticky)
-    padding-top: $spacing;
-    padding-bottom: $spacing;
+    padding-top: utilities.$size-6;
+    padding-bottom: utilities.$size-6;
 
     &.is-scrolled-down {
-        box-shadow: $boxShadow;
+        box-shadow: var(--bulma-shadow);
     }
 
-    + section {
-        padding-top: $spacing;
+    +section {
+        padding-top: utilities.$size-6;
     }
 
     .search-controls {
@@ -45,15 +44,162 @@
     @extend %content-loader;
 }
 
-.tag-button {
-	align-items: center;
-	border-radius: 3px;
-	display: inline-flex;
-	font-size: 0.75rem;
-	height: 2em;
-	justify-content: center;
-	line-height: 1.5;
-	padding-left: 0.75em;
-	padding-right: 0.75em;
-	white-space: nowrap;
+.tag-dropdown .button {
+    align-items: center;
+    border-radius: 3px;
+    display: inline-flex;
+    font-size: 0.75rem;
+    height: 2em;
+    justify-content: center;
+    line-height: 1.5;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    white-space: nowrap;
+}
+
+a.dropdown-item:focus {
+    @extend a, .dropdown-item, :hover;
+}
+
+a.dropdown-item[disabled] {
+    color: utilities.$grey;
+    cursor: not-allowed;
+
+    &:hover {
+        background-color: inherit;
+        color: utilities.$grey;
+    }
+}
+
+@mixin mark-entity($color) {
+    background-color: rgb(from $color r g b /.2);
+    border-bottom: .2em solid;
+    border-color: $color;
+
+    .entity-icon,
+    &.entity-icon {
+        padding-left: .3em;
+        padding-right: .3em;
+        color: $color;
+    }
+}
+
+.entity-person {
+    @include mark-entity(utilities.$entity-person);
+}
+
+.entity-location {
+    @include mark-entity(utilities.$entity-location);
+}
+
+.entity-organization {
+    @include mark-entity(utilities.$entity-organization);
+}
+
+.entity-miscellaneous {
+    @include mark-entity(utilities.$entity-miscellaneous);
+}
+
+.is-disabled {
+    @extend [disabled];
+}
+
+.highlight {
+    background-color: var(--bulma-primary-soft);
+    color: var(--bulma-primary-soft-invert);
+}
+
+.input-feedback {
+    margin-top: 0.5rem;
+}
+
+.content {
+    a {
+        text-decoration: underline;
+    }
+}
+
+
+table.spreadsheet {
+    border: 2px solid var(--bulma-border);
+
+    thead th,
+    tbody td,
+    tbody th {
+        border-width: 1px;
+    }
+
+    th {
+        background-color: var(--bulma-body-background-color);
+    }
+
+    tr:hover {
+        background-color: inherit;
+    }
+}
+
+// restore some rules from older bulma versions for compatibility
+
+.block,
+.message,
+.title,
+.box,
+.field,
+.content {
+    @include utilities.block();
+}
+
+.heading {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+:root {
+    --bulma-shadow: 0 2px 3px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1),
+        0 0 0 1px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1);
+}
+
+// reset focus styling for accessibility
+// bulma's customisation makes focus rings invisible on blue background
+
+a,
+button {
+    &:focus-visible {
+        outline: auto !important;
+        border: inherit !important;
+    }
+}
+
+
+// primeNG
+
+.field.has-addons .control:last-child {
+    .p-multiselect {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+    }
+}
+
+// vega
+
+.vega-bindings {
+    @extend .columns;
+    @extend .is-multiline;
+
+    .vega-bind {
+        @extend .field;
+        @extend .column;
+        @extend .is-4;
+
+        .vega-bind-name {
+            @extend .label;
+        }
+
+        select {
+            @extend .select;
+        }
+    }
 }

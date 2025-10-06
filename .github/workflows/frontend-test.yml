@@ -1,0 +1,21 @@
+# This workflow will run frontend tests on the `ianalyzer-frontend:latest` image
+
+name: Frontend unit tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-test.yml'
+      - 'docker-compose.yaml'
+
+jobs:
+  frontend-test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run frontend unit tests
+      run: |
+        docker compose --env-file .env-ci run --build frontend yarn test

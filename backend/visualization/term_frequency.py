@@ -2,7 +2,7 @@ import math
 from addcorpus.models import CorpusConfiguration
 from datetime import datetime
 from es.search import get_index, total_hits, search
-from ianalyzer.elasticsearch import elasticsearch
+from es.client import elasticsearch
 from copy import deepcopy
 from visualization import query, termvectors
 from es import download
@@ -73,6 +73,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         client=es_client,
         source=[]
     )
+    found_hits = list(found_hits)
 
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)

@@ -4,16 +4,17 @@ locations.
 '''
 import os
 from os.path import join, isfile, split, splitext
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 import re
-from io import BytesIO
+from ianalyzer_readers.xml_tag import Tag
 
 from django.conf import settings
 
-from addcorpus.extract import Combined, Metadata, XML
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpusDefinition, FieldDefinition
+from api.utils import find_media_file
+from ianalyzer_readers.extract import Combined, Metadata, XML
+from addcorpus.python_corpora import filters
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition
 from addcorpus.es_settings import es_settings
 from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 from corpora.utils.constants import document_context
@@ -25,7 +26,7 @@ from media.media_url import media_url
 
 class Ecco(XMLCorpusDefinition):
     title = "Eighteenth Century Collections Online"
-    description = "Digital collection of books published in Great Britain during the 18th century."
+    description = "Printed works published in Great Britain and its territories during the 18th century."
     description_page = 'ecco.md'
     min_date = datetime(year=1700, month=1, day=1)
     max_date = datetime(year=1800, month=12, day=31)
@@ -38,10 +39,10 @@ class Ecco(XMLCorpusDefinition):
     languages = ['en', 'fr', 'la', 'grc', 'de',  'it', 'cy', 'ga', 'gd']
     category = 'book'
 
-    tag_toplevel = 'pageContent'
-    tag_entry = 'page'
+    tag_toplevel = Tag('pageContent')
+    tag_entry = Tag('page')
 
-    meta_pattern = re.compile('^\d+\_DocMetadata\.xml$')
+    meta_pattern = re.compile(r'^\d+\_DocMetadata\.xml$')
 
     @property
     def es_settings(self):
@@ -92,7 +93,7 @@ class Ecco(XMLCorpusDefinition):
                             'Volume'
                         ]
 
-                        meta_dict = self.metadata_from_xml(
+                        meta_dict = self._metadata_from_xml(
                             full_path, tags=meta_tags)
                         meta_dict['id'] = record_id
                         meta_dict['category'] = category
@@ -138,7 +139,6 @@ class Ecco(XMLCorpusDefinition):
                 extractor=Metadata('fullTitle'),
                 es_mapping={'type': 'keyword'},
                 results_overview=True,
-                search_field_core=True,
                 csv_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description="Accept only pages from these books",
@@ -154,8 +154,7 @@ class Ecco(XMLCorpusDefinition):
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
-                extractor=XML(tag='ocrText',
-                              flatten=True),
+                extractor=XML(Tag('ocrText'), flatten=True),
                 visualizations=['wordcloud']
             ),
             FieldDefinition(
@@ -181,7 +180,6 @@ class Ecco(XMLCorpusDefinition):
                 results_overview=True,
                 csv_core=True,
                 extractor=Metadata('author'),
-                search_field_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages by these authors.',
                     option_count=1000
@@ -293,9 +291,7 @@ class Ecco(XMLCorpusDefinition):
         image_path = request_args['image_path']
         start_page = int(request_args['start_page'])
         end_page = int(request_args['end_page'])
-        absolute_path = join(self.data_directory, image_path)
-        if not isfile(absolute_path):
-            return None
+        absolute_path = find_media_file(self.data_directory, image_path, 'application/pdf')
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
         out = build_partial_pdf(pages, input_pdf)

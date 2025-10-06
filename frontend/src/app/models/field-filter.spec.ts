@@ -1,25 +1,25 @@
-import { convertToParamMap } from '@angular/router';
-import { mockFieldMultipleChoice, mockFieldDate } from '../../mock-data/corpus';
-import { EsDateFilter, EsTermsFilter } from './elasticsearch';
-import { DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
-import { of } from 'rxjs';
-import { distinct } from 'rxjs/operators';
+import { booleanFieldFactory, dateFieldFactory, keywordFieldFactory } from '../../mock-data/corpus';
+import { BooleanFilter, DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
+import { SimpleStore } from '../store/simple-store';
+import { Store } from '../store/types';
 
 describe('SearchFilter', () => {
     // while these tests are ran on the DateFilter,
     // they test logic implemented in the abstract
     // SearchFilter class
 
-    const field = mockFieldDate;
+    const field = dateFieldFactory();
+    let store: Store;
     let filter: DateFilter;
     const exampleData: DateFilterData = {
         min: new Date(Date.parse('Jan 01 1850')),
         max: new Date(Date.parse('Dec 31 1860'))
     };
-    const isActive = () => filter.active.value;
+    const isActive = () => filter.state$.value.active;
 
     beforeEach(() => {
-        filter = new DateFilter(field);
+        store = new SimpleStore();
+        filter = new DateFilter(store, field);
     });
 
     it('should toggle', () => {
@@ -60,6 +60,40 @@ describe('SearchFilter', () => {
         expect(isActive()).toBeFalse();
     });
 
+    it('should be resettable when activated', () => {
+        filter.set(exampleData);
+
+        expect(filter.state$.value).toEqual({
+            active: true,
+            data: exampleData
+        });
+
+        filter.reset();
+
+        expect(filter.state$.value).toEqual({
+            active: false,
+            data: filter.defaultData
+        });
+
+    });
+
+    it('should be resettable when deactivated', () => {
+        filter.set(exampleData);
+        filter.deactivate();
+
+        expect(filter.state$.value).toEqual({
+            active: false,
+            data: exampleData
+        });
+
+        filter.reset();
+
+        expect(filter.state$.value).toEqual({
+            active: false,
+            data: filter.defaultData
+        });
+    });
+
     it('should ignore activation without data', () => {
         expect(isActive()).toBeFalse();
 
@@ -71,37 +105,22 @@ describe('SearchFilter', () => {
     });
 
     it('should set from parameters', () => {
-        filter.setFromParams(convertToParamMap({
+        store.paramUpdates$.next({
             date: '1850-01-01:1860-01-01'
-        }));
+        });
 
-        expect(filter.active.value).toBeTrue();
+        expect(isActive()).toBeTrue();
 
-        filter.setFromParams(convertToParamMap({
-            query: 'test'
-        }));
+        store.paramUpdates$.next({
+            date: null,
+        });
 
-        expect(filter.active.value).toBeFalse();
-    });
-
-    it('should signal updates', () => {
-        let updates = 0;
-        filter.update.subscribe(() => updates += 1);
-
-        filter.set(exampleData);
-        expect(updates).toBe(1);
-
-        filter.deactivate();
-        expect(updates).toBe(2);
-
-        filter.reset(); // this does not affect anything since the filter is inactive
-        expect(updates).toBe(2);
-
+        expect(isActive()).toBeFalse();
     });
 });
 
 describe('DateFilter', () => {
-    const field = mockFieldDate;
+    const field = dateFieldFactory();
     let filter: DateFilter;
     const exampleData = {
         min: new Date(Date.parse('Jan 01 1850')),
@@ -109,7 +128,8 @@ describe('DateFilter', () => {
     };
 
     beforeEach(() => {
-        filter = new DateFilter(field);
+        const store = new SimpleStore();
+        filter = new DateFilter(store, field);
     });
 
     it('should create', () => {
@@ -158,12 +178,13 @@ describe('DateFilter', () => {
 });
 
 describe('MultipleChoiceFilter', () => {
-    const field = mockFieldMultipleChoice;
+    const field = keywordFieldFactory();
     let filter: MultipleChoiceFilter;
     const exampleData = ['test'];
 
     beforeEach(() => {
-        filter = new MultipleChoiceFilter(field);
+        const store = new SimpleStore();
+        filter = new MultipleChoiceFilter(store, field);
     });
 
     it('should create', () => {
@@ -198,7 +219,7 @@ describe('MultipleChoiceFilter', () => {
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             terms: {
-                greater_field: ['wow!', 'a great selection!']
+                genre: ['wow!', 'a great selection!']
             }
         });
     });
@@ -207,5 +228,28 @@ describe('MultipleChoiceFilter', () => {
         filter.set(exampleData);
         const esFilter = filter.toEsFilter();
         expect(filter.dataFromEsFilter(esFilter)).toEqual(filter.currentData);
+    });
+});
+
+describe('BooleanFilter', () => {
+    const field = booleanFieldFactory();
+    let store: SimpleStore;
+    let filter: BooleanFilter;
+
+    beforeEach(() => {
+        store = new SimpleStore();
+        filter = new BooleanFilter(store, field);
+    });
+
+    it('should set', () => {
+        const checkData = (data: boolean) => expect(filter.state$.value.data).toBe(data);
+
+        checkData(undefined);
+
+        filter.set(true);
+        checkData(true);
+
+        filter.set(false);
+        checkData(false);
     });
 });

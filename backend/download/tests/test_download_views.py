@@ -1,19 +1,24 @@
-from rest_framework import status
 import pytest
-import os
 import csv
+from copy import deepcopy
+import io
+import os
+
+from rest_framework import status
+
 from download.models import Download
 from download import SEARCH_RESULTS_DIALECT
 from addcorpus.models import Corpus
-import io
 from visualization import query
 from es.search import hits
 from tag.models import Tag, TaggedDocument
+from django.core.cache import cache
+
 
 def test_direct_download_view(admin_client, mock_corpus, index_mock_corpus, csv_directory):
     request_json = {
         "corpus": mock_corpus,
-        "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
+        "es_query": mock_match_all_query(),
         "fields": ['date','content'],
         "size": 3,
         "route": f"/search/{mock_corpus}",
@@ -84,6 +89,12 @@ def mock_es_query(query_text, search_field):
     q = query.MATCH_ALL
     q = query.set_query_text(q, query_text)
     q = query.set_search_fields(q, [search_field])
+    return q
+
+
+def mock_match_all_query():
+    q = deepcopy(query.MATCH_ALL)
+    q.update({'size': 3})
     return q
 
 @pytest.mark.parametrize("visualization_type, request_parameters", [('date_term_frequency', term_frequency_parameters), ('ngram', ngram_parameters)])
@@ -196,14 +207,14 @@ def tag_on_some_document(admin_client, admin_user, small_mock_corpus, some_docum
 
     return tag
 
+
 def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock_corpus, tag_on_some_document):
     encoding = 'utf-8'
     download_request_json = {
         'corpus': small_mock_corpus,
-        'es_query': query.MATCH_ALL,
+        'es_query': mock_match_all_query(),
         'tags': [tag_on_some_document.id],
-        'fields': ['date','content'],
-        'size': 3,
+        'fields': ['date', 'content'],
         'route': f"/search/{small_mock_corpus}",
         'encoding': encoding
     }
@@ -218,3 +229,60 @@ def test_download_with_tag(db, admin_client, small_mock_corpus, index_small_mock
     reader = csv.DictReader(stream, delimiter=';')
     rows = [row for row in reader]
     assert len(rows) == 1
+
+
+def test_unauthenticated_download(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
+    download_request_json = {
+        'corpus': basic_mock_corpus,
+        'es_query': mock_match_all_query(),
+        'fields': ['date', 'content'],
+        'route': f"/search/{basic_mock_corpus}",
+        'encoding': 'utf-8'
+    }
+    response = client.post('/api/download/search_results',
+                           download_request_json,
+                           content_type='application/json'
+                           )
+    assert status.is_success(response.status_code)
+    # check that download object is removed
+    download_objects = Download.objects.all()
+    assert download_objects.count() == 0
+
+
+def test_query_text_in_csv(db, client, basic_mock_corpus, basic_corpus_public, index_basic_mock_corpus):
+    es_query = query.set_query_text(mock_match_all_query(), 'ghost')
+    download_request_json = {
+        'corpus': basic_mock_corpus,
+        'es_query': es_query,
+        'fields': ['character', 'line'],
+        'route': f"/search/{basic_mock_corpus}",
+        'encoding': 'utf-8'
+    }
+    response = client.post('/api/download/search_results',
+                           download_request_json,
+                           content_type='application/json'
+                           )
+    assert status.is_success(response.status_code)
+    stream = read_file_response(response, 'utf-8')
+    reader = csv.DictReader(stream, delimiter=';')
+    row = next(reader)
+    assert row['query'] == 'ghost'
+
+@pytest.mark.xfail(reason='query in context download does not work')
+def test_download_with_query_in_context(
+    db, admin_client, small_mock_corpus, index_small_mock_corpus
+):
+    es_query = query.set_query_text(query.MATCH_ALL, 'the')
+    es_query['highlight'] = { 'fragment_size': 200, 'fields': { 'content': {} } }
+    es_query['size'] = 3
+    request_json = {
+        'corpus': small_mock_corpus,
+        'es_query': es_query,
+        'fields': ['date', 'content', 'context'],
+        'route': f"/search/{small_mock_corpus}?query=the&highlight=200",
+        'encoding': 'utf-8'
+    }
+    response = admin_client.post(
+        '/api/download/search_results', request_json, content_type='application/json'
+    )
+    assert status.is_success(response.status_code)

@@ -1,4 +1,4 @@
-<div class="field is-grouped is-grouped-multiline" *ngIf="(document?.tags$ | async) as tags">
+<div class="field is-grouped is-grouped-multiline">
     <div class="control tags has-addons" *ngFor="let tag of tags">
         <span class="tag is-primary tag-name">
             <span class="name">
@@ -6,7 +6,7 @@
             </span>
         </span>
         <button class="button tag" [attr.aria-label]="'remove tag ' + tag.name"
-            iaBalloon="remove this tag" iaBalloonPosition="up"
+            iaBalloon="remove this tag" iaBalloonPosition="down"
             (click)="removeTag(tag)">
             <span class="icon"><fa-icon [icon]="actionIcons.remove" aria-hidden="true"></fa-icon></span>
         </button>
@@ -14,13 +14,14 @@
 
     <div class="control">
         <ng-container *ngIf="showAddNew; else toggleAddNew">
-            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="showAddNew = false"></ia-tag-select>
+            <ia-tag-select [exclude]="tags" (selection)="addTag($event)" (cancel)="closeAddNew()" />
         </ng-container>
 
         <ng-template #toggleAddNew>
             <button class="button tag" aria-label="add a tag"
-                iaBalloon="add a tag" iaBalloonPosition="up"
-                (click)="showAddNew = true">
+                iaBalloon="add a tag" iaBalloonPosition="down"
+                (click)="showAddNew = true"
+                #toggleAddNewButton>
                 <span class="icon"><fa-icon [icon]="actionIcons.add" aria-hidden="true"></fa-icon></span>
             </button>
         </ng-template>

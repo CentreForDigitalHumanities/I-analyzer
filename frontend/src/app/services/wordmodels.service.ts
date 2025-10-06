@@ -5,7 +5,7 @@ import {
     RelatedWordsResults,
     WordInModelResult,
     WordSimilarity,
-} from '../models';
+} from '@models';
 
 @Injectable()
 export class WordmodelsService {
@@ -45,22 +45,24 @@ export class WordmodelsService {
             .toPromise();
     }
 
-    public wordModelsDocumentationRequest(data: {
-        corpus_name: string;
-    }): Promise<{ documentation: string }> {
-        return this.http
-            .get<{ documentation: string }>(this.wmApiRoute('documentation'), {
-                params: data,
-            })
-            .toPromise();
-    }
-
     public async getRelatedWords(
         queryTerm: string,
         corpusName: string,
         neighbours: number
     ): Promise<RelatedWordsResults> {
         return this.relatedWordsRequest({
+            query_term: queryTerm,
+            corpus_name: corpusName,
+            neighbours,
+        });
+    }
+
+    public getNeighborNetwork(
+        queryTerm: string,
+        corpusName: string,
+        neighbours: number,
+    ) {
+        return this.http.post(this.wmApiRoute('neighbor_network'), {
             query_term: queryTerm,
             corpus_name: corpusName,
             neighbours,

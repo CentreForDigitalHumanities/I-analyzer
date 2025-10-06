@@ -1,47 +1,29 @@
-from datetime import datetime
 from addcorpus.models import Corpus
 from rest_framework.status import is_success
-
-def mock_query_data(user, corpus_name):
-    return {
-        'aborted': False,
-        'corpus': corpus_name,
-        'user': user.id,
-        'started': datetime.now().isoformat(),
-        'completed': datetime.now().isoformat(),
-        'query_json': {
-            "queryText": "example",
-            "filters": [],
-            "sortAscending": False
-        },
-        'total_results': 10,
-        'transferred': 0,
-    }
+from api.models import Query
+from visualization.query import MATCH_ALL
+from django.utils import timezone
 
 def test_search_history_view(admin_user, admin_client):
-    corpus = Corpus.objects.create(name = 'mock-corpus')
-
     # get search history
     response = admin_client.get('/api/search_history/')
     assert is_success(response.status_code)
     assert len(response.data) == 0
 
-    # add a query to search history
-    data = mock_query_data(admin_user, 'mock-corpus')
-    response = admin_client.post('/api/search_history/', data, content_type='application/json')
-    assert is_success(response.status_code)
-
-    # get search history again
-    response = admin_client.get('/api/search_history/')
-    assert  is_success(response.status_code)
-    assert len(response.data) == 1
-
 
 def test_delete_search_history(auth_client, auth_user, db):
     mock_corpus = 'mock-corpus'
     corpus = Corpus.objects.create(name = mock_corpus)
-    query = mock_query_data(auth_user, mock_corpus)
-    auth_client.post('/api/search_history/', query, content_type='application/json')
+    Query.objects.create(
+        user=auth_user,
+        corpus=corpus,
+        query_json = {'es_query': MATCH_ALL},
+        started=timezone.now(),
+        completed=timezone.now(),
+        total_results=10,
+        transferred=10,
+        aborted=False,
+    )
 
     assert len(auth_user.queries.all()) == 1
 

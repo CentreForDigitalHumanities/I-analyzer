@@ -4,68 +4,127 @@
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="search for bigrams (2 words) or trigrams (3 words)"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-size">
                     Length of n-gram
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="sizeOptions" [value]="currentSizeOption" optionLabel="label"
-                        (onChange)="onParameterChange('size', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentSizeOption" labelledBy="label-size"
+                        (onChange)="onParameterChange('size', $event.value)">
+                        <span iaDropdownLabel>{{currentSizeOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of sizeOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="only search n-grams with the search term in the specified position"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">
+                iaBalloonPosition="up-left" iaBalloonLength="fit"
+                id="label-positions">
                     Position of search term
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="positionsOptions" [value]="currentPositionsOption" optionLabel="label"
-                        (onChange)="onParameterChange('positions', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentPositionsOption" labelledBy="label-positions"
+                        (onChange)="onParameterChange('positions', $event.value)">
+                        <span iaDropdownLabel>{{currentPositionsOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of positionsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="divide by the average frequency of the words in the n-gram; favours words that are otherwise rare"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">
+                iaBalloonPosition="up-left" iaBalloonLength="fit"
+                id="label-freq-compensation">
                     Compensate for frequency
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="freqCompensationOptions" [value]="currentFreqCompensationOption" optionLabel="label"
-                        (onChange)="onParameterChange('freqCompensation', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentFreqCompensationOption" labelledBy="label-freq-compensation"
+                        (onChange)="onParameterChange('freqCompensation', $event.value)">
+                        <span iaDropdownLabel>{{currentFreqCompensationOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of freqCompensationOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
         <div class="column is-one-third" *ngIf="analysisOptions">
             <div class="field">
                 <label class="label" iaBalloon="pre-processing steps on the text, like removing stopwords or stemming"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-analysis">
                     Language processing
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="analysisOptions" [value]="currentAnalysisOption" optionLabel="label"
-                        (onChange)="onParameterChange('analysis', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentAnalysisOption" labelledBy="label-analysis"
+                        (onChange)="onParameterChange('analysis', $event.value)">
+                        <span iaDropdownLabel>{{currentAnalysisOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of analysisOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-max-documents">
+                    Document limit
+                </label>
                 <div class="control">
-                    <ia-dropdown [options]="maxDocumentsOptions" [value]="currentMaxDocumentsOption" optionLabel="label"
-                    (onChange)="onParameterChange('maxDocuments', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentMaxDocumentsOption" labelledBy="label-max-documents"
+                        (onChange)="onParameterChange('maxDocuments', $event.value)">
+                        <span iaDropdownLabel>{{currentMaxDocumentsOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of maxDocumentsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
         <div class="column is-one-third">
             <div class="field">
                 <label class="label" iaBalloon="the number of n-grams displayed in the results"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">Number of n-grams</label>
+                    iaBalloonPosition="up-left" iaBalloonLength="fit"
+                    id="label-number-of-ngrams">
+                    Number of n-grams
+                </label>
                 <div class="control">
-                    <ia-dropdown [options]="numberOfNgramsOptions" [value]="currentNumberOfNgramsOption" optionLabel="label"
-                    (onChange)="onParameterChange('numberOfNgrams', $event.value)"></ia-dropdown>
+                    <ia-dropdown [value]="currentNumberOfNgramsOption"
+                        labelledBy="label-number-of-ngrams"
+                        (onChange)="onParameterChange('numberOfNgrams', $event.value)">
+                        <span iaDropdownLabel>{{currentNumberOfNgramsOption?.label}}</span>
+                        <div iaDropdownMenu>
+                            <a *ngFor="let option of numberOfNgramsOptions"
+                                iaDropdownItem [value]="option">
+                                {{option.label}}
+                            </a>
+                        </div>
+                    </ia-dropdown>
                 </div>
             </div>
         </div>
@@ -73,11 +132,21 @@
     <div class="column is-one-third" *ngIf="allDateFields && allDateFields.length > 1">
         <div class="field">
             <div class="control">
-                <label class="label" iaBalloon="field to use on the x-axis">
+                <label class="label" iaBalloon="field to use on the x-axis"
+                    id="label-date-field">
                     Compare frequencies by:
                 </label>
-                <ia-dropdown [options]="allDateFields" optionLabel="displayName" [value]="dateField"
-                (onChange)="onParameterChange('dateField', $event.name)"></ia-dropdown>
+                <ia-dropdown [value]="dateField"
+                    labelledBy="label-date-field"
+                    (onChange)="onParameterChange('dateField', $event)">
+                    <span iaDropdownLabel>{{dateField?.displayName}}</span>
+                    <div iaDropdownMenu>
+                        <a *ngFor="let field of allDateFields"
+                            iaDropdownItem [value]="field.name">
+                            {{field.displayName}}
+                        </a>
+                    </div>
+                </ia-dropdown>
             </div>
         </div>
 
@@ -87,13 +156,13 @@
         <div class="level-right">
             <div class="level-item">
                 <button class="button" type="reset" (click)="cancelChanges()">
-                    <span class="icon"><fa-icon [icon]="formIcons.confirm"></fa-icon></span>
+                    <span class="icon"><fa-icon [icon]="formIcons.reset"></fa-icon></span>
                     <span>Cancel changes</span>
                 </button>
             </div>
             <div class="level-item">
                 <button class="button is-primary" type="submit" (click)="confirmChanges()">
-                    <span class="icon"><fa-icon [icon]="formIcons.reset"></fa-icon></span>
+                    <span class="icon"><fa-icon [icon]="formIcons.confirm"></fa-icon></span>
                     <span>Calculate!</span>
                 </button>
             </div>
@@ -102,7 +171,7 @@
 </div>
 
 
-<div [ngClass]="{ 'is-hidden': asTable }">
+<div [ngClass]="{ 'is-hidden': asTable, 'is-loading':isLoading}">
     <div class="block">
         <ia-joyplot [data]="currentResults" [formatValue]="formatValue" [palette]="palette" quantity="frequency"
             [comparedByQuantity]="dateField?.displayName">

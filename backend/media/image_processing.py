@@ -1,4 +1,4 @@
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 from io import BytesIO
 
 from os.path import getsize, split
@@ -47,7 +47,7 @@ def retrieve_pdf(path):
     '''
     Retrieve the pdf as a file object.
     '''
-    pdf = PdfReader(path, 'rb')
+    pdf = PdfReader(path)
 
     return pdf
 

@@ -1,17 +1,33 @@
 import { Component, ElementRef, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
-import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
-import { ApiService, NotificationService, ParamService, VisualizationService } from '../../services';
-import { ParamDirective } from '../../param/param-directive';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
-import { formIcons } from '../../shared/icons';
+import { Subject } from 'rxjs';
+
+import { formIcons } from '@shared/icons';
+import {
+    Corpus,
+    FreqTableHeaders,
+    QueryModel,
+    CorpusField,
+    NgramResults,
+    SuccessfulTask,
+} from '@models';
+import {
+    ApiService,
+    NotificationService,
+    VisualizationService,
+} from '@services';
+
+import { RouterStoreService } from '../../store/router-store.service';
+import { NgramParameters, NgramSettings } from '@models/ngram';
+
 
 @Component({
     selector: 'ia-ngram',
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss'],
+    standalone: false
 })
-export class NgramComponent extends ParamDirective implements OnChanges {
+export class NgramComponent implements OnChanges {
     @HostBinding('style.display') display = 'block'; // needed for loading spinner positioning
 
     @Input() queryModel: QueryModel;
@@ -19,14 +35,17 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
-    @HostBinding('class.is-loading') isLoading = false;
 
     @Output() ngramError = new EventEmitter<string>();
 
     @ViewChild('chart-container') chartContainer: ElementRef;
 
+    keysInStore = ['ngramSettings'];
+
     allDateFields: CorpusField[];
     dateField: CorpusField;
+
+    stopPolling$ = new Subject<void>();
 
     tableHeaders: FreqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true },
@@ -69,10 +88,11 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     tasksToCancel: string[];
 
     resultsCache: { [parameters: string]: any } = {};
-    currentParameters: NgramParameters;
-    lastParameters: NgramParameters;
+    ngramParameters: NgramParameters;
+    currentSettings: NgramSettings;
     parametersChanged = false;
-    ngramSettings: string[];
+    dataHasLoaded: boolean;
+    isLoading = false;
 
     formIcons = formIcons;
 
@@ -82,89 +102,64 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         private apiService: ApiService,
         private visualizationService: VisualizationService,
         private notificationService: NotificationService,
-        route: ActivatedRoute,
-        router: Router,
-        paramService: ParamService
+        store: RouterStoreService,
     ) {
-        super(route, router, paramService);
-        this.currentParameters = new NgramParameters(
-            this.sizeOptions[0].value,
-            this.positionsOptions[0].value,
-            this.freqCompensationOptions[0].value,
-            'none',
-            this.maxDocumentsOptions[0].value,
-            this.numberOfNgramsOptions[0].value,
-            'date'
+        this.ngramParameters = new NgramParameters(
+            store,
         );
+        this.currentSettings = _.clone(this.ngramParameters.state$.value);
     }
 
     get currentSizeOption() {
-        if (this.currentParameters) {
-            return this.sizeOptions.find(
-                (item) => item.value === this.currentParameters.size
-            );
-        }
+        return this.sizeOptions.find(
+            (item) => item.value === this.currentSettings.size
+        );
     }
 
     get currentPositionsOption() {
-        if (this.currentParameters) {
-            return this.positionsOptions.find(
-                (item) => item.value === this.currentParameters.positions
-            );
-        }
+        return this.positionsOptions.find(
+            (item) => item.value === this.currentSettings.positions
+        );
     }
 
     get currentFreqCompensationOption() {
-        if (this.currentParameters) {
-            return this.freqCompensationOptions.find(
-                (item) => item.value === this.currentParameters.freqCompensation
-            );
-        }
+        return this.freqCompensationOptions.find(
+            (item) => item.value === this.currentSettings.freqCompensation
+        );
     }
 
     get currentAnalysisOption() {
-        if (this.currentParameters) {
-            return this.analysisOptions.find(
-                (item) => item.value === this.currentParameters.analysis
-            );
-        }
+        return this.analysisOptions.find(
+            (item) => item.value === this.currentSettings.analysis
+        );
     }
 
     get currentMaxDocumentsOption() {
-        if (this.currentParameters) {
-            return this.maxDocumentsOptions.find(
-                (item) => item.value === this.currentParameters.maxDocuments
-            );
-        }
+        return this.maxDocumentsOptions.find(
+            (item) => item.value === this.currentSettings.maxDocuments
+        );
     }
 
     get currentNumberOfNgramsOption() {
-        if (this.currentParameters) {
-            return this.numberOfNgramsOptions.find(
-                (item) => item.value === this.currentParameters.numberOfNgrams
-            );
-        }
+        return this.numberOfNgramsOptions.find(
+            (item) => item.value === this.currentSettings.numberOfNgrams
+        );
     }
 
-    initialize() {}
-
-    teardown(): void {
-        this.apiService.abortTasks({ task_ids: this.tasksToCancel });
-    }
-
-    setStateFromParams(params: ParamMap) {
-        this.setParameters(params);
-        this.loadGraph();
+    ngOnDestroy(): void {
+        this.stopPolling$.next();
+        this.ngramParameters.complete();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel || changes.visualizedField) {
-            this.resultsCache = {};
+        if (changes.corpus) {
             this.allDateFields = this.corpus.fields.filter(
                 (field) => field.mappingType === 'date'
             );
             this.dateField = this.allDateFields[0];
-            this.currentParameters.dateField = this.dateField.name;
+        }
+        if (changes.queryModel || changes.visualizedField) {
+            this.resultsCache = {};
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [
                     { label: 'None', value: 'none' },
@@ -185,64 +180,58 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             }
         }
 
-        if (this.currentParameters) {
+        if (this.ngramParameters.state$.value) {
             this.loadGraph();
         }
-    }
 
-    setParameters(params: Params) {
-        const ngramSettings = params.get('ngramSettings');
-        if (ngramSettings) {
-            this.currentParameters.fromRouteParam(ngramSettings);
-        }
     }
 
     loadGraph() {
         this.isLoading = true;
-
-        this.lastParameters = _.clone(this.currentParameters);
-        const cachedResult = this.getCachedResult(this.currentParameters);
+        this.dataHasLoaded = false;
+        const cachedResult = this.getCachedResult();
 
         if (cachedResult) {
             this.onDataLoaded(cachedResult);
         } else {
-            this.visualizationService
-                .getNgramTasks(
-                    this.queryModel,
-                    this.corpus,
-                    this.visualizedField.name,
-                    this.currentParameters
-                )
-                .then((response) => {
-                    this.tasksToCancel = response.task_ids;
-                    return this.apiService.pollTasks<NgramResults>(
-                        response.task_ids
-                    );
-                })
-                .then(([result]) => {
-                    this.tasksToCancel = undefined;
-                    this.cacheResult(result, this.currentParameters);
-                    this.onDataLoaded(result);
-                })
-                .catch(this.onFailure.bind(this));
+            this.visualizationService.getNgramTasks(
+                this.queryModel, this.corpus, this.visualizedField.name,
+                this.currentSettings, this.dateField.name).then(
+                    response => {
+                        this.tasksToCancel = response.task_ids;
+                        // tasksToCancel contains ids of the parent task and its subtasks
+                        // we are only interested in the outcome of the parent task (first in array)
+                        const poller$ = this.apiService.pollTasks([this.tasksToCancel[0]], this.stopPolling$);
+                        poller$.subscribe({
+                            error: (error) => this.onFailure(error),
+                            next: (result: SuccessfulTask<NgramResults[]>) => this.onDataLoaded((result).results[0]),
+                            complete: () => {
+                                if (!this.dataHasLoaded) {
+                                    this.apiService.abortTasks({ task_ids: this.tasksToCancel });
+                                    this.tasksToCancel = null;
+                                }
+                            }
+                    });
+            });
         }
     }
 
-    onFailure(error: { message: string }) {
-        console.log(error);
+    onFailure(error: {message: string}) {
+        console.error(error);
         this.currentResults = undefined;
         this.ngramError.emit(error.message);
         this.isLoading = false;
     }
 
     onDataLoaded(result: NgramResults) {
+        this.dataHasLoaded = true;
         this.currentResults = result;
+        this.cacheResult(result);
         this.tableData = this.makeTableData(result);
-
         this.isLoading = false;
     }
 
-    makeTableData(result: NgramResults): any[] {
+    makeTableData(result: NgramResults): typeof this.tableData {
         return _.flatMap(
             result.time_points.map((date, index) =>
                 result.words.map((dataset) => ({
@@ -254,16 +243,27 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         );
     }
 
-    cacheResult(result: any, params: NgramParameters): void {
-        const key = params.toRouteParam();
-        this.resultsCache[key] = result;
+    cacheResult(result: any): void {
+        const key = this.concatenateDateField(this.ngramParameters.stringifyNgramSettings(this.currentSettings));
+        if (key) {
+            this.resultsCache[key] = result;
+        }
     }
 
-    getCachedResult(params: NgramParameters): any {
-        const key = params.toRouteParam();
-        if (_.has(this.resultsCache, key)) {
+    getCachedResult(): any {
+        const key = this.concatenateDateField(this.ngramParameters.stringifyNgramSettings(this.currentSettings));
+        if (key && _.has(this.resultsCache, key)) {
             return this.resultsCache[key];
         }
+    }
+
+    concatenateDateField(key: string): string {
+        // add the date field to the resultsCache key: it is currently not handled by ngramParameters 
+        // TO DO: this is a workaround, remove if ngramParameters are implemented to handle date field
+        if (this.allDateFields.length) {
+            key.concat(`f:${this.dateField.name}`)
+        }
+        return key
     }
 
     setPositionsOptions(size) {
@@ -271,30 +271,31 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         this.positionsOptions = ['any']
             .concat(['first', 'second', 'third', 'fourth'].slice(0, size))
             .map((item) => ({ value: item, label: item }));
-        this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
     onParameterChange(parameter: string, value: any) {
-        this.currentParameters[parameter] = value;
+        if (_.get(this.currentSettings, parameter) === value) {
+            return;
+        }
+        _.assign(this.currentSettings, {[parameter]: value});
 
         if (parameter === 'size' && value) {
             this.setPositionsOptions(value);
         }
 
         this.parametersChanged = true;
+        this.stopPolling$.next();
     }
 
     cancelChanges() {
-        this.setPositionsOptions(this.lastParameters.size);
-        this.currentParameters = this.lastParameters;
         this.parametersChanged = false;
     }
 
     confirmChanges() {
+        this.ngramParameters.setParams(this.currentSettings);
+        this.isLoading = true;
         this.parametersChanged = false;
-        this.setParams({
-            ngramSettings: this.currentParameters.toRouteParam(),
-        });
+        this.loadGraph();
     }
 
     formatValue(value: number): string {
@@ -318,7 +319,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             this.corpus,
             this.queryModel,
             this.visualizedField.name,
-            this.currentParameters
+            this.ngramParameters.state$.value,
+            this.dateField.name
         );
         this.apiService
             .requestFullData({

@@ -1,25 +1,38 @@
 from datetime import datetime
 from glob import glob
 import logging
-from bs4 import BeautifulSoup
 from os.path import join
-from django.conf import settings
 
 import bs4
-from addcorpus.corpus import XMLCorpusDefinition
-from addcorpus.extract import XML, Constant, Combined, Choice
-from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
+from django.conf import settings
+from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousTag, TransformTag
+
+from addcorpus.python_corpora.corpus import XMLCorpusDefinition
+from ianalyzer_readers.extract import XML, Constant, Combined, Order
+from corpora.parliament.utils.parlamint import (
+    party_attribute_extractor,
+)
+from corpora.parliament.utils.parlamint_v4 import (
+    current_party_id_extractor,
+    extract_named_entities,
+    extract_people_data,
+    extract_all_org_data,
+    extract_speech,
+    load_people_data,
+    load_party_data,
+    ner_keyword_field,
+    organisation_attribute_extractor,
+    person_attribute_extractor,
+    speech_ner,
+)
 from corpora.utils.formatting import format_page_numbers
+from corpora.utils.filter_sources import in_date_range
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.field_defaults  as field_defaults
+from corpora.utils.constants import document_context
+import corpora.parliament.utils.field_defaults as field_defaults
 import re
 
 logger = logging.getLogger('indexing')
-
-def load_nl_recent_metadata(directory):
-    with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
-        soup = BeautifulSoup(f.read(), 'xml')
-    return soup
 
 
 def format_role(role):
@@ -28,8 +41,6 @@ def format_role(role):
     else:
         return role.title() if type(role) == str else role
 
-def find_topic(speech):
-    return speech.find_parent('topic')
 
 def format_house(house):
     if house == 'senate':
@@ -52,21 +63,6 @@ def format_house_recent(url):
     else:
         return 'Tweede Kamer'
 
-def find_last_pagebreak(node):
-    "find the last pagebreak node before the start of the current node"
-    is_tag = lambda x : type(x) == bs4.element.Tag
-
-    #look for pagebreaks in previous nodes
-    for prev_node in node.previous_siblings:
-        if is_tag(prev_node):
-            breaks = prev_node.find_all('pagebreak')
-            if breaks:
-                return breaks[-1]
-
-    #if none was found, go up a level
-    parent = node.parent
-    if parent:
-        return find_last_pagebreak(parent)
 
 def format_pages(pages):
     topic_start, topic_end, prev_break, last_break = pages
@@ -86,28 +82,21 @@ def format_party(data):
         id = id[5:]
     return id
 
+
 def get_party_full(speech_node):
     party_ref = speech_node.attrs.get(':party-ref')
     if not party_ref:
-        return None
+        return []
     parents = list(speech_node.parents)
     party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
-    return party_node
+    return [party_node]
 
 def get_source(meta_node):
     if type(meta_node) == bs4.element.Tag:
         is_link = lambda node: 'pm:linktype' in node.attrs and node['pm:linktype'] == 'pdf'
         link_node = meta_node.find(is_link)
         return link_node
-
     return ''
-
-def get_sequence(node, tag_entry):
-    previous = node.find_all_previous(tag_entry)
-    return len(previous) + 1 # start from 1
-
-def is_old(metadata):
-    return metadata['dataset'] == 'old'
 
 def get_sequence_recent(id):
     pattern = r'u(\d+)$'
@@ -116,301 +105,417 @@ def get_sequence_recent(id):
         return int(match.group(1))
 
 
-class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
-    '''
-    Class for indexing Dutch parliamentary data
-    '''
-
-    title = "People & Parliament (Netherlands)"
-    description = "Speeches from the Eerste Kamer and Tweede Kamer"
-    min_date = datetime(year=1815, month=1, day=1)
+class ParliamentNetherlandsNew(XMLCorpusDefinition):
+    min_date = datetime(year=2015, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
+    data_directory = settings.PP_NL_RECENT_DATA
+
+    tag_toplevel = Tag("TEI")
+    tag_entry = Tag("u")
+
+    def sources(self, start: datetime, end: datetime):
+        if not in_date_range(self, start, end):
+            return []
+        party_data = extract_all_org_data(load_party_data(self.data_directory))
+        person_data = extract_people_data(load_people_data(self.data_directory))
+        metadata = {
+            "organisations": party_data,
+            "persons": person_data,
+        }
+        for year in range(start.year, end.year):
+            for xml_file in glob("{}/{}/*.xml".format(self.data_directory, year)):
+                metadata["ner"] = extract_named_entities(xml_file)
+                yield xml_file, metadata
+
+    country = field_defaults.country()
+    country.extractor = Constant(value="Netherlands")
+
+    date = field_defaults.date()
+    date.extractor = XML(
+        Tag("teiHeader"),
+        Tag("fileDesc"),
+        Tag("sourceDesc"),
+        Tag("bibl"),
+        Tag("date"),
+        toplevel=True,
+    )
+
+    chamber = field_defaults.chamber()
+    chamber.extractor = XML(
+        Tag("teiHeader"),
+        Tag("fileDesc"),
+        Tag("sourceDesc"),
+        Tag("bibl"),
+        Tag("idno"),
+        toplevel=True,
+        transform=format_house_recent,
+    )
+    chamber.language = "nl"
+
+    debate_title = field_defaults.debate_title()
+    debate_title.extractor = XML(
+        Tag("teiHeader"),
+        Tag("fileDesc"),
+        Tag("titleStmt"),
+        Tag("title"),
+        multiple=True,
+        toplevel=True,
+        transform=lambda titles: titles[-2] if len(titles) else titles,
+    )
+    debate_title.language = "nl"
+
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = XML(
+        attribute="xml:id", toplevel=True, transform=lambda x: x.split('.')[0]
+    )
+
+    topic = field_defaults.topic()
+    topic.extractor = XML(
+        Tag("head"),
+        toplevel=True,
+    )
+    topic.language = "nl"
+
+    speech = field_defaults.speech(language="nl")
+    speech.extractor = XML(
+        Tag("seg"),
+        multiple=True,
+        extract_soup_func=extract_speech,
+        transform=lambda x: "\n".join(x),
+    )
+
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = XML(attribute="xml:id")
+
+    speaker = field_defaults.speaker()
+    speaker.extractor = person_attribute_extractor("name")
+
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = XML(attribute="who")
+
+    speaker_gender = field_defaults.speaker_gender()
+    speaker_gender.extractor = person_attribute_extractor("gender")
+
+    role = field_defaults.parliamentary_role()
+    role.extractor = XML(attribute="ana", transform=lambda x: x[1:].title())
+
+    party = field_defaults.party()
+    party.extractor = organisation_attribute_extractor('name')
+    party.language = "nl"
+
+    party_id = field_defaults.party_id()
+    party_id.extractor = current_party_id_extractor()
+
+    party_full = field_defaults.party_full()
+    party_full.extractor = organisation_attribute_extractor("full_name")
+    party_full.language = "nl"
+
+    sequence = field_defaults.sequence()
+    sequence.extractor = Order(transform=lambda value: value + 1)
+
+    source_archive = field_defaults.source_archive()
+    source_archive.extractor = Constant(value="ParlaMINT")
+
+    speech_ner = speech_ner()
+    ner_per = ner_keyword_field("person")
+    ner_loc = ner_keyword_field("location")
+    ner_org = ner_keyword_field("organization")
+    ner_misc = ner_keyword_field("miscellaneous")
+
+    fields = [
+        chamber,
+        country,
+        date,
+        debate_id,
+        debate_title,
+        topic,
+        speech,
+        speech_id,
+        speaker,
+        speaker_id,
+        speaker_gender,
+        role,
+        party,
+        party_id,
+        party_full,
+        sequence,
+        source_archive,
+        speech_ner,
+        ner_loc,
+        ner_misc,
+        ner_org,
+        ner_per,
+    ]
+
+
+class ParliamentNetherlandsOld(XMLCorpusDefinition):
+    """
+    Class for indexing Dutch parliamentary data from the Political Mashup archive
+    """
+    min_date = datetime(year=1815, month=1, day=1)
+    max_date = datetime(year=2014, month=12, day=31)
+
+    tag_toplevel = Tag("root")
+    tag_entry = Tag("speech")
     data_directory = settings.PP_NL_DATA
-    data_directory_recent = settings.PP_NL_RECENT_DATA
-    word_model_path = getattr(settings, 'PP_NL_WM', None)
-
-    es_index = getattr(settings, 'PP_NL_INDEX', 'parliament-netherlands')
-    image = 'netherlands.jpg'
-    description_page = 'netherlands.md'
-    tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
-    tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
-    languages = ['nl']
-
-    category = 'parliament'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
 
-        #old data
-        for xml_file in glob('{}/*.xml'.format(self.data_directory)):
-            period_match = re.search(r'[0-9]{8}', xml_file)
+        if not in_date_range(self, start, end):
+            return []
+
+        for xml_file in glob("{}/*.xml".format(self.data_directory)):
+            period_match = re.search(r"[0-9]{8}", xml_file)
             if period_match:
                 period = period_match.group(0)
                 start_year = int(period[:4])
 
                 if start_year >= start.year and start_year < end.year:
-                    yield xml_file, { 'dataset': 'old' }
+                    yield xml_file, {}
             else:
-                message = 'File {} is not indexed, because the filename has no recognisable date'.format(xml_file)
+                message = "File {} is not indexed, because the filename has no recognisable date".format(
+                    xml_file
+                )
                 logger.warning(msg=message)
 
-        # new data
-        if self.data_directory_recent:
-            soup = load_nl_recent_metadata(self.data_directory_recent)
-            role_data = extract_role_data(soup)
-            party_data = extract_all_party_data(soup)
-            person_data = extract_people_data(soup)
-            metadata = {
-                'dataset': 'recent',
-                'roles': role_data,
-                'parties': party_data,
-                'persons': person_data
-            }
-
-            for year in range(start.year, end.year):
-                for xml_file in glob('{}/{}/*.xml'.format(self.data_directory_recent, year)):
-                    yield xml_file, metadata
-
-
     country = field_defaults.country()
-    country.extractor = Constant(
-        value='Netherlands'
-    )
+    country.extractor = Constant(value="Netherlands")
 
     date = field_defaults.date()
-    date.extractor = Choice(
-        XML(
-            tag=['meta','dc:date'],
-            toplevel=True,
-            applicable=is_old
-        ),
-        XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl', 'date'],
-            toplevel=True
-        )
+    date.extractor = XML(
+        Tag("meta"),
+        Tag("dc:date"),
+        toplevel=True,
     )
-    date.search_filter.lower = min_date
 
     chamber = field_defaults.chamber()
-    chamber.extractor = Choice(
-        XML(
-            tag=['meta','dc:subject', 'pm:house'],
-            attribute='pm:house',
-            toplevel=True,
-            transform=format_house,
-            applicable=is_old
-        ),
-        XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl','idno'],
-            toplevel=True,
-            transform=format_house_recent
-        )
+    chamber.extractor = XML(
+        Tag("meta"),
+        Tag("dc:subject"),
+        Tag("pm:house"),
+        attribute="pm:house",
+        toplevel=True,
+        transform=format_house,
     )
+    chamber.language = "nl"
 
     debate_title = field_defaults.debate_title()
-    debate_title.extractor = Choice(
-        XML(
-            tag=['meta', 'dc:title'],
-            toplevel=True,
-            applicable=is_old
-        ),
-        XML(
-            tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
-            multiple=True,
-            toplevel=True,
-            transform=lambda titles: titles[-2] if len(titles) else titles
-        )
+    debate_title.extractor = XML(
+        Tag("meta"),
+        Tag("dc:title"),
+        toplevel=True,
     )
+    debate_title.language = "nl"
 
     debate_id = field_defaults.debate_id()
-    debate_id.extractor = Choice(
-        XML(
-            tag=['meta', 'dc:identifier'],
-            toplevel=True,
-            applicable=is_old
-        ),
-        XML(
-            tag=None,
-            attribute='xml:id',
-            toplevel=True,
-        )
+    debate_id.extractor = XML(
+        Tag("meta"),
+        Tag("dc:identifier"),
+        toplevel=True,
     )
 
     topic = field_defaults.topic()
-    topic.extractor = Choice(
-        XML(
-            transform_soup_func = find_topic,
-            attribute='title',
-            applicable=is_old,
-        ),
-        XML(
-            tag=['note'],
-            toplevel=True,
-            recursive=True
-        )
+    topic.extractor = XML(
+        FindParentTag("topic"),
+        attribute="title",
     )
+    topic.language = "nl"
 
-    speech = field_defaults.speech()
-    speech.extractor = Choice(
-        XML(
-            tag='p',
-            multiple=True,
-            flatten=True,
-            applicable=is_old
-        ),
-        XML(
-            tag=['seg'],
-            multiple=True,
-            flatten=True,
-        )
-    )
+    speech = field_defaults.speech(language="nl")
+    speech.extractor = XML(Tag("p"), multiple=True, transform=lambda x: "\n".join(x))
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = Choice(
-        XML(
-            attribute='id',
-            applicable=is_old
-        ),
-        XML(
-            tag=None,
-            attribute='xml:id'
-        )
-    )
+    speech_id.extractor = XML(attribute="id")
 
     speaker = field_defaults.speaker()
-    speaker.extractor = Choice(
-        Combined(
-            XML(attribute='function'),
-            XML(attribute='speaker'),
-            transform=' '.join,
-            applicable=is_old,
-        ),
-        person_attribute_extractor('name')
+    speaker.extractor = Combined(
+        XML(attribute="function"),
+        XML(attribute="speaker"),
+        transform=" ".join,
     )
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = Choice(
-        XML(
-            attribute='member-ref',
-            applicable=is_old
-        ),
-        XML(attribute='who'),
-    )
-
-    speaker_gender = field_defaults.speaker_gender()
-    speaker_gender.extractor = Choice(
-        Constant(
-            None,
-            applicable=is_old
-        ),
-        person_attribute_extractor('gender')
-    )
+    speaker_id.extractor = XML(attribute="member-ref")
 
     role = field_defaults.parliamentary_role()
-    role.extractor = Choice(
-        XML(
-            attribute='role',
-            transform=format_role,
-            applicable = is_old,
-        ),
-        XML(
-            tag=None,
-            attribute='ana',
-            transform=lambda x: x[1:].title()
-        )
+    role.extractor = XML(
+        attribute="role",
+        transform=format_role,
     )
 
     party = field_defaults.party()
-    party.extractor = Choice(
-        Combined(
-            XML(attribute='party'),
-            XML(attribute='party-ref'),
-            transform=format_party,
-            applicable = is_old
-        ),
-        party_attribute_extractor('name')
+    party.extractor = Combined(
+        XML(attribute="party"),
+        XML(attribute="party-ref"),
+        transform=format_party,
     )
-
+    party.language = "nl"
 
     party_id = field_defaults.party_id()
-    party_id.extractor = Choice(
-        XML(
-            attribute='party-ref',
-            applicable = is_old
-        ),
-        person_attribute_extractor('party_id')
-    )
+    party_id.extractor = XML(attribute="party-ref")
 
     party_full = field_defaults.party_full()
-    party_full.extractor = Choice(
-        XML(
-            attribute='pm:name',
-            transform_soup_func=get_party_full,
-            applicable = is_old,
-        ),
-        party_attribute_extractor('full_name')
+    party_full.extractor = XML(
+        TransformTag(get_party_full),
+        attribute="pm:name",
     )
+    party_full.language = "nl"
 
     page = field_defaults.page()
-    page.extractor = Choice(
-        Combined(
-            XML(transform_soup_func=find_topic,
-                attribute='source-start-page'
-            ),
-            XML(transform_soup_func=find_topic,
-                attribute='source-end-page'
-            ),
-            XML(transform_soup_func=find_last_pagebreak,
-                attribute='originalpagenr',
-            ),
-            XML(tag=['stage-direction', 'pagebreak'],
-                attribute='originalpagenr',
-                multiple=True,
-                transform=lambda pages : pages[-1] if pages else pages
-            ),
-            transform=format_pages,
-            applicable = is_old,
-        )
+    page.extractor = Combined(
+        XML(FindParentTag("topic"), attribute="source-start-page"),
+        XML(FindParentTag("topic"), attribute="source-end-page"),
+        XML(
+            PreviousTag("pagebreak"),
+            attribute="originalpagenr",
+        ),
+        XML(
+            Tag("stage-direction"),
+            Tag("pagebreak"),
+            attribute="originalpagenr",
+            multiple=True,
+            transform=lambda pages: pages[-1] if pages else pages,
+        ),
+        transform=format_pages,
     )
 
     url = field_defaults.url()
     url.extractor = XML(
-        tag=['meta', 'dc:source'],
-        transform_soup_func=get_source,
+        Tag("meta"),
+        Tag("dc:source"),
+        Tag("pm:link"),
         toplevel=True,
-        attribute='pm:source',
-        applicable = is_old,
+        attribute="pm:source",
     )
 
     sequence = field_defaults.sequence()
-    sequence.extractor = Choice(
-        XML(
-            extract_soup_func = lambda node : get_sequence(node, 'speech'),
-            applicable = is_old
-        ),
-        XML(
-            tag=None,
-            attribute='xml:id',
-            transform = get_sequence_recent,
-        )
-    )
+    sequence.extractor = Order(transform=lambda value: value + 1)
 
     source_archive = field_defaults.source_archive()
-    source_archive.extractor = Choice(
-        Constant(value='PoliticalMashup', applicable=is_old),
-        Constant(value='ParlaMINT')
-    )
+    source_archive.extractor = Constant(value="PoliticalMashup")
+
+    fields = [
+        date,
+        country,
+        chamber,
+        debate_title,
+        debate_id,
+        topic,
+        role,
+        sequence,
+        source_archive,
+        speech,
+        speech_id,
+        speaker,
+        speaker_id,
+        party,
+        party_full,
+        page,
+        url,
+    ]
+
+
+class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
+    """
+    Class for indexing Dutch parliamentary data
+    """
+
+    title = "People & Parliament (Netherlands)"
+    description = "Debates in the Dutch national parliament, from its founding to the present. A collection of the speeches in the Eerste Kamer and Tweede Kamer."
+    min_date = datetime(year=1815, month=1, day=1)
+    max_date = datetime(year=2022, month=12, day=31)
+
+    languages = ["nl"]
+    category = "parliament"
+    document_context = document_context()
+
+    data_directory = settings.PP_NL_RECENT_DATA
+    word_model_path = getattr(settings, "PP_NL_WM", None)
+
+    es_index = getattr(settings, "PP_NL_INDEX", "parliament-netherlands")
+    image = "netherlands.jpg"
+    description_page = "netherlands.md"
+    citation_page = "netherlands.md"
+
+    @property
+    def subcorpora(self):
+        return [
+            ParliamentNetherlandsOld(),
+            ParliamentNetherlandsNew(),
+        ]
+
+    def sources(self, start, end):
+        for i, subcorpus in enumerate(self.subcorpora):
+            for source in subcorpus.sources(start, end):
+                filename, metadata = source
+                metadata["subcorpus"] = i
+                yield filename, metadata
+
+    def source2dicts(self, source):
+        filename, metadata = source
+
+        subcorpus_index = metadata["subcorpus"]
+        subcorpus = self.subcorpora[subcorpus_index]
+
+        docs = subcorpus.source2dicts(source)
+        for doc in docs:
+            yield {field.name: doc.get(field.name, None) for field in self.fields}
+
+    chamber = field_defaults.chamber()
+    country = field_defaults.country()
+
+    date = field_defaults.date()
+    date.search_filter.lower = min_date
+    date.search_filter.upper = max_date
+
+    debate_title = field_defaults.debate_title()
+    debate_id = field_defaults.debate_id()
+    speech = field_defaults.speech(language="nl")
+    speech_id = field_defaults.speech_id()
+    topic = field_defaults.topic()
+    speaker = field_defaults.speaker()
+    speaker_id = field_defaults.speaker_id()
+    speaker_gender = field_defaults.speaker_gender()
+    role = field_defaults.parliamentary_role()
+    page = field_defaults.page()
+    party = field_defaults.party()
+    party_id = field_defaults.party_id()
+    party_full = field_defaults.party_full()
+    sequence = field_defaults.sequence()
+    source_archive = field_defaults.source_archive()
+    url = field_defaults.url()
+
+    speech_ner = speech_ner()
+    ner_per = ner_keyword_field("person")
+    ner_loc = ner_keyword_field("location")
+    ner_org = ner_keyword_field("organization")
+    ner_misc = ner_keyword_field("miscellaneous")
 
     def __init__(self):
         self.fields = [
-            self.country, self.date,
             self.chamber,
-            self.debate_title, self.debate_id,
-            self.topic,
+            self.country,
+            self.date,
+            self.debate_title,
+            self.debate_id,
+            self.page,
+            self.party,
+            self.party_id,
+            self.party_full,
+            self.role,
+            self.sequence,
             self.source_archive,
-            self.speech, self.speech_id,
-            self.speaker, self.speaker_id, self.role, self.speaker_gender,
-            self.party, self.party_id, self.party_full,
-            self.page, self.url, self.sequence
+            self.speaker,
+            self.speaker_id,
+            self.speaker_gender,
+            self.speech,
+            self.speech_id,
+            self.topic,
+            self.url,
+            self.speech_ner,
+            self.ner_loc,
+            self.ner_misc,
+            self.ner_org,
+            self.ner_per,
         ]
-

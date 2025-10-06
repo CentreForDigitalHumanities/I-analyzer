@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
-from addcorpus.corpus import CSVCorpusDefinition, FieldDefinition
-from addcorpus.extract import CSV, Combined, Pass
+from addcorpus.python_corpora.corpus import CSVCorpusDefinition, FieldDefinition
+from ianalyzer_readers.extract import CSV, Combined, Pass
 import corpora.dbnl.utils as utils
 
 class DBNLMetadata(CSVCorpusDefinition):
@@ -90,4 +90,3 @@ class DBNLMetadata(CSVCorpusDefinition):
             )
         )
     ]
-

@@ -1,5 +1,5 @@
-from addcorpus.corpus import FieldDefinition
-from addcorpus.extract import Constant
+from addcorpus.python_corpora.corpus import FieldDefinition
+from ianalyzer_readers.extract import Constant
 
 from corpora.utils import exclude_fields
 

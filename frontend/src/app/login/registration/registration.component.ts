@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as _ from 'lodash';
-import { userIcons } from '../../shared/icons';
+import { userIcons } from '@shared/icons';
+import { Title } from '@angular/platform-browser';
+import { pageTitle } from '@utils/app';
 
 interface RegisterErrors {
     non_field_errors?: string[];
@@ -23,6 +25,7 @@ type RegisterErrorResponse = Omit<HttpErrorResponse, 'error'> & {
     selector: 'ia-registration',
     templateUrl: './registration.component.html',
     styleUrls: ['./registration.component.scss'],
+    standalone: false
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
     public username: string;
@@ -31,7 +34,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     public isLoading: boolean;
 
     public registrationSucceeded: boolean;
-    public serverError = false;
+    public serverErrorCode: number = 0;
 
     public isModalActive = false;
 
@@ -41,9 +44,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     private destroy$ = new Subject<boolean>();
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private title: Title) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.title.setTitle(pageTitle('Register'));
+    }
+
     ngOnDestroy() {
         this.destroy$.next(true);
     }
@@ -83,8 +89,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         if (errorResponse.status === 400) {
             this.errors = errorResponse.error;
         } else {
-            this.serverError = true;
+            this.serverErrorCode = errorResponse.status;
         }
     }
 }
-

@@ -1,16 +1,70 @@
 import {
+    IconDefinition as RegularIconDefinition,
+    faClock,
+    faFileCode,
+    faNewspaper,
+    faQuestionCircle
+} from '@fortawesome/free-regular-svg-icons';
+import {
     IconDefinition as SolidIconDefinition,
-    faAngleDown, faArrowLeft, faArrowRight, faAt, faBook, faBookOpen, faChartColumn,
-    faCheck, faChevronLeft, faChevronRight, faCog, faCogs, faDatabase, faDiagramProject,
-    faDownload, faEnvelope, faFilter, faHistory, faImage, faInfo, faInfoCircle, faLink, faList, faLock,
-    faMinus, faPalette, faPlus, faQuestionCircle, faSearch, faSearchMinus, faSearchPlus, faSignOut,
-    faSortAlphaAsc, faSortAlphaDesc, faSortNumericAsc, faSortNumericDesc, faSquare,
-    faTable, faTimes, faTrashCan, faUndo, faUser
+    faAngleDown,
+    faAngleUp,
+    faArrowLeft,
+    faArrowRight,
+    faAt,
+    faBook,
+    faBookmark,
+    faBookOpen,
+    faBuilding,
+    faChartColumn,
+    faCheck,
+    faChevronLeft,
+    faChevronRight,
+    faCog,
+    faCogs,
+    faDatabase,
+    faDiagramProject,
+    faDownload,
+    faEnvelope,
+    faEye,
+    faFilter,
+    faHistory,
+    faImage,
+    faInfo,
+    faInfoCircle,
+    faLink,
+    faList,
+    faLocationDot,
+    faLock,
+    faMinus,
+    faPalette,
+    faPencil,
+    faPlus,
+    faSearch,
+    faSearchMinus,
+    faSearchPlus,
+    faSignOut,
+    faSortAlphaAsc,
+    faSortAlphaDesc,
+    faSortNumericAsc,
+    faSortNumericDesc,
+    faSquare,
+    faTable,
+    faTags,
+    faTimes,
+    faTrashCan,
+    faUndo,
+    faUpload,
+    faUser,
+    faArrowUp,
+    faArrowDown,
+    faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition as RegularIconDefinition, faNewspaper } from '@fortawesome/free-regular-svg-icons';
 
 type IconDefinition = SolidIconDefinition | RegularIconDefinition;
-export interface Icons { [alias: string]: IconDefinition }
+export interface Icons {
+    [alias: string]: IconDefinition;
+}
 
 export const userIcons: Icons = {
     user: faUser,
@@ -27,24 +81,40 @@ export const navIcons: Icons = {
     settings: faCog,
     admin: faCogs,
     downloads: faDownload,
+    tags: faTags,
+};
+
+export const directionIcons: Icons = {
+    up: faArrowUp,
+    down: faArrowDown,
+    left: faArrowLeft,
+    right: faArrowRight,
 };
 
 export const actionIcons: Icons = {
     search: faSearch,
     help: faInfoCircle,
     helpAlt: faQuestionCircle,
+    tooltip: faQuestionCircle,
+    manual: navIcons.manual,
     download: faDownload,
+    upload: faUpload,
     config: faCog,
     email: faEnvelope,
     more: faPlus,
     less: faMinus,
     prev: faArrowLeft,
     next: faArrowRight,
+    inOut: faFileCode,
     link: faLink,
     dropdown: faAngleDown,
+    dropup: faAngleUp,
     add: faPlus,
     remove: faTimes,
     delete: faTrashCan,
+    edit: faPencil,
+    view: faEye,
+    wait: faClock,
 };
 
 export const formIcons: Icons = {
@@ -89,8 +159,8 @@ export const scanIcons: Icons = {
     zoomIn: faSearchPlus,
     zoomOut: faSearchMinus,
     zoomReset: faUndo,
-    prev: faChevronRight,
-    next: faChevronLeft,
+    prev: faChevronLeft,
+    next: faChevronRight,
 };
 
 export const documentIcons: Icons = {
@@ -99,3 +169,10 @@ export const documentIcons: Icons = {
     scanAlt: faNewspaper,
     context: faBookOpen,
 };
+
+export const entityIcons: Icons = {
+    person: faUser,
+    location: faLocationDot,
+    organization: faBuilding,
+    miscellaneous: faBookmark,
+}

@@ -1,7 +1,14 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
-import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
-import { QueryParameters } from './search-requests';
+import { APIQuery } from './search-requests';
+import {
+    AggregateTermFrequencyParameters,
+    DateTermFrequencyParameters,
+    NGramRequestParameters,
+    TermFrequencyResult,
+} from './visualization';
 
 export interface SearchResults {
     fields?: CorpusField[];
@@ -12,28 +19,29 @@ export interface SearchResults {
     };
 }
 
-export interface ResultOverview {
-    queryText: string;
-    resultsCount: number;
-};
-
-export interface AggregateQueryFeedback {
-    completed: boolean;
-    aggregations: AggregateData;
-};
-
-export interface AggregateFrequencyResults {
-    success: boolean;
-    message?: string;
-    data?: AggregateResult[];
-};
-
-export interface AggregateResult {
+export interface MostFrequentWordsResult {
     key: string;
     doc_count: number;
-    key_as_string?: string;
 };
 
+
+export interface GeoDocument {
+    type: string; // e.g. 'Feature'
+    geometry: {
+        type: string; // e.g. 'Point'
+        coordinates: [number, number]; // [longitude, latitude]
+    };
+    properties: {
+        id: string;
+    };
+}
+
+export interface GeoLocation {
+    location: {
+        lat: number;
+        lon: number;
+    };
+}
 
 export interface DateFrequencyPair {
     date: Date;
@@ -43,10 +51,6 @@ export interface DateFrequencyPair {
 export interface DateResult {
     date: Date;
     doc_count: number;
-};
-
-export interface AggregateData {
-    [fieldName: string]: AggregateResult[];
 };
 
 export interface WordSimilarity {
@@ -81,30 +85,48 @@ export interface QueryFeedback {
     similarTerms?: string[];
 }
 
+export interface FieldEntities {
+    [entityType: string] : string
+}
+
+export interface NamedEntitiesResult {
+    [fieldName: string]: FieldEntities[]
+}
+
 export interface TaskResult { task_ids: string[] };
 
 export interface TaskSuccess {
     success: true;
 }
 
-export type TasksOutcome<ExpectedResult> =
-    | { status: 'failed' }
-    | { status: 'working' }
-    | { status: 'done'; done: true; results: ExpectedResult[] };
+interface WorkingTask {
+    status: 'working';
+}
+
+export interface SuccessfulTask<T> {
+    status: 'done';
+    results: T;
+}
+
+export type TasksOutcome = HttpErrorResponse | WorkingTask | SuccessfulTask<NgramResults[] | TermFrequencyResult[]>;
+
+export type ExtraDownloadColumns = ('context'|'document_link'|'tags')[]
 
 export type ResultsDownloadParameters = {
     corpus: string;
     fields: string[];
     route: string;
-} & QueryParameters;
+    extra: ExtraDownloadColumns
+} & APIQuery;
 
 export type TermFrequencyDownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[];
 
-export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
+export type LimitedResultsDownloadParameters = ResultsDownloadParameters &
+    DownloadOptions;
 
 export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency' | 'ngram';
 export type DownloadStatus = 'done' | 'working' | 'error';
-export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters;
+export type DownloadParameters = TermFrequencyDownloadParameters | ResultsDownloadParameters | NGramRequestParameters;
 
 export interface PendingDownload {
     download_type: DownloadType;

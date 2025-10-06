@@ -1,41 +1,104 @@
 [
     {
-        "id": "main",
-        "title": "I-Analyzer User Manual"
-    },
-    {   "id": "privacy",
-        "title": "Terms of use and privacy"
-    },
-    {
-        "id": "query",
-        "title": "Search Query"
-    },
-    {   "id": "numberofresults",
-        "title": "Number of results visualisation"
-    },
-    {   "id": "termfrequency",
-        "title": "Search term frequency visualisation"
-    },
-    {   "id": "wordcloud",
-        "title": "Word cloud visualisation"
-    },
-    {   "id": "ngrams",
-        "title": "Common n-grams visualisation"
+        "title": "Using I-analyzer",
+        "pages": [
+            {
+                "id": "main",
+                "title": "I-Analyzer user manual"
+            },
+            {   "id": "privacy",
+                "title": "Terms of use and privacy"
+            },
+            {
+                "id": "glossary",
+                "title": "Glossary"
+            }
+        ]
     },
     {
-        "id": "relatedwords",
-        "title": "Related words visualisation"
+        "title": "Searching",
+        "pages": [
+            {
+                "id": "query",
+                "title": "Search queries"
+            },
+            {
+                "id": "namedentities",
+                "title": "Viewing named entities"
+            },
+            {
+                "id": "tagging-documents",
+                "title": "Tagging documents"
+            },
+            {
+                "id": "download",
+                "title": "Downloading data"
+            },
+            {
+                "id": "citation",
+                "title": "Citing I-analyzer"
+            }
+
+        ]
     },
     {
-        "id": "comparesimilarity",
-        "title": "Compare similarity visualisation"
+        "title": "Visualisations",
+        "pages": [
+            {   "id": "numberofresults",
+                "title": "Number of results"
+            },
+            {   "id": "termfrequency",
+                "title": "Frequency of the search term"
+            },
+            {   "id": "wordcloud",
+                "title": "Most frequent words"
+            },
+            {   "id": "ngrams",
+                "title": "Neighbouring words"
+            }
+        ]
     },
     {
-        "id": "download",
-        "title": "Downloading data"
+        "title": "Word embeddings",
+        "pages": [
+            {
+                "id": "word-embeddings",
+                "title": "What are word embeddings?"
+            },
+            {
+                "id": "relatedwords",
+                "title": "Related words"
+            },
+            {
+                "id": "neighbour-network",
+                "title": "Network of nearest neighbours"
+            },
+            {
+                "id": "comparesimilarity",
+                "title": "Compare similarity"
+            }
+        ]
     },
     {
-        "id": "citation",
-        "title": "Citing I-analyzer"
+        "title": "Creating your own corpus",
+        "permissions": ["canEditCorpus"],
+        "pages": [
+            {
+                "id": "creating-a-corpus",
+                "title": "Creating a corpus"
+            },
+            {
+                "id": "uploading-source-data",
+                "title": "Uploading source data"
+            },
+            {
+                "id": "types-of-fields",
+                "title": "Types of fields"
+            },
+            {
+                "id": "importing-and-exporting-corpora",
+                "title": "Importing and exporting corpora"
+            }
+        ]
     }
 ]
