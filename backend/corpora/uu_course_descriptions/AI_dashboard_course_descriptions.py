@@ -19,9 +19,6 @@ def metadata_lookup(values):
     metadata_dict = values[1]
     return metadata_dict[id]
 
-def test_transform(input):
-    return input
-
 class AIDashboardCourseDescriptions(XLSXCorpusDefinition):
     title = 'AI Dashboard Course Descriptions'
     description = 'All courses taught at Utrecht University in 2020-2024'
@@ -62,7 +59,7 @@ class AIDashboardCourseDescriptions(XLSXCorpusDefinition):
         FieldDefinition(
             name='id',
             display_name='Course ID',
-            extractor=CSV('Cursus', transform=test_transform),
+            extractor=CSV('Cursus'),
             es_mapping=keyword_mapping(),
             csv_core=True,
             results_overview=True,
