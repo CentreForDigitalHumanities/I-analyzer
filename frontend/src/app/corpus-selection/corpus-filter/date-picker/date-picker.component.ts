@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Input, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { FormControl } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,10 +27,15 @@ export class DatePickerComponent {
     }
 
     ngOnInit() {
-        this.control.setValue(this.value || this.default);
         this.control.valueChanges.pipe(
             takeUntilDestroyed(this.destroyRef)
         ).subscribe(() => this.onValueChange());
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.value || changes.default) {
+            this.control.setValue(this.value || this.default);
+        }
     }
 
     onValueChange() {
