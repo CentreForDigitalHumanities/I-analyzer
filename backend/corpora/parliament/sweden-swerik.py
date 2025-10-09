@@ -8,7 +8,7 @@ from bs4.element import Tag as BS4Tag
 
 from django.conf import settings
 from ianalyzer_readers.readers.xml import XMLReader
-from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order, Pass
+from ianalyzer_readers.extract import Constant, XML, Combined, Metadata, Order, Pass, Cache
 from ianalyzer_readers.xml_tag import Tag, PreviousSiblingTag, TransformTag
 from ianalyzer_readers.readers.core import Field
 from tqdm import tqdm
@@ -275,15 +275,18 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         return metadata
 
 
-    _speaker_id_extractor = XML(attribute='who')
-    _date_extractor = XML(
-        Tag('text', recursive=False),
-        Tag('front', recursive=False),
-        Tag('docDate'),
-        toplevel=True,
-        attribute='when',
-        multiple=True,
-        transform=_get_date_range,
+    _speaker_id_extractor = Cache(XML(attribute='who'))
+    _date_extractor = Cache(
+        XML(
+            Tag('text', recursive=False),
+            Tag('front', recursive=False),
+            Tag('docDate'),
+            toplevel=True,
+            attribute='when',
+            multiple=True,
+            transform=_get_date_range,
+        ),
+        level='source',
     )
 
     chamber = field_defaults.chamber()
