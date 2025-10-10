@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from django.utils.functional import classproperty
 import openpyxl
 import os.path
 import PIL
@@ -85,6 +86,15 @@ class GaleMetadata(XLSXCorpusDefinition):
     ]
 
 
+class ParentOf(Tag):
+    def __init__(self, tag):
+        self.tag = tag
+
+    def find_in_soup(self, soup):
+        element = self.tag.find_next_in_soup(soup)
+        yield element.parent
+
+
 class GaleCorpus(XMLCorpusDefinition):
     @property
     def es_settings(self):
@@ -92,7 +102,10 @@ class GaleCorpus(XMLCorpusDefinition):
 
     tag_toplevel = Tag('articles')
     tag_entry = Tag('artInfo')
-    external_file_tag_toplevel = Tag('issue')
+
+    @classproperty
+    def external_file_tag_toplevel(cls):
+        return lambda metadata: ParentOf(Tag("id", string=metadata["id"]))
 
     language = 'en'
     scan_image_type = 'image/png'
@@ -200,8 +213,7 @@ class GaleCorpus(XMLCorpusDefinition):
             ),
         ),
         extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            SiblingTag("ocr"),
+            Tag("ocr"),
             external_file=True,
         ),
         sortable=True,
@@ -211,8 +223,7 @@ class GaleCorpus(XMLCorpusDefinition):
         display_name="Article title",
         description="Title of the article.",
         extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            SiblingTag("ti"),
+            Tag("ti"),
             external_file=True,
         ),
         visualizations=["wordcloud"],
@@ -223,8 +234,7 @@ class GaleCorpus(XMLCorpusDefinition):
         display_name="Starting column",
         description="Which column the article starts in.",
         extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            SiblingTag("sc"),
+            Tag("sc"),
             external_file=True,
         ),
     )
@@ -234,8 +244,7 @@ class GaleCorpus(XMLCorpusDefinition):
         description="How many pages the article covers.",
         es_mapping={"type": "integer"},
         extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            SiblingTag("pc"),
+            Tag("pc"),
             external_file=True,
         ),
     )
@@ -245,8 +254,7 @@ class GaleCorpus(XMLCorpusDefinition):
         description="Number of words in the article.",
         es_mapping={"type": "integer"},
         extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            SiblingTag("wordCount"),
+            Tag("wordCount"),
             external_file=True,
         ),
     )
@@ -257,8 +265,7 @@ class GaleCorpus(XMLCorpusDefinition):
         description="Article category.",
         es_mapping={"type": "keyword"},
         extractor=extract.XML(
-            lambda metadata: Tag("id", string=metadata["id"]),
-            SiblingTag("ct"),
+            Tag("ct"),
             external_file=True,
         ),
         search_filter=filters.MultipleChoiceFilter(
@@ -275,8 +282,7 @@ class GaleCorpus(XMLCorpusDefinition):
             description="At which page the article starts.",
             es_mapping={"type": "integer"},
             extractor=extract.XML(
-                lambda metadata: Tag("id", string=metadata["id"]),
-                ParentTag(2),
+                ParentTag(1),
                 Tag("pa"),
                 external_file=True,
                 transform=lambda pa: self.clean_page_number(pa) if pa is not None else None
