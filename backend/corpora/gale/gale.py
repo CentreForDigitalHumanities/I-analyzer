@@ -16,6 +16,13 @@ from api.utils import find_media_file
 from media.media_url import media_url
 
 
+def when_not_empty(func):
+    def delegate(val):
+        if val is None:
+            return None
+        return func(val)
+    return delegate
+
 def fix_path_sep(path):
     """Replaces backward slashes with the current platforms preferred path separator.
     Removes path spearator if present at the end of the path"""
@@ -42,6 +49,16 @@ class GaleMetadata(XLSXCorpusDefinition):
         xlsx_path = os.path.join(self.data_directory, self.filename)
         yield xlsx_path, {}
 
+    def documents(self):
+        for doc in super().documents():
+            if doc is None:
+                continue
+            if not doc.get('date'):
+                # XLSX contains one row per publication with metadata, skip those row
+                continue
+            yield doc
+
+
     required_field = 'PublicationTitle'
     fields = [
         FieldDefinition(
@@ -52,21 +69,21 @@ class GaleMetadata(XLSXCorpusDefinition):
             name='date',
             extractor=extract.CSV(
                 'IssueDate',
-                transform=clean_date
+                transform=when_not_empty(clean_date)
             )
         ),
         FieldDefinition(
             name='image_path',
             extractor=extract.CSV(
                 'ImageLocation',
-                transform=fix_path_sep
+                transform=when_not_empty(fix_path_sep)
             )
         ),
         FieldDefinition(
             name='data_location',
             extractor=extract.CSV(
                 'DataLocation',
-                transform=fix_path_sep
+                transform=when_not_empty(fix_path_sep)
             )
         ),
         FieldDefinition(
@@ -77,7 +94,7 @@ class GaleMetadata(XLSXCorpusDefinition):
             name='issue_id',
             extractor=extract.CSV(
                 'Filename',
-                transform=lambda filename: filename.split("_")[0]
+                transform=when_not_empty(lambda filename: filename.split("_")[0])
             )
         ),
 
@@ -269,11 +286,12 @@ class GaleCorpus(XMLCorpusDefinition):
 
     @property
     def page_no(self):
+        # note that page number is not an integer, because it can sometimes be a roman numeral
         return FieldDefinition(
             name="page_no",
             display_name="Page number",
             description="At which page the article starts.",
-            es_mapping={"type": "integer"},
+            es_mapping={"type": "keyword"},
             extractor=extract.XML(
                 lambda metadata: Tag("id", string=metadata["id"]),
                 ParentTag(2),
