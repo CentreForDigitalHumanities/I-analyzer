@@ -49,17 +49,8 @@ class GaleMetadata(XLSXCorpusDefinition):
         xlsx_path = os.path.join(self.data_directory, self.filename)
         yield xlsx_path, {}
 
-    def documents(self):
-        for doc in super().documents():
-            if doc is None:
-                continue
-            if not doc.get('date'):
-                # XLSX contains one row per publication with metadata, skip those row
-                continue
-            yield doc
 
-
-    required_field = 'PublicationTitle'
+    required_field = 'IssueDate'
     fields = [
         FieldDefinition(
             name='title',
