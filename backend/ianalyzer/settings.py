@@ -116,6 +116,8 @@ LOGGING = {
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'data')
 
+SAML_CSP_HANDLER = ''
+
 # This needs to be the last line of the settings.py, so that all settings can be overridden.
 try:
     from ianalyzer.settings_local import *
@@ -125,4 +127,3 @@ except ImportError as e:
         Warning
     )
 
-SAML_CSP_HANDLER = ''
