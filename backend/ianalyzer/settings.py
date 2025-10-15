@@ -124,3 +124,5 @@ except ImportError as e:
         'No local settings file - configure your environment in backend/ianalyzer/settings_local.py',
         Warning
     )
+
+SAML_CSP_HANDLER = ''
