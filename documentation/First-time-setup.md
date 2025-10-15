@@ -30,6 +30,16 @@ yarn postinstall
 psql -f backend/create_db.sql
 yarn django migrate
 ```
+
+> [!NOTE]
+> With Postgresql 15 later, you may need to grant privileges on the schema too. Use the `psql` command in the terminal, and run the following:
+>
+> ```
+> \c ianalyzer
+> grant all privileges on all tables in schema public to ianalyzer;
+> ```
+>
+
 5. Make a superuser account with `yarn django createsuperuser`
 
 ## Setup with Docker
