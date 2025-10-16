@@ -195,6 +195,14 @@ _chambers = {
 }
 
 
+def _correct_records_path(path: str) -> str:
+    '''
+    Fixes incorrect file paths, see https://github.com/swerik-project/riksdagen-records/issues/129
+    '''
+
+    return path.replace('/199920/', '/19992000/')
+
+
 class SwerikMetadataReader(XMLReader):
     '''Extracts XML file index from metadata file. This step is needed to get Chamber
     metadata.'''
@@ -210,7 +218,7 @@ class SwerikMetadataReader(XMLReader):
             yield path, {'chamber': chamber}
 
     fields = [
-        Field(name='path', extractor=XML(attribute='href')),
+        Field(name='path', extractor=XML(attribute='href', transform=_correct_records_path)),
         Field(name='chamber', extractor=Metadata('chamber')),
     ]
 
