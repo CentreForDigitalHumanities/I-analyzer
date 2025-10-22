@@ -28,7 +28,7 @@ import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryModule } from './history/history.module';
 import { SearchHistoryComponent } from './history/search-history/index';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './core/home/home.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { LoginModule } from './login/login.module';
