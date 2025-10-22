@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CorpusInfoComponent } from './corpus-info.component';
-import { commonTestBed } from '../common-test-bed';
+import { commonTestBed } from '../../common-test-bed';
 
 describe('CorpusInfoComponent', () => {
     let component: CorpusInfoComponent;

@@ -18,8 +18,8 @@ import { CreateDefinitionComponent } from './corpus-definitions/create-definitio
 import { DefinitionsOverviewComponent } from './corpus-definitions/definitions-overview/definitions-overview.component';
 import { DefinitionInOutComponent } from './corpus-definitions/definition-in-out/definition-in-out.component';
 import { CorpusFormComponent } from './corpus-definitions/form/corpus-form/corpus-form.component';
-import { CorpusModule } from './corpus-header/corpus.module';
-import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
+import { CorpusModule } from './corpus/corpus.module';
+import { CorpusInfoComponent } from './corpus/corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { CorpusGuard } from './corpus.guard';
 import { DocumentPageComponent } from './document/document-page/document-page.component';

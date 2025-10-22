@@ -5,7 +5,7 @@ import { HighlightSelectorComponent } from './highlight-selector.component';
 import { SearchResultsComponent } from './search-results.component';
 import { SearchComponent } from './search.component';
 import { DocumentModule } from '../document/document.module';
-import { CorpusModule } from '../corpus-header/corpus.module';
+import { CorpusModule } from '../corpus/corpus.module';
 import { FilterModule } from '../filter/filter.module';
 import { DownloadModule } from '../download/download.module';
 import { ElasticSearchService, QueryService, SearchService } from '@services';
