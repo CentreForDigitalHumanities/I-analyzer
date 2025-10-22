@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
-import { ImageViewModule } from '../image-view/image-view.module';
+import { ImageViewModule } from './image-view/image-view.module';
 import { SearchRelevanceComponent } from '../search';
 import { CorpusModule } from '../corpus/corpus.module';
 import { TagModule } from '../tag/tag.module';

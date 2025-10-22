@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FoundDocument, Corpus } from '@models';
+import { ImageInfo } from '@models/image';
 import { ApiService } from '@services';
 import { scanIcons, actionIcons, formIcons } from '@shared/icons';
 
@@ -100,11 +101,4 @@ export class ImageViewComponent implements OnChanges {
     pageIndexChange(event: number) {
         this.showPage = this.pageIndices.indexOf(event);
     }
-}
-
-export interface ImageInfo {
-    pageNumbers: number[];
-    homePageIndex: number;
-    fileName: string;
-    fileSize: string;
 }
