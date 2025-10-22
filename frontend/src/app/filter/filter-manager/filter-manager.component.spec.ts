@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
-import { commonTestBed } from '../common-test-bed';
+import { commonTestBed } from '../../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { corpusFactory } from '../../mock-data/corpus';
+import { corpusFactory } from '../../../mock-data/corpus';
 import { QueryModel } from '@models';
 
 import { AuthService } from '@services';
-import { UnauthenticatedMock } from '../../mock-data/auth';
+import { UnauthenticatedMock } from '../../../mock-data/auth';
 
 describe('FilterManagerComponent', () => {
     let component: FilterManagerComponent;
