@@ -11,7 +11,7 @@ import { environment } from '@environments/environment';
 
 import { ApiRetryService } from './services/index';
 
-import { AboutComponent } from './about/about.component';
+import { AboutComponent } from './about/about/about.component';
 import { AppComponent } from './app.component';
 import { CorpusDefinitionsModule } from './corpus-definitions/corpus-definitions.module';
 import { CreateDefinitionComponent } from './corpus-definitions/create-definition/create-definition.component';
@@ -36,9 +36,9 @@ import { RegistrationComponent } from './login/registration/registration.compone
 import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
-import { ManualComponent } from './manual/manual.component';
-import { ManualModule } from './manual/manual.module';
-import { PrivacyComponent } from './privacy/privacy.component';
+import { ManualComponent } from './about/manual/manual.component';
+import { AboutModule } from './about/about.module';
+import { PrivacyComponent } from './about/privacy/privacy.component';
 import { SearchComponent } from './search/index';
 import { SearchModule } from './search/search.module';
 import { SettingsComponent } from './settings/settings.component';
@@ -176,7 +176,7 @@ export const imports: any[] = [
     DocumentModule,
     HistoryModule,
     LoginModule,
-    ManualModule,
+    AboutModule,
     MenuModule,
     SearchModule,
     SettingsModule,
