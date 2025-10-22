@@ -27,10 +27,8 @@ import { CorpusModule } from './corpus-header/corpus.module';
 import { CorpusInfoComponent } from './corpus-info/corpus-info.component';
 import { CorpusSelectionModule } from './corpus-selection/corpus-selection.module';
 import { CorpusGuard } from './corpus.guard';
-import { DialogComponent } from './dialog/dialog.component';
 import { DocumentPageComponent } from './document/document-page/document-page.component';
 import { DocumentModule } from './document/document.module';
-import { FooterComponent } from './footer/footer.component';
 import { forwardLegacyParamsGuard } from './forward-legacy-params.guard';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryModule } from './history/history.module';
@@ -45,8 +43,6 @@ import { ResetPasswordComponent } from './login/reset-password/reset-password.co
 import { VerifyEmailComponent } from './login/verify-email/verify-email.component';
 import { ManualComponent } from './manual/manual.component';
 import { ManualModule } from './manual/manual.module';
-import { MenuComponent } from './menu/menu.component';
-import { NotificationsComponent } from './notifications/notifications.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { SearchComponent } from './search/index';
 import { SearchModule } from './search/search.module';
@@ -58,7 +54,7 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 import { MatomoConfig, matomoImports } from './routing/matomo';
 import { stylePreset } from './primeng-theme';
-import { MenuDropdownComponent } from './menu/menu-dropdown/menu-dropdown.component';
+import { CoreModule } from './core/core.module';
 
 export const appRoutes: Routes = [
     {
@@ -175,19 +171,10 @@ const routerOptions: ExtraOptions = {
     anchorScrolling: 'enabled',
 };
 
-export const declarations: any[] = [
-    AppComponent,
-    DialogComponent,
-    FooterComponent,
-    HomeComponent,
-    MenuComponent,
-    NotificationsComponent,
-    MenuDropdownComponent,
-];
-
 export const imports: any[] = [
     SharedModule,
     // Feature Modules
+    CoreModule,
     CorpusModule,
     CorpusDefinitionsModule,
     CorpusSelectionModule,
@@ -228,7 +215,7 @@ export const providers: any[] = [
 ];
 
 @NgModule({
-    declarations,
+    declarations: [AppComponent],
     imports,
     providers,
     bootstrap: [AppComponent],
