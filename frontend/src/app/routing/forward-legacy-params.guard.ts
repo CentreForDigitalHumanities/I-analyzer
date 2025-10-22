@@ -3,7 +3,7 @@ import {
     RouterStateSnapshot
 } from '@angular/router';
 import * as _ from 'lodash';
-import { COMPARE_TERMS_KEY, DELIMITER } from './models/compared-queries';
+import { COMPARE_TERMS_KEY, DELIMITER } from '../models/compared-queries';
 
 const LEGACY_COMPARE_TERMS_PARAM = 'compareTerm';
 
