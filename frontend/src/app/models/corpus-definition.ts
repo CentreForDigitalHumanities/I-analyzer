@@ -9,6 +9,7 @@ export interface CorpusDataFile {
     id?: number;
     corpusID: number;
     file: File | string;
+    original_filename?: string;
     is_sample: boolean;
     created?: Date;
     confirmed: boolean;

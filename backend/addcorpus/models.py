@@ -536,6 +536,10 @@ class CorpusDataFile(models.Model):
     corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
     file = models.FileField(upload_to=upload_path,
                             help_text='file containing corpus data')
+    original_filename = models.CharField(
+        help_text='original name of the uploaded file (for user form)',
+        blank=True,
+    )
     is_sample = models.BooleanField(
         default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
     created = models.DateTimeField(auto_now_add=True)

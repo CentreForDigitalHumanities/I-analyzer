@@ -263,7 +263,13 @@ class DataFileField(serializers.FileField):
 
 class CorpusDataFileSerializer(serializers.ModelSerializer):
     file = DataFileField()
+    original_filename = serializers.CharField(read_only=True)
 
     class Meta:
         model = CorpusDataFile
-        fields = ('id', 'corpus', 'file', 'created', 'is_sample', 'confirmed')
+        fields = ('id', 'corpus', 'file', 'created', 'is_sample', 'confirmed', 'original_filename')
+
+    def validate(self, data):
+        if file := data.get('file'):
+            data['original_filename'] = file.name
+        return data
