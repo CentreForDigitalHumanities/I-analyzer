@@ -177,7 +177,6 @@ export const imports: any[] = [
     CoreModule,
     CorpusModule,
     CorpusDefinitionsModule,
-    CorpusSelectionModule,
     DialogModule,
     DocumentModule,
     HistoryModule,
