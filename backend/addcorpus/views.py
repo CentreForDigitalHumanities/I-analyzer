@@ -12,7 +12,8 @@ from addcorpus.serializers import (CorpusDataFileSerializer,
                                    CorpusDocumentationPageSerializer,
                                    CorpusJSONDefinitionSerializer,
                                    CorpusSerializer)
-from addcorpus.utils import get_csv_info, clear_corpus_image
+from addcorpus.utils import clear_corpus_image
+from addcorpus.json_corpora.csv_field_info import get_csv_info
 from django.conf import settings
 from django.http.response import FileResponse
 from rest_framework import viewsets

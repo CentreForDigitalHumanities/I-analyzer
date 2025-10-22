@@ -5,9 +5,10 @@
         <form (ngSubmit)="search()" *ngIf="corpus">
             <div class="field has-addons">
                 <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
-                    <button class="button" type="button" (click)="showQueryDocumentation()">
+                    <button class="button" type="button" (click)="showQueryDocumentation()"
+                        aria-label="help">
                         <span class="icon">
-                            <fa-icon [icon]="actionIcons.help" aria-label="help"></fa-icon>
+                            <fa-icon [icon]="actionIcons.manual" aria-hidden="true" />
                         </span>
                     </button>
                 </div>
@@ -23,10 +24,8 @@
                         <span>Search</span>
                     </button>
                 </div>
-                <div class="control" iaBalloon="Click here to limit your search to specific fields"
-                    iaBalloonLength="medium">
-                    <ia-select-field [corpusFields]="corpus.fields" filterCriterion="searchable" [queryModel]="queryModel">
-                    </ia-select-field>
+                <div class="control">
+                    <ia-select-field [queryModel]="queryModel" />
                 </div>
             </div>
         </form>

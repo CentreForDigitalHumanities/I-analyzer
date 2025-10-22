@@ -13,7 +13,8 @@ import { formIcons } from '@shared/icons';
 @Component({
     selector: 'ia-documentation-form',
     templateUrl: './documentation-form.component.html',
-    styleUrl: './documentation-form.component.scss'
+    styleUrl: './documentation-form.component.scss',
+    standalone: false,
 })
 export class DocumentationFormComponent implements OnInit {
     form = new FormGroup({

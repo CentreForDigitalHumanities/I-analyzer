@@ -245,6 +245,10 @@ class CorpusConfiguration(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
+    has_named_entities = models.BooleanField(
+        default=False,
+        help_text='whether this corpus has named entity annotations',
+    )
     default_sort = models.JSONField(
         blank=True,
         validators=[validate_sort_configuration],
@@ -289,34 +293,27 @@ class CorpusConfiguration(models.Model):
                 ])
 
     @property
-    def has_named_entities(self):
-        from es.search import total_hits
+    def visible_fields(self) -> models.QuerySet['Field']:
+        fields = self.fields.all()
 
-        client = elasticsearch(self.corpus.name)
-        try:
-            # we check if any fields exist for filtering named entities
-            ner_exists = client.search(
-                index=self.es_index, query={"exists": {"field": "*:ner-kw"}}, size=0
-            )
-            if total_hits(ner_exists):
-                return True
-        except:
-            return False
-        return False
+        if not self.has_named_entities:
+            fields = fields.exclude(name__endswith=':ner-kw').exclude(name__endswith=':ner')
+
+        return fields
 
 
-FIELD_DISPLAY_TYPES = [
-    ('text_content', 'text content'),
-    (MappingType.TEXT.value, 'text'),
-    (MappingType.KEYWORD.value, 'keyword'),
-    (MappingType.DATE.value, 'date'),
-    (MappingType.DATE_RANGE.value, 'date_range'),
-    (MappingType.INTEGER.value, 'integer'),
-    (MappingType.FLOAT.value, 'float'),
-    (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point'),
-    ('url', 'url'),
-]
+class FieldDisplayTypes(models.TextChoices):
+    TEXT_CONTENT = ('text_content', 'text content')
+    TEXT = (MappingType.TEXT.value, 'text')
+    KEYWORD = (MappingType.KEYWORD.value, 'keyword')
+    DATE = (MappingType.DATE.value, 'date')
+    DATE_RANGE = (MappingType.DATE_RANGE.value, 'date_range')
+    INTEGER = (MappingType.INTEGER.value, 'integer')
+    FLOAT = (MappingType.FLOAT.value, 'float')
+    BOOLEAN = (MappingType.BOOLEAN.value, 'boolean')
+    GEO_POINT = (MappingType.GEO_POINT.value, 'geo_point')
+    URL = ('url', 'url')
+
 
 FIELD_VISUALIZATIONS = [
     (VisualizationType.RESULTS_COUNT.value, 'Number of results'),
@@ -355,7 +352,7 @@ class Field(models.Model):
     )
     display_type = models.CharField(
         max_length=16,
-        choices=FIELD_DISPLAY_TYPES,
+        choices=FieldDisplayTypes.choices,
         help_text='as what type of data this field is rendered in the interface',
     )
     description = models.CharField(
@@ -530,8 +527,11 @@ class CorpusDocumentationPage(models.Model):
 
 
 class CorpusDataFile(models.Model):
+    def upload_dir(self):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}')
+
     def upload_path(self, filename):
-        return os.path.join('corpus_datafiles', f'{self.corpus.pk}', filename)
+        return os.path.join(self.upload_dir(), filename)
 
     corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
     file = models.FileField(upload_to=upload_path,

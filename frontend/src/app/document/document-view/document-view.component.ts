@@ -8,7 +8,8 @@ import { documentIcons, entityIcons } from '@shared/icons';
 @Component({
     selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
-    styleUrls: ['./document-view.component.scss']
+    styleUrls: ['./document-view.component.scss'],
+    standalone: false
 })
 export class DocumentViewComponent implements OnChanges {
 
@@ -68,7 +69,11 @@ export class DocumentViewComponent implements OnChanges {
         if (view === 'scan' && this.showScanTab) {
             return 'scan';
         }
-        return _.first(this.contentFields)['name'];
+        return this.fieldTabID(_.first(this.contentFields));
+    }
+
+    fieldTabID(field: CorpusField) {
+        return `field-${field.name}`;
     }
 
 }

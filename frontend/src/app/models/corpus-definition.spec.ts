@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ApiService } from '@services';
 import { CorpusDefinition } from './corpus-definition';
 import { ApiServiceMock } from '../../mock-data/api';
-import { mockCorpusDefinition } from '../../mock-data/corpus-definition';
+import { corpusDefinitionFactory } from '../../mock-data/corpus-definition';
 import * as _ from 'lodash';
 
 
@@ -35,14 +35,14 @@ describe('CorpusDefinition', () => {
         const updateSpy = spyOn(apiService, 'updateCorpus').and.callThrough();
 
         const corpus = new CorpusDefinition(apiService);
-        corpus.definition = mockCorpusDefinition;
+        corpus.definition = corpusDefinitionFactory();
         corpus.save();
 
         expect(createSpy).toHaveBeenCalledTimes(1);
         expect(updateSpy).not.toHaveBeenCalled();
         expect(corpus.id).toBeDefined();
 
-        const newDefinition = _.set(_.cloneDeep(mockCorpusDefinition), ['meta', 'title'], 'Different title');
+        const newDefinition = _.set(corpusDefinitionFactory(), ['meta', 'title'], 'Different title');
         corpus.setFromDefinition(newDefinition);
         corpus.save();
 

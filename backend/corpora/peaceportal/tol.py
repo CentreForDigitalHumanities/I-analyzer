@@ -6,7 +6,7 @@ import bs4
 from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
-from addcorpus.python_corpora.extract import XML, Constant, Combined
+from ianalyzer_readers.extract import XML, Constant, Combined
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, \
     clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language, \
     transform_to_date_range, not_before_extractor, not_after_extractor
@@ -41,9 +41,6 @@ class PeaceportalTOL(PeacePortal, XMLCorpusDefinition):
             Tag('history'), Tag('origin'), Tag('origDate'), Tag('date'),
             transform=lambda x: get_year(x),
         )
-
-        self.not_before.extractor = not_before_extractor()
-        self.not_after.extractor = not_after_extractor()
 
         self.date.extractor = Combined(
             not_before_extractor(),

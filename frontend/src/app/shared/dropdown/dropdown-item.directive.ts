@@ -4,7 +4,8 @@ import { DropdownService } from './dropdown.service';
 import * as _ from 'lodash';
 
 @Directive({
-    selector: '[iaDropdownItem]'
+    selector: '[iaDropdownItem]',
+    standalone: false
 })
 export class DropdownItemDirective {
     @HostBinding('class') class = 'dropdown-item';

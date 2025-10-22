@@ -13,7 +13,8 @@ import { SearchService } from '@services';
 @Component({
     selector: 'ia-date-filter',
     templateUrl: './date-filter.component.html',
-    styleUrls: ['./date-filter.component.scss']
+    styleUrls: ['./date-filter.component.scss'],
+    standalone: false
 })
 export class DateFilterComponent extends BaseFilterComponent<DateFilter> {
     public minDate: Date;

@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CorpusFormComponent } from './corpus-form.component';
-import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
-import { StepsModule } from 'primeng/steps';
-import { MetaFormComponent } from '../meta-form/meta-form.component';
-import { FieldFormComponent } from '../field-form/field-form.component';
-import { DataFormComponent } from '../data-form/data-form.component';
-import { ApiService } from '@services';
-import { ApiServiceMock } from 'mock-data/api';
-import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '@services';
+import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
+import { SharedModule } from '@shared/shared.module';
+import { ApiServiceMock } from 'mock-data/api';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { StepsModule } from 'primeng/steps';
+import { DataFormComponent } from '../data-form/data-form.component';
+import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
+import { FieldFormComponent } from '../field-form/field-form.component';
+import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
+import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { MetaFormComponent } from '../meta-form/meta-form.component';
+import { CorpusFormComponent } from './corpus-form.component';
 
 describe('CorpusFormComponent', () => {
     let component: CorpusFormComponent;
@@ -26,12 +29,15 @@ describe('CorpusFormComponent', () => {
                 MetaFormComponent,
                 FieldFormComponent,
                 DataFormComponent,
+                ImageUploadComponent,
+                FormFeedbackComponent,
+                DocumentationFormComponent,
             ],
             imports: [
                 SharedModule,
                 StepsModule,
                 ReactiveFormsModule,
-                MultiSelectModule,
+                AutoCompleteModule,
             ],
             providers: [
                 SlugifyPipe,

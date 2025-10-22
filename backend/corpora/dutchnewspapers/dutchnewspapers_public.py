@@ -13,7 +13,7 @@ from django.conf import settings
 
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition, FieldDefinition, consolidate_start_end_years
 from addcorpus.python_corpora import filters
-from addcorpus.python_corpora.extract import Metadata, XML
+from ianalyzer_readers.extract import Metadata, XML
 from addcorpus.python_corpora.load_corpus import corpus_dir
 
 from corpora.utils.constants import document_context
@@ -33,13 +33,14 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
     description = "Collection of Dutch newspapers in the public domain, digitised by the Koninklijke Bibliotheek."
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
-    data_directory = settings.DUTCHNEWSPAPERS_DATA
+    data_directory = getattr(settings, 'DUTCHNEWSPAPERS_DATA', None)
     es_index = getattr(settings, 'DUTCHNEWSPAPERS_ES_INDEX', 'dutchnewspapers-public')
     image = 'dutchnewspapers.jpg'
     languages = ['nl']
     category = 'periodical'
     description_page = 'description_public.md'
     citation_page = 'citation_public.md'
+    word_model_path = getattr(settings, "DUTCHNEWSPAPERS_WM", None)
 
     @property
     def es_settings(self):
@@ -109,7 +110,7 @@ class DutchNewspapersPublic(XMLCorpusDefinition):
                         })
                         yield full_path, meta_dict
 
-    titlefile = join(corpus_dir('dutchnewspapers-public'), 'newspaper_titles.txt')
+    titlefile = join(os.path.dirname(__file__), 'newspaper_titles.txt')
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
     paper_count = len(papers)

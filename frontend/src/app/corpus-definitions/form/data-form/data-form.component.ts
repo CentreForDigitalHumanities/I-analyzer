@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
-import { ApiService } from '@services';
+import { APICorpusDefinitionField, CorpusDataFile, DataFileInfo, FIELD_TYPE_OPTIONS } from '@models/corpus-definition';
+import { ApiService, DialogService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
@@ -21,6 +21,7 @@ import {
     selector: 'ia-data-form',
     templateUrl: './data-form.component.html',
     styleUrl: './data-form.component.scss',
+    standalone: false
 })
 export class DataFormComponent implements OnInit, OnDestroy {
     actionIcons = actionIcons;
@@ -38,7 +39,8 @@ export class DataFormComponent implements OnInit, OnDestroy {
 
     constructor(
         private apiService: ApiService,
-        private corpusDefService: CorpusDefinitionService
+        private corpusDefService: CorpusDefinitionService,
+        private dialogService: DialogService,
     ) {}
 
     ngOnInit() {
@@ -132,8 +134,13 @@ export class DataFormComponent implements OnInit, OnDestroy {
         return this.fileUploaded() && !!this.dataFile?.confirmed;
     }
 
+    openDocumentation() {
+        this.dialogService.showManualPage('uploading-source-data');
+    }
+
     private loadDataFileInfo(dataFile: CorpusDataFile) {
         this.dataFile = dataFile;
         return this.apiService.getDataFileInfo(dataFile);
     }
+
 }

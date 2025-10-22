@@ -8,7 +8,8 @@ import { actionIcons } from '@shared/icons';
     selector: 'ia-freqtable',
     templateUrl: './freqtable.component.html',
     styleUrls: ['./freqtable.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FreqtableComponent implements OnChanges {
     @Input() headers: FreqTableHeaders;

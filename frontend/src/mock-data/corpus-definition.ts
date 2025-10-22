@@ -1,6 +1,6 @@
-import { APICorpusDefinition } from '../app/models/corpus-definition';
+import { APICorpusDefinition, DataFileInfo } from '../app/models/corpus-definition';
 
-export const mockCorpusDefinition: APICorpusDefinition = {
+export const corpusDefinitionFactory = (): APICorpusDefinition => ({
     name: 'test',
     meta: {
         title: 'Test corpus',
@@ -51,4 +51,17 @@ export const mockCorpusDefinition: APICorpusDefinition = {
             }
         }
     ]
-};
+});
+
+export const dataFileInfoFactory = (): DataFileInfo => ({
+    'n_rows': 3,
+    'fields': {
+        'date': 'date',
+        'genre': 'text_metadata',
+        'title': 'text_metadata',
+        'content': 'text_content',
+        'url': 'text_metadata'
+    },
+    'delimiter': ','
+}
+);

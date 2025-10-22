@@ -16,9 +16,8 @@
         <div class="field">
             <label class="label" id="fields-select-label">Fields</label>
             <div class="control">
-                <p-multiSelect [options]="availableCsvFields"
-                    [(ngModel)]="selectedCsvFields"
-                    optionLabel="displayName"
+                <p-multiSelect [options]="fieldOptions"
+                    [(ngModel)]="fieldSelection"
                     placeholder="select fields"
                     name="searchFields"
                     ariaLabelledBy="fields-select-label">
@@ -36,27 +35,44 @@
             <ia-search-sorting [pageResults]="resultsConfig" labelledBy="sort-by-label" />
         </div>
 
-        <!-- TODO: show this option when query-in-context download is fixed -->
-        <div class="field" *ngIf="queryModel.queryText" hidden>
+        <div class="field">
             <div role="group" class="control">
                 <legend class="label">
                     Additional columns
                 </legend>
-                <label>
-                    <!-- checkbox: include query? -->
-                     <!-- checkbox: include user tags? -->
-                    <input type="checkbox"
-                        [checked]="(resultsConfig.highlight$ | async) !== undefined"
-                        (change)="onHighlightChange($event)">
-                    Include "query in context" snippets
-                </label>
+                <!-- checkbox: include query? -->
+                <ul>
+                    <li>
+                        <label>
+                            <input name="tags" type="checkbox"
+                                [(ngModel)]="tagsSelected">
+                            Your tags
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input name="documentLink" type="checkbox"
+                                [checked]="documentLinkSelected"
+                                (change)="documentLinkSelected = !documentLinkSelected">
+                            Document URL
+                        </label>
+                    </li>
+                    <li>
+                        <label *ngIf="queryModel.queryText">
+                            <input  type="checkbox"
+                                [checked]="(resultsConfig.highlight$ | async) !== undefined"
+                                (change)="onHighlightChange($event)">
+                            "Query in context" snippets
+                        </label>
+                    </li>
+                </ul>
             </div>
         </div>
 
         <ng-container *ngIf="(canDownloadDirectly$ | async); else longDownloadSubmit">
-            <div class="field">
-                <div role="group" class="control">
-                    <legend class="label">File encoding</legend>
+            <div class="field" role="group">
+                <legend class="label">File encoding</legend>
+                <div class="control radios">
                     <label class="radio" *ngFor="let encodingOption of encodingOptions">
                         <input type="radio" name="encoding" (click)="encoding=encodingOption" [checked]="encoding===encodingOption">
                         {{encodingOption}}

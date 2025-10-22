@@ -5,6 +5,7 @@ import { scanIcons } from '@shared/icons';
     selector: 'ia-image-navigation',
     templateUrl: './image-navigation.component.html',
     styleUrls: ['./image-navigation.component.scss'],
+    standalone: false
 })
 export class ImageNavigationComponent implements OnChanges {
     @Input() public pageIndices: number[];

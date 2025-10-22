@@ -1,16 +1,34 @@
-@import "../../../_utilities";
+@use "../../../_utilities";
 
-.filter-container{
-    &:hover{
-        box-shadow: 0 0 0 1px $primary;
-    }
-    margin-bottom: 5px;
-}
+// .filter-container{
+//     &:hover{
+//         box-shadow: 0 0 0 1px utilities.$primary;
+//     }
+//     margin-bottom: 5px;
+// }
 
 .filter-container.on{
-    box-shadow: 0 0 0 2px $primary;
+    box-shadow: 0 0 0 2px utilities.$primary;
 }
 
-.control {
+fieldset {
+    border: none;
+    min-inline-size: inherit;
+    margin-bottom: 5px;
+
+    legend {
+        float: left;
+        padding: 0;
+        margin-bottom: 1rem;
+        line-height: inherit;
+    }
+}
+
+[data-balloon]::after {
     z-index: 20;
+}
+
+
+.filter-control {
+    clear: both;
 }

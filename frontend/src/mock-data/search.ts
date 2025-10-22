@@ -1,7 +1,7 @@
 import { PageResultsParameters } from '../app/models/page-results';
 import { SearchFilter } from '../app/models/field-filter';
 import { Corpus, CorpusField, FoundDocument, QueryModel, SearchResults } from '../app/models/index';
-import { mockCorpus } from './corpus';
+import { corpusFactory } from './corpus';
 import { TagServiceMock } from './tag';
 import { ElasticSearchServiceMock } from './elastic-search';
 import { Aggregator } from '../app/models/aggregation';
@@ -41,13 +41,13 @@ export class SearchServiceMock {
         const doc = new FoundDocument(
             new TagServiceMock() as any,
             new ElasticSearchServiceMock() as any,
-            mockCorpus,
+            corpusFactory(),
             {
                 _id: 'test_1',
                 _score: 1.0,
                 _source: {
-                    great_field: 'test',
-                    speech: 'This is a document!'
+                    genre: 'Test',
+                    content: 'This is a document!'
                 },
             },
             1.0

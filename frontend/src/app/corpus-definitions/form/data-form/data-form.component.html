@@ -1,6 +1,8 @@
 <h1 class="title">Upload a sample of your data</h1>
 <p class="subtitle">Determines sensible default values for the fields of your corpus</p>
 
+<button class="button" (click)="openDocumentation()">Manual</button>
+
 <ng-container *ngIf="!fileUploaded()">
     <p>You have not uploaded a data file yet.</p>
 </ng-container>

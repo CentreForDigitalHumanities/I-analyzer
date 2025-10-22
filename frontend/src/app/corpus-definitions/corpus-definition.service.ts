@@ -81,14 +81,14 @@ export class CorpusDefinitionService implements OnDestroy {
     }
 
     public makeDefaultField(
-        dtype: APICorpusDefinitionField['type'] | 'text',
+        dtype: APICorpusDefinitionField['type'],
         colName: string
     ): APICorpusDefinitionField {
         let field: Partial<APICorpusDefinitionField> = {
             name: this.slugify.transform(colName),
             display_name: colName,
             description: '',
-            type: dtype == 'text' ? 'text_metadata' : dtype,
+            type: dtype,
             extract: {
                 column: colName,
             },
@@ -116,10 +116,30 @@ export class CorpusDefinitionService implements OnDestroy {
                     hidden: false,
                 };
             }
-            case 'text': {
+            case 'text_metadata': {
                 field.options = {
                     search: true,
                     filter: 'show',
+                    preview: false,
+                    visualize: true,
+                    sort: false,
+                    hidden: false,
+                };
+            }
+            case 'text_content': {
+                field.options = {
+                    search: true,
+                    filter: 'none',
+                    preview: true,
+                    visualize: true,
+                    sort: false,
+                    hidden: false,
+                };
+            }
+            case 'url': {
+                field.options = {
+                    search: false,
+                    filter: 'none',
                     preview: false,
                     visualize: false,
                     sort: false,

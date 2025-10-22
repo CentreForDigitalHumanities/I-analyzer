@@ -2,10 +2,15 @@ import os
 
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 
+from addcorpus.models import CorpusDataFile
+
 here = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_csv_upload(admin_user, admin_client, json_mock_corpus):
+    # clear corpus data file info
+    CorpusDataFile.objects.all().delete()
+
     fp = os.path.join(here, 'files', 'example.csv')
 
     json_mock_corpus.owner = admin_user
@@ -23,8 +28,8 @@ def test_csv_upload(admin_user, admin_client, json_mock_corpus):
     assert info_res.status_code == HTTP_200_OK
     assert info_res.data == {
         'fields': {
-            'character': 'text',
-            'line': 'text',
+            'character': 'text_metadata',
+            'line': 'text_metadata',
             'date-column': 'date',
             'FLOAT COLUMN': 'float',
             'int_column': 'integer',

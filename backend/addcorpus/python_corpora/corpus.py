@@ -14,6 +14,7 @@ from ianalyzer_readers.readers.core import Reader, Field
 from ianalyzer_readers.readers.xml import XMLReader
 from ianalyzer_readers.readers.csv import CSVReader
 from ianalyzer_readers.readers.html import HTMLReader
+from ianalyzer_readers.readers.json import JSONReader
 from ianalyzer_readers.readers.rdf import RDFReader
 from ianalyzer_readers.readers.xlsx import XLSXReader
 
@@ -186,20 +187,6 @@ class CorpusDefinition(Reader):
         '''
         return self.word_model_path is not None and isdir(self.word_model_path)
 
-    @property
-    def new_highlight(self):
-        '''
-        if the corpus has been re-indexed using the top-level term vector 'with_positions_offsets'
-        for the main content field, needed for the updated highlighter
-        TODO: remove this property and its references when all corpora are reindexed using the
-        current definitions (with the top-level term vector for speech)
-        '''
-        try:
-            highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
-        except Exception:
-            return False
-        return self.title in highlight_corpora
-
     '''
     Allow the downloading of source images
     '''
@@ -297,6 +284,14 @@ class CorpusDefinition(Reader):
             if filename:
                 return os.path.join(directory, filename)
 
+    def process_scan(self, filename):
+        '''
+        Run any required processing for making scan files ready for consumption by the frontend.
+        (e.g. converting to a different format)
+        '''
+        logger.info("process_scan() called but it's the empty base implementation")
+        raise NotImplementedError()
+
 
 class ParentCorpusDefinition(CorpusDefinition):
     ''' A class from which other corpus definitions can inherit.
@@ -347,20 +342,11 @@ class XLSXCorpusDefinition(CorpusDefinition, XLSXReader):
     '''
 
 
-class JSONCorpusDefinition(CorpusDefinition):
+class JSONCorpusDefinition(CorpusDefinition, JSONReader):
     '''
     Corpus definition for json encoded data.
     '''
 
-    def source2dicts(self, source, *nargs, **kwargs):
-        self._reject_extractors(extract.XML, extract.CSV)
-
-        field_dict = {
-            field.name: field.extractor.apply(source, *nargs, **kwargs)
-            for field in self.fields
-        }
-
-        yield field_dict
 
 class RDFCorpusDefinition(CorpusDefinition, RDFReader):
     '''

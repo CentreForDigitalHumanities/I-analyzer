@@ -1,12 +1,18 @@
 import { Component, Input } from '@angular/core';
-import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
+import { APICorpusDefinitionField, CorpusDataFile, DataFileInfo, FIELD_TYPE_OPTIONS } from '@models/corpus-definition';
 
 @Component({
-  selector: 'ia-datafile-info',
-  templateUrl: './datafile-info.component.html',
-  styleUrl: './datafile-info.component.scss'
+    selector: 'ia-datafile-info',
+    templateUrl: './datafile-info.component.html',
+    styleUrl: './datafile-info.component.scss',
+    standalone: false,
 })
 export class DatafileInfoComponent {
-    @Input() currentFileInfo: DataFileInfo;
-    @Input() currentDataFile: CorpusDataFile;
+    @Input({ required: true }) currentFileInfo!: DataFileInfo;
+    @Input({ required: true }) currentDataFile!: CorpusDataFile;
+
+
+    fieldTypeLabel(value: APICorpusDefinitionField['type']) {
+        return FIELD_TYPE_OPTIONS.find(option => option.value == value)?.label;
+    }
 }

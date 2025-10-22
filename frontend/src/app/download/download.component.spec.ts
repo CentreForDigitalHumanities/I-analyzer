@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { mockCorpus, mockField, mockField2 } from '../../mock-data/corpus';
+import { corpusFactory } from '../../mock-data/corpus';
 import { commonTestBed } from '../common-test-bed';
 import { QueryModel } from '@models';
 
@@ -18,8 +18,8 @@ describe('DownloadComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DownloadComponent);
         component = fixture.componentInstance;
-        component.corpus = mockCorpus;
-        component.queryModel = new QueryModel(mockCorpus);
+        component.corpus = corpusFactory();
+        component.queryModel = new QueryModel(component.corpus);
         component.ngOnChanges({
             queryModel: new SimpleChange(undefined, component.queryModel, true)
          });
@@ -32,15 +32,14 @@ describe('DownloadComponent', () => {
 
     it('should respond to field selection', () => {
         // Start with a single field
-        expect(component['getColumnNames']()).toEqual(['great_field', 'speech']);
+        expect(component['getColumnNames']()).toEqual(['genre', 'content', 'date']);
 
         // Deselect all
-        component.selectedCsvFields = [];
+        component.fieldSelection = [];
         expect(component['getColumnNames']()).toEqual([]);
 
         // Select two
-        component.selectedCsvFields = [mockField, mockField2];
-        const expected_fields = ['great_field', 'speech'];
-        expect(component['getColumnNames']()).toEqual(expected_fields);
+        component.fieldSelection = ['genre', 'content'];
+        expect(component['getColumnNames']()).toEqual(['genre', 'content']);
     });
 });
