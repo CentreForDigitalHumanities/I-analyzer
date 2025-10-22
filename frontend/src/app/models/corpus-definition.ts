@@ -94,11 +94,13 @@ export interface APIEditableCorpus {
     active: boolean;
     definition: APICorpusDefinition;
     has_image?: boolean;
+    has_confirmed_datafile?: boolean;
 }
 
 export class CorpusDefinition {
     active = false;
     hasImage = false;
+    hasConfirmedDataFile: boolean;
     loading$ = new BehaviorSubject<boolean>(true);
 
     definition: APICorpusDefinition;
@@ -154,8 +156,11 @@ export class CorpusDefinition {
         this.id = result.id;
         this.active = result.active;
         this.setFromDefinition(result.definition);
-        this.loading$.next(false);
         this.hasImage = result.has_image;
+        this.hasConfirmedDataFile = result.has_confirmed_datafile;
+
+        // do not edit properties AFTER this !!!
+        this.loading$.next(false);
     }
 };
 

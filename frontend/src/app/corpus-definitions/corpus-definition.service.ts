@@ -171,20 +171,16 @@ export class CorpusDefinitionService implements OnDestroy {
     }
 
     private dataComplete(corpus: CorpusDefinition) {
-        return true; // Placeholder for future data completeness checks
-    }
-
-    private hasFields(corpus: CorpusDefinition) {
-        return !_.isEmpty(corpus?.definition.fields);
+        return corpus.hasConfirmedDataFile;
     }
 
     private setSteps(corpus: CorpusDefinition) {
-        let maxStep = Infinity;
-        if (!this.metadataComplete(corpus)) {
-            maxStep = 0;
-        }
-        else if (!this.hasFields(corpus)) {
+        let maxStep = 0;
+        if (this.metadataComplete(corpus)) {
             maxStep = 1;
+        }
+        if (this.metadataComplete(corpus) && this.dataComplete(corpus)) {
+            maxStep = 3;
         }
 
         const steps = this.steps$.value.map(

@@ -56,23 +56,6 @@ export class DataFormComponent implements OnInit, OnDestroy {
                 next: (info) => this.fileInfo$.next(info),
                 error: (err) => this.error$.next(err),
             });
-
-        this.fileInfo$
-            .pipe(
-                takeUntil(this.destroy$),
-                distinctUntilChanged(_.isEqual),
-                filter(_.negate(_.isUndefined)),
-                switchMap((info) => {
-                    const fields = _.map(info.fields, (dtype, colName) =>
-                        this.corpusDefService.makeDefaultField(dtype, colName)
-                    );
-                    return of(fields);
-                })
-            )
-            .subscribe({
-                next: (fields) => this.corpusDefService.setFields(fields),
-                error: console.error,
-            });
     }
 
     onUpload(event: InputEvent) {
@@ -116,7 +99,10 @@ export class DataFormComponent implements OnInit, OnDestroy {
             .patchDataFile(this.dataFile.id, { confirmed: true })
             .pipe(switchMap((datafile) => this.loadDataFileInfo(datafile)))
             .subscribe({
-                next: (info) => this.fileInfo$.next(info),
+                next: (info) => {
+                    this.fileInfo$.next(info);
+                    this.setCorpusFields(info);
+                },
                 error: (err) => this.error$.next(err),
             });
     }
@@ -143,4 +129,10 @@ export class DataFormComponent implements OnInit, OnDestroy {
         return this.apiService.getDataFileInfo(dataFile);
     }
 
+    private setCorpusFields(info: DataFileInfo) {
+        const fields = _.map(info.fields, (dtype, colName) =>
+            this.corpusDefService.makeDefaultField(dtype, colName)
+        );
+        this.corpusDefService.setFields(fields);
+    }
 }
