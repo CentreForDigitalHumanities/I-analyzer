@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { APICorpusDefinitionField, CorpusDataFile, DataFileInfo, FIELD_TYPE_OPTIONS } from '@models/corpus-definition';
+import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
 import { ApiService, DialogService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
@@ -7,14 +7,13 @@ import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
 import {
     BehaviorSubject,
-    distinctUntilChanged,
     filter,
     map,
     Observable,
-    of,
     Subject,
     switchMap,
-    takeUntil,
+    take,
+    takeUntil
 } from 'rxjs';
 
 @Component({
@@ -133,6 +132,14 @@ export class DataFormComponent implements OnInit, OnDestroy {
         const fields = _.map(info.fields, (dtype, colName) =>
             this.corpusDefService.makeDefaultField(dtype, colName)
         );
+        this.nextStep();
         this.corpusDefService.setFields(fields);
+    }
+
+    private nextStep() {
+        this.corpusDefService.corpus$.value.definitionUpdated$.pipe(
+            take(1),
+            takeUntil(this.destroy$),
+        ).subscribe(() => this.corpusDefService.activateStep(2));
     }
 }
