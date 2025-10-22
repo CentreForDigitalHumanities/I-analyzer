@@ -81,16 +81,13 @@ export class DataFormComponent implements OnInit, OnDestroy {
         // should show the upload dialog again
     }
 
-    resetFile() {
+    handleReset = (): Observable<any> => this.apiService.deleteDataFile(this.dataFile);
+
+    onResetComplete() {
         // delete the file
-        this.apiService.deleteDataFile(this.dataFile).subscribe({
-            next: () => {
-                this.corpusDefService.setFields([]);
-                this.fileInfo$.next(undefined);
-                this.dataFile = undefined;
-            },
-            error: console.error,
-        });
+        this.corpusDefService.setFields([]);
+        this.fileInfo$.next(undefined);
+        this.dataFile = undefined;
     }
 
     confirmFile() {

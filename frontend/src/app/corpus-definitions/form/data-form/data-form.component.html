@@ -17,7 +17,7 @@
 
 <ng-template #currentFileMenu>
     <div class="field is-grouped">
-        <button class="button" (click)="resetFile()">
+        <button class="button" (click)="confirmReset.open()">
             <span class="icon" aria-hidden="true">
                 <fa-icon [icon]="formIcons.reset"></fa-icon>
             </span>
@@ -72,3 +72,15 @@
 
 
 </form>
+
+<ia-confirm-modal #confirmReset actionText="Remove data file" [handleAsync]="handleReset"
+    (result)="onResetComplete()">
+    <p *ngIf="dataFile?.confirmed">
+        This will delete the file <code>{{dataFile?.original_filename}}</code> and will
+        reset the form to this step. You will need to upload a new file before you
+        can continue.
+    </p>
+    <p *ngIf="!dataFile?.confirmed">
+        This will delete the file <code>{{dataFile?.original_filename}}</code>.
+    </p>
+</ia-confirm-modal>
