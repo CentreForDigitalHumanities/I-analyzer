@@ -1,4 +1,4 @@
-import { APP_BASE_HREF, TitleCasePipe } from '@angular/common';
+import { APP_BASE_HREF } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 
@@ -206,7 +206,6 @@ export const providers: any[] = [
             },
         }
     }),
-    TitleCasePipe,
     CookieService,
     { provide: APP_BASE_HREF, useValue: '/' },
 ];
