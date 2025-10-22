@@ -9,11 +9,7 @@ import { MenuModule } from 'primeng/menu';
 import { environment } from '@environments/environment';
 
 
-import {
-    ApiRetryService,
-    ApiService,
-    ElasticSearchService,
-} from './services/index';
+import { ApiRetryService, ElasticSearchService } from './services/index';
 
 import { AboutComponent } from './about/about.component';
 import { AppComponent } from './app.component';
@@ -193,7 +189,6 @@ if ('matomo' in environment) {
 }
 
 export const providers: any[] = [
-    ApiService,
     ApiRetryService,
     ElasticSearchService,
     CorpusGuard,
