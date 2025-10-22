@@ -58,6 +58,7 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { WordModelsModule } from './word-models/word-models.module';
 import { MatomoConfig, matomoImports } from './routing/matomo';
 import { stylePreset } from './primeng-theme';
+import { MenuDropdownComponent } from './menu/menu-dropdown/menu-dropdown.component';
 
 export const appRoutes: Routes = [
     {
@@ -181,6 +182,7 @@ export const declarations: any[] = [
     HomeComponent,
     MenuComponent,
     NotificationsComponent,
+    MenuDropdownComponent,
 ];
 
 export const imports: any[] = [

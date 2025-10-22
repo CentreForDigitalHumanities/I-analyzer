@@ -1,11 +1,10 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, fromEvent, merge, of, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, merge, of } from 'rxjs';
 import { User } from '@models/index';
 import { environment } from '@environments/environment';
 import { AuthService } from '@services/auth.service';
-import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
-import * as _ from 'lodash';
+import { filter, map } from 'rxjs/operators';
 import { navIcons, userIcons } from '@shared/icons';
 
 @Component({
@@ -15,13 +14,10 @@ import { navIcons, userIcons } from '@shared/icons';
     standalone: false
 })
 export class MenuComponent implements OnDestroy, OnInit {
-    @ViewChild('userDropdown') userDropdown: ElementRef;
-
     brand = environment.navbarBrand;
     adminUrl = environment.adminUrl;
 
     menuOpen$ = new BehaviorSubject<boolean>(false);
-    dropdownOpen$ = new BehaviorSubject<boolean>(false);
 
     user$: Observable<User>;
     isAdmin$: Observable<boolean>;
@@ -50,15 +46,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         this.user$ = this.authService.currentUser$;
         this.isAdmin$ = this.user$.pipe(map((user) => user?.isAdmin));
 
-        this.dropdownOpen$
-            .pipe(takeUntil(this.destroy$), filter(_.identity))
-            .subscribe(this.triggerCloseDropdown.bind(this));
-
         this.makeRoute();
-    }
-
-    toggleDropdown() {
-        this.dropdownOpen$.next(!this.dropdownOpen$.value);
     }
 
     toggleMenu() {
@@ -89,31 +77,5 @@ export class MenuComponent implements OnDestroy, OnInit {
                 queryParams: snapshot?.queryParams,
             }))
         );
-    }
-
-    /** close user dropdown when the user clicks or focuses elsewhere */
-    private triggerCloseDropdown() {
-        // observable of the next click
-        // timer(0) is used to avoid the opening click event being registered
-        const clicks$ = timer(0).pipe(
-            switchMap(() => fromEvent(document, 'click'))
-        );
-
-        // observable of the dropdown losing focus
-
-        const focusOutOfDropdown = (event: FocusEvent) =>
-            _.isNull(event.relatedTarget) ||
-            (event.relatedTarget as Element).parentElement.id !==
-                'userDropdown';
-
-        const focusOut$ = fromEvent<FocusEvent>(
-            this.userDropdown.nativeElement,
-            'focusout'
-        ).pipe(filter(focusOutOfDropdown));
-
-        // when either of these happens, close the dropdown
-        merge(clicks$, focusOut$)
-            .pipe(take(1))
-            .subscribe(() => this.dropdownOpen$.next(false));
     }
 }
