@@ -11,7 +11,7 @@ import { DownloadModule } from '../download/download.module';
 import { ElasticSearchService, QueryService, SearchService } from '@services';
 import { VisualizationModule } from '../visualization/visualization.module';
 import { ResultsSortModule } from './results-sort/results-sort.module';
-import { SelectFieldComponent } from '../select-field/select-field.component';
+import { SelectFieldComponent } from './select-field/select-field.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 
 

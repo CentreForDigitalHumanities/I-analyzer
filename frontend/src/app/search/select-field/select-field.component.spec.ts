@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SelectFieldComponent } from './select-field.component';
-import { commonTestBed } from '../common-test-bed';
-import { corpusFactory } from '../../mock-data/corpus';
+import { commonTestBed } from '../../common-test-bed';
+import { corpusFactory } from '../../../mock-data/corpus';
 import { QueryModel } from '@models';
 
 describe('SelectFieldComponent', () => {
