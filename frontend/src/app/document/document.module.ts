@@ -20,6 +20,7 @@ import { EntityPipe } from './pipes/entity.pipe';
 import { ParagraphPipe } from './pipes/paragraph.pipe';
 import { SnippetPipe } from './pipes/snippet.pipe';
 import { ContentFieldComponent } from './content-field/content-field.component';
+import { ElasticSearchService } from '@services';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,9 @@ import { ContentFieldComponent } from './content-field/content-field.component';
         DocumentPreviewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,
+    ],
+    providers: [
+        ElasticSearchService,
     ]
 })
 export class DocumentModule { }
