@@ -12,7 +12,7 @@ import {
 
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { ShowError } from '../error/error.component';
+import { ShowError } from '@shared/error/error.component';
 import { QueryModel, SearchResults, User } from '@models/index';
 import { PageResults, PageResultsParameters } from '@models/page-results';
 import { SearchService } from '@services';
