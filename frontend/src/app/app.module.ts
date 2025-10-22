@@ -13,7 +13,6 @@ import {
     ApiRetryService,
     ApiService,
     ElasticSearchService,
-    HighlightService,
 } from './services/index';
 
 import { AboutComponent } from './about/about.component';
@@ -197,7 +196,6 @@ export const providers: any[] = [
     ApiService,
     ApiRetryService,
     ElasticSearchService,
-    HighlightService,
     CorpusGuard,
     LoggedOnGuard,
     providePrimeNG({
