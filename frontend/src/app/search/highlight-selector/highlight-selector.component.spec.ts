@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { corpusFactory } from '../../../mock-data/corpus';
-import { commonTestBed } from '../../common-test-bed';
+import { commonTestBed } from '@app/common-test-bed';
 import { QueryModel } from '@models';
 
 import { HighlightSelectorComponent } from './highlight-selector.component';

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import * as _ from 'lodash';
 import { corpusFactory, keywordFieldFactory, } from '../../../mock-data/corpus';
-import { commonTestBed } from '../../common-test-bed';
+import { commonTestBed } from '@app/common-test-bed';
 
 import { CorpusField, FoundDocument, QueryModel } from '@models/index';
 

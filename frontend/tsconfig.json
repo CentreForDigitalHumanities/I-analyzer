@@ -14,6 +14,7 @@
       "module": "esnext",
       "baseUrl": "src",
       "paths": {
+          "@app/*": ["app/*"],
           "@shared/*": ["app/shared/*"],
           "@models": ["app/models"],
           "@models/*": ["app/models/*"],

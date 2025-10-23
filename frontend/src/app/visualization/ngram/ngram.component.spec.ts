@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 
 import { QueryModel } from '@models';
 import { corpusFactory } from '../../../mock-data/corpus';
-import { commonTestBed } from '../../common-test-bed';
+import { commonTestBed } from '@app/common-test-bed';
 import { NgramComponent } from './ngram.component';
 import { ApiService, VisualizationService } from '@services';
 import { ApiServiceMock, fakeNgramResult } from '../../../mock-data/api';
