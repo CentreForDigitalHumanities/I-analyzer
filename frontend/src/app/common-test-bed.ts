@@ -40,47 +40,37 @@ export const commonTestBed = () => {
             }),
         },
         {
-            provide: AuthService,
-            useValue: new AuthServiceMock()
+            provide: AuthService, useClass: AuthServiceMock,
         },
         {
-            provide: CorpusService, useValue: new CorpusServiceMock()
+            provide: CorpusService, useClass: CorpusServiceMock,
         },
         {
-            provide: DialogService,
-            useClass: DialogServiceMock,
+            provide: DialogService, useClass: DialogServiceMock,
         },
         {
-            provide: ElasticSearchService,
-            useValue: new ElasticSearchServiceMock(),
+            provide: ElasticSearchService, useClass: ElasticSearchServiceMock,
         },
         {
-            provide: EntityService,
-            useValue: new EntityServiceMock(),
+            provide: EntityService, useClass: EntityServiceMock,
         },
         {
-            provide: ElementRef,
-            useClass: MockElementRef,
+            provide: ElementRef, useClass: MockElementRef,
         },
         {
-            provide: SearchService,
-            useValue: new SearchServiceMock(),
+            provide: SearchService, useClass: SearchServiceMock,
         },
         {
-            provide: WordmodelsService,
-            useValue: new WordmodelsServiceMock(),
+            provide: WordmodelsService, useClass: WordmodelsServiceMock,
         },
         {
-            provide: VisualizationService,
-            useValue: new VisualizationServiceMock(),
+            provide: VisualizationService, useClass: VisualizationServiceMock,
         },
         {
-            provide: TagService,
-            useValue: new TagServiceMock(),
+            provide: TagService, useClass: TagServiceMock,
         },
         {
-            provide: RouterStoreService,
-            useValue: new SimpleStore()
+            provide: RouterStoreService, useClass: SimpleStore,
         },
         {
             provide: CorpusDefinitionService,

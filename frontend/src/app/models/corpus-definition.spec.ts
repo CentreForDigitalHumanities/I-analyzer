@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { ApiService } from '@services';
 import { CorpusDefinition } from './corpus-definition';
-import { ApiServiceMock } from '../../mock-data/api';
-import { corpusDefinitionFactory } from '../../mock-data/corpus-definition';
+import { ApiServiceMock } from '@mock-data/api';
+import { corpusDefinitionFactory } from '@mock-data/corpus-definition';
 import * as _ from 'lodash';
 
 

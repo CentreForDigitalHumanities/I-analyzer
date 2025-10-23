@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { DocumentPageComponent } from './document-page/document-page.component';
-import { ImageViewModule } from '../image-view/image-view.module';
+import { ImageViewModule } from './image-view/image-view.module';
 import { SearchRelevanceComponent } from '../search';
-import { CorpusModule } from '../corpus-header/corpus.module';
+import { CorpusModule } from '../corpus/corpus.module';
 import { TagModule } from '../tag/tag.module';
 import { DocumentPopupComponent } from './document-popup/document-popup.component';
 import { DialogModule } from 'primeng/dialog';
@@ -20,6 +20,7 @@ import { EntityPipe } from './pipes/entity.pipe';
 import { ParagraphPipe } from './pipes/paragraph.pipe';
 import { SnippetPipe } from './pipes/snippet.pipe';
 import { ContentFieldComponent } from './content-field/content-field.component';
+import { ElasticSearchService } from '@services';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,9 @@ import { ContentFieldComponent } from './content-field/content-field.component';
         DocumentPreviewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,
+    ],
+    providers: [
+        ElasticSearchService,
     ]
 })
 export class DocumentModule { }

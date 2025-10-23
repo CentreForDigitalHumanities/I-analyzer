@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CorpusDefinition } from '../../../models/corpus-definition';
-import { ApiService } from '../../../services';
+import { CorpusDefinition } from '@models/corpus-definition';
+import { ApiService } from '@services/api.service';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { combineLatest, map, tap } from 'rxjs';
 import _ from 'lodash';

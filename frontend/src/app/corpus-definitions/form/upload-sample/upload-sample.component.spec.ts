@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UploadSampleComponent } from './upload-sample.component';
-import { commonTestBed } from 'app/common-test-bed';
+import { commonTestBed } from '@app/common-test-bed';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import { ApiService } from '@services';
 import { CorpusDefinition } from '@models/corpus-definition';
