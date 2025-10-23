@@ -10,7 +10,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { BalloonDirective } from './balloon/balloon.directive';
-import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
+import { DatePickerComponent } from './date-picker/date-picker.component';
 import { ErrorComponent } from './error/error.component';
 import { DropdownModule } from './dropdown/dropdown.module';
 import { TabPanelDirective } from './tabs/tab-panel.directive';
