@@ -5,7 +5,7 @@ import { commonTestBed } from '@app/common-test-bed';
 import { DateFilter, DateFilterData, QueryModel } from '@models';
 
 import { DateFilterComponent } from './date-filter.component';
-import { SimpleStore } from '../../store/simple-store';
+import { SimpleStore } from '@app/store/simple-store';
 import { SearchService } from '@services';
 import * as _ from 'lodash';
 

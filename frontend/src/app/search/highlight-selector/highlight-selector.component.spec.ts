@@ -7,7 +7,7 @@ import { HighlightSelectorComponent } from './highlight-selector.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { PageResults } from '@models/page-results';
-import { SimpleStore } from '../../store/simple-store';
+import { SimpleStore } from '@app/store/simple-store';
 import { SearchServiceMock } from '@mock-data/search';
 import { SearchService } from '@services';
 

@@ -11,7 +11,7 @@ import { PageResults } from '@models/page-results';
 import { DocumentPage } from '@models/document-page';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
-import { SimpleStore } from '../../store/simple-store';
+import { SimpleStore } from '@app/store/simple-store';
 import { take } from 'rxjs/operators';
 
 const createField = (name: string): CorpusField => {

@@ -6,7 +6,7 @@ import { SearchService } from '@services';
 import * as _ from 'lodash';
 import { corpusFactory, intFieldFactory } from '@mock-data/corpus';
 import { CorpusField, QueryModel, RangeFilter } from '@models';
-import { SimpleStore } from '../../store/simple-store';
+import { SimpleStore } from '@app/store/simple-store';
 import { RangeFilterComponent } from './range-filter.component';
 
 describe('RangeFilterComponent', () => {
