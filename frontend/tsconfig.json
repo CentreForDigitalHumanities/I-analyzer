@@ -21,7 +21,8 @@
           "@services": ["app/services"],
           "@services/*": ["app/services/*"],
           "@utils/*": ["app/utils/*"],
-          "@environments/*": ["environments/*"]
+          "@environments/*": ["environments/*"],
+          "@mock-data/*": ["mock-data/*"]
       },
       "useDefineForClassFields": false,
       "resolveJsonModule": true

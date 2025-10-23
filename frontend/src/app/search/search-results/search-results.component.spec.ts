@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import * as _ from 'lodash';
-import { corpusFactory, keywordFieldFactory, } from '../../../mock-data/corpus';
+import { corpusFactory, keywordFieldFactory, } from '@mock-data/corpus';
 import { commonTestBed } from '@app/common-test-bed';
 
 import { CorpusField, FoundDocument, QueryModel } from '@models/index';
 
 import { SearchResultsComponent } from './search-results.component';
-import { makeDocument } from '../../../mock-data/constructor-helpers';
+import { makeDocument } from '@mock-data/constructor-helpers';
 import { PageResults } from '@models/page-results';
 import { DocumentPage } from '@models/document-page';
 import { of } from 'rxjs';

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { booleanFieldFactory, corpusFactory } from '../../../mock-data/corpus';
+import { booleanFieldFactory, corpusFactory } from '@mock-data/corpus';
 
 import { commonTestBed } from '@app/common-test-bed';
 import { BooleanFilter, CorpusField, QueryModel } from '@models';

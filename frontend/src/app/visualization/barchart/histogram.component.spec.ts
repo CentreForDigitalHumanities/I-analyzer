@@ -4,7 +4,7 @@ import { QueryModel } from '@models';
 import { commonTestBed } from '@app/common-test-bed';
 
 import { HistogramComponent } from './histogram.component';
-import { corpusFactory, keywordFieldFactory } from '../../../mock-data/corpus';
+import { corpusFactory, keywordFieldFactory } from '@mock-data/corpus';
 
 describe('HistogramCompoment', () => {
     let component: HistogramComponent;

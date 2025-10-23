@@ -4,11 +4,11 @@ import { By } from '@angular/platform-browser';
 import { commonTestBed } from '@app/common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { corpusFactory } from '../../../mock-data/corpus';
+import { corpusFactory } from '@mock-data/corpus';
 import { QueryModel } from '@models';
 
 import { AuthService } from '@services';
-import { UnauthenticatedMock } from '../../../mock-data/auth';
+import { UnauthenticatedMock } from '@mock-data/auth';
 
 describe('FilterManagerComponent', () => {
     let component: FilterManagerComponent;

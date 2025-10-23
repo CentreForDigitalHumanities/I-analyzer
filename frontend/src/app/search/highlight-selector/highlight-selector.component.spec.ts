@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { corpusFactory } from '../../../mock-data/corpus';
+import { corpusFactory } from '@mock-data/corpus';
 import { commonTestBed } from '@app/common-test-bed';
 import { QueryModel } from '@models';
 
@@ -8,7 +8,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { PageResults } from '@models/page-results';
 import { SimpleStore } from '../../store/simple-store';
-import { SearchServiceMock } from '../../../mock-data/search';
+import { SearchServiceMock } from '@mock-data/search';
 import { SearchService } from '@services';
 
 describe('HighlightSelectorComponent', () => {

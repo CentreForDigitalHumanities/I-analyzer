@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } from '@angular/core/testing';
-import { corpusFactory, dateFieldFactory } from '../../../mock-data/corpus';
+import { corpusFactory, dateFieldFactory } from '@mock-data/corpus';
 
 import { commonTestBed } from '@app/common-test-bed';
 import { DateFilter, DateFilterData, QueryModel } from '@models';

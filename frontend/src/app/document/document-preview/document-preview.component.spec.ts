@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DocumentPreviewComponent } from './document-preview.component';
 import { commonTestBed } from '@app/common-test-bed';
-import { contentFieldFactory } from '../../../mock-data/corpus';
-import { makeDocument } from '../../../mock-data/constructor-helpers';
+import { contentFieldFactory } from '@mock-data/corpus';
+import { makeDocument } from '@mock-data/constructor-helpers';
 import { DocumentPage } from '@models/document-page';
 
 describe('DocumentPreviewComponent', () => {

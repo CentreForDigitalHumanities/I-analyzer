@@ -3,8 +3,8 @@ import { By } from '@angular/platform-browser';
 
 import { DocumentPopupComponent } from './document-popup.component';
 import { commonTestBed } from '@app/common-test-bed';
-import { makeDocument } from '../../../mock-data/constructor-helpers';
-import { corpusFactory } from '../../../mock-data/corpus';
+import { makeDocument } from '@mock-data/constructor-helpers';
+import { corpusFactory } from '@mock-data/corpus';
 import { DocumentPage } from '@models/document-page';
 import { QueryModel } from '@models';
 

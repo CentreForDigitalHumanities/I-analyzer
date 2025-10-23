@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '@app/common-test-bed';
 
 import { DocumentPageComponent } from './document-page.component';
-import { makeDocument } from '../../../mock-data/constructor-helpers';
+import { makeDocument } from '@mock-data/constructor-helpers';
 
 describe('DocumentPageComponent', () => {
     let component: DocumentPageComponent;
