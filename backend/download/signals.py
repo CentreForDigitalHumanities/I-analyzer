@@ -17,12 +17,14 @@ def _try_remove_file(path):
         logger.warning(f'Could not remove file: {path}', exc_info=True)
 
 @receiver(post_delete, sender=Download)
-def after_download_delete(sender, instance, **kwargs):
+def after_download_delete(sender, instance: Download, **kwargs):
     if instance.filename:
         full_path = os.path.abspath(instance.filename)
         _try_remove_file(full_path)
 
-        converted_path = output_path(
-            settings.CSV_FILES_PATH, instance.filename)[0]
+        converted_path, _ = output_path(
+            os.path.dirname(os.path.abspath(instance.filename)),
+            instance.filename
+        )
         if os.path.exists(converted_path):
             _try_remove_file(converted_path)
