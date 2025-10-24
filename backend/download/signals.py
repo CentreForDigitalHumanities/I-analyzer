@@ -14,7 +14,7 @@ def _try_remove_file(path):
     try:
         os.remove(path)
     except:
-        logger.warning(f'Could nore remove file: {path}', exc_info=True)
+        logger.warning(f'Could not remove file: {path}', exc_info=True)
 
 @receiver(post_delete, sender=Download)
 def after_download_delete(sender, instance, **kwargs):
