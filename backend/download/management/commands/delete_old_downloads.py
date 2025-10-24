@@ -40,7 +40,10 @@ class Command(BaseCommand):
         if response == 'y':
             old_downloads.delete()
             for path in orphan_files:
-                os.remove(path)
+                try:
+                    os.remove(path)
+                except Exception as e:
+                    print(self.style.WARNING(f'Could not remove {path}: {e}'))
             print(self.style.SUCCESS('Finished'))
         else:
             print('No action taken.')
