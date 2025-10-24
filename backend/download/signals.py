@@ -19,7 +19,7 @@ def _try_remove_file(path):
 @receiver(post_delete, sender=Download)
 def after_download_delete(sender, instance, **kwargs):
     if instance.filename:
-        full_path = os.path.join(settings.CSV_FILES_PATH, instance.filename)
+        full_path = os.path.abspath(instance.filename)
         _try_remove_file(full_path)
 
         converted_path = output_path(
