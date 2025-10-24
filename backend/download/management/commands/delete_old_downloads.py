@@ -38,7 +38,10 @@ class Command(BaseCommand):
         response = input().lower()
 
         if response == 'y':
+            print('Removing downloads records...')
             old_downloads.delete()
+
+            print('Removing orphan files...')
             for path in orphan_files:
                 try:
                     os.remove(path)
