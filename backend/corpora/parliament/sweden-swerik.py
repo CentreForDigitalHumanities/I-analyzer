@@ -297,7 +297,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
         level='source',
     )
 
-    chamber = field_defaults.chamber()
+    chamber = field_defaults.chamber(count=3)
     chamber.extractor = Metadata('chamber', transform=_chambers.get)
 
     country = field_defaults.country()
