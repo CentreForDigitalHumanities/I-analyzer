@@ -55,7 +55,9 @@ export class ConfirmModalComponent implements OnDestroy {
     @Input({required: true}) actionText: string;
     @Input() icon: any;
     @Input() actionButtonClass: string = 'is-primary';
-    @Output() result = new Subject<any>();
+    @Input() disableCloseButton: boolean = false;
+    @Output() accept = new Subject<any>();
+    @Output() reject = new Subject<void>();
 
     @ViewChild('modalTitle') title: ElementRef<HTMLElement>;
 
@@ -73,7 +75,7 @@ export class ConfirmModalComponent implements OnDestroy {
     ngOnDestroy(): void {
         this.confirmAction$.complete();
         this.loading$.complete();
-        this.result.complete();
+        this.accept.complete();
     }
 
     open(data?: any) {
@@ -87,11 +89,12 @@ export class ConfirmModalComponent implements OnDestroy {
             lastValueFrom(this.handleAsync(data)),
         ).then(res => {
             this.confirmAction$.next(undefined);
-            this.result.next(res)
+            this.accept.next(res)
         });
     }
 
     cancel() {
         this.confirmAction$.next(undefined);
+        this.reject.next();
     }
 }
