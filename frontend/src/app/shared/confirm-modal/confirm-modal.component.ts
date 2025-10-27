@@ -76,7 +76,7 @@ export class ConfirmModalComponent implements OnDestroy {
         this.result.complete();
     }
 
-    open(data: any) {
+    open(data?: any) {
         this.confirmAction$.next({data});
         setTimeout(() => this.title.nativeElement.focus());
     }
