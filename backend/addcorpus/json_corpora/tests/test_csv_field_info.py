@@ -1,4 +1,3 @@
-from operator import is_
 import os
 from addcorpus.json_corpora.csv_field_info import (
     is_date, is_date_col, is_long_text, get_csv_info, is_url, is_url_col
@@ -60,12 +59,12 @@ def test_map_col(small_mock_corpus):
     info = get_csv_info(filepath)
     assert info == {
         'n_rows': 3,
-        'fields': {
-            'date': 'date',
-            'genre': 'text_metadata',
-            'title': 'text_metadata',
-            'content': 'text_content',
-            'url': 'url'
-        },
+        'fields': [
+            {'name': 'date', 'type': 'date'},
+            {'name': 'genre', 'type': 'text_metadata'},
+            {'name': 'title', 'type': 'text_metadata'},
+            {'name': 'content', 'type': 'text_content'},
+            {'name': 'url', 'type': 'url'}
+        ],
         'delimiter': ','
     }

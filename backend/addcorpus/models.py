@@ -548,6 +548,12 @@ class CorpusDataFile(models.Model):
         help_text='whether the file has been confirmed by the user as correct',
     )
 
+    csv_info = models.JSONField(
+        default=dict(),
+        blank=True,
+        help_text='contains information on the content of the file, e.g. columns and number of rows'
+    )
+
     def __str__(self):
         return f'{self.file.name}'
 

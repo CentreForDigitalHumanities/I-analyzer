@@ -268,10 +268,12 @@ class DataFileField(serializers.FileField):
 class CorpusDataFileSerializer(serializers.ModelSerializer):
     file = DataFileField()
     original_filename = serializers.CharField(read_only=True)
+    csv_info = serializers.JSONField(read_only=True)
 
     class Meta:
         model = CorpusDataFile
-        fields = ('id', 'corpus', 'file', 'created', 'is_sample', 'confirmed', 'original_filename')
+        fields = ('id', 'corpus', 'file', 'created', 'is_sample',
+                  'confirmed', 'original_filename', 'csv_info')
 
     def validate(self, data):
         if file := data.get('file'):

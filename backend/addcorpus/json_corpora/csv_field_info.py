@@ -20,7 +20,8 @@ def get_csv_info(path: Union[str, os.PathLike], **kwargs) -> Dict:
     df = pd.read_csv(path, encoding=encoding, sep=dialect.delimiter, **kwargs)
     info = {
         'n_rows': len(df),
-        'fields': {col_name: map_col(df[col_name]) for col_name in df.columns},
+        'fields': [
+            {'name': col_name, 'type': map_col(df[col_name])} for col_name in df.columns],
         'delimiter': dialect.delimiter,
     }
     return info
