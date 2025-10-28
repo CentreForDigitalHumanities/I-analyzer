@@ -38,9 +38,15 @@ class Command(BaseCommand):
         response = input().lower()
 
         if response == 'y':
+            print('Removing downloads records...')
             old_downloads.delete()
+
+            print('Removing orphan files...')
             for path in orphan_files:
-                os.remove(path)
+                try:
+                    os.remove(path)
+                except Exception as e:
+                    print(self.style.WARNING(f'Could not remove {path}: {e}'))
             print(self.style.SUCCESS('Finished'))
         else:
             print('No action taken.')
