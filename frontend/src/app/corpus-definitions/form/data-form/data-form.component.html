@@ -1,38 +1,45 @@
-none uploaded: {{noneUploaded$|async}}<br>
-
-first uploaded: {{firstUploaded$|async}}<br>
-
-first confirmed: {{firstConfirmed$|async}}<br>
-
-new uploaded: {{newUploaded$|async}}<br>
-
-<!-- {{dataFiles$ | async|json}}
-{{confirmed$ | async | json}} -->
+@let fileState = fileState$ | async;
+@let dataFiles = dataFiles$ | async;
+@let confirmed = confirmed$ | async;
+@let unconfirmed = unconfirmed$ | async;
 
 <h1 class="title">Upload a sample of your data</h1>
-<p class="subtitle">Determines sensible default values for the fields of your corpus</p>
+<p class="subtitle">
+    Determines sensible default values for the fields of your corpus
+</p>
 
 <button class="button" (click)="openDocumentation()">Manual</button>
 
-<ng-container *ngIf="noneUploaded$ |async">
-    <p>You have not uploaded a data file yet.</p>
-</ng-container>
+@switch (fileState) {
+    @case ("noneUploaded") {
+        <p>You have not uploaded a data file yet.</p>
+    }
 
-<ng-container *ngIf="(firstUploaded$ | async)">
-    <ia-datafile-info [currentDataFile]="unconfirmed$|async" />
-    <p>If this is what you expected, click "use this file" to base your corpus on this data file.</p>
-    <p>In the next step, you can configure the fields in more detail.</p>
-    <p>If this does not seem correct, please consult the manual and make sure the file is formatted correctly.</p>
-    <p>You can use "reset" to remove your data file, or "replace" to upload a different one. </p>
-</ng-container>
+    @case ("firstUploaded") {
+        <ia-datafile-info [currentDataFile]="unconfirmed$ | async" />
+        <p>
+            If this is what you expected, click "use this file" to base your
+            corpus on this data file.
+        </p>
+        <p>In the next step, you can configure the fields in more detail.</p>
+        <p>
+            If this does not seem correct, please consult the manual and make
+            sure the file is formatted correctly.
+        </p>
+        <p>
+            You can use "reset" to remove your data file, or "replace" to upload
+            a different one.
+        </p>
+    }
 
-<ng-container *ngIf="(firstConfirmed$ | async)">
-    <ia-datafile-info [currentDataFile]="confirmed$| async" />
-</ng-container>
+    @case ("firstConfirmed") {
+        <ia-datafile-info [currentDataFile]="confirmed" />
+    }
+}
 
-<ng-container #currentFileMenu *ngIf="(firstUploaded$ | async) || (firstConfirmed$ | async)">
+@if (fileState === "firstUploaded" || fileState == "firstConfirmed") {
     <div class="field is-grouped">
-        <button class="button" (click)="confirmReset.open()">
+        <button class="button" (click)="confirmReset.open(dataFiles)">
             <span class="icon" aria-hidden="true">
                 <fa-icon [icon]="formIcons.reset"></fa-icon>
             </span>
@@ -40,8 +47,13 @@ new uploaded: {{newUploaded$|async}}<br>
         </button>
         <div class="file mb-0">
             <label class="file-label">
-                <input class="file-input" type="file" name="definition-upload"
-                    accept=".csv,.tsv,text/csv,text/tab-separated-values " (input)="onUpload($event)" />
+                <input
+                    class="file-input"
+                    type="file"
+                    name="definition-upload"
+                    accept=".csv,.tsv,text/csv,text/tab-separated-values "
+                    (input)="onUpload($event)"
+                />
                 <span class="file-cta">
                     <span class="file-icon" aria-hidden="true">
                         <fa-icon [icon]="formIcons.replace"></fa-icon>
@@ -50,69 +62,86 @@ new uploaded: {{newUploaded$|async}}<br>
                 </span>
             </label>
         </div>
-        <button *ngIf="!(firstConfirmed$|async)" class="button is-primary" (click)="confirmFile()">
-            <span class="icon" aria-hidden="true">
-                <fa-icon [icon]="formIcons.confirm"></fa-icon>
-            </span>
-            <span>Use this file</span>
-        </button>
-    </div>
-</ng-container>
-
-
-<form *ngIf="(noneUploaded$|async)">
-    <div class="field">
-        <div class="file">
-            <label class="file-label">
-                <input class="file-input" type="file" name="definition-upload"
-                    accept=".csv,.tsv,text/csv,text/tab-separated-values " (input)="onUpload($event)" />
-                <span class="file-cta">
-                    <span class="file-icon" aria-hidden="true">
-                        <fa-icon [icon]="actionIcons.upload"></fa-icon>
-                    </span>
-                    <span class="file-label">Upload CSV file...</span>
+        @if (fileState === "firstUploaded") {
+            <button class="button is-primary" (click)="confirmFile()">
+                <span class="icon" aria-hidden="true">
+                    <fa-icon [icon]="formIcons.confirm"></fa-icon>
                 </span>
-            </label>
-        </div>
+                <span>Use this file</span>
+            </button>
+        }
     </div>
+}
 
-    <div class="message is-danger" *ngIf="error$ | async as error">
-        <div class="message-header">
-            Invalid file
+@if (fileState === "noneUploaded") {
+    <form>
+        <div class="field">
+            <div class="file">
+                <label class="file-label">
+                    <input
+                        class="file-input"
+                        type="file"
+                        name="definition-upload"
+                        accept=".csv,.tsv,text/csv,text/tab-separated-values "
+                        (input)="onUpload($event)"
+                    />
+                    <span class="file-cta">
+                        <span class="file-icon" aria-hidden="true">
+                            <fa-icon [icon]="actionIcons.upload"></fa-icon>
+                        </span>
+                        <span class="file-label">Upload CSV file...</span>
+                    </span>
+                </label>
+            </div>
         </div>
-        <div class="message-body">
-            An error occurred when reading the file: {{error.message}}
+
+        <div class="message is-danger" *ngIf="error$ | async as error">
+            <div class="message-header">Invalid file</div>
+            <div class="message-body">
+                An error occurred when reading the file: {{ error.message }}
+            </div>
         </div>
-    </div>
+    </form>
+}
 
-
-</form>
-
-<ia-confirm-modal #confirmReset actionText="Remove data file" [handleAsync]="handleReset"
-    (accept)="onResetComplete()">
-    <p *ngIf="(confirmed$ | async) as dataFile">
-        This will delete the file <code>{{dataFile?.original_filename}}</code> and will
-        reset the form to this step. You will need to upload a new file before you
-        can continue.
-    </p>
-    <p *ngIf="(unconfirmed$ | async) as dataFile">
-        This will delete the file <code>{{dataFile?.original_filename}}</code>.
-    </p>
+<!-- Reset confirmation -->
+<ia-confirm-modal
+    #confirmReset
+    actionText="Remove data file"
+    [handleAsync]="handleReset"
+    (accept)="onResetComplete()"
+>
+    @if (confirmed) {
+        <p>
+            This will delete the file
+            <code>{{ confirmed.original_filename }}</code> and will reset the
+            form to this step. You will need to upload a new file before you can
+            continue.
+        </p>
+    }
+    @if (unconfirmed) {
+        <p>
+            This will delete the file
+            <code>{{ unconfirmed.original_filename }}</code
+            >.
+        </p>
+    }
 </ia-confirm-modal>
 
-<!-- Compare and confirm replaced file -->
-<ia-confirm-modal #confirmReplace actionText="Replace data file" [disableCloseButton]="true"
-    (accept)="onReplaceAccept()" (reject)="onReplaceReject()" [handleAsync]="handleReplace">
-    <div class="columns">
-        <div class="column">
-            <ng-container>
-                <ia-datafile-info [currentDataFile]="confirmed$| async" />
-            </ng-container>
-        </div>
-        <div class="column">
-            <ng-container>
-                <ia-datafile-info [currentDataFile]="unconfirmed$| async" />
-            </ng-container>
-        </div>
+<!-- Replace file confimation -->
+<div class="modal" [class.is-active]="fileState === 'newUploaded'">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Replace data file?</p>
+        </header>
+        <section class="modal-card-body">
+            <ia-datafile-info
+                [currentDataFile]="confirmed"
+                [newDataFile]="unconfirmed"
+                (onCurrentSelected)="onReplace(handleReplaceReject)"
+                (onNewSelected)="onReplace(handleReplaceAccept)"
+            ></ia-datafile-info>
+        </section>
     </div>
-</ia-confirm-modal>
+</div>
