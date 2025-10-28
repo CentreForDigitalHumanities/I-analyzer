@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { APICorpusDefinitionField, CorpusDataFile, DataFileInfo, FIELD_TYPE_OPTIONS } from '@models/corpus-definition';
+import { APICorpusDefinitionField, CorpusDataFile, FIELD_TYPE_OPTIONS } from '@models/corpus-definition';
 
 @Component({
     selector: 'ia-datafile-info',
@@ -8,11 +8,10 @@ import { APICorpusDefinitionField, CorpusDataFile, DataFileInfo, FIELD_TYPE_OPTI
     standalone: false,
 })
 export class DatafileInfoComponent {
-    @Input({ required: true }) currentFileInfo!: DataFileInfo;
     @Input({ required: true }) currentDataFile!: CorpusDataFile;
 
-
     fieldTypeLabel(value: APICorpusDefinitionField['type']) {
-        return FIELD_TYPE_OPTIONS.find(option => option.value == value)?.label;
+        return FIELD_TYPE_OPTIONS.find((option) => option.value == value)
+            ?.label;
     }
 }

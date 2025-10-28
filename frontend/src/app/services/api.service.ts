@@ -353,12 +353,6 @@ export class ApiService {
         });
     }
 
-    public getDataFileInfo(dataFile: CorpusDataFile): Observable<DataFileInfo> {
-        return this.http.get<DataFileInfo>(
-            `/api/corpus/datafiles/${dataFile.id}/info/`
-        );
-    }
-
     // Tagging
 
     public userTags(): Observable<Tag[]> {

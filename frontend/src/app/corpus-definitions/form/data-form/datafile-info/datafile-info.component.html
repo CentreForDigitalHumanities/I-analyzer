@@ -1,12 +1,12 @@
-<div class="block">
+<div class="block" *ngIf="currentDataFile">
     <p>
-        <span>Uploaded <code>{{currentDataFile.original_filename}}</code>. </span>
-        <span>Number of documents: {{currentFileInfo.n_rows}}. </span>
+        <span>{{currentDataFile.confirmed ? "Current file: " : "Uploaded: "}}
+            <code>{{currentDataFile.original_filename}}</code>. </span>
+        <span>Number of documents: {{currentDataFile.csv_info.n_rows}}. </span>
     </p>
-    <p>Found the following columns in your sample file:</p>
+    <p *ngIf="!currentDataFile.confirmed">Found the following columns in your sample file:</p>
+
     <table class="table is-fullwidth">
-        <!-- <caption style="text-align: left">Number of documents: {{currentFileInfo.n_rows}}</caption>
-        <caption style="text-align: left">Found the following columns in your sample file:</caption> -->
         <thead>
             <tr>
                 <th>Column</th>
@@ -14,9 +14,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let field of currentFileInfo.fields|keyvalue">
-                <td>{{field.key}}</td>
-                <td>{{fieldTypeLabel(field.value)}}</td>
+            <tr *ngFor="let field of currentDataFile.csv_info.fields">
+                <td>{{field.name}}</td>
+                <td>{{fieldTypeLabel(field.type)}}</td>
             </tr>
         </tbody>
     </table>

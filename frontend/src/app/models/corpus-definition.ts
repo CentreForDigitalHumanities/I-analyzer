@@ -13,11 +13,12 @@ export interface CorpusDataFile {
     is_sample: boolean;
     created?: Date;
     confirmed: boolean;
+    csv_info: DataFileInfo;
 }
 
 export interface DataFileInfo {
     n_rows: number;
-    fields: { [columnName: string]: APICorpusDefinitionField['type'] };
+    fields: [Pick<APICorpusDefinitionField, 'name' | 'type'>];
     delimiter: Delimiter;
 }
 

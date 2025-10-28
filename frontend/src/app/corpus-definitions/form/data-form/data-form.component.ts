@@ -1,12 +1,21 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
 import { ApiService, DialogService } from '@services';
+import { ConfirmModalComponent } from '@shared/confirm-modal/confirm-modal.component';
 import { actionIcons, formIcons } from '@shared/icons';
 import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
 import * as _ from 'lodash';
 import { MenuItem } from 'primeng/api';
 import {
     BehaviorSubject,
+    combineLatest,
+    concat,
     filter,
     map,
     Observable,
@@ -20,15 +29,20 @@ import {
     selector: 'ia-data-form',
     templateUrl: './data-form.component.html',
     styleUrl: './data-form.component.scss',
-    standalone: false
+    standalone: false,
 })
-export class DataFormComponent implements OnInit, OnDestroy {
+export class DataFormComponent implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('confirmReplace') ReplaceConfirmModal: ConfirmModalComponent;
+
     actionIcons = actionIcons;
     formIcons = formIcons;
 
-    file$ = new BehaviorSubject<File | undefined>(undefined);
-    dataFile: CorpusDataFile;
-    fileInfo$ = new Subject<DataFileInfo>();
+    filesChanged$ = new Subject<void>();
+
+    dataFiles$ = new BehaviorSubject<CorpusDataFile[] | undefined>(undefined);
+    unconfirmed$: Observable<CorpusDataFile>;
+    confirmed$: Observable<CorpusDataFile>;
+
     error$ = new BehaviorSubject<Error | undefined>(undefined);
     destroy$ = new Subject<void>();
 
@@ -36,68 +50,135 @@ export class DataFormComponent implements OnInit, OnDestroy {
         map((steps) => steps[1])
     );
 
+    // DIT NAAR STATES UIT INDEX FORM
+    // no file uploaded
+    noneUploaded$ = this.dataFiles$.pipe(map((files) => _.isEmpty(files)));
+
+    // first file uploaded, not confirmed
+    firstUploaded$ = this.dataFiles$.pipe(
+        map((files) => {
+            return files?.length === 1 && _.some(files, { confirmed: false });
+        })
+    );
+
+    // first file uploaded and confirmed
+    firstConfirmed$ = this.dataFiles$.pipe(
+        map((files) => {
+            return files?.length === 1 && _.some(files, { confirmed: true });
+        })
+    );
+
+    // new file uploaded, not confirmed
+    newUploaded$ = this.dataFiles$.pipe(
+        map((files) => {
+            return (
+                files?.length === 2 &&
+                _.some(files, { confirmed: true }) &&
+                _.some(files, { confirmed: false })
+            );
+        })
+    );
+
     constructor(
         private apiService: ApiService,
         private corpusDefService: CorpusDefinitionService,
-        private dialogService: DialogService,
+        private dialogService: DialogService
     ) {}
 
     ngOnInit() {
-        this.apiService
-            .listDataFiles(this.corpusDefService.corpus$.value.id, true)
-            .pipe(
-                map(_.head),
-                filter(_.negate(_.isUndefined)),
-                switchMap((dataFile) => this.loadDataFileInfo(dataFile)),
-                takeUntil(this.destroy$)
-            )
+        this.confirmed$ = this.dataFiles$.pipe(
+            filter(_.negate(_.isUndefined)),
+            map((files) => files.find((file) => file.confirmed))
+        );
+
+        this.unconfirmed$ = this.dataFiles$.pipe(
+            filter(_.negate(_.isUndefined)),
+            map((files) => files.find((file) => !file.confirmed))
+        );
+
+        this.filesChanged$.subscribe({
+            next: () => this.refreshDataFiles(),
+        });
+
+        this.refreshDataFiles();
+    }
+
+    ngAfterViewInit() {
+        // Watches the newUploaded boolean
+        // If true, open the confirmation modal
+        const uploaded$ = this.newUploaded$.pipe(filter((x) => x === true));
+
+        combineLatest([uploaded$, this.unconfirmed$])
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (info) => this.fileInfo$.next(info),
-                error: (err) => this.error$.next(err),
+                next: ([uploaded, unconfirmedFile]) =>
+                    this.ReplaceConfirmModal.open(unconfirmedFile),
             });
     }
 
     onUpload(event: InputEvent) {
         const files: File[] = event.target['files'];
         const file = files ? _.first(files) : undefined;
-        this.file$.next(file);
-        const corpusId = this.corpusDefService.corpus$.value.id;
-        this.apiService
-            .createDataFile(corpusId, file)
-            .pipe(
-                takeUntil(this.destroy$),
-                switchMap((dataFile) => this.loadDataFileInfo(dataFile))
-            )
-            .subscribe({
-                next: (info) => this.fileInfo$.next(info),
-                error: (err) => this.error$.next(err),
-            });
+        this.createDataFile(file);
     }
 
-    replaceFile(event: InputEvent) {
-        const files: File[] = event.target['files'];
-        const file = files ? _.first(files) : undefined;
-        console.log('replace file', file);
-        // should show the upload dialog again
-    }
-
-    handleReset = (): Observable<any> => this.apiService.deleteDataFile(this.dataFile);
+    handleReset = (): Observable<any> =>
+        this.dataFiles$.pipe(
+            switchMap((files) => {
+                console.log(files);
+                return files.map((file) => {
+                    console.log(file);
+                    return this.apiService.deleteDataFile(file);
+                });
+            })
+        );
 
     onResetComplete() {
-        // delete the file
+        // reset corpus fields
         this.corpusDefService.setFields([]);
-        this.fileInfo$.next(undefined);
-        this.dataFile = undefined;
+        this.filesChanged$.next();
+    }
+
+    // Confirm file replacement
+    // Removes the old file, then confirms the new
+    handleReplace = () => {
+        const removeConfirmed = this.confirmed$.pipe(
+            switchMap((df) => this.apiService.deleteDataFile(df))
+        );
+        const confirmUnconfirmed = this.unconfirmed$.pipe(
+            takeUntil(this.destroy$),
+            switchMap((datafile) =>
+                this.apiService.patchDataFile(datafile.id, {
+                    confirmed: true,
+                })
+            )
+        );
+        return concat(removeConfirmed, confirmUnconfirmed);
+    };
+
+    onReplaceAccept() {
+        this.refreshDataFiles();
+    }
+
+    onReplaceReject() {
+        // Remove unconfirmed file
+        console.log('reject');
     }
 
     confirmFile() {
-        this.apiService
-            .patchDataFile(this.dataFile.id, { confirmed: true })
-            .pipe(switchMap((datafile) => this.loadDataFileInfo(datafile)))
+        this.unconfirmed$
+            .pipe(
+                takeUntil(this.destroy$),
+                switchMap((datafile) =>
+                    this.apiService.patchDataFile(datafile.id, {
+                        confirmed: true,
+                    })
+                )
+            )
             .subscribe({
-                next: (info) => {
-                    this.fileInfo$.next(info);
-                    this.setCorpusFields(info);
+                next: (datafile) => {
+                    this.setCorpusFields(datafile.csv_info);
+                    this.filesChanged$.next();
                 },
                 error: (err) => this.error$.next(err),
             });
@@ -108,35 +189,42 @@ export class DataFormComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    fileUploaded(): boolean {
-        return !!this.dataFile && !_.isEmpty(this.dataFile.file);
-    }
-
-    fileConfirmed(): boolean {
-        return this.fileUploaded() && !!this.dataFile?.confirmed;
-    }
-
     openDocumentation() {
         this.dialogService.showManualPage('uploading-source-data');
     }
 
-    private loadDataFileInfo(dataFile: CorpusDataFile) {
-        this.dataFile = dataFile;
-        return this.apiService.getDataFileInfo(dataFile);
+    private createDataFile(file: File): void {
+        const corpusId = this.corpusDefService.corpus$.value.id;
+        this.apiService
+            .createDataFile(corpusId, file)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => this.filesChanged$.next(),
+                error: (err) => this.error$.next(err),
+            });
+    }
+
+    private refreshDataFiles(): void {
+        this.apiService
+            .listDataFiles(this.corpusDefService.corpus$.value.id, true)
+            .pipe(filter(_.negate(_.isUndefined)), takeUntil(this.destroy$))
+            .subscribe({
+                next: (datafiles) => this.dataFiles$.next(datafiles),
+                error: (err) => this.error$.next(err),
+            });
     }
 
     private setCorpusFields(info: DataFileInfo) {
-        const fields = _.map(info.fields, (dtype, colName) =>
-            this.corpusDefService.makeDefaultField(dtype, colName)
+        const fields = _.map(info.fields, (field) =>
+            this.corpusDefService.makeDefaultField(field.type, field.name)
         );
         this.nextStep();
         this.corpusDefService.setFields(fields);
     }
 
     private nextStep() {
-        this.corpusDefService.corpus$.value.definitionUpdated$.pipe(
-            take(1),
-            takeUntil(this.destroy$),
-        ).subscribe(() => this.corpusDefService.activateStep(2));
+        this.corpusDefService.corpus$.value.definitionUpdated$
+            .pipe(take(1), takeUntil(this.destroy$))
+            .subscribe(() => this.corpusDefService.activateStep(2));
     }
 }
