@@ -6,7 +6,7 @@ import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definitio
 import { ApiService } from '@services';
 import { CorpusDefinition } from '@models/corpus-definition';
 
-describe('UploadSampleComponent', () => {
+describe('DataFormComponent', () => {
     let apiService: ApiService;
     let corpusDefinitionService: CorpusDefinitionService;
     let component: DataFormComponent;
