@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 import { selectColor } from '@utils/select-color';
 import { BarchartDirective } from './barchart.directive';
-import { HistogramData } from './results-count';
+import { HistogramData } from './results-count-histogram';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api

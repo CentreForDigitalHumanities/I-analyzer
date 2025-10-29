@@ -13,7 +13,7 @@ import { BarchartDirective } from './barchart.directive';
 
 import { selectColor } from '@utils/select-color';
 import { showLoading } from '@utils/utils';
-import { TimelineData } from './results-count';
+import { TimelineData } from './results-count-timeline';
 import { BehaviorSubject } from 'rxjs';
 
 
