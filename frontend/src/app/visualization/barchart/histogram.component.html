@@ -6,7 +6,9 @@
 
 <div class="block">
     <ia-barchart-options
-        [queryText]="queryText" [showTokenCountOption]="data.totalTokenCountAvailable" [isLoading]="isLoading"
+        [queryText]="queryText"
+        [showTokenCountOption]="data.totalTokenCountAvailable$ | async"
+        [isLoading]="isLoading"
         [frequencyMeasure]="frequencyMeasure"
         [freqTable]="asTable" [histogram]="true"
         (chartParameters)="onOptionChange($event)">

@@ -22,7 +22,7 @@ import { VisualizationService } from '@services/visualization.service';
 import { ComparedQueries } from '@models/compared-queries';
 import { RouterStoreService } from '../../store/router-store.service';
 import { hasPrefixTerm } from './query-utils';
-import { BarchartData } from './results-count';
+import { BarchartData, FrequencyMeasure } from './results-count';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -53,14 +53,11 @@ export abstract class BarchartDirective<
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    @Input() frequencyMeasure: 'documents' | 'tokens' = 'documents';
+    @Input() frequencyMeasure: FrequencyMeasure = 'documents';
 
     normalizer: 'raw' | 'percent' | 'documents' | 'terms' = 'raw';
     chartType: 'bar' | 'line' | 'scatter' = 'bar';
     comparedQueries: ComparedQueries;
-
-    // documentLimitExceeded = false; // whether the results include documents than the limit
-    // totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
     // table data
     tableHeaders: FreqTableHeaders;

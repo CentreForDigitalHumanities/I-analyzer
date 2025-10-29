@@ -10,7 +10,9 @@
 
 <div class="block">
     <ia-barchart-options
-        [queryText]="queryText" [showTokenCountOption]="data.totalTokenCountAvailable" [isLoading]="isLoading"
+        [queryText]="queryText"
+        [showTokenCountOption]="data.totalTokenCountAvailable$ | async"
+        [isLoading]="isLoading"
         [freqTable]="asTable" [histogram]="false"
         [frequencyMeasure]="frequencyMeasure"
         (chartParameters)="onOptionChange($event)">

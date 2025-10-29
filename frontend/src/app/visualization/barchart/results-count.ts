@@ -21,7 +21,6 @@ export abstract class BarchartData<
     // rawData: a list of series
     rawData$ = new BehaviorSubject<BarchartSeries<DataPoint>[]>([]);
     documentLimitExceeded = false; // whether the results include documents than the limit
-    totalTokenCountAvailable: boolean; // whether the data includes token count totals
     dataHasLoaded: boolean;
 
     tasksToCancel: string[];
@@ -29,6 +28,10 @@ export abstract class BarchartData<
     loading$ = new BehaviorSubject<boolean>(false);
     error$ = new Subject<string>();
     stopPolling$ = new Subject<void>();
+
+    totalTokenCountAvailable$ = this.rawData$.pipe(
+        map(this.checkTotalTokenCount)
+    );
 
     constructor(
         protected queryModel: QueryModel,
@@ -328,6 +331,12 @@ export abstract class BarchartData<
             ? data.match_count / data.token_count
             : undefined;
         return cat;
+    }
+
+    private checkTotalTokenCount(data: BarchartSeries<DataPoint>[]): boolean {
+        return data.find((series) =>
+            series.data.find((cat) => cat.token_count !== undefined)
+        ) !== undefined;
     }
 
     abstract fullDataRequest(): Promise<TaskResult>;
