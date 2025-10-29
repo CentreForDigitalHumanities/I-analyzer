@@ -61,8 +61,8 @@ class HeraldTribune(GaleCorpus):
     max_date = datetime(2013, 10, 14)
     data_directory = settings.HERALD_TRIBUNE_DATA
     es_index = getattr(settings, 'HERALD_TRIBUNE_ES_INDEX', 'heraldtribune')
-    # image = 'the_happy_land.png'
-    # description_page = 'IllustratedLondonNews.md'
+    image = 'Neuilly-sur-Seine_International_Herald_Tribune.jpg'
+    description_page = 'HeraldTribune.md'
     languages = ['en']
     category = 'periodical'
 
