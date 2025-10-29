@@ -20,7 +20,7 @@ export abstract class BarchartData<
     DataPoint extends TimelineDataPoint | HistogramDataPoint
 > {
     // rawData: a list of series
-    rawData: BarchartSeries<DataPoint>[];
+    rawData$: BehaviorSubject<BarchartSeries<DataPoint>[]>;
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
     dataHasLoaded: boolean;
@@ -116,23 +116,25 @@ export abstract class BarchartData<
     }
 
     private initQueries(): void {
-        this.rawData = [
+        const series = [
             this.newSeries(this.queryModel.queryText),
             ...this.comparedQueries.state$.value.compare.map(this.newSeries)
         ];
+        this.rawData$ = new BehaviorSubject(series);
     }
 
     /** update the queries in the graph to the input array. Preserve results if possible,
      * and start loading for the rest.
      */
     private updateQueries(queries: string[]) {
-        if (this.rawData) {
-            this.rawData = queries.map((queryText) => {
-                const existingSeries = this.rawData.find(
+        if (this.rawData$) {
+            const data = queries.map((queryText) => {
+                const existingSeries = this.rawData$.value.find(
                     (series) => series.queryText === queryText
                 );
                 return existingSeries || this.newSeries(queryText);
             });
+            this.rawData$.next(data);
             this.loadData();
         }
     }
@@ -154,9 +156,9 @@ export abstract class BarchartData<
                     : _.identity
             )
             .then((rawData) => {
-                this.rawData = rawData;
+                this.rawData$.next(rawData);
 
-                if (!this.rawData.length) {
+                if (!rawData.length) {
                     this.error$.next('No results');
                 };
             });
@@ -164,7 +166,7 @@ export abstract class BarchartData<
     }
 
     private requestDocumentData(): Promise<BarchartSeries<DataPoint>[]> {
-        const dataPromises = this.rawData.map((series) => {
+        const dataPromises = this.rawData$.value.map((series) => {
             if (!series.data.length) {
                 // retrieve data if it was not already loaded
                 return this.getSeriesDocumentData(series);
@@ -180,7 +182,7 @@ export abstract class BarchartData<
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    private requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
+    private requestTermFrequencyData(rawData: typeof this.rawData$.value): Promise<BarchartSeries<DataPoint>[]> {
         // cancel and stop polling running tasks
         this.stopPolling$.next();
         const dataPromises = rawData.map(series => {
@@ -213,8 +215,8 @@ export abstract class BarchartData<
      * This means that not all documents will be read when counting term frequency.
      */
     private checkDocumentLimitExceeded(
-        rawData: typeof this.rawData
-    ): typeof this.rawData {
+        rawData: typeof this.rawData$.value
+    ): typeof this.rawData$.value {
         this.documentLimitExceeded =
             rawData.find((series) => series.searchRatio < 1) !== undefined;
         return rawData;
@@ -398,7 +400,7 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
 
     zoomedInData (min: Date, max: Date) {
         // const series = this.rawData[seriesIndex];
-        this.rawData.map(series => {
+        this.rawData$.value.map(series => {
             const queryModelCopy = this.addQueryDateFilter(
                 this.queryModel,
                 min,
