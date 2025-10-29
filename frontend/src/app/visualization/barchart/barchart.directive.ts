@@ -237,6 +237,7 @@ export abstract class BarchartDirective<
         // create new data model and subscribe
         this.data = this.initData();
         this.data.rawData$.pipe(
+            skip(1), // skip the first (empty) event
             takeUntil(this.refresh$),
             takeUntil(this.destroy$),
         ).subscribe(data => this.onDataLoaded(data));
@@ -304,6 +305,7 @@ export abstract class BarchartDirective<
             this.initChart(data);
         }
     }
+
     /** select the columns/headers for the frequency table */
     abstract setTableHeaders(data: typeof this.data.rawData$.value): void;
     /** code to be executed when zooming in, or when parameters are updated while zoomed in */
