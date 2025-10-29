@@ -6,10 +6,7 @@ import _ from 'lodash';
 export class HistogramData extends BarchartData<TermsResult, HistogramDataPoint> {
     fullDataRequest(): Promise<TaskResult> {
         const paramsPerSeries = this.rawData$.value.map((series) => {
-            const queryModel = this.queryModelForSeries(
-                series,
-                this.queryModel
-            );
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
             const bins = this.makeTermFrequencyBins(series);
             return this.visualizationService.makeAggregateTermFrequencyParameters(
                 this.queryModel.corpus,

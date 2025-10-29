@@ -59,8 +59,6 @@ export abstract class BarchartData<
         this.error$.complete();
     }
 
-
-
     protected refresh() {
         this.initQueries();
         this.loadData();
@@ -73,7 +71,6 @@ export abstract class BarchartData<
         setSearchRatio = true
     ): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-
         return this.requestSeriesDocCounts(queryModelCopy).then((result) =>
             this.docCountResultIntoSeries(result, series, setSearchRatio)
         );
@@ -168,11 +165,10 @@ export abstract class BarchartData<
 
     private loadData(): Promise<void> {
         const dataPromises = this.requestDocumentData().then(
-                this.frequencyMeasure === 'tokens'
-                    ? this.requestTermFrequencyData.bind(this)
-                    : _.identity
-            )
-            .then((rawData) => {
+            this.frequencyMeasure === 'tokens'
+                ? this.requestTermFrequencyData.bind(this)
+                : _.identity
+        ).then((rawData) => {
                 this.rawData$.next(rawData);
 
                 if (!rawData.length) {
@@ -184,8 +180,8 @@ export abstract class BarchartData<
 
     private requestDocumentData(): Promise<BarchartSeries<DataPoint>[]> {
         const dataPromises = this.rawData$.value.map((series) => {
+            // retrieve data if it was not already loaded
             if (!series.data.length) {
-                // retrieve data if it was not already loaded
                 return this.getSeriesDocumentData(series);
             } else {
                 return series;
@@ -236,7 +232,7 @@ export abstract class BarchartData<
                     field.searchable && field.displayType === 'text_content'
             );
             const queryModelCopy = queryModel.clone();
-            queryModelCopy.setParams({searchFields: mainContentFields});
+            queryModelCopy.setParams({ searchFields: mainContentFields });
             return queryModelCopy;
         }
     }
@@ -288,11 +284,10 @@ export abstract class BarchartData<
     /** fill in the `relative_doc_count` property for an array of datapoints.
      */
     private includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
-        return data.map((item) => {
-            const result = _.clone(item);
-            result.relative_doc_count = result.doc_count / total;
-            return result;
-        });
+        return data.map((item) => ({
+            ...item,
+            relative_doc_count: item.doc_count / total,
+        }));
     }
 
     private onFailure(error) {

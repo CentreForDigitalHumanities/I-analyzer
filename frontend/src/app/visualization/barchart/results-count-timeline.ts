@@ -12,15 +12,9 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
 
     zoomedInData (min: Date, max: Date): Promise<BarchartSeries<TimelineDataPoint>[]> {
         const promises = this.rawData$.value.map(series => {
-            const queryModelCopy = this.addQueryDateFilter(
-                this.queryModel,
-                min,
-                max
-            );
+            const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
             return this.getSeriesDocumentData(
-                series,
-                queryModelCopy,
-                false
+                series, queryModelCopy, false
             ).then((result) => {
                 if (this.frequencyMeasure === 'tokens') {
                     return this.getTermFrequencies(result, queryModelCopy);
@@ -34,10 +28,7 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
 
     fullDataRequest() {
         const paramsPerSeries = this.rawData$.value.map((series) => {
-            const queryModel = this.queryModelForSeries(
-                series,
-                this.queryModel
-            );
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
             const bins = this.makeTermFrequencyBins(series);
             const unit = this.timeCategory;
             return this.visualizationService.makeDateTermFrequencyParameters(
@@ -55,7 +46,6 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
         });
     }
 
-
     /**
      * Get the time category (year/month/week/day) that should be used in the graph,
      * based on minimum and maximum dates on the x axis.
@@ -72,7 +62,6 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
             return 'year';
         }
     }
-
 
     protected refresh(): void {
         this.setTimeDomain();
@@ -114,7 +103,6 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
         );
     }
 
-
     /**
      * Add a date filter to a query model restricting it to the provided min and max values.
      */
@@ -130,9 +118,7 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
     private makeTermFrequencyBins(series: TimelineSeries) {
         return series.data.map((bin, index) => {
             const [minDate, maxDate] = this.categoryTimeDomain(
-                bin,
-                index,
-                series
+                bin, index, series
             );
             return {
                 start_date: minDate,
@@ -162,5 +148,4 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
                 : undefined;
         return [startDate, endDate];
     }
-
 }
