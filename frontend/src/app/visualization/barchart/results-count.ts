@@ -19,7 +19,7 @@ export abstract class BarchartData<
     DataPoint extends TimelineDataPoint | HistogramDataPoint
 > {
     // rawData: a list of series
-    rawData$: BehaviorSubject<BarchartSeries<DataPoint>[]>;
+    rawData$ = new BehaviorSubject<BarchartSeries<DataPoint>[]>([]);
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
     dataHasLoaded: boolean;
@@ -29,7 +29,6 @@ export abstract class BarchartData<
     loading$ = new BehaviorSubject<boolean>(false);
     error$ = new Subject<string>();
     stopPolling$ = new Subject<void>();
-
 
     constructor(
         protected queryModel: QueryModel,
@@ -44,7 +43,7 @@ export abstract class BarchartData<
         this.refresh();
         this.queryModel.update.pipe(
             takeUntil(this.destroy$)
-        ).subscribe(this.loadData.bind(this));
+        ).subscribe(this.refresh.bind(this));
         this.comparedQueries.allQueries$.subscribe(this.updateQueries.bind(this));
         this.destroy$.subscribe(() => this.complete());
     }
@@ -136,7 +135,7 @@ export abstract class BarchartData<
             this.newSeries(this.queryModel.queryText),
             ...this.comparedQueries.state$.value.compare.map(this.newSeries)
         ];
-        this.rawData$ = new BehaviorSubject(series);
+        this.rawData$.next(series)
     }
 
     /** update the queries in the graph to the input array. Preserve results if possible,
@@ -293,10 +292,12 @@ export abstract class BarchartData<
     }
 
     private onFailure(error) {
-        this.error$.next(`could not load results: ${error.message}`);
+        this.error$.next(error.message);
     }
 
-    private processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint> {
+    private processSeriesTermFrequency(
+        results: TermFrequencyResult[], series: BarchartSeries<DataPoint>
+    ): BarchartSeries<DataPoint> {
         this.dataHasLoaded = true;
         series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
@@ -312,8 +313,7 @@ export abstract class BarchartData<
      * @param cat DataPoint object where the data should be added
      */
     private addTermFrequencyToCategory(
-        data: TermFrequencyResult,
-        cat: DataPoint
+        data: TermFrequencyResult, cat: DataPoint
     ): DataPoint {
         cat.match_count = data.match_count;
         cat.total_doc_count = data.total_doc_count;
