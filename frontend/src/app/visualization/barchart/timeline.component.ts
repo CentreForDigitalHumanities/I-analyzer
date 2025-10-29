@@ -1,13 +1,12 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
-import { addDays, addMonths, addWeeks, addYears, differenceInDays, format } from 'date-fns';
+import { addDays, addMonths, addWeeks, addYears, format } from 'date-fns';
 import 'chartjs-adapter-moment';
 
 import {
     QueryModel,
     TimelineSeries,
-    TimelineDataPoint,
     TimeCategory,
     DateFilterData,
 } from '@models/index';
@@ -15,10 +14,7 @@ import { BarchartDirective } from './barchart.directive';
 
 import { selectColor } from '@utils/select-color';
 import { showLoading } from '@utils/utils';
-import {
-    DateHistogramAggregator,
-    DateHistogramResult,
-} from '@models/aggregation';
+import { TimelineData } from './results-count';
 
 
 @Component({
@@ -28,20 +24,24 @@ import {
     standalone: false
 })
 export class TimelineComponent
-    extends BarchartDirective<DateHistogramResult, TimelineDataPoint>
+    extends BarchartDirective<TimelineData>
     implements OnChanges, OnInit {
     /** domain on the axis */
     public xDomain: [Date, Date];
     /** time unit on the x-axis */
     private currentTimeCategory: TimeCategory;
-    /** threshold for scaling down a unit on the time scale */
-    private scaleDownThreshold = 10;
 
-    refreshChart(): void {
-        this.initQueries();
-        this.clearCanvas();
-        this.setTimeDomain();
-        this.prepareChart();
+    initData(): TimelineData {
+        return new TimelineData(
+            this.queryModel,
+            this.comparedQueries,
+            this.frequencyMeasure,
+            this.visualizedField,
+            this.searchService,
+            this.apiService,
+            this.visualizationService,
+            this.destroy$,
+        );
     }
 
     /** get min/max date for the entire graph and set domain and time category */
@@ -52,57 +52,7 @@ export class TimelineComponent
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
         this.xDomain = [min, max];
-        this.currentTimeCategory = this.calculateTimeCategory(min, max);
-    }
-
-    aggregateResultToDataPoint(cat: DateHistogramResult): TimelineDataPoint {
-        /* date fields are returned with keys containing identifiers by elasticsearch
-        replace with string representation, contained in 'key_as_string' field
-        */
-        return {
-            date: new Date(cat.key_as_string),
-            doc_count: cat.doc_count,
-        };
-    }
-
-    /** Retrieve doc counts for a series.
-     *
-     * @param series series object
-     * @param setSearchRatio whether the `searchRatio` property of the series should be updated.
-     * True when retrieving results for the entire series, false when retrieving a window.
-     */
-    requestSeriesDocCounts(queryModel: QueryModel) {
-        const aggregation = new DateHistogramAggregator(
-            this.visualizedField,
-            this.currentTimeCategory
-        );
-        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregation);
-    }
-
-    requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
-        const bins = this.makeTermFrequencyBins(series);
-        return this.visualizationService.dateTermFrequencySearch(
-            this.corpus,
-            queryModel,
-            this.visualizedField.name,
-            bins,
-            this.currentTimeCategory
-        );
-    }
-
-    makeTermFrequencyBins(series: TimelineSeries) {
-        return series.data.map((bin, index) => {
-            const [minDate, maxDate] = this.categoryTimeDomain(
-                bin,
-                index,
-                series
-            );
-            return {
-                start_date: minDate,
-                end_date: maxDate,
-                size: this.documentLimitForCategory(bin, series),
-            };
-        });
+        this.currentTimeCategory = this.data.calculateTimeCategory(min, max);
     }
 
     /** time domain for a bin */
@@ -113,29 +63,6 @@ export class TimelineComponent
                 ? series.data[catIndex + 1].date
                 : undefined;
         return [startDate, endDate];
-    }
-
-    fullDataRequest() {
-        const paramsPerSeries = this.rawData.map((series) => {
-            const queryModel = this.queryModelForSeries(
-                series,
-                this.queryModel
-            );
-            const bins = this.makeTermFrequencyBins(series);
-            const unit = this.calculateTimeCategory(...this.xDomain); // use initial unit, not zoomed-in-status
-            return this.visualizationService.makeDateTermFrequencyParameters(
-                this.corpus,
-                queryModel,
-                this.visualizedField.name,
-                bins,
-                unit
-            );
-        });
-        return this.apiService.requestFullData({
-            visualization: 'date_term_frequency',
-            parameters: paramsPerSeries,
-            corpus_name: this.corpus.name,
-        });
     }
 
     setChart() {
@@ -153,7 +80,7 @@ export class TimelineComponent
     }
 
     getDatasets() {
-        return this.rawData.map((series, seriesIndex) => {
+        return this.data.rawData$.value.map((series, seriesIndex) => {
             const data = this.chartDataFromSeries(series);
             return {
                 type: this.chartType,
@@ -179,7 +106,7 @@ export class TimelineComponent
     }
 
     callibratexAxis(date: Date, margin: number = 1) {
-        switch(this.currentTimeCategory) {
+        switch (this.data.currentTimeCategory) {
             case 'day':
                 return addDays(date, margin);
             case 'week':
@@ -206,7 +133,7 @@ export class TimelineComponent
         x.type = 'time';
         (x as any).time = {
             minUnit: 'day',
-            unit: this.currentTimeCategory,
+            unit: this.data.currentTimeCategory,
         };
         x.min = xMin.toISOString();
         x.max = xMax.toISOString();
@@ -246,16 +173,16 @@ export class TimelineComponent
      * underlying data.
      */
     onZoomIn(chart, triggeredByDataUpdate = false) {
-        const initialTimeCategory = this.calculateTimeCategory(...this.xDomain);
-        const previousTimeCategory = this.currentTimeCategory;
+        const initialTimeCategory = this.data.calculateTimeCategory(...this.xDomain);
+        const previousTimeCategory = this.data.currentTimeCategory;
         const min = new Date(chart.scales.x.min);
         const max = new Date(chart.scales.x.max);
-        this.currentTimeCategory = this.calculateTimeCategory(min, max);
+        this.data.currentTimeCategory = this.data.calculateTimeCategory(min, max);
 
         if (
-            this.currentTimeCategory !== previousTimeCategory ||
+            this.data.currentTimeCategory !== previousTimeCategory ||
             (triggeredByDataUpdate &&
-                this.currentTimeCategory !== initialTimeCategory)
+                this.data.currentTimeCategory !== initialTimeCategory)
         ) {
             showLoading(
                 this.isLoading$,
@@ -288,29 +215,8 @@ export class TimelineComponent
         // when zooming, hide data for smooth transition
         chart.update(triggeredByDataUpdate ? 'none' : 'hide');
 
-        const dataPromises: Promise<TimelineSeries>[] = chart.data.datasets.map(
-            (dataset, seriesIndex) => {
-                const series = this.rawData[seriesIndex];
-                const queryModelCopy = this.addQueryDateFilter(
-                    this.queryModel,
-                    min,
-                    max
-                );
-                return this.getSeriesDocumentData(
-                    series,
-                    queryModelCopy,
-                    false
-                ).then((result) => {
-                    if (this.frequencyMeasure === 'tokens') {
-                        return this.getTermFrequencies(result, queryModelCopy);
-                    } else {
-                        return result;
-                    }
-                });
-            }
-        );
 
-        const zoomedInResults = await Promise.all(dataPromises);
+        const zoomedInResults = await this.data.zoomedInData(min, max);
 
         zoomedInResults.forEach((data, seriesIndex) => {
             chart.data.datasets[seriesIndex].data =
@@ -336,7 +242,7 @@ export class TimelineComponent
     /** trigger zoom out, update chart data accordingly */
     zoomOut(): void {
         this.chart.resetZoom();
-        this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
+        this.currentTimeCategory = this.data.calculateTimeCategory(...this.xDomain);
         (this.chart.options.scales.x as any).time.unit =
             this.currentTimeCategory;
         this.chart.update();
@@ -344,29 +250,12 @@ export class TimelineComponent
         this.setChart();
     }
 
-    /**
-     * Get the time category (year/month/week/day) that should be used in the graph,
-     * based on minimum and maximum dates on the x axis.
-     */
-    public calculateTimeCategory(min: Date, max: Date): TimeCategory {
-        const diff = differenceInDays(max, min);
-        if (diff <= this.scaleDownThreshold) {
-            return 'day';
-        } else if (diff <= this.scaleDownThreshold * 7) {
-            return 'week';
-        } else if (diff <= this.scaleDownThreshold * 30) {
-            return 'month';
-        } else {
-            return 'year';
-        }
-    }
-
     setTableHeaders() {
         const rightColumnName =
             this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
-        if (this.rawData.length > 1) {
+        if (this.data.rawData$.value.length > 1) {
             this.tableHeaders = [
                 {
                     key: 'date',

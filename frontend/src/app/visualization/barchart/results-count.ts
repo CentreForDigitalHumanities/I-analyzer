@@ -115,6 +115,16 @@ export abstract class BarchartData<
         ]);
     }
 
+    /** adapt query model to fit series: use correct search fields and query text */
+    protected queryModelForSeries(
+        series: BarchartSeries<DataPoint>,
+        queryModel: QueryModel
+    ) {
+        return this.selectSearchFields(
+            this.setQueryText(queryModel, series.queryText)
+        );
+    }
+
     private initQueries(): void {
         const series = [
             this.newSeries(this.queryModel.queryText),
@@ -195,18 +205,6 @@ export abstract class BarchartData<
         });
 
         return Promise.all(dataPromises);
-    }
-
-
-
-    /** adapt query model to fit series: use correct search fields and query text */
-    private queryModelForSeries(
-        series: BarchartSeries<DataPoint>,
-        queryModel: QueryModel
-    ) {
-        return this.selectSearchFields(
-            this.setQueryText(queryModel, series.queryText)
-        );
     }
 
 
@@ -329,6 +327,8 @@ export abstract class BarchartData<
         this.error$.complete();
     }
 
+    abstract fullDataRequest(): Promise<TaskResult>;
+
     /** Request doc counts for a series */
     protected abstract requestSeriesDocCounts(
         queryModel: QueryModel
@@ -343,6 +343,27 @@ export abstract class BarchartData<
 }
 
 export class HistogramData extends BarchartData<TermsResult, HistogramDataPoint> {
+    fullDataRequest(): Promise<TaskResult> {
+        const paramsPerSeries = this.rawData$.value.map((series) => {
+            const queryModel = this.queryModelForSeries(
+                series,
+                this.queryModel
+            );
+            const bins = this.makeTermFrequencyBins(series);
+            return this.visualizationService.makeAggregateTermFrequencyParameters(
+                this.queryModel.corpus,
+                queryModel,
+                this.visualizedField.name,
+                bins
+            );
+        });
+        return this.apiService.requestFullData({
+            visualization: 'aggregate_term_frequency',
+            parameters: paramsPerSeries,
+            corpus_name: this.queryModel.corpus.name,
+        });
+    }
+
     /** specify aggregator object based on visualised field;
      * used in document requests.
      */
@@ -350,9 +371,9 @@ export class HistogramData extends BarchartData<TermsResult, HistogramDataPoint>
         let size = 100;
 
         const filterOptions = this.visualizedField.filterOptions;
-        if (filterOptions.name === 'MultipleChoiceFilter') {
+        if (filterOptions?.name === 'MultipleChoiceFilter') {
             size = (filterOptions as MultipleChoiceFilterOptions).option_count;
-        } else if (filterOptions.name === 'RangeFilter') {
+        } else if (filterOptions?.name === 'RangeFilter') {
             const filterRange =
                 (filterOptions as RangeFilterOptions).upper -
                 (filterOptions as RangeFilterOptions).lower;
@@ -389,7 +410,6 @@ export class HistogramData extends BarchartData<TermsResult, HistogramDataPoint>
             size: this.documentLimitForCategory(bin, series),
         }));
     }
-
 }
 
 export class TimelineData extends BarchartData<DateHistogramResult, TimelineDataPoint> {
@@ -398,9 +418,8 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
 
-    zoomedInData (min: Date, max: Date) {
-        // const series = this.rawData[seriesIndex];
-        this.rawData$.value.map(series => {
+    zoomedInData (min: Date, max: Date): Promise<BarchartSeries<TimelineDataPoint>[]> {
+        const promises = this.rawData$.value.map(series => {
             const queryModelCopy = this.addQueryDateFilter(
                 this.queryModel,
                 min,
@@ -418,7 +437,50 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
                 }
             });
         });
+        return Promise.all(promises);
     }
+
+    fullDataRequest() {
+        const paramsPerSeries = this.rawData$.value.map((series) => {
+            const queryModel = this.queryModelForSeries(
+                series,
+                this.queryModel
+            );
+            const bins = this.makeTermFrequencyBins(series);
+            const unit = this.currentTimeCategory;
+            return this.visualizationService.makeDateTermFrequencyParameters(
+                this.queryModel.corpus,
+                queryModel,
+                this.visualizedField.name,
+                bins,
+                unit
+            );
+        });
+        return this.apiService.requestFullData({
+            visualization: 'date_term_frequency',
+            parameters: paramsPerSeries,
+            corpus_name: this.queryModel.corpus.name,
+        });
+    }
+
+
+    /**
+     * Get the time category (year/month/week/day) that should be used in the graph,
+     * based on minimum and maximum dates on the x axis.
+     */
+    calculateTimeCategory(min: Date, max: Date): TimeCategory {
+        const diff = differenceInDays(max, min);
+        if (diff <= this.scaleDownThreshold) {
+            return 'day';
+        } else if (diff <= this.scaleDownThreshold * 7) {
+            return 'week';
+        } else if (diff <= this.scaleDownThreshold * 30) {
+            return 'month';
+        } else {
+            return 'year';
+        }
+    }
+
 
     protected refresh(): void {
         this.setTimeDomain();
@@ -507,23 +569,6 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
                 ? series.data[catIndex + 1].date
                 : undefined;
         return [startDate, endDate];
-    }
-
-    /**
-     * Get the time category (year/month/week/day) that should be used in the graph,
-     * based on minimum and maximum dates on the x axis.
-     */
-    private calculateTimeCategory(min: Date, max: Date): TimeCategory {
-        const diff = differenceInDays(max, min);
-        if (diff <= this.scaleDownThreshold) {
-            return 'day';
-        } else if (diff <= this.scaleDownThreshold * 7) {
-            return 'week';
-        } else if (diff <= this.scaleDownThreshold * 30) {
-            return 'month';
-        } else {
-            return 'year';
-        }
     }
 
 }
