@@ -54,9 +54,11 @@ export abstract class BarchartData<
     }
 
     complete() {
+        this.rawData$.complete();
         this.stopPolling$.next();
         this.stopPolling$.complete();
         this.error$.complete();
+        this.loading$.complete();
     }
 
     protected refresh() {
