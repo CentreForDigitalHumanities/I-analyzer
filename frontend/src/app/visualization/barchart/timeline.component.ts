@@ -8,13 +8,13 @@ import {
     QueryModel,
     TimelineSeries,
     TimeCategory,
-    DateFilterData,
 } from '@models/index';
 import { BarchartDirective } from './barchart.directive';
 
 import { selectColor } from '@utils/select-color';
 import { showLoading } from '@utils/utils';
 import { TimelineData } from './results-count';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Component({
@@ -26,10 +26,14 @@ import { TimelineData } from './results-count';
 export class TimelineComponent
     extends BarchartDirective<TimelineData>
     implements OnChanges, OnInit {
-    /** domain on the axis */
-    public xDomain: [Date, Date];
-    /** time unit on the x-axis */
-    private currentTimeCategory: TimeCategory;
+    /** time unit on the x-axis; may be the category of zoomed-in data */
+    private viewTimeCategory: TimeCategory;
+
+    private zoomedDataLoading$ = new BehaviorSubject<boolean>(false);
+
+    get isLoading(): boolean {
+        return this.data.loading$.value || this.zoomedDataLoading$.value;
+    }
 
     initData(): TimelineData {
         return new TimelineData(
@@ -44,34 +48,13 @@ export class TimelineComponent
         );
     }
 
-    /** get min/max date for the entire graph and set domain and time category */
-    setTimeDomain() {
-        const filter = this.queryModel.filterForField(this.visualizedField)
-            || this.visualizedField.makeSearchFilter();
-        const currentDomain = filter.currentData as DateFilterData;
-        const min = new Date(currentDomain.min);
-        const max = new Date(currentDomain.max);
-        this.xDomain = [min, max];
-        this.currentTimeCategory = this.data.calculateTimeCategory(min, max);
-    }
-
-    /** time domain for a bin */
-    categoryTimeDomain(cat, catIndex, series): [Date, Date] {
-        const startDate = cat.date;
-        const endDate =
-            catIndex < series.data.length - 1
-                ? series.data[catIndex + 1].date
-                : undefined;
-        return [startDate, endDate];
-    }
-
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
             const unit = (this.chart.options.scales.x as any).time
                 .unit as TimeCategory;
             if (unit) {
-                this.currentTimeCategory = unit;
+                this.viewTimeCategory = unit;
             }
             this.updateChartData();
         } else {
@@ -105,8 +88,8 @@ export class TimelineComponent
         }));
     }
 
-    callibratexAxis(date: Date, margin: number = 1) {
-        switch (this.data.currentTimeCategory) {
+    addDateMargin(date: Date, margin: number = 1): Date {
+        switch (this.data.timeCategory) {
             case 'day':
                 return addDays(date, margin);
             case 'week':
@@ -115,7 +98,6 @@ export class TimelineComponent
                 return addMonths(date, margin);
             case 'year':
                 return addYears(date, margin);
-
         }
     }
 
@@ -123,8 +105,8 @@ export class TimelineComponent
         const xLabel = this.visualizedField.displayName
             ? this.visualizedField.displayName
             : this.visualizedField.name;
-        const xMin = this.callibratexAxis(this.xDomain[0], -1);
-        const xMax = this.callibratexAxis(this.xDomain[1]);
+        const xMin = this.addDateMargin(this.data.xDomain[0], -1);
+        const xMax = this.addDateMargin(this.data.xDomain[1]);
 
         const options = this.basicChartOptions;
         options.plugins.title.text = this.chartTitle();
@@ -133,7 +115,7 @@ export class TimelineComponent
         x.type = 'time';
         (x as any).time = {
             minUnit: 'day',
-            unit: this.data.currentTimeCategory,
+            unit: this.data.timeCategory,
         };
         x.min = xMin.toISOString();
         x.max = xMax.toISOString();
@@ -173,19 +155,19 @@ export class TimelineComponent
      * underlying data.
      */
     onZoomIn(chart, triggeredByDataUpdate = false) {
-        const initialTimeCategory = this.data.calculateTimeCategory(...this.xDomain);
-        const previousTimeCategory = this.data.currentTimeCategory;
+        const initialTimeCategory = this.data.timeCategory;
+        const previousTimeCategory = this.viewTimeCategory;
         const min = new Date(chart.scales.x.min);
         const max = new Date(chart.scales.x.max);
-        this.data.currentTimeCategory = this.data.calculateTimeCategory(min, max);
+        this.viewTimeCategory = this.data.calculateTimeCategory(min, max);
 
         if (
-            this.data.currentTimeCategory !== previousTimeCategory ||
+            this.viewTimeCategory !== previousTimeCategory ||
             (triggeredByDataUpdate &&
-                this.data.currentTimeCategory !== initialTimeCategory)
+                this.viewTimeCategory !== initialTimeCategory)
         ) {
             showLoading(
-                this.isLoading$,
+                this.zoomedDataLoading$,
                 this.loadZoomedInData(
                     chart,
                     min,
@@ -223,7 +205,7 @@ export class TimelineComponent
                 this.chartDataFromSeries(data);
         });
 
-        chart.options.scales.x.time.unit = this.currentTimeCategory;
+        chart.options.scales.x.time.unit = this.viewTimeCategory;
         chart.update('show'); // fade into view
     }
 
@@ -242,9 +224,9 @@ export class TimelineComponent
     /** trigger zoom out, update chart data accordingly */
     zoomOut(): void {
         this.chart.resetZoom();
-        this.currentTimeCategory = this.data.calculateTimeCategory(...this.xDomain);
+        this.viewTimeCategory = this.data.timeCategory;
         (this.chart.options.scales.x as any).time.unit =
-            this.currentTimeCategory;
+            this.viewTimeCategory;
         this.chart.update();
 
         this.setChart();
@@ -320,7 +302,7 @@ export class TimelineComponent
     // eslint-disable-next-line @typescript-eslint/member-ordering
     get formatDate(): (date) => string {
         let dateFormat: string;
-        switch (this.currentTimeCategory) {
+        switch (this.viewTimeCategory) {
             case 'year':
                 dateFormat = 'yyyy';
                 break;

@@ -16,7 +16,7 @@ import {
     ChartParameters,
 } from '@models';
 import Zoom from 'chartjs-plugin-zoom';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { selectColor } from '@utils/select-color';
 import { VisualizationService } from '@services/visualization.service';
 import { ComparedQueries } from '@models/compared-queries';
@@ -83,8 +83,6 @@ export abstract class BarchartDirective<
             percent: 'relative_doc_count',
         },
     };
-
-    isLoading$ = new BehaviorSubject<boolean>(false);
 
     // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() error = new EventEmitter();

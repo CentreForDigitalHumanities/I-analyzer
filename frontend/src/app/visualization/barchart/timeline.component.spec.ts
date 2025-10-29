@@ -37,7 +37,7 @@ describe('TimelineComponent', () => {
         component.setTimeDomain();
         const min = new Date('1802-01-01');
         const max = new Date('1804-01-01');
-        expect(component.callibratexAxis(min, -1)).toEqual(new Date('1801-01-01'));
-        expect(component.callibratexAxis(max)).toEqual(new Date('1805-01-01'));
+        expect(component.addDateMargin(min, -1)).toEqual(new Date('1801-01-01'));
+        expect(component.addDateMargin(max)).toEqual(new Date('1805-01-01'));
     })
 });

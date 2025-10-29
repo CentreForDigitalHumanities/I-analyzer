@@ -413,7 +413,8 @@ export class HistogramData extends BarchartData<TermsResult, HistogramDataPoint>
 }
 
 export class TimelineData extends BarchartData<DateHistogramResult, TimelineDataPoint> {
-    currentTimeCategory: TimeCategory = 'year';
+    xDomain: [Date, Date];
+    timeCategory: TimeCategory = 'year';
 
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
@@ -447,7 +448,7 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
                 this.queryModel
             );
             const bins = this.makeTermFrequencyBins(series);
-            const unit = this.currentTimeCategory;
+            const unit = this.timeCategory;
             return this.visualizationService.makeDateTermFrequencyParameters(
                 this.queryModel.corpus,
                 queryModel,
@@ -506,7 +507,7 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
     protected requestSeriesDocCounts(queryModel: QueryModel) {
         const aggregation = new DateHistogramAggregator(
             this.visualizedField,
-            this.currentTimeCategory
+            this.timeCategory
         );
         return this.searchService.aggregateSearch(this.queryModel.corpus, queryModel, aggregation);
     }
@@ -518,7 +519,7 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
             queryModel,
             this.visualizedField.name,
             bins,
-            this.currentTimeCategory
+            this.timeCategory
         );
     }
 
@@ -557,8 +558,8 @@ export class TimelineData extends BarchartData<DateHistogramResult, TimelineData
         const currentDomain = filter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
-        // this.xDomain = [min, max]; TODO: remove this or keep it?
-        this.currentTimeCategory = this.calculateTimeCategory(min, max);
+        this.xDomain = [min, max];
+        this.timeCategory = this.calculateTimeCategory(min, max);
     }
 
     /** time domain for a bin */
