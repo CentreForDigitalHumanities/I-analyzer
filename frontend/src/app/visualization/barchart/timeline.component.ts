@@ -48,22 +48,13 @@ export class TimelineComponent
         );
     }
 
-    setChart() {
-        if (this.chart) {
-            // reset time unit to the one set in the chart
-            const unit = (this.chart.options.scales.x as any).time
-                .unit as TimeCategory;
-            if (unit) {
-                this.viewTimeCategory = unit;
-            }
-            this.updateChartData();
-        } else {
-            this.initChart();
-        }
+    setChart(data: typeof this.data.rawData$.value) {
+        this.viewTimeCategory = this.data.timeCategory;
+        super.setChart(data);
     }
 
-    getDatasets() {
-        return this.data.rawData$.value.map((series, seriesIndex) => {
+    getDatasets(data: typeof this.data.rawData$.value) {
+        return data.map((series, seriesIndex) => {
             const data = this.chartDataFromSeries(series);
             return {
                 type: this.chartType,
@@ -197,9 +188,7 @@ export class TimelineComponent
         // when zooming, hide data for smooth transition
         chart.update(triggeredByDataUpdate ? 'none' : 'hide');
 
-
         const zoomedInResults = await this.data.zoomedInData(min, max);
-
         zoomedInResults.forEach((data, seriesIndex) => {
             chart.data.datasets[seriesIndex].data =
                 this.chartDataFromSeries(data);
@@ -229,15 +218,15 @@ export class TimelineComponent
             this.viewTimeCategory;
         this.chart.update();
 
-        this.setChart();
+        this.setChart(this.data.rawData$.value);
     }
 
-    setTableHeaders() {
+    setTableHeaders(data: typeof this.data.rawData$.value) {
         const rightColumnName =
             this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
-        if (this.data.rawData$.value.length > 1) {
+        if (data.length > 1) {
             this.tableHeaders = [
                 {
                     key: 'date',

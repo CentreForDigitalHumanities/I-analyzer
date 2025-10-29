@@ -16,7 +16,7 @@ import {
     ChartParameters,
 } from '@models';
 import Zoom from 'chartjs-plugin-zoom';
-import { Subject, takeUntil } from 'rxjs';
+import { skip, Subject, takeUntil } from 'rxjs';
 import { selectColor } from '@utils/select-color';
 import { VisualizationService } from '@services/visualization.service';
 import { ComparedQueries } from '@models/compared-queries';
@@ -174,11 +174,12 @@ export abstract class BarchartDirective<
             this.refresh$.next();
             this.refreshChart();
         } else if (changes.palette) {
-            this.setChart();
+            this.setChart(this.data.rawData$.value);
         }
     }
 
     ngOnDestroy(): void {
+        this.clearCanvas();
         this.destroy$.next(undefined);
         this.refresh$.complete();
         this.destroy$.complete();
@@ -187,11 +188,11 @@ export abstract class BarchartDirective<
 
     onDataLoaded(data: typeof this.data.rawData$.value) {
         // initialise or update chart
-        this.setChart();
+        this.setChart(data);
 
         // update freqtable
-        this.setTableHeaders();
-        this.setTableData();
+        this.setTableHeaders(data);
+        this.setTableData(data);
 
         // load zoomed-in data if needed
         if (this.isZoomedIn) {
@@ -227,6 +228,9 @@ export abstract class BarchartDirective<
      * clear data and update chart
      */
     refreshChart(): void {
+        // clear canvas
+        this.clearCanvas();
+
         // complete existing data model
         this.data?.complete();
 
@@ -241,8 +245,6 @@ export abstract class BarchartDirective<
             takeUntil(this.destroy$),
         ).subscribe(message => this.onDataError(message));
 
-        // clear canvas
-        this.clearCanvas();
     }
 
     /** if a chart is active, clear canvas and reset chart object */
@@ -295,15 +297,15 @@ export abstract class BarchartDirective<
     }
 
     /** update or initialise chart (should be ran after updates to `rawData`) */
-    setChart(): void {
+    setChart(data: typeof this.data.rawData$.value): void {
         if (this.chart) {
-            this.updateChartData();
+            this.updateChartData(data);
         } else {
-            this.initChart();
+            this.initChart(data);
         }
     }
     /** select the columns/headers for the frequency table */
-    abstract setTableHeaders(): void;
+    abstract setTableHeaders(data: typeof this.data.rawData$.value): void;
     /** code to be executed when zooming in, or when parameters are updated while zoomed in */
     onZoomIn(chart, triggeredByDataUpdate = false) {}
     /** options for the chart.
@@ -313,9 +315,9 @@ export abstract class BarchartDirective<
     abstract chartOptions(datasets);
 
     /** initalise a new chart */
-    initChart() {
-        const labels = this.getLabels();
-        const datasets = this.getDatasets();
+    initChart(data: typeof this.data.rawData$.value) {
+        const labels = this.getLabels(data);
+        const datasets = this.getDatasets(data);
         const options = this.chartOptions(datasets);
 
         this.chart = new Chart(barchartID, {
@@ -337,9 +339,9 @@ export abstract class BarchartDirective<
     }
 
     /** After updating `rawData`, this executes the update in the chart. */
-    updateChartData() {
-        const labels = this.getLabels();
-        const datasets = this.getDatasets();
+    updateChartData(data: typeof this.data.rawData$.value) {
+        const labels = this.getLabels(data);
+        const datasets = this.getDatasets(data);
         this.chart.options = this.chartOptions(datasets);
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
@@ -350,12 +352,12 @@ export abstract class BarchartDirective<
     /** Return x-axis labels for the chartJS dataset.
      * Can be left undefined depending on data format.
      */
-    getLabels(): string[] {
+    getLabels(data: typeof this.data.rawData$.value): string[] {
         return undefined;
     }
 
     /** return chartJS dataset objects based on rawData */
-    abstract getDatasets(): any[];
+    abstract getDatasets(data: typeof this.data.rawData$.value): any[];
 
     /**
      * Show the zooming hint once per session, hide automatically with a delay
@@ -410,9 +412,9 @@ export abstract class BarchartDirective<
     }
 
     /** assemble the array of table data */
-    setTableData() {
-        if (this.data.rawData$.value && this.data.rawData$.value.length) {
-            this.tableData = _.flatMap(this.data.rawData$.value, (series) =>
+    setTableData(data: typeof this.data.rawData$.value) {
+        if (data && data.length) {
+            this.tableData = _.flatMap(data, (series) =>
                 series.data.map((item) => {
                     const result = _.cloneDeep(item) as any;
                     result.queryText = series.queryText;

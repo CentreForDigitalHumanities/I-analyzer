@@ -44,11 +44,11 @@ export class HistogramComponent
         );
     }
 
-    getLabels(): string[] {
+    getLabels(data: typeof this.data.rawData$.value): string[] {
         // make an array of all unique labels and sort
 
-        if (this.data.rawData$.value) {
-            const all_labels = _.flatMap(this.data.rawData$.value, (series) =>
+        if (data) {
+            const all_labels = _.flatMap(data, (series) =>
                 series.data.map((item) => item.key)
             );
             const labels = all_labels.filter(
@@ -60,7 +60,7 @@ export class HistogramComponent
             } else {
                 const valueKey = this.currentValueKey;
                 sorted_labels = _.sortBy(labels, (label) =>
-                    _.sumBy(this.data.rawData$.value, (series) => {
+                    _.sumBy(data, (series) => {
                         const item = series.data.find((i) => i.key === label);
                         return -1 * (item ? item[valueKey] : 0);
                     })
@@ -70,11 +70,11 @@ export class HistogramComponent
         }
     }
 
-    getDatasets() {
-        const labels = this.getLabels();
+    getDatasets(data: typeof this.data.rawData$.value) {
+        const labels = this.getLabels(data);
         const valueKey = this.currentValueKey;
 
-        return this.data.rawData$.value.map((series, seriesIndex) => ({
+        return data.map((series, seriesIndex) => ({
             type: this.chartType,
             label: series.queryText ? series.queryText : '(no query)',
             data: labels.map((key) => {
@@ -109,7 +109,7 @@ export class HistogramComponent
         return options;
     }
 
-    setTableHeaders() {
+    setTableHeaders(data: typeof this.data.rawData$.value) {
         /*
         Provides the table headers to the freqTable component. Determines optional headers.
         */
@@ -120,7 +120,7 @@ export class HistogramComponent
             this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
-        if (this.data.rawData$.value.length > 1) {
+        if (data.length > 1) {
             // if there are several queries, fulltable is disabled
             this.tableHeaders = [
                 { key: 'key', label, isSecondaryFactor: true },
