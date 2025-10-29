@@ -16,7 +16,7 @@ import {
     ChartParameters,
 } from '@models';
 import Zoom from 'chartjs-plugin-zoom';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { selectColor } from '@utils/select-color';
 import { VisualizationService } from '@services/visualization.service';
 import { ComparedQueries } from '@models/compared-queries';
@@ -87,11 +87,10 @@ export abstract class BarchartDirective<
     // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() error = new EventEmitter();
 
-    destroy$ = new Subject<void>();
-    // stopPolling$ = new Subject<void>();
-    // tasksToCancel: string[];
+    /** indicates that the data model should be re-instantiated */
+    refresh$ = new Subject<void>();
 
-    // dataHasLoaded: boolean;
+    destroy$ = new Subject<void>();
 
     data: Data;
 
@@ -175,6 +174,7 @@ export abstract class BarchartDirective<
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.changesRequireRefresh(changes)) {
+            this.refresh$.next();
             this.refreshChart();
         } else if (changes.palette) {
             this.setChart();
@@ -183,6 +183,7 @@ export abstract class BarchartDirective<
 
     ngOnDestroy(): void {
         this.destroy$.next(undefined);
+        this.refresh$.complete();
         this.destroy$.complete();
         this.comparedQueries.complete();
     }
@@ -229,12 +230,22 @@ export abstract class BarchartDirective<
      * clear data and update chart
      */
     refreshChart(): void {
+        // complete existing data model
+        this.data?.complete();
+
+        // create new data model and subscribe
         this.data = this.initData();
-        this.data.rawData$.subscribe(data => this.onDataLoaded(data));
-        this.data.error$.subscribe(message => this.onDataError(message));
-        // this.initQueries();
+        this.data.rawData$.pipe(
+            takeUntil(this.refresh$),
+            takeUntil(this.destroy$),
+        ).subscribe(data => this.onDataLoaded(data));
+        this.data.error$.pipe(
+            takeUntil(this.refresh$),
+            takeUntil(this.destroy$),
+        ).subscribe(message => this.onDataError(message));
+
+        // clear canvas
         this.clearCanvas();
-        // this.prepareChart();
     }
 
     /** if a chart is active, clear canvas and reset chart object */

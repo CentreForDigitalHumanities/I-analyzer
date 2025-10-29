@@ -47,12 +47,20 @@ export abstract class BarchartData<
             takeUntil(this.destroy$)
         ).subscribe(this.loadData.bind(this));
         this.comparedQueries.allQueries$.subscribe(this.updateQueries.bind(this));
-        this.destroy$.subscribe(() => this.onDestroy());
+        this.destroy$.subscribe(() => this.complete());
     }
 
     get documentLimit(): number {
         return hasPrefixTerm(this.queryModel.queryText) ? documentLimitPrefixQueries : documentLimitBase;
     }
+
+    complete() {
+        this.stopPolling$.next();
+        this.stopPolling$.complete();
+        this.error$.complete();
+    }
+
+
 
     protected refresh() {
         this.initQueries();
@@ -319,12 +327,6 @@ export abstract class BarchartData<
             ? data.match_count / data.token_count
             : undefined;
         return cat;
-    }
-
-    private onDestroy() {
-        this.stopPolling$.next();
-        this.stopPolling$.complete();
-        this.error$.complete();
     }
 
     abstract fullDataRequest(): Promise<TaskResult>;
