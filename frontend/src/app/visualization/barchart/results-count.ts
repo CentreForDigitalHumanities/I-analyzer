@@ -5,7 +5,7 @@ import { ComparedQueries } from '@models/compared-queries';
 import { ApiService, SearchService, VisualizationService } from '@services';
 import _ from 'lodash';
 import { hasPrefixTerm } from './query-utils';
-import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Observable, skip, Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { showLoading } from '@utils/utils';
 
 export type FrequencyMeasure = 'documents' | 'tokens';
@@ -44,7 +44,12 @@ export abstract class BarchartData<
         this.queryModel.update.pipe(
             takeUntil(this.destroy$)
         ).subscribe(this.refresh.bind(this));
-        this.comparedQueries.allQueries$.subscribe(this.updateQueries.bind(this));
+        this.comparedQueries.comparedQueries$.pipe(
+            skip(1),
+            withLatestFrom(this.comparedQueries.allQueries$),
+            map(([compared, all]) => all),
+            takeUntil(this.destroy$),
+        ).subscribe(this.updateQueries.bind(this));
         this.destroy$.subscribe(() => this.complete());
     }
 
