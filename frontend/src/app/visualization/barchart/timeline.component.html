@@ -23,7 +23,7 @@
     <canvas id="barchart" width="400" height="200" aria-label="timeline" role="img"></canvas>
 </div>
 
-<div class="block" *ngIf="asTable">
+<div class="block" *ngIf="asTable" [class.is-loading]="isLoading">
     <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name"
         [requiredColumn]="currentValueKey">
     </ia-freqtable>
