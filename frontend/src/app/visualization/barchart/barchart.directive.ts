@@ -22,7 +22,7 @@ import { VisualizationService } from '@services/visualization.service';
 import { ComparedQueries } from '@models/compared-queries';
 import { RouterStoreService } from '../../store/router-store.service';
 import { hasPrefixTerm } from './query-utils';
-import { BarchartData, FrequencyMeasure } from './results-count';
+import { BarchartData, FrequencyMeasure } from './barchart-data';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds

@@ -1,5 +1,5 @@
 import { TermsAggregator, TermsResult } from '@models/aggregation';
-import { BarchartData } from './results-count';
+import { BarchartData } from './barchart-data';
 import { HistogramDataPoint, HistogramSeries, MultipleChoiceFilterOptions, QueryModel, RangeFilterOptions, TaskResult } from '@models';
 import _ from 'lodash';
 

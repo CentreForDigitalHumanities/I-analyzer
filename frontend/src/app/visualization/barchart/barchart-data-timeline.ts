@@ -1,4 +1,4 @@
-import { BarchartData } from './results-count';
+import { BarchartData } from './barchart-data';
 import { BarchartSeries, DateFilterData, QueryModel, TimeCategory, TimelineDataPoint, TimelineSeries } from '@models';
 import { DateHistogramAggregator, DateHistogramResult } from '@models/aggregation';
 import { differenceInDays } from 'date-fns';
