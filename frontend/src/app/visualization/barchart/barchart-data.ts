@@ -4,7 +4,7 @@ import { DateHistogramResult, TermsResult } from '@models/aggregation';
 import { ComparedQueries } from '@models/compared-queries';
 import { ApiService, SearchService, VisualizationService } from '@services';
 import _ from 'lodash';
-import { hasPrefixTerm } from './query-utils';
+import { hasPrefixTerm, mainContentFields } from './query-utils';
 import { BehaviorSubject, map, Observable, skip, Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { showLoading } from '@utils/utils';
 
@@ -236,12 +236,9 @@ export abstract class BarchartData<
         if (this.frequencyMeasure === 'documents') {
             return queryModel;
         } else {
-            const mainContentFields = this.queryModel.corpus.fields.filter(
-                (field) =>
-                    field.searchable && field.displayType === 'text_content'
-            );
+            const searchFields = mainContentFields(queryModel);
             const queryModelCopy = queryModel.clone();
-            queryModelCopy.setParams({ searchFields: mainContentFields });
+            queryModelCopy.setParams({ searchFields });
             return queryModelCopy;
         }
     }

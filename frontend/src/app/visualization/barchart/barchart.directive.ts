@@ -21,7 +21,7 @@ import { selectColor } from '@utils/select-color';
 import { VisualizationService } from '@services/visualization.service';
 import { ComparedQueries } from '@models/compared-queries';
 import { RouterStoreService } from '../../store/router-store.service';
-import { hasPrefixTerm } from './query-utils';
+import { hasPrefixTerm, mainContentFields } from './query-utils';
 import { BarchartData, FrequencyMeasure } from './barchart-data';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
@@ -454,15 +454,10 @@ export abstract class BarchartDirective<
 
     get searchFields(): string {
         if (this.queryModel) {
-            const searchFields = this.selectSearchFields(
-                this.queryModel
-            ).searchFields;
-
+            const searchFields = mainContentFields(this.queryModel);
             const displayNames = searchFields.map((field) => field.displayName);
-
             return displayNames.join(', ');
         }
-
         return 'all fields';
     }
 
