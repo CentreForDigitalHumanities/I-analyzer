@@ -6,7 +6,7 @@
 
 <div class="block">
     <ia-barchart-options
-        [queryText]="queryText"
+        [queryText]="queryModel.queryText"
         [showTokenCountOption]="data.totalTokenCountAvailable$ | async"
         [isLoading]="isLoading"
         [frequencyMeasure]="frequencyMeasure"

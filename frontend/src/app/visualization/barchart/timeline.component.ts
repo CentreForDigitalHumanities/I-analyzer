@@ -198,18 +198,6 @@ export class TimelineComponent
         chart.update('show'); // fade into view
     }
 
-    /**
-     * Add a date filter to a query model restricting it to the provided min and max values.
-     */
-    addQueryDateFilter(query: QueryModel, min: Date, max: Date): QueryModel {
-        const queryModelCopy = query.clone();
-        // download zoomed in results
-        const filter = this.visualizedField.makeSearchFilter();
-        filter.set({ min, max });
-        queryModelCopy.addFilter(filter);
-        return queryModelCopy;
-    }
-
     /** trigger zoom out, update chart data accordingly */
     zoomOut(): void {
         this.chart.resetZoom();

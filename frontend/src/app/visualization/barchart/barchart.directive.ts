@@ -48,8 +48,8 @@ export abstract class BarchartDirective<
     // chart object
     chart: Chart;
 
-    @Input() queryModel: QueryModel;
-    @Input() visualizedField: CorpusField;
+    @Input({ required: true }) queryModel!: QueryModel;
+    @Input({ required: true }) visualizedField!: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
@@ -468,7 +468,7 @@ export abstract class BarchartDirective<
 
     chartTitle() {
         const queryTexts = this.data.rawData$.value.map((series) => series.queryText);
-        if (this.queryText == null && this.data.rawData$.value.length === 1) {
+        if (!this.queryModel.queryText && this.data.rawData$.value.length === 1) {
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
             const normalizationText = ['raw', 'percent'].includes(
@@ -479,12 +479,6 @@ export abstract class BarchartDirective<
             return `Frequency of '${queryTexts.join(', ')}' by ${
                 this.visualizedField.displayName
             } (n of ${this.frequencyMeasure}${normalizationText})`;
-        }
-    }
-
-    get queryText(): string {
-        if (this.queryModel) {
-            return this.queryModel.queryText;
         }
     }
 
