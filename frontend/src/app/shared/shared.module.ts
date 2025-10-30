@@ -21,6 +21,9 @@ import { SlugifyPipe } from './pipes/slugify.pipe';
 import { ToggleButtonDirective } from './toggle-button.directive';
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
+/** this should be imported by all other modules; provides basic building blocks
+ * for the whole application
+ */
 @NgModule({
     declarations: [
         DatePickerComponent,

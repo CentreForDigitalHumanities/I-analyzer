@@ -58,75 +58,65 @@
                 </a>
             </div>
             <div class="navbar-end">
-                <div *ngIf="user$ | async as user; else notLoggedIn"
-                    class="navbar-item has-dropdown"
-                    [class.is-active]="dropdownOpen$ | async">
-                    <a class="navbar-link"
-                        tabindex="0" role="button"
-                        (click)="toggleDropdown()"
-                        (keydown.enter)="toggleDropdown()"
-                        [attr.aria-expanded]="dropdownOpen$ | async"
-                        data-target="userDropdown">
+                <ia-menu-dropdown *ngIf="user$ | async as user; else notLoggedIn">
+                    <div iaMenuDropdownLabel>
                         <span class="icon" aria-hidden="true">
                             <fa-icon [icon]="userIcons.user"></fa-icon>
                         </span>
                         {{user.name}}
-                        <!-- drop down menu to log out, or see previous queries-->
-                    </a>
-                    <div class="navbar-dropdown is-right"
-                        id="userDropdown" #userDropdown>
-                        <a class="navbar-item"
-                            [routerLink]="['/search-history']"
-                            [routerLinkActive]="'is-active'">
-                            <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="navIcons.searchHistory"></fa-icon>
-                            </span>
-                            Search history
-                        </a>
-                        <a class="navbar-item"
-                            [routerLink]="['/download-history']"
-                            [routerLinkActive]="'is-active'">
-                            <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="navIcons.downloads"></fa-icon>
-                            </span>
-                            Downloads
-                        </a>
-                        <a class="navbar-item"
-                            [routerLink]="['/tags']"
-                            [routerLinkActive]="'is-active'">
-                            <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="navIcons.tags"></fa-icon>
-                            </span>
-                            Tags
-                        </a>
-                        <a class="navbar-item"
-                            [routerLink]="['/settings']"
-                            [routerLinkActive]="'is-active'">
-                            <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="navIcons.settings"></fa-icon>
-                            </span>
-                            Settings
-                        </a>
-                        <a class="navbar-item"
-                            *ngIf="isAdmin$ | async"
-                            href="{{adminUrl}}">
-                            <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="navIcons.admin"></fa-icon>
-                            </span>
-                            Administration
-                        </a>
-                        <a class="navbar-item"
-                            role="button"
-                            tabindex="0"
-                            (click)="logout()"
-                            (keydown.enter)="logout()">
-                            <span class="icon" aria-hidden="true">
-                                <fa-icon [icon]="userIcons.logout"></fa-icon>
-                            </span>
-                            Sign out
-                        </a>
                     </div>
-                </div>
+                    <!-- menu items -->
+                    <a class="navbar-item"
+                        [routerLink]="['/search-history']"
+                        routerLinkActive="is-active">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="navIcons.searchHistory"></fa-icon>
+                        </span>
+                        Search history
+                    </a>
+                    <a class="navbar-item"
+                        [routerLink]="['/download-history']"
+                        routerLinkActive="is-active">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="navIcons.downloads"></fa-icon>
+                        </span>
+                        Downloads
+                    </a>
+                    <a class="navbar-item"
+                        [routerLink]="['/tags']"
+                        routerLinkActive="is-active">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="navIcons.tags"></fa-icon>
+                        </span>
+                        Tags
+                    </a>
+                    <a class="navbar-item"
+                        [routerLink]="['/settings']"
+                        routerLinkActive="is-active">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="navIcons.settings"></fa-icon>
+                        </span>
+                        Settings
+                    </a>
+                    <a class="navbar-item"
+                        *ngIf="isAdmin$ | async"
+                        href="{{adminUrl}}">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="navIcons.admin"></fa-icon>
+                        </span>
+                        Administration
+                    </a>
+                    <a class="navbar-item"
+                        role="button"
+                        tabindex="0"
+                        (click)="logout()"
+                        (keydown.enter)="logout()">
+                        <span class="icon" aria-hidden="true">
+                            <fa-icon [icon]="userIcons.logout"></fa-icon>
+                        </span>
+                        Sign out
+                    </a>
+                </ia-menu-dropdown>
                 <ng-template #notLoggedIn>
                     <a class="navbar-item"
                         [routerLink]="['/login']" [routerLinkActive]="'is-active'">

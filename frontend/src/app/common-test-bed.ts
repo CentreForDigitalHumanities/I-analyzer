@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import {FontAwesomeTestingModule} from '@fortawesome/angular-fontawesome/testing';
 
-import { appRoutes, declarations, imports, providers } from './app.module';
+import { appRoutes, imports, providers } from './app.module';
 
 import { ApiServiceMock } from '../mock-data/api';
 import { AuthServiceMock } from '../mock-data/auth';
@@ -90,7 +90,6 @@ export const commonTestBed = () => {
 
     return {
         testingModule: TestBed.configureTestingModule({
-            declarations,
             imports: filteredImports,
             providers: filteredProviders
         })
