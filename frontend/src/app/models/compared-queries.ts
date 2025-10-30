@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { Store } from '../store/types';
 import { Observable } from 'rxjs';
 import { queryFromParams, queryToParams } from '../utils/params';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, distinctUntilKeyChanged, filter, map, takeUntil } from 'rxjs/operators';
 
 interface CompareQueryState {
     primary: string|undefined;
@@ -18,6 +18,9 @@ export class ComparedQueries extends StoreSync<CompareQueryState> {
     /** all queries, including the primary query text */
     allQueries$: Observable<string[]>;
 
+    /** compared queries, excluding the primary query text */
+    comparedQueries$: Observable<string[]>;
+
     protected keysInStore = ['query', COMPARE_TERMS_KEY];
 
     constructor(store: Store) {
@@ -28,6 +31,10 @@ export class ComparedQueries extends StoreSync<CompareQueryState> {
 
         this.allQueries$ = this.state$.pipe(
             map(state => [state.primary, ...state.compare])
+        );
+        this.comparedQueries$ = this.state$.pipe(
+            distinctUntilKeyChanged('compare', _.isEqual),
+            map(state => state.compare),
         );
     }
 

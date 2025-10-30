@@ -1,16 +1,9 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 import * as _ from 'lodash';
 
-import {
-    HistogramDataPoint,
-    HistogramSeries,
-    MultipleChoiceFilterOptions,
-    QueryModel,
-    RangeFilterOptions,
-} from '@models/index';
 import { selectColor } from '@utils/select-color';
 import { BarchartDirective } from './barchart.directive';
-import { TermsAggregator, TermsResult } from '@models/aggregation';
+import { HistogramData } from './barchart-data-histogram';
 
 function formatXAxisLabel(value): string {
     const label = this.getLabelForValue(value); // from chartJS api
@@ -28,7 +21,7 @@ function formatXAxisLabel(value): string {
     standalone: false
 })
 export class HistogramComponent
-    extends BarchartDirective<TermsResult, HistogramDataPoint>
+    extends BarchartDirective<HistogramData>
     implements OnInit, OnChanges {
     /** On what property should the data be sorted? */
     get defaultSort(): string {
@@ -38,80 +31,24 @@ export class HistogramComponent
         return this.currentValueKey;
     }
 
-    /** specify aggregator object based on visualised field;
-     * used in document requests.
-     */
-    getAggregator(): TermsAggregator {
-        let size = 100;
-
-        const filterOptions = this.visualizedField.filterOptions;
-        if (filterOptions?.name === 'MultipleChoiceFilter') {
-            size = (filterOptions as MultipleChoiceFilterOptions).option_count;
-        } else if (filterOptions?.name === 'RangeFilter') {
-            const filterRange =
-                (filterOptions as RangeFilterOptions).upper -
-                (filterOptions as RangeFilterOptions).lower;
-            size = _.max([size, filterRange])
-        }
-        return new TermsAggregator(this.visualizedField, size);
-    }
-
-    requestSeriesDocCounts(queryModel: QueryModel) {
-        const aggregator = this.getAggregator();
-
-        return this.searchService.aggregateSearch(this.corpus, queryModel, aggregator);
-    }
-
-    aggregateResultToDataPoint(cat: TermsResult) {
-        return cat;
-    }
-
-    requestSeriesTermFrequency(
-        series: HistogramSeries,
-        queryModel: QueryModel
-    ) {
-        const bins = this.makeTermFrequencyBins(series);
-        return this.visualizationService.aggregateTermFrequencySearch(
-            this.corpus,
-            queryModel,
-            this.visualizedField.name,
-            bins
+    initData(): HistogramData {
+        return new HistogramData(
+            this.queryModel,
+            this.comparedQueries,
+            this.frequencyMeasure,
+            this.visualizedField,
+            this.searchService,
+            this.apiService,
+            this.visualizationService,
+            this.destroy$,
         );
     }
 
-    makeTermFrequencyBins(series: HistogramSeries) {
-        return series.data.map((bin) => ({
-            fieldValue: bin.key,
-            size: this.documentLimitForCategory(bin, series),
-        }));
-    }
-
-    fullDataRequest() {
-        const paramsPerSeries = this.rawData.map((series) => {
-            const queryModel = this.queryModelForSeries(
-                series,
-                this.queryModel
-            );
-            const bins = this.makeTermFrequencyBins(series);
-            return this.visualizationService.makeAggregateTermFrequencyParameters(
-                this.corpus,
-                queryModel,
-                this.visualizedField.name,
-                bins
-            );
-        });
-        return this.apiService.requestFullData({
-            visualization: 'aggregate_term_frequency',
-            parameters: paramsPerSeries,
-            corpus_name: this.corpus.name,
-        });
-    }
-
-    getLabels(): string[] {
+    getLabels(data: typeof this.data.rawData$.value): string[] {
         // make an array of all unique labels and sort
 
-        if (this.rawData) {
-            const all_labels = _.flatMap(this.rawData, (series) =>
+        if (data) {
+            const all_labels = _.flatMap(data, (series) =>
                 series.data.map((item) => item.key)
             );
             const labels = all_labels.filter(
@@ -123,7 +60,7 @@ export class HistogramComponent
             } else {
                 const valueKey = this.currentValueKey;
                 sorted_labels = _.sortBy(labels, (label) =>
-                    _.sumBy(this.rawData, (series) => {
+                    _.sumBy(data, (series) => {
                         const item = series.data.find((i) => i.key === label);
                         return -1 * (item ? item[valueKey] : 0);
                     })
@@ -133,11 +70,11 @@ export class HistogramComponent
         }
     }
 
-    getDatasets() {
-        const labels = this.getLabels();
+    getDatasets(data: typeof this.data.rawData$.value) {
+        const labels = this.getLabels(data);
         const valueKey = this.currentValueKey;
 
-        return this.rawData.map((series, seriesIndex) => ({
+        return data.map((series, seriesIndex) => ({
             type: this.chartType,
             label: series.queryText ? series.queryText : '(no query)',
             data: labels.map((key) => {
@@ -172,7 +109,7 @@ export class HistogramComponent
         return options;
     }
 
-    setTableHeaders() {
+    setTableHeaders(data: typeof this.data.rawData$.value) {
         /*
         Provides the table headers to the freqTable component. Determines optional headers.
         */
@@ -183,7 +120,7 @@ export class HistogramComponent
             this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
-        if (this.rawData.length > 1) {
+        if (data.length > 1) {
             // if there are several queries, fulltable is disabled
             this.tableHeaders = [
                 { key: 'key', label, isSecondaryFactor: true },
