@@ -14,7 +14,11 @@ from api.utils import check_json_keys
 
 logger = logging.getLogger()
 
-TERM_FREQUENCY_SIZE_LIMIT = 5000
+TERM_FREQUENCY_SIZE_LIMIT = 10500
+'''Limit for the term frequency graph. Size is currently set in the frontend, this is
+only to prevent overuse. The limit is slightly over what the frontend should request
+to prevent errors due to rounding in each bin.
+'''
 
 
 class WordcloudView(APIView):
