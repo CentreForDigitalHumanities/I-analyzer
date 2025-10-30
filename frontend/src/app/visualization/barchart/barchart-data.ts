@@ -60,6 +60,7 @@ export abstract class BarchartData<
         return hasPrefixTerm(this.queryModel.queryText) ? documentLimitPrefixQueries : documentLimitBase;
     }
 
+    /** Complete observables */
     complete() {
         this.rawData$.complete();
         this.stopPolling$.next();
@@ -68,8 +69,9 @@ export abstract class BarchartData<
         this.loading$.complete();
     }
 
+    /** Create a new data object and fetch results */
     protected refresh() {
-        this.initQueries();
+        this.initSeries();
         this.loadData();
     }
 
@@ -85,6 +87,16 @@ export abstract class BarchartData<
         );
     }
 
+    /**
+     * Get term frequency data for a data series
+     *
+     * Makes initial request for the series, polls result, merges frequency data with the
+     * series object.
+
+    * @param series data series with document counts already filled in
+     * @param queryModel user query
+     * @returns promise of the series with term frequencies added
+     */
     protected getTermFrequencies(
         series: BarchartSeries<DataPoint>,
         queryModel: QueryModel
@@ -115,7 +127,7 @@ export abstract class BarchartData<
     }
 
     /**
-     * calculate the maximum number of documents to read through in a bin
+     * Calculate the maximum number of documents to read through in a bin
      * when determining term frequency.
      */
     protected documentLimitForCategory(
@@ -128,7 +140,7 @@ export abstract class BarchartData<
         ]);
     }
 
-    /** adapt query model to fit series: use correct search fields and query text */
+    /** Adapt query model to fit series: use correct search fields and query text */
     protected queryModelForSeries(
         series: BarchartSeries<DataPoint>,
         queryModel: QueryModel
@@ -138,7 +150,8 @@ export abstract class BarchartData<
         );
     }
 
-    private initQueries(): void {
+    /** Create new data object with empty frequencies */
+    private initSeries(): void {
         const series = [
             this.newSeries(this.queryModel.queryText),
             ...this.comparedQueries.state$.value.compare.map(this.newSeries)
@@ -146,23 +159,21 @@ export abstract class BarchartData<
         this.rawData$.next(series)
     }
 
-    /** update the queries in the graph to the input array. Preserve results if possible,
-     * and start loading for the rest.
+    /** Update the data object to add/remove data series. If a query was already
+     * present, results are preserved. Starts loading results for new series.
      */
     private updateQueries(queries: string[]) {
-        if (this.rawData$) {
-            const data = queries.map((queryText) => {
-                const existingSeries = this.rawData$.value.find(
-                    (series) => series.queryText === queryText
-                );
-                return existingSeries || this.newSeries(queryText);
-            });
-            this.rawData$.next(data);
-            this.loadData();
-        }
+        const data = queries.map((queryText) => {
+            const existingSeries = this.rawData$.value.find(
+                (series) => series.queryText === queryText
+            );
+            return existingSeries || this.newSeries(queryText);
+        });
+        this.rawData$.next(data);
+        this.loadData();
     }
 
-    /** make a blank series object */
+    /** Make a blank series object, without frequencies */
     private newSeries(queryText: string): BarchartSeries<DataPoint> {
         return {
             queryText,
@@ -172,6 +183,7 @@ export abstract class BarchartData<
         };
     }
 
+    /** Overarching function to load frequency data */
     private loadData(): Promise<void> {
         const dataPromises = this.requestDocumentData().then(
             this.frequencyMeasure === 'tokens'
@@ -187,6 +199,9 @@ export abstract class BarchartData<
         return showLoading(this.loading$, dataPromises);
     }
 
+    /** Request document frequencies for all series, if they are not
+     * already filled in.
+     */
     private requestDocumentData(): Promise<BarchartSeries<DataPoint>[]> {
         const dataPromises = this.rawData$.value.map((series) => {
             // retrieve data if it was not already loaded
@@ -201,8 +216,8 @@ export abstract class BarchartData<
         );
     }
 
-    /** Retrieve all term frequencies and store in `rawData`.
-     * Term frequencies are only loaded if they were not already there.
+    /** Fetch term frequencies for all data series, if they are not already filled
+     * in.
      */
     private requestTermFrequencyData(rawData: typeof this.rawData$.value): Promise<BarchartSeries<DataPoint>[]> {
         // cancel and stop polling running tasks
@@ -232,7 +247,10 @@ export abstract class BarchartData<
         return rawData;
     }
 
-    private selectSearchFields(queryModel: QueryModel) {
+    /**
+     * Return a copy of the query model with the right search fields selected.
+     */
+    private selectSearchFields(queryModel: QueryModel): QueryModel {
         if (this.frequencyMeasure === 'documents') {
             return queryModel;
         } else {
@@ -243,8 +261,7 @@ export abstract class BarchartData<
         }
     }
 
-
-    /** return a copy of a query model with the query text set to the given value */
+    /** Return a copy of a query model with the query text set to the given value */
     private setQueryText(query: QueryModel, queryText: string): QueryModel {
         const queryModelCopy = query.clone();
         queryModelCopy.setQueryText(queryText);
@@ -282,12 +299,12 @@ export abstract class BarchartData<
         };
     }
 
-    /** total document count for a data array */
+    /** Total document count for a data array */
     private totalDocCount(data: AggregateResult[]) {
         return _.sumBy(data, (item) => item.doc_count);
     }
 
-    /** fill in the `relative_doc_count` property for an array of datapoints.
+    /** Fill in the `relative_doc_count` property for an array of datapoints.
      */
     private includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
         return data.map((item) => ({
@@ -296,10 +313,13 @@ export abstract class BarchartData<
         }));
     }
 
-    private onFailure(error) {
+    private onFailure(error: { message: string }) {
         this.error$.next(error.message);
     }
 
+    /** Update a data series in place with term frequency results. Also set
+     * `dataHasLoaded` to true.
+     */
     private processSeriesTermFrequency(
         results: TermFrequencyResult[], series: BarchartSeries<DataPoint>
     ): BarchartSeries<DataPoint> {
@@ -312,7 +332,7 @@ export abstract class BarchartData<
     };
 
     /**
-     * add term frequency data to a DataPoint object
+     * Add term frequency data to a DataPoint object
      *
      * @param result output from request for term frequencies
      * @param cat DataPoint object where the data should be added
@@ -330,12 +350,16 @@ export abstract class BarchartData<
         return cat;
     }
 
+    /** Whether total token counts are included in the data (which would enable
+     * normalisation)
+     */
     private checkTotalTokenCount(data: BarchartSeries<DataPoint>[]): boolean {
         return data.find((series) =>
             series.data.find((cat) => cat.token_count !== undefined)
         ) !== undefined;
     }
 
+    /** Make request for the full term frequency data, rather than a sample */
     abstract fullDataRequest(): Promise<TaskResult>;
 
     /** Request doc counts for a series */
@@ -343,10 +367,11 @@ export abstract class BarchartData<
         queryModel: QueryModel
     ): Promise<AggregateResult[]>;
 
+    /** Request term frequency counts for a series */
+    protected abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
 
     /** convert the output of an aggregation search to the relevant result type */
     protected abstract aggregateResultToDataPoint(cat: AggregateResult): DataPoint;
 
-    protected abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
 
 }
