@@ -95,24 +95,25 @@ export interface APIEditableCorpus {
     active: boolean;
     definition: APICorpusDefinition;
     has_image?: boolean;
-    has_confirmed_datafile?: boolean;
+    has_complete_data?: boolean;
 }
 
 export class CorpusDefinition {
     active = false;
     hasImage = false;
-    hasConfirmedDataFile: boolean;
+    hasCompleteData: boolean;
     loading$ = new BehaviorSubject<boolean>(true);
 
     definition: APICorpusDefinition;
 
     definitionUpdated$ = this.loading$.pipe(filter((val) => !val));
 
-    constructor(private apiService: ApiService, public id?: number) {
+    constructor(
+        private apiService: ApiService,
+        public id?: number,
+    ) {
         if (this.id) {
-            this.apiService
-                .corpusDefinition(this.id)
-                .subscribe((result) => this.setFromAPIData(result));
+            this.refresh();
         } else {
             this.loading$.next(false);
         }
@@ -131,6 +132,14 @@ export class CorpusDefinition {
     /** whether the corpus definition contains all data necessary for saving */
     isComplete() {
         return !_.isUndefined(this.definition);
+    }
+
+    /** refresh the corpus from the database **/
+    refresh(): void {
+        this.loading$.next(true);
+        this.apiService
+            .corpusDefinition(this.id)
+            .subscribe((result) => this.setFromAPIData(result));
     }
 
     /** save the corpus state in the database */
@@ -158,7 +167,7 @@ export class CorpusDefinition {
         this.active = result.active;
         this.setFromDefinition(result.definition);
         this.hasImage = result.has_image;
-        this.hasConfirmedDataFile = result.has_confirmed_datafile;
+        this.hasCompleteData = result.has_complete_data;
 
         // do not edit properties AFTER this !!!
         this.loading$.next(false);

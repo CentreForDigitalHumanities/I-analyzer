@@ -69,7 +69,9 @@ export class DataFormComponent implements OnInit, OnDestroy {
         );
 
         this.filesChanged$.subscribe({
-            next: () => this.refreshDataFiles(),
+            next: () => {
+                this.refreshDataFiles();
+            },
         });
 
         this.fileState$ = this.dataFiles$.pipe(
@@ -105,7 +107,7 @@ export class DataFormComponent implements OnInit, OnDestroy {
             });
     }
 
-    handleReplaceAccept = () => {
+    onReplaceAccept = () => {
         // Confirm file replacement
         // Removes the old file, then confirms the new
         const removeConfirmed = this.confirmed$.pipe(
@@ -113,27 +115,31 @@ export class DataFormComponent implements OnInit, OnDestroy {
             switchMap((df) => this.apiService.deleteDataFile(df)),
         );
 
-        return removeConfirmed.pipe(
-            withLatestFrom(this.unconfirmed$),
-            map(([_, file]) => file),
-            switchMap((file) =>
-                this.apiService.patchDataFile(file.id, { confirmed: true }),
-            ),
-        );
+        removeConfirmed
+            .pipe(
+                withLatestFrom(this.unconfirmed$),
+                map(([_, file]) => file),
+                switchMap((file) =>
+                    this.apiService.patchDataFile(file.id, { confirmed: true }),
+                ),
+            )
+            .subscribe({
+                next: (datafile) => {
+                    this.setCorpusFields(datafile.csv_info);
+                    this.refreshDataFiles();
+                },
+                error: (error) => this.error$.next(error),
+            });
     };
 
-    handleReplaceReject = () =>
+    onReplaceReject = () =>
         // Remove unconfirmed (new) file
-        this.unconfirmed$.pipe(
-            switchMap((file) => this.apiService.deleteDataFile(file)),
-        );
-
-    onReplace(handler: () => Observable<CorpusDataFile | null>) {
-        handler().subscribe({
-            next: () => this.refreshDataFiles(),
-            error: (error) => this.error$.next(error),
-        });
-    }
+        this.unconfirmed$
+            .pipe(switchMap((file) => this.apiService.deleteDataFile(file)))
+            .subscribe({
+                next: () => this.refreshDataFiles(),
+                error: (error) => this.error$.next(error),
+            });
 
     handleReset = (files: CorpusDataFile[]): Observable<any> => {
         const requests = files.map((file) =>
@@ -176,6 +182,7 @@ export class DataFormComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (datafiles) => {
                     this.dataFiles$.next(datafiles);
+                    this.corpusDefService.refreshCorpus();
                 },
                 error: (err) => this.error$.next(err),
             });

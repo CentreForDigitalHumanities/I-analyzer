@@ -24,9 +24,7 @@ export class CorpusDefinitionService implements OnDestroy {
     ]);
     activeStep$ = new BehaviorSubject<number>(0);
 
-    constructor(
-        private slugify: SlugifyPipe,
-    ) {
+    constructor(private slugify: SlugifyPipe) {
         this.corpus$
             .pipe(takeUntil(this.destroy$), filter(_.negate(_.isUndefined)))
             .subscribe({
@@ -60,6 +58,10 @@ export class CorpusDefinitionService implements OnDestroy {
         this.corpus$.next(corpus);
     }
 
+    public refreshCorpus(): void {
+        this.corpus$.value.refresh();
+    }
+
     public setDelimiter(delimiter: Delimiter): void {
         let sourceDataOpts = this.corpus$.value.definition.source_data.options;
         if (
@@ -82,7 +84,7 @@ export class CorpusDefinitionService implements OnDestroy {
 
     public makeDefaultField(
         dtype: APICorpusDefinitionField['type'],
-        colName: string
+        colName: string,
     ): APICorpusDefinitionField {
         let field: Partial<APICorpusDefinitionField> = {
             name: this.slugify.transform(colName),
@@ -171,7 +173,7 @@ export class CorpusDefinitionService implements OnDestroy {
     }
 
     private dataComplete(corpus: CorpusDefinition) {
-        return corpus.hasConfirmedDataFile;
+        return corpus.hasCompleteData;
     }
 
     private setSteps(corpus: CorpusDefinition) {
@@ -183,12 +185,10 @@ export class CorpusDefinitionService implements OnDestroy {
             maxStep = 3;
         }
 
-        const steps = this.steps$.value.map(
-            (step, index) => ({
-                ...step,
-                disabled: index > maxStep,
-            })
-        );
+        const steps = this.steps$.value.map((step, index) => ({
+            ...step,
+            disabled: index > maxStep,
+        }));
         this.steps$.next(steps);
     }
 }

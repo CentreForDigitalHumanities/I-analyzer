@@ -40,8 +40,8 @@
          <ia-datafile-info
                 [currentDataFile]="confirmed"
                 [newDataFile]="unconfirmed"
-                (onCurrentSelected)="onReplace(handleReplaceReject)"
-                (onNewSelected)="onReplace(handleReplaceAccept)"
+                (onCurrentSelected)="onReplaceReject()"
+                (onNewSelected)="onReplaceAccept()"
             ></ia-datafile-info>
     }
 }

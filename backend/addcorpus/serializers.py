@@ -161,15 +161,21 @@ class JSONDefinitionField(serializers.Field):
 class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
     definition = JSONDefinitionField()
     has_image = serializers.BooleanField(source='configuration.image', read_only=True)
-    has_confirmed_datafile = serializers.SerializerMethodField()
+    has_complete_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Corpus
-        fields = ['id', 'active', 'definition', 'owner', 'has_image', 'has_confirmed_datafile']
+        fields = ['id', 'active', 'definition',
+                  'owner', 'has_image', 'has_complete_data']
         read_only_fields = ['id']
 
-    def get_has_confirmed_datafile(self, obj: Corpus):
-        return CorpusDataFile.objects.filter(corpus=obj, confirmed=True).exists()
+    def get_has_complete_data(self, obj: Corpus):
+        '''Corpus should have exactly one file, that is confirmed'''
+        confirmed_exists = CorpusDataFile.objects.filter(
+            corpus=obj, confirmed=True).exists()
+        unconfirmed_exists = CorpusDataFile.objects.filter(
+            corpus=obj, confirmed=False).exists()
+        return confirmed_exists and not unconfirmed_exists
 
     def create(self, validated_data: Dict):
         definition_data = validated_data.get('definition')
