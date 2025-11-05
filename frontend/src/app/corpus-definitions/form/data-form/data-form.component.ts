@@ -8,6 +8,7 @@ import { MenuItem } from 'primeng/api';
 import {
     BehaviorSubject,
     filter,
+    forkJoin,
     map,
     Observable,
     shareReplay,
@@ -108,6 +109,7 @@ export class DataFormComponent implements OnInit, OnDestroy {
         // Confirm file replacement
         // Removes the old file, then confirms the new
         const removeConfirmed = this.confirmed$.pipe(
+            take(1),
             switchMap((df) => this.apiService.deleteDataFile(df)),
         );
 
@@ -132,6 +134,13 @@ export class DataFormComponent implements OnInit, OnDestroy {
             error: (error) => this.error$.next(error),
         });
     }
+
+    handleReset = (files: CorpusDataFile[]): Observable<any> => {
+        const requests = files.map((file) =>
+            this.apiService.deleteDataFile(file),
+        );
+        return forkJoin(requests);
+    };
 
     onResetComplete() {
         // reset corpus fields
@@ -160,6 +169,32 @@ export class DataFormComponent implements OnInit, OnDestroy {
             });
     }
 
+    private refreshDataFiles(): void {
+        this.apiService
+            .listDataFiles(this.corpusDefService.corpus$.value.id, true)
+            .pipe(filter(_.negate(_.isUndefined)), takeUntil(this.destroy$))
+            .subscribe({
+                next: (datafiles) => {
+                    this.dataFiles$.next(datafiles);
+                },
+                error: (err) => this.error$.next(err),
+            });
+    }
+
+    private setCorpusFields(info: DataFileInfo) {
+        const fields = _.map(info.fields, (field) =>
+            this.corpusDefService.makeDefaultField(field.type, field.name),
+        );
+        this.nextStep();
+        this.corpusDefService.setFields(fields);
+    }
+
+    private nextStep() {
+        this.corpusDefService.corpus$.value.definitionUpdated$
+            .pipe(take(1), takeUntil(this.destroy$))
+            .subscribe(() => this.corpusDefService.activateStep(2));
+    }
+
     private datafilesToState = (files: CorpusDataFile[]): DataFileState => {
         if (_.isEmpty(files)) {
             return 'noneUploaded';
@@ -180,30 +215,4 @@ export class DataFormComponent implements OnInit, OnDestroy {
             return 'newUploaded';
         }
     };
-
-    private nextStep() {
-        this.corpusDefService.corpus$.value.definitionUpdated$
-            .pipe(take(1), takeUntil(this.destroy$))
-            .subscribe(() => this.corpusDefService.activateStep(2));
-    }
-
-    private refreshDataFiles(): void {
-        this.apiService
-            .listDataFiles(this.corpusDefService.corpus$.value.id, true)
-            .pipe(filter(_.negate(_.isUndefined)), takeUntil(this.destroy$))
-            .subscribe({
-                next: (datafiles) => {
-                    this.dataFiles$.next(datafiles);
-                },
-                error: (err) => this.error$.next(err),
-            });
-    }
-
-    private setCorpusFields(info: DataFileInfo) {
-        const fields = _.map(info.fields, (field) =>
-            this.corpusDefService.makeDefaultField(field.type, field.name),
-        );
-        this.nextStep();
-        this.corpusDefService.setFields(fields);
-    }
 }
