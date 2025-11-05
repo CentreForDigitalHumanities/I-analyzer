@@ -1,5 +1,5 @@
 <div class="section">
-    <div class="container">
+    <div class="container is-readable">
         <nav aria-label="secondary navigation" class="breadcrumb block">
             <ul>
                 <li><a [routerLink]="['/']">I-Analyzer</a></li>
@@ -9,6 +9,27 @@
             </ul>
         </nav>
 
+        <div class="columns">
+            @let corpus = corpus$ | async;
+            <div class="column">
+                <h1 class="title">Edit "{{corpus?.definition?.meta?.title || '...'}}"</h1>
+            </div>
+            <div class="column is-narrow">
+                @if (corpus.active) {
+                    <a class="button is-medium" [routerLink]="['/search', corpus.definition.name]">
+                        <span class="icon">
+                            <fa-icon [icon]="corpusIcons.search" aria-hidden="true" />
+                        </span>
+                    </a>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
         <p-steps [model]="steps$ | async" [readonly]="false" [activeIndex]="activeStep$ | async"
             (activeIndexChange)="onActiveIndexChange($event)" />
     </div>

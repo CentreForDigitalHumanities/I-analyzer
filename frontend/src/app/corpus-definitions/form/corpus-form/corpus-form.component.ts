@@ -5,7 +5,7 @@ import { ApiService } from '../../../services';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
 import { combineLatest, map, tap } from 'rxjs';
 import _ from 'lodash';
-import { actionIcons } from '@shared/icons';
+import { actionIcons, corpusIcons } from '@shared/icons';
 import { Title } from '@angular/platform-browser';
 import { pageTitle } from '@utils/app';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,6 +28,7 @@ export class CorpusFormComponent {
     corpus$ = this.corpusDefService.corpus$.asObservable();
 
     actionIcons = actionIcons;
+    corpusIcons = corpusIcons;
 
     constructor(
         private apiService: ApiService,

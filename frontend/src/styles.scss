@@ -115,7 +115,7 @@ a.dropdown-item[disabled] {
 }
 
 .content {
-    a {
+    a:not(.button) {
         text-decoration: underline;
     }
 }
