@@ -73,15 +73,18 @@
 
 <ia-confirm-modal #confirmDelete
     actionText="Delete corpus" actionButtonClass="is-danger" [icon]="actionIcons.delete"
-    [handleAsync]="handleDelete" (accept)="onDeleteComplete()">
-    <p>
-        Do you want to delete corpus
-        <strong>{{corpus.definition.meta.title}}</strong>?
-        This cannot be reversed.
-    </p>
-    <p *ngIf="corpus.active">
-        If you want to hide this corpus in the search interface, you can also
-        deactivate it in the editing menu.
-    </p>
+    [handleAsync]="handleDelete" (result)="onDeleteComplete()">
+    @let corpus = confirmDelete.data?.data;
+    @if (corpus) {
+        <p>
+            Do you want to delete corpus
+            <strong>{{corpus.definition.meta.title}}</strong>?
+            This cannot be reversed.
+        </p>
+        <p *ngIf="corpus.active">
+            If you want to hide this corpus in the search interface, you can also
+            deactivate it in the editing menu.
+        </p>
+    }
 </ia-confirm-modal>
 
