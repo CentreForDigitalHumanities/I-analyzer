@@ -1,6 +1,6 @@
 .wrapper {
     display: grid;
-    grid-gap: 10px;
+    grid-gap: 1.5rem;
 }
 
 .caption {
@@ -8,12 +8,11 @@
 }
 
 .table {
-    grid-row: 2
+    grid-row: 2;
 }
 
 .button {
     grid-row: 3;
-    max-width: 60%;
 }
 
 .current {

@@ -42,7 +42,7 @@
             <p>Number of documents: {{ currentDataFile.csv_info.n_rows }}.</p>
         </div>
         <div class="table current">
-            <table>
+            <table class="table is-fullwidth">
                 <thead>
                     <tr>
                         <th>Column</th>
@@ -66,11 +66,11 @@
                     <code>{{ newDataFile.original_filename }}</code>
                 </span>
             </p>
-            <p>Number of documents: {{ currentDataFile.csv_info.n_rows }}.</p>
+            <p>Number of documents: {{ newDataFile.csv_info.n_rows }}.</p>
         </div>
 
         <div class="table new">
-            <table>
+            <table class="table is-fullwidth">
                 <thead>
                     <tr>
                         <th>Column</th>
