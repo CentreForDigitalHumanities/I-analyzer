@@ -6,10 +6,12 @@ import { ApiService } from '@services';
 import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { ApiServiceMock } from 'mock-data/api';
+import { QuillModule } from 'ngx-quill';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { StepsModule } from 'primeng/steps';
 import { DataFormComponent } from '../data-form/data-form.component';
 import { DocumentationFormComponent } from '../documentation-form/documentation-form.component';
+import { MarkdownEditorComponent } from '../documentation-form/markdown-editor/markdown-editor.component';
 import { FieldFormComponent } from '../field-form/field-form.component';
 import { FormFeedbackComponent } from '../form-feedback/form-feedback.component';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
@@ -32,12 +34,14 @@ describe('CorpusFormComponent', () => {
                 ImageUploadComponent,
                 FormFeedbackComponent,
                 DocumentationFormComponent,
+                MarkdownEditorComponent,
             ],
             imports: [
                 SharedModule,
                 StepsModule,
                 ReactiveFormsModule,
                 AutoCompleteModule,
+                QuillModule,
             ],
             providers: [
                 SlugifyPipe,
