@@ -141,7 +141,7 @@ export const appRoutes: Routes = [
         canActivate: [LoggedOnGuard],
     },
     {
-        path: 'my-corpora',
+        path: 'custom-corpora',
         canActivate: [LoggedOnGuard],
         children: [
             {

@@ -77,12 +77,12 @@
                         id="userDropdown" #userDropdown>
                         <a class="navbar-item"
                             *ngIf="canEditCorpora$ | async"
-                            [routerLink]="['/my-corpora']"
+                            [routerLink]="['/custom-corpora']"
                             [routerLinkActive]="'is-active'">
                             <span class="icon" arai-hidden="true">
-                                <fa-icon [icon]="navIcons.myCorpora" />
+                                <fa-icon [icon]="navIcons.corpora" />
                             </span>
-                            My corpora
+                            Custom corpora
                         </a>
                         <a class="navbar-item"
                             [routerLink]="['/search-history']"

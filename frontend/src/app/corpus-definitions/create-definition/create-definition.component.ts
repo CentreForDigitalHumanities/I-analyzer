@@ -62,8 +62,8 @@ export class CreateDefinitionComponent {
         this.corpus.save().subscribe({
             next: (result: APIEditableCorpus) => {
                 const nextRoute = asImport
-                    ? ['/my-corpora']
-                    : ['/my-corpora', 'edit', result.id];
+                    ? ['/custom-corpora']
+                    : ['/custom-corpora', 'edit', result.id];
                 this.router.navigate(nextRoute);
             },
             error: (err: HttpErrorResponse) => {
