@@ -89,13 +89,12 @@ def validate_has_data(corpus):
     config = corpus.configuration
     datafiles = corpus.datafiles
 
-    if not datafiles.filter(confirmed=True).exists():
-        if not config.data_directory:
-                raise CorpusNotIndexableError(
-                    'Missing data files or data directory'
-                )
-
+    if config.data_directory:
         if not os.path.isdir(config.data_directory):
             raise CorpusNotIndexableError(
                 'Configured data directory does not exist.'
             )
+    elif not datafiles.filter(confirmed=True).exists():
+        raise CorpusNotIndexableError(
+            'Missing data files or data directory'
+        )

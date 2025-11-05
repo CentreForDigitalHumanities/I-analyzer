@@ -42,11 +42,11 @@ def test_reader_uses_directory(json_mock_corpus: Corpus, small_mock_corpus: str)
         _test_reader_output(docs)
 
 
-def test_reader_validates_directory(json_mock_corpus: Corpus):
+def test_reader_validates_directory(json_mock_corpus: Corpus, tmp_path):
     # should run without error
     make_reader(json_mock_corpus)
 
-    json_mock_corpus.configuration.data_directory = '/not/a/real/location/'
+    json_mock_corpus.configuration.data_directory = tmp_path / 'doesnotexist'
     json_mock_corpus.configuration.save()
 
     with pytest.raises(CorpusNotIndexableError):
