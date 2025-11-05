@@ -35,9 +35,18 @@
     @case ("firstConfirmed") {
         <ia-datafile-info [currentDataFile]="confirmed" />
     }
+
+    @case ("newUploaded") {
+         <ia-datafile-info
+                [currentDataFile]="confirmed"
+                [newDataFile]="unconfirmed"
+                (onCurrentSelected)="onReplace(handleReplaceReject)"
+                (onNewSelected)="onReplace(handleReplaceAccept)"
+            ></ia-datafile-info>
+    }
 }
 
-@if (fileState === "firstUploaded" || fileState == "firstConfirmed") {
+@if (fileState === "firstUploaded" || fileState === "firstConfirmed") {
     <div class="field is-grouped">
         <button class="button" (click)="confirmReset.open(dataFiles)">
             <span class="icon" aria-hidden="true">
@@ -127,21 +136,3 @@
         </p>
     }
 </ia-confirm-modal>
-
-<!-- Replace file confimation -->
-<div class="modal" [class.is-active]="fileState === 'newUploaded'">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">Replace data file?</p>
-        </header>
-        <section class="modal-card-body">
-            <ia-datafile-info
-                [currentDataFile]="confirmed"
-                [newDataFile]="unconfirmed"
-                (onCurrentSelected)="onReplace(handleReplaceReject)"
-                (onNewSelected)="onReplace(handleReplaceAccept)"
-            ></ia-datafile-info>
-        </section>
-    </div>
-</div>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit} from '@angular/core';
 import { CorpusDataFile, DataFileInfo } from '@models/corpus-definition';
 import { ApiService, DialogService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
