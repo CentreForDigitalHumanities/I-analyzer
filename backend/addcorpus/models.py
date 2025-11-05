@@ -549,7 +549,7 @@ class CorpusDataFile(models.Model):
     )
 
     csv_info = models.JSONField(
-        default=dict(),
+        default=dict,
         blank=True,
         help_text='contains information on the content of the file, e.g. columns and number of rows'
     )
