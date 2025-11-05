@@ -269,7 +269,8 @@ class CorpusConfiguration(models.Model):
         max_length=200,
         validators=[validate_source_data_directory],
         blank=True,
-        help_text='path to directory containing source data files',
+        help_text='Path to directory containing source data files. For database-only ' \
+            'corpora, this can be used to override the CorpusDataFile for the corpus.',
     )
     source_data_delimiter = models.CharField(
         max_length=1,
