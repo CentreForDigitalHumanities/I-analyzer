@@ -163,6 +163,10 @@ table.spreadsheet {
         0 0 0 1px hsla(var(--bulma-shadow-h), var(--bulma-shadow-s), var(--bulma-shadow-l), 0.1);
 }
 
+.modal-card .modal-card-body:last-child {
+    border-end-start-radius: var(--bulma-modal-card-foot-radius);
+    border-end-end-radius: var(--bulma-modal-card-foot-radius);
+}
 // reset focus styling for accessibility
 // bulma's customisation makes focus rings invisible on blue background
 

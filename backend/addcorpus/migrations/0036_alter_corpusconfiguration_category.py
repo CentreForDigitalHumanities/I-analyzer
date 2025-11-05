@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('addcorpus', '0032_corpusconfiguration_has_named_entities'),
+        ('addcorpus', '0035_corpusdatafile_csv_info'),
     ]
 
     operations = [
