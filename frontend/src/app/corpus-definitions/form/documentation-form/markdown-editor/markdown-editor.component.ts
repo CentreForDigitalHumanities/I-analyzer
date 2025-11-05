@@ -31,7 +31,7 @@ export const decreaseHeaderLevels = (content: string): string =>
             provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => MarkdownEditorComponent),
             multi: true,
-        }
+        },
     ],
 })
 export class MarkdownEditorComponent implements ControlValueAccessor {
@@ -45,15 +45,14 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
             ['bold', 'italic', 'underline', 'strike'],
             ['blockquote', 'code-block'],
 
-            [{ 'header': 1 }, { 'header': 2 }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ header: 1 }, { header: 2 }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
 
-            [{ 'header': [1, 2, 3, 4, 5, false] }],
+            [{ header: [1, 2, 3, 4, 5, false] }],
             ['link', 'image'],
 
             ['clean'],
-
-        ]
+        ],
     };
 
     turndownService = new TurndownService({ headingStyle: 'atx' });
@@ -83,13 +82,19 @@ export class MarkdownEditorComponent implements ControlValueAccessor {
         }
     }
 
-    private markdownToHtml(value: string): string {
+    private markdownToHtml(value: string | null): string {
+        if (value === null) {
+            return '';
+        }
         const headersAdjusted = decreaseHeaderLevels(value);
         const html = marked.parse(headersAdjusted, { async: false });
         return html;
     }
 
-    private htmlToMarkdown(value: string): string {
+    private htmlToMarkdown(value: string | null): string {
+        if (value === null) {
+            return '';
+        }
         const markdown = this.turndownService.turndown(value);
         const headersAdjusted = increaseHeaderLevels(markdown);
         return headersAdjusted;
