@@ -44,7 +44,7 @@ export class CorpusInfoComponent implements OnInit {
     }
 
     renderMarkdown(content: string): string {
-        return marked.parse(content);
+        return marked.parse(content, {async: false});
     }
 
     private includePage(corpus: Corpus, page: CorpusDocumentationPage): boolean {
