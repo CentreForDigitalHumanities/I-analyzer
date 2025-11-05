@@ -84,7 +84,7 @@ export class DialogService {
         });
 
         const doc = await documentation;
-        const html = marked.parse(doc);
+        const html = await marked.parse(doc);
         this.behavior.next({
             identifier,
             html,
