@@ -20,6 +20,8 @@ import { EntityPipe } from './pipes/entity.pipe';
 import { ParagraphPipe } from './pipes/paragraph.pipe';
 import { SnippetPipe } from './pipes/snippet.pipe';
 import { ContentFieldComponent } from './content-field/content-field.component';
+import { DateRangePipe } from './pipes/date-range.pipe';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -39,6 +41,7 @@ import { ContentFieldComponent } from './content-field/content-field.component';
         ContentFieldPreviewComponent,
         KeywordPipe,
         ContentFieldComponent,
+        DateRangePipe,
     ],
     imports: [
         DialogModule,
@@ -50,6 +53,9 @@ import { ContentFieldComponent } from './content-field/content-field.component';
         DocumentPreviewComponent,
         DocumentPageComponent,
         DocumentPopupComponent,
+    ],
+    providers: [
+        DatePipe,
     ]
 })
 export class DocumentModule { }

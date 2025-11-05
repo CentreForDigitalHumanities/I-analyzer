@@ -4,12 +4,15 @@ CATEGORIES = [
     ('parliament', 'Parliamentary debates'),
     ('periodical', 'Newspapers and other periodicals'),
     ('finance', 'Financial reports'),
-    ('ruling', 'Court rulings'),
-    ('review', 'Online reviews'),
+    ('ruling', 'Laws and rulings'),
+    ('review', 'Reviews and discussions'),
     ('inscription', 'Funerary inscriptions'),
     ('oration', 'Orations'),
     ('book', 'Books'),
-    ('informative', 'Informative'),
+    ('letter', 'Letters and life writing'),
+    ('poetry', 'Poetry and songs'),
+    ('social', 'Social media'),
+    ('other', 'Other'),
 ]
 '''
 Types of data
@@ -46,8 +49,6 @@ FORBIDDEN_FIELD_NAMES = [
     'visualizedField',
     'normalize',
     'ngramSettings',
-    'scan',
-    'tab-scan'
     'p',
     'tags',
     'tab',
@@ -61,5 +62,4 @@ would make routing ambiguous.
 
 `query` and `document_link` are forbidden because they are reserved columns in CSV downloads.
 
-`scan` and `tab-scan` are added because they interfere with element IDs in the DOM.
 '''

@@ -4,7 +4,7 @@ import { QueryModel } from '@models';
 import { commonTestBed } from '../../common-test-bed';
 
 import { HistogramComponent } from './histogram.component';
-import { mockCorpus3, mockField, mockField2 } from '../../../mock-data/corpus';
+import { corpusFactory, keywordFieldFactory } from '../../../mock-data/corpus';
 
 describe('HistogramCompoment', () => {
     let component: HistogramComponent;
@@ -26,38 +26,32 @@ describe('HistogramCompoment', () => {
 
 
     it('should filter text fields', () => {
-        component.corpus = mockCorpus3;
+        component.corpus = corpusFactory();
+        component.corpus.fields[0] = keywordFieldFactory(true);
+
         component.frequencyMeasure = 'documents';
 
-        const query1 = new QueryModel(mockCorpus3);
+        const query1 = new QueryModel(component.corpus);
         query1.setQueryText('test');
 
-        const query2 = new QueryModel(mockCorpus3);
+        const query2 = new QueryModel(component.corpus);
         query2.setParams({
             queryText: 'test',
-            searchFields: [mockField, mockField2]
+            searchFields: component.corpus.fields.slice(0, 2),
         });
 
-        const cases = [
-            {
-                query: query1,
-                searchFields: undefined,
-            }, {
-                query: query2,
-                searchFields: [mockField, mockField2]
-            }
-        ];
+        const queries = [ query1, query2 ];
 
-        cases.forEach(testCase => {
-            const newQuery = component.selectSearchFields(testCase.query);
-            expect(newQuery.searchFields).toEqual(testCase.query.searchFields);
+        queries.forEach(query => {
+            const newQuery = component.selectSearchFields(query);
+            expect(newQuery.searchFields).toEqual(query.searchFields);
         });
 
         component.frequencyMeasure = 'tokens';
 
-        cases.forEach(testCase => {
-            const newQuery = component.selectSearchFields(testCase.query);
-            expect(newQuery.searchFields).toEqual([mockField2]);
+        queries.forEach(query => {
+            const newQuery = component.selectSearchFields(query);
+            expect(newQuery.searchFields).toEqual([component.corpus.fields[1]]);
         });
     });
 

@@ -1,9 +1,31 @@
+from operator import is_
 import os
 from addcorpus.json_corpora.csv_field_info import (
-    is_date, is_date_col, is_long_text, get_csv_info
+    is_date, is_date_col, is_long_text, get_csv_info, is_url, is_url_col
 )
 import pandas as pd
 from addcorpus.python_corpora.load_corpus import load_corpus_definition
+
+
+def test_is_url():
+    assert is_url('http://example.com')
+    assert is_url('https://example.com')
+    assert not is_url('www.example.com')
+    assert not is_url('not_a_url')
+    assert not is_url(None)
+    assert not is_url(12345)
+
+
+def test_is_url_col():
+    clean_url_series = pd.Series(['http://example.com', 'https://example.com'])
+    dirty_url_series = pd.concat([clean_url_series, pd.Series([None, ''])])
+    not_url_series = pd.concat([clean_url_series, pd.Series([None, 12345])])
+    empty_series = pd.Series([None, None])
+
+    assert is_url_col(clean_url_series)
+    assert is_url_col(dirty_url_series)
+    assert not is_url_col(not_url_series)
+    assert not is_url_col(empty_series)
 
 
 def test_is_date():
@@ -41,4 +63,5 @@ def test_map_col(small_mock_corpus):
         'genre': 'text_metadata',
         'title': 'text_metadata',
         'content': 'text_content',
+        'url': 'url'
     }

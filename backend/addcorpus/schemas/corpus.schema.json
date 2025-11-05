@@ -42,6 +42,9 @@
                         "inscription",
                         "oration",
                         "book",
+                        "letter",
+                        "poerty",
+                        "social",
                         "informative"
                     ]
                 },

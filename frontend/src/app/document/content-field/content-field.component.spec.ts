@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ContentFieldComponent } from './content-field.component';
 import { commonTestBed } from 'app/common-test-bed';
 import { makeDocument } from 'mock-data/constructor-helpers';
-import { mockField2 } from 'mock-data/corpus';
+import { contentFieldFactory } from 'mock-data/corpus';
 
 describe('ContentFieldComponent', () => {
     let component: ContentFieldComponent;
@@ -14,8 +14,8 @@ describe('ContentFieldComponent', () => {
 
         fixture = TestBed.createComponent(ContentFieldComponent);
         component = fixture.componentInstance;
-        component.document = makeDocument({ speech: 'This is a test' });
-        component.field = mockField2;
+        component.document = makeDocument({ content: 'This is a test' });
+        component.field = contentFieldFactory();
         fixture.detectChanges();
     });
 

@@ -2,11 +2,14 @@
     <div *ngSwitchCase="'text'"
         [innerHtml]="field | elasticsearchHighlight:document | paragraph">
     </div>
-    <ng-container *ngSwitchCase="'keyword'">
-        {{ document.fieldValue(field) | keyword }}
-    </ng-container>
+    <div *ngSwitchCase="'keyword'"
+         [innerHTML]="field | elasticsearchHighlight:document | keyword">
+    </div>
     <ng-container *ngSwitchCase="'date'">
         {{ document.fieldValue(field) | date:'mediumDate' }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'date_range'">
+        {{ document.fieldValue(field) | dateRange:'mediumDate' }}
     </ng-container>
     <ng-container *ngSwitchCase="'geo_point'">
         {{ field | geoData:document }}

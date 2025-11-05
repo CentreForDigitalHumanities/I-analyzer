@@ -50,7 +50,7 @@ def make_download(request_json, download_id, download_size=None, user=None):
     filepath = create_csv.search_results_csv(
         results,
         request_json['fields'],
-        query.get_query_text(es_query),
+        es_query,
         download_id,
         corpus,
         user,
