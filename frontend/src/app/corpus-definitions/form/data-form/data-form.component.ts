@@ -68,7 +68,7 @@ export class DataFormComponent implements OnInit, OnDestroy {
             shareReplay(1),
         );
 
-        this.filesChanged$.subscribe({
+        this.filesChanged$.pipe(takeUntil(this.destroy$)).subscribe({
             next: () => {
                 this.refreshDataFiles();
             },
