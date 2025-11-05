@@ -155,7 +155,7 @@ class ParliamentEurope(Parliament):
                 metadata["subcorpus"] = i
                 yield filename, metadata
 
-    def source2dicts(self, source):
+    def source2dicts(self, source, **kwargs):
         filename, metadata = source
 
         subcorpus_index = metadata["subcorpus"]
