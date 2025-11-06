@@ -13,6 +13,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-tag-overview',
     templateUrl: './tag-overview.component.html',
     styleUrls: ['./tag-overview.component.scss'],
+    standalone: false
 })
 export class TagOverviewComponent implements OnInit {
     tags$ = this.tagService.tags$;
@@ -26,6 +27,8 @@ export class TagOverviewComponent implements OnInit {
 
     editedTag: Partial<Tag>;
 
+    handleDelete = this.tagService.deleteTag.bind(this.tagService);
+
     constructor(
         private tagService: TagService,
         private corpusService: CorpusService,
@@ -36,10 +39,6 @@ export class TagOverviewComponent implements OnInit {
         this.corpora = await this.corpusService.get(false);
         this.tagService.fetch();
         this.title.setTitle(pageTitle('Tags'));
-    }
-
-    delete(tag: Tag) {
-        this.tagService.deleteTag(tag).subscribe();
     }
 
     startEdit(tag: Tag) {
@@ -74,13 +73,17 @@ export class TagOverviewComponent implements OnInit {
     }
 
     makeQueryParams(corpusName, tag) {
-        const corpus = findByName(this.corpora, corpusName);
+        if (this.corpora) {
+            const corpus = findByName(this.corpora, corpusName);
 
-        const query = new QueryModel(corpus);
-        const tagfilter = query.filters.find(isTagFilter);
-        tagfilter.set([tag.id]);
+            if (corpus) {
+                const query = new QueryModel(corpus);
+                const tagfilter = query.filters.find(isTagFilter);
+                tagfilter.set([tag.id]);
 
-        const params = query.toQueryParams();
-        return params;
+                const params = query.toQueryParams();
+                return params;
+            }
+        }
     }
 }

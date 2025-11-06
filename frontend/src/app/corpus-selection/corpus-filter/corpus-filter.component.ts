@@ -18,7 +18,8 @@ interface FilterState {
 @Component({
     selector: 'ia-corpus-filter',
     templateUrl: './corpus-filter.component.html',
-    styleUrls: ['./corpus-filter.component.scss']
+    styleUrls: ['./corpus-filter.component.scss'],
+    standalone: false
 })
 export class CorpusFilterComponent implements OnInit {
     @Input({required: true}) corpora!: Corpus[];

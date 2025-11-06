@@ -187,20 +187,6 @@ class CorpusDefinition(Reader):
         '''
         return self.word_model_path is not None and isdir(self.word_model_path)
 
-    @property
-    def new_highlight(self):
-        '''
-        if the corpus has been re-indexed using the top-level term vector 'with_positions_offsets'
-        for the main content field, needed for the updated highlighter
-        TODO: remove this property and its references when all corpora are reindexed using the
-        current definitions (with the top-level term vector for speech)
-        '''
-        try:
-            highlight_corpora = settings.NEW_HIGHLIGHT_CORPORA
-        except Exception:
-            return False
-        return self.title in highlight_corpora
-
     '''
     Allow the downloading of source images
     '''
@@ -297,6 +283,14 @@ class CorpusDefinition(Reader):
             filename = self.__getattribute__(attr)
             if filename:
                 return os.path.join(directory, filename)
+
+    def process_scan(self, filename):
+        '''
+        Run any required processing for making scan files ready for consumption by the frontend.
+        (e.g. converting to a different format)
+        '''
+        logger.info("process_scan() called but it's the empty base implementation")
+        raise NotImplementedError()
 
 
 class ParentCorpusDefinition(CorpusDefinition):

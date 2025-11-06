@@ -10,7 +10,8 @@ import { BaseFilterComponent } from '../base-filter.component';
 @Component({
     selector: 'ia-multiple-choice-filter',
     templateUrl: './multiple-choice-filter.component.html',
-    styleUrls: ['./multiple-choice-filter.component.scss']
+    styleUrls: ['./multiple-choice-filter.component.scss'],
+    standalone: false
 })
 export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilter> {
     options: { label: string; value: string; doc_count: number }[] = [];

@@ -25,6 +25,7 @@ function formatXAxisLabel(value): string {
     selector: 'ia-histogram',
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss'],
+    standalone: false
 })
 export class HistogramComponent
     extends BarchartDirective<TermsResult, HistogramDataPoint>
@@ -44,9 +45,9 @@ export class HistogramComponent
         let size = 100;
 
         const filterOptions = this.visualizedField.filterOptions;
-        if (filterOptions.name === 'MultipleChoiceFilter') {
+        if (filterOptions?.name === 'MultipleChoiceFilter') {
             size = (filterOptions as MultipleChoiceFilterOptions).option_count;
-        } else if (filterOptions.name === 'RangeFilter') {
+        } else if (filterOptions?.name === 'RangeFilter') {
             const filterRange =
                 (filterOptions as RangeFilterOptions).upper -
                 (filterOptions as RangeFilterOptions).lower;

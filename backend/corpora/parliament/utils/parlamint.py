@@ -1,13 +1,7 @@
-from string import punctuation
-from typing import Iterable
-
 from ianalyzer_readers.extract import XML, Combined, Metadata
-from ianalyzer_readers.xml_tag import Tag
-from bs4.element import NavigableString, Tag as Node
+from bs4.element import NavigableString
 
-from addcorpus.es_mappings import non_indexed_text_mapping, keyword_mapping
 from addcorpus.python_corpora.corpus import FieldDefinition
-from addcorpus.python_corpora.filters import MultipleChoiceFilter
 
 def clean_value(value):
     if type(value) == str or type(value) == NavigableString:

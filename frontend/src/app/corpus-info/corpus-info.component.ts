@@ -9,9 +9,10 @@ import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 @Component({
-  selector: 'ia-corpus-info',
-  templateUrl: './corpus-info.component.html',
-  styleUrls: ['./corpus-info.component.scss']
+    selector: 'ia-corpus-info',
+    templateUrl: './corpus-info.component.html',
+    styleUrls: ['./corpus-info.component.scss'],
+    standalone: false
 })
 export class CorpusInfoComponent implements OnInit {
     corpus: Corpus;
@@ -43,7 +44,7 @@ export class CorpusInfoComponent implements OnInit {
     }
 
     renderMarkdown(content: string): string {
-        return marked.parse(content);
+        return marked.parse(content, { async: false });
     }
 
     private includePage(corpus: Corpus, page: CorpusDocumentationPage): boolean {

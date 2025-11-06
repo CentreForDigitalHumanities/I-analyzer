@@ -49,10 +49,6 @@ def _import_fields(data: Dict) -> List[Dict]:
 
     parsed = [_parse_field(field) for field in fields_data]
 
-    # TODO: replace this!!!!
-    # for field in configuration.fields.exclude(name__in=(f['name'] for f in fields_data)):
-    #     field.delete()
-
     _include_ngram_visualisation(parsed)
     return parsed
 
@@ -268,7 +264,7 @@ def _include_ngram_visualisation(fields: Iterable[Dict]) -> None:
 
     if any(get_path(field, 'es_mapping', 'type') == 'date' for field in fields):
         for field in fields:
-            if field['display_type'] == 'text_content':
+            if field['display_type'] == 'text_content' and 'visualizations' in field:
                 field['visualizations'].append(VisualizationType.NGRAM.value)
 
 

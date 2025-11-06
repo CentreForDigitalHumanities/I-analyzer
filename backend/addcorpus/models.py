@@ -1,39 +1,30 @@
 import os
 import warnings
-from datetime import datetime
 
+from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
+from addcorpus.validation.creation import (
+    validate_es_mapping, validate_field_language,
+    validate_field_name_permissible_characters, validate_implication,
+    validate_language_code, validate_mimetype,
+    validate_name_is_not_a_route_parameter, validate_ner_slug,
+    validate_search_filter, validate_search_filter_with_mapping,
+    validate_searchable_field_has_full_text_search,
+    validate_sort_configuration, validate_source_data_directory,
+    validate_visualizations_with_mapping)
+from addcorpus.validation.indexing import (validate_essential_fields,
+                                           validate_has_configuration,
+                                           validate_has_data_directory,
+                                           validate_language_field)
+from addcorpus.validation.publishing import (validate_complete_metadata,
+                                             validate_default_sort,
+                                             validate_ngram_has_date_field)
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
-from django.conf import settings
-
-from addcorpus.constants import CATEGORIES, MappingType, VisualizationType
-from addcorpus.validation.creation import (
-    validate_es_mapping,
-    validate_field_language,
-    validate_implication,
-    validate_language_code,
-    validate_mimetype,
-    validate_field_name_permissible_characters,
-    validate_name_is_not_a_route_parameter,
-    validate_ner_slug,
-    validate_search_filter,
-    validate_search_filter_with_mapping,
-    validate_searchable_field_has_full_text_search,
-    validate_sort_configuration,
-    validate_visualizations_with_mapping,
-    validate_source_data_directory,
-)
-from addcorpus.validation.indexing import (validate_essential_fields,
-    validate_has_configuration, validate_language_field, validate_has_data_directory)
-from addcorpus.validation.publishing import (
-    validate_default_sort,
-    validate_ngram_has_date_field,
-    validate_complete_metadata
-)
 from es.client import elasticsearch
 
 MAX_LENGTH_NAME = 126
@@ -254,6 +245,10 @@ class CorpusConfiguration(models.Model):
         default=False,
         help_text='whether this corpus has word models',
     )
+    has_named_entities = models.BooleanField(
+        default=False,
+        help_text='whether this corpus has named entity annotations',
+    )
     default_sort = models.JSONField(
         blank=True,
         validators=[validate_sort_configuration],
@@ -298,34 +293,27 @@ class CorpusConfiguration(models.Model):
                 ])
 
     @property
-    def has_named_entities(self):
-        from es.search import total_hits
+    def visible_fields(self) -> models.QuerySet['Field']:
+        fields = self.fields.all()
 
-        client = elasticsearch(self.corpus.name)
-        try:
-            # we check if any fields exist for filtering named entities
-            ner_exists = client.search(
-                index=self.es_index, query={"exists": {"field": "*:ner-kw"}}, size=0
-            )
-            if total_hits(ner_exists):
-                return True
-        except:
-            return False
-        return False
+        if not self.has_named_entities:
+            fields = fields.exclude(name__endswith=':ner-kw').exclude(name__endswith=':ner')
+
+        return fields
 
 
-FIELD_DISPLAY_TYPES = [
-    ('text_content', 'text content'),
-    (MappingType.TEXT.value, 'text'),
-    (MappingType.KEYWORD.value, 'keyword'),
-    (MappingType.DATE.value, 'date'),
-    (MappingType.DATE_RANGE.value, 'date_range'),
-    (MappingType.INTEGER.value, 'integer'),
-    (MappingType.FLOAT.value, 'float'),
-    (MappingType.BOOLEAN.value, 'boolean'),
-    (MappingType.GEO_POINT.value, 'geo_point'),
-    ('url', 'url'),
-]
+class FieldDisplayTypes(models.TextChoices):
+    TEXT_CONTENT = ('text_content', 'text content')
+    TEXT = (MappingType.TEXT.value, 'text')
+    KEYWORD = (MappingType.KEYWORD.value, 'keyword')
+    DATE = (MappingType.DATE.value, 'date')
+    DATE_RANGE = (MappingType.DATE_RANGE.value, 'date_range')
+    INTEGER = (MappingType.INTEGER.value, 'integer')
+    FLOAT = (MappingType.FLOAT.value, 'float')
+    BOOLEAN = (MappingType.BOOLEAN.value, 'boolean')
+    GEO_POINT = (MappingType.GEO_POINT.value, 'geo_point')
+    URL = ('url', 'url')
+
 
 FIELD_VISUALIZATIONS = [
     (VisualizationType.RESULTS_COUNT.value, 'Number of results'),
@@ -364,7 +352,7 @@ class Field(models.Model):
     )
     display_type = models.CharField(
         max_length=16,
-        choices=FIELD_DISPLAY_TYPES,
+        choices=FieldDisplayTypes.choices,
         help_text='as what type of data this field is rendered in the interface',
     )
     description = models.CharField(
@@ -539,15 +527,35 @@ class CorpusDocumentationPage(models.Model):
 
 
 class CorpusDataFile(models.Model):
+    def upload_dir(self):
+        return os.path.join('corpus_datafiles', f'{self.corpus.pk}')
+
     def upload_path(self, filename):
-        return os.path.join('corpus_datafiles', f'{self.corpus.pk}', filename)
+        return os.path.join(self.upload_dir(), filename)
 
     corpus = models.ForeignKey(to=Corpus, on_delete=models.CASCADE)
     file = models.FileField(upload_to=upload_path,
                             help_text='file containing corpus data')
+    original_filename = models.CharField(
+        help_text='original name of the uploaded file (for user form)',
+        blank=True,
+    )
     is_sample = models.BooleanField(
         default=False, help_text='This file is used in creating the corpus definition, it may additonaly reflect (part of) the actual data.')
     created = models.DateTimeField(auto_now_add=True)
+    confirmed = models.BooleanField(
+        default=False,
+        help_text='whether the file has been confirmed by the user as correct',
+    )
+
+    csv_info = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text='contains information on the content of the file, e.g. columns and number of rows'
+    )
 
     def __str__(self):
         return f'{self.file.name}'
+
+    class Meta:
+        unique_together = ('corpus', 'confirmed')

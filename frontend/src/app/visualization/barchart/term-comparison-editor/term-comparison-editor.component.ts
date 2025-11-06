@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
     selector: 'ia-term-comparison-editor',
     templateUrl: './term-comparison-editor.component.html',
     styleUrls: ['./term-comparison-editor.component.scss'],
+    standalone: false
 })
 export class TermComparisonEditorComponent implements OnDestroy {
     @Input() termLimit = 10;

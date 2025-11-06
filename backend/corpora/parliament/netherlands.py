@@ -10,13 +10,19 @@ from ianalyzer_readers.xml_tag import Tag, FindParentTag, PreviousTag, Transform
 from addcorpus.python_corpora.corpus import XMLCorpusDefinition
 from ianalyzer_readers.extract import XML, Constant, Combined, Order
 from corpora.parliament.utils.parlamint import (
-    extract_all_party_data,
-    extract_people_data,
-    extract_role_data,
-    ner_keyword_field,
     party_attribute_extractor,
-    person_attribute_extractor,
+)
+from corpora.parliament.utils.parlamint_v4 import (
+    current_party_id_extractor,
+    extract_named_entities,
+    extract_people_data,
+    extract_all_org_data,
     extract_speech,
+    load_people_data,
+    load_party_data,
+    ner_keyword_field,
+    organisation_attribute_extractor,
+    person_attribute_extractor,
     speech_ner,
 )
 from corpora.utils.formatting import format_page_numbers
@@ -27,11 +33,6 @@ import corpora.parliament.utils.field_defaults as field_defaults
 import re
 
 logger = logging.getLogger('indexing')
-
-def load_nl_recent_metadata(directory):
-    with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
-        soup = bs4.BeautifulSoup(f.read(), 'xml')
-    return soup
 
 
 def format_role(role):
@@ -104,23 +105,6 @@ def get_sequence_recent(id):
         return int(match.group(1))
 
 
-def extract_named_entities(xml_file: str) -> dict:
-    '''Extract the named entities from the xml file, and save them, ordered by speech id,
-    in a dictionary, which will be used to populate the NER keyword fields'''
-    with open(xml_file) as f:
-        soup = bs4.BeautifulSoup(f, 'xml')
-    speeches = soup.find_all("u")
-    output = dict()
-    for speech in speeches:
-        annotations_dict = {"LOC": list(), "MISC": list(), "ORG": list(), "PER": list()}
-        annotations = speech.find_all("name")
-        for annotation in annotations:
-            annotated = " ".join([word.string for word in annotation.find_all("w")])
-            annotations_dict[annotation["type"]].append(annotated)
-        output[speech["xml:id"]] = annotations_dict
-    return output
-
-
 class ParliamentNetherlandsNew(XMLCorpusDefinition):
     min_date = datetime(year=2015, month=1, day=1)
     max_date = datetime(year=2022, month=12, day=31)
@@ -132,13 +116,10 @@ class ParliamentNetherlandsNew(XMLCorpusDefinition):
     def sources(self, start: datetime, end: datetime):
         if not in_date_range(self, start, end):
             return []
-        soup = load_nl_recent_metadata(self.data_directory)
-        role_data = extract_role_data(soup)
-        party_data = extract_all_party_data(soup)
-        person_data = extract_people_data(soup)
+        party_data = extract_all_org_data(load_party_data(self.data_directory))
+        person_data = extract_people_data(load_people_data(self.data_directory))
         metadata = {
-            "roles": role_data,
-            "parties": party_data,
+            "organisations": party_data,
             "persons": person_data,
         }
         for year in range(start.year, end.year):
@@ -219,14 +200,14 @@ class ParliamentNetherlandsNew(XMLCorpusDefinition):
     role.extractor = XML(attribute="ana", transform=lambda x: x[1:].title())
 
     party = field_defaults.party()
-    party.extractor = party_attribute_extractor("name")
+    party.extractor = organisation_attribute_extractor('name')
     party.language = "nl"
 
     party_id = field_defaults.party_id()
-    party_id.extractor = person_attribute_extractor("party_id")
+    party_id.extractor = current_party_id_extractor()
 
     party_full = field_defaults.party_full()
-    party_full.extractor = party_attribute_extractor("full_name")
+    party_full.extractor = organisation_attribute_extractor("full_name")
     party_full.language = "nl"
 
     sequence = field_defaults.sequence()
@@ -471,7 +452,7 @@ class ParliamentNetherlands(Parliament, XMLCorpusDefinition):
                 metadata["subcorpus"] = i
                 yield filename, metadata
 
-    def source2dicts(self, source):
+    def source2dicts(self, source, **kwargs):
         filename, metadata = source
 
         subcorpus_index = metadata["subcorpus"]

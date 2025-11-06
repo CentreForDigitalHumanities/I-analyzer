@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXsrfConfiguration } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { BalloonDirective } from '../balloon.directive';
 import { DatePickerComponent } from '../corpus-selection/corpus-filter/date-picker/date-picker.component';
@@ -18,6 +19,7 @@ import { TabsComponent } from './tabs/tabs.component';
 import { ToggleComponent } from './toggle/toggle.component';
 import { SlugifyPipe } from './pipes/slugify.pipe';
 import { ToggleButtonDirective } from './toggle-button.directive';
+import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
 @NgModule({
     declarations: [
@@ -30,6 +32,7 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         ToggleComponent,
         SlugifyPipe,
         ToggleButtonDirective,
+        ConfirmModalComponent,
     ],
     exports: [
         // shared components
@@ -39,7 +42,7 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         TabsComponent,
         TabPanelDirective,
         ToggleButtonDirective,
-
+        ConfirmModalComponent,
         // shared modules
         BrowserAnimationsModule,
         BrowserModule,
@@ -48,31 +51,28 @@ import { ToggleButtonDirective } from './toggle-button.directive';
         FormsModule,
         FontAwesomeModule,
         BalloonDirective,
-        HttpClientModule,
-        HttpClientXsrfModule,
         RouterModule,
         TableModule,
         ToggleComponent,
-
         // Shared pipes
         SlugifyPipe,
-    ],
-    imports: [
+    ], imports: [
         BrowserAnimationsModule,
         BrowserModule,
         CommonModule,
+        DatePickerModule,
+        DialogModule,
         FormsModule,
-        CalendarModule,
         TableModule,
         DropdownModule,
         FontAwesomeModule,
-        HttpClientModule,
-        HttpClientXsrfModule.withOptions({
+        RouterModule,
+        ReactiveFormsModule,
+    ], providers: [
+        SlugifyPipe,
+        provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken',
-        }),
-        RouterModule,
-    ],
-    providers: [SlugifyPipe],
-})
+        }))
+    ] })
 export class SharedModule {}

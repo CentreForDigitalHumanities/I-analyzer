@@ -63,3 +63,7 @@ Each user account has a download limit. By default, this is 10.000 documents. Yo
 Use this with caution on production servers. Note that the server may also have request timeouts that will effectively prevent users from being able to download large files, even if they are allowed to generate them.
 
 Furthermore, the rate of requests for the download API is limited. By default, this is set to 5 request per minute. This prevents server overload when users try to harvest from the API, while still enabling said harvesting at a moderate rate.
+
+## Download storage
+
+The storage used by the download folder will gradually accumulate as users request downloads. You can use `python manage.py delete_old_downloads` to remove old files and reduce storage space.

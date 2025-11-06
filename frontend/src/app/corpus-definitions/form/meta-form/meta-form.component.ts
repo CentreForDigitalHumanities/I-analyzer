@@ -4,19 +4,21 @@ import {
     OnChanges,
     OnDestroy, SimpleChanges
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { map, Observable, Subject, takeUntil, take } from 'rxjs';
 import { CorpusDefinitionService } from '../../corpus-definition.service';
-import { APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
-import { ISO6393Languages } from '../constants';
+import { APICorpusDefinition, APIEditableCorpus, CorpusDefinition } from '../../../models/corpus-definition';
+import { collectLanguages, Language } from '../constants';
 import { actionIcons, formIcons } from '@shared/icons';
 import { mergeAsBooleans } from '@utils/observables';
 import { MenuItem } from 'primeng/api';
+import _ from 'lodash';
 
 @Component({
     selector: 'ia-meta-form',
     templateUrl: './meta-form.component.html',
     styleUrl: './meta-form.component.scss',
+    standalone: false
 })
 export class MetaFormComponent implements OnChanges, OnDestroy {
     @Input({required: true}) corpus!: CorpusDefinition;
@@ -25,11 +27,14 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         { value: 'parliament', label: 'Parliamentary debates' },
         { value: 'periodical', label: 'Newspapers and other periodicals' },
         { value: 'finance', label: 'Financial reports' },
-        { value: 'ruling', label: 'Court rulings' },
-        { value: 'review', label: 'Online reviews' },
+        { value: 'ruling', label: 'Laws and rulings' },
+        { value: 'review', label: 'Reviews and discussions' },
         { value: 'inscription', label: 'Funerary inscriptions' },
         { value: 'oration', label: 'Orations' },
         { value: 'book', label: 'Books' },
+        { value: 'letter', label: 'Letters and life writing' },
+        { value: 'poerty', label: 'Poetry and songs' },
+        { value: 'social', label: 'Social media' },
         { value: 'informative', label: 'Informative' },
         { value: undefined, label: 'Other' },
     ];
@@ -42,12 +47,12 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
             min: [],
             max: [],
         }),
-        languages: [['']],
+        languages: [[]],
     });
 
     destroy$ = new Subject<void>();
 
-    languageOptions = ISO6393Languages;
+    // languageOptions = collectLanguages();
     actionIcons = actionIcons;
     formIcons = formIcons;
 
@@ -73,6 +78,9 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         false: [this.metaForm.valueChanges, this.changesSubmitted$]
     });
 
+    languages: Language[] = collectLanguages();
+    languageSuggestions = this.languages;
+
     constructor(
         private formBuilder: FormBuilder,
         private corpusDefService: CorpusDefinitionService,
@@ -92,7 +100,7 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
                     takeUntil(this.destroy$)
                 )
                 .subscribe(() =>
-                    this.metaForm.patchValue(this.corpus.definition.meta)
+                    this.metaForm.patchValue(this.dataToFormValue(this.corpus.definition.meta))
                 );
         }
     }
@@ -104,9 +112,8 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
 
     onSubmit(): void {
         this.changesSubmitted$.next();
-        const newMeta = this.metaForm.value;
-        this.corpus.definition.meta =
-            newMeta as CorpusDefinition['definition']['meta'];
+        const newMeta = this.formValueToData(this.metaForm.value);
+        this.corpus.definition.meta = newMeta;
         this.corpus.save().subscribe({
             next: this.onSubmitSuccess.bind(this),
             error: this.onSubmitError.bind(this),
@@ -117,13 +124,41 @@ export class MetaFormComponent implements OnChanges, OnDestroy {
         this.corpusDefService.activateStep(1);
     }
 
+    setLanguageSuggestions(query: string) {
+        this.languageSuggestions = this.languages.filter(lang =>
+            this.languageMatchesQuery(lang, query)
+        );
+    }
+
     private onSubmitSuccess(value: APIEditableCorpus) {
-        this.metaForm.patchValue(value.definition.meta);
+        this.metaForm.patchValue(this.dataToFormValue(value.definition.meta));
         this.changesSavedSucces$.next();
     }
 
     private onSubmitError(err) {
         this.changesSavedError$.next();
         console.error(err);
+    }
+
+    private dataToFormValue(data: APICorpusDefinition['meta']): typeof this.metaForm['value'] {
+        const value = _.clone(data) as any;
+        value.languages = data.languages.map(code =>
+            this.languages.find(l => l.code == code)
+        );
+        return value;
+    }
+
+    private formValueToData(value: typeof this.metaForm['value']): APICorpusDefinition['meta'] {
+        const data = _.clone(value) as any;
+        data.languages = (value.languages || []).map(lang => lang.code);
+        return data;
+    }
+
+    private languageMatchesQuery(lang: Language, query: string) {
+        return this.contains(lang.displayName, query) || this.contains(lang.altNames, query);
+    }
+
+    private contains(s: string, query: string) {
+        return s.toLowerCase().includes(query.toLowerCase());
     }
 }

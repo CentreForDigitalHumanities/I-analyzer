@@ -1,4 +1,4 @@
-import { mockFieldMultipleChoice, mockFieldDate, mockField } from '../../mock-data/corpus';
+import { booleanFieldFactory, dateFieldFactory, keywordFieldFactory } from '../../mock-data/corpus';
 import { BooleanFilter, DateFilter, DateFilterData, MultipleChoiceFilter } from './field-filter';
 import { SimpleStore } from '../store/simple-store';
 import { Store } from '../store/types';
@@ -8,7 +8,7 @@ describe('SearchFilter', () => {
     // they test logic implemented in the abstract
     // SearchFilter class
 
-    const field = mockFieldDate;
+    const field = dateFieldFactory();
     let store: Store;
     let filter: DateFilter;
     const exampleData: DateFilterData = {
@@ -120,7 +120,7 @@ describe('SearchFilter', () => {
 });
 
 describe('DateFilter', () => {
-    const field = mockFieldDate;
+    const field = dateFieldFactory();
     let filter: DateFilter;
     const exampleData = {
         min: new Date(Date.parse('Jan 01 1850')),
@@ -178,7 +178,7 @@ describe('DateFilter', () => {
 });
 
 describe('MultipleChoiceFilter', () => {
-    const field = mockFieldMultipleChoice;
+    const field = keywordFieldFactory();
     let filter: MultipleChoiceFilter;
     const exampleData = ['test'];
 
@@ -219,7 +219,7 @@ describe('MultipleChoiceFilter', () => {
         const esFilter = filter.toEsFilter();
         expect(esFilter).toEqual({
             terms: {
-                greater_field: ['wow!', 'a great selection!']
+                genre: ['wow!', 'a great selection!']
             }
         });
     });
@@ -232,7 +232,7 @@ describe('MultipleChoiceFilter', () => {
 });
 
 describe('BooleanFilter', () => {
-    const field = mockField;
+    const field = booleanFieldFactory();
     let store: SimpleStore;
     let filter: BooleanFilter;
 

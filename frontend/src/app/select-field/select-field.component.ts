@@ -1,122 +1,78 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import * as _ from 'lodash';
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CorpusField, QueryModel } from '@models/index';
 import { actionIcons } from '@shared/icons';
+import { searchFieldOptions } from '@utils/search-fields';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ia-select-field',
     templateUrl: './select-field.component.html',
     styleUrls: ['./select-field.component.scss'],
+    standalone: false
 })
 export class SelectFieldComponent implements OnChanges {
-    @Input() queryModel: QueryModel;
-    @Input() public filterCriterion: 'searchable'|'downloadable';
-    @Input() public corpusFields: CorpusField[];
-    @Output() selection = new EventEmitter<CorpusField[]>();
+    @Input({ required: true }) queryModel!: QueryModel;
 
-    // all fields which are searchable/downloadable
+    /** searchable fields
+     *
+     * This includes multifield "variants", i.e. "*.text" and "*.stemmed" fields
+     */
     private availableFields: CorpusField[];
-    // the options displayed at any moment in the dropdown element
-    public optionFields: CorpusField[];
-    // user selection
-    selectedFields: CorpusField[];
-    // whether to display all field options, or just the core ones
+    /** the options displayed in the dropdown element
+     *
+     * Must be a plain JS object, not a CorpusField instance; see
+     * https://github.com/orgs/primefaces/discussions/3695#discussioncomment-12582579
+     */
+    public options: { label: string, value: string }[];
+    /** user selection (field names) */
+    selected: string[];
+    /** whether to display all field options, or just the core ones */
     public allVisible = false;
 
     actionIcons = actionIcons;
 
-    constructor() {}
+    constructor(private destroyRef: DestroyRef) {}
 
-    initialize() {
-        if (this.queryModel) {
-            this.setStateFromQueryModel(this.queryModel);
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel) {
+            this.availableFields = searchFieldOptions(this.queryModel.corpus);
+            this.setOptions();
+            this.setStateFromQueryModel();
+            this.queryModel.update.pipe(
+                takeUntilDestroyed(this.destroyRef),
+            ).subscribe(() => this.setStateFromQueryModel());
+        }
+    }
+
+    setStateFromQueryModel() {
+        if (this.queryModel.searchFields) {
+            this.selected = this.queryModel.searchFields.map(f => f.name);
         } else {
-            this.selectedFields = this.filterCoreFields();
+            this.selected = [];
         }
-        this.availableFields = this.getAvailableFields(this.corpusFields);
-        this.optionFields = this.filterCoreFields();
-    }
-
-    ngOnChanges(): void {
-        this.initialize();
-    }
-
-    setStateFromQueryModel(queryModel: QueryModel) {
-        if (queryModel.searchFields) {
-            this.selectedFields = _.clone(queryModel.searchFields);
-        } else {
-            this.selectedFields = [];
-        }
-    }
-
-    private getAvailableFields(corpusFields: CorpusField[]): CorpusField[] {
-        const availableFields = corpusFields.filter(field => field[this.filterCriterion]);
-        if (this.filterCriterion === 'searchable') {
-            return _.flatMap(availableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
-        } else {
-            return availableFields;
-        }
-    }
-
-    private searchableMultiFields(field: CorpusField): CorpusField[] {
-        if (field.multiFields) {
-            if (field.multiFields.includes('text')) {
-                // replace keyword field with text multifield
-                return this.useTextMultifield(field);
-            }
-            if (field.multiFields.includes('stemmed')) {
-                return this.useStemmedMultifield(field);
-            }
-        }
-        return [field];
-    }
-
-    private useTextMultifield(field: CorpusField) {
-        const textField = _.clone(field);
-        textField.name = field.name + '.text';
-        textField.multiFields = null;
-        return [textField];
-    }
-
-    private useStemmedMultifield(field: CorpusField) {
-        const stemmedField = _.clone(field);
-        stemmedField.name = field.name + '.stemmed';
-        stemmedField.displayName = field.displayName + ' (stemmed)';
-        stemmedField.multiFields = null;
-
-        return [field, stemmedField];
     }
 
     public toggleAllFields() {
-        if (this.allVisible) {
-            this.optionFields = this.filterCoreFields();
-        } else {
-            // show all options, with core options first, the rest alphabetically sorted
-            const coreFields = this.filterCoreFields();
-            const noCoreOptions = _.without(this.availableFields, ... coreFields);
-            this.optionFields = coreFields.concat(_.sortBy(noCoreOptions,['displayName']));
-        }
         this.allVisible = !this.allVisible;
-        this.onUpdate();
+        this.setOptions();
     }
 
     public onUpdate() {
-        this.selection.emit(this.selectedFields);
-        if (this.queryModel) {
-            this.queryModel.setParams({
-                searchFields: this.selectedFields
-            });
-        }
+        const fields = this.availableFields.filter(f => this.selected.includes(f.name));
+        this.queryModel.setParams({ searchFields: fields });
     }
 
-    private filterCoreFields() {
-        if (this.filterCriterion === 'downloadable') {
-            return this.corpusFields.filter(field => field.csvCore);
-        } else if (this.filterCriterion === 'searchable') {
-            return this.corpusFields.filter(field => field.searchFieldCore);
+    setOptions() {
+        let fields: CorpusField[];
+        if (this.allVisible) {
+            fields = this.availableFields.sort(f => f.searchFieldCore ? 0 : 1);
         } else {
-            return this.availableFields;
+            fields = this.availableFields.filter(f => f.searchFieldCore);
         }
+
+        this.options = fields.map(f => ({ label: f.displayName, value: f.name }));
+
     }
 }

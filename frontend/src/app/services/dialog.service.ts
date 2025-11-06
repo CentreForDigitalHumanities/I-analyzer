@@ -45,8 +45,11 @@ export class DialogService {
             return this.manifest;
         }
 
-        const path = this.getLocalizedPath(`manual`, `/manifest.json`);
-        return this.manifest = fetch(path).then(response => response.json());
+        const path = this.getLocalizedPath(`manual`, `manifest.json`);
+        return this.manifest = fetch(path).then(response => {
+            console.log(response);
+            return response.json();
+        });
     }
 
     /**
@@ -81,7 +84,7 @@ export class DialogService {
         });
 
         const doc = await documentation;
-        const html = marked.parse(doc);
+        const html = await marked.parse(doc);
         this.behavior.next({
             identifier,
             html,
@@ -98,7 +101,7 @@ export class DialogService {
 
     private async parseResponse(response: Response) {
         const text = await response.text();
-        const html = marked.parse(text);
+        const html = await marked.parse(text);
         // mark that the output of the markdown service is safe to accept: it can contain style and id attributes,
         // which normally aren't liked by Angular
         return this.domSanitizer.bypassSecurityTrustHtml(html.replace(/<a href=/g, '<a target="_blank" href='));
@@ -122,12 +125,13 @@ export type DialogPageEvent =
   };
 
 
-export interface ManualSection {
+export interface ManualPage {
     title: string;
     id: string;
 }
 
 export interface ManualSection {
     title: string;
-    pages: ManualSection[];
+    permissions?: 'canEditCorpus'[]
+    pages: ManualPage[];
 };

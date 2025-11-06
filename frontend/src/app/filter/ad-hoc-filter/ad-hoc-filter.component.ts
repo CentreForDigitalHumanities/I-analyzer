@@ -5,7 +5,8 @@ import { BaseFilterComponent } from './../base-filter.component';
 @Component({
     selector: 'ia-ad-hoc-filter',
     templateUrl: './ad-hoc-filter.component.html',
-    styleUrls: ['./ad-hoc-filter.component.scss']
+    styleUrls: ['./ad-hoc-filter.component.scss'],
+    standalone: false
 })
 export class AdHocFilterComponent extends BaseFilterComponent<AdHocFilter> {
 }

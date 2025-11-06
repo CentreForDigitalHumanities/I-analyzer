@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 
 @Pipe({
     name: 'keyword',
+    standalone: false
 })
 export class KeywordPipe implements PipeTransform {
     constructor() {}

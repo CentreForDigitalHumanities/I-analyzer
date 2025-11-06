@@ -9,12 +9,17 @@ export interface CorpusDataFile {
     id?: number;
     corpusID: number;
     file: File | string;
+    original_filename?: string;
     is_sample: boolean;
     created?: Date;
+    confirmed: boolean;
+    csv_info: DataFileInfo;
 }
 
 export interface DataFileInfo {
-    [columnName: string]: APICorpusDefinitionField['type'];
+    n_rows: number;
+    fields: Pick<APICorpusDefinitionField, 'name' | 'type'>[];
+    delimiter: Delimiter;
 }
 
 export interface APICorpusDefinitionField {
@@ -90,22 +95,25 @@ export interface APIEditableCorpus {
     active: boolean;
     definition: APICorpusDefinition;
     has_image?: boolean;
+    has_complete_data?: boolean;
 }
 
 export class CorpusDefinition {
     active = false;
     hasImage = false;
+    hasCompleteData: boolean;
     loading$ = new BehaviorSubject<boolean>(true);
 
     definition: APICorpusDefinition;
 
     definitionUpdated$ = this.loading$.pipe(filter((val) => !val));
 
-    constructor(private apiService: ApiService, public id?: number) {
+    constructor(
+        private apiService: ApiService,
+        public id?: number,
+    ) {
         if (this.id) {
-            this.apiService
-                .corpusDefinition(this.id)
-                .subscribe((result) => this.setFromAPIData(result));
+            this.refresh();
         } else {
             this.loading$.next(false);
         }
@@ -124,6 +132,14 @@ export class CorpusDefinition {
     /** whether the corpus definition contains all data necessary for saving */
     isComplete() {
         return !_.isUndefined(this.definition);
+    }
+
+    /** refresh the corpus from the database **/
+    refresh(): void {
+        this.loading$.next(true);
+        this.apiService
+            .corpusDefinition(this.id)
+            .subscribe((result) => this.setFromAPIData(result));
     }
 
     /** save the corpus state in the database */
@@ -150,7 +166,57 @@ export class CorpusDefinition {
         this.id = result.id;
         this.active = result.active;
         this.setFromDefinition(result.definition);
-        this.loading$.next(false);
         this.hasImage = result.has_image;
+        this.hasCompleteData = result.has_complete_data;
+
+        // do not edit properties AFTER this !!!
+        this.loading$.next(false);
     }
-}
+};
+
+export const FIELD_TYPE_OPTIONS: {
+    label: string;
+    value: APICorpusDefinitionField['type'];
+    helpText: string;
+    hasLanguage?: boolean;
+}[] = [
+    {
+        label: 'text (content)',
+        value: 'text_content',
+        helpText:
+            'Main document text. Can consist of multiple paragraphs. Can be used to search.',
+        hasLanguage: true,
+    },
+    {
+        label: 'text (metadata)',
+        value: 'text_metadata',
+        helpText:
+            'Metadata text. Limited to a single paragraph. Can be used to filter and/or search.',
+        hasLanguage: true,
+    },
+    {
+        label: 'number (integer)',
+        value: 'integer',
+        helpText: 'This field contains whole numbers',
+    },
+    {
+        label: 'number (decimal)',
+        value: 'float',
+        helpText: 'This field contains numbers with (optional) decimals',
+    },
+    {
+        label: 'date',
+        value: 'date',
+        helpText: 'This field contains dates.',
+    },
+    {
+        label: 'boolean',
+        value: 'boolean',
+        helpText: 'This field contains true/false values.',
+    },
+    {
+        label: 'url',
+        value: 'url',
+        helpText: 'This field contains URLs',
+    },
+];

@@ -7,6 +7,7 @@ import { pageTitle } from '@utils/app';
     selector: 'ia-privacy',
     templateUrl: './privacy.component.html',
     styleUrls: ['./privacy.component.scss'],
+    standalone: false
 })
 export class PrivacyComponent implements OnInit {
     public header: string | undefined;

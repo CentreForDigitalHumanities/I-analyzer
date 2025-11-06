@@ -12,6 +12,7 @@ const defaultValueType = 'alpha';
     selector: 'ia-search-sorting',
     templateUrl: './search-sorting.component.html',
     styleUrls: ['./search-sorting.component.scss'],
+    standalone: false
 })
 export class SearchSortingComponent {
     @HostBinding('class') classes = 'field has-addons';
