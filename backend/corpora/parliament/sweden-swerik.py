@@ -182,10 +182,8 @@ def _is_known(speaker_id: str) -> bool:
 def _is_in_sweden_corpus_range(debate_date_range: Tuple[date, date]) -> bool:
     return ParliamentSweden.min_date < debate_date_range[0] < ParliamentSweden.max_date
 
-def _format_sweden_corpus_link(speech_id: str) -> str:
-    # For the sake of simplicity, this just assumes that the sweden corpus is called
-    # `parliament-sweden`
-    return document_link('parliament-sweden', speech_id)
+def _sweden_corpus_link_transform(base_url: str) -> Callable[[str], str]:
+    return lambda speech_id: document_link('parliament-sweden', speech_id, base_url)
 
 
 _chambers = {
@@ -253,6 +251,11 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
 
     tag_toplevel = Tag('TEI')
     tag_entry = Tag('u', attrs={'prev': None})
+
+    sweden_corpus_base_url: str = getattr(settings, 'PP_SWEDEN_SWERIK_CROSSCORPUS_LINK_URL', settings.BASE_URL)
+    '''
+    Base URL to generate links to the Sweden corpus.
+    '''
 
     def sources(self, **kwargs):
         print('Extracting person metadata...')
@@ -438,7 +441,7 @@ class ParliamentSwedenSwerik(Parliament, XMLReader):
                 Pass(_speaker_id_extractor, transform=_is_known),
                 transform=all,
             ),
-            transform=_format_sweden_corpus_link,
+            transform=_sweden_corpus_link_transform(sweden_corpus_base_url),
         )
     )
 

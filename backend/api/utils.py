@@ -35,5 +35,5 @@ def find_media_file(base_path, file_path, mime_type=None):
 
     return path
 
-def document_link(corpus_name: str, document_id: str) -> str:
-    return f'{settings.BASE_URL}/document/{corpus_name}/{document_id}'
+def document_link(corpus_name: str, document_id: str, base_url=settings.BASE_URL) -> str:
+    return f'{base_url}/document/{corpus_name}/{document_id}'
