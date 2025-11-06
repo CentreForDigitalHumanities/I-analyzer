@@ -9,6 +9,7 @@ from addcorpus.models import (Corpus, CorpusConfiguration, CorpusDataFile,
 from django.core.files import File
 from langcodes import Language, standardize_tag
 from rest_framework import serializers
+from os import path
 
 
 class NonEmptyJSONField(serializers.JSONField):
@@ -159,12 +160,22 @@ class JSONDefinitionField(serializers.Field):
 
 class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
     definition = JSONDefinitionField()
-    has_image =serializers.BooleanField(source='configuration.image', read_only=True)
+    has_image = serializers.BooleanField(source='configuration.image', read_only=True)
+    has_complete_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Corpus
-        fields = ['id', 'active', 'definition', 'owner', 'has_image']
+        fields = ['id', 'active', 'definition',
+                  'owner', 'has_image', 'has_complete_data']
         read_only_fields = ['id']
+
+    def get_has_complete_data(self, obj: Corpus):
+        '''Corpus should have exactly one file, that is confirmed'''
+        confirmed_exists = CorpusDataFile.objects.filter(
+            corpus=obj, confirmed=True).exists()
+        unconfirmed_exists = CorpusDataFile.objects.filter(
+            corpus=obj, confirmed=False).exists()
+        return confirmed_exists and not unconfirmed_exists
 
     def create(self, validated_data: Dict):
         definition_data = validated_data.get('definition')
@@ -254,7 +265,7 @@ class CorpusJSONDefinitionSerializer(serializers.ModelSerializer):
 
 class DataFileField(serializers.FileField):
     def to_representation(self, value: File) -> Dict:
-        return value.name
+        return path.basename(value.name)
 
     def to_internal_value(self, data):
         return super().to_internal_value(data)
@@ -262,7 +273,15 @@ class DataFileField(serializers.FileField):
 
 class CorpusDataFileSerializer(serializers.ModelSerializer):
     file = DataFileField()
+    original_filename = serializers.CharField(read_only=True)
+    csv_info = serializers.JSONField(read_only=True)
 
     class Meta:
         model = CorpusDataFile
-        fields = ('id', 'corpus', 'file', 'created', 'is_sample')
+        fields = ('id', 'corpus', 'file', 'created', 'is_sample',
+                  'confirmed', 'original_filename', 'csv_info')
+
+    def validate(self, data):
+        if file := data.get('file'):
+            data['original_filename'] = file.name
+        return data

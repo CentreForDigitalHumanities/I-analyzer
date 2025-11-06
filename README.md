@@ -1,7 +1,8 @@
 # I-analyzer
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8064133.svg)](https://doi.org/10.5281/zenodo.8064133)
-[![Actions Status](https://github.com/CentreForDigitalHumanities/I-analyzer/workflows/Unit%20tests/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions)
+[![Backend unit tests](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/backend-test.yml/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/backend-test.yml)
+[![Frontend unit tests](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/frontend-test.yml)
 
 > "The great text mining tool that obviates all others."
 > — Julian Gonggrijp
