@@ -24,8 +24,6 @@ export class MenuComponent implements OnDestroy, OnInit {
     dropdownOpen$ = new BehaviorSubject<boolean>(false);
 
     user$: Observable<User> = this.authService.currentUser$;
-    isAdmin$: Observable<boolean> = this.user$.pipe(map((user) => user?.isAdmin));
-    canEditCorpora$: Observable<boolean> = this.user$.pipe(map(user => user?.canEditCorpora));
 
     route$: Observable<{
         url: string[];
