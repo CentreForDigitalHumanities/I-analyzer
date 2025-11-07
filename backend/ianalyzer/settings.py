@@ -48,7 +48,7 @@ PROXY_FRONTEND = None
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
-SITE_NAME = 'IANALYZER'
+SITE_NAME = 'Textcavator'
 HOST = 'localhost:8000'
 
 # Download location
