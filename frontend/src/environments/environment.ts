@@ -12,7 +12,7 @@ export const environment = {
     navbarBrand: {
         title: 'Textcavator',
         subtitle: undefined,
-        logo: '/assets/logo.png',
+        logo: '/assets/logo.svg',
         logoAlt: undefined,
     },
     appDescription:
