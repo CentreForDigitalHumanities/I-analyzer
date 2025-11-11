@@ -15,18 +15,10 @@ import { environment } from '@environments/environment';
 export class HomeComponent implements OnInit {
     appTitle = environment.navbarBrand;
 
-    public items: Corpus[];
-
-    isLoading = new BehaviorSubject<boolean>(false);
-
     constructor(private corpusService: CorpusService, title: Title) {
         title.setTitle(environment.appName);
     }
 
     ngOnInit() {
-        showLoading(
-            this.isLoading,
-            this.corpusService.get(true).then((items) => (this.items = items))
-        );
     }
 }
