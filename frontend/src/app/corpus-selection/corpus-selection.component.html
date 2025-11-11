@@ -2,8 +2,6 @@
     <div class="container is-readable" [class.is-loading]="isLoading | async">
         <ng-container *ngIf="items">
             <ng-container *ngIf="showCorpusFilters; else spacer">
-                <hr>
-
                 <div class="block">
                     <ia-corpus-filter [corpora]="items" (filtered)="filteredItems = $event"></ia-corpus-filter>
                 </div>

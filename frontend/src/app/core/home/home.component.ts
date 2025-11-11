@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { BehaviorSubject } from 'rxjs';
-import { Corpus } from '@models/corpus';
-import { CorpusService } from '@services/index';
-import { showLoading } from '@utils/utils';
 import { environment } from '@environments/environment';
+import _ from 'lodash';
 
 @Component({
     selector: 'ia-home',
@@ -14,9 +11,11 @@ import { environment } from '@environments/environment';
 })
 export class HomeComponent implements OnInit {
     appTitle = environment.navbarBrand;
+    appName = environment.appName;
+    appDescription = _.get(environment, 'appDescription', undefined);
 
-    constructor(private corpusService: CorpusService, title: Title) {
-        title.setTitle(environment.appName);
+    constructor(title: Title) {
+        title.setTitle(this.appName);
     }
 
     ngOnInit() {
