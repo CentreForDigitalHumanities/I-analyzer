@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataFormComponent } from './data-form.component';
-import { commonTestBed } from 'app/common-test-bed';
-import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
-import { ApiService } from '@services';
+import { commonTestBed } from '@app/common-test-bed';
 import { CorpusDefinition } from '@models/corpus-definition';
+import { ApiService } from '@services';
+import { CorpusDefinitionService } from 'app/corpus-definitions/corpus-definition.service';
+import { DataFormComponent } from './data-form.component';
 
 describe('DataFormComponent', () => {
     let apiService: ApiService;
