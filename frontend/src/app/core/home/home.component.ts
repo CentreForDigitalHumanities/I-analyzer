@@ -13,6 +13,8 @@ import { environment } from '@environments/environment';
     standalone: false
 })
 export class HomeComponent implements OnInit {
+    appTitle = environment.navbarBrand;
+
     public items: Corpus[];
 
     isLoading = new BehaviorSubject<boolean>(false);
