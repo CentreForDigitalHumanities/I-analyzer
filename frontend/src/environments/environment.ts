@@ -11,7 +11,7 @@ export const environment = {
     appName: 'Textcavator',
     navbarBrand: {
         title: 'Textcavator',
-        subtitle: undefined,
+        subtitle: 'People & Parliament',
         logo: '/assets/logo.png',
         logoAlt: undefined,
     },
