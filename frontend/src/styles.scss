@@ -115,7 +115,7 @@ a.dropdown-item[disabled] {
 }
 
 .content {
-    a {
+    a:not(.button) {
         text-decoration: underline;
     }
 }
@@ -136,6 +136,16 @@ table.spreadsheet {
 
     tr:hover {
         background-color: inherit;
+    }
+}
+
+.breadcrumb {
+    li:not(.is-active) > a {
+        text-decoration: underline;
+    }
+
+    li.is-active > a {
+        color: var(--bulma-text);
     }
 }
 

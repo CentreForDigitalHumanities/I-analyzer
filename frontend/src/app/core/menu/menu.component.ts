@@ -19,8 +19,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     menuOpen$ = new BehaviorSubject<boolean>(false);
 
-    user$: Observable<User>;
-    isAdmin$: Observable<boolean>;
+    user$: Observable<User> = this.authService.currentUser$;
 
     route$: Observable<{
         url: string[];
@@ -44,8 +43,6 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.user$ = this.authService.currentUser$;
-        this.isAdmin$ = this.user$.pipe(map((user) => user?.isAdmin));
-
         this.makeRoute();
     }
 

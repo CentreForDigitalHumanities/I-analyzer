@@ -65,7 +65,16 @@
                         </span>
                         {{user.name}}
                     </div>
-                    <!-- menu items -->
+                <!-- menu items -->
+                    <a class="navbar-item"
+                        *ngIf="user.canEditCorpora"
+                        [routerLink]="['/custom-corpora']"
+                        [routerLinkActive]="'is-active'">
+                        <span class="icon" arai-hidden="true">
+                            <fa-icon [icon]="navIcons.corpora" />
+                        </span>
+                        Custom corpora
+                    </a>
                     <a class="navbar-item"
                         [routerLink]="['/search-history']"
                         routerLinkActive="is-active">
@@ -99,7 +108,7 @@
                         Settings
                     </a>
                     <a class="navbar-item"
-                        *ngIf="isAdmin$ | async"
+                        *ngIf="user.isAdmin"
                         href="{{adminUrl}}">
                         <span class="icon" aria-hidden="true">
                             <fa-icon [icon]="navIcons.admin"></fa-icon>

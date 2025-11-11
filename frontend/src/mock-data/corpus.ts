@@ -146,6 +146,7 @@ export const booleanFieldFactory = () =>
 
 export const corpusFactory = () =>
     new Corpus(
+        1,
         'test',
         'Test corpus',
         'A basic corpus for testing',
