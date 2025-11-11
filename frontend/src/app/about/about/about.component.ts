@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SafeHtml, Title } from '@angular/platform-browser';
 import { environment } from '@environments/environment';
 import { DialogService } from '@services';
+import { pageTitle } from '@utils/app';
 
 @Component({
     selector: 'ia-about',
@@ -21,7 +22,7 @@ export class AboutComponent implements OnInit {
         this.isLoading = true;
         this.appName = environment.appName;
         this.fetchData();
-        this.title.setTitle(`About - ${this.appName}`);
+        this.title.setTitle(pageTitle('About'));
     }
 
     async fetchData() {
