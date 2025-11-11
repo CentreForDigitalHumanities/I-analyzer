@@ -14,7 +14,6 @@
 
 .navbar-item img {
     max-height: 3rem;
-    margin-right: 7px;
 }
 
 .navbar-item:not(.has-dropdown) {
@@ -32,6 +31,7 @@
 .navbar-brand .navbar-item {
     font-family: utilities.$brand-font;
     font-size: utilities.$size-4;
+    margin-right: 0.5em;
 }
 
 
@@ -41,6 +41,6 @@
     &::before {
         content: '| ';
         font-style: normal;
-        margin-right: 0.4rem;
+        margin-right: 0.4em;
     }
 }

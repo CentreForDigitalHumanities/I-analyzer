@@ -224,6 +224,15 @@ table.spreadsheet {
     }
 }
 
+// do not use extra-bold weight for titles
+
+.title {
+    --bulma-title-weight: var(--bulma-weight-bold);
+}
+.content {
+    --bulma-content-heading-weight: var(--bulma-weight-bold);
+}
+
 // restore some rules from older bulma versions for compatibility
 
 .block,
