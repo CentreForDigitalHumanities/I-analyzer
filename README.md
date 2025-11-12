@@ -1,5 +1,8 @@
 # Textcavator
 
+> [!NOTE]
+> We are currently in the process of renaming this application from I-analyzer to Textcavator.
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8064133.svg)](https://doi.org/10.5281/zenodo.8064133)
 [![Backend unit tests](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/backend-test.yml/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/backend-test.yml)
 [![Frontend unit tests](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/CentreForDigitalHumanities/I-analyzer/actions/workflows/frontend-test.yml)
