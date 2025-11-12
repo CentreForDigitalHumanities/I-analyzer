@@ -86,7 +86,7 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER', 'redis://')
 # url to the frontend for generating email links
 BASE_URL = 'http://localhost:4200'
 
-DEFAULT_FROM_EMAIL = 'ianalyzer@ianalyzer.dev'
+DEFAULT_FROM_EMAIL = 'textcavator@textcavator.dev'
 
 LOGGING = {
     "version": 1,
