@@ -4,12 +4,15 @@ CATEGORIES = [
     ('parliament', 'Parliamentary debates'),
     ('periodical', 'Newspapers and other periodicals'),
     ('finance', 'Financial reports'),
-    ('ruling', 'Court rulings'),
-    ('review', 'Online reviews'),
+    ('ruling', 'Laws and rulings'),
+    ('review', 'Reviews and discussions'),
     ('inscription', 'Funerary inscriptions'),
     ('oration', 'Orations'),
     ('book', 'Books'),
-    ('informative', 'Informative'),
+    ('letter', 'Letters and life writing'),
+    ('poetry', 'Poetry and songs'),
+    ('social', 'Social media'),
+    ('other', 'Other'),
 ]
 '''
 Types of data

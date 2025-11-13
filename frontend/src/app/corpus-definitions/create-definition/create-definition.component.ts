@@ -5,7 +5,7 @@ import { APIEditableCorpus, CorpusDefinition } from '@models/corpus-definition';
 import { ApiService } from '@services';
 import { actionIcons, formIcons } from '@shared/icons';
 import { Subject } from 'rxjs';
-import { SlugifyPipe } from '../../shared/pipes/slugify.pipe';
+import { SlugifyPipe } from '@shared/pipes/slugify.pipe';
 import { Title } from '@angular/platform-browser';
 import { pageTitle } from '@utils/app';
 
@@ -62,8 +62,8 @@ export class CreateDefinitionComponent {
         this.corpus.save().subscribe({
             next: (result: APIEditableCorpus) => {
                 const nextRoute = asImport
-                    ? ['/corpus-definitions']
-                    : ['/corpus-definitions', 'edit', result.id];
+                    ? ['/custom-corpora']
+                    : ['/custom-corpora', 'edit', result.id];
                 this.router.navigate(nextRoute);
             },
             error: (err: HttpErrorResponse) => {

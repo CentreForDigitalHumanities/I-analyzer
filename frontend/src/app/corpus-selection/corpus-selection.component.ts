@@ -1,9 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Corpus } from '@models/corpus';
 import * as _ from 'lodash';
-import { AuthService } from '@services';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 import { actionIcons } from '@shared/icons';
 import { environment } from '@environments/environment';
 
@@ -20,16 +17,12 @@ export class CorpusSelectionComponent implements OnInit {
 
     filteredItems: Corpus[];
 
-    showManageLink$: Observable<boolean>;
 
     actionIcons = actionIcons;
 
     showCorpusFilters: boolean;
 
-    constructor(private authService: AuthService) {
-        this.showManageLink$ = this.authService.currentUser$.pipe(
-            map((user) => user?.canEditCorpora)
-        );
+    constructor() {
         this.showCorpusFilters = _.get(environment, 'showCorpusFilters', true);
      }
 
