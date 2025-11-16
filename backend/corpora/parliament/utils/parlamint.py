@@ -147,8 +147,8 @@ def ner_keyword_field(entity: str):
     return FieldDefinition(
         name=f"{entity}:ner-kw",
         display_name=f"Named Entity: {entity.capitalize()}",
-        searchable=True,
-        es_mapping=keyword_mapping(enable_full_text_search=True),
+        searchable=False,
+        es_mapping=keyword_mapping(enable_full_text_search=False),
         search_filter=MultipleChoiceFilter(
             description=f"Select only speeches which contain this {entity} entity",
             option_count=100,
@@ -190,7 +190,7 @@ def format_annotated_text(element: Node) -> str:
     tokens = [el.extract() for el in element.find_previous_siblings(["w", "pc"])]
     output += detokenize_parlamint(reversed(tokens))
     annotated = element.find_all("w")
-    formatted = " ".join([a.string for a in annotated])
+    formatted = " ".join([a.string for a in annotated if a.string])
     if output:
         # if there is preceding text, add whitespace prior to annotation
         output += " "
@@ -211,7 +211,7 @@ def speech_ner():
         hidden=True,
         es_mapping=non_indexed_text_mapping(),
         display_type="text_content",
-        searchable=True,
+        searchable=False,
         extractor=XML(
             Tag("seg"),
             multiple=True,
