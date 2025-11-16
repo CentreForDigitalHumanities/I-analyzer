@@ -16,9 +16,9 @@ from corpora.parliament.utils.parlamint import ner_keyword_field, speech_ner
 
 from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_constants import COUNTRY_CODES, COUNTRY_CODE_TO_NAME, DATE_RANGES
 from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_extract import get_orgs_metadata, get_persons_metadata, extract_named_entities, person_attribute_extractor, extract_speech, organisation_attribute_extractor, current_party_id_extractor, get_party_list
-from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_transform import transform_xml_filename, transform_ministerial_role, transform_parliamentary_role, transform_political_orientation, transform_speaker_constituency
+from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_transform import transform_xml_filename, transform_ministerial_role, transform_parliamentary_role, transform_political_orientation, transform_speaker_constituency, transform_date
 
-from ianalyzer_readers.extract import XML, Combined, Order, Metadata, Pass
+from ianalyzer_readers.extract import Backup, XML, Combined, Order, Metadata, Pass
 from ianalyzer_readers.xml_tag import Tag
 
 def open_xml_as_soup(filepath):
@@ -43,7 +43,6 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
     document_context = document_context()
     tag_toplevel = Tag('TEI')
     tag_entry = Tag('u')
-    languages = ['en', 'tr']
 
     def sources(self, *args, **kwargs):
         for country_code in COUNTRY_CODES:
@@ -83,13 +82,24 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
     )
     
     date = field_defaults.date(min_date=min_date, max_date=max_date)
-    date.extractor = XML(
+    date.extractor = Backup(
+        XML(
             Tag('teiHeader'),
             Tag('fileDesc'),
             Tag('sourceDesc'),
             Tag('bibl'),
             Tag('date'),
+            toplevel=True,
+        ),
+        XML(
+            Tag('teiHeader'),
+            Tag('profileDesc'),
+            Tag('settingDesc'),
+            Tag('setting'),
+            Tag('date'),
             toplevel=True
+        ),
+        transform=transform_date
     )
 
     debate_id = field_defaults.debate_id()
@@ -103,7 +113,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
         attribute='xml:id'
     )
 
-    speech = field_defaults.speech(language='tr')
+    speech = field_defaults.speech()
     speech.extractor = XML(
             Tag('s'),
             multiple=True,
@@ -235,13 +245,13 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
             self.speaker_wikimedia,
             self.speaker_twitter,
             self.parliamentary_role,
-            self.ministerial_role,
+            # self.ministerial_role,
             self.current_party_id,
             self.current_party,
             self.current_party_full,
             self.current_party_wiki,
             self.current_party_political_orientation,
-            self.speaker_constituency,
+            # self.speaker_constituency,
             self.ner_per,
             self.ner_loc,
             self.ner_org,
