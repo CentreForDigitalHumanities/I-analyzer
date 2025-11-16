@@ -82,25 +82,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
     )
     
     date = field_defaults.date(min_date=min_date, max_date=max_date)
-    date.extractor = Backup(
-        XML(
-            Tag('teiHeader'),
-            Tag('fileDesc'),
-            Tag('sourceDesc'),
-            Tag('bibl'),
-            Tag('date'),
-            toplevel=True,
-        ),
-        XML(
-            Tag('teiHeader'),
-            Tag('profileDesc'),
-            Tag('settingDesc'),
-            Tag('setting'),
-            Tag('date'),
-            toplevel=True
-        ),
-        transform=transform_date
-    )
+    date.extractor = Metadata('date')
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = XML(
@@ -213,7 +195,10 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
         display_name='Political Orientation',
         description="Political leaning according to the ParlaMint team",
         es_mapping=keyword_mapping(),
-        searchable=False
+        searchable=False,
+        search_filter = MultipleChoiceFilter(
+            description='Search for speeches from selected political leanings',
+        ),
     )
     current_party_political_orientation.extractor = Pass(
         organisation_attribute_extractor('political_orientation'),
