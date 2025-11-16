@@ -54,11 +54,16 @@ def node_is_current(node, date):
 
 def transform_parliamentary_role(data):
     org_nodes, date, country = data
+    if not org_nodes or not date or not country:
+        return None
     for node in org_nodes:
         if node['ref'] in COUNTRY_PARLIAMENTS[country] and node['role'] == 'member' and node_is_current(node, date):
             return 'MP'
+        else:
+            return 'non-MP'
 
 def transform_ministerial_role(data):
+    # TODO: make universal, .#mstr is a Turkish convention
     org_nodes, date, country = data
     for node in org_nodes:
         if '#mstr.' in node['ref'] and node['role'] == 'head' and node_is_current(node, date):
@@ -79,6 +84,8 @@ def transform_speaker_constituency(data):
 def transform_current_party_id(data):
     '''looks up party affiliation for a person'''
     id, persons, party_list, date = data
+    if not id or not persons or not party_list or not date:
+        return 'NA'
     current_parties = []
     is_party_node = lambda node: node['ref'] in party_list
     party_nodes = [node for node in persons[id]['org_nodes'] if node and is_party_node(node)]
