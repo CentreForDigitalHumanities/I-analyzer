@@ -6,8 +6,8 @@ from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_transform imp
 
 def extract_person_data(node):
     id = '#' + node['xml:id']
-    surname = node.persName.surname.text.strip()
-    forename = node.persName.forename.text.strip()
+    surname = node.persName.surname.text.strip() if node.persName.surname else ''
+    forename = node.persName.forename.text.strip()if node.persName.forename else ''
     name = ' '.join([forename, surname])
     role = node.persName.roleName.text.strip() if node.persName.roleName else None #too simple, needs to be able to have different values and be gotten from the org_node
     gender = node.sex['value'].strip() if node.sex else None
@@ -182,5 +182,6 @@ def extract_speech(element):
             sentence.append(string)
         else:
             sentence.append(string + ' ')
-    sentence[-1] = sentence[-1][:-1] if sentence and sentence[-1].endswith(' ') else sentence[-1] #trailspaces
+    if len(sentence) > 1:
+        sentence[-1] = sentence[-1][:-1] if sentence[-1].endswith(' ') else sentence[-1] #trailspaces
     return ''.join(sentence)

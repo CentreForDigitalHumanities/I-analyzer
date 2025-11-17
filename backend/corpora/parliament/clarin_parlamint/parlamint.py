@@ -16,7 +16,7 @@ from corpora.parliament.utils.parlamint import ner_keyword_field, speech_ner
 
 from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_constants import COUNTRY_CODES, COUNTRY_CODE_TO_NAME, DATE_RANGES
 from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_extract import get_orgs_metadata, get_persons_metadata, extract_named_entities, person_attribute_extractor, extract_speech, organisation_attribute_extractor, current_party_id_extractor, get_party_list
-from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_transform import transform_xml_filename, transform_ministerial_role, transform_parliamentary_role, transform_political_orientation, transform_speaker_constituency, transform_date
+from corpora.parliament.clarin_parlamint.parlamint_utils.parlamint_transform import transform_xml_filename, transform_ministerial_role, transform_parliamentary_role, transform_political_orientation, transform_speaker_constituency
 
 from ianalyzer_readers.extract import Backup, XML, Combined, Order, Metadata, Pass
 from ianalyzer_readers.xml_tag import Tag
@@ -66,7 +66,8 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
                         str(year), 
                         transform_xml_filename(xml_file, country_code)
                     ) # en-file Path
-                    metadata['translated_soup'] = open_xml_as_soup(translated_file_path)
+                    if os.path.exists(translated_file_path):
+                        metadata['translated_soup'] = open_xml_as_soup(translated_file_path)
                     yield xml_file, metadata
 
     country = FieldDefinition(
@@ -107,11 +108,21 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
         return extract_speech(element) if element else None
 
     speech_translated = field_defaults.speech_translated()
-    speech_translated.extractor = Combined(
-        XML(attribute='xml:id'),
-        Metadata('translated_soup'),
-        transform=lookup_translated_speech
+    speech_translated.extractor = Backup(
+        Combined(
+            XML(attribute='xml:id'),
+            Metadata('translated_soup'),
+            transform=lookup_translated_speech
+        ),
+        # just use the original for the GB corpus TODO: make it a conditional, could not get it to work yet
+        XML(
+            Tag('s'),
+            multiple=True,
+            extract_soup_func = extract_speech,
+            transform=' '.join
+        )
     )
+
 
     speech_ner = speech_ner()
 

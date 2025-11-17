@@ -1,25 +1,130 @@
 COUNTRY_CODES = [
-    'AT',
-    'TR'
+    # 'AT',
+    # 'BA',
+    # 'BE',
+    # 'BG',
+    # 'CZ',
+    # 'DK'
+    # 'EE',
+    # 'ES',
+    # 'ES-CT',
+    # 'ES-GA',
+    # 'ES-PV',
+    # 'FI',
+    # 'FR',
+    # 'GB',
+    # 'GR',
+    # 'HR',
+    # 'HU',
+    # 'IS',
+    # 'IT',
+    # 'LV'
+    # 'NL',
+    # 'NO',
+    # 'PL',
+    # 'PT',
+    # 'RS',
+    # 'SE',
+    # 'SI',
+    # 'TR',
+    'UA'
 ]
 
 COUNTRY_CODE_TO_NAME = {
     'AT': 'Austria',
-    'TR': 'Türkiye'
+    'BA': 'Bosnia',
+    'BE': 'Belgium',
+    'BG': 'Bulgaria',
+    'CZ': 'the Czech Republic',
+    'DK': 'Denmark',
+    'EE': 'Estonia',
+    'ES': 'Spain',
+    'ES-CT': 'Spain - Catelonia',
+    'ES-GA': 'Spain - Galicia',
+    'ES-PV': 'Spain - Basque Country',
+    'FI': 'Finland',
+    'FR': 'France',
+    'GB': 'the United Kingdom',
+    'GR': 'Greece',
+    'HR': 'Croatia',
+    'HU': 'Hungary',
+    'IS': 'Iceland',
+    'IT': 'Italy',
+    'LV': 'Latvia',
+    'NL': 'the Netherlands',
+    'NO': 'Norway',
+    'PL': 'Poland',
+    'PT': 'Portugal',
+    'RS': 'Serbia',
+    'SE': 'Sweden',
+    'SI': 'Slovenia',
+    'TR': 'Türkiye',
+    'UA': 'Ukraine'
 }
 
 COUNTRY_PARLIAMENTS = {
     'AT': ['#NR', '#BR'],
-    'TR': ['#TBMM']
-}
-
-COUNTRY_PARTIES = {
-    
+    'BA': ['#PS'],
+    'BE': ['#be_federal_parliament'],
+    'BG': ['#BGNS'],
+    'CZ': ['#chamberOfNations.FSSN', '#chamberOfPeople.FSSL', '#nationalCouncil.CNR', 
+           '#parliament.PSP', '#senate.SE', '#senate.SE14'],
+    'DK': ['#FT'],
+    'EE': ['#ee_parliament'],
+    'ES': ['#CD'],
+    'ES-CT': ['#PC'],
+    'ES-GA': ['#PG'],
+    'ES-PV': ['#ES-PV'],
+    'FI': ['#fi_parliament'],
+    'FR': ['#ParlaMint-FR-LOWER'],
+    'GB': ['#parliament.HC', '#parliament.HL'],
+    'GR': ['#PoGR'],
+    'HR': ['#HS'],
+    'HU': ['#OGY'],
+    'IS': ['#LV'],
+    'IT': ['#LEG'],
+    'LV': ['#PT'],
+    'NL': ['#EK', '#TK'],
+    'NO': ['#ST', '#LT', '#OT'],
+    'PL': ['#parliament.Sejm', '#parliament.Senat'],
+    'PT': ['#Parliament'],
+    'RS': ['#NS'],
+    'SE': ['#Riksdagen'],
+    'SI': ['#DZ'],
+    'TR': ['#TBMM'],
+    'UA': ['#ВРУ']
 }
 
 DATE_RANGES = {
     'AT': {'min_year': 1996, 'max_year': 2022},
-    'TR': {'min_year': 2011, 'max_year': 2022}
+    'BA': {'min_year': 1998, 'max_year': 2022},
+    'BE': {'min_year': 2014, 'max_year': 2022},
+    'BG': {'min_year': 2014, 'max_year': 2022},
+    'CZ': {'min_year': 2013, 'max_year': 2022},
+    'DK': {'min_year': 2014, 'max_year': 2022},
+    'EE': {'min_year': 2011, 'max_year': 2022},
+    'ES': {'min_year': 2014, 'max_year': 2022},
+    'ES-CT': {'min_year': 2014, 'max_year': 2022},
+    'ES-GA': {'min_year': 2015, 'max_year': 2022},
+    'ES-PV': {'min_year': 2015, 'max_year': 2022},
+    'FI': {'min_year': 2015, 'max_year': 2022},
+    'FR': {'min_year': 2017, 'max_year': 2022},
+    'GB': {'min_year': 2015, 'max_year': 2022},
+    'GR': {'min_year': 2015, 'max_year': 2022},
+    'HR': {'min_year': 2003, 'max_year': 2022},
+    'HU': {'min_year': 2014, 'max_year': 2022},
+    'IS': {'min_year': 2015, 'max_year': 2022},
+    'IT': {'min_year': 2013, 'max_year': 2022},
+    'LV': {'min_year': 2014, 'max_year': 2022},
+    'NL': {'min_year': 2014, 'max_year': 2022},
+    'NO': {'min_year': 1998, 'max_year': 2022},
+    'PL': {'min_year': 2015, 'max_year': 2022},
+    'PT': {'min_year': 2015, 'max_year': 2022},
+    'RS': {'min_year': 1998, 'max_year': 2022},
+    'SE': {'min_year': 1998, 'max_year': 2022},
+    'SI': {'min_year': 2000, 'max_year': 2022},
+    'TR': {'min_year': 2011, 'max_year': 2022},
+    'UA': {'min_year': 2002, 'max_year': 2022}
 }
 
 POLITICAL_ORIENTATIONS = {
@@ -41,5 +146,5 @@ POLITICAL_ORIENTATIONS = {
     'PP': 'Pirate Party',
     'SI': 'Single Issue',
     'SY': 'Syncretic',
-    'NA': ''
+    'NA': 'Unknown'
 }

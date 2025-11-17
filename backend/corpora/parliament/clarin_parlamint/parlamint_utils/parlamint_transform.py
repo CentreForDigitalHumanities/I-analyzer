@@ -53,14 +53,14 @@ def node_is_current(node, date):
         return False
 
 def transform_parliamentary_role(data):
+    check_mp = lambda node, date : node['ref'] in COUNTRY_PARLIAMENTS[country] and node['role'] == 'member' and node_is_current(node, date)
     org_nodes, date, country = data
-    if not org_nodes or not date or not country:
+    if not date or not country or org_nodes is None:
         return None
-    for node in org_nodes:
-        if node['ref'] in COUNTRY_PARLIAMENTS[country] and node['role'] == 'member' and node_is_current(node, date):
-            return 'MP'
-        else:
-            return 'non-MP'
+    if any(check_mp(node, date) for node in org_nodes):
+        return 'MP'
+    else:
+        return 'non-MP'
 
 def transform_ministerial_role(data):
     # TODO: make universal, .#mstr is a Turkish convention

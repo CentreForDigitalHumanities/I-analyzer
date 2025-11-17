@@ -170,7 +170,7 @@ def detokenize_parlamint(tokens: Iterable[str]) -> str:
         if token.get("join") != "right":
             output += f"{token.string} "
         else:
-            output += token.string
+            output += token.string if token.string else ''
     # do not include the last character (always whitespace) in the output
     return output[:-1]
 
