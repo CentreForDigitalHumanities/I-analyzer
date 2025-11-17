@@ -79,6 +79,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
         search_filter = MultipleChoiceFilter(
             description='Search for speeches from the selected countries',
         ),
+        results_overview = True,
         extractor = Metadata('country', transform=lambda country_code: COUNTRY_CODE_TO_NAME[country_code])
     )
     
@@ -97,6 +98,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
     )
 
     speech = field_defaults.speech()
+    speech.results_overview = False
     speech.extractor = XML(
             Tag('s'),
             multiple=True,
@@ -108,6 +110,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
         return extract_speech(element) if element else None
 
     speech_translated = field_defaults.speech_translated()
+    speech_translated.results_overview = True
     speech_translated.extractor = Backup(
         Combined(
             XML(attribute='xml:id'),
@@ -229,8 +232,8 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
             self.country,
             self.date,
             self.speech_id,
-            self.speech,
             self.speech_translated,
+            self.speech,
             self.speech_ner,
             self.sequence,
             self.speaker,
