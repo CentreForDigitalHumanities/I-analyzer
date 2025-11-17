@@ -81,7 +81,8 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
             description='Search for speeches from the selected countries',
         ),
         results_overview = True,
-        extractor = Metadata('country', transform=lambda country_code: COUNTRY_CODE_TO_NAME[country_code])
+        extractor = Metadata('country', transform=lambda country_code: COUNTRY_CODE_TO_NAME[country_code]),
+        visualizations=["resultscount", "termfrequency"]
     )
     
     date = field_defaults.date(min_date=min_date, max_date=max_date)
