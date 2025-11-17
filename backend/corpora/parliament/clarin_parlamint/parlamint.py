@@ -46,6 +46,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
 
     def sources(self, *args, **kwargs):
         for country_code in COUNTRY_CODES:
+            print("STARTING COUNTRY: ", country_code)
             country_data_directory = os.path.join(self.data_directory, "Parlamint-{}".format(country_code), "ParlaMint-{}.TEI.ana".format(country_code))
             country_translated_data_directory = os.path.join(self.data_directory, "Parlamint-{}".format(country_code), "ParlaMint-{}-en.TEI.ana".format(country_code))
             persons_metadata = get_persons_metadata(country_data_directory, country_code)
