@@ -1,8 +1,26 @@
+import pytest
+from django.contrib.auth.models import Group
+
+from addcorpus.models import Corpus
 from es.views import NamedEntitySearchView
 
 
 def test_ner_search_view(es_ner_search_client, client):
     route = '/api/es/mock-csv-corpus/my_identifier/named_entities'
+    response = client.get(route, content_type='application/json')
+    assert response.status_code == 200
+
+@pytest.fixture()
+def annotated_corpus_public(annotated_mock_corpus):
+    basic_group = Group.objects.create(name='basic')
+    corpus = Corpus.objects.get(name=annotated_mock_corpus)
+    corpus.groups.add(basic_group)
+
+
+def test_ner_search_view_live(
+    client, annotated_mock_corpus, index_annotated_mock_corpus, annotated_corpus_public,
+):
+    route = f'/api/es/{annotated_mock_corpus}/0/named_entities'
     response = client.get(route, content_type='application/json')
     assert response.status_code == 200
 
