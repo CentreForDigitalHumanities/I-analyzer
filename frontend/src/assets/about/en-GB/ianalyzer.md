@@ -6,15 +6,15 @@ Textcavator is primarily intended for academic research and higher education. We
 
 ## Development
 
-Textcavator is developed at Utrecht University's Centre for Digital Humanities by the Research Software Lab. The lab started development on Textcavator in 2017. Searching through text data is the first step for a lot of humanities research, and Textcavator is our way of adressing similar needs from researchers.
+Textcavator is developed at Utrecht University's Centre for Digital Humanities by the Research Software Lab. Searching through text data is the first step for a lot of humanities research, and Textcavator is our way of adressing similar needs from researchers.
 
-In its source code, Textcavator separates the interface from the data structure of each corpus. For each new corpus that we add, we add a definition file that describes which fields exist, what kind of data each field contains, etc. The application then uses that information to present a search interface with filters, visualisations, et cetera.
+Textcavator evolved from xTAS, developed at the University of Amsterdam. This led to the development of [Texcavator](https://research-software-directory.org/projects/texcavator) by Utrecht University, the Netherlands eScience Centre, and the University of Amsterdam. Since 2015, the Research Software Lab has continued to develop the software. From 2017-2025, we used the name I-analyzer, now Textcavator.
 
-This way, whenever researchers have data that they want to add, we don't need to describe what it means to filter or how the visualisations should work; we just need to define what the data looks like.
+Textcavator is designed as a flexible application that can serve a variety of research projects. The application is not tied to a specific dataset, and easily extended with new corpora. There is also an environment for researchers to create and manage their own corpora, currently in an experimental phase.
 
-As Textcavator is designed to be flexible, we have worked with different research projects over time to add corpora and develop the application. You can find more information about some of these projects in our [portfolio](https://cdh.uu.nl/portfolio/).
+We have worked with different research projects over time to add corpora and develop the application. You can find more information about some of these projects in our [portfolio](https://cdh.uu.nl/portfolio/).
 
-The [source code of Textcavator](https://github.com/CentreForDigitalHumanities/I-analyzer) is shared under an MIT license.
+Textcavator is developed as open source software. The [source code of Textcavator](https://github.com/CentreForDigitalHumanities/I-analyzer) is shared with an MIT licence.
 
 ## Research using Textcavator
 
