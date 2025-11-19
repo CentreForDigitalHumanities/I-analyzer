@@ -8,9 +8,9 @@ import { version } from './version';
 
 export const environment = {
     production: false,
-    appName: 'I-Analyzer',
+    appName: 'Textcavator',
     navbarBrand: {
-        title: 'I-analyzer',
+        title: 'Textcavator',
         subtitle: undefined,
         logo: '/assets/logo.png',
         logoAlt: undefined,
