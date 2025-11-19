@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { ApiService } from '@services';
+import { ApiService, CorpusService } from '@services';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 
@@ -110,6 +110,7 @@ export class CorpusDefinition {
 
     constructor(
         private apiService: ApiService,
+        private corpusService: CorpusService,
         public id?: number,
     ) {
         if (this.id) {
@@ -151,6 +152,7 @@ export class CorpusDefinition {
             : this.apiService.createCorpus(data);
         const result$ = request$.pipe(share());
         result$.subscribe((result) => this.setFromAPIData(result));
+        result$.subscribe(() => this.corpusService.get(true));
         return result$;
     }
 
