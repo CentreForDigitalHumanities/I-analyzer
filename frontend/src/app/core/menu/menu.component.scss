@@ -37,10 +37,4 @@
 
 .app-subtitle {
     font-style: italic;
-
-    &::before {
-        content: '| ';
-        font-style: normal;
-        margin-right: 0.4em;
-    }
 }
