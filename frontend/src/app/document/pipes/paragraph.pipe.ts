@@ -23,7 +23,8 @@ export class ParagraphPipe implements PipeTransform {
         if (!paragraphs || paragraphs.length === 1) {
             return content as string;
         }
-        const wrapped = paragraphs.join('</p><p>')
+        const cleanedParagraphs = paragraphs.filter(p => p !== '')
+        const wrapped = cleanedParagraphs.join('</p><p>')
         return this.domSanitizer.bypassSecurityTrustHtml(`<p>${wrapped}</p>`);
     }
 
