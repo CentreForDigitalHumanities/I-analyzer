@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import * as _ from 'lodash';
 
 import { entityIcons } from '@shared/icons';
-import { FieldEntities } from '@models';
+import { entityKeys } from '@models';
 
 @Component({
     selector: 'ia-entity-legend',
@@ -11,7 +11,7 @@ import { FieldEntities } from '@models';
     standalone: false
 })
 export class EntityLegendComponent implements OnChanges {
-    // @Input() entityAnnotations: FieldEntities[];
+    @Input() annotatedContent?: string;
 
     public entityIcons = entityIcons;
     public entities: string[] = ['person', 'location', 'organization', 'miscellaneous'];
@@ -19,11 +19,11 @@ export class EntityLegendComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges(): void {
-    //     if (!this.entityAnnotations) {
-    //         this.entities = null;
-    //     } else {
-    //         this.entities = _.uniq(this.entityAnnotations.map((item) => item.entity)).filter((value) => value !=='flat');
-    //     }
+        this.entities = Object.values(entityKeys).filter(entityName => {
+            const key = _.invert(entityKeys)[entityName];
+            const pattern = new RegExp(`\\[[^\\]]+\\]\\(${key}\\)`, 'g');
+            return pattern.test(this.annotatedContent);
+        });
     }
 
 }

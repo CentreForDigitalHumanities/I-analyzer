@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CorpusField, FoundDocument } from '@models';
+import { CorpusField, entityKeys, FoundDocument } from '@models';
 import { splitParagraphs } from '../pipes/paragraph.pipe';
 import { entityIcons } from '@app/shared/icons';
 import _ from 'lodash';
@@ -20,13 +20,7 @@ export class ContentFieldComponent {
     splitParagraphs = splitParagraphs;
 
     annotationName(annotation: string) {
-        const keys = {
-            PER: 'person',
-            LOC: 'location',
-            ORG: 'organization',
-            MISC: 'miscellaneous',
-        };
-        return _.get(keys, annotation);
+        return _.get(entityKeys, annotation);
     }
 
     annotationIcon(annotation: string) {

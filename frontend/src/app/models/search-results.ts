@@ -85,6 +85,13 @@ export interface QueryFeedback {
     similarTerms?: string[];
 }
 
+export const entityKeys: Record<string, string> = {
+    PER: 'person',
+    LOC: 'location',
+    ORG: 'organization',
+    MISC: 'miscellaneous',
+};
+
 export interface FieldEntities {
     [entityType: string] : string
 }

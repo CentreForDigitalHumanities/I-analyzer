@@ -16,7 +16,7 @@
                 }
             }
         }
-        <ia-entity-legend *ngIf="showEntities" />
+        <ia-entity-legend [annotatedContent]="value" />
     } @else {
         <div [innerHtml]="field | elasticsearchHighlight:document | paragraph"></div>
     }
