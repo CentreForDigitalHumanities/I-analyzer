@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { ApiService, CorpusService } from '@services';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, share, switchMap } from 'rxjs/operators';
+import { filter, share, switchMap, tap } from 'rxjs/operators';
 import { findByName } from '@app/utils/utils';
 
 export type Delimiter = ',' | ';' | '\t';
