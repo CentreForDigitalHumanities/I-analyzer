@@ -79,6 +79,7 @@ class ParlaMintAll(Parliament, XMLCorpusDefinition):
         es_mapping=keyword_mapping(),
         search_filter = MultipleChoiceFilter(
             description='Search for speeches from the selected countries',
+            option_count=len(COUNTRY_CODES)
         ),
         results_overview = True,
         extractor = Metadata('country', transform=lambda country_code: COUNTRY_CODE_TO_NAME[country_code]),
