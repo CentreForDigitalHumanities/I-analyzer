@@ -96,6 +96,11 @@ export class FoundDocument {
         return this.fieldValues[field.name];
     }
 
+    namedEntityAnnotatedValue(field: CorpusField) {
+        const annotatedName = field.name + ':ner';
+        return _.get(this.fieldValues, annotatedName);
+    }
+
     language(field: CorpusField) {
         if (field.language === 'dynamic') {
             return this.fieldValue(this.corpus.languageField);

@@ -11,19 +11,19 @@ import { FieldEntities } from '@models';
     standalone: false
 })
 export class EntityLegendComponent implements OnChanges {
-    @Input() entityAnnotations: FieldEntities[];
+    // @Input() entityAnnotations: FieldEntities[];
 
     public entityIcons = entityIcons;
-    public entities: string[];
+    public entities: string[] = ['person', 'location', 'organization', 'miscellaneous'];
 
     constructor() { }
 
     ngOnChanges(): void {
-        if (!this.entityAnnotations) {
-            this.entities = null;
-        } else {
-            this.entities = _.uniq(this.entityAnnotations.map((item) => item.entity)).filter((value) => value !=='flat');
-        }
+    //     if (!this.entityAnnotations) {
+    //         this.entities = null;
+    //     } else {
+    //         this.entities = _.uniq(this.entityAnnotations.map((item) => item.entity)).filter((value) => value !=='flat');
+    //     }
     }
 
 }
