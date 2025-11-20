@@ -17,7 +17,6 @@ import { ImageViewModule } from './image-view/image-view.module';
 import { MetadataFieldComponent } from './metadata-field/metadata-field.component';
 import { DateRangePipe } from './pipes/date-range.pipe';
 import { ElasticsearchHighlightPipe } from './pipes/elasticsearch-highlight.pipe';
-import { EntityPipe } from './pipes/entity.pipe';
 import { GeoDataPipe } from './pipes/geo-data.pipe';
 import { KeywordPipe } from './pipes/keyword.pipe';
 import { ParagraphPipe } from './pipes/paragraph.pipe';
@@ -35,7 +34,6 @@ import { AnnotationSegmentsPipe } from './pipes/annotation-segments.pipe';
         EntityToggleComponent,
         MetadataFieldComponent,
         ElasticsearchHighlightPipe,
-        EntityPipe,
         GeoDataPipe,
         ParagraphPipe,
         SnippetPipe,

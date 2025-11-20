@@ -92,14 +92,6 @@ export const entityKeys: Record<string, string> = {
     MISC: 'miscellaneous',
 };
 
-export interface FieldEntities {
-    [entityType: string] : string
-}
-
-export interface NamedEntitiesResult {
-    [fieldName: string]: FieldEntities[]
-}
-
 export interface TaskResult { task_ids: string[] };
 
 export interface TaskSuccess {
