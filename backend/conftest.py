@@ -155,6 +155,10 @@ def media_mock_corpus() -> str:
 def tag_mock_corpus() -> str:
     return 'tagging-mock-corpus'
 
+@pytest.fixture()
+def annotated_mock_corpus() -> str:
+    return 'annotated-mock-corpus'
+
 def _clear_test_indices(es_client: Elasticsearch):
     response = es_client.indices.get(index='test-*')
     for index in response.keys():
@@ -209,6 +213,10 @@ def index_ml_mock_corpus(db, es_client: Elasticsearch, ml_mock_corpus: str, test
 @pytest.fixture()
 def index_tag_mock_corpus(db, es_client: Elasticsearch, tag_mock_corpus: str, test_index_cleanup):
     _index_test_corpus(es_client, tag_mock_corpus)
+
+@pytest.fixture()
+def index_annotated_mock_corpus(db, es_client: Elasticsearch, annotated_mock_corpus: str, test_index_cleanup):
+    _index_test_corpus(es_client, annotated_mock_corpus)
 
 
 @pytest.fixture()
