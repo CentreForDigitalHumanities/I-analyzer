@@ -2,17 +2,19 @@
     @if (showEntities) {
         @let value = document.namedEntityAnnotatedValue(field) || document.fieldValue(field);
         @for (p of splitParagraphs(value); track p) {
-            @for (segment of p | annotationSegments; track segment) {
-                @let annotation = annotationName(segment.annotation);
-                @if (annotation) {
-                    <mark class="entity-{{annotation}}">
+            <p>
+                @for (segment of p | annotationSegments; track segment) {
+                    @let annotation = annotationName(segment.annotation);
+                    @if (annotation) {
+                        <mark class="entity-{{annotation}}">
+                            {{segment.content}}
+                            <fa-icon [icon]="entityIcons[annotation]"  class="entity-icon"/>
+                        </mark>
+                    } @else {
                         {{segment.content}}
-                        <fa-icon [icon]="entityIcons[annotation]"  class="entity-icon"/>
-                    </mark>
-                } @else {
-                    {{segment.content}}
+                    }
                 }
-            }
+            </p>
         }
         <ia-entity-legend [annotatedContent]="value" />
     } @else {
