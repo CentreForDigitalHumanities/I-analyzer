@@ -1,0 +1,4 @@
+<div *ngIf="visible$|async" class="notification is-warning is-light">
+  <button class="delete" (click)="hideAlert()"></button>
+    {{alertMessage$|async}}
+</div>
