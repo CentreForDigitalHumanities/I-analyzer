@@ -39,7 +39,7 @@ def get_publication_id(identifier: str) -> str:
 
 def join_issue_strings(issue_description: Union[list[str], None]) -> Union[str, None]:
     if issue_description:
-        return "".join(issue_description[:2])
+        return " ".join(issue_description[:2])
 
 
 class Gallica(XMLCorpusDefinition):
